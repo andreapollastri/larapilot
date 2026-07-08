@@ -39,7 +39,13 @@ class SpecAddCommand extends LarapilotCommand
         $result = $validation->validateSpecPayload($payload);
 
         if (! $result['ok']) {
-            return $this->success('validation_result', $result);
+            return $this->failure(
+                'E_INVALID_INPUT',
+                'Specs payload failed validation.',
+                $this->exitForCode('E_INVALID_INPUT'),
+                'Fix the findings and retry.',
+                ['findings' => $result['findings']]
+            );
         }
 
         $specs->add($payload['specs']);

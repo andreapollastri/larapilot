@@ -22,7 +22,9 @@ Common rules:
 {"schema":"larapilot/v1","kind":"error","error":{"code":"E_*","message":"...","hint":"..."}}
 ```
 
-- `php artisan larapilot:validate-*` commands return a normal stdout envelope with `kind:"validation_result"`. Structural validation outcomes are reported in `data.ok` and `data.findings`; error envelopes are reserved for process failures.
+- `php artisan larapilot:validate-*` commands return a normal stdout envelope with `kind:"validation_result"`. Structural validation outcomes are reported in `data.ok` and `data.findings`; the exit code is `0` when `data.ok` is true and `2` otherwise. Error envelopes are reserved for process failures.
+- `spec-add` and `spec-plan` reject invalid payloads with an error envelope (`E_INVALID_INPUT`, exit `2`) that carries the findings in `error.details.findings`.
+- Workflow transitions are enforced: `spec-start` requires `PLANNED`, `spec-review` requires `IN PROGRESS`, `spec-approve` and `spec-request-changes` require `REVIEW`. Invalid transitions fail with `E_PRECONDITION` (exit `4`).
 
 - Branch on `error.code`, never on `error.message`.
 - Treat exit codes as stable:

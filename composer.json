@@ -12,9 +12,14 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Andrea Pollastri"
+            "name": "Andrea Pollastri",
+            "email": "scrivi@andreapollastri.net"
         }
     ],
+    "support": {
+        "issues": "https://github.com/andreapollastri/larapilot/issues",
+        "source": "https://github.com/andreapollastri/larapilot"
+    },
     "require": {
         "php": "^8.2",
         "illuminate/console": "^11.45.3|^12.41.1|^13.0",
@@ -58,6 +63,7 @@
     },
     "scripts": {
         "test": "pest",
-        "lint": "pint --format agent"
+        "lint": "pint --format agent",
+        "analyse": "phpstan analyse --memory-limit=1G"
     }
 }

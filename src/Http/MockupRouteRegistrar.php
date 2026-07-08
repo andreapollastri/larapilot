@@ -6,18 +6,13 @@ namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\MockupController;
+use Larapilot\Services\ConfigService;
 
 class MockupRouteRegistrar
 {
     public static function register(): void
     {
-        if (! config('larapilot.enabled', true)) {
-            return;
-        }
-
-        $controller = app(MockupController::class);
-
-        if (! $controller->mockupsAreBrowsable()) {
+        if (! app(ConfigService::class)->mockupsBrowsable()) {
             return;
         }
 

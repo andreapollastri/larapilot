@@ -7,5 +7,3 @@ composer.lock
 .DS_Store
 coverage/
 build/
-phpstan.neon
-testbench.yaml

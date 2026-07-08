@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\JsonSchema\Types\Type;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
@@ -48,7 +49,7 @@ class RunArtisanTool extends Tool
     }
 
     /**
-     * @return array<string, JsonSchema>
+     * @return array<string, Type>
      */
     public function schema(JsonSchema $schema): array
     {

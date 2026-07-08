@@ -29,8 +29,6 @@ class ValidatePrdCommand extends LarapilotCommand
             return $this->failure('E_PRECONDITION', 'PRD file does not exist.', $this->exitForCode('E_PRECONDITION'), 'Run larapilot-inception or larapilot:prd-write first.');
         }
 
-        $result = $validation->validatePrd($content);
-
-        return $this->success('validation_result', $result);
+        return $this->validationResult($validation->validatePrd($content));
     }
 }

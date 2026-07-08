@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Illuminate\Support\Arr;
+use Larapilot\Support\AtomicFile;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigService
 {
+    /**
+     * @var array<string, mixed>|null
+     */
+    protected ?array $resolved = null;
+
     public function projectRoot(): string
     {
         return base_path();
@@ -18,6 +24,14 @@ class ConfigService
      * @return array<string, mixed>
      */
     public function resolve(): array
+    {
+        return $this->resolved ??= $this->resolveFresh();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function resolveFresh(): array
     {
         $configPath = $this->configPath();
 
@@ -68,7 +82,7 @@ class ConfigService
 
     public function absolutePath(string $relative): string
     {
-        if (str_starts_with($relative, '/')) {
+        if (str_starts_with($relative, '/') || preg_match('/^[A-Za-z]:[\\\\\\/]/', $relative) === 1) {
             return $relative;
         }
 
@@ -125,10 +139,12 @@ class ConfigService
         $config = array_replace_recursive($this->defaults(), $overrides);
         $this->ensureDirectories();
 
-        file_put_contents(
+        AtomicFile::write(
             $this->configPath(),
             Yaml::dump($config, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
+
+        $this->resolved = null;
     }
 
     public function status(string $key): string
@@ -136,5 +152,28 @@ class ConfigService
         $config = $this->resolve();
 
         return Arr::get($config, "workflow.statuses.{$key}", strtoupper($key));
+    }
+
+    /**
+     * Whether the mockup preview route may serve files in the current
+     * environment. Never true in production.
+     */
+    public function mockupsBrowsable(): bool
+    {
+        if (! config('larapilot.enabled', true) || ! config('larapilot.mockups_route.enabled', true)) {
+            return false;
+        }
+
+        if (app()->environment('production')) {
+            return false;
+        }
+
+        $allowed = config('larapilot.mockups_route.environments');
+
+        if (is_array($allowed) && $allowed !== []) {
+            return app()->environment($allowed);
+        }
+
+        return true;
     }
 }

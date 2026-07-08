@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\SpecCode;
+
 class ValidationService
 {
     /**
@@ -79,11 +81,23 @@ class ValidationService
                 }
             }
 
+            $code = (string) ($spec['code'] ?? '');
+
+            if ($code !== '' && ! SpecCode::isValid($code)) {
+                $findings[] = $this->finding('SPEC_INVALID_CODE', 'error', "{$prefix}.code", "Spec code contains invalid characters: {$code}.", 'Use letters, digits, dots, dashes, and underscores (e.g. US-001).');
+            }
+
             $body = (string) ($spec['body'] ?? '');
 
-            foreach (['User Story', 'Demonstrates', 'Acceptance Criteria'] as $section) {
-                if (! str_contains($body, $section)) {
-                    $findings[] = $this->finding('SPEC_MISSING_SECTION', 'error', "{$prefix}.body", "Spec body is missing section: {$section}.", "Include a '{$section}' section in the spec body.");
+            $sections = [
+                'User Story' => ['User Story', 'Storia Utente'],
+                'Demonstrates' => ['Demonstrates', 'Dimostra'],
+                'Acceptance Criteria' => ['Acceptance Criteria', 'Criteri di Accettazione'],
+            ];
+
+            foreach ($sections as $section => $names) {
+                if (! $this->hasSection($body, $names)) {
+                    $findings[] = $this->finding('SPEC_MISSING_SECTION', 'error', "{$prefix}.body", "Spec body is missing section: {$section}.", "Include a '**{$section}**' (or '## {$section}') section in the spec body.");
                 }
             }
         }
@@ -155,12 +169,34 @@ class ValidationService
 
         if ($code === '') {
             $findings[] = $this->finding('PLAN_MISSING_CODE', 'error', 'code', 'Spec code is required for plan validation.', 'Pass a valid US-XXX code.');
+        } elseif (! SpecCode::isValid($code)) {
+            $findings[] = $this->finding('PLAN_INVALID_CODE', 'error', 'code', "Spec code contains invalid characters: {$code}.", 'Use letters, digits, dots, dashes, and underscores (e.g. US-001).');
         }
 
         return [
             'ok' => ! $this->hasErrors($findings),
             'findings' => $findings,
         ];
+    }
+
+    /**
+     * A section counts only when marked up as a heading (## Name) or
+     * bold label (**Name**), matching the spec template — a passing
+     * mention in prose is not enough.
+     *
+     * @param  list<string>  $names
+     */
+    protected function hasSection(string $body, array $names): bool
+    {
+        foreach ($names as $name) {
+            $quoted = preg_quote($name, '/');
+
+            if (preg_match('/(^|\n)\s*(#{1,6}\s+[^\n]*'.$quoted.'|\*\*'.$quoted.'\*\*)/i', $body) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

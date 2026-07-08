@@ -35,6 +35,6 @@ class ValidateSpecCommand extends LarapilotCommand
             return $this->failure('E_INVALID_INPUT', 'Invalid specs payload.', $this->exitForCode('E_INVALID_INPUT'));
         }
 
-        return $this->success('validation_result', $validation->validateSpecPayload($payload));
+        return $this->validationResult($validation->validateSpecPayload($payload));
     }
 }

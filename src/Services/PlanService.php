@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\AtomicFile;
+use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
 class PlanService
@@ -18,7 +20,7 @@ class PlanService
         $config = $this->config->resolve();
         $planning = $this->config->absolutePath($config['file']['planning'] ?? '.larapilot/plans/');
 
-        return rtrim($planning, '/').'/'.$code.'-plan.yaml';
+        return rtrim($planning, '/').'/'.SpecCode::ensure($code).'-plan.yaml';
     }
 
     /**
@@ -26,12 +28,6 @@ class PlanService
      */
     public function save(string $code, array $payload): void
     {
-        $directory = dirname($this->path($code));
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
         $plan = [
             'code' => $code,
             'plan_body' => (string) ($payload['plan_body'] ?? ''),
@@ -39,7 +35,7 @@ class PlanService
             'updated_at' => now()->toIso8601String(),
         ];
 
-        file_put_contents(
+        AtomicFile::write(
             $this->path($code),
             Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
@@ -87,13 +83,8 @@ class PlanService
         }
 
         $plan['tasks'] = $tasks;
-        $directory = dirname($this->path($code));
 
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents(
+        AtomicFile::write(
             $this->path($code),
             Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );

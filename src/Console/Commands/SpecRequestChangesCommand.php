@@ -17,12 +17,17 @@ class SpecRequestChangesCommand extends LarapilotCommand
 
     protected $description = 'Send a spec in REVIEW back to TODO with rework feedback';
 
-    public function handle(SpecService $specs, ConfigService $config, string $code): int
+    public function handle(SpecService $specs, ConfigService $config): int
     {
+        $code = (string) $this->argument('code');
         $spec = $specs->find($code);
 
         if ($spec === null) {
             return $this->failure('E_NOT_FOUND', "Spec {$code} not found.", $this->exitForCode('E_NOT_FOUND'));
+        }
+
+        if (($guard = $this->guardStatus($spec, [$config->status('review')], 'request changes on')) !== null) {
+            return $guard;
         }
 
         $file = $this->option('file');

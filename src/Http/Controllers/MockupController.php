@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Larapilot\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -31,9 +30,9 @@ class MockupController
 
     public function __construct(protected ConfigService $config) {}
 
-    public function __invoke(Request $request, string $spec, ?string $path = null): Response|BinaryFileResponse
+    public function __invoke(string $spec, ?string $path = null): Response|BinaryFileResponse
     {
-        if (! $this->mockupsAreBrowsable()) {
+        if (! $this->config->mockupsBrowsable()) {
             abort(404);
         }
 
@@ -51,25 +50,6 @@ class MockupController
         return response()->file($absolutePath, [
             'Content-Type' => $this->mimeType($relativePath),
         ]);
-    }
-
-    public function mockupsAreBrowsable(): bool
-    {
-        if (! config('larapilot.mockups_route.enabled', true)) {
-            return false;
-        }
-
-        if (app()->environment('production')) {
-            return false;
-        }
-
-        $allowed = config('larapilot.mockups_route.environments');
-
-        if (is_array($allowed) && $allowed !== []) {
-            return app()->environment($allowed);
-        }
-
-        return true;
     }
 
     protected function isValidSpec(string $spec): bool
@@ -100,7 +80,7 @@ class MockupController
         $realFile = realpath($absolute);
 
         if ($realRoot === false || $realFile === false) {
-            return is_file($absolute) ? $absolute : null;
+            return null;
         }
 
         if (! str_starts_with($realFile, $realRoot.DIRECTORY_SEPARATOR) && $realFile !== $realRoot) {

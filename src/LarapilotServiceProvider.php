@@ -12,6 +12,7 @@ use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
+use Larapilot\Console\Commands\SpecDeleteCommand;
 use Larapilot\Console\Commands\SpecListCommand;
 use Larapilot\Console\Commands\SpecNextCommand;
 use Larapilot\Console\Commands\SpecPlanCommand;
@@ -47,10 +48,8 @@ class LarapilotServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        if (! config('larapilot.enabled', true)) {
-            return;
-        }
-
+        // Commands and publishing stay available even when larapilot is
+        // disabled, so larapilot:doctor can diagnose a disabled install.
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
@@ -71,11 +70,16 @@ class LarapilotServiceProvider extends ServiceProvider
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,
                 SpecApproveCommand::class,
+                SpecDeleteCommand::class,
             ]);
 
             $this->publishes([
                 __DIR__.'/../config/larapilot.php' => config_path('larapilot.php'),
             ], 'larapilot-config');
+        }
+
+        if (! config('larapilot.enabled', true)) {
+            return;
         }
 
         Mcp::local('larapilot', LarapilotServer::class);

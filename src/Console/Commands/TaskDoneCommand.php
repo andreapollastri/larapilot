@@ -15,8 +15,11 @@ class TaskDoneCommand extends LarapilotCommand
 
     protected $description = 'Mark one plan task as completed';
 
-    public function handle(PlanService $plans, string $code, string $taskId): int
+    public function handle(PlanService $plans): int
     {
+        $code = (string) $this->argument('code');
+        $taskId = (string) $this->argument('taskId');
+
         try {
             $plans->markTaskDone($code, $taskId);
         } catch (\RuntimeException $exception) {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\AtomicFile;
+
 class PrdService
 {
     public function __construct(
@@ -33,13 +35,6 @@ class PrdService
 
     public function write(string $content): void
     {
-        $path = $this->path();
-        $directory = dirname($path);
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents($path, $content);
+        AtomicFile::write($this->path(), $content);
     }
 }

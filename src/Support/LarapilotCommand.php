@@ -38,4 +38,37 @@ abstract class LarapilotCommand extends Command
             default => 1,
         };
     }
+
+    /**
+     * Emit a validation_result envelope; exit non-zero when validation failed.
+     *
+     * @param  array{ok: bool, findings: array<int, array<string, string>>}  $result
+     */
+    protected function validationResult(array $result): int
+    {
+        $this->line(EnvelopeWriter::success('validation_result', $result));
+
+        return $result['ok'] ? self::SUCCESS : $this->exitForCode('E_INVALID_INPUT');
+    }
+
+    /**
+     * @param  array<string, mixed>  $spec
+     * @param  list<string>  $allowed
+     */
+    protected function guardStatus(array $spec, array $allowed, string $action): ?int
+    {
+        $status = strtoupper(trim((string) ($spec['status'] ?? '')));
+        $allowedUpper = array_map('strtoupper', $allowed);
+
+        if (in_array($status, $allowedUpper, true)) {
+            return null;
+        }
+
+        return $this->failure(
+            'E_PRECONDITION',
+            "Cannot {$action} a spec in status ".($status === '' ? '(none)' : $status).'.',
+            $this->exitForCode('E_PRECONDITION'),
+            'Expected status: '.implode(' or ', $allowed).'.'
+        );
+    }
 }

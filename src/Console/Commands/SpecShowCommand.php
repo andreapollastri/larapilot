@@ -13,8 +13,9 @@ class SpecShowCommand extends LarapilotCommand
 
     protected $description = 'Show one spec and its tasks';
 
-    public function handle(SpecService $specs, string $code): int
+    public function handle(SpecService $specs): int
     {
+        $code = (string) $this->argument('code');
         $data = $specs->show($code);
 
         if ($data === null) {

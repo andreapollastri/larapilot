@@ -1,5 +1,10 @@
 # Larapilot
 
+[![tests](https://github.com/andreapollastri/larapilot/actions/workflows/tests.yml/badge.svg)](https://github.com/andreapollastri/larapilot/actions/workflows/tests.yml)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/andreapollastri/larapilot.svg)](https://packagist.org/packages/andreapollastri/larapilot)
+[![Total Downloads](https://img.shields.io/packagist/dt/andreapollastri/larapilot.svg)](https://packagist.org/packages/andreapollastri/larapilot)
+[![License](https://img.shields.io/packagist/l/andreapollastri/larapilot.svg)](LICENSE)
+
 **From a rough product idea to reviewed Laravel code, with an AI product team that follows a real process.**
 
 Larapilot ports the [ARchetipo](https://github.com/techreloaded-ar/ARchetipo) spec-driven workflow to **Laravel and PHP**, integrated with [Laravel Boost](https://laravel.com/ai/boost). Instead of a Go CLI, Larapilot uses Artisan commands and Boost skills/MCP tools so your AI agent gets both a disciplined product process and deep Laravel context.
@@ -82,6 +87,8 @@ flowchart LR
 | `REVIEW` | Ready for human review |
 | `DONE` | Accepted (human-gated) |
 
+Transitions are enforced: `spec-start` requires `PLANNED`, `spec-review` requires `IN PROGRESS`, and `spec-approve`/`spec-request-changes` require `REVIEW`. Commands attempting an invalid transition fail with an `E_PRECONDITION` envelope and exit code `4`.
+
 ---
 
 ## The AI team
@@ -124,9 +131,22 @@ Skills call these commands; you rarely run them manually:
 | `larapilot:spec-review` | → REVIEW |
 | `larapilot:spec-request-changes` | → TODO with feedback |
 | `larapilot:spec-approve` | → DONE |
+| `larapilot:spec-delete` | Remove spec + plan files |
 | `larapilot:metrics` | Backlog progress |
 
 All commands emit JSON envelopes with schema `larapilot/v1`.
+
+### Exit codes
+
+Agents can rely on exit codes without parsing the envelope:
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Success (validations: payload is valid) |
+| `1` | Generic error |
+| `2` | Invalid input / validation failed |
+| `3` | Connector error |
+| `4` | Precondition failed or not found (missing spec, invalid transition) |
 
 ---
 

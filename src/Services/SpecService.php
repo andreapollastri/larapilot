@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\AtomicFile;
+use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
 class SpecService
@@ -28,7 +30,7 @@ class SpecService
 
     public function specPath(string $code): string
     {
-        return rtrim($this->specsDirectory(), '/').'/'.$code.'.yaml';
+        return rtrim($this->specsDirectory(), '/').'/'.SpecCode::ensure($code).'.yaml';
     }
 
     /**
@@ -128,6 +130,9 @@ class SpecService
         ];
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function find(string $code): ?array
     {
         foreach ($this->allSpecs() as $spec) {
@@ -139,6 +144,9 @@ class SpecService
         return null;
     }
 
+    /**
+     * @return array{spec: array<string, mixed>, tasks: array<int, array<string, mixed>>, workdir: string}|null
+     */
     public function next(?string $status = null): ?array
     {
         $status = $status ?? $this->config->status('todo');
@@ -181,11 +189,16 @@ class SpecService
 
         foreach ($specs as $spec) {
             $code = (string) ($spec['code'] ?? '');
-            if ($code === '') {
+            if (! SpecCode::isValid($code)) {
                 continue;
             }
 
             $indexed[$code] = array_merge($indexed[$code] ?? [], $spec);
+
+            if (trim((string) ($indexed[$code]['status'] ?? '')) === '') {
+                $indexed[$code]['status'] = $this->config->status('todo');
+            }
+
             $this->writeSpecFile($code, $indexed[$code]);
         }
 
@@ -258,18 +271,32 @@ class SpecService
         $this->persistSpec($spec);
     }
 
+    public function delete(string $code): void
+    {
+        if ($this->find($code) === null) {
+            throw new \RuntimeException("Spec {$code} not found.");
+        }
+
+        $remaining = array_values(array_filter(
+            $this->allSpecs(),
+            fn (array $spec): bool => ($spec['code'] ?? null) !== $code
+        ));
+
+        $this->writeBacklog($remaining);
+
+        foreach ([$this->specPath($code), $this->planPath($code)] as $path) {
+            if (is_file($path)) {
+                unlink($path);
+            }
+        }
+    }
+
     /**
      * @param  array<int, array<string, mixed>>  $specs
      */
     protected function writeBacklog(array $specs): void
     {
-        $directory = dirname($this->backlogPath());
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents(
+        AtomicFile::write(
             $this->backlogPath(),
             Yaml::dump(['specs' => array_values($specs)], 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
@@ -280,13 +307,7 @@ class SpecService
      */
     protected function writeSpecFile(string $code, array $spec): void
     {
-        $directory = $this->specsDirectory();
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents(
+        AtomicFile::write(
             $this->specPath($code),
             Yaml::dump($spec, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
@@ -297,7 +318,7 @@ class SpecService
         $config = $this->config->resolve();
         $planning = $this->config->absolutePath($config['file']['planning'] ?? '.larapilot/plans/');
 
-        return rtrim($planning, '/').'/'.$code.'-plan.yaml';
+        return rtrim($planning, '/').'/'.SpecCode::ensure($code).'-plan.yaml';
     }
 
     /**

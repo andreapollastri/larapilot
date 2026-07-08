@@ -16,8 +16,9 @@ class ValidatePlanCommand extends LarapilotCommand
 
     protected $description = 'Validate a generated plan payload without changing spec status';
 
-    public function handle(ValidationService $validation, string $code): int
+    public function handle(ValidationService $validation): int
     {
+        $code = (string) $this->argument('code');
         $file = $this->option('file');
 
         if ($file === null || ! is_file($file)) {
@@ -36,6 +37,6 @@ class ValidatePlanCommand extends LarapilotCommand
             return $this->failure('E_INVALID_INPUT', 'Invalid plan payload.', $this->exitForCode('E_INVALID_INPUT'));
         }
 
-        return $this->success('validation_result', $validation->validatePlanPayload($code, $payload));
+        return $this->validationResult($validation->validatePlanPayload($code, $payload));
     }
 }
