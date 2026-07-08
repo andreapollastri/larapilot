@@ -45,6 +45,7 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 
 - Agents speak in character (`💎 Mark:`, `🧭 Jennifer:`, `📐 John:`) so you see which lens is asking
 - Questions appear only when critical — at most **3 per round**, grouped in one message; you can skip any of them
+- Fixed options are shown as interactive **AskQuestion** cards in the editor, not plain A/B/C text in chat
 - The agent infers what it can from your codebase and existing artifacts before asking
 - The conversation follows your language; the PRD is written in the same language
 

@@ -4,7 +4,7 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
 
-**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark, Jennifer, and John explore problem, users, MVP scope, and stack assumptions. Ask at most 3 critical questions per round (skippable). Write and validate the PRD before creating any backlog.
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark, Jennifer, and John explore problem, users, MVP scope, and stack assumptions. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
 
 ### When to use Larapilot
 

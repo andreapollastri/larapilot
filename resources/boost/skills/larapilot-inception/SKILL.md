@@ -30,7 +30,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 ## Workflow
 
 1. Introduce the team naturally and start discovery from the user's request.
-2. Facilitate discovery: vision, problem, users, positioning, MVP boundaries, core Laravel stack assumptions.
+2. Facilitate discovery: vision, problem, users, positioning, MVP boundaries, core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
 3. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
 4. Write the PRD with these required sections:
    - `## Elevator Pitch`
