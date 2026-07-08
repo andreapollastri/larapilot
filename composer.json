@@ -21,18 +21,18 @@
         "source": "https://github.com/andreapollastri/larapilot"
     },
     "require": {
-        "php": "^8.2",
-        "illuminate/console": "^11.45.3|^12.41.1|^13.0",
-        "illuminate/contracts": "^11.45.3|^12.41.1|^13.0",
-        "illuminate/filesystem": "^11.45.3|^12.41.1|^13.0",
-        "illuminate/routing": "^11.45.3|^12.41.1|^13.0",
-        "illuminate/support": "^11.45.3|^12.41.1|^13.0",
-        "laravel/boost": "^1.0",
+        "php": "^8.3",
+        "illuminate/console": "^12.41.1|^13.0",
+        "illuminate/contracts": "^12.41.1|^13.0",
+        "illuminate/filesystem": "^12.41.1|^13.0",
+        "illuminate/routing": "^12.41.1|^13.0",
+        "illuminate/support": "^12.41.1|^13.0",
+        "laravel/boost": "^1.0|^2.0",
         "symfony/yaml": "^7.0|^8.0"
     },
     "require-dev": {
         "laravel/pint": "^1.27",
-        "orchestra/testbench": "^9.15|^10.6|^11.0",
+        "orchestra/testbench": "^10.6|^11.0",
         "pestphp/pest": "^3.8|^4.1",
         "phpstan/phpstan": "^2.1"
     },

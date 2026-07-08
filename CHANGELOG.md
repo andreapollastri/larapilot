@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Requires PHP `^8.3` and Laravel `^12.41.1|^13.0`; PHP 8.2 and Laravel 11 are no longer supported (the `laravel/boost`/`laravel/mcp` dependency chain cannot resolve on Laravel 11).
+- Allows `laravel/boost` `^2.0` alongside `^1.0` — boost 2.x is required for Laravel 13.
 - Validation commands (`validate-prd`, `validate-spec`, `validate-plan`) exit with code `2` when validation fails; `spec-add` and `spec-plan` return an error envelope with the findings instead of a success envelope.
 - Spec body validation requires marked-up sections (`**User Story**` or `## User Story`) instead of matching plain substrings.
 - All backlog, spec, plan, PRD, and project config writes are atomic (temp file + rename).
