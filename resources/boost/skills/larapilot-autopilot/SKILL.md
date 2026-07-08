@@ -19,6 +19,8 @@ Read `.larapilot/shared-runtime.md`.
 
 ## Selection Rules
 
+Read the PRD delivery target (see Delivery Target in shared-runtime). For `Full Product` or `Enterprise`, confirm with the user before processing large batches.
+
 Default pipeline per spec:
 
 1. If status is `TODO` → run `larapilot-plan` for that spec

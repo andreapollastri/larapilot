@@ -43,6 +43,8 @@ return [
     'personas' => [
         'product_manager' => ['name' => 'Mark', 'icon' => '💎', 'role' => 'Product Manager'],
         'business_strategist' => ['name' => 'Jennifer', 'icon' => '🧭', 'role' => 'Business Strategist'],
+        'business_consultant' => ['name' => 'Benjamin', 'icon' => '🏢', 'role' => 'Business Consultant'],
+        'innovator' => ['name' => 'Sebastian', 'icon' => '💡', 'role' => 'Innovator'],
         'requirements_analyst' => ['name' => 'Tom', 'icon' => '🔎', 'role' => 'Requirements Analyst'],
         'architect' => ['name' => 'John', 'icon' => '📐', 'role' => 'Architect'],
         'developer' => ['name' => 'Alex', 'icon' => '🔧', 'role' => 'Full-Stack Developer'],
@@ -50,8 +52,10 @@ return [
         'code_reviewer' => ['name' => 'Robert', 'icon' => '🛡️', 'role' => 'Code Reviewer'],
         'security_expert' => ['name' => 'Lars', 'icon' => '🔐', 'role' => 'Security Expert'],
         'devops' => ['name' => 'Jack', 'icon' => '🚀', 'role' => 'DevOps Engineer'],
-        'seo_expert' => ['name' => 'Emma', 'icon' => '📈', 'role' => 'SEO Expert'],
+        'seo_expert' => ['name' => 'Emma', 'icon' => '📈', 'role' => 'SEO & Web Performance Specialist'],
         'social_media_manager' => ['name' => 'Lauren', 'icon' => '💬', 'role' => 'Social Media Manager'],
+        'legal_expert' => ['name' => 'Violet', 'icon' => '⚖️', 'role' => 'Legal Expert'],
+        'finops' => ['name' => 'Aurora', 'icon' => '💰', 'role' => 'FinOps Expert'],
         'ux_designer' => ['name' => 'Elise', 'icon' => '🎨', 'role' => 'UX Designer'],
     ],
 ];

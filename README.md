@@ -37,9 +37,12 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 **What they explore:**
 
 - Market positioning, competitive context, and product risks (Jennifer)
+- Market research and enterprise business perspective (Benjamin)
+- Competitive challenger and integration opportunities (Sebastian)
 - Product scope, personas, and MVP trade-offs (Mark)
-- High-level Laravel stack assumptions (John)
-- For public websites: SEO discoverability (Emma) and social/distribution strategy (Lauren)
+- SOLID, scalable, performant architecture within budget (John + Aurora)
+- For public websites: SEO, Analytics, tracking, Lighthouse targets (Emma) and social strategy (Lauren)
+- When personal data is involved: GDPR and privacy requirements (Violet)
 
 **How the interview behaves:**
 
@@ -238,20 +241,24 @@ Transitions are enforced: `spec-start` requires `PLANNED`, `spec-review` require
 
 Personas are lenses that make the process visible:
 
-| Persona     | Role                 | Main expertise                                 |
-| ----------- | -------------------- | ---------------------------------------------- |
-| 💎 Mark     | Product Manager      | Product scope, personas, MVP trade-offs        |
-| 🧭 Jennifer | Business Strategist  | Market positioning, competitive context, product risks |
-| 🔎 Tom      | Requirements Analyst | Acceptance criteria, edge cases, spec quality  |
-| 📐 John     | Architect            | Technical solution and architectural decisions |
-| 🔧 Alex     | Full-Stack Developer | Implementation and task breakdown              |
-| 🧪 Anne     | Test Architect       | Test strategy and coverage                     |
-| 🛡️ Robert   | Code Reviewer        | Code quality, plan adherence, Laravel conventions |
-| 🔐 Lars     | Security Expert      | OWASP-aligned assessment, threat modeling, secure defaults |
-| 🚀 Jack     | DevOps Engineer      | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
-| 📈 Emma     | SEO Expert           | Technical SEO, discoverability, launch SEO checklist |
-| 💬 Lauren   | Social Media Manager | Open Graph, share previews, distribution readiness |
-| 🎨 Elise    | UX Designer          | User flows, accessibility, mockups, and visual language |
+| Persona     | Role                              | Main expertise                                 |
+| ----------- | --------------------------------- | ---------------------------------------------- |
+| 💎 Mark     | Product Manager                   | Product scope, personas, MVP trade-offs        |
+| 🧭 Jennifer | Business Strategist               | Market positioning, competitive context, product risks |
+| 🏢 Benjamin | Business Consultant             | Market research, enterprise know-how, business lens on technical choices |
+| 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, import/export opportunities |
+| 🔎 Tom      | Requirements Analyst              | Acceptance criteria, edge cases, spec quality  |
+| 📐 John     | Architect                         | SOLID, scalable architecture, application and site performance |
+| 🔧 Alex     | Full-Stack Developer              | Implementation and task breakdown              |
+| 🧪 Anne     | Test Architect                    | Test strategy and coverage                     |
+| 🛡️ Robert   | Code Reviewer                     | Code quality, plan adherence, Laravel conventions |
+| 🔐 Lars     | Security Expert                   | OWASP-aligned assessment, threat modeling, secure defaults |
+| 🚀 Jack     | DevOps Engineer                   | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
+| 💰 Aurora   | FinOps Expert                     | SaaS budgets, cloud cost optimization, provider and infra choices by budget |
+| ⚖️ Violet   | Legal Expert                      | GDPR, data processing, privacy compliance, consent and legal requirements |
+| 📈 Emma     | SEO & Web Performance Specialist  | Technical SEO, Analytics, tracking events, Lighthouse performance |
+| 💬 Lauren   | Social Media Manager              | Open Graph, share previews, distribution readiness |
+| 🎨 Elise    | UX Designer                       | User flows, accessibility, mockups, and visual language |
 
 ---
 

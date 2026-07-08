@@ -1485,8 +1485,12 @@
         <p><strong>What they explore:</strong></p>
         <ul>
           <li>Market positioning, competitive context, and product risks (Jennifer)</li>
+          <li>Market research and enterprise business perspective (Benjamin)</li>
+          <li>Competitive challenger and integration opportunities (Sebastian)</li>
           <li>Product scope, personas, and MVP trade-offs (Mark)</li>
-          <li>High-level Laravel stack assumptions (John)</li>
+          <li>SOLID, scalable, performant architecture within budget (John + Aurora)</li>
+          <li>For public websites: SEO, Analytics, tracking, Lighthouse (Emma) and social strategy (Lauren)</li>
+          <li>When personal data is involved: GDPR and privacy (Violet)</li>
         </ul>
 
         <p><strong>How the interview behaves:</strong></p>
@@ -1721,8 +1725,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Product Inception</h3>
               <p>Guided discovery interview — not a one-shot form. The team explores your idea conversationally, then writes and validates the PRD.</p>
               <ul>
-                <li><strong>Team:</strong> Mark (PM), Jennifer (Strategist), John (Architect); Emma &amp; Lauren join for public websites</li>
-                <li><strong>Explores:</strong> market positioning (Jennifer), MVP scope and trade-offs (Mark), Laravel stack assumptions (John)</li>
+                <li><strong>Team:</strong> Mark, Jennifer, Benjamin, Sebastian, John, Aurora; Emma, Lauren, Violet join when relevant</li>
+                <li><strong>Explores:</strong> positioning, enterprise research, competitive integrations, MVP scope, budget-aligned architecture</li>
                 <li><strong>Interview rules:</strong> max 3 questions per round, skippable; infers from codebase first</li>
                 <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> (backlog comes later via <code>/larapilot-spec</code>)</li>
               </ul>
@@ -1756,7 +1760,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Technical Planning</h3>
               <p>Detailed implementation plan with tasks, file changes, and test strategy → <code>PLANNED</code>.</p>
               <ul>
-                <li><strong>Team:</strong> Tom, John, Alex, Anne</li>
+                <li><strong>Team:</strong> Tom, John, Sebastian, Aurora, Violet, Alex, Anne</li>
               </ul>
             </div>
           </div>
@@ -1786,9 +1790,9 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Ship &amp; Deploy</h3>
               <p>OWASP security gate and production release. <a href="https://cipi.sh">Cipi</a> + <code>cipi/agent</code> is the preferred path; also supports Forge, Laravel Cloud, Ploi, Kubernetes, and custom VPS.</p>
               <ul>
-                <li><strong>Team:</strong> Lars (Security), Jack (DevOps), Emma &amp; Lauren (public sites)</li>
+                <li><strong>Team:</strong> Lars, Jack, Aurora, Violet, Emma &amp; Lauren (public sites)</li>
                 <li><strong>Gate:</strong> OWASP Top 10 assessment → <code>.larapilot/docs/security/</code></li>
-                <li><strong>Launch:</strong> SEO + social checks → <code>.larapilot/docs/launch/</code></li>
+                <li><strong>Launch:</strong> SEO, Analytics, Lighthouse, GDPR, social → <code>.larapilot/docs/launch/</code></li>
                 <li><strong>Deploy:</strong> platform-specific runbook (Cipi webhook, Forge push, K8s rollout, …)</li>
               </ul>
             </div>
@@ -1813,6 +1817,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
         <div class="team-grid">
           <div class="team-card"><div class="team-avatar">💎</div><div class="team-name">Mark</div><div class="team-role">Product Manager</div></div>
           <div class="team-card"><div class="team-avatar">🧭</div><div class="team-name">Jennifer</div><div class="team-role">Business Strategist</div></div>
+          <div class="team-card"><div class="team-avatar">🏢</div><div class="team-name">Benjamin</div><div class="team-role">Business Consultant</div></div>
+          <div class="team-card"><div class="team-avatar">💡</div><div class="team-name">Sebastian</div><div class="team-role">Innovator</div></div>
           <div class="team-card"><div class="team-avatar">🔎</div><div class="team-name">Tom</div><div class="team-role">Requirements Analyst</div></div>
           <div class="team-card"><div class="team-avatar">📐</div><div class="team-name">John</div><div class="team-role">Architect</div></div>
           <div class="team-card"><div class="team-avatar">🔧</div><div class="team-name">Alex</div><div class="team-role">Full-Stack Developer</div></div>
@@ -1820,7 +1826,9 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           <div class="team-card"><div class="team-avatar">🛡️</div><div class="team-name">Robert</div><div class="team-role">Code Reviewer</div></div>
           <div class="team-card"><div class="team-avatar">🔐</div><div class="team-name">Lars</div><div class="team-role">Security Expert</div></div>
           <div class="team-card"><div class="team-avatar">🚀</div><div class="team-name">Jack</div><div class="team-role">DevOps Engineer</div></div>
-          <div class="team-card"><div class="team-avatar">📈</div><div class="team-name">Emma</div><div class="team-role">SEO Expert</div></div>
+          <div class="team-card"><div class="team-avatar">💰</div><div class="team-name">Aurora</div><div class="team-role">FinOps Expert</div></div>
+          <div class="team-card"><div class="team-avatar">⚖️</div><div class="team-name">Violet</div><div class="team-role">Legal Expert</div></div>
+          <div class="team-card"><div class="team-avatar">📈</div><div class="team-name">Emma</div><div class="team-role">SEO &amp; Web Performance</div></div>
           <div class="team-card"><div class="team-avatar">💬</div><div class="team-name">Lauren</div><div class="team-role">Social Media Manager</div></div>
           <div class="team-card"><div class="team-avatar">🎨</div><div class="team-name">Elise</div><div class="team-role">UX Designer</div></div>
         </div>

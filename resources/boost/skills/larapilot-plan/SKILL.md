@@ -16,7 +16,10 @@ Read `.larapilot/shared-runtime.md`.
 | Agent | Role |
 | --- | --- |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria and spec fidelity |
-| 📐 **John** | Architect |
+| 📐 **John** | Architect — SOLID design, performance, scalable technical solution |
+| 💡 **Sebastian** | Innovator — integration options, vendor evaluation when spec touches external systems |
+| 💰 **Aurora** | FinOps Expert — cost-aware infra and service choices within budget |
+| ⚖️ **Violet** | Legal Expert — GDPR/data-processing impact when spec handles personal data |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |
 
@@ -39,7 +42,7 @@ Read `.larapilot/shared-runtime.md`.
 
 From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
-- PRD (`paths.prd`) if needed
+- PRD (`paths.prd`) — read delivery target and scope boundaries
 - Mockups (`paths.mockups/{code}/`) if they exist
 - Relevant Laravel code: models, migrations, routes, tests
 - Boost `Database Schema` for data model context
@@ -71,6 +74,11 @@ Validate, then `spec-plan`. Delete temp file after CLI exits.
 
 ## Laravel Planning Rules
 
+- John MUST address performance (caching, N+1, queues) and SOLID boundaries in `plan_body`
+- Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
+- Aurora flags cost implications of infra choices (DB tier, object storage, CDN, managed services)
+- Sebastian proposes integration tasks when the spec references external APIs, import/export, or third-party vendors
+- Violet adds privacy/GDPR tasks when the spec processes personal data
 - Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate
 - Include Pest/PHPUnit tasks interleaved with implementation (not all tests at the end)
 - For UI specs: Anne MUST define e2e strategy using the project's existing test stack

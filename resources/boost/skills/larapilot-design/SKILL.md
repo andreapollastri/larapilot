@@ -16,9 +16,9 @@ Read `.larapilot/shared-runtime.md`.
 | Agent | Role |
 | --- | --- |
 | 🎨 **Elise** | UX Designer — user flows, accessibility, mockups, and visual language |
-| 📈 **Emma** | SEO Expert — heading hierarchy, meta patterns, semantic structure *(public pages)* |
+| 📈 **Emma** | SEO & Web Performance Specialist — semantic structure, Analytics/tracking placement, Lighthouse targets *(public pages)* |
 | 💬 **Lauren** | Social Media Manager — OG/Twitter card notes, share image specs *(public pages)* |
-| 💎 **Mark** | Product Manager — scope and persona alignment |
+| 💎 **Mark** | Product Manager — scope and persona alignment with PRD delivery target |
 
 ## Config & CLI
 
@@ -34,7 +34,7 @@ Read `.larapilot/shared-runtime.md`.
 - For Laravel apps with Flux/Livewire/Inertia: mockups are references, not production components
 - Elise speaks in character when presenting design choices
 - Every mockup uses semantic HTML, correct form labels, and accessible contrast — Alex inherits these in implementation
-- For public pages: Emma annotates SEO structure (single H1, meta title/description patterns) in the mockup README; Lauren documents OG image size (1200×630) and default share copy
+- For public pages: Emma annotates SEO structure (single H1, meta title/description), Analytics integration points (GA4, Plausible, GTM), key tracking events, and Lighthouse performance targets in the mockup README; Lauren documents OG image size (1200×630) and default share copy
 
 ## Output
 

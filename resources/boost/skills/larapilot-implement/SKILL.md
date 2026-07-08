@@ -31,9 +31,10 @@ Read `.larapilot/shared-runtime.md`.
 ## Execution Contract
 
 1. **Autonomous by default** — stop only for explicit blockers (scope change, missing prerequisite spec, semantic test breakage).
-2. Work under `data.workdir` for all file operations.
-3. Run connector commands from `data.project_root`.
-4. After `spec-start`, re-run `spec-show` if worktree may have been created.
+2. Implement the **full planned spec** — never silently drop acceptance criteria to fit an MVP unless the PRD delivery target is MVP and the spec was scoped accordingly.
+3. Work under `data.workdir` for all file operations.
+4. Run connector commands from `data.project_root`.
+5. After `spec-start`, re-run `spec-show` if worktree may have been created.
 
 ## Laravel Implementation
 

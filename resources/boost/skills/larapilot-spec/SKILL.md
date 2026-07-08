@@ -16,7 +16,7 @@ Read `.larapilot/shared-runtime.md`.
 | Agent | Role |
 | --- | --- |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
-| 💎 **Mark** | Product Manager — prioritization and MVP alignment |
+| 💎 **Mark** | Product Manager — prioritization and alignment with PRD delivery target |
 
 ## Config & CLI
 
@@ -31,6 +31,19 @@ Read `.larapilot/shared-runtime.md`.
 - If backlog exists → **extend** with only the requested specs
 
 Read PRD from `data.paths.prd`. If missing, ask for path, content, or suggest `larapilot-inception`.
+
+Read the **delivery target** from `## MVP Scope` (see Delivery Target in shared-runtime). Scope the backlog to match — do not cap at MVP when the PRD says `V1 Complete`, `Full Product`, or `Enterprise`.
+
+## Bootstrap backlog (from PRD)
+
+| Delivery target | Backlog depth |
+| --- | --- |
+| **MVP** | Lean: one spec per core user journey; defer secondary FRs to Future Phases |
+| **V1 Complete** | Core + essential secondary features; bounded but production-ready |
+| **Full Product** | One spec (or epic group) per FR in `## Functional Requirements`; multi-epic backlog expected |
+| **Enterprise** | Full Product breadth + compliance, integrations, observability, and ops specs |
+
+When extending an existing backlog, new specs must stay consistent with the PRD delivery target.
 
 ## Spec Template
 

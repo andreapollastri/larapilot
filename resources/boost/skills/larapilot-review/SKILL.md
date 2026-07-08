@@ -67,5 +67,6 @@ Delete temp file after CLI exits.
 
 - Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
+- Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP
 - Be concise; this is a gate, not a re-implementation
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)

@@ -4,7 +4,7 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
 
-**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Jennifer explores market and positioning; Mark defines MVP scope and trade-offs; John covers stack assumptions. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark asks the **delivery target** early (`MVP`, `V1 Complete`, `Full Product`, `Enterprise`) — MVP thinking is the default lens, not a hard ceiling. Jennifer explores market and positioning; Benjamin brings enterprise market research; Sebastian challenges against competitors and integrations; Mark scopes to the chosen target; John and Aurora co-own scalable, performant, budget-aligned architecture. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
 
 ### When to use Larapilot
 
@@ -105,6 +105,8 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | --- | --- |
 | 💎 Mark | Product Manager |
 | 🧭 Jennifer | Business Strategist |
+| 🏢 Benjamin | Business Consultant |
+| 💡 Sebastian | Innovator |
 | 🔎 Tom | Requirements Analyst |
 | 📐 John | Architect |
 | 🔧 Alex | Full-Stack Developer |
@@ -112,7 +114,9 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 🛡️ Robert | Code Reviewer |
 | 🔐 Lars | Security Expert |
 | 🚀 Jack | DevOps Engineer |
-| 📈 Emma | SEO Expert |
+| 💰 Aurora | FinOps Expert |
+| ⚖️ Violet | Legal Expert |
+| 📈 Emma | SEO & Web Performance Specialist |
 | 💬 Lauren | Social Media Manager |
 | 🎨 Elise | UX Designer |
 

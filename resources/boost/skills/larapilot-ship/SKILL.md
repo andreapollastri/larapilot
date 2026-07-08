@@ -17,8 +17,10 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict |
 | 🚀 **Jack** | DevOps Engineer — deploy orchestration, health checks, platform-specific runbooks |
-| 📈 **Emma** | SEO Expert — launch SEO checklist (public sites only) |
-| 💬 **Lauren** | Social Media Manager — Open Graph, share previews, distribution readiness (public sites only) |
+| 💰 **Aurora** | FinOps Expert — validates deploy target and infra cost against budget |
+| ⚖️ **Violet** | Legal Expert — GDPR and privacy compliance at launch *(when personal data is processed)* |
+| 📈 **Emma** | SEO & Web Performance Specialist — SEO, Analytics, tracking, Lighthouse *(public sites)* |
+| 💬 **Lauren** | Social Media Manager — Open Graph, share previews, distribution readiness *(public sites)* |
 
 ## Config & CLI
 
@@ -115,7 +117,7 @@ cipi deploy {app}
 
 ### Phase 0 — Release context
 
-Jack loads backlog state and confirms release scope (single spec, sprint batch, or full MVP) and **deploy target**.
+Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. **Aurora** validates the target fits the project's budget and scaling needs before prep begins.
 
 ### Phase 1 — Lars security gate (OWASP)
 
@@ -197,15 +199,24 @@ Jack orchestrates (speaks in character):
 
 Skip this phase for APIs, admin-only apps, or CLI tools with no public web presence.
 
-**Emma** runs an SEO launch checklist:
+**Emma** runs SEO, Analytics, and performance launch checks:
 
 - Unique `<title>` and meta description on key pages
 - Single `<h1>` per page; logical heading hierarchy
 - `robots.txt` and `sitemap.xml` (or route) reachable
 - Canonical URLs on duplicate-prone routes
 - HTTPS enforced; no mixed content
-- Core Web Vitals basics: image dimensions, lazy loading where appropriate
+- Analytics integration live (GA4, Plausible, Matomo, or chosen stack) with consent where required
+- Key tracking events firing (signup, purchase, CTA clicks) — verify in debug mode or tag assistant
+- Lighthouse audit on critical pages: target Performance ≥ 80, Accessibility ≥ 90 on mobile
 - Structured data (JSON-LD) if applicable (product, article, organization)
+
+**Violet** verifies privacy compliance when the app processes personal data:
+
+- Privacy policy and cookie/consent banner reachable
+- Lawful basis documented for each data collection point
+- Data retention and deletion flows operational
+- Third-party processors (Analytics, email, payment) listed with DPA status
 
 **Lauren** verifies social and distribution readiness:
 
@@ -219,15 +230,15 @@ Document findings in `.larapilot/docs/launch/{release-id}.md` when issues are fo
 
 ### Phase 5 — Release report
 
-Jack reports: target platform, app name, commit deployed, health status, deploy method.
+Jack reports: target platform, app name, commit deployed, health status, deploy method. Aurora summarizes infra cost impact of the release.
 
 Lars confirms no new Critical/High exposure from deploy configuration.
 
-Emma and Lauren summarize web launch status (PASS / issues to fix) when applicable.
+Violet, Emma, and Lauren summarize compliance and web launch status (PASS / issues to fix) when applicable.
 
 ## Rules
 
-- Lars, Jack, Emma, and Lauren speak in character throughout
+- Lars, Jack, Aurora, Violet, Emma, and Lauren speak in character throughout
 - Never skip the security assessment for production deploys
 - Never expose deploy tokens (`CIPI_*`, Forge keys, K8s secrets) in chat or committed files
 - Recommend Cipi when no target is set and a VPS deploy is appropriate — do not force it when the user has chosen another platform
