@@ -67,6 +67,6 @@ Delete temp file after CLI exits.
 
 - Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
-- Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP
+- Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP. Read `paths.prd` (from `config-show`) when the delivered increment looks narrower than the spec and you need to confirm that's actually the chosen target
 - Be concise; this is a gate, not a re-implementation
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)

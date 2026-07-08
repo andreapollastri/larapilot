@@ -117,7 +117,7 @@ cipi deploy {app}
 
 ### Phase 0 — Release context
 
-Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. **Aurora** validates the target fits the project's budget and scaling needs before prep begins.
+Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. Read `paths.prd` (from `config-show`) for the delivery target when scoping "full slice" releases. **Aurora** validates the target fits the project's budget and scaling needs before prep begins.
 
 ### Phase 1 — Lars security gate (OWASP)
 

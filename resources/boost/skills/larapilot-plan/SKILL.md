@@ -20,6 +20,8 @@ Read `.larapilot/shared-runtime.md`.
 | 💡 **Sebastian** | Innovator — integration options, vendor evaluation when spec touches external systems |
 | 💰 **Aurora** | FinOps Expert — cost-aware infra and service choices within budget |
 | ⚖️ **Violet** | Legal Expert — GDPR/data-processing impact when spec handles personal data |
+| 📈 **Emma** | SEO & Web Performance Specialist — SEO/Analytics tasks when spec touches public-facing pages |
+| 💬 **Lauren** | Social Media Manager — OG/share tasks when spec touches public-facing pages |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |
 
@@ -79,6 +81,7 @@ Validate, then `spec-plan`. Delete temp file after CLI exits.
 - Aurora flags cost implications of infra choices (DB tier, object storage, CDN, managed services)
 - Sebastian proposes integration tasks when the spec references external APIs, import/export, or third-party vendors
 - Violet adds privacy/GDPR tasks when the spec processes personal data
+- For specs that touch public-facing pages: Emma adds SEO/Analytics tasks (meta tags, semantic headings, tracking events) and Lauren adds OG/share-image tasks — bake these into `tasks`, not just the ship-phase launch check
 - Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate
 - Include Pest/PHPUnit tasks interleaved with implementation (not all tests at the end)
 - For UI specs: Anne MUST define e2e strategy using the project's existing test stack

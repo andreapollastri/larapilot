@@ -39,7 +39,7 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 - Market positioning, competitive context, and product risks (Jennifer)
 - Market research and enterprise business perspective (Benjamin)
 - Competitive challenger and integration opportunities (Sebastian)
-- Product scope, personas, and MVP trade-offs (Mark)
+- Product scope, personas, and delivery-target trade-offs (Mark)
 - SOLID, scalable, performant architecture within budget (John + Aurora)
 - For public websites: SEO, Analytics, tracking, Lighthouse targets (Emma) and social strategy (Lauren)
 - When personal data is involved: GDPR and privacy requirements (Violet)
@@ -243,7 +243,7 @@ Personas are lenses that make the process visible:
 
 | Persona     | Role                              | Main expertise                                 |
 | ----------- | --------------------------------- | ---------------------------------------------- |
-| 💎 Mark     | Product Manager                   | Product scope, personas, MVP trade-offs        |
+| 💎 Mark     | Product Manager                   | Product scope, personas, delivery-target choice, scope trade-offs |
 | 🧭 Jennifer | Business Strategist               | Market positioning, competitive context, product risks |
 | 🏢 Benjamin | Business Consultant             | Market research, enterprise know-how, business lens on technical choices |
 | 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, import/export opportunities |
