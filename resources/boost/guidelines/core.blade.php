@@ -2,6 +2,10 @@
 
 Larapilot brings **spec-driven product development** to Laravel projects via [Laravel Boost](https://laravel.com/ai/boost). It turns your AI agent into a disciplined product squad: discovery → backlog → plan → implement → review.
 
+**Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
+
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark, Jennifer, and John explore problem, users, MVP scope, and stack assumptions. Ask at most 3 critical questions per round (skippable). Write and validate the PRD before creating any backlog.
+
 ### When to use Larapilot
 
 Use Larapilot skills when the user wants to:
@@ -18,7 +22,7 @@ Use Larapilot skills when the user wants to:
 | Step | Skill | Output |
 | --- | --- | --- |
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
-| Design (optional) | `larapilot-design` | `.larapilot/mockups/` (dev route `/mockups/`) |
+| Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`) |
 | Backlog | `larapilot-spec` | `.larapilot/backlog.yaml`, `.larapilot/specs/` |
 | Planning | `larapilot-plan` | `.larapilot/plans/US-XXX-plan.yaml` |
 | Implementation | `larapilot-implement` | Code, tests, review notes |
@@ -28,10 +32,11 @@ Use Larapilot skills when the user wants to:
 
 ```bash
 composer require andreapollastri/larapilot --dev
-composer require laravel/boost --dev
 php artisan larapilot:install
 php artisan boost:install
 ```
+
+Laravel Boost is installed automatically as a Larapilot dependency.
 
 Register the Larapilot MCP server in your editor (in addition to `laravel-boost`):
 
@@ -85,7 +90,7 @@ When planning or implementing Laravel features:
 - Backlog: `.larapilot/backlog.yaml`
 - Specs: `.larapilot/specs/US-XXX.yaml`
 - Plans: `.larapilot/plans/US-XXX-plan.yaml`
-- Mockups: `.larapilot/mockups/` (served at `/mockups/{spec}/` only outside production)
+- Mockups: `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` only outside production; `index.html` is the default file)
 - Test results: `.larapilot/docs/test-results/`
 
 ### Personas

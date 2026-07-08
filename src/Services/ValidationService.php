@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\ArtifactSections;
 use Larapilot\Support\SpecCode;
 
 class ValidationService
@@ -15,24 +16,22 @@ class ValidationService
     {
         $content ??= app(PrdService::class)->read() ?? '';
         $findings = [];
+        $missing = [];
 
-        $requiredSections = [
-            'Elevator Pitch' => '## Elevator Pitch',
-            'Vision' => '## Vision',
-            'User Personas' => '## User Personas',
-            'Functional Requirements' => '## Functional Requirements',
-            'MVP Scope' => '## MVP Scope',
-            'Technical Architecture' => '## Technical Architecture',
-        ];
+        foreach (ArtifactSections::prd() as $name => $aliases) {
+            if (! $this->hasSection($content, $aliases)) {
+                $missing[] = $name;
+            }
+        }
 
-        foreach ($requiredSections as $name => $marker) {
-            if (! str_contains($content, $marker)) {
+        if ($missing !== [] && ! $this->hasMinimumLevel2Headings($content, ArtifactSections::minimumPrdHeadings())) {
+            foreach ($missing as $name) {
                 $findings[] = [
                     'code' => 'PRD_MISSING_SECTION',
                     'severity' => 'error',
                     'path' => $name,
                     'message' => "PRD is missing required section: {$name}.",
-                    'hint' => "Add a '{$marker}' section to the PRD.",
+                    'hint' => 'Add a level-2 heading for this section in the artifact language, or provide at least '.ArtifactSections::minimumPrdHeadings().' ## headings with substantive content.',
                 ];
             }
         }
@@ -88,16 +87,17 @@ class ValidationService
             }
 
             $body = (string) ($spec['body'] ?? '');
+            $missingSections = [];
 
-            $sections = [
-                'User Story' => ['User Story', 'Storia Utente'],
-                'Demonstrates' => ['Demonstrates', 'Dimostra'],
-                'Acceptance Criteria' => ['Acceptance Criteria', 'Criteri di Accettazione'],
-            ];
-
-            foreach ($sections as $section => $names) {
+            foreach (ArtifactSections::spec() as $section => $names) {
                 if (! $this->hasSection($body, $names)) {
-                    $findings[] = $this->finding('SPEC_MISSING_SECTION', 'error', "{$prefix}.body", "Spec body is missing section: {$section}.", "Include a '**{$section}**' (or '## {$section}') section in the spec body.");
+                    $missingSections[] = $section;
+                }
+            }
+
+            if ($missingSections !== [] && ! $this->hasMinimumMarkedSections($body, ArtifactSections::minimumSpecSections())) {
+                foreach ($missingSections as $section) {
+                    $findings[] = $this->finding('SPEC_MISSING_SECTION', 'error', "{$prefix}.body", "Spec body is missing section: {$section}.", "Include a marked heading for {$section} (## or **heading**) in the artifact language.");
                 }
             }
         }
@@ -143,8 +143,8 @@ class ValidationService
 
                 $body = (string) ($task['body'] ?? '');
 
-                if (! str_contains($body, '## Description') && ! str_contains($body, '## Descrizione')) {
-                    $findings[] = $this->finding('TASK_MISSING_SECTION', 'error', "tasks[{$index}].body", "Task {$id} body must include a Description section.", 'Use ## Description or ## Descrizione.');
+                if (! $this->hasSection($body, ArtifactSections::taskDescription()) && ! $this->hasMinimumLevel2Headings($body, 1)) {
+                    $findings[] = $this->finding('TASK_MISSING_SECTION', 'error', "tasks[{$index}].body", "Task {$id} body must include a Description section.", 'Use a level-2 heading for the task description in the artifact language.');
                 }
             }
 
@@ -197,6 +197,16 @@ class ValidationService
         }
 
         return false;
+    }
+
+    protected function hasMinimumLevel2Headings(string $content, int $minimum): bool
+    {
+        return preg_match_all('/^##\s+\S/m', $content) >= $minimum;
+    }
+
+    protected function hasMinimumMarkedSections(string $body, int $minimum): bool
+    {
+        return preg_match_all('/(^|\n)\s*(#{1,6}\s+\S|\*\*[^*\n]+\*\*)/m', $body) >= $minimum;
     }
 
     /**

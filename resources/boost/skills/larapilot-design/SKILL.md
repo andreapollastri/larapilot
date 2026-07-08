@@ -27,7 +27,7 @@ Read `.larapilot/shared-runtime.md`.
 - **Never modify application code** — only write to `.larapilot/mockups/{spec-code}/` or `.larapilot/mockups/{feature-name}/`
 - Use standalone HTML + CSS (optionally Tailwind CDN if the project uses Tailwind — check Boost guidelines)
 - Match existing mockups in `.larapilot/mockups/` for visual consistency
-- In **local/dev/staging**, mockups are browsable at `/mockups/{spec-code}/` via a Laravel route
+- In **local/dev/staging**, mockups are browsable at `/mockups/{spec}` via a Laravel route (serves `index.html` by default)
 - In **production** (`APP_ENV=production`), the route is disabled and mockups are not web-accessible
 - For Laravel apps with Flux/Livewire/Inertia: mockups are references, not production components
 - Elise speaks in character when presenting design choices

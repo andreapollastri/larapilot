@@ -68,7 +68,21 @@ Detect the output language from the strongest available source, in priority orde
 
 Apply the detected language to all user-facing output: messages, document section headers, error messages, and opening announcements.
 
-**English is the default** for technical artifacts unless the conversation or existing artifacts are in Italian.
+**English is the default fallback** when the language cannot be determined from backlog, PRD, or conversation.
+
+Artifacts can be written in **any language**. The required **structure** stays the same; only the heading labels and body text change.
+
+Each section must be introduced with a markdown heading (`## Title` or `**Title**`) — a passing mention in prose is not enough.
+
+The CLI validator checks structure in two steps:
+
+1. **Known translations** — it recognizes common heading names (English, Italian, Spanish, French, …) for each required section.
+2. **Heading count fallback** — if a heading is not recognized word-for-word, validation still passes when the artifact has enough marked headings:
+   - **PRD:** 6 headings (`## …`) — one per required section
+   - **Spec body:** 3 headings (`## …` or `**…**`) — User Story, Demonstrates, Acceptance Criteria
+   - **Plan task:** 1 heading (`## …`) — Description per task
+
+Keep the same language across PRD → backlog → specs → plans.
 
 ### Template Rendering Rule
 

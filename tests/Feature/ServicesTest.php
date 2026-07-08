@@ -81,6 +81,71 @@ it('requires marked-up sections in spec bodies', function (): void {
 
     $italian = specsPayload(['body' => "**Storia Utente**\nx\n\n**Dimostra**\nx\n\n**Criteri di Accettazione**\n- [ ] x"]);
     expect($validation->validateSpecPayload($italian)['ok'])->toBeTrue();
+
+    $french = specsPayload(['body' => "**Besoin utilisateur**\nx\n\n**Vérification**\nx\n\n**Critères d'acceptation**\n- [ ] x"]);
+    expect($validation->validateSpecPayload($french)['ok'])->toBeTrue();
+});
+
+it('accepts localized prd headings when structure is complete', function (): void {
+    $validation = app(ValidationService::class);
+
+    $italian = <<<'MD'
+# Prodotto
+
+## Sintesi
+Un prodotto.
+
+## Visione
+Grande visione.
+
+## Personas utente
+Sviluppatori.
+
+## Requisiti funzionali
+- Login
+
+## Ambito MVP
+Solo login.
+
+## Architettura tecnica
+Monolite Laravel.
+MD;
+
+    expect($validation->validatePrd($italian)['ok'])->toBeTrue();
+
+    $french = <<<'MD'
+# Produit
+
+## Accroche
+Un produit.
+
+## Vision
+Grande vision.
+
+## Personas
+Développeurs.
+
+## Exigences fonctionnelles
+- Connexion
+
+## Périmètre MVP
+Connexion seulement.
+
+## Architecture technique
+Monolithe Laravel.
+MD;
+
+    expect($validation->validatePrd($french)['ok'])->toBeTrue();
+});
+
+it('accepts localized plan task descriptions', function (): void {
+    $validation = app(ValidationService::class);
+
+    $payload = planPayload();
+    $payload['tasks'][0]['body'] = "## Descripción\nCrear el modelo.";
+    $payload['tasks'][1]['body'] = "## Beschreibung\nTests schreiben.";
+
+    expect($validation->validatePlanPayload('US-001', $payload)['ok'])->toBeTrue();
 });
 
 it('flags invalid spec codes during validation', function (): void {

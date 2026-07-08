@@ -59,4 +59,4 @@ Delete temp file after CLI exits.
 
 - Only human approval moves a spec to DONE
 - Be concise; this is a gate, not a re-implementation
-- Support English and Italian in user-facing messages
+- Use the detected language for all user-facing messages (see Language Policy in shared runtime)
