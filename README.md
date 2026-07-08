@@ -68,26 +68,57 @@ The CLI blocks invalid jumps (e.g. implement before plan, approve before review)
 
 ### 1. Install
 
+Three commands, run from your Laravel project root:
+
 ```bash
+# 1a. Add the package (Laravel Boost comes as a dependency — no separate require)
 composer require andreapollastri/larapilot --dev
+
+# 1b. Initialize the .larapilot/ workspace
 php artisan larapilot:install
+
+# 1c. Publish guidelines and the /larapilot-* skills via Laravel Boost
 php artisan boost:install
 ```
 
-Laravel Boost is installed automatically as a Larapilot dependency — no separate `composer require` needed.
+`larapilot:install` creates the workspace and tells you what comes next:
 
-`larapilot:install` creates `.larapilot/config.yaml` and `.larapilot/shared-runtime.md`.
+```text
+INFO  Larapilot installed successfully.
 
-`boost:install` publishes Larapilot **guidelines** and **skills** from the package.
+  - .larapilot/config.yaml
+  - .larapilot/shared-runtime.md
+
+Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.
+```
+
+`boost:install` asks which editors and agents you use, then publishes the Larapilot **guidelines** and the seven **`/larapilot-*` skills** for them. Already running Boost in the project? Use `php artisan boost:update --discover` instead.
 
 ### 2. Enable MCP servers
 
-Register both Boost and Larapilot in your editor:
+Register both servers in your editor — **Boost** for Laravel context (docs, schema, Tinker), **Larapilot** for workflow state:
 
 | Server          | Command | Args                          |
 | --------------- | ------- | ----------------------------- |
 | `laravel-boost` | `php`   | `artisan boost:mcp`           |
 | `larapilot`     | `php`   | `artisan mcp:start larapilot` |
+
+Concrete example for editors with a JSON MCP config (Cursor: `.cursor/mcp.json`, Claude Code: `.mcp.json`):
+
+```json
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "php",
+            "args": ["artisan", "boost:mcp"]
+        },
+        "larapilot": {
+            "command": "php",
+            "args": ["artisan", "mcp:start", "larapilot"]
+        }
+    }
+}
+```
 
 ### 3. Use skills in your AI agent
 
@@ -139,6 +170,32 @@ Use `/larapilot-autopilot` to batch-plan and implement multiple specs when the b
 ```bash
 php artisan larapilot:metrics  # backlog progress
 ```
+
+### 5. Verify installation
+
+```bash
+php artisan larapilot:doctor
+```
+
+```json
+{
+    "schema": "larapilot/v1",
+    "kind": "doctor",
+    "data": {
+        "healthy": true,
+        "checks": {
+            "config": true,
+            "shared_runtime": true,
+            "backlog": false,
+            "prd": false,
+            "boost": true
+        },
+        "project_root": "/path/to/your-app"
+    }
+}
+```
+
+`data.healthy` is `true` when config, shared runtime, and Boost are in place. On a fresh install `backlog` and `prd` are still `false` — expected: they turn `true` after `/larapilot-inception` (PRD) and `/larapilot-spec` (backlog).
 
 ---
 

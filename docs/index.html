@@ -1163,7 +1163,7 @@
       <div class="hero-copy">
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
-          Spec-driven for Laravel
+          Spec-driven for Laravel projects
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -1214,6 +1214,7 @@
   <span class="punct">-</span> Installing <span class="str">andreapollastri/larapilot</span></pre>
                 </div>
                 <div class="term-chunk">
+                  <div class="terminal-comment"># Create the .larapilot/ workspace</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
                     <span class="cmd" data-full="php artisan larapilot:install"></span>
@@ -1222,6 +1223,16 @@
                   <pre class="terminal-output" aria-label="Install output"><span class="ok">Larapilot installed successfully.</span>
   <span class="punct">-</span> .larapilot/config.yaml
   <span class="punct">-</span> .larapilot/shared-runtime.md</pre>
+                </div>
+                <div class="term-chunk">
+                  <div class="terminal-comment"># Publish guidelines &amp; the /larapilot-* skills via Laravel Boost</div>
+                  <div class="terminal-line">
+                    <span class="prompt">❯</span>
+                    <span class="cmd" data-full="php artisan boost:install"></span>
+                    <button class="copy-btn" data-copy="php artisan boost:install" title="Copy">Copy</button>
+                  </div>
+                  <pre class="terminal-output" aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
+  <span class="punct">-</span> guidelines + <span class="num">7</span> skills <span class="punct">(</span><span class="str">/larapilot-inception</span> … <span class="str">/larapilot-autopilot</span><span class="punct">)</span></pre>
                   <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
                 </div>
               </div>
@@ -1516,15 +1527,38 @@
         </ul>
 
         <h3>1. Install</h3>
+        <p>Three commands, run from your Laravel project root. Laravel Boost is installed automatically as a Larapilot dependency — no separate <code>composer require</code> needed.</p>
+
+        <p><strong>1a — Add the package:</strong></p>
         <div class="code-block">
           <div class="code-block-header">Terminal</div>
-          <pre><code>composer require andreapollastri/larapilot --dev
-php artisan larapilot:install
-php artisan boost:install</code></pre>
+          <pre><code>composer require andreapollastri/larapilot --dev</code></pre>
         </div>
-        <p>Laravel Boost is installed automatically as a Larapilot dependency. <code>larapilot:install</code> creates <code>.larapilot/config.yaml</code> and <code>.larapilot/shared-runtime.md</code>. <code>boost:install</code> publishes guidelines and skills.</p>
+
+        <p><strong>1b — Initialize Larapilot.</strong> Creates the <code>.larapilot/</code> workspace in your repo:</p>
+        <div class="code-block">
+          <div class="code-block-header">Terminal</div>
+          <pre><code>php artisan larapilot:install</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header">Expected output</div>
+          <pre><code>INFO  Larapilot installed successfully.
+
+  - .larapilot/config.yaml
+  - .larapilot/shared-runtime.md
+
+Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
+        </div>
+
+        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the seven <code>/larapilot-*</code> skills and the coding guidelines available to your AI editor:</p>
+        <div class="code-block">
+          <div class="code-block-header">Terminal</div>
+          <pre><code>php artisan boost:install</code></pre>
+        </div>
+        <p>Boost's installer asks which editors and agents you use, then publishes guidelines and skills for them. Already running Boost in the project? Use <code>php artisan boost:update --discover</code> instead to pick up the Larapilot skills.</p>
 
         <h3>2. Enable MCP servers</h3>
+        <p>Your editor needs both servers: <strong>Boost</strong> for Laravel context (docs, schema, Tinker) and <strong>Larapilot</strong> for workflow state.</p>
         <div class="table-card">
           <table>
             <thead><tr><th>Server</th><th>Command</th><th>Args</th></tr></thead>
@@ -1533,6 +1567,22 @@ php artisan boost:install</code></pre>
               <tr><td><code>larapilot</code></td><td><code>php</code></td><td><code>artisan mcp:start larapilot</code></td></tr>
             </tbody>
           </table>
+        </div>
+        <p>Concrete example for editors with a JSON MCP config (Cursor: <code>.cursor/mcp.json</code>, Claude Code: <code>.mcp.json</code>):</p>
+        <div class="code-block">
+          <div class="code-block-header">.mcp.json</div>
+          <pre><code>{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "php",
+      "args": ["artisan", "boost:mcp"]
+    },
+    "larapilot": {
+      "command": "php",
+      "args": ["artisan", "mcp:start", "larapilot"]
+    }
+  }
+}</code></pre>
         </div>
 
         <h3>3. Use skills in your AI agent</h3>
@@ -1592,7 +1642,25 @@ php artisan boost:install</code></pre>
           <div class="code-block-header">Terminal</div>
           <pre><code>php artisan larapilot:doctor</code></pre>
         </div>
-        <p>Returns a JSON envelope with <code>data.healthy</code> and check results for config, shared runtime, backlog, PRD, and Boost.</p>
+        <div class="code-block">
+          <div class="code-block-header">Expected output</div>
+          <pre><code>{
+  "schema": "larapilot/v1",
+  "kind": "doctor",
+  "data": {
+    "healthy": true,
+    "checks": {
+      "config": true,
+      "shared_runtime": true,
+      "backlog": false,
+      "prd": false,
+      "boost": true
+    },
+    "project_root": "/path/to/your-app"
+  }
+}</code></pre>
+        </div>
+        <p><code>data.healthy</code> is <code>true</code> when config, shared runtime, and Boost are all in place. On a fresh install <code>backlog</code> and <code>prd</code> are still <code>false</code> — that's expected: they turn <code>true</code> after <code>/larapilot-inception</code> (PRD) and <code>/larapilot-spec</code> (backlog).</p>
       </section>
 
       <!-- Workflow -->
@@ -2160,7 +2228,7 @@ So that I can access protected features.
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const labels = [
-        { status: 'SETUP', cls: 'setup', text: 'installed in two commands' },
+        { status: 'SETUP', cls: 'setup', text: 'installed in three commands' },
         { status: 'PRD', cls: 'setup', text: 'discovery → .larapilot/docs/PRD.md' },
         { status: 'TODO', cls: 'todo', text: '3 user stories in the backlog' },
         { status: 'PLANNED', cls: 'planned', text: 'US-001 planned · 4 tasks' },
