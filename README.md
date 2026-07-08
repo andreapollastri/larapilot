@@ -10,7 +10,7 @@ Larapilot ports the [ARchetipo](https://github.com/techreloaded-ar/ARchetipo) sp
 
 AI agents are fast, but isolated prompts are not a product process. Larapilot turns your assistant into a disciplined squad:
 
-- **A workflow, not prompt lore** — discovery → backlog → plan → implement → review
+- **A workflow, not prompt lore** — discovery → backlog → plan → implement → review → ship
 - **Spec-driven by default** — `spec → plan → implement` repeats per increment
 - **Persistent artifacts** — PRD, backlog, specs, plans, mockups live in your repo
 - **Laravel-native** — Boost docs, schema, Tinker, and conventions during implementation
@@ -36,10 +36,10 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 
 **What they explore:**
 
-- The problem and who feels it
-- Target users and their goals
-- Product positioning and MVP boundaries (in scope / out of scope)
-- High-level Laravel stack assumptions (packages, auth, UI stack)
+- Market positioning, competitive context, and product risks (Jennifer)
+- Product scope, personas, and MVP trade-offs (Mark)
+- High-level Laravel stack assumptions (John)
+- For public websites: SEO discoverability (Emma) and social/distribution strategy (Lauren)
 
 **How the interview behaves:**
 
@@ -59,6 +59,7 @@ After the PRD, each user story follows the same loop:
 2. **`/larapilot-plan US-XXX`** — technical plan with tasks → status **PLANNED**
 3. **`/larapilot-implement US-XXX`** — code and tests under the plan → **REVIEW**
 4. **`/larapilot-review US-XXX`** — you approve (**DONE**) or send back with feedback (**TODO**)
+5. **`/larapilot-ship`** *(optional)* — Lars OWASP gate; Jack deploys (Cipi preferred, or Forge, Laravel Cloud, Ploi, Kubernetes, custom); Emma and Lauren verify web launch for public sites
 
 The CLI blocks invalid jumps (e.g. implement before plan, approve before review). Optional `/larapilot-design` adds UI mockups before planning or implementation.
 
@@ -92,7 +93,7 @@ INFO  Larapilot installed successfully.
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.
 ```
 
-`boost:install` asks which editors and agents you use, then publishes the Larapilot **guidelines** and the seven **`/larapilot-*` skills** for them. Already running Boost in the project? Use `php artisan boost:update --discover` instead.
+`boost:install` asks which editors and agents you use, then publishes the Larapilot **guidelines** and the eight **`/larapilot-*` skills** for them. Already running Boost in the project? Use `php artisan boost:update --discover` instead.
 
 ### 2. Enable MCP servers
 
@@ -130,6 +131,7 @@ Concrete example for editors with a JSON MCP config (Cursor: `.cursor/mcp.json`,
 | `/larapilot-plan US-001`      | Technical plan & tasks                                     |
 | `/larapilot-implement US-001` | Code, tests, review                                        |
 | `/larapilot-review US-001`    | Human acceptance gate                                      |
+| `/larapilot-ship`             | OWASP gate + multi-platform deploy + web launch checks    |
 | `/larapilot-autopilot`        | Batch plan + implement                                     |
 
 ### 4. Example: from idea to done
@@ -144,9 +146,10 @@ Start with a fresh Laravel app and this prompt in your AI editor:
 | 2. Backlog | `/larapilot-spec` | User stories extracted from the PRD MVP scope | `backlog.yaml`, `specs/US-001.yaml`, `specs/US-002.yaml` … (**TODO**) |
 | 3. Design *(optional)* | `/larapilot-design US-001` | Elise builds a registration screen mockup | `.larapilot/mockups/US-001/` → browse at `/mockups/US-001` |
 | 4. Plan | `/larapilot-plan US-001` | John and Alex break down migrations, routes, tests | `plans/US-001-plan.yaml` → **PLANNED** |
-| 5. Implement | `/larapilot-implement US-001` | Alex implements, Anne writes tests, Robert reviews | Laravel code + Pest tests → **REVIEW** |
+| 5. Implement | `/larapilot-implement US-001` | Alex implements, Anne tests, Robert and Lars review | Laravel code + Pest tests → **REVIEW** |
 | 6. Accept | `/larapilot-review US-001` | You approve or request changes | **DONE** — or back to **TODO** with feedback |
-| 7. Next spec | `/larapilot-plan US-002` … | Repeat plan → implement → review for each story | until the backlog is complete |
+| 7. Ship *(optional)* | `/larapilot-ship` | Lars OWASP gate; Jack deploys (Cipi, Forge, Cloud, Ploi, K8s, custom); Emma & Lauren for public sites | Production release |
+| 8. Next spec | `/larapilot-plan US-002` … | Repeat plan → implement → review for each story | until the backlog is complete |
 
 After step 6, your repo might look like this:
 
@@ -212,6 +215,8 @@ flowchart LR
         IM -. next .-> S
     end
 
+    Loop -. optional .-> SH["Ship<br/>multi-platform deploy"]
+
     P -. UI .-> D
 ```
 
@@ -235,14 +240,18 @@ Personas are lenses that make the process visible:
 
 | Persona     | Role                 | Main expertise                                 |
 | ----------- | -------------------- | ---------------------------------------------- |
-| 💎 Mark     | Product Manager      | Vision, personas, MVP scope                    |
-| 🧭 Jennifer | Business Strategist  | Discovery, positioning, product hypotheses     |
-| 🔎 Mark     | Requirements Analyst | Acceptance criteria, edge cases, spec quality  |
+| 💎 Mark     | Product Manager      | Product scope, personas, MVP trade-offs        |
+| 🧭 Jennifer | Business Strategist  | Market positioning, competitive context, product risks |
+| 🔎 Tom      | Requirements Analyst | Acceptance criteria, edge cases, spec quality  |
 | 📐 John     | Architect            | Technical solution and architectural decisions |
 | 🔧 Alex     | Full-Stack Developer | Implementation and task breakdown              |
 | 🧪 Anne     | Test Architect       | Test strategy and coverage                     |
-| 🛡️ Robert   | Code Reviewer        | Quality, security, adherence to the plan       |
-| 🎨 Elise    | UX Designer          | Mockups and visual language                    |
+| 🛡️ Robert   | Code Reviewer        | Code quality, plan adherence, Laravel conventions |
+| 🔐 Lars     | Security Expert      | OWASP-aligned assessment, threat modeling, secure defaults |
+| 🚀 Jack     | DevOps Engineer      | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
+| 📈 Emma     | SEO Expert           | Technical SEO, discoverability, launch SEO checklist |
+| 💬 Lauren   | Social Media Manager | Open Graph, share previews, distribution readiness |
+| 🎨 Elise    | UX Designer          | User flows, accessibility, mockups, and visual language |
 
 ---
 
@@ -299,6 +308,8 @@ paths:
     prd: .larapilot/docs/PRD.md
     mockups: .larapilot/mockups/
     test_results: .larapilot/docs/test-results/
+    security: .larapilot/docs/security/
+    launch: .larapilot/docs/launch/
 
 workflow:
     statuses:

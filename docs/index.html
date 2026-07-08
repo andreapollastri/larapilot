@@ -787,7 +787,7 @@
     /* ── Steps ── */
     .steps {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: .5rem;
       margin: 1.5rem 0;
     }
@@ -818,6 +818,7 @@
     .step:nth-child(3) .step-num { background: var(--amber); }
     .step:nth-child(4) .step-num { background: var(--green); }
     .step:nth-child(5) .step-num { background: var(--violet); }
+    .step:nth-child(6) .step-num { background: var(--accent); }
 
     .step strong {
       display: block;
@@ -1177,7 +1178,7 @@
           </a>
         </div>
         <div class="hero-stats">
-          <div class="hero-stat"><strong>7 skills</strong><span>Full workflow coverage</span></div>
+          <div class="hero-stat"><strong>8 skills</strong><span>Full workflow coverage</span></div>
           <div class="hero-stat"><strong>20+ commands</strong><span>Agent-friendly CLI</span></div>
           <div class="hero-stat"><strong>MCP native</strong><span>Cursor &amp; Boost ready</span></div>
         </div>
@@ -1232,7 +1233,7 @@
                     <button class="copy-btn" data-copy="php artisan boost:install" title="Copy">Copy</button>
                   </div>
                   <pre class="terminal-output" aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
-  <span class="punct">-</span> guidelines + <span class="num">7</span> skills <span class="punct">(</span><span class="str">/larapilot-inception</span> … <span class="str">/larapilot-autopilot</span><span class="punct">)</span></pre>
+  <span class="punct">-</span> guidelines + <span class="num">8</span> skills <span class="punct">(</span><span class="str">/larapilot-inception</span> … <span class="str">/larapilot-ship</span><span class="punct">)</span></pre>
                   <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
                 </div>
               </div>
@@ -1483,10 +1484,9 @@
 
         <p><strong>What they explore:</strong></p>
         <ul>
-          <li>The problem and who feels it</li>
-          <li>Target users and their goals</li>
-          <li>Product positioning and MVP boundaries (in scope / out of scope)</li>
-          <li>High-level Laravel stack assumptions (packages, auth, UI stack)</li>
+          <li>Market positioning, competitive context, and product risks (Jennifer)</li>
+          <li>Product scope, personas, and MVP trade-offs (Mark)</li>
+          <li>High-level Laravel stack assumptions (John)</li>
         </ul>
 
         <p><strong>How the interview behaves:</strong></p>
@@ -1550,7 +1550,7 @@
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
         </div>
 
-        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the seven <code>/larapilot-*</code> skills and the coding guidelines available to your AI editor:</p>
+        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the eight <code>/larapilot-*</code> skills and the coding guidelines available to your AI editor:</p>
         <div class="code-block">
           <div class="code-block-header">Terminal</div>
           <pre><code>php artisan boost:install</code></pre>
@@ -1596,6 +1596,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <tr><td><code>/larapilot-plan US-001</code></td><td>Technical plan &amp; tasks</td></tr>
               <tr><td><code>/larapilot-implement US-001</code></td><td>Code, tests, review</td></tr>
               <tr><td><code>/larapilot-review US-001</code></td><td>Human acceptance gate</td></tr>
+              <tr><td><code>/larapilot-ship</code></td><td>OWASP gate + multi-platform deploy</td></tr>
               <tr><td><code>/larapilot-autopilot</code></td><td>Batch plan + implement</td></tr>
             </tbody>
           </table>
@@ -1612,9 +1613,10 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <tr><td>2. Backlog</td><td><code>/larapilot-spec</code></td><td>User stories extracted from the PRD MVP scope</td><td><code>backlog.yaml</code>, <code>specs/US-001.yaml</code> … <span class="status status-todo">TODO</span></td></tr>
               <tr><td>3. Design <em>(optional)</em></td><td><code>/larapilot-design US-001</code></td><td>Elise builds a registration screen mockup</td><td><code>.larapilot/mockups/US-001/</code> → <code>/mockups/US-001</code></td></tr>
               <tr><td>4. Plan</td><td><code>/larapilot-plan US-001</code></td><td>John and Alex break down migrations, routes, tests</td><td><code>plans/US-001-plan.yaml</code> → <span class="status status-planned">PLANNED</span></td></tr>
-              <tr><td>5. Implement</td><td><code>/larapilot-implement US-001</code></td><td>Alex implements, Anne tests, Robert reviews</td><td>Laravel code + Pest tests → <span class="status status-review">REVIEW</span></td></tr>
+              <tr><td>5. Implement</td><td><code>/larapilot-implement US-001</code></td><td>Alex implements, Anne tests, Robert and Lars review</td><td>Laravel code + Pest tests → <span class="status status-review">REVIEW</span></td></tr>
               <tr><td>6. Accept</td><td><code>/larapilot-review US-001</code></td><td>You approve or request changes</td><td><span class="status status-done">DONE</span> — or back to <span class="status status-todo">TODO</span></td></tr>
-              <tr><td>7. Next spec</td><td><code>/larapilot-plan US-002</code> …</td><td>Repeat plan → implement → review for each story</td><td>until the backlog is complete</td></tr>
+              <tr><td>7. Ship <em>(optional)</em></td><td><code>/larapilot-ship</code></td><td>Lars OWASP gate; Jack deploys (<a href="https://cipi.sh">Cipi</a> preferred, or Forge, Cloud, Ploi, K8s, custom); Emma &amp; Lauren for public sites</td><td>Production release</td></tr>
+              <tr><td>8. Next spec</td><td><code>/larapilot-plan US-002</code> …</td><td>Repeat plan → implement → review for each story</td><td>until the backlog is complete</td></tr>
             </tbody>
           </table>
         </div>
@@ -1668,7 +1670,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
         <div class="section-header">
           <span class="section-label">Workflow</span>
           <h2>Spec-driven loop</h2>
-          <p>Inception produces the PRD through a guided interview; optional design creates mockups; then each user story cycles through plan → implement → review.</p>
+          <p>Inception produces the PRD through a guided interview; optional design creates mockups; then each user story cycles through plan → implement → review. Optional ship releases to production on any Laravel hosting target.</p>
         </div>
 
         <div class="steps">
@@ -1677,6 +1679,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           <div class="step"><div class="step-num">3</div><strong>Plan</strong><span>plans/</span></div>
           <div class="step"><div class="step-num">4</div><strong>Implement</strong><span>code + tests</span></div>
           <div class="step"><div class="step-num">5</div><strong>Review</strong><span>human gate</span></div>
+          <div class="step"><div class="step-num">6</div><strong>Ship</strong><span>any platform</span></div>
         </div>
 
         <h3>Workflow states</h3>
@@ -1688,7 +1691,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <tr><td><span class="status status-planned">PLANNED</span></td><td>Technical plan complete</td><td><code>/larapilot-implement</code></td></tr>
               <tr><td><span class="status status-progress">IN PROGRESS</span></td><td>Implementation started</td><td>Complete tasks → review</td></tr>
               <tr><td><span class="status status-review">REVIEW</span></td><td>Ready for human review</td><td><code>/larapilot-review</code></td></tr>
-              <tr><td><span class="status status-done">DONE</span></td><td>Accepted (human-gated)</td><td>Next spec</td></tr>
+              <tr><td><span class="status status-done">DONE</span></td><td>Accepted (human-gated)</td><td>Next spec or <code>/larapilot-ship</code></td></tr>
             </tbody>
           </table>
         </div>
@@ -1707,7 +1710,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
       <section class="doc-section" id="skills">
         <div class="section-header">
           <span class="section-label">Skills</span>
-          <h2>Seven skills, full coverage</h2>
+          <h2>Eight skills, full coverage</h2>
           <p>Published via Laravel Boost and invoked in your AI agent. Each orchestrates a workflow phase via Artisan commands.</p>
         </div>
 
@@ -1718,8 +1721,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Product Inception</h3>
               <p>Guided discovery interview — not a one-shot form. The team explores your idea conversationally, then writes and validates the PRD.</p>
               <ul>
-                <li><strong>Team:</strong> Mark (PM), Jennifer (Strategist), John (Architect)</li>
-                <li><strong>Explores:</strong> problem, users, MVP scope, Laravel stack assumptions</li>
+                <li><strong>Team:</strong> Mark (PM), Jennifer (Strategist), John (Architect); Emma &amp; Lauren join for public websites</li>
+                <li><strong>Explores:</strong> market positioning (Jennifer), MVP scope and trade-offs (Mark), Laravel stack assumptions (John)</li>
                 <li><strong>Interview rules:</strong> max 3 questions per round, skippable; infers from codebase first</li>
                 <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> (backlog comes later via <code>/larapilot-spec</code>)</li>
               </ul>
@@ -1729,9 +1732,9 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
             <div class="skill-badge">/larapilot-design</div>
             <div class="skill-body">
               <h3>UI Design</h3>
-              <p>Static HTML/CSS mockups previewable via dev-only route.</p>
+              <p>Static HTML/CSS mockups with user flows and accessible markup, previewable via dev-only route.</p>
               <ul>
-                <li><strong>Team:</strong> Elise (UX Designer)</li>
+                <li><strong>Team:</strong> Elise (UX); Emma &amp; Lauren for public pages</li>
                 <li><strong>Preview:</strong> <code>/mockups/{spec}</code> (matches folder under <code>.larapilot/mockups/</code>)</li>
               </ul>
             </div>
@@ -1742,6 +1745,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Backlog &amp; Specs</h3>
               <p>Creates or extends the backlog with user stories from the PRD.</p>
               <ul>
+                <li><strong>Team:</strong> Tom (Requirements Analyst), Mark (PM)</li>
                 <li><strong>Output:</strong> <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code></li>
               </ul>
             </div>
@@ -1752,7 +1756,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Technical Planning</h3>
               <p>Detailed implementation plan with tasks, file changes, and test strategy → <code>PLANNED</code>.</p>
               <ul>
-                <li><strong>Team:</strong> Mark, John, Alex, Anne</li>
+                <li><strong>Team:</strong> Tom, John, Alex, Anne</li>
               </ul>
             </div>
           </div>
@@ -1762,7 +1766,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
               <h3>Implementation</h3>
               <p>Executes the plan: code, tests, task tracking, handoff to <code>REVIEW</code>.</p>
               <ul>
-                <li><strong>Team:</strong> Alex, Anne, Robert</li>
+                <li><strong>Team:</strong> Alex, Anne, Robert, Lars</li>
               </ul>
             </div>
           </div>
@@ -1770,7 +1774,23 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
             <div class="skill-badge">/larapilot-review</div>
             <div class="skill-body">
               <h3>Human Review</h3>
-              <p>Acceptance gate — approve to <code>DONE</code> or request changes back to <code>TODO</code>.</p>
+              <p>Acceptance gate — Robert presents the increment and residual risks; you approve to <code>DONE</code> or request changes back to <code>TODO</code>.</p>
+              <ul>
+                <li><strong>Team:</strong> Robert (Code Reviewer)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-badge">/larapilot-ship</div>
+            <div class="skill-body">
+              <h3>Ship &amp; Deploy</h3>
+              <p>OWASP security gate and production release. <a href="https://cipi.sh">Cipi</a> + <code>cipi/agent</code> is the preferred path; also supports Forge, Laravel Cloud, Ploi, Kubernetes, and custom VPS.</p>
+              <ul>
+                <li><strong>Team:</strong> Lars (Security), Jack (DevOps), Emma &amp; Lauren (public sites)</li>
+                <li><strong>Gate:</strong> OWASP Top 10 assessment → <code>.larapilot/docs/security/</code></li>
+                <li><strong>Launch:</strong> SEO + social checks → <code>.larapilot/docs/launch/</code></li>
+                <li><strong>Deploy:</strong> platform-specific runbook (Cipi webhook, Forge push, K8s rollout, …)</li>
+              </ul>
             </div>
           </div>
           <div class="skill-item">
@@ -1793,11 +1813,15 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
         <div class="team-grid">
           <div class="team-card"><div class="team-avatar">💎</div><div class="team-name">Mark</div><div class="team-role">Product Manager</div></div>
           <div class="team-card"><div class="team-avatar">🧭</div><div class="team-name">Jennifer</div><div class="team-role">Business Strategist</div></div>
-          <div class="team-card"><div class="team-avatar">🔎</div><div class="team-name">Mark</div><div class="team-role">Requirements Analyst</div></div>
+          <div class="team-card"><div class="team-avatar">🔎</div><div class="team-name">Tom</div><div class="team-role">Requirements Analyst</div></div>
           <div class="team-card"><div class="team-avatar">📐</div><div class="team-name">John</div><div class="team-role">Architect</div></div>
           <div class="team-card"><div class="team-avatar">🔧</div><div class="team-name">Alex</div><div class="team-role">Full-Stack Developer</div></div>
           <div class="team-card"><div class="team-avatar">🧪</div><div class="team-name">Anne</div><div class="team-role">Test Architect</div></div>
           <div class="team-card"><div class="team-avatar">🛡️</div><div class="team-name">Robert</div><div class="team-role">Code Reviewer</div></div>
+          <div class="team-card"><div class="team-avatar">🔐</div><div class="team-name">Lars</div><div class="team-role">Security Expert</div></div>
+          <div class="team-card"><div class="team-avatar">🚀</div><div class="team-name">Jack</div><div class="team-role">DevOps Engineer</div></div>
+          <div class="team-card"><div class="team-avatar">📈</div><div class="team-name">Emma</div><div class="team-role">SEO Expert</div></div>
+          <div class="team-card"><div class="team-avatar">💬</div><div class="team-name">Lauren</div><div class="team-role">Social Media Manager</div></div>
           <div class="team-card"><div class="team-avatar">🎨</div><div class="team-name">Elise</div><div class="team-role">UX Designer</div></div>
         </div>
       </section>

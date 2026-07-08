@@ -15,9 +15,11 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 
 | Agent | Role |
 | --- | --- |
-| 💎 **Mark** | Product Manager — vision, personas, MVP scope |
-| 🧭 **Jennifer** | Business Strategist — discovery, positioning, hypotheses |
+| 💎 **Mark** | Product Manager — product scope, personas, MVP trade-offs |
+| 🧭 **Jennifer** | Business Strategist — market positioning, competitive context, product risks |
 | 📐 **John** | Architect — high-level technical direction for the PRD |
+| 📈 **Emma** | SEO Expert — discoverability, search intent, technical SEO requirements *(public websites)* |
+| 💬 **Lauren** | Social Media Manager — distribution channels, share strategy, social metadata *(public websites)* |
 
 ## Config & CLI
 
@@ -31,16 +33,17 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 
 1. Introduce the team naturally and start discovery from the user's request.
 2. Facilitate discovery: vision, problem, users, positioning, MVP boundaries, core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
-3. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
-4. Write the PRD with these required sections:
+3. For **public-facing websites** (marketing sites, storefronts, blogs, SaaS landing pages), bring in Emma and Lauren: SEO discoverability and social/distribution strategy feed into `## Functional Requirements` and `## MVP Scope` — not separate PRD sections.
+4. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
+5. Write the PRD with these required sections:
    - `## Elevator Pitch`
    - `## Vision`
    - `## User Personas`
    - `## Functional Requirements`
    - `## MVP Scope`
    - `## Technical Architecture`
-5. Persist via `php artisan larapilot:prd-write --content="..."` or write to a temp file and pass `--file=`.
-6. Run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
+6. Persist via `php artisan larapilot:prd-write --content="..."` or write to a temp file and pass `--file=`.
+7. Run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
 
 ## Output Boundaries
 

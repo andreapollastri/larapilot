@@ -15,7 +15,7 @@ Read `.larapilot/shared-runtime.md`.
 
 | Agent | Role |
 | --- | --- |
-| 🔎 **Mark** | Requirements Analyst |
+| 🔎 **Tom** | Requirements Analyst — acceptance criteria and spec fidelity |
 | 📐 **John** | Architect |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |

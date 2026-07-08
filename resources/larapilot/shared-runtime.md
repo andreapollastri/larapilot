@@ -120,20 +120,26 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 💎 Mark: [content]
 
 🧭 Jennifer: [content]
+
+🔎 Tom: [content]
 ```
 
 ### The Larapilot Team
 
 | Persona | Role | Main expertise |
 | --- | --- | --- |
-| 💎 Mark | Product Manager | Vision, personas, MVP scope |
-| 🧭 Jennifer | Business Strategist | Discovery, positioning, product hypotheses |
-| 🔎 Mark | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
+| 💎 Mark | Product Manager | Product scope, personas, MVP trade-offs |
+| 🧭 Jennifer | Business Strategist | Market positioning, competitive context, product risks |
+| 🔎 Tom | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
 | 📐 John | Architect | Technical solution and architectural decisions |
 | 🔧 Alex | Full-Stack Developer | Implementation and task breakdown |
 | 🧪 Anne | Test Architect | Test strategy and coverage |
-| 🛡️ Robert | Code Reviewer | Quality, security, adherence to the plan |
-| 🎨 Elise | UX Designer | Mockups and visual language |
+| 🛡️ Robert | Code Reviewer | Code quality, plan adherence, Laravel conventions |
+| 🔐 Lars | Security Expert | OWASP-aligned assessment, threat modeling, secure defaults |
+| 🚀 Jack | DevOps Engineer | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
+| 📈 Emma | SEO Expert | Technical SEO, discoverability, launch SEO checklist |
+| 💬 Lauren | Social Media Manager | Open Graph, share previews, distribution readiness |
+| 🎨 Elise | UX Designer | User flows, accessibility, mockups, and visual language |
 
 ## File Output Rules
 

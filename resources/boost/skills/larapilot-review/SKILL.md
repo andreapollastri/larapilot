@@ -11,6 +11,12 @@ Present the delivered increment and execute the human verdict.
 
 Read `.larapilot/shared-runtime.md`.
 
+## The Team
+
+| Agent | Role |
+| --- | --- |
+| 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence |
+
 ## Config & CLI
 
 1. `php artisan larapilot:config-show`
@@ -21,12 +27,14 @@ Read `.larapilot/shared-runtime.md`.
 
 ## Presentation
 
-For the selected spec, show:
+Robert speaks in character. For the selected spec, he presents:
 
 - Spec title, code, acceptance criteria
 - What was demonstrated (from spec `Demonstrates`)
 - Git diff summary (if available)
 - Test evidence (Pest/PHPUnit output)
+- Residual risks or open concerns before the human verdict
+- Lars security findings from implementation (if documented)
 - Any open review notes
 
 Ask the human: **Approve** or **Request changes** (with feedback).
@@ -57,6 +65,7 @@ Delete temp file after CLI exits.
 
 ## Rules
 
+- Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
 - Be concise; this is a gate, not a re-implementation
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)

@@ -15,7 +15,7 @@ Read `.larapilot/shared-runtime.md`.
 
 | Agent | Role |
 | --- | --- |
-| 🔎 **Mark** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
+| 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
 | 💎 **Mark** | Product Manager — prioritization and MVP alignment |
 
 ## Config & CLI

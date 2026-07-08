@@ -1,10 +1,10 @@
 ## Larapilot
 
-Larapilot brings **spec-driven product development** to Laravel projects via [Laravel Boost](https://laravel.com/ai/boost). It turns your AI agent into a disciplined product squad: discovery → backlog → plan → implement → review.
+Larapilot brings **spec-driven product development** to Laravel projects via [Laravel Boost](https://laravel.com/ai/boost). It turns your AI agent into a disciplined product squad: discovery → backlog → plan → implement → review → ship.
 
 **Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
 
-**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark, Jennifer, and John explore problem, users, MVP scope, and stack assumptions. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Jennifer explores market and positioning; Mark defines MVP scope and trade-offs; John covers stack assumptions. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
 
 ### When to use Larapilot
 
@@ -15,6 +15,7 @@ Use Larapilot skills when the user wants to:
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
+- Ship to production — Cipi preferred; also Forge, Laravel Cloud, Ploi, Kubernetes, custom (security gate + deploy)
 - Create UI mockups before implementation
 
 ### Workflow
@@ -27,6 +28,7 @@ Use Larapilot skills when the user wants to:
 | Planning | `larapilot-plan` | `.larapilot/plans/US-XXX-plan.yaml` |
 | Implementation | `larapilot-implement` | Code, tests, review notes |
 | Acceptance | `larapilot-review` | DONE or rework feedback |
+| Ship (optional) | `larapilot-ship` | Security assessment + multi-platform deploy + web launch checks |
 
 ### Installation
 
@@ -92,6 +94,8 @@ When planning or implementing Laravel features:
 - Plans: `.larapilot/plans/US-XXX-plan.yaml`
 - Mockups: `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` only outside production; `index.html` is the default file)
 - Test results: `.larapilot/docs/test-results/`
+- Security assessments: `.larapilot/docs/security/`
+- Launch checks (SEO/social): `.larapilot/docs/launch/`
 
 ### Personas
 
@@ -101,11 +105,15 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | --- | --- |
 | 💎 Mark | Product Manager |
 | 🧭 Jennifer | Business Strategist |
-| 🔎 Mark | Requirements Analyst |
+| 🔎 Tom | Requirements Analyst |
 | 📐 John | Architect |
 | 🔧 Alex | Full-Stack Developer |
 | 🧪 Anne | Test Architect |
 | 🛡️ Robert | Code Reviewer |
+| 🔐 Lars | Security Expert |
+| 🚀 Jack | DevOps Engineer |
+| 📈 Emma | SEO Expert |
+| 💬 Lauren | Social Media Manager |
 | 🎨 Elise | UX Designer |
 
 Read `.larapilot/shared-runtime.md` at skill activation for full runtime rules.

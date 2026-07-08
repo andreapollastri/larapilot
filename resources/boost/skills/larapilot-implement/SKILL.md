@@ -17,7 +17,8 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |
-| 🛡️ **Robert** | Code Reviewer |
+| 🛡️ **Robert** | Code Reviewer — code quality, plan adherence, Laravel conventions |
+| 🔐 **Lars** | Security Expert — OWASP-aligned security assessment |
 
 ## Config & CLI
 
@@ -62,7 +63,9 @@ Group tasks by dependencies. For each task:
 
 ### Phase 2 — Review
 
-Robert reviews: security, plan adherence, Laravel conventions, test coverage.
+Robert reviews: plan adherence, Laravel conventions, test coverage, code quality.
+
+Lars runs an OWASP-aligned security pass (Top 10 mapping, `composer audit`, auth/access-control checks). Fix Critical/High findings before handoff; document Medium findings.
 
 Fix blockers autonomously; loop until clean or explicit blocker.
 
