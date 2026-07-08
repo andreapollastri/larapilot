@@ -1,0 +1,11 @@
+/vendor/
+composer.lock
+.phpunit.result.cache
+.phpunit.cache
+.idea/
+.vscode/
+.DS_Store
+coverage/
+build/
+phpstan.neon
+testbench.yaml

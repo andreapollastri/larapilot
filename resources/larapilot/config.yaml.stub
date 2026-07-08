@@ -1,0 +1,19 @@
+connector: file
+
+paths:
+  prd: .larapilot/docs/PRD.md
+  mockups: .larapilot/mockups/
+  test_results: .larapilot/docs/test-results/
+
+workflow:
+  statuses:
+    todo: TODO
+    planned: PLANNED
+    in_progress: IN PROGRESS
+    review: REVIEW
+    done: DONE
+
+file:
+  backlog: .larapilot/backlog.yaml
+  specs: .larapilot/specs/
+  planning: .larapilot/plans/

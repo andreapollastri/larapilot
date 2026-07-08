@@ -1,0 +1,86 @@
+---
+name: larapilot-plan
+description: Creates a detailed technical implementation plan for a Larapilot spec. Use when the user wants to plan a spec, break down a feature, create tasks, or prepare development. Triggers include "plan US-005", "break this down", "how do we build this". Pass spec code (US-XXX) or auto-select the next TODO spec.
+---
+
+# Larapilot — Spec Planning
+
+Produce a detailed implementation plan for one spec and persist it via the CLI.
+
+## Shared Runtime
+
+Read `.larapilot/shared-runtime.md`.
+
+## The Team
+
+| Agent | Role |
+| --- | --- |
+| 🔎 **Mark** | Requirements Analyst |
+| 📐 **John** | Architect |
+| 🔧 **Alex** | Full-Stack Developer |
+| 🧪 **Anne** | Test Architect |
+
+## Config & CLI
+
+1. `php artisan larapilot:config-show`
+2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO`
+3. `php artisan larapilot:validate-plan {code} --file=...`
+4. `php artisan larapilot:spec-plan {code} --file=...`
+
+## Workflow
+
+### Stage 0 — Select spec
+
+- With code argument → `spec-show`
+- Without argument → `spec-next`
+- Free-text descriptions → route to `larapilot-spec` first
+
+### Stage 1 — Load context (parallel)
+
+From `data.workdir` (codebase) and `data.project_root` (artifacts):
+
+- PRD (`paths.prd`) if needed
+- Mockups (`paths.mockups/{code}/`) if they exist
+- Relevant Laravel code: models, migrations, routes, tests
+- Boost `Database Schema` for data model context
+- Boost `Search Docs` for Laravel/package patterns
+
+### Stage 2 — Team Brief + Plan
+
+Show a compact team brief (1-3 sentences per agent), then write the plan payload.
+
+Temp file: `.larapilot/tmp-payload-{code}-plan.json`
+
+```json
+{
+  "plan_body": "## Technical Solution\n...\n\n## Test Strategy\n...",
+  "tasks": [
+    {
+      "id": "TASK-01",
+      "title": "...",
+      "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Completion Criteria\n- [ ] ...",
+      "type": "Impl",
+      "status": "TODO",
+      "dependencies": []
+    }
+  ]
+}
+```
+
+Validate, then `spec-plan`. Delete temp file after CLI exits.
+
+## Laravel Planning Rules
+
+- Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate
+- Include Pest/PHPUnit tasks interleaved with implementation (not all tests at the end)
+- For UI specs: Anne MUST define e2e strategy using the project's existing test stack
+- For UI that needs mockups: invoke `larapilot-design` or generate inline to `.larapilot/mockups/{code}/`
+- Task bodies are execution contracts for smaller models: Objective, Read, Change, Steps, Verify, Done
+
+## Rework Mode
+
+When `data.spec.rework` is true or body contains `## Rework Feedback`:
+
+- Preserve existing DONE tasks
+- Add `type: Fix` tasks for each feedback bullet
+- Augment `plan_body` with a Rework note

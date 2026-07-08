@@ -1,0 +1,63 @@
+{
+    "name": "andreapollastri/larapilot",
+    "description": "Spec-driven AI product workflow for Laravel — discovery, backlog, planning, implementation, and review via Laravel Boost.",
+    "keywords": [
+        "laravel",
+        "ai",
+        "boost",
+        "mcp",
+        "spec-driven",
+        "product-development"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrea Pollastri"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^11.45.3|^12.41.1|^13.0",
+        "illuminate/contracts": "^11.45.3|^12.41.1|^13.0",
+        "illuminate/filesystem": "^11.45.3|^12.41.1|^13.0",
+        "illuminate/routing": "^11.45.3|^12.41.1|^13.0",
+        "illuminate/support": "^11.45.3|^12.41.1|^13.0",
+        "laravel/boost": "^1.0",
+        "symfony/yaml": "^7.0|^8.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^9.15|^10.6|^11.0",
+        "pestphp/pest": "^3.8|^4.1",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Larapilot\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Larapilot\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Larapilot\\LarapilotServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "lint": "pint --format agent"
+    }
+}
