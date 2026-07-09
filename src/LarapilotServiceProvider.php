@@ -21,6 +21,7 @@ use Larapilot\Console\Commands\SpecReviewCommand;
 use Larapilot\Console\Commands\SpecShowCommand;
 use Larapilot\Console\Commands\SpecStartCommand;
 use Larapilot\Console\Commands\TaskDoneCommand;
+use Larapilot\Console\Commands\UpdateCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
@@ -53,6 +54,7 @@ class LarapilotServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                UpdateCommand::class,
                 DoctorCommand::class,
                 ConfigShowCommand::class,
                 PrdWriteCommand::class,

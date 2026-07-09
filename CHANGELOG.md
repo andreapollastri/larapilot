@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`larapilot:update` command** — one-step refresh after a package upgrade: rewrites `.larapilot/shared-runtime.md` from the packaged copy and re-runs `boost:update` to republish guidelines and the `/larapilot-*` skills, without ever touching `.larapilot/config.yaml`. `--skip-boost` refreshes the runtime only. Suitable for Composer `post-update-cmd` hooks (documented in README and site docs).
 - **Budget Sensitivity** (`Tracked` | `Relaxed`): during inception Aurora asks whether budget should drive decisions; `Relaxed` excludes budget evaluation while keeping loosened business validation (short advisories on lock-in and hard-to-reverse costs, no cost-based vetoes). Persisted in the PRD under `## Technical Architecture` and honored by the plan and ship skills.
 - **Vendor & Package Policy** in the shared runtime: Laravel built-ins/first-party → Spatie packages (preferred third-party source) → Filament and its plugins (preferred route for admin/control panels) → other vetted vendors, with a mandatory maintenance/compatibility/security check (`composer audit`) before any `composer require`. Referenced by the inception, spec, plan, design, and implement skills.
 
 ### Changed
 
+- `larapilot:install` no longer refreshes the shared runtime on already-installed projects: it now fails fast with a hint pointing to `larapilot:update` (the dedicated refresh path) or `--force`. The 1.0.0 refresh-on-rerun behavior moved to `larapilot:update`, which exits `0` so it can run in scripts.
 - Sebastian (Innovator) now **must propose competitor data porting** whenever comparable products exist: concrete import paths for users switching from rival products (CSV/API importers, onboarding flows) plus lock-in-free export — promoted to Functional Requirements and first-class backlog specs. Docs clarified accordingly (was previously an ambiguous "import/export opportunities").
 
 ## [1.0.0] - 2026-07-08

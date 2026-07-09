@@ -203,6 +203,29 @@ php artisan larapilot:doctor
 
 `data.healthy` is `true` when config, shared runtime, and Boost are in place. On a fresh install `backlog` and `prd` are still `false` — expected: they turn `true` after `/larapilot-inception` (PRD) and `/larapilot-spec` (backlog).
 
+### 6. Keep it updated
+
+Boost publishes guidelines and skills as **copies** into your editor directories, so after upgrading the package one command brings everything current — the shared runtime doc, the Larapilot guidelines, and the `/larapilot-*` skills:
+
+```bash
+composer update andreapollastri/larapilot
+php artisan larapilot:update
+```
+
+`larapilot:update` never touches `.larapilot/config.yaml` — your project customizations survive — and re-runs `boost:update` with the editor and agent choices you already made during `boost:install` (no questions asked). Pass `--skip-boost` to refresh only the shared runtime and manage Boost publishing yourself.
+
+To keep the project aligned automatically, hook it into Composer in your app's `composer.json`:
+
+```json
+"scripts": {
+    "post-update-cmd": [
+        "@php artisan larapilot:update --ansi"
+    ]
+}
+```
+
+From then on every `composer update` republishes runtime, guidelines, and skills — nothing goes stale silently. Run `php artisan larapilot:doctor` anytime to confirm the install is healthy.
+
 ---
 
 ## Workflow
@@ -277,6 +300,7 @@ Skills call these commands; you rarely run them manually:
 | Command                          | Purpose                          |
 | -------------------------------- | -------------------------------- |
 | `larapilot:install`              | Initialize project               |
+| `larapilot:update`               | Refresh runtime + skills after upgrade |
 | `larapilot:doctor`               | Diagnose installation            |
 | `larapilot:config-show`          | Project metadata (JSON envelope) |
 | `larapilot:prd-write`            | Save PRD                         |

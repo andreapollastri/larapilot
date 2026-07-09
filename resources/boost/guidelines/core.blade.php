@@ -42,6 +42,15 @@ php artisan boost:install
 
 Laravel Boost is installed automatically as a Larapilot dependency.
 
+### Update
+
+After upgrading the package, one command refreshes the shared runtime, guidelines, and skills (project config is never touched):
+
+```bash
+composer update andreapollastri/larapilot
+php artisan larapilot:update
+```
+
 Register the Larapilot MCP server in your editor (in addition to `laravel-boost`):
 
 ```json

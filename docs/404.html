@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Larapilot</title>
+  <meta name="description" content="Page not found. Return to Larapilot docs.">
+  <meta name="theme-color" content="#ff4436">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: "Geist Mono";
+      src: local("JetBrains Mono"), local("ui-monospace");
+    }
+
+    :root {
+      --bg: #fafafa;
+      --bg-alt: #f4f4f5;
+      --surface: #ffffff;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #09090b;
+      --text-secondary: #52525b;
+      --text-tertiary: #a1a1aa;
+      --accent: #ff4436;
+      --accent-dark: #e03328;
+      --accent-soft: rgba(255, 68, 54, 0.08);
+      --accent-glow: rgba(255, 68, 54, 0.18);
+      --indigo: #6366f1;
+      --green: #16a34a;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-xs: 6px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.06);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,.08);
+      --font: "Plus Jakarta Sans", system-ui, sans-serif;
+      --mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+      --header-h: 64px;
+      --max: 1120px;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::selection { background: var(--accent-soft); color: var(--accent-dark); }
+
+    a { color: inherit; text-decoration: none; }
+
+    code {
+      font-family: var(--mono);
+      font-size: .84em;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      padding: .12em .4em;
+      border-radius: var(--radius-xs);
+    }
+
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem;
+      background: rgba(250, 250, 250, .82);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: var(--max);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: .95rem;
+      letter-spacing: -.02em;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .header-nav a {
+      font-size: .84rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: .45rem .75rem;
+      border-radius: var(--radius-xs);
+      transition: color .15s, background .15s;
+    }
+
+    .header-nav a:hover { color: var(--text); background: var(--bg-alt); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .55rem 1rem;
+      border-radius: var(--radius-xs);
+      font-weight: 600;
+      font-size: .84rem;
+      border: none;
+      cursor: pointer;
+      transition: transform .15s var(--ease), box-shadow .15s, background .15s;
+      white-space: nowrap;
+    }
+
+    .btn:active { transform: scale(.98); }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .btn-accent:hover { background: var(--accent-dark); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .page {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--header-h) + 3rem) 1.5rem 4rem;
+      overflow: hidden;
+    }
+
+    .page-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .page-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 25% 35%, rgba(255,68,54,.12) 0%, transparent 50%),
+        radial-gradient(circle at 75% 25%, rgba(99,102,241,.10) 0%, transparent 45%);
+    }
+
+    .page-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 20%, transparent 100%);
+    }
+
+    .page-inner {
+      position: relative;
+      width: 100%;
+      max-width: var(--max);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .35rem .85rem .35rem .45rem;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .eyebrow-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .error-code {
+      font-size: clamp(4rem, 12vw, 6.5rem);
+      font-weight: 800;
+      letter-spacing: -.06em;
+      line-height: 1;
+      margin-bottom: .75rem;
+      background: linear-gradient(135deg, var(--accent) 0%, #ff8a7a 45%, var(--indigo) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .page-desc {
+      font-size: 1.02rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      max-width: 34rem;
+    }
+
+    .page-desc strong { color: var(--text); font-weight: 600; }
+
+    .page-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+    }
+
+    .hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .hint {
+      flex: 1 1 140px;
+    }
+
+    .hint strong {
+      display: block;
+      font-size: .88rem;
+      font-weight: 700;
+      margin-bottom: .2rem;
+    }
+
+    .hint span {
+      font-size: .78rem;
+      color: var(--text-tertiary);
+    }
+
+    .hint a {
+      color: var(--accent-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(255,68,54,.35);
+    }
+
+    .hint a:hover { text-decoration-color: var(--accent); }
+
+    .terminal {
+      background: var(--text);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      transform: perspective(1200px) rotateY(-3deg) rotateX(2deg);
+      transition: transform .5s var(--ease);
+    }
+
+    .terminal:hover { transform: perspective(1200px) rotateY(0) rotateX(0); }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .85rem 1rem;
+      background: #27272a;
+      border-bottom: 1px solid #3f3f46;
+    }
+
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot.r { background: #ef4444; }
+    .terminal-dot.y { background: #eab308; }
+    .terminal-dot.g { background: #22c55e; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: .72rem;
+      color: #71717a;
+      font-family: var(--mono);
+    }
+
+    .terminal-body {
+      padding: 1.15rem 1.25rem 1.25rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      line-height: 1.65;
+      color: #d4d4d8;
+    }
+
+    .terminal-line {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+      margin-bottom: .85rem;
+    }
+
+    .terminal-line .prompt {
+      color: #22c55e;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .terminal-line .cmd { color: #fafafa; }
+
+    .terminal-output {
+      margin: 0;
+      padding: .85rem 1rem;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: var(--radius-xs);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .terminal-output .key { color: #93c5fd; }
+    .terminal-output .str { color: #86efac; }
+    .terminal-output .num { color: #fcd34d; }
+    .terminal-output .bool { color: #c4b5fd; }
+    .terminal-output .err { color: #f87171; }
+
+    .site-footer {
+      max-width: var(--max);
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem 1.5rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: .84rem;
+      color: var(--text-tertiary);
+    }
+
+    .site-footer a { color: var(--text-secondary); }
+    .site-footer a:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .page-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .page-desc { margin-left: auto; margin-right: auto; }
+      .page-cta, .eyebrow { justify-content: center; }
+      .hints { justify-content: center; text-align: left; }
+      .terminal { max-width: 420px; margin: 0 auto; }
+    }
+
+    @media (max-width: 640px) {
+      .header-nav { display: none; }
+      .hints { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Larapilot</a>
+      <nav class="header-nav">
+        <a href="index.html#quickstart">Quickstart</a>
+        <a href="index.html#workflow">Workflow</a>
+        <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-bg"><div class="page-grid"></div></div>
+    <div class="page-inner">
+      <div>
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Workflow transition blocked
+        </div>
+        <div class="error-code" aria-hidden="true">404</div>
+        <h1>This page is not in the backlog</h1>
+        <p class="page-desc">
+          The URL you requested does not exist — or it was moved without updating the plan.
+          Head back to the docs and continue from a valid step in the Larapilot workflow.
+        </p>
+        <div class="page-cta">
+          <a class="btn btn-accent" href="index.html">Back to docs</a>
+          <a class="btn btn-ghost" href="index.html#quickstart">Quickstart</a>
+        </div>
+        <div class="hints">
+          <div class="hint">
+            <strong>Install</strong>
+            <span><a href="index.html#quickstart">Get started</a> with Larapilot in your Laravel app</span>
+          </div>
+          <div class="hint">
+            <strong>CLI</strong>
+            <span>Run <code>php artisan larapilot:doctor</code> to diagnose your setup</span>
+          </div>
+          <div class="hint">
+            <strong>Source</strong>
+            <span>Report issues on <a href="https://github.com/andreapollastri/larapilot/issues" target="_blank" rel="noopener">GitHub</a></span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="terminal" aria-label="Example CLI error envelope">
+        <div class="terminal-bar">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span class="terminal-title">larapilot — zsh</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line">
+            <span class="prompt">❯</span>
+            <span class="cmd">php artisan larapilot:spec-show PAGE-404</span>
+          </div>
+          <pre class="terminal-output" aria-label="JSON error response">{
+  <span class="key">"ok"</span>: <span class="bool">false</span>,
+  <span class="key">"kind"</span>: <span class="str">"error"</span>,
+  <span class="key">"code"</span>: <span class="str">"E_NOT_FOUND"</span>,
+  <span class="key">"message"</span>: <span class="str">"Spec PAGE-404 not found."</span>,
+  <span class="key">"hint"</span>: <span class="str">"Valid transitions: index.html → quickstart → workflow"</span>,
+  <span class="key">"exit"</span>: <span class="num">1</span>
+}</pre>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>MIT © <a href="https://andreapollastri.net" target="_blank" rel="noopener">Andrea Pollastri</a></span>
+    <span><a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></span>
+  </footer>
+
+</body>
+</html>

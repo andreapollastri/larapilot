@@ -15,8 +15,45 @@ it('installs the project scaffolding', function (): void {
 it('refuses to reinstall without force', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    $this->artisan('larapilot:install')->assertExitCode(4);
+    $this->artisan('larapilot:install')
+        ->assertExitCode(4)
+        ->expectsOutputToContain('larapilot:update');
     $this->artisan('larapilot:install', ['--force' => true])->assertSuccessful();
+});
+
+it('refuses to update before install', function (): void {
+    $this->artisan('larapilot:update')
+        ->assertExitCode(4)
+        ->expectsOutputToContain('larapilot:install');
+});
+
+it('refreshes the shared runtime via update', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    file_put_contents(base_path('.larapilot/shared-runtime.md'), 'stale copy from an older release');
+
+    $this->artisan('larapilot:update', ['--skip-boost' => true])->assertSuccessful();
+
+    expect(file_get_contents(base_path('.larapilot/shared-runtime.md')))
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/shared-runtime.md'));
+});
+
+it('keeps project config untouched during update', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    file_put_contents(base_path('.larapilot/config.yaml'), "connector: file\ncustom: kept\n");
+
+    $this->artisan('larapilot:update', ['--skip-boost' => true])->assertSuccessful();
+
+    expect(file_get_contents(base_path('.larapilot/config.yaml')))->toContain('custom: kept');
+});
+
+it('fails update when boost:update is unavailable', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:update')
+        ->assertExitCode(4)
+        ->expectsOutputToContain('boost:install');
 });
 
 it('reports installation health via doctor', function (): void {

@@ -1667,6 +1667,25 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
 }</code></pre>
         </div>
         <p><code>data.healthy</code> is <code>true</code> when config, shared runtime, and Boost are all in place. On a fresh install <code>backlog</code> and <code>prd</code> are still <code>false</code> — that's expected: they turn <code>true</code> after <code>/larapilot-inception</code> (PRD) and <code>/larapilot-spec</code> (backlog).</p>
+
+        <h3>6. Keep it updated</h3>
+        <p>Boost publishes guidelines and skills as <strong>copies</strong> into your editor directories, so after upgrading the package one command brings everything current — the shared runtime doc, the Larapilot guidelines, and the <code>/larapilot-*</code> skills:</p>
+        <div class="code-block">
+          <div class="code-block-header">Terminal</div>
+          <pre><code>composer update andreapollastri/larapilot
+php artisan larapilot:update</code></pre>
+        </div>
+        <p><code>larapilot:update</code> never touches <code>.larapilot/config.yaml</code> — your project customizations survive — and re-runs <code>boost:update</code> with the editor and agent choices you already made during <code>boost:install</code> (no questions asked). Pass <code>--skip-boost</code> to refresh only the shared runtime and manage Boost publishing yourself.</p>
+        <p>To keep the project aligned automatically, hook it into Composer in your app's <code>composer.json</code>:</p>
+        <div class="code-block">
+          <div class="code-block-header">composer.json</div>
+          <pre><code>"scripts": {
+    "post-update-cmd": [
+        "@php artisan larapilot:update --ansi"
+    ]
+}</code></pre>
+        </div>
+        <p>From then on every <code>composer update</code> republishes runtime, guidelines, and skills — nothing goes stale silently. Run <code>php artisan larapilot:doctor</code> anytime to confirm the install is healthy.</p>
       </section>
 
       <!-- Workflow -->
@@ -1849,6 +1868,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
             <thead><tr><th>Command</th><th>Description</th></tr></thead>
             <tbody>
               <tr><td><code>larapilot:install</code></td><td>Initialize project</td></tr>
+              <tr><td><code>larapilot:update</code></td><td>Refresh runtime + skills after upgrade</td></tr>
               <tr><td><code>larapilot:doctor</code></td><td>Diagnose installation</td></tr>
               <tr><td><code>larapilot:config-show</code></td><td>Project metadata (JSON envelope)</td></tr>
               <tr><td><code>larapilot:metrics</code></td><td>Backlog progress</td></tr>

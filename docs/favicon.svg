@@ -1,7 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Larapilot">
-  <rect width="32" height="32" rx="8" fill="#ff4436"/>
-  <g fill="#ffffff">
-    <path d="M7 8h4.5v11H17v4H7V8z"/>
-    <path d="M18 8h4.8c3.6 0 6 2 6 5.1 0 2.7-1.6 4.5-4.1 5l4.5 5.9H24l-4.2-5.5V8zm4.5 3.2v3.6h2.4c1.5 0 2.3-.8 2.3-1.8s-.8-1.8-2.3-1.8h-2.4z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Larapilot">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff6a52"/>
+      <stop offset=".5" stop-color="#ff4436"/>
+      <stop offset="1" stop-color="#d92718"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <g id="lp">
+      <path d="M10 16h9v23h10.5v9H10z"/>
+      <path fill-rule="evenodd" d="M34 16h10.5a10.5 10.5 0 0 1 0 21H43v11h-9V16zm9 7v7h3a3.5 3.5 0 0 0 0-7h-3z"/>
+    </g>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="15" fill="url(#sheen)"/>
+  <rect x=".75" y=".75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.5"/>
+  <use href="#lp" transform="translate(0 1.5)" fill="#8f1a0d" opacity=".35"/>
+  <use href="#lp" fill="#ffffff"/>
 </svg>
