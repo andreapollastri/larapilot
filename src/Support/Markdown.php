@@ -12,19 +12,19 @@ class Markdown
     public static function toHtml(string $markdown): string
     {
         if (class_exists(CommonMarkConverter::class)) {
-            $converter = new CommonMarkConverter([
-                'html_input' => 'strip',
-                'allow_unsafe_links' => false,
-            ]);
+            try {
+                $converter = new CommonMarkConverter([
+                    'html_input' => 'strip',
+                    'allow_unsafe_links' => false,
+                ]);
 
-            return (string) $converter->convert($markdown);
+                return self::withHeadingIds((string) $converter->convert($markdown));
+            } catch (\Throwable) {
+                // fall through to the dependency-free renderer
+            }
         }
 
-        try {
-            return Str::markdown($markdown);
-        } catch (\Throwable) {
-            return self::basicToHtml($markdown);
-        }
+        return self::basicToHtml($markdown);
     }
 
     /**
@@ -33,9 +33,16 @@ class Markdown
     public static function headings(string $markdown): array
     {
         $headings = [];
+        $inFence = false;
 
         foreach (preg_split('/\r?\n/', $markdown) as $line) {
-            if (preg_match('/^(#{2,3})\s+(.+)$/', $line, $matches) !== 1) {
+            if (preg_match('/^\s*(?:```|~~~)/', $line) === 1) {
+                $inFence = ! $inFence;
+
+                continue;
+            }
+
+            if ($inFence || preg_match('/^(#{2,3})\s+(.+)$/', $line, $matches) !== 1) {
                 continue;
             }
 
@@ -51,15 +58,65 @@ class Markdown
         return $headings;
     }
 
+    /**
+     * CommonMark emits headings without ids; inject slug ids (matching
+     * headings()) so table-of-contents anchors resolve.
+     */
+    protected static function withHeadingIds(string $html): string
+    {
+        return preg_replace_callback(
+            '/<h([1-6])>(.*?)<\/h\1>/s',
+            function (array $matches): string {
+                $id = self::slug(html_entity_decode(strip_tags($matches[2]), ENT_QUOTES | ENT_HTML5));
+
+                return $id === ''
+                    ? $matches[0]
+                    : "<h{$matches[1]} id=\"{$id}\">{$matches[2]}</h{$matches[1]}>";
+            },
+            $html
+        ) ?? $html;
+    }
+
     protected static function basicToHtml(string $markdown): string
     {
         $lines = preg_split('/\r?\n/', $markdown) ?: [];
         $html = [];
         $inList = false;
         $inParagraph = false;
+        $inCode = false;
 
         foreach ($lines as $line) {
             $trimmed = trim($line);
+
+            if (preg_match('/^(?:```|~~~)/', $trimmed) === 1) {
+                if ($inCode) {
+                    $html[] = '</code></pre>';
+                    $inCode = false;
+
+                    continue;
+                }
+
+                if ($inList) {
+                    $html[] = '</ul>';
+                    $inList = false;
+                }
+
+                if ($inParagraph) {
+                    $html[] = '</p>';
+                    $inParagraph = false;
+                }
+
+                $html[] = '<pre><code>';
+                $inCode = true;
+
+                continue;
+            }
+
+            if ($inCode) {
+                $html[] = e($line);
+
+                continue;
+            }
 
             if ($trimmed === '') {
                 if ($inList) {
@@ -131,6 +188,10 @@ class Markdown
             }
 
             $html[] = self::escapeAndInline($trimmed);
+        }
+
+        if ($inCode) {
+            $html[] = '</code></pre>';
         }
 
         if ($inList) {

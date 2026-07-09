@@ -21,15 +21,14 @@ class DashboardService
     public function board(): array
     {
         $workflow = $this->config->resolve()['workflow']['statuses'] ?? config('larapilot.workflow.statuses', []);
-        $statusOrder = array_values(is_array($workflow) ? $workflow : []);
 
         $columns = [];
 
-        foreach ($statusOrder as $status) {
+        foreach (array_values(is_array($workflow) ? $workflow : []) as $status) {
             $columns[(string) $status] = [];
         }
 
-        foreach ($this->specs->list()['items'] as $spec) {
+        foreach ($this->specs->allSpecs() as $spec) {
             $status = (string) ($spec['status'] ?? 'TODO');
 
             if (! array_key_exists($status, $columns)) {
@@ -42,7 +41,9 @@ class DashboardService
         return [
             'metrics' => $this->specs->metrics(),
             'columns' => $columns,
-            'statusOrder' => $statusOrder,
+            // include columns created for statuses outside the configured
+            // workflow, so those specs still show on the board
+            'statusOrder' => array_map('strval', array_keys($columns)),
         ];
     }
 

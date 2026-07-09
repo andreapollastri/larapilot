@@ -31,7 +31,6 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 | 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM |
 | 💬 **Lauren** | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora |
 | 🎨 **Elise** | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
-| 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt maintenance, Analytics/SEM |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest strategy |
 

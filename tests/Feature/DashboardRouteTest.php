@@ -49,6 +49,29 @@ it('renders the PRD with section headings', function (): void {
         ->assertSee('Technical Architecture');
 });
 
+it('links the PRD table of contents to heading anchors', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+    $config->ensureDirectories();
+
+    app(PrdService::class)->write(validPrd());
+
+    $this->get('/larapilot/prd')
+        ->assertOk()
+        ->assertSee('href="#elevator-pitch"', false)
+        ->assertSee('id="elevator-pitch"', false);
+});
+
+it('shows specs whose status is outside the configured workflow', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'BLOCKED']);
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('BLOCKED')
+        ->assertSee('US-001');
+});
+
 it('shows spec detail with tasks', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec();

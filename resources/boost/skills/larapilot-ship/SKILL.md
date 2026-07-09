@@ -237,10 +237,9 @@ Skip this phase for APIs, admin-only apps, or CLI tools with no public web prese
 - HTTPS enforced; no mixed content
 - Analytics integration live (GA4, Plausible, Matomo, IndieStats, or chosen stack) with consent where required
 - Key tracking events firing (signup, purchase, CTA clicks)
-- Lighthouse on critical pages: Performance ≥ 80, Accessibility ≥ 90 on mobile
+- Lighthouse on critical pages (mobile): **Accessibility ≥ 90**, Performance ≥ 80
 - **Mobile First** spot-check (Elise + Anne): primary journeys usable at 375 px; nav and CTAs reachable; no horizontal scroll; desktop layout enhanced, not divergent
 - Structured data (JSON-LD) where applicable
-- Lighthouse: **Accessibility ≥ 90**, Performance ≥ 80 on critical pages
 - **WCAG 2.2 AA** spot-check: keyboard nav, focus visible, form labels, alt text, contrast in light/dark (Elise + Emma)
 - **Accessibility statement** page reachable when Violet required it (EAA / public sector)
 

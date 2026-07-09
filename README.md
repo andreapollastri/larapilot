@@ -331,7 +331,7 @@ Personas are lenses that make the process visible:
 
 **Cloud & infra** — **Cloudflare** preferred for DNS, CDN, and WAF (alternatives: AWS WAF + CloudFront, Bunny, Akamai, Fastly). Jack proposes **AWS** compute step-by-step when budget allows; **DigitalOcean** as alternative; **Hetzner** and **OVH** for EU. **Observability** always proposed: Laravel Nightwatch, AWS CloudWatch, or alternatives (Datadog, Grafana, …). Local dev: Sail or Herd; [127001.it](https://127001.it/) for wildcard local URLs.
 
-- **Integrations** — **Sebastian** proposes vendors and competitor porting at discovery; **Matt** delivers API/service wiring (OAuth, webhooks, HTTP clients, queues) with Alex and John.
+**Integrations** — **Sebastian** proposes vendors and competitor porting at discovery; **Matt** delivers API/service wiring (OAuth, webhooks, HTTP clients, queues) with Alex and John.
 
 **Red team** — **Oliver** runs ethical hacking / penetration tests before ship; reports to **Lars**, who issues GO/NO-GO with the OWASP assessment.
 
@@ -339,7 +339,7 @@ Personas are lenses that make the process visible:
 
 **Internationalization** — **Emily** owns locales, currency, timezones, and cultural UX per country target; **Violet** owns legal/compliance per market.
 
-**UX & frontend:** Elise — **mobile-first responsive** UI; Nordic design; WCAG 2.2 AA; logo + favicon.svg + social assets (when client provides none). Lauren uses Elise's OG/share artwork.
+**UX & frontend** — Elise: **mobile-first responsive** UI, Nordic design, WCAG 2.2 AA, logo + favicon.svg + social assets (when client provides none). Lauren uses Elise's OG/share artwork.
 
 **Marketing** — Lauren drives newsletter, campaigns, SEM (Aurora budget), with Emma and Elise.
 
