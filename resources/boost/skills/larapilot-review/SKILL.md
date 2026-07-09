@@ -20,6 +20,7 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifac
 | Agent | Role |
 | --- | --- |
 | 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence |
+| 🎧 **Sophia** | Support Manager — notes open maintenance items from support intake when relevant |
 
 ## Config & CLI
 
@@ -35,8 +36,10 @@ Robert speaks in character. For the selected spec, he presents:
 
 - Spec title, code, acceptance criteria
 - What was demonstrated (from spec `Demonstrates`)
-- Git diff summary (if available) — branch follows **Gitflow** (`feature/US-XXX-*`, not direct `main` commits)
-- Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target
+- Git diff summary (if available) — branch follows **Gitflow** (`feature/US-XXX-*`, not direct `main`/`develop` commits); **one commit per task** with Conventional Commit messages; **internal PR** open/updated toward `develop`
+- Factory/seeder evidence — factories exist/updated for touched models; `migrate:fresh --seed` produces coherent demo data (or note if spec is non-data)
+- Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target; UI specs include **responsive tests** at 375 / 768 / 1280 px
+- Mockup/responsive evidence — mobile-first mockup or implementation; nav usable on phone and desktop; no clipped CTAs at mobile widths
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
 - Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes

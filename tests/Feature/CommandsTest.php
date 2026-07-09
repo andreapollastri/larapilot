@@ -9,7 +9,8 @@ it('installs the project scaffolding', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
     expect(base_path('.larapilot/config.yaml'))->toBeFile()
-        ->and(base_path('.larapilot/shared-runtime.md'))->toBeFile();
+        ->and(base_path('.larapilot/shared-runtime.md'))->toBeFile()
+        ->and(base_path('.larapilot/task-templates.md'))->toBeFile();
 });
 
 it('refuses to reinstall without force', function (): void {
@@ -35,7 +36,9 @@ it('refreshes the shared runtime via update', function (): void {
     $this->artisan('larapilot:update', ['--skip-boost' => true])->assertSuccessful();
 
     expect(file_get_contents(base_path('.larapilot/shared-runtime.md')))
-        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/shared-runtime.md'));
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/shared-runtime.md'))
+        ->and(file_get_contents(base_path('.larapilot/task-templates.md')))
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/task-templates.md'));
 });
 
 it('keeps project config untouched during update', function (): void {

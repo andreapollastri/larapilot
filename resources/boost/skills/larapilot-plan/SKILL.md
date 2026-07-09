@@ -11,6 +11,8 @@ Produce a detailed implementation plan for one spec and persist it via the CLI.
 
 Read `.larapilot/shared-runtime.md` — including **Sub-agents** (optional explore in Stage 1).
 
+Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 bootstrap, entity, non-entity, test, fix).
+
 ## Output Economy
 
 **Split** — see `larapilot-plan` in shared-runtime. Team brief: 1–3 sentences per agent. Chat between stages: status and blockers only. `plan_body` and task bodies stay detailed execution contracts.
@@ -22,14 +24,16 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents** (optional explo
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria and spec fidelity |
 | 📐 **John** | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target |
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
+| 🔗 **Matt** | Integration Manager — API/service wiring tasks with Alex, John, Elise |
+| 🌍 **Emily** | Translator — locale files, currency, timezone, country-target UX *(with Violet)* |
 | 💰 **Aurora** | FinOps Expert — infra/security/marketing budget per PRD; privilege security spend |
 | ⚖️ **Violet** | Legal Expert — privacy/legal tasks: cookie/ToS, retention, anonymization, opt-out |
 | 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM |
 | 💬 **Lauren** | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora |
-| 🎨 **Elise** | UX Designer — mockups, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
+| 🎨 **Elise** | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
 | 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt maintenance, Analytics/SEM |
 | 🔧 **Alex** | Full-Stack Developer |
-| 🧪 **Anne** | Test Architect |
+| 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest strategy |
 
 ## Config & CLI
 
@@ -81,15 +85,23 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 ```json
 {
-  "plan_body": "## Technical Solution\n...\n\n## Test Strategy\n...",
+  "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Branch: feature/US-XXX-short-desc\n- TASK-00: bootstrap + internal PR\n- Per task: one commit, push, update PR\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n...",
   "tasks": [
     {
-      "id": "TASK-01",
-      "title": "...",
-      "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Completion Criteria\n- [ ] ...",
+      "id": "TASK-00",
+      "title": "Bootstrap feature branch and internal PR",
+      "body": "## Description\n...\n\n## Git Deliverables\n- Commit: chore(US-XXX): TASK-00 bootstrap feature branch\n...",
       "type": "Impl",
       "status": "TODO",
       "dependencies": []
+    },
+    {
+      "id": "TASK-01",
+      "title": "...",
+      "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
+      "type": "Impl",
+      "status": "TODO",
+      "dependencies": ["TASK-00"]
     }
   ]
 }
@@ -97,25 +109,50 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 Validate, then `spec-plan`. Delete temp file after CLI exits.
 
+## Task body templates
+
+Use `.larapilot/task-templates.md` — do not invent ad-hoc task shapes.
+
+| Template | When |
+| --- | --- |
+| **TASK-00** | Always first — branch `feature/US-XXX-*`, push, open internal PR to `develop` |
+| **Entity task** | New/changed Eloquent model — migration + factory + seeder in the **same task** |
+| **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A` |
+| **Test task** | Anne — reuse factories; `test(US-XXX): TASK-NN` commit |
+| **Fix / evolutiva** | Rework — same Git + factory/seeder rules when schema changes |
+
+Every **Impl** and **Fix** task body MUST include:
+- `## Git Deliverables` — commit message, push target, PR update line
+- `## Test Data` — factory/seeder checklist, or explicit `N/A`
+- `## Completion Criteria` — checkboxes (auto-ticked by `task-done`)
+
+`plan_body` MUST include `## Git & Branching` and `## Test Data Strategy` sections.
+
 ## Laravel Planning Rules
 
 - John MUST apply **Architecture Standards** and **Multi-tenancy** comparison from shared-runtime when spec touches SaaS/workspaces; plan Gitflow branch name `feature/US-XXX-*`, semver/CHANGELOG tasks, `security.txt` + `SECURITY.md`, CI pipeline gates, queues, DTOs, OpenAPI
+- **Alex** plans **factory + seeder tasks** for every new/changed Eloquent model (domain-meaningful Faker data, states, relationships, coherent `DatabaseSeeder`); factory/seeder updates ship in the same task as migrations — never deferred
+- **Alex + Jack** plan **per-task Git discipline**: each task body ends with commit message template (`type(US-XXX): TASK-NN …`), push, and internal PR update toward `develop`; no batched multi-task commits
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
 - Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
-- New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** specs, evaluate **Filament** (and its plugin ecosystem) as the preferred route before planning a custom panel — always verify maintenance, compatibility, and security before adding a dependency
+- **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
+- **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet
+- New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** specs, honor the panel route recorded in the PRD — if none is recorded, **ask the user** (Filament vs custom, never assume), recommending the best fit for the specific case and the option closest to the project mockups — always verify maintenance, compatibility, and security before adding a dependency
 - Apply **Laravel Scaffolding Defaults** from shared-runtime unless the PRD opts out: auth specs get Fortify 2FA + `Password::defaults()` + **Socialite** for SSO; new models/migrations use UUID primary keys; greenfield auth uses Argon2id; local-dev specs prefer **Sail** (or **Herd** if PRD says so) and may document **127001.it** URLs
 - When a spec touches newsletter, analytics, error monitoring, or S3: Sebastian plans the PRD-chosen integration; security-audit specs: **Aikido** first when Tracked/Forge, plus **checkpoint** as local/CI complement
 - **Jack** plans cloud/deploy, Cloudflare edge, observability, **Gitflow** workflow, **CI/CD** scaffold, and **release/x.y.z** + CHANGELOG bump tasks
 - **Lars** plans `public/.well-known/security.txt` and root `SECURITY.md` when missing
 - Anne defines **Testing standards** per delivery target; every public API route gets a feature test; add **accessibility** checks (Pest + axe or Lighthouse CI) on public UI specs
+- **Elise** plans **mobile-first** UI/mockup tasks — mobile screen primary, desktop enhancement, responsive README contract (breakpoints, nav pattern)
+- **Anne** plans **responsive UI test tasks** for every UI spec: viewport matrix (375 / 768 / 1280 px minimum), mobile nav assertions, critical journeys at multiple widths, axe at mobile viewport — interleaved with implementation, not at ship only
 - Violet adds full **Privacy & Legal Compliance** tasks when the spec processes personal data (cookie policy, ToS, retention, anonymization, opt-out, subprocessors)
 - For public-facing specs: **Emma** URL/robots/sitemap/llms; **Elise** UI + WCAG + **favicon.svg, logo, OG 1200×630** (if client assets missing); **Violet** a11y legal; **Lauren** marketing using Elise social assets
 - Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate
 - Include Pest/PHPUnit tasks interleaved with implementation (not all tests at the end)
-- For UI specs: Anne MUST define e2e strategy using the project's existing test stack
+- For UI specs: Anne MUST define e2e/responsive strategy using the project's test stack — **Mobile First test contract** from Elise's mockup README (viewports, nav, orientation)
 - For UI that needs mockups: invoke `larapilot-design` or generate inline to `.larapilot/mockups/{code}/`
-- Task bodies are execution contracts for smaller models: Objective, Read, Change, Steps, Verify, Done
+- Task bodies are execution contracts for smaller models: use templates from `.larapilot/task-templates.md` — Objective (Description), Files, Steps, Test Data, Git Deliverables, Completion Criteria
 
 ## Rework Mode
 

@@ -16,6 +16,7 @@ return [
         'review' => '.larapilot/docs/review/',
         'security' => '.larapilot/docs/security/',
         'launch' => '.larapilot/docs/launch/',
+        'support' => '.larapilot/docs/support/',
     ],
 
     'mockups_route' => [
@@ -58,5 +59,9 @@ return [
         'legal_expert' => ['name' => 'Violet', 'icon' => '⚖️', 'role' => 'Legal Expert'],
         'finops' => ['name' => 'Aurora', 'icon' => '💰', 'role' => 'FinOps Expert'],
         'ux_designer' => ['name' => 'Elise', 'icon' => '🎨', 'role' => 'UX Designer'],
+        'integration_manager' => ['name' => 'Matt', 'icon' => '🔗', 'role' => 'Integration Manager'],
+        'ethical_hacker' => ['name' => 'Oliver', 'icon' => '🎯', 'role' => 'Ethical Hacker'],
+        'support_manager' => ['name' => 'Sophia', 'icon' => '🎧', 'role' => 'Support Manager'],
+        'translator' => ['name' => 'Emily', 'icon' => '🌍', 'role' => 'Translator'],
     ],
 ];

@@ -27,7 +27,7 @@ class UpdateCommand extends LarapilotCommand
         }
 
         SharedRuntime::refresh();
-        $this->components->info('Shared runtime refreshed (.larapilot/shared-runtime.md).');
+        $this->components->info('Larapilot docs refreshed (.larapilot/shared-runtime.md, .larapilot/task-templates.md).');
 
         if ($this->option('skip-boost')) {
             $this->line('Boost publishing skipped. Run php artisan boost:update to refresh guidelines and skills.');

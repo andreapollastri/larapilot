@@ -75,6 +75,7 @@ class ConfigService
                 'review' => $this->absolutePath($config['paths']['review'] ?? '.larapilot/docs/review/'),
                 'security' => $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
                 'launch' => $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
+                'support' => $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -127,6 +128,7 @@ class ConfigService
             $this->absolutePath($config['paths']['review'] ?? '.larapilot/docs/review/'),
             $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
             $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
+            $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
         ];
 

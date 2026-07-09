@@ -211,7 +211,38 @@ Propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgra
 | `release/x.y.z` | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop` |
 | `hotfix/x.y.z` | Urgent production fix; branch from `main`; merge → `main` + `develop` |
 
-Rules: no direct commits to `main`; PR/MR required; delete feature branches after merge; Larapilot spec codes map to `feature/US-XXX-*` branch names when possible.
+Rules: no direct commits to `main` or `develop`; PR/MR required; delete feature branches after merge; Larapilot spec codes map to `feature/US-XXX-*` branch names when possible.
+
+### Git discipline — strict per task *(Alex implements; Robert + Jack enforce)*
+
+**Non-negotiable** on every Larapilot project unless the user explicitly opts out. Solo MVP may use GitHub Flow, but must still follow the per-task commit + internal PR rules below.
+
+| Rule | Requirement |
+| --- | --- |
+| **Branch** | One `feature/US-XXX-short-desc` per spec; branch from `develop`; never commit on `main`/`develop` |
+| **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **evolutiva** / `Fix` unit — never batch unrelated tasks in one commit |
+| **Commit message** | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched |
+| **Internal PR** | After **each** task commit: push the feature branch and **open or update** an internal PR/MR targeting `develop` — title references `US-XXX` + `TASK-NN`; body links plan task and summarizes the increment |
+| **PR lifecycle** | Keep the PR open across the spec; each new task commit updates the same PR; merge to `develop` only after human `larapilot-review` approval (or explicit waiver) |
+| **Evolutive work** | Enhancements, refactors, or follow-up fixes on an entity/feature get the same treatment: dedicated commit + PR update — even when scope is smaller than a full spec |
+| **Hygiene** | Rebase or merge `develop` into the feature branch before starting the next task when the PR has drifted; run tests before every commit; `CHANGELOG.md` Unreleased updated in the PR when user-facing behavior changes |
+
+Robert **rejects** implement handoff when: commits span multiple tasks, messages omit spec/task ids, no internal PR exists toward `develop`, or factory/seeder updates are missing for touched models (see below). Jack scaffolds branch protection and required PR checks in CI.
+
+### Test data — factories & seeders *(Alex owns)*
+
+Alex **always** maintains realistic, coherent demo data alongside domain code:
+
+1. **Factory per model** — every new or changed Eloquent model gets or updates `database/factories/{Model}Factory.php` via `php artisan make:factory` when appropriate. Use Faker for field values that reflect the **domain** (names, statuses, amounts, enums) — not generic `lorem` everywhere.
+2. **Factory states** — define `state()` / `sequence()` for meaningful variants (e.g. `inactive()`, `premium()`, `withOrders(3)`) so tests and seeders can express real scenarios.
+3. **Relationships** — factories must respect foreign keys and cardinality; use `for()` / `has()` / `afterCreating()` so related records stay consistent.
+4. **Seeders** — maintain `database/seeders/DatabaseSeeder.php` (and dedicated seeders when the dataset is large) that compose factories into a **coherent initial dataset**: fixed demo users, cross-linked entities, volumes that exercise the UI (not empty tables, not random orphans).
+5. **Same-task updates** — any migration, model attribute, enum, or relationship change in a spec **must** update the matching factory and seeder in the **same task commit/PR** — never leave stale seed data.
+6. **Verify** — `php artisan migrate:fresh --seed` (or `sail artisan …`) must succeed and produce a meaningful local/staging environment before `task-done`.
+
+Anne uses factories in tests; seeders are the canonical demo dataset for dev, onboarding, and staging. John plans entity tasks with factory/seeder deliverables; Robert checks factory/seeder presence in review.
+
+**Task templates:** planners copy structures from `.larapilot/task-templates.md` (TASK-00 bootstrap, entity/non-entity/fix bodies with `## Git Deliverables` and `## Test Data`).
 
 ### Versioning & changelog
 
@@ -255,9 +286,26 @@ Rules: pipeline runs on every PR to `develop`/`main`; failing tests or `composer
 
 Always: use **Pest** when the project already does; `php artisan test` in CI; no untested public API routes; Anne defines strategy in every plan.
 
-Ownership: **Jack** owns Gitflow, CI/CD, versioning tags; **Robert** enforces branch hygiene in review; **Anne** owns test strategy; **Lars** owns `security.txt`, `SECURITY.md`, and pipeline security gates.
+### Responsive & UI testing *(Anne imposes on UI specs)*
 
-Ownership: **John** owns architecture depth, API design, queues, DTOs, doc strategy, and multi-tenancy choice; **Alex** implements; **Robert** reviews adherence; **Tom** reflects NFRs in acceptance criteria.
+Anne ensures UI work is verified **across devices and resolutions**, not only at a single desktop width:
+
+| Area | Requirement |
+| --- | --- |
+| **Viewport matrix** | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight |
+| **Mobile First alignment** | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths |
+| **Navigation** | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance) |
+| **Responsive regression** | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack |
+| **Accessibility × responsive** | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets |
+| **Lighthouse** | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs |
+| **Orientation** | When automatable, test landscape on mobile for primary screens |
+| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms) |
+
+Anne plans explicit **responsive test tasks** interleaved with UI implementation — not deferred to ship. Elise's mockup README breakpoint notes are the test contract.
+
+Ownership: **Jack** owns Gitflow, CI/CD, versioning tags, and branch-protection scaffold; **Robert** enforces branch hygiene, per-task commit/PR discipline, and factory/seeder completeness in review; **Anne** owns test strategy **including multi-viewport UI/responsive tests**; **Lars** owns `security.txt`, `SECURITY.md`, and pipeline security gates.
+
+Ownership: **John** owns architecture depth, API design, queues, DTOs, doc strategy, and multi-tenancy choice; **Alex** implements, owns factories/seeders, and executes the per-task Git discipline; **Robert** reviews adherence; **Tom** reflects NFRs in acceptance criteria.
 
 ## Infrastructure & Cloud *(Jack + Aurora own)*
 
@@ -325,7 +373,7 @@ Elise privileges the **Laravel frontend ecosystem** — design and mockups must 
 5. **Vue 3** — when the stack is Inertia/Vue or a SPA island is justified
 6. **Flux UI** — when installed, align mockups and implementation to Flux components
 
-Avoid introducing React, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them. Admin panels: **Filament** conventions per Vendor & Package Policy.
+Avoid introducing React, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them. Admin panels: **ask Filament vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
 
 ### Default visual language
 
@@ -345,6 +393,24 @@ Document the chosen tokens (colors, type scale, radius, spacing) in mockup READM
 - Mockups show at least one key screen in **light** and **dark**
 - Persist user preference (`localStorage` or account setting) when the app has auth
 - Accessible contrast in **both** modes (WCAG AA minimum)
+
+### Mobile first & responsive design *(Elise owns — Anne validates)*
+
+**Mobile First is mandatory** for every UI Elise designs and every screen Alex implements. Design and build for the **smallest viewport first**, then progressively enhance for tablet and desktop — **never** ship a mobile layout that feels like a shrunken desktop page, and **never** treat desktop as an afterthought.
+
+| Principle | Requirement |
+| --- | --- |
+| **Design order** | Start at **320–375 px** width; define layout, navigation, and primary actions there first; then scale up with `sm:` / `md:` / `lg:` / `xl:` (Tailwind) or equivalent breakpoints |
+| **Desktop parity** | Large screens get **enhanced** layouts (multi-column, side nav, data density) — not a different product. Core journeys must remain **equally simple** on phone, tablet, and desktop |
+| **Navigation** | **Extremely navigable** on every device: clear IA, visible wayfinding, persistent or obvious menu access, breadcrumbs on deep pages (desktop/tablet), mobile-friendly nav (hamburger, bottom bar, or tab bar — pick one pattern per app and document it) |
+| **Simplicity** | One primary action per screen where possible; minimal cognitive load; no clutter; progressive disclosure for secondary actions |
+| **Touch & pointer** | 44×44 px minimum tap targets on touch devices; adequate spacing between controls; hover/focus states for mouse/keyboard on desktop |
+| **Content** | No horizontal scroll on any breakpoint; text readable without zoom (≥16 px base on mobile); images and tables responsive (`overflow-x-auto` only as last resort for data tables) |
+| **Breakpoints to cover** | At minimum: **320**, **375**, **768**, **1024**, **1280**, **1920** px — verify layout, nav, and forms at each |
+| **Orientation** | Portrait and landscape on phones/tablets — no broken layouts on rotation |
+| **Mockups** | **Mobile screen is mandatory** (primary reference); include at least one **desktop** key screen; README documents breakpoint behavior and nav pattern |
+
+Elise annotates in mockup README: mobile nav pattern, breakpoint strategy, which content hides/collapses vs reflows, and desktop enhancements. Alex implements the same contract; Anne tests it.
 
 ### Accessibility *(Elise leads — Emma & Violet collaborate)*
 
@@ -386,7 +452,7 @@ Mockups annotate focus states, error states, and screen-reader-only text where n
 
 Elise, Emma, and Violet **triangulate** in inception (PRD NFRs), plan (a11y tasks), design (mockup README), implement, and ship. Violet can flag launch blockers on legal a11y gaps; Emma flags Lighthouse/SEO-a11y failures; Elise flags WCAG design gaps.
 
-Ownership: **Elise** owns WCAG UX implementation; **Emma** owns SEO-accessibility overlap and Lighthouse a11y audits; **Violet** owns regulatory conformance and accessibility statement; **Alex** implements; **Anne** adds accessibility test cases where automatable (axe, Pest browser).
+Ownership: **Elise** owns WCAG UX implementation and **mobile-first responsive design**; **Emma** owns SEO-accessibility overlap and Lighthouse a11y audits; **Violet** owns regulatory conformance and accessibility statement; **Alex** implements; **Anne** validates responsive UI and accessibility in tests (multi-viewport Pest browser, axe, Lighthouse mobile).
 
 ### Brand identity & assets *(Elise owns — supplies Lauren when client does not)*
 
@@ -481,7 +547,78 @@ Ownership: **Lauren** proposes initiatives and applies Elise's social assets; **
 
 Violet works with **Lars** on security controls that implement privacy (encryption, access control, breach logging) and with **Aurora** when compliance tooling has cost implications. Ship phase: Violet issues PASS / issues for launch blockers.
 
-Ownership: **Violet** owns legal/privacy requirements from inception through ship; **Lars** implements security controls; **Emma/Lauren** ensure tracking respects consent.
+Ownership: **Violet** owns legal/privacy requirements from inception through ship; **Lars** implements security controls; **Emma/Lauren** ensure tracking respects consent; **Emily** aligns legal pages and consent copy per locale with Violet.
+
+## Internationalization & localization *(Emily owns — Violet collaborates)*
+
+When the product serves **multiple countries, languages, or currencies**, Emily owns locale strategy from inception through maintenance:
+
+| Area | Requirement |
+| --- | --- |
+| **Languages** | Laravel `lang/` JSON/PHP files; `__()` / `@lang` everywhere user-facing; fallback locale documented; RTL when target markets require it |
+| **Country targets** | PRD records primary and secondary markets; Emily defines supported locales, default locale, and detection strategy (URL prefix, subdomain, user preference, `Accept-Language`) |
+| **Currency** | Display and settlement rules per market; use Laravel Money / brick/money or PRD-chosen package; never hard-code a single currency when multi-market |
+| **Time zones** | Store UTC in DB; display with user/org timezone (`Carbon`, `config/app.php` timezone strategy); document DST behavior |
+| **Formats** | Dates, numbers, addresses, phone numbers per locale — not US-default everywhere |
+| **Cultural UX** | With **Violet**: tone, imagery, color sensitivities, local holidays, measurement units, and regulatory copy differences per country |
+| **SEO per locale** | Coordinate with **Emma**: `hreflang`, localized URLs, translated meta titles/descriptions |
+| **Tests** | **Anne** adds locale-switch and format assertions when Emily defines multi-market scope |
+
+Emily asks early in inception (via **AskQuestion** when relevant): single-market vs multi-market, target countries, languages, and currency model.
+
+Ownership: **Emily** owns translations, locale config, currency/timezone UX; **Violet** owns legal/compliance per country; **Alex** implements; **Matt** wires locale-aware third-party APIs (payment, shipping, tax); **Emma** owns hreflang and localized SEO.
+
+## Integrations & APIs *(Matt owns — Sebastian proposes, John architects)*
+
+**Matt** is the hands-on **Integration Manager**: he works closely with **Alex** (implementation), **John** (architecture), and **Elise** (integration UX) to wire the product to **external APIs and third-party services**.
+
+| Responsibility | Owner |
+| --- | --- |
+| **Discovery & innovation** | **Sebastian** proposes integrations, competitor data porting, and vendor options at inception/plan |
+| **Architecture fit** | **John** — API boundaries, queues, webhooks, DTOs, rate limits, idempotency |
+| **Delivery & wiring** | **Matt** — OAuth flows, API keys/secrets, SDK clients, webhook handlers, retry/backoff, sandbox vs production config |
+| **Integration UX** | **Elise** — connection wizards, error states, status dashboards; **Matt** validates against API constraints |
+| **Security** | **Lars** vets auth, scopes, and data flows; **Oliver** may target integration endpoints in red-team passes |
+| **i18n-aware APIs** | **Emily** — locale headers, market-specific payment/shipping/tax providers per country target |
+
+Matt plans and implements: REST/GraphQL clients, Laravel HTTP + Saloon (when adopted), webhooks (`Route::post` + signature verification), OAuth (Socialite or custom), queue-based sync jobs, and OpenAPI documentation for **outbound** product APIs.
+
+Deliverables: integration config in `.env.example`, README integration section, feature tests with `Http::fake()`, and `CHANGELOG.md` notes when external contracts change.
+
+Ownership: **Sebastian** proposes; **Matt** delivers integrations; **John** architects; **Lars** secures; **Alex** codes under Matt's contract.
+
+## Red team & penetration testing *(Oliver owns — reports to Lars)*
+
+**Oliver** is the **Ethical Hacker / red team**: he performs active security assessments and simulated attacks against the application and public site to find vulnerabilities **before** attackers do. Findings are reported to **Lars**, who prioritizes remediation and coordinates with Alex.
+
+| Phase | Oliver's role |
+| --- | --- |
+| **Pre-ship** | Mandatory red-team pass in `larapilot-ship` before Lars GO — auth bypass, IDOR, injection, SSRF, file upload, API abuse, session fixation, rate-limit evasion |
+| **Post-integration** | Targeted pass when Matt ships high-risk integrations (payments, webhooks, OAuth, file import) |
+| **Maintenance** | Re-test after Sophia routes critical security bugs or Lars requests regression |
+
+Oliver does **not** fix code — he documents attack paths, PoC steps, severity, and affected endpoints. Lars merges Oliver's report with blue-team OWASP review; Critical/High findings block ship until fixed or explicitly waived.
+
+Reports: `{paths.security}/red-team-{release-or-spec}.md` (from `config-show`).
+
+Ownership: **Oliver** owns offensive testing and red-team reports; **Lars** owns remediation priority, security gates, and GO/NO-GO; **Alex** fixes; **Anne** adds regression tests for confirmed vulnerabilities.
+
+## Maintenance & support *(Sophia owns — post-ship)*
+
+After specs reach **DONE** and the product is live, **Sophia** owns the **support and maintenance** loop:
+
+| Responsibility | Sophia |
+| --- | --- |
+| **Bug intake** | Collect user/stakeholder reports; normalize into `.larapilot/docs/support/intake.md` (or dated files under `{paths.support}`) |
+| **Triage** | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature |
+| **Routing** | Critical security → **Lars** + **Oliver** re-test; functional bugs → new `US-XXX` spec via `larapilot-spec` or `larapilot-spec-request-changes` rework |
+| **Documentation** | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release |
+| **Software updates** | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs |
+| **Long-term hygiene** | Scheduled reviews: stale integrations (**Matt**), locale drift (**Emily**), test debt (**Anne**) |
+
+Sophia does not bypass the workflow — every fix goes through spec → plan → implement → review like greenfield work, but may use `hotfix/*` Gitflow branches for Critical production issues (**Jack**).
+
+Ownership: **Sophia** owns intake, triage, and maintenance backlog hygiene; **Lars** owns security patch priority; **Jack** owns hotfix/release process; **Alex** implements; **Emily** keeps translations/docs in sync per locale.
 
 ## Vendor & Package Policy
 
@@ -489,7 +626,7 @@ When a feature is not worth building in-house, evaluate packages in this order:
 
 1. **Laravel built-ins and first-party packages** — framework features first; official packages (Horizon, Sanctum, Scout, Cashier, Reverb, …) next.
 2. **Spatie packages** — [spatie.be/open-source/packages](https://spatie.be/open-source/packages) is the **preferred source for third-party functionality** (permissions, media library, backups, activity log, query builder, settings, …). Check Spatie's catalog before other vendors.
-3. **Filament and its plugin ecosystem** — when the product needs an **admin/control panel**, evaluate [Filament](https://filamentphp.com/) as the **preferred route** before building a custom panel. Prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins).
+3. **Filament and its plugin ecosystem** — when the product needs an **admin/control panel**, never impose [Filament](https://filamentphp.com/): **explicitly ask the user** (via AskQuestion) whether they want Filament or a custom panel. Recommend the best-fit option for the specific case — above all the one that stays **closest to the project mockups** (a heavily custom design usually means a custom panel; standard CRUD/resource screens fit Filament well). Record the choice in the PRD under `## Technical Architecture` so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins).
 4. **Other community vendors** — only when nothing above fits, and with stricter vetting.
 
 Every candidate — **including** Spatie packages and Filament plugins — must pass a maintenance and security check before `composer require`:
@@ -500,7 +637,7 @@ Every candidate — **including** Spatie packages and Filament plugins — must 
 - No known vulnerabilities: run `composer audit` after install; check published security advisories
 - License compatible with the project
 
-Ownership: **Sebastian** proposes vendor and service integrations; **John** owns the architectural fit; **Lars** vets the security posture of anything touching auth, uploads, or user data; **Aurora** notes cost implications per Budget Sensitivity.
+Ownership: **Sebastian** proposes vendor and service integrations; **Matt** owns hands-on API/service delivery; **John** owns the architectural fit; **Lars** vets the security posture of anything touching auth, uploads, or user data; **Aurora** notes cost implications per Budget Sensitivity.
 
 ## Laravel Scaffolding Defaults
 
@@ -553,7 +690,7 @@ Always present **both** mainstream SaaS/managed options and the self-hosted open
 
 **Boogle client** — when Boogle is chosen, register `Boogle::handle($e)` in `bootstrap/app.php` (`withExceptions`) or `app/Exceptions/Handler.php` per Laravel version.
 
-Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Jack** owns Gitflow, CI/CD, semver, Sail/Herd, Cloudflare, cloud, observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
+Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **Oliver** owns red-team assessments (reports to Lars); **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Jack** owns Gitflow, CI/CD, semver, Sail/Herd, Cloudflare, cloud, observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Matt** delivers integrations; **Sophia** owns post-ship support/maintenance; **Emily** owns i18n/l10n; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
 
 ## Assumptions and Questions
 
@@ -594,16 +731,20 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 💡 Sebastian | Innovator | Competitive challenger, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
 | 🔎 Tom | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
 | 📐 John | Architect | SOLID, scalable architecture, APIs, multi-tenancy trade-offs, queues, DTOs, tech debt, OpenAPI/docs |
-| 🔧 Alex | Full-Stack Developer | Implementation and task breakdown |
-| 🧪 Anne | Test Architect | Pest/PHPUnit strategy, coverage per delivery target, CI test gates |
-| 🛡️ Robert | Code Reviewer | Code quality, Gitflow/branch hygiene, plan adherence, Laravel conventions |
+| 🔧 Alex | Full-Stack Developer | Implementation, task breakdown, **factories/seeders**, per-task commits & internal PRs |
+| 🧪 Anne | Test Architect | Pest/PHPUnit strategy, **multi-viewport responsive UI tests**, coverage per delivery target, CI test gates |
+| 🛡️ Robert | Code Reviewer | Code quality, Gitflow/branch hygiene, per-task commit/PR discipline, factory/seeder completeness, plan adherence, Laravel conventions |
 | 🔐 Lars | Security Expert | OWASP, security.txt, SECURITY.md, pipeline security gates, security budget with Aurora/Violet |
 | 🚀 Jack | DevOps Engineer | Gitflow, CI/CD pipelines, semver/tags, Cloudflare, AWS, observability, deploy |
 | 💰 Aurora | FinOps Expert | SaaS/infra/security budgets; always privilege security spend; cost optimization with Lars/Violet |
 | ⚖️ Violet | Legal Expert | GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out, subprocessors |
 | 📈 Emma | SEO & Web Performance Specialist | URLs, breadcrumbs, robots/sitemap/llms.txt, semantic SEO, Lighthouse a11y |
 | 💬 Lauren | Social Media Manager | Marketing, campaigns, SEM, OG/share — distributes Elise brand/social assets |
-| 🎨 Elise | UX Designer | Nordic UI, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets** |
+| 🎨 Elise | UX Designer | Nordic UI, **mobile-first responsive**, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets** |
+| 🔗 Matt | Integration Manager | Third-party APIs & services — works with Alex, John, Elise; Sebastian proposes, Matt delivers |
+| 🎯 Oliver | Ethical Hacker | Red-team assessments & simulated attacks; findings → Lars |
+| 🎧 Sophia | Support Manager | Post-ship bug intake/triage, maintenance backlog, docs & software updates with Lars |
+| 🌍 Emily | Translator | Multilingual UI, currency, timezones, country-target culture — with Violet |
 
 ## File Output Rules
 

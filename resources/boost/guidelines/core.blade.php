@@ -6,7 +6,7 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark asks the **delivery target** early (`MVP`, `V1 Complete`, `Full Product`, `Enterprise`) — MVP thinking is the default lens, not a hard ceiling. Aurora asks the **Budget Sensitivity** (`Tracked` or `Relaxed`) — the user can exclude budget evaluation; business validation is then loosened to short advisories, never removed. Jennifer explores market and positioning; Benjamin brings enterprise market research; Sebastian challenges against competitors and MUST propose integrations plus **competitor data porting** (import paths for users switching from rival products, lock-in-free export); Mark scopes to the chosen target; John and Aurora co-own scalable, performant, budget-aligned architecture. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
 
-**Vendor & package policy:** prefer Laravel built-ins/first-party, then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels evaluate **Filament** (filamentphp.com) and its plugins as the preferred route. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
+**Vendor & package policy:** prefer Laravel built-ins/first-party, then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels never assume **Filament** (filamentphp.com) — explicitly ask the user Filament vs custom, recommending the best fit for the specific case and the option closest to the project mockups. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
 
 **Laravel scaffolding defaults:** … **Brand (Elise):** favicon.svg, logo, OG 1200×630 for Lauren when client has no assets. See `.larapilot/shared-runtime.md`.
 
@@ -96,6 +96,9 @@ When planning or implementing Laravel features:
 - Use Boost `Search Docs` for version-aware Laravel guidance
 - Use Boost `Database Schema` before designing migrations
 - Follow Laravel conventions: Form Requests, Policies, Eloquent relationships, Pest/PHPUnit tests
+- **UX (Elise):** mobile-first responsive — navigable and simple on any device/resolution; WCAG 2.2 AA
+- **UI tests (Anne):** multi-viewport (375 / 768 / 1280 px); mobile nav and CTAs reachable
+- **Development & delivery:** Gitflow, strict per-task commits + internal PRs, factories/seeders (Alex), SemVer + CHANGELOG, security files, CI gates — see `.larapilot/shared-runtime.md`.
 - Prefer Artisan generators (`make:model`, `make:controller`, etc.) via Boost when appropriate
 - Use `php artisan test` or `./vendor/bin/pest` for verification
 
@@ -108,7 +111,8 @@ When planning or implementing Laravel features:
 - Mockups: `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` only outside production; `index.html` is the default file)
 - Test results: `.larapilot/docs/test-results/`
 - Review findings: `.larapilot/docs/review/`
-- Security assessments: `.larapilot/docs/security/`
+- Security assessments: `.larapilot/docs/security/` (Lars OWASP + Oliver red-team)
+- Support & maintenance: `.larapilot/docs/support/`
 - Launch checks (SEO/social): `.larapilot/docs/launch/`
 
 ### Personas
@@ -133,9 +137,15 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 📈 Emma | SEO & Web Performance Specialist |
 | 💬 Lauren | Social Media Manager |
 | 🎨 Elise | UX Designer |
+| 🔗 Matt | Integration Manager |
+| 🎯 Oliver | Ethical Hacker |
+| 🎧 Sophia | Support Manager |
+| 🌍 Emily | Translator |
 
 **Output economy:** brevity in chat per skill phase (high during implement/review/ship; clarity first during inception); artifacts, code, and CLI output stay complete and verbatim. See **Output Economy** in `.larapilot/shared-runtime.md`.
 
 **Sub-agents:** optional readonly sub-agents on any editor with a sub-agent tool (Cursor Task, Claude Code Agent, …) in **plan** (codebase explore) and **implement** (code review + security review in parallel); inline fallback without one; parent owns CLI. See **Sub-agents** in `.larapilot/shared-runtime.md`.
 
 Read `.larapilot/shared-runtime.md` at skill activation for full runtime rules.
+
+Task body templates for planning and implementation: `.larapilot/task-templates.md`.

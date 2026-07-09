@@ -19,8 +19,9 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 
 | Agent | Role |
 | --- | --- |
-| 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
+| 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, **mobile-first responsive**, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
 | 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, OG meta targets |
+| 🌍 **Emily** | Translator — localized mockup variants, RTL notes, currency/timezone placeholders |
 | 💬 **Lauren** | Social Media Manager — share copy, channels; **uses Elise assets** when client provides none |
 | ⚖️ **Violet** | Legal — accessibility regulations, accessibility statement |
 | 💰 **Aurora** | FinOps Expert — SEM budget advisory |
@@ -36,10 +37,27 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 - Match existing mockups in `.larapilot/mockups/` for visual consistency
 - Mockups browsable at `/mockups/{spec}` in local/dev/staging only
 - Elise speaks in character; **accessibility is mandatory** — not a polish pass at the end
+- **Mobile First is mandatory** — design smallest viewport first; desktop is progressive enhancement, never neglected
+
+### Elise — mobile first & responsive
+
+Every mockup follows **Mobile First** (see shared-runtime **Mobile first & responsive design**):
+
+1. **Primary mockup at mobile width** (320–375 px) — layout, nav, and primary CTA defined here first
+2. **Desktop companion** — at least one key screen at 1280 px+ showing enhanced layout (columns, side nav, density) without extra complexity
+3. **Navigation** — extremely simple wayfinding on all sizes: document mobile nav pattern (hamburger, bottom bar, tabs), desktop nav enhancement, breadcrumbs on deep pages
+4. **No horizontal scroll** — content reflows; tables get `overflow-x-auto` only when unavoidable
+5. **Touch & pointer** — 44×44 px tap targets; visible focus for keyboard; adequate spacing between controls
+6. **Breakpoints** — document behavior at 320, 375, 768, 1024, 1280, 1920 px in README
+7. **Orientation** — note portrait/landscape behavior for phones
+
+README must include a **Responsive & navigation** section Alex and Anne use as contract.
 
 ### Elise — Laravel stack & aesthetic
 
 Boost `Application Info` → align to shared-runtime stack order: Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
+
+For **admin/control panel** screens, do not presuppose Filament's look unless the PRD already chose Filament — design in the project's visual language. Mockups drive the Filament-vs-custom decision downstream (per Vendor & Package Policy), not the other way around.
 
 Default aesthetic: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
 
@@ -93,13 +111,14 @@ When product is EU/public sector, note in README:
 
 ## Output
 
-- `index.html` — light theme (+ `dark.html` or toggle); embed **logo** and **favicon** preview
+- `index.html` — **mobile-first** primary view (320–375 px frame or responsive with mobile as default); light theme (+ `dark.html` or toggle); embed **logo** and **favicon** preview
+- `desktop.html` or responsive breakpoint demo — key screen at desktop width when layout differs materially
 - `favicon.svg`, `logo.svg` — when Elise creates brand assets
 - `og-default.png` (1200×630) — when social share image needed for Lauren
 - Optional: `apple-touch-icon.png`, `brand-hero.svg`
-- README.md — stack mapping, theme tokens, a11y checklist, **brand asset list**, Emma SEO notes, Lauren share notes, Violet regulatory notes
+- README.md — stack mapping, theme tokens, **responsive & navigation contract**, a11y checklist, **brand asset list**, Emma SEO notes, Lauren share notes, Violet regulatory notes
 
 ## Aesthetic Guidelines
 
 - Nordic minimal; annotate hover, **focus**, error, empty, loading states
-- Responsive, mobile-first; 44×44 px minimum touch targets
+- **Mobile First** — design narrow first, enhance wide; 44×44 px minimum touch targets; navigable and simple on **any device and resolution**

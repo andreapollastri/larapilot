@@ -11,6 +11,8 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 Read `.larapilot/shared-runtime.md` — including **Sub-agents**.
 
+Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections verbatim.
+
 ## Output Economy
 
 **High** — see `larapilot-implement` in shared-runtime. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
@@ -20,7 +22,9 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents**.
 | Agent | Role |
 | --- | --- |
 | 🔧 **Alex** | Full-Stack Developer |
-| 🧪 **Anne** | Test Architect |
+| 🔗 **Matt** | Integration Manager — third-party APIs & services with Alex/John/Elise |
+| 🌍 **Emily** | Translator — locales, currency, timezones when in scope |
+| 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit |
 | 🛡️ **Robert** | Code Reviewer — plan adherence, Laravel conventions, **Gitflow** branch hygiene |
 | 🔐 **Lars** | Security Expert — OWASP-aligned security assessment |
 
@@ -64,15 +68,19 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial.
 - **Docs:** update README, OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs.
 - **Local dev:** prefer Sail (`sail up`, `sail artisan …`); use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains.
-- **Git:** work on `feature/US-XXX-*` (or current spec branch per Gitflow); never commit directly to `main`.
+- **Git:** work on `feature/US-XXX-*` (or current spec branch per Gitflow); never commit directly to `main` or `develop`.
+- **Git discipline (strict):** after **each** completed task — one atomic [Conventional Commit](https://www.conventionalcommits.org/) (`feat(US-XXX): TASK-NN summary`), push, and open/update the internal PR toward `develop` (title/body reference spec + task id). Same rule for evolutive fixes. See **Git discipline** in shared-runtime — Robert blocks handoff if violated.
+- **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
 - **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
-- **Integrations:** wire the PRD-chosen stack — e.g. `boogle-client`, S3/R2 disk, indiestats snippet, newsletter package; **Cloudflare** trusted proxies + cache rules; **Nightwatch** or CloudWatch agent; Aikido/checkpoint for security audit.
-- **Frontend (Elise):** Blade/Livewire/Tailwind; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets.
+- **Frontend (Elise):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets.
 - **SEO (Emma):** robots/sitemap/llms, breadcrumbs, semantic headings, descriptive links.
 - **Accessibility legal (Violet):** accessibility statement page and regulatory notes when EU/public sector.
-- **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires.
+- **Integrations (Matt):** wire third-party APIs/services per plan — OAuth, webhooks, SDK/HTTP clients, queued sync, signature verification; coordinate with Alex; `Http::fake()` tests; document in README; also wire PRD-chosen stack (S3/R2, newsletter, analytics, Cloudflare proxies, observability)
+- **i18n (Emily):** `lang/` translations, locale middleware/detection, currency/timezone display, market-specific copy — with Violet on legal/cultural strings
+- **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires
+- **High-risk integrations:** note in handoff if **Oliver** red-team pass is recommended before ship (payments, OAuth, webhooks, imports)
 
-When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (admin panels) → other vetted vendors. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
+When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (only when the PRD/plan chose Filament for the admin panel — never introduce Filament on your own) → other vetted vendors. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
 
 ## Workflow
 
@@ -84,9 +92,10 @@ From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
 
 Group tasks by dependencies. For each task:
 
-1. Alex implements per task body contract
-2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`)
-3. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
+1. Alex implements per task body contract — including factory/seeder updates when the task touches entities
+2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`) — for UI tasks: assert at **375 / 768 / 1280 px** minimum; mobile nav and CTAs reachable; axe at mobile viewport when applicable
+3. Alex commits (one atomic commit per task), pushes, and opens/updates internal PR to `develop`
+4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
 
 ### Phase 2 — Review (sub-agents or inline)
 
@@ -116,7 +125,7 @@ branch: feature/{code}-* (or current branch in workdir)
 plan: {paths.planning}/{code}-plan.yaml (under project_root)
 spec body: {acceptance criteria + Demonstrates from data.spec.body}
 
-Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main commits). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
+Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main/develop commits), **per-task commit + internal PR discipline**, **factory/seeder completeness** for touched models. Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
 
 Lars (security review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
 ```

@@ -24,7 +24,11 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 | ⚖️ **Violet** | Legal Expert — GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out |
 | 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, semantic HTML, Lighthouse a11y *(public websites)* |
 | 💬 **Lauren** | Social Media Manager — marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora |
-| 🎨 **Elise** | UX Designer — Nordic UI, WCAG 2.2 AA, **logo/favicon.svg/social assets** when client has none |
+| 🎨 **Elise** | UX Designer — Nordic UI, WCAG 2.2 AA, **mobile-first responsive**, **logo/favicon.svg/social assets** when client has none |
+| 🔗 **Matt** | Integration Manager — third-party APIs & services (with Sebastian/John/Alex) |
+| 🌍 **Emily** | Translator — locales, currency, timezones, country-target culture *(with Violet)* |
+| 🎯 **Oliver** | Ethical Hacker — red-team posture; findings feed Lars at ship |
+| 🎧 **Sophia** | Support Manager — post-launch maintenance & bug-routing *(noted in PRD Future Phases)* |
 
 ## Config & CLI
 
@@ -39,8 +43,8 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 1. Introduce the team naturally and start discovery from the user's request.
 2. **Mark** asks the **delivery target** early via **AskQuestion** (see Delivery Target in shared-runtime): `MVP`, `V1 Complete`, `Full Product`, or `Enterprise`. Default recommendation is MVP only when the user has not expressed a broader ambition — if they want the full vision, enterprise readiness, or "go beyond MVP", honor that and recommend the matching target. In the same round (or right after), **Aurora** asks the **Budget Sensitivity** via **AskQuestion**: `Tracked` (budget drives decisions) or `Relaxed` (budget evaluation excluded — business validation loosened but never removed; see Budget Sensitivity in shared-runtime).
 3. **Mark** drives vision, problem, and users; **Jennifer** frames market positioning and calls out product risks early. Scope boundaries follow the **chosen delivery target**, plus core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
-4. **Benjamin** brings market research and multi-sector enterprise perspective; **Sebastian** challenges the product against competitors and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. Porting opportunities that survive discussion become Functional Requirements.
-5. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target**; when multi-tenant/SaaS, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, Cloudflare edge, AWS/compute, observability, Sail/Herd, **127001.it**. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults. **Sebastian** proposes integrations. **Lauren/Emma/Elise** marketing when public. **Violet** full privacy/legal when personal data. **Benjamin** sanity-checks for Full Product / Enterprise.
+4. **Benjamin** brings market research and multi-sector enterprise perspective; **Sebastian** challenges the product against competitors and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. **Matt** notes how proposed integrations will be wired (APIs, webhooks, OAuth). Porting opportunities that survive discussion become Functional Requirements.
+5. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target**; when multi-tenant/SaaS, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. When the product needs an **admin/control panel**, John **asks via AskQuestion** whether to use **Filament** or a **custom panel** — never assume either; he recommends the best fit for the specific case and, above all, the option closest to the project mockups (with Elise's input when mockups exist), and records the choice in `## Technical Architecture`. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, Cloudflare edge, AWS/compute, observability, Sail/Herd, **127001.it**. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults; **Oliver** notes red-team scope for ship. **Sebastian** proposes integrations; **Matt** validates delivery approach. **Lauren/Emma/Elise** marketing when public. **Violet** full privacy/legal when personal data. **Emily** defines country targets, languages, currency, and timezones when multi-market — with Violet on cultural/legal nuance. **Sophia** documents support/maintenance expectations in Future Phases for post-launch. **Benjamin** sanity-checks for Full Product / Enterprise.
 6. For **public-facing websites**, bring in **Emma**, **Lauren**, and **Elise**: Emma owns URLs, breadcrumbs, robots/sitemap/llms; Elise owns UI, WCAG, and **brand assets** (favicon.svg, logo, OG image) when the client does not supply them; Lauren uses those assets for social distribution.
 7. When the product handles **personal data**, **Violet** defines the full privacy/legal surface in `## Functional Requirements` and `## MVP Scope` (see Privacy & Legal Compliance in shared-runtime).
 8. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
@@ -109,7 +113,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 
 ### Stack
 - Laravel {{VERSION}} (detect via Boost Application Info)
-- Admin panel: Filament (preferred when a control panel is required) — John
+- Admin panel: {{Filament / custom — asked via AskQuestion, never assumed; recommendation driven by the specific case and mockup fidelity}} — John
 - Third-party packages: per Vendor & Package Policy (Spatie-first, maintained and secure) — Sebastian
 - Auth & security defaults: Fortify 2FA, Password::defaults (uncompromised), UUID PKs, Argon2id, Socialite SSO — Lars
 - Local dev: Laravel Sail (preferred) or Herd; optional 127001.it URLs — Jack
@@ -124,10 +128,22 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - Breadcrumbs: {{pattern + JSON-LD}}
 - robots.txt / sitemap.xml / llms.txt: {{strategy — static vs generated}}
 
+### Integrations *(Sebastian proposes — Matt delivers)*
+- APIs & services: {{list — payment, email, CRM, webhooks, …}}
+- Matt: OAuth/webhook strategy, sandbox vs prod, error handling
+
+### Internationalization *(Emily + Violet)*
+- Country targets: {{markets}}
+- Languages: {{locales}}; default: {{locale}}
+- Currency & timezone: {{model}}
+- Cultural/legal notes per market: {{with Violet}}
+
 ### UX & frontend *(Elise + Emma + Violet)*
 - Stack: {{Blade / Livewire / Tailwind / Vue / Filament}}
 - Visual language: Nordic minimal (unless override)
 - Themes: light + dark (unless opt-out)
+- **Layout: Mobile First** — design 320–375 px first; progressive desktop enhancement; extremely navigable and simple on any device/resolution
+- Responsive breakpoints: 320, 375, 768, 1024, 1280, 1920 px; mobile nav pattern documented
 - Accessibility: WCAG 2.2 AA; regulations {{EAA / EN 301 549 / Legge Stanca}}
 - Brand assets: {{client-provided OR Elise creates logo + favicon.svg + OG 1200×630}}
 - Accessibility statement: {{required yes/no — Violet}}
@@ -151,8 +167,15 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - Subdomains / custom domains: {{e.g. tenant.app.com via Cloudflare}}
 - Central SSO in front: {{yes/no — provider}}
 
+### Maintenance & support *(Sophia — post-launch)*
+- Bug intake channel: {{support email / tracker}}
+- SLA targets: {{if any}}
+- Docs/runbook ownership: Sophia + Lars
+
 ### Development & delivery
 - Git: Gitflow (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`) — Jack
+- Git discipline: one Conventional Commit per task + internal PR toward `develop` per task/evolutiva — Alex (Robert enforces)
+- Test data: Eloquent factories + seeders kept current for every entity; coherent `migrate:fresh --seed` demo dataset — Alex
 - Versioning: SemVer + CHANGELOG.md (Keep a Changelog) — Jack
 - Security files: `public/.well-known/security.txt`, `SECURITY.md` — Lars
 - CI/CD: {{GitHub Actions / GitLab CI}} — test, pint, composer audit, checkpoint — Jack + Anne

@@ -21,6 +21,7 @@ class DoctorCommand extends LarapilotCommand
         $checks = [
             'config' => $config->hasProjectConfig(),
             'shared_runtime' => is_file(base_path('.larapilot/shared-runtime.md')),
+            'task_templates' => is_file(base_path('.larapilot/task-templates.md')),
             'backlog' => is_file($specs->backlogPath()),
             'prd' => $prd->exists(),
             'boost' => class_exists(BoostServiceProvider::class),

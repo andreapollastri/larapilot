@@ -2,6 +2,28 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.4.0] - 2026-07-09
+
+### Added
+
+- **New personas — Matt, Oliver, Sophia, Emily**
+    - **🔗 Matt** (Integration Manager) — hands-on API & third-party service delivery with Alex, John, Elise; Sebastian proposes, Matt wires.
+    - **🎯 Oliver** (Ethical Hacker) — red-team assessments before ship; reports findings to Lars.
+    - **🎧 Sophia** (Support Manager) — post-ship bug intake/triage, maintenance backlog, docs & software updates with Lars.
+    - **🌍 Emily** (Translator) — multilingual UI, currency, timezones, country-target culture with Violet.
+    - New `paths.support` (`.larapilot/docs/support/`); security folder holds Lars OWASP + Oliver red-team reports.
+    - Updated `shared-runtime.md`, all skills, `config/larapilot.php`, `core.blade.php`, README.
+
+### Changed
+
+- **Alex — factories, seeders & strict Gitflow** — Alex must create/update Eloquent factories (domain-meaningful Faker data, states, relationships) and keep seeders (`DatabaseSeeder` + dedicated seeders) producing a coherent demo dataset; updates ship in the same task as model/migration changes with `migrate:fresh --seed` verification. **Git discipline** is now non-negotiable: one atomic Conventional Commit per completed task or evolutiva, push after each task, and open/update an internal PR toward `develop` (Robert blocks handoff on violation). Updated `shared-runtime.md`, `larapilot-plan`, `larapilot-implement`, `larapilot-review`, `core.blade.php`, and README.
+
+- **Mobile First — Elise & Anne** — UI design and tests must follow **Mobile First**: smallest viewport first (320–375 px), progressive desktop enhancement without neglecting large screens; extremely navigable and simple on any device/resolution. Elise documents breakpoint/nav contract in mockup README; Anne plans and runs multi-viewport tests (375 / 768 / 1280 px minimum, mobile nav, axe at mobile). Updated `shared-runtime.md`, `larapilot-design`, `larapilot-plan`, `larapilot-implement`, `larapilot-inception`, `larapilot-review`, `core.blade.php`, and README.
+
+- **Task body templates** — new `.larapilot/task-templates.md` (published on install/update): TASK-00 Git bootstrap, entity/non-entity/test/fix templates with `## Git Deliverables` and `## Test Data` sections; `larapilot-plan` and `larapilot-implement` reference it; `SharedRuntime::refresh()` copies all packaged docs.
+
+- **Vendor & Package Policy (Filament)** — Filament is no longer the assumed "preferred route" for admin/control panels. The team now **explicitly asks the user** (Filament vs custom panel) via AskQuestion, recommending the best-fit technology for the specific case and, above all, the option closest to the project mockups. The choice is recorded in the PRD (`## Technical Architecture`); `larapilot-spec`/`larapilot-plan` honor it (and ask when missing), `larapilot-implement` never introduces Filament on its own, and `larapilot-design` mockups no longer presuppose Filament's look — updated across `shared-runtime.md`, `core.blade.php`, all affected skills, and the README.
+
 ## [1.3.0] - 2026-07-09
 
 ### Added

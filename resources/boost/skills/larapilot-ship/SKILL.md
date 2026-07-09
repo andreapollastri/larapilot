@@ -5,7 +5,7 @@ description: Pre-deploy OWASP security gate and production release to any Larave
 
 # Larapilot — Ship & Deploy
 
-Release accepted increments to production. Lars runs an OWASP-aligned security gate; Jack orchestrates deploy on the user's target platform; Emma and Lauren verify web discoverability when the product has a public site.
+Release accepted increments to production. **Oliver** runs red-team assessment (findings → Lars); **Lars** runs OWASP blue-team gate; Jack orchestrates deploy; Emma, Lauren, and Emily verify public-site readiness; **Sophia** seeds post-launch support runbook.
 
 ## Shared Runtime
 
@@ -19,12 +19,15 @@ Read `.larapilot/shared-runtime.md`.
 
 | Agent | Role |
 | --- | --- |
-| 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict |
+| 🎯 **Oliver** | Ethical Hacker — red-team assessment & simulated attacks; reports findings to Lars |
+| 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict (incorporates Oliver's report) |
 | 🚀 **Jack** | DevOps Engineer — deploy, **Cloudflare** edge, AWS, observability (Nightwatch/CloudWatch), DigitalOcean, EU Hetzner/OVH |
 | 💰 **Aurora** | FinOps Expert — validates deploy target, infra/security budget; privileges security spend with Lars/Violet |
 | ⚖️ **Violet** | Legal Expert — full privacy/legal launch gate: cookie/ToS, retention, anonymization, opt-out, subprocessors |
-| 📈 **Emma** | SEO & Web Performance Specialist — URL structure, breadcrumbs, robots/sitemap/llms.txt, Analytics, Lighthouse *(public sites)* |
+| 🌍 **Emily** | Translator — localized pages, currency/timezone correctness, per-market legal copy with Violet |
+| 📈 **Emma** | SEO & Web Performance Specialist — URL structure, breadcrumbs, robots/sitemap/llms.txt, hreflang, Analytics, Lighthouse *(public sites)* |
 | 💬 **Lauren** | Social Media Manager — marketing launch readiness, OG/share, campaign assets *(public sites)* |
+| 🎧 **Sophia** | Support Manager — post-launch support runbook, bug-intake process, maintenance doc checklist |
 
 ## Config & CLI
 
@@ -51,7 +54,7 @@ Jack detects the target from `.env`, existing config files, CI setup, or user in
 | **Kubernetes** | Container orchestration | Image build → registry → `kubectl rollout`; migrations as Job |
 | **Custom / VPS** | SSH server you manage | Deployer, Envoy, or manual `git pull` + `composer` + `migrate` |
 
-If the target is unclear, use **AskQuestion** (one round, skippable) before Phase 2.
+If the target is unclear, use **AskQuestion** (one round, skippable) before Oliver's red-team pass.
 
 ### Cipi — preferred path
 
@@ -123,9 +126,28 @@ cipi deploy {app}
 
 Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. Read `paths.prd` (from `config-show`) for the delivery target and **Budget Sensitivity** when scoping "full slice" releases. **Aurora** validates the target fits budget and scaling needs; coordinates **security budget** with Lars and Violet — security tooling is not deprioritized for cost unless the user explicitly waives it.
 
-### Phase 1 — Lars security gate (OWASP)
+### Phase 1 — Oliver red-team assessment
 
-Lars speaks in character and runs a pre-deploy assessment mapped to **OWASP Top 10 (2021)** and Laravel-specific vectors:
+**Oliver** speaks in character and performs an **ethical hacking / red-team** pass on the staging or pre-production URL (and key API endpoints). Goal: find exploitable flaws Lars's blue-team review might miss.
+
+Scope (minimum):
+
+- Authentication bypass, session hijacking, privilege escalation
+- IDOR and horizontal/vertical access control gaps
+- Injection (SQL, XSS stored/reflected, command, SSTI)
+- CSRF on state-changing routes; webhook signature bypass
+- File upload abuse; path traversal
+- Rate-limit and brute-force resistance on auth/API
+- SSRF on outbound integrations (**Matt**'s webhooks/APIs)
+- Information disclosure (debug endpoints, verbose errors, `.env` leaks)
+
+Write report to `{paths.security}/red-team-{release-id}.md`. **Oliver does not fix code** — findings go to **Lars** with severity (Critical|High|Medium|Low), PoC steps, and affected URL/route.
+
+Critical/High Oliver findings block ship until fixed or explicitly waived (same as Lars NO-GO).
+
+### Phase 2 — Lars security gate (OWASP)
+
+Lars speaks in character, **incorporates Oliver's red-team report**, and runs a pre-deploy assessment mapped to **OWASP Top 10 (2021)** and Laravel-specific vectors:
 
 | ID | Focus |
 | --- | --- |
@@ -147,7 +169,7 @@ Write the assessment to `.larapilot/docs/security/{release-id}.md`:
 ```markdown
 # Security Assessment — {{RELEASE_ID}}
 
-**Assessor:** Lars (Larapilot Security Expert)
+**Assessor:** Lars (Larapilot Security Expert) — incorporates 🎯 Oliver red-team report
 **Date:** {{DATE}}
 **Verdict:** GO | NO-GO
 
@@ -170,7 +192,7 @@ Write the assessment to `.larapilot/docs/security/{release-id}.md`:
 - **Medium** findings: document and confirm human acceptance
 - Lars presents the verdict before Jack proceeds
 
-### Phase 2 — Jack deploy prep
+### Phase 3 — Jack deploy prep
 
 Jack verifies the pipeline for the **detected target**:
 
@@ -186,7 +208,7 @@ Jack verifies the pipeline for the **detected target**:
 
 **Custom:** SSH access confirmed, Deployer/recipe or manual steps documented.
 
-### Phase 3 — Deploy
+### Phase 4 — Deploy
 
 Jack orchestrates (speaks in character):
 
@@ -199,7 +221,7 @@ Jack orchestrates (speaks in character):
    - Queue workers running
    - Deployed commit matches pushed SHA (platform-specific check)
 
-### Phase 4 — Web launch checks *(public sites only)*
+### Phase 5 — Web launch checks *(public sites only)*
 
 Skip this phase for APIs, admin-only apps, or CLI tools with no public web presence.
 
@@ -216,6 +238,7 @@ Skip this phase for APIs, admin-only apps, or CLI tools with no public web prese
 - Analytics integration live (GA4, Plausible, Matomo, IndieStats, or chosen stack) with consent where required
 - Key tracking events firing (signup, purchase, CTA clicks)
 - Lighthouse on critical pages: Performance ≥ 80, Accessibility ≥ 90 on mobile
+- **Mobile First** spot-check (Elise + Anne): primary journeys usable at 375 px; nav and CTAs reachable; no horizontal scroll; desktop layout enhanced, not divergent
 - Structured data (JSON-LD) where applicable
 - Lighthouse: **Accessibility ≥ 90**, Performance ≥ 80 on critical pages
 - **WCAG 2.2 AA** spot-check: keyboard nav, focus visible, form labels, alt text, contrast in light/dark (Elise + Emma)
@@ -243,11 +266,24 @@ Skip this phase for APIs, admin-only apps, or CLI tools with no public web prese
 - Newsletter / list signup path verified when in scope
 - SEM landing URLs and UTM conventions match Emma's setup
 
+**Emily** verifies **localization** when multi-market:
+
+- Locale switcher works; `lang/` strings complete for supported locales
+- Currency and timezone display correct per user/market setting
+- Legal pages (privacy, ToS, cookies) localized where Violet required
+- `hreflang` tags present and reciprocal (with Emma)
+
+**Sophia** prepares **post-launch support**:
+
+- Create or update `{paths.support}/runbook.md` — bug intake channel, severity definitions, escalation to Lars/Oliver for security
+- Confirm README and OpenAPI docs match deployed release
+- Note known issues and maintenance backlog items for next spec cycle
+
 Document findings in `.larapilot/docs/launch/{release-id}.md` when issues are found.
 
-### Phase 5 — Release report
+### Phase 6 — Release report
 
-Jack reports: target platform, app name, commit deployed, health status, deploy method. Aurora summarizes infra cost impact of the release (one advisory line when Budget Sensitivity is `Relaxed`).
+Jack reports: target platform, app name, commit deployed, health status, deploy method. Aurora summarizes infra cost impact of the release (one advisory line when Budget Sensitivity is `Relaxed`). **Sophia** confirms support runbook path. Security summary references both **Oliver** red-team and **Lars** OWASP reports.
 
 Lars confirms no new Critical/High exposure from deploy configuration.
 

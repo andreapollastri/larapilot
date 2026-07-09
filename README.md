@@ -62,7 +62,7 @@ After the PRD, each user story follows the same loop:
 2. **`/larapilot-plan US-XXX`** — technical plan with tasks → status **PLANNED**
 3. **`/larapilot-implement US-XXX`** — code and tests under the plan → **REVIEW**
 4. **`/larapilot-review US-XXX`** — you approve (**DONE**) or send back with feedback (**TODO**)
-5. **`/larapilot-ship`** *(optional)* — Lars OWASP gate; Jack deploys (Cipi preferred, or Forge, Laravel Cloud, Ploi, Kubernetes, custom); Emma and Lauren verify web launch for public sites
+5. **`/larapilot-ship`** *(optional)* — Oliver red-team + Lars OWASP gate; Jack deploys (Cipi preferred, or Forge, Laravel Cloud, Ploi, Kubernetes, custom); Emma, Lauren, and Emily verify web launch; Sophia sets up support runbook
 
 The CLI blocks invalid jumps (e.g. implement before plan, approve before review). Optional `/larapilot-design` adds UI mockups before planning or implementation. Use `/larapilot-autopilot` to batch-plan and implement multiple specs when the backlog is stable.
 
@@ -101,6 +101,7 @@ INFO  Larapilot installed successfully.
 
   - .larapilot/config.yaml
   - .larapilot/shared-runtime.md
+  - .larapilot/task-templates.md
 
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.
 ```
@@ -171,9 +172,13 @@ After step 6, your repo might look like this:
 
 ```text
 .larapilot/
+├── shared-runtime.md
+├── task-templates.md
 ├── docs/
 │   ├── PRD.md
+│   ├── review/
 │   ├── security/
+│   ├── support/
 │   └── launch/
 ├── backlog.yaml
 ├── specs/
@@ -289,17 +294,20 @@ Personas are lenses that make the process visible:
 | 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, competitor data porting (import from rivals, lock-in-free export) |
 | 🔎 Tom      | Requirements Analyst              | Acceptance criteria, edge cases, spec quality  |
 | 📐 John     | Architect                         | Scalable architecture, multi-tenancy trade-offs, APIs, queues, DTOs, OpenAPI/docs |
-| 🔧 Alex     | Full-Stack Developer              | Implementation and task breakdown              |
-| 🧪 Anne     | Test Architect                    | Pest/PHPUnit strategy, CI test gates           |
-| 🛡️ Robert   | Code Reviewer                     | Code quality, Gitflow hygiene, Laravel conventions |
+| 🔧 Alex     | Full-Stack Developer              | Implementation, factories/seeders, per-task commits & PRs |
+| 🧪 Anne     | Test Architect                    | Pest strategy, **multi-viewport responsive UI tests**, CI gates |
+| 🛡️ Robert   | Code Reviewer                     | Code quality, Gitflow hygiene, per-task PR discipline, factory/seeder checks, Laravel conventions |
 | 🔐 Lars     | Security Expert                   | OWASP, security.txt, SECURITY.md, pipeline gates |
 | 🚀 Jack     | DevOps Engineer                   | Gitflow, CI/CD, semver, Cloudflare, AWS, observability, deploy |
 | 💰 Aurora   | FinOps Expert                     | Infra/security/marketing budgets; security spend never first cut |
 | ⚖️ Violet   | Legal Expert                      | GDPR, cookie/ToS, **EAA/accessibility law**, retention, opt-out |
 | 📈 Emma     | SEO & Web Performance Specialist  | URLs, breadcrumbs, robots/sitemap/llms, semantic SEO, Lighthouse a11y |
 | 💬 Lauren   | Social Media Manager              | Marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora |
-| 🎨 Elise    | UX Designer                       | Nordic UI, WCAG 2.2 AA, **logo, favicon.svg, OG/social assets** |
-| 💬 Lauren   | Social Media Manager              | Marketing, OG/share — distributes Elise assets when needed |
+| 🎨 Elise    | UX Designer                       | **Mobile-first responsive** UI, Nordic, WCAG 2.2 AA, **logo, favicon.svg, OG/social assets** |
+| 🔗 Matt     | Integration Manager               | Third-party APIs & services — with Alex, John, Elise; Sebastian proposes |
+| 🎯 Oliver   | Ethical Hacker                    | Red-team assessments; findings → Lars |
+| 🎧 Sophia   | Support Manager                   | Post-ship bug intake, maintenance backlog, docs & updates with Lars |
+| 🌍 Emily    | Translator                        | Multilingual UI, currency, timezones, country culture — with Violet |
 
 ### Team policies
 
@@ -307,17 +315,25 @@ Personas are lenses that make the process visible:
 
 **Competitor data porting** — Sebastian doesn't stop at "import/export" as a feature label: whenever comparable products exist, he must propose concrete migration paths that bring data **from competitor products into yours** (CSV/API importers, onboarding flows for switchers) and structured export so users are never locked in. These become Functional Requirements and first-class backlog specs.
 
-**Vendor & package policy** — new dependencies are evaluated in this order: Laravel built-ins/first-party → [Spatie packages](https://spatie.be/open-source/packages) (the preferred third-party source) → [Filament](https://filamentphp.com/) and its plugins (the preferred route for admin/control panels) → other community vendors. Every candidate must be actively maintained, version-compatible, and pass `composer audit` before it lands in your project.
+**Vendor & package policy** — new dependencies are evaluated in this order: Laravel built-ins/first-party → [Spatie packages](https://spatie.be/open-source/packages) (the preferred third-party source) → [Filament](https://filamentphp.com/) and its plugins (for admin/control panels — proposed, never imposed: the team always asks Filament vs custom, recommending the best fit for the case and the option closest to the project mockups) → other community vendors. Every candidate must be actively maintained, version-compatible, and pass `composer audit` before it lands in your project.
 
 **Architecture standards** — John scopes depth to delivery target; **multi-tenancy** patterns compared with pros/cons (distributed monolith + subdomains, row-level, DB/schema-per-tenant, stancl/tenancy). APIs, queues, DTOs, OpenAPI/Swagger. Socialite SSO.
 
-**Development & delivery** — **Gitflow** (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`); **SemVer** + **CHANGELOG.md** (Keep a Changelog); **`security.txt`** + **`SECURITY.md`**; CI/CD minimum gates (Pest, Pint, `composer audit`, checkpoint).
+**Development & delivery** — **Gitflow** (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`); **strict per-task commits + internal PRs** toward `develop` (Alex implements, Robert enforces); **factories & seeders** kept current for every entity (coherent `migrate:fresh --seed` demo data); **SemVer** + **CHANGELOG.md** (Keep a Changelog); **`security.txt`** + **`SECURITY.md`**; CI/CD minimum gates (Pest, Pint, `composer audit`, checkpoint).
 
 **Security budget** — Aurora privileges security spend; Lars and Violet review against best practice and regulations.
 
 **Cloud & infra** — **Cloudflare** preferred for DNS, CDN, and WAF (alternatives: AWS WAF + CloudFront, Bunny, Akamai, Fastly). Jack proposes **AWS** compute step-by-step when budget allows; **DigitalOcean** as alternative; **Hetzner** and **OVH** for EU. **Observability** always proposed: Laravel Nightwatch, AWS CloudWatch, or alternatives (Datadog, Grafana, …). Local dev: Sail or Herd; [127001.it](https://127001.it/) for wildcard local URLs.
 
-**UX & frontend** — Elise: Laravel UI, Nordic design, WCAG 2.2 AA, **logo + favicon.svg + social assets** (when client provides none). Lauren uses Elise's OG/share artwork.
+- **Integrations** — **Sebastian** proposes vendors and competitor porting at discovery; **Matt** delivers API/service wiring (OAuth, webhooks, HTTP clients, queues) with Alex and John.
+
+**Red team** — **Oliver** runs ethical hacking / penetration tests before ship; reports to **Lars**, who issues GO/NO-GO with the OWASP assessment.
+
+**Support & maintenance** — **Sophia** triages post-launch bugs into backlog specs, keeps README/OpenAPI current, coordinates patches with Lars and Jack (`hotfix/*` when Critical).
+
+**Internationalization** — **Emily** owns locales, currency, timezones, and cultural UX per country target; **Violet** owns legal/compliance per market.
+
+**UX & frontend:** Elise — **mobile-first responsive** UI; Nordic design; WCAG 2.2 AA; logo + favicon.svg + social assets (when client provides none). Lauren uses Elise's OG/share artwork.
 
 **Marketing** — Lauren drives newsletter, campaigns, SEM (Aurora budget), with Emma and Elise.
 
@@ -395,8 +411,10 @@ paths:
     prd: .larapilot/docs/PRD.md
     mockups: .larapilot/mockups/
     test_results: .larapilot/docs/test-results/
+    review: .larapilot/docs/review/
     security: .larapilot/docs/security/
     launch: .larapilot/docs/launch/
+    support: .larapilot/docs/support/
 
 workflow:
     statuses:
