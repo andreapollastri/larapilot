@@ -27,6 +27,7 @@ class SpecApproveCommand extends LarapilotCommand
             return $guard;
         }
 
+        $specs->tickBodyChecklist($code);
         $specs->setStatus($code, $config->status('done'));
 
         return $this->success('approve_result', [

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\Checklist;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
@@ -73,6 +74,9 @@ class PlanService
         foreach ($tasks as $index => $task) {
             if (($task['id'] ?? null) === $taskId) {
                 $tasks[$index]['status'] = 'DONE';
+                if (is_string($task['body'] ?? null)) {
+                    $tasks[$index]['body'] = Checklist::tick($task['body']);
+                }
                 $found = true;
                 break;
             }

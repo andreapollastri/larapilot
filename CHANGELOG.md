@@ -9,6 +9,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **Output Economy** in `shared-runtime.md` — per-phase brevity rules for chat and status (drop filler, keep persona labels and AskQuestion intact; artifacts, compliance, and security NO-GO rationale stay complete).
 - **Sub-agents (editor-agnostic)** in `shared-runtime.md` — optional readonly sub-agents on any editor with a sub-agent tool (Cursor Task, Claude Code Agent, …), with inline fallback when none exists: codebase explore during plan (large codebases); code review + security review in parallel during implement Phase 2; parent owns CLI and writes `{paths.review}/{code}.md` before handoff.
 - **`paths.review` config path** (default `.larapilot/docs/review/`) — registered in `config/larapilot.php`, exposed by `config-show`, and created by `ensureDirectories()` like the other docs paths.
+- **Checklist auto-tick** — `task-done` now marks the task's `- [ ]` completion criteria as `- [x]` in the plan body; `spec-approve` ticks the spec's acceptance criteria on human approval. Artifact checkboxes reflect real progress without manual YAML edits.
 
 ### Changed
 

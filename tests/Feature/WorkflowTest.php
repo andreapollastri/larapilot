@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
 use Larapilot\Services\ValidationService;
 
@@ -55,6 +56,51 @@ it('walks a spec through the whole workflow', function (): void {
     $spec = $specs->find('US-001');
     expect($spec['status'])->toBe('DONE')
         ->and($spec['status_history'])->toHaveCount(4);
+});
+
+it('ticks completion criteria checkboxes when a task is done', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    addSpec();
+
+    $payload = planPayload();
+    $payload['tasks'][0]['body'] = "## Description\nCreate the model.\n\n## Completion Criteria\n- [ ] Model exists\n- [ ] Migration runs";
+    $this->artisan('larapilot:spec-plan', ['code' => 'US-001', '--file' => payloadFile($payload, 'tmp-plan.yaml')])
+        ->assertSuccessful();
+
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-01'])->assertSuccessful();
+
+    $tasks = app(PlanService::class)->read('US-001')['tasks'];
+
+    expect($tasks[0]['status'])->toBe('DONE')
+        ->and($tasks[0]['body'])->toContain('- [x] Model exists')
+        ->and($tasks[0]['body'])->toContain('- [x] Migration runs')
+        ->and($tasks[0]['body'])->not->toContain('- [ ]')
+        ->and($tasks[1]['status'])->toBe('TODO');
+});
+
+it('ticks acceptance criteria checkboxes when a spec is approved', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    addSpec();
+    planSpec();
+
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-01'])->assertSuccessful();
+    $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-02'])->assertSuccessful();
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
+
+    expect(app(SpecService::class)->find('US-001')['body'])->toContain('- [ ] Happy path');
+
+    $this->artisan('larapilot:spec-approve', ['code' => 'US-001'])->assertSuccessful();
+
+    $spec = app(SpecService::class)->find('US-001');
+
+    expect($spec['status'])->toBe('DONE')
+        ->and($spec['body'])->toContain('- [x] Happy path')
+        ->and($spec['body'])->toContain('- [x] Error case')
+        ->and($spec['body'])->not->toContain('- [ ]');
 });
 
 it('sends a spec back to todo with rework feedback', function (): void {

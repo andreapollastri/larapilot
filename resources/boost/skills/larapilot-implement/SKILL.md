@@ -86,7 +86,7 @@ Group tasks by dependencies. For each task:
 
 1. Alex implements per task body contract
 2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`)
-3. `task-done` when verified
+3. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
 
 ### Phase 2 — Review (sub-agents or inline)
 

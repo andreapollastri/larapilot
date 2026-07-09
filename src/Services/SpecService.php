@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\Checklist;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
@@ -248,6 +249,23 @@ class SpecService
 
         $this->writeBacklog($specs);
         $this->writeSpecFile($code, $spec);
+    }
+
+    public function tickBodyChecklist(string $code): void
+    {
+        $spec = $this->find($code);
+
+        if ($spec === null) {
+            throw new \RuntimeException("Spec {$code} not found.");
+        }
+
+        $body = (string) ($spec['body'] ?? '');
+        $ticked = Checklist::tick($body);
+
+        if ($ticked !== $body) {
+            $spec['body'] = $ticked;
+            $this->persistSpec($spec);
+        }
     }
 
     public function setStatus(string $code, string $status): void
