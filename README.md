@@ -39,7 +39,7 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 - Market positioning, competitive context, and product risks (Jennifer)
 - Market research and enterprise business perspective (Benjamin)
 - Competitive challenger: integrations and **competitor data porting** — import paths for users switching from rival products, lock-in-free export (Sebastian)
-- Product scope, personas, and delivery-target trade-offs (Mark)
+- Product scope, personas, and **delivery target** (`MVP`, `V1 Complete`, `Full Product`, `Enterprise`) — Mark asks early via AskQuestion; MVP is the default lens, not a hard ceiling
 - SOLID, scalable, performant architecture within budget (John + Aurora) — you can set **Budget Sensitivity** to `Relaxed` to exclude budget evaluation; business validation is loosened to short advisories, never removed
 - For public websites: SEO, Analytics, tracking, Lighthouse targets (Emma) and social strategy (Lauren)
 - When personal data is involved: GDPR and privacy requirements (Violet)
@@ -64,7 +64,16 @@ After the PRD, each user story follows the same loop:
 4. **`/larapilot-review US-XXX`** — you approve (**DONE**) or send back with feedback (**TODO**)
 5. **`/larapilot-ship`** *(optional)* — Lars OWASP gate; Jack deploys (Cipi preferred, or Forge, Laravel Cloud, Ploi, Kubernetes, custom); Emma and Lauren verify web launch for public sites
 
-The CLI blocks invalid jumps (e.g. implement before plan, approve before review). Optional `/larapilot-design` adds UI mockups before planning or implementation.
+The CLI blocks invalid jumps (e.g. implement before plan, approve before review). Optional `/larapilot-design` adds UI mockups before planning or implementation. Use `/larapilot-autopilot` to batch-plan and implement multiple specs when the backlog is stable.
+
+---
+
+## Requirements
+
+- PHP **^8.3**
+- Laravel **^12** or **^13**
+- [Laravel Boost](https://laravel.com/ai/boost) `^1.0` or `^2.0` (installed automatically with Larapilot)
+- An AI editor with MCP support (Cursor, Claude Code, etc.)
 
 ---
 
@@ -96,7 +105,9 @@ INFO  Larapilot installed successfully.
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.
 ```
 
-`boost:install` asks which editors and agents you use, then publishes the Larapilot **guidelines** and the eight **`/larapilot-*` skills** for them. Already running Boost in the project? Use `php artisan boost:update --discover` instead.
+`boost:install` asks which editors and agents you use, then publishes the Larapilot **guidelines** (coding rules — not a skill) and the eight **`/larapilot-*` skills** (`inception`, `design`, `spec`, `plan`, `implement`, `review`, `ship`, `autopilot`) for them. Already running Boost in the project? Use `php artisan boost:update --discover` instead.
+
+On an already-installed project, `larapilot:install` fails fast and points you to `larapilot:update` (after upgrades) or `--force` (to overwrite config). Your customizations in `.larapilot/config.yaml` are never touched by `larapilot:update`.
 
 ### 2. Enable MCP servers
 
@@ -125,6 +136,8 @@ Concrete example for editors with a JSON MCP config (Cursor: `.cursor/mcp.json`,
 ```
 
 ### 3. Use skills in your AI agent
+
+Eight workflow skills — each orchestrates a phase via Artisan commands:
 
 | Skill                         | Purpose                                                    |
 | ----------------------------- | ---------------------------------------------------------- |
@@ -159,7 +172,9 @@ After step 6, your repo might look like this:
 ```text
 .larapilot/
 ├── docs/
-│   └── PRD.md
+│   ├── PRD.md
+│   ├── security/
+│   └── launch/
 ├── backlog.yaml
 ├── specs/
 │   ├── US-001.yaml
@@ -238,25 +253,27 @@ flowchart LR
     subgraph Loop["Spec-Driven Loop"]
         S["Spec<br/>.larapilot/backlog.yaml"] --> P["Plan<br/>.larapilot/plans/"]
         P --> IM["Implement<br/>code + tests"]
-        IM -. next .-> S
+        IM --> R["Review<br/>human gate"]
+        R -. next spec .-> S
     end
 
     Loop -. optional .-> SH["Ship<br/>multi-platform deploy"]
 
     P -. UI .-> D
+    S -. batch .-> AP["Autopilot<br/>plan + implement"]
 ```
 
 ### Workflow states
 
-| State         | Meaning                      |
-| ------------- | ---------------------------- |
-| `TODO`        | Spec exists, not yet planned |
-| `PLANNED`     | Technical plan complete      |
-| `IN PROGRESS` | Implementation started       |
-| `REVIEW`      | Ready for human review       |
-| `DONE`        | Accepted (human-gated)       |
+| State         | Meaning                      | Next step                    |
+| ------------- | ---------------------------- | ---------------------------- |
+| `TODO`        | Spec exists, not yet planned | `/larapilot-plan`            |
+| `PLANNED`     | Technical plan complete      | `/larapilot-implement`       |
+| `IN PROGRESS` | Implementation started       | Complete tasks → review      |
+| `REVIEW`      | Ready for human review       | `/larapilot-review`          |
+| `DONE`        | Accepted (human-gated)       | Next spec or `/larapilot-ship` |
 
-Transitions are enforced: `spec-start` requires `PLANNED`, `spec-review` requires `IN PROGRESS`, and `spec-approve`/`spec-request-changes` require `REVIEW`. Commands attempting an invalid transition fail with an `E_PRECONDITION` envelope and exit code `4`.
+Transitions are enforced: `spec-plan` refuses specs already in `REVIEW` or `DONE`, `spec-start` requires `PLANNED`, `spec-review` requires `IN PROGRESS`, and `spec-approve`/`spec-request-changes` require `REVIEW`. Commands attempting an invalid transition fail with an `E_PRECONDITION` envelope and exit code `4`.
 
 ---
 
@@ -322,6 +339,22 @@ Skills call these commands; you rarely run them manually:
 
 All commands emit JSON envelopes with schema `larapilot/v1`.
 
+### JSON envelope
+
+Success on stdout:
+
+```json
+{"schema":"larapilot/v1","kind":"<kind>","data":{...}}
+```
+
+Errors on stderr:
+
+```json
+{"schema":"larapilot/v1","kind":"error","error":{"code":"E_*","message":"...","hint":"..."}}
+```
+
+Branch on `error.code`, never on message text. Common error codes: `E_INVALID_INPUT`, `E_PRECONDITION`, `E_NOT_FOUND`, `E_CONNECTOR`.
+
 ### Exit codes
 
 Agents can rely on exit codes without parsing the envelope:
@@ -379,6 +412,32 @@ Examples (folder → URL):
 - `.larapilot/mockups/US-001/css/app.css` → `/mockups/US-001/css/app.css`
 
 Disable entirely with `LARAPILOT_MOCKUPS_ROUTE=false` in `.env`.
+
+### Environment variables
+
+| Variable                  | Default  | Description                                      |
+| ------------------------- | -------- | ------------------------------------------------ |
+| `LARAPILOT_ENABLED`       | `true`   | Disable MCP and mockup route when `false`        |
+| `LARAPILOT_CONNECTOR`     | `file`   | Storage connector                                |
+| `LARAPILOT_MOCKUPS_ROUTE` | `true`   | Set `false` to disable the mockup preview route  |
+
+When `LARAPILOT_ENABLED=false`, MCP and the mockup route are gated off. Artisan commands and `larapilot:doctor` remain available.
+
+### Worktree support
+
+`spec-show` and `spec-next` return `data.workdir` — the absolute directory for per-spec codebase work (e.g. a git worktree). Connector commands still run from `data.project_root` returned by `config-show`.
+
+---
+
+## Larapilot MCP
+
+Register alongside Laravel Boost. Three tools designed to work with Boost:
+
+| Tool           | Description                              |
+| -------------- | ---------------------------------------- |
+| `backlog_list` | List all specs with status               |
+| `spec_show`    | Spec details, plan tasks, workdir        |
+| `run_artisan`  | Run any `larapilot:*` command            |
 
 ---
 

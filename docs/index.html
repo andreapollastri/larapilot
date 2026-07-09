@@ -1233,7 +1233,8 @@
                     <button class="copy-btn" data-copy="php artisan boost:install" title="Copy">Copy</button>
                   </div>
                   <pre class="terminal-output" aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
-  <span class="punct">-</span> guidelines + <span class="num">8</span> skills <span class="punct">(</span><span class="str">/larapilot-inception</span> … <span class="str">/larapilot-ship</span><span class="punct">)</span></pre>
+  <span class="punct">-</span> guidelines + <span class="num">8</span> <span class="str">/larapilot-*</span> skills
+  <span class="punct">(</span><span class="str">inception</span><span class="punct">,</span> <span class="str">design</span><span class="punct">,</span> <span class="str">spec</span><span class="punct">,</span> <span class="str">plan</span><span class="punct">,</span> <span class="str">implement</span><span class="punct">,</span> <span class="str">review</span><span class="punct">,</span> <span class="str">ship</span><span class="punct">,</span> <span class="str">autopilot</span><span class="punct">)</span></pre>
                   <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
                 </div>
               </div>
@@ -1425,7 +1426,7 @@
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9a6 6 0 1012 0A6 6 0 003 9z" stroke="currentColor" stroke-width="1.5"/><path d="M9 6v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </div>
             <h3>A workflow, not prompt lore</h3>
-            <p>Discovery → backlog → plan → implement → review. Every phase has clear inputs, outputs, and guardrails enforced by the CLI.</p>
+            <p>Discovery → backlog → plan → implement → review → ship. Every phase has clear inputs, outputs, and guardrails enforced by the CLI.</p>
           </div>
           <div class="bento-card">
             <div class="bento-icon indigo">
@@ -1487,7 +1488,7 @@
           <li>Market positioning, competitive context, and product risks (Jennifer)</li>
           <li>Market research and enterprise business perspective (Benjamin)</li>
           <li>Competitive challenger: integrations and <strong>competitor data porting</strong> — import paths for users switching from rival products, lock-in-free export (Sebastian)</li>
-          <li>Product scope, personas, and delivery-target trade-offs (Mark)</li>
+          <li>Product scope, personas, and <strong>delivery target</strong> (<code>MVP</code>, <code>V1 Complete</code>, <code>Full Product</code>, <code>Enterprise</code>) — Mark asks early via AskQuestion; MVP is the default lens, not a hard ceiling</li>
           <li>SOLID, scalable, performant architecture within budget (John + Aurora) — <strong>Budget Sensitivity</strong> can be set to <code>Relaxed</code> to exclude budget evaluation; business validation is loosened, never removed</li>
           <li>For public websites: SEO, Analytics, tracking, Lighthouse (Emma) and social strategy (Lauren)</li>
           <li>When personal data is involved: GDPR and privacy (Violet)</li>
@@ -1510,8 +1511,9 @@
           <li><code>/larapilot-plan US-XXX</code> — technical plan with tasks → <span class="status status-planned">PLANNED</span></li>
           <li><code>/larapilot-implement US-XXX</code> — code and tests → <span class="status status-review">REVIEW</span></li>
           <li><code>/larapilot-review US-XXX</code> — you approve (<span class="status status-done">DONE</span>) or send back (<span class="status status-todo">TODO</span>)</li>
+          <li><code>/larapilot-ship</code> <em>(optional)</em> — OWASP gate, deploy, web launch checks for public sites</li>
         </ol>
-        <p>The CLI blocks invalid jumps (implement before plan, approve before review). Optional <code>/larapilot-design</code> adds UI mockups before planning.</p>
+        <p>The CLI blocks invalid jumps (implement before plan, approve before review). Optional <code>/larapilot-design</code> adds UI mockups before planning; <code>/larapilot-autopilot</code> batch-plans and implements when the backlog is stable.</p>
       </section>
 
       <!-- Quickstart -->
@@ -1554,12 +1556,13 @@
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
         </div>
 
-        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the eight <code>/larapilot-*</code> skills and the coding guidelines available to your AI editor:</p>
+        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the eight <code>/larapilot-*</code> skills (<code>inception</code>, <code>design</code>, <code>spec</code>, <code>plan</code>, <code>implement</code>, <code>review</code>, <code>ship</code>, <code>autopilot</code>) and the coding <strong>guidelines</strong> (not a skill) available to your AI editor:</p>
         <div class="code-block">
           <div class="code-block-header">Terminal</div>
           <pre><code>php artisan boost:install</code></pre>
         </div>
         <p>Boost's installer asks which editors and agents you use, then publishes guidelines and skills for them. Already running Boost in the project? Use <code>php artisan boost:update --discover</code> instead to pick up the Larapilot skills.</p>
+        <p>On an already-installed project, <code>larapilot:install</code> fails fast and points you to <code>larapilot:update</code> (after upgrades) or <code>--force</code> (to overwrite config). <code>larapilot:update</code> never touches <code>.larapilot/config.yaml</code>.</p>
 
         <h3>2. Enable MCP servers</h3>
         <p>Your editor needs both servers: <strong>Boost</strong> for Laravel context (docs, schema, Tinker) and <strong>Larapilot</strong> for workflow state.</p>
@@ -1734,7 +1737,7 @@ php artisan larapilot:update</code></pre>
         <div class="section-header">
           <span class="section-label">Skills</span>
           <h2>Eight skills, full coverage</h2>
-          <p>Published via Laravel Boost and invoked in your AI agent. Each orchestrates a workflow phase via Artisan commands.</p>
+          <p>Published via Laravel Boost and invoked in your AI agent. Boost also publishes <strong>guidelines</strong> (coding rules — not a skill). These eight <code>/larapilot-*</code> skills cover the workflow: inception, design, spec, plan, implement, review, ship, autopilot.</p>
         </div>
 
         <div class="skills-grid">
@@ -1852,6 +1855,11 @@ php artisan larapilot:update</code></pre>
           <div class="team-card"><div class="team-avatar">💬</div><div class="team-name">Lauren</div><div class="team-role">Social Media Manager</div></div>
           <div class="team-card"><div class="team-avatar">🎨</div><div class="team-name">Elise</div><div class="team-role">UX Designer</div></div>
         </div>
+
+        <h3>Team policies</h3>
+        <p><strong>Budget Sensitivity</strong> — during inception, Aurora asks whether budget should drive decisions (<code>Tracked</code>, the default) or whether you want to exclude budget evaluation (<code>Relaxed</code>). In <code>Relaxed</code> mode the business figures stop asking budget questions and never block a choice on cost, but they keep flagging vendor lock-in and hard-to-reverse cost risks as short advisories. The choice is stored in the PRD under <code>## Technical Architecture</code>.</p>
+        <p><strong>Competitor data porting</strong> — Sebastian doesn't stop at "import/export" as a feature label: whenever comparable products exist, he must propose concrete migration paths that bring data <strong>from competitor products into yours</strong> (CSV/API importers, onboarding flows for switchers) and structured export so users are never locked in.</p>
+        <p><strong>Vendor &amp; package policy</strong> — new dependencies are evaluated in this order: Laravel built-ins/first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie packages</a> → <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a> and its plugins → other community vendors. Every candidate must be actively maintained, version-compatible, and pass <code>composer audit</code> before it lands in your project.</p>
       </section>
 
       <!-- CLI -->
@@ -2014,6 +2022,8 @@ paths:
   prd: .larapilot/docs/PRD.md
   mockups: .larapilot/mockups/
   test_results: .larapilot/docs/test-results/
+  security: .larapilot/docs/security/
+  launch: .larapilot/docs/launch/
 
 workflow:
   statuses:
@@ -2094,7 +2104,9 @@ file:
 ├── backlog.yaml
 ├── docs/
 │   ├── PRD.md
-│   └── test-results/
+│   ├── test-results/
+│   ├── security/
+│   └── launch/
 ├── specs/
 │   ├── US-001.yaml
 │   └── US-002.yaml
