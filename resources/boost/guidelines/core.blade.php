@@ -136,6 +136,6 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 
 **Output economy:** brevity in chat per skill phase (high during implement/review/ship; clarity first during inception); artifacts, code, and CLI output stay complete and verbatim. See **Output Economy** in `.larapilot/shared-runtime.md`.
 
-**Sub-agents (Cursor):** optional readonly Task sub-agents in **plan** (`explore`) and **implement** (`bugbot` + `security-review` in parallel); parent owns CLI. See **Sub-agents** in `.larapilot/shared-runtime.md`.
+**Sub-agents:** optional readonly sub-agents on any editor with a sub-agent tool (Cursor Task, Claude Code Agent, …) in **plan** (codebase explore) and **implement** (code review + security review in parallel); inline fallback without one; parent owns CLI. See **Sub-agents** in `.larapilot/shared-runtime.md`.
 
 Read `.larapilot/shared-runtime.md` at skill activation for full runtime rules.

@@ -13,6 +13,7 @@ return [
         'prd' => '.larapilot/docs/PRD.md',
         'mockups' => '.larapilot/mockups/',
         'test_results' => '.larapilot/docs/test-results/',
+        'review' => '.larapilot/docs/review/',
         'security' => '.larapilot/docs/security/',
         'launch' => '.larapilot/docs/launch/',
     ],

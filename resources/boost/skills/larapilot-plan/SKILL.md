@@ -58,7 +58,7 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 #### Sub-agent (optional — large or unfamiliar codebase)
 
-When `data.workdir` has substantial existing code, launch one **`explore`** sub-agent (`readonly: true`, `run_in_background: false`) before Stage 2. Parent still reads PRD and mockups directly.
+When `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; e.g. Cursor `explore`, Claude Code `Explore` — see **Type mapping** in shared-runtime) before Stage 2. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool: the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
 
 Handoff prompt:
 

@@ -162,7 +162,7 @@ Start with a fresh Laravel app and this prompt in your AI editor:
 | 2. Backlog | `/larapilot-spec` | User stories extracted from the PRD MVP scope | `backlog.yaml`, `specs/US-001.yaml`, `specs/US-002.yaml` … (**TODO**) |
 | 3. Design *(optional)* | `/larapilot-design US-001` | Elise builds a registration screen mockup | `.larapilot/mockups/US-001/` → browse at `/mockups/US-001` |
 | 4. Plan | `/larapilot-plan US-001` | John and Alex break down migrations, routes, tests | `plans/US-001-plan.yaml` → **PLANNED** |
-| 5. Implement | `/larapilot-implement US-001` | Alex implements, Anne tests; Robert and Lars review via readonly sub-agents (`bugbot` + `security-review`) | Laravel code + Pest tests → **REVIEW** |
+| 5. Implement | `/larapilot-implement US-001` | Alex implements, Anne tests; Robert and Lars review via readonly sub-agents (or inline) | Laravel code + Pest tests → **REVIEW** |
 | 6. Accept | `/larapilot-review US-001` | You approve or request changes | **DONE** — or back to **TODO** with feedback |
 | 7. Ship *(optional)* | `/larapilot-ship` | Lars OWASP gate; Jack deploys (Cipi, Forge, Cloud, Ploi, K8s, custom); Emma & Lauren for public sites | Production release |
 | 8. Next spec | `/larapilot-plan US-002` … | Repeat plan → implement → review for each story | until the backlog is complete |
@@ -469,16 +469,16 @@ Register alongside Laravel Boost. Three tools designed to work with Boost:
 
 During **plan** and **implement**, skills instruct the agent to use Boost MCP tools for Laravel-specific work.
 
-### Sub-agents (Cursor Task tool)
+### Sub-agents
 
-On editors that support the Task tool (e.g. Cursor), two skills may spawn **readonly sub-agents** for fresher context:
+On editors with a sub-agent tool (Cursor Task tool, Claude Code Agent tool, …), two skills spawn **readonly sub-agents** for fresher context — with an inline fallback when the editor has none:
 
 | Skill | Sub-agents | Purpose |
 | ----- | ---------- | ------- |
-| `/larapilot-plan` | `explore` *(optional)* | Map an large codebase before writing tasks |
-| `/larapilot-implement` | `bugbot` + `security-review` *(parallel)* | Robert code review + Lars OWASP pass after all tasks are done |
+| `/larapilot-plan` | codebase explore *(optional)* | Map a large codebase before writing tasks |
+| `/larapilot-implement` | code review + security review *(parallel)* | Robert code review + Lars OWASP pass after all tasks are done |
 
-The **parent agent** always owns `php artisan larapilot:*` calls and code fixes. Implement writes `.larapilot/docs/review/US-XXX.md` for `/larapilot-review` to present to you. Autopilot never forks sub-agents — one spec at a time. Details in `.larapilot/shared-runtime.md` → **Sub-agents**.
+The **parent agent** always owns `php artisan larapilot:*` calls and code fixes. Implement writes `.larapilot/docs/review/US-XXX.md` for `/larapilot-review` to present to you — with or without sub-agents. Autopilot never forks sub-agents — one spec at a time. Details in `.larapilot/shared-runtime.md` → **Sub-agents**.
 
 ### Language & validation
 

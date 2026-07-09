@@ -645,31 +645,35 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 - Multi-option architecture comparisons when the user must choose (John)
 - Anything that would hide a material risk or make AskQuestion ambiguous
 
-## Sub-agents (Cursor Task tool)
+## Sub-agents
 
-Some skills spawn **readonly sub-agents** via the editor's Task tool for fresh context — not separate Larapilot personas. Sub-agents **never** call `php artisan larapilot:*`, edit files, or replace the human gate.
+Some skills spawn **readonly sub-agents** for fresh context via the editor's sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent) — not separate Larapilot personas. Sub-agents **never** call `php artisan larapilot:*`, edit files, or replace the human gate.
+
+**Capability check:** sub-agents are an optimization, not a requirement. If the editor has no sub-agent tool, skip the spawn and run the same pass **inline in the parent session** using the handoff prompt as a checklist — every flow below produces the same artifacts either way.
 
 ### Global rules
 
 1. **Parent owns the workflow** — only the parent agent runs CLI transitions (`spec-start`, `task-done`, `spec-plan`, `spec-review`, `spec-approve`, …).
-2. **Readonly sub-agents** — code review and security passes are read-only; the parent applies fixes and re-runs tests.
+2. **Read-only always** — code review and security passes never edit files: enable the editor's readonly flag when available; the handoff prompt forbids edits regardless. The parent applies fixes and re-runs tests.
 3. **Compact handoff** — pass spec code, absolute `data.workdir`, branch name, acceptance criteria, and plan path — not the full shared-runtime file.
-4. **Parallel when independent** — Robert and Lars reviews run in one message with two Task calls; explore during plan is a single sub-agent.
+4. **Parallel when independent** — Robert and Lars reviews launch together (one message, two sub-agent calls, synchronous) when the editor supports it; otherwise run them sequentially. Explore during plan is a single sub-agent.
 5. **Never parallelize specs** — autopilot and batch flows stay one spec at a time; no sub-agent per spec in parallel.
 
 ### Where sub-agents are used
 
-| Skill | Sub-agent | When | Type |
+| Skill | Sub-agent | When | Role |
 | --- | --- | --- | --- |
-| **`larapilot-plan`** | Codebase explore *(optional)* | Stage 1, large or unfamiliar `data.workdir` | `explore`, readonly |
-| **`larapilot-implement`** | Robert + Lars | Phase 2, after all tasks `task-done` | `bugbot` + `security-review`, readonly, parallel |
-| **`larapilot-review`** | — | Reads parent-written `.larapilot/docs/review/{code}.md` if present | no spawn |
+| **`larapilot-plan`** | Codebase explore *(optional)* | Stage 1, large or unfamiliar `data.workdir` | readonly codebase mapping |
+| **`larapilot-implement`** | Robert + Lars | Phase 2, after all tasks `task-done` | readonly code review + security review, parallel |
+| **`larapilot-review`** | — | Reads parent-written `{paths.review}/{code}.md` if present | no spawn |
+
+**Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
 Skills **without** sub-agents: `inception`, `spec`, `design`, `ship`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
 
 ### Review artifact
 
-After merging sub-agent findings in **`larapilot-implement`**, the parent writes `.larapilot/docs/review/{code}.md` (create parent dirs) before `spec-review`:
+After merging sub-agent findings in **`larapilot-implement`**, the parent writes `{paths.review}/{code}.md` (path from `config-show`, default `.larapilot/docs/review/`; create parent dirs) before `spec-review`:
 
 ```markdown
 # Review findings — US-XXX

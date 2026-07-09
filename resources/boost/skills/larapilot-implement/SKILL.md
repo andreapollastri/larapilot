@@ -9,7 +9,7 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Sub-agents (Cursor Task tool)**.
+Read `.larapilot/shared-runtime.md` — including **Sub-agents**.
 
 ## Output Economy
 
@@ -88,18 +88,22 @@ Group tasks by dependencies. For each task:
 2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`)
 3. `task-done` when verified
 
-### Phase 2 — Review (sub-agents)
+### Phase 2 — Review (sub-agents or inline)
 
-After all tasks are verified, run **readonly sub-agents in parallel** before fixing and handoff. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
+After all tasks are verified, run two **readonly review passes** — Robert (code review) and Lars (security) — before fixing and handoff. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
 
-#### Launch (one message, two Task calls)
+#### Launch
 
-| Persona | Task `subagent_type` | `readonly` |
+With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent): spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
+
+| Persona | Pass | Example types |
 | --- | --- | --- |
-| 🛡️ Robert | `bugbot` | `true` |
-| 🔐 Lars | `security-review` | `true` |
+| 🛡️ Robert | code review | Cursor `bugbot`; else generic readonly sub-agent |
+| 🔐 Lars | security review | Cursor `security-review`; else generic readonly sub-agent |
 
-Set `run_in_background: false` on both. Use `Diff: branch changes` (or `uncommitted changes` when nothing is committed yet).
+Enable the editor's readonly flag when available; the handoff prompt forbids edits regardless. Review scope: the branch diff (or uncommitted changes when nothing is committed yet).
+
+**Inline fallback** — no sub-agent tool: the parent runs the same two passes itself, sequentially (Robert, then Lars), using the handoff prompt below as a checklist. All later steps are identical.
 
 #### Handoff prompt (fill from `config-show` + `spec-show`)
 
@@ -109,12 +113,12 @@ Larapilot implement review — {code}
 workdir: {data.workdir absolute}
 project_root: {data.project_root absolute}
 branch: feature/{code}-* (or current branch in workdir)
-plan: {paths.plans}/{code}-plan.yaml (under project_root)
+plan: {paths.planning}/{code}-plan.yaml (under project_root)
 spec body: {acceptance criteria + Demonstrates from data.spec.body}
 
-Robert (bugbot): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main commits). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
+Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main commits). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
 
-Lars (security-review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
+Lars (security review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
 ```
 
 #### Parent merge loop
@@ -122,7 +126,7 @@ Lars (security-review): OWASP Top 10 on branch diff; auth/access-control; compos
 1. Deduplicate Robert + Lars bullets; fix all **Critical** and **High** autonomously.
 2. Re-run tests after fixes (`php artisan test` or `./vendor/bin/pest`).
 3. Re-run **Lars only** if auth, policies, or security files changed materially; skip Robert re-run unless code changed widely.
-4. Write `.larapilot/docs/review/{code}.md` per **Sub-agents** in shared-runtime (Robert, Lars, Parent actions sections).
+4. Write `{paths.review}/{code}.md` (from `config-show`; default `.larapilot/docs/review/`) per **Sub-agents** in shared-runtime (Robert, Lars, Parent actions sections).
 5. Document **Medium** findings in Parent actions if not fixed.
 
 Robert and Lars still speak in character when the **parent** summarizes merged findings in chat (Output Economy bullets).

@@ -39,7 +39,7 @@ Robert speaks in character. For the selected spec, he presents:
 - Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
-- Lars security findings from implementation — read `.larapilot/docs/review/{code}.md` when present (written during implement sub-agent merge); otherwise from implementation notes
+- Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes
 - Any open review notes
 
 Ask the human: **Approve** or **Request changes** (with feedback).
