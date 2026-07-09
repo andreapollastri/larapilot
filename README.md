@@ -38,9 +38,9 @@ Everything starts with `/larapilot-inception`. You bring a rough idea — one se
 
 - Market positioning, competitive context, and product risks (Jennifer)
 - Market research and enterprise business perspective (Benjamin)
-- Competitive challenger and integration opportunities (Sebastian)
+- Competitive challenger: integrations and **competitor data porting** — import paths for users switching from rival products, lock-in-free export (Sebastian)
 - Product scope, personas, and delivery-target trade-offs (Mark)
-- SOLID, scalable, performant architecture within budget (John + Aurora)
+- SOLID, scalable, performant architecture within budget (John + Aurora) — you can set **Budget Sensitivity** to `Relaxed` to exclude budget evaluation; business validation is loosened to short advisories, never removed
 - For public websites: SEO, Analytics, tracking, Lighthouse targets (Emma) and social strategy (Lauren)
 - When personal data is involved: GDPR and privacy requirements (Violet)
 
@@ -246,7 +246,7 @@ Personas are lenses that make the process visible:
 | 💎 Mark     | Product Manager                   | Product scope, personas, delivery-target choice, scope trade-offs |
 | 🧭 Jennifer | Business Strategist               | Market positioning, competitive context, product risks |
 | 🏢 Benjamin | Business Consultant             | Market research, enterprise know-how, business lens on technical choices |
-| 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, import/export opportunities |
+| 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, competitor data porting (import from rivals, lock-in-free export) |
 | 🔎 Tom      | Requirements Analyst              | Acceptance criteria, edge cases, spec quality  |
 | 📐 John     | Architect                         | SOLID, scalable architecture, application and site performance |
 | 🔧 Alex     | Full-Stack Developer              | Implementation and task breakdown              |
@@ -254,11 +254,19 @@ Personas are lenses that make the process visible:
 | 🛡️ Robert   | Code Reviewer                     | Code quality, plan adherence, Laravel conventions |
 | 🔐 Lars     | Security Expert                   | OWASP-aligned assessment, threat modeling, secure defaults |
 | 🚀 Jack     | DevOps Engineer                   | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
-| 💰 Aurora   | FinOps Expert                     | SaaS budgets, cloud cost optimization, provider and infra choices by budget |
+| 💰 Aurora   | FinOps Expert                     | SaaS budgets, cloud cost optimization, provider and infra choices by budget (advisory-only when Budget Sensitivity is Relaxed) |
 | ⚖️ Violet   | Legal Expert                      | GDPR, data processing, privacy compliance, consent and legal requirements |
 | 📈 Emma     | SEO & Web Performance Specialist  | Technical SEO, Analytics, tracking events, Lighthouse performance |
 | 💬 Lauren   | Social Media Manager              | Open Graph, share previews, distribution readiness |
 | 🎨 Elise    | UX Designer                       | User flows, accessibility, mockups, and visual language |
+
+### Team policies
+
+**Budget Sensitivity** — during inception, Aurora asks whether budget should drive decisions (`Tracked`, the default) or whether you want to exclude budget evaluation (`Relaxed`). In `Relaxed` mode the business figures (Aurora, Benjamin, Jennifer) stop asking budget questions and never block a choice on cost, but they keep flagging vendor lock-in and hard-to-reverse cost risks as short advisories — validation is loosened, never removed. The choice is stored in the PRD under `## Technical Architecture`.
+
+**Competitor data porting** — Sebastian doesn't stop at "import/export" as a feature label: whenever comparable products exist, he must propose concrete migration paths that bring data **from competitor products into yours** (CSV/API importers, onboarding flows for switchers) and structured export so users are never locked in. These become Functional Requirements and first-class backlog specs.
+
+**Vendor & package policy** — new dependencies are evaluated in this order: Laravel built-ins/first-party → [Spatie packages](https://spatie.be/open-source/packages) (the preferred third-party source) → [Filament](https://filamentphp.com/) and its plugins (the preferred route for admin/control panels) → other community vendors. Every candidate must be actively maintained, version-compatible, and pass `composer audit` before it lands in your project.
 
 ---
 

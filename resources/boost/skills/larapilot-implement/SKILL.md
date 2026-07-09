@@ -48,6 +48,8 @@ Use **Laravel Boost** throughout:
 
 Follow Laravel best practices from Boost guidelines: thin controllers, Form Requests, policies, eager loading, Pest tests.
 
+When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (admin panels) → other vetted vendors. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
+
 ## Workflow
 
 ### Phase 0 — Load plan

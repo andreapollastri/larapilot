@@ -17,7 +17,7 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict |
 | 🚀 **Jack** | DevOps Engineer — deploy orchestration, health checks, platform-specific runbooks |
-| 💰 **Aurora** | FinOps Expert — validates deploy target and infra cost against budget |
+| 💰 **Aurora** | FinOps Expert — validates deploy target and infra cost per PRD Budget Sensitivity |
 | ⚖️ **Violet** | Legal Expert — GDPR and privacy compliance at launch *(when personal data is processed)* |
 | 📈 **Emma** | SEO & Web Performance Specialist — SEO, Analytics, tracking, Lighthouse *(public sites)* |
 | 💬 **Lauren** | Social Media Manager — Open Graph, share previews, distribution readiness *(public sites)* |
@@ -117,7 +117,7 @@ cipi deploy {app}
 
 ### Phase 0 — Release context
 
-Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. Read `paths.prd` (from `config-show`) for the delivery target when scoping "full slice" releases. **Aurora** validates the target fits the project's budget and scaling needs before prep begins.
+Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. Read `paths.prd` (from `config-show`) for the delivery target and **Budget Sensitivity** when scoping "full slice" releases. **Aurora** validates the target fits the project's budget and scaling needs before prep begins — in `Relaxed` mode she checks only scaling fit and flags cost concerns as a short advisory without blocking the deploy.
 
 ### Phase 1 — Lars security gate (OWASP)
 
@@ -230,7 +230,7 @@ Document findings in `.larapilot/docs/launch/{release-id}.md` when issues are fo
 
 ### Phase 5 — Release report
 
-Jack reports: target platform, app name, commit deployed, health status, deploy method. Aurora summarizes infra cost impact of the release.
+Jack reports: target platform, app name, commit deployed, health status, deploy method. Aurora summarizes infra cost impact of the release (one advisory line when Budget Sensitivity is `Relaxed`).
 
 Lars confirms no new Critical/High exposure from deploy configuration.
 

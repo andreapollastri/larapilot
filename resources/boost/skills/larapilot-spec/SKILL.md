@@ -90,3 +90,5 @@ Validate first, then `spec-add`. Delete temp file after CLI exits.
 - Split specs along Laravel seams: models/migrations, routes/controllers, policies, Livewire/Inertia UI, API resources
 - Keep specs INVEST-compliant and independently demonstrable
 - Use Boost `Application Info` to align specs with installed packages (Livewire, Inertia, Pest, etc.)
+- When the PRD includes **admin/control panel** features, split those specs along Filament seams (panel setup, one resource per entity) — Filament is the preferred route per the Vendor & Package Policy in shared-runtime
+- When the PRD includes **competitor data porting** FRs (Sebastian's import/export integrations), keep them as first-class specs — importers from rival products and lock-in-free export are product features, not technical chores

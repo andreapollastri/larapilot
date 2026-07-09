@@ -35,6 +35,7 @@ Read `.larapilot/shared-runtime.md`.
 - Elise speaks in character when presenting design choices
 - Every mockup uses semantic HTML, correct form labels, and accessible contrast — Alex inherits these in implementation
 - For public pages: Emma annotates SEO structure (single H1, meta title/description), Analytics integration points (GA4, Plausible, GTM), key tracking events, and Lighthouse performance targets in the mockup README; Lauren documents OG image size (1200×630) and default share copy
+- For **admin/control panel** screens destined for **Filament** (see Vendor & Package Policy in shared-runtime): follow Filament's layout conventions (sidebar navigation, resource tables, form schemas) instead of inventing a custom admin UI — note in the README which Filament components/plugins the mockup maps to
 
 ## Output
 

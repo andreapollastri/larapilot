@@ -119,6 +119,44 @@ Rules for all skills:
 3. **MVP is a method, not a ceiling** — trade-off framing stays useful at every level; scope depth follows the target.
 4. The PRD section stays named `## MVP Scope` for validator compatibility; its body reflects the chosen target (In Scope / Out of Scope / Future Phases).
 
+## Budget Sensitivity
+
+Budget is a default lens, not a mandatory gate. During **`larapilot-inception`**, Aurora asks the user (via **AskQuestion**, in the same round as the delivery target or right after it) whether budget should actively drive decisions. The choice is persisted in the PRD under `## Technical Architecture` as:
+
+```markdown
+**Budget Sensitivity:** Tracked | Relaxed
+```
+
+| Mode | Meaning | Business-lens behavior (Aurora, Benjamin, Jennifer) |
+| --- | --- | --- |
+| **Tracked** *(default)* | Budget is an active constraint | Aurora sizes infra and services against the stated budget; cost concerns can reshape or block technical choices |
+| **Relaxed** | The user opted out of budget evaluation | Validation is **loosened, never removed**: no cost-based vetoes, no budget interrogation — but business figures still flag order-of-magnitude cost risks, vendor lock-in, and choices that are expensive to reverse, as short advisory notes (1–2 lines) |
+
+Rules for all skills:
+
+1. **Read the budget sensitivity from the PRD** (`paths.prd`) before making cost-driven recommendations. If missing, treat it as **Tracked**.
+2. In **Relaxed** mode, never drop the business lens entirely — compress it to concise advisories and move on without asking budget questions.
+3. The user can switch mode at any time; update the PRD line when they do.
+
+## Vendor & Package Policy
+
+When a feature is not worth building in-house, evaluate packages in this order:
+
+1. **Laravel built-ins and first-party packages** — framework features first; official packages (Horizon, Sanctum, Scout, Cashier, Reverb, …) next.
+2. **Spatie packages** — [spatie.be/open-source/packages](https://spatie.be/open-source/packages) is the **preferred source for third-party functionality** (permissions, media library, backups, activity log, query builder, settings, …). Check Spatie's catalog before other vendors.
+3. **Filament and its plugin ecosystem** — when the product needs an **admin/control panel**, evaluate [Filament](https://filamentphp.com/) as the **preferred route** before building a custom panel. Prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins).
+4. **Other community vendors** — only when nothing above fits, and with stricter vetting.
+
+Every candidate — **including** Spatie packages and Filament plugins — must pass a maintenance and security check before `composer require`:
+
+- Compatible with the installed PHP/Laravel versions (verify via Boost `Application Info`)
+- Actively maintained: recent releases and commits, responsive issue tracker
+- Healthy adoption (downloads, stars) relative to the problem's niche
+- No known vulnerabilities: run `composer audit` after install; check published security advisories
+- License compatible with the project
+
+Ownership: **Sebastian** proposes vendor and service integrations; **John** owns the architectural fit; **Lars** vets the security posture of anything touching auth, uploads, or user data; **Aurora** notes cost implications per Budget Sensitivity.
+
 ## Assumptions and Questions
 
 Ask the user only when all these conditions are true:
@@ -155,7 +193,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 💎 Mark | Product Manager | Product scope, personas, delivery-target choice, scope trade-offs |
 | 🧭 Jennifer | Business Strategist | Market positioning, competitive context, product risks |
 | 🏢 Benjamin | Business Consultant | Market research, enterprise know-how, business lens on technical choices |
-| 💡 Sebastian | Innovator | Competitive challenger, vendor integrations, import/export opportunities |
+| 💡 Sebastian | Innovator | Competitive challenger, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
 | 🔎 Tom | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
 | 📐 John | Architect | SOLID, scalable architecture, application and site performance |
 | 🔧 Alex | Full-Stack Developer | Implementation and task breakdown |
