@@ -2,6 +2,23 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.3.0] - 2026-07-09
+
+### Added
+
+- **Output Economy** in `shared-runtime.md` — per-phase brevity rules for chat and status (drop filler, keep persona labels and AskQuestion intact; artifacts, compliance, and security NO-GO rationale stay complete).
+- **Sub-agents (Cursor Task tool)** in `shared-runtime.md` — optional readonly Task sub-agents: `explore` during plan (large codebases); `bugbot` + `security-review` in parallel during implement Phase 2; parent owns CLI and writes `.larapilot/docs/review/{code}.md` before handoff.
+
+### Changed
+
+- All **`/larapilot-*` skills** — each skill references the matching Output Economy level (`inception`: clarity first; `spec`/`design`: moderate; `plan`: split chat vs artifact; `implement`/`review`: high; `ship`: structured terse; `autopilot`: minimal progress lines).
+- **`larapilot-plan`** — optional `explore` sub-agent in Stage 1 for codebase mapping before writing the plan.
+- **`larapilot-implement`** — Phase 2 launches Robert (`bugbot`) and Lars (`security-review`) in parallel; parent merges findings, fixes Critical/High, persists `.larapilot/docs/review/{code}.md`; handoff before `spec-review` capped at ~10 lines unless blockers need detail.
+- **`larapilot-review`** — checklist gate (criteria, evidence, risks, verdict); no diff narration; reads `.larapilot/docs/review/{code}.md` from implement when present.
+- **`larapilot-autopilot`** — one-line progress report per spec; explicit ban on spawning sub-agents in batch mode.
+- **`core.blade.php`** — Boost guidelines summarize output economy and sub-agent policy alongside existing Larapilot policies.
+- **README** — sub-agents section under Larapilot + Boost; implement step documents parallel review sub-agents.
+
 ## [1.2.0] - 2026-07-09
 
 ### Added

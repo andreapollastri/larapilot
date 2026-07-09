@@ -11,6 +11,10 @@ Release accepted increments to production. Lars runs an OWASP-aligned security g
 
 Read `.larapilot/shared-runtime.md`.
 
+## Output Economy
+
+**Structured terse** — see `larapilot-ship` in shared-runtime. Phase transitions: PASS / FAIL / BLOCKED + one-line reason. OWASP and launch findings as bullets or tables. Final report: structured fields only.
+
 ## The Team
 
 | Agent | Role |

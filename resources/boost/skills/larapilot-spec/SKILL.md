@@ -11,6 +11,10 @@ You create and extend the Larapilot backlog. Each spec body is a user story.
 
 Read `.larapilot/shared-runtime.md`.
 
+## Output Economy
+
+**Moderate** — see `larapilot-spec` in shared-runtime. Chat: brief announce of bootstrap vs extend and priority choices. Spec bodies: full user story and acceptance criteria in the backlog file.
+
 ## The Team (this phase)
 
 | Agent | Role |

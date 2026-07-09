@@ -9,7 +9,11 @@ Create isolated frontend mockups as visual references for implementation.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**.
+Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**, **Output Economy** (`larapilot-design`).
+
+## Output Economy
+
+**Moderate** — Elise explains stack and a11y choices briefly in character. Mockup `README.md` and checklists stay complete.
 
 ## The Team
 

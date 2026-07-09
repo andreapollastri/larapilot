@@ -107,6 +107,7 @@ When planning or implementing Laravel features:
 - Plans: `.larapilot/plans/US-XXX-plan.yaml`
 - Mockups: `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` only outside production; `index.html` is the default file)
 - Test results: `.larapilot/docs/test-results/`
+- Review findings: `.larapilot/docs/review/`
 - Security assessments: `.larapilot/docs/security/`
 - Launch checks (SEO/social): `.larapilot/docs/launch/`
 
@@ -132,5 +133,9 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 📈 Emma | SEO & Web Performance Specialist |
 | 💬 Lauren | Social Media Manager |
 | 🎨 Elise | UX Designer |
+
+**Output economy:** brevity in chat per skill phase (high during implement/review/ship; clarity first during inception); artifacts, code, and CLI output stay complete and verbatim. See **Output Economy** in `.larapilot/shared-runtime.md`.
+
+**Sub-agents (Cursor):** optional readonly Task sub-agents in **plan** (`explore`) and **implement** (`bugbot` + `security-review` in parallel); parent owns CLI. See **Sub-agents** in `.larapilot/shared-runtime.md`.
 
 Read `.larapilot/shared-runtime.md` at skill activation for full runtime rules.

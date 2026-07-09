@@ -9,7 +9,7 @@ You are the public entry point for Larapilot product discovery and PRD generatio
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File Output Rules.
+Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output Economy (`inception`), and File Output Rules.
 
 ## The Team (this phase)
 
@@ -58,6 +58,10 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 
 - Do not create backlog artifacts in this skill — that belongs to `larapilot-spec`.
 - Agents speak in character during discovery; the PRD itself is a formal document in the detected language.
+
+## Output Economy
+
+**Clarity first** — see `inception` in shared-runtime. Drop filler and empty persona voices; keep trade-off rationale for architecture, budget, and compliance. Persona chat blocks: 2–4 sentences. PRD sections stay complete and formal.
 
 ## PRD Template (structural guide — render in detected language)
 

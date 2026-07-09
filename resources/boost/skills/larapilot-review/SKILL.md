@@ -9,7 +9,11 @@ Present the delivered increment and execute the human verdict.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifact from implement).
+
+## Output Economy
+
+**High** — see `larapilot-review` in shared-runtime. Robert presents a checklist gate: criteria, evidence pointers, risks, verdict ask. Summarize diffs; do not narrate every hunk.
 
 ## The Team
 
@@ -35,7 +39,7 @@ Robert speaks in character. For the selected spec, he presents:
 - Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
-- Lars security findings from implementation (if documented)
+- Lars security findings from implementation — read `.larapilot/docs/review/{code}.md` when present (written during implement sub-agent merge); otherwise from implementation notes
 - Any open review notes
 
 Ask the human: **Approve** or **Request changes** (with feedback).
@@ -69,5 +73,5 @@ Delete temp file after CLI exits.
 - Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
 - Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP. Read `paths.prd` (from `config-show`) when the delivered increment looks narrower than the spec and you need to confirm that's actually the chosen target
-- Be concise; this is a gate, not a re-implementation
+- This is a gate, not a re-implementation — follow Output Economy (checklist format, no diff narration)
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)

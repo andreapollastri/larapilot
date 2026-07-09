@@ -9,7 +9,11 @@ Produce a detailed implementation plan for one spec and persist it via the CLI.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` — including **Sub-agents** (optional explore in Stage 1).
+
+## Output Economy
+
+**Split** — see `larapilot-plan` in shared-runtime. Team brief: 1–3 sentences per agent. Chat between stages: status and blockers only. `plan_body` and task bodies stay detailed execution contracts.
 
 ## The Team
 
@@ -51,6 +55,23 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 - Relevant Laravel code: models, migrations, routes, tests
 - Boost `Database Schema` for data model context
 - Boost `Search Docs` for Laravel/package patterns
+
+#### Sub-agent (optional — large or unfamiliar codebase)
+
+When `data.workdir` has substantial existing code, launch one **`explore`** sub-agent (`readonly: true`, `run_in_background: false`) before Stage 2. Parent still reads PRD and mockups directly.
+
+Handoff prompt:
+
+```text
+Larapilot plan context — {code}
+workdir: {data.workdir absolute}
+Spec title: {data.spec.title}
+Acceptance criteria (summary): {from data.spec.body}
+
+Map: Eloquent models, migrations, routes, policies, tests, frontend stack (Blade/Livewire/Inertia/Vue/Filament) touching this feature. List gaps vs acceptance criteria. Bullet summary only — no file edits. Parent writes the plan.
+```
+
+Parent merges explore output into planning; only parent calls `validate-plan` and `spec-plan`.
 
 ### Stage 2 — Team Brief + Plan
 

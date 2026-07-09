@@ -11,6 +11,10 @@ Batch-run `larapilot-plan` and `larapilot-implement` across eligible specs.
 
 Read `.larapilot/shared-runtime.md`.
 
+## Output Economy
+
+**Minimal** — see `larapilot-autopilot` in shared-runtime. Per spec: `US-XXX: {from}→{to} | N tasks | OK or blocker`. Batch summary at end. Delegate plan/implement chat style when those flows run.
+
 ## Config & CLI
 
 1. `php artisan larapilot:config-show`
@@ -39,7 +43,7 @@ Process specs one at a time in priority order (same ordering as `spec-next`).
 
 After each spec:
 
-- Report progress: code, status transition, task count
+- Report progress in one line (Output Economy): code, status transition, task count, blocker if any
 - On blocker: log, skip or stop per policy
 
 ## Safety
@@ -47,6 +51,7 @@ After each spec:
 - Never auto-approve specs (human gate via `larapilot-review` remains required)
 - Confirm with user before processing more than 5 specs
 - Use stronger models for plan phases; cheaper models acceptable for implement when tasks have explicit contracts
+- **Never spawn sub-agents in autopilot** — run plan/implement flows in the parent session; sub-agents run only inside `larapilot-implement` Phase 2 (and optional explore in `larapilot-plan` Stage 1) when those skills are active
 
 ## Laravel
 

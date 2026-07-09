@@ -611,7 +611,84 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 - Create parent directories if they do not exist
 - Overwrite the target generated artifact for the current run unless the active flow explicitly says otherwise
 
+## Output Economy
+
+Brevity applies to **chat and status messages**, not to persisted artifacts. Drop filler; keep decisions, risks, blockers, and next steps. This is **not** telegraphic or broken-English compression — stay professional in the detected language.
+
+### Global rules (every skill)
+
+1. **No filler** — skip openers ("Sure!", "I'd be happy to…"), restating the user's request, and closing pleasantries unless the user asked for them.
+2. **Persona labels stay** — keep `icon + name:` prefixes (see Agent Persona); compress the body, not the speaker.
+3. **AskQuestion unchanged** — persona intro in chat; options only in the tool. Never shorten question prompts at the cost of clarity.
+4. **Artifacts stay formal** — PRD, backlog specs, plan bodies, task bodies, mockup READMEs, launch reports, and CLI payloads keep full structure and required sections. Brevity is for conversation, not for files the validator or a human must sign off on.
+5. **Verbatim technical content** — code, file paths, `php artisan larapilot:*` commands, JSON envelopes, test output, and error messages are byte-for-byte exact; never paraphrase them for brevity.
+6. **Skip empty voices** — if a persona has nothing new to add in a round, do not speak for them.
+
+### Per-phase chat style
+
+| Skill / phase | Economy level | Chat behavior |
+| --- | --- | --- |
+| **`larapilot-inception`** | Clarity first | Discovery needs rationale for trade-offs (tenancy, budget, compliance). Still: no filler, no recap of what the user already said, at most 3 questions per round. Persona blocks: **2–4 sentences** when contributing. PRD file: formal and complete. |
+| **`larapilot-spec`** | Moderate | Brief announce of bootstrap vs extend and epic/priority choices. Spec markdown bodies: full user story and acceptance criteria — never shortened. |
+| **`larapilot-plan`** | Split | Team brief: **1–3 sentences per agent** (already required). Between stages: status and blockers only. `plan_body` and task bodies: detailed execution contracts — do not strip. |
+| **`larapilot-design`** | Moderate | Elise explains stack and a11y choices in character, briefly. Mockup `README.md` and checklists: complete (a11y, SEO, brand assets). |
+| **`larapilot-implement`** | High | Default line: **task → action → result → next**. No Laravel tutorials unless blocked. Robert/Lars findings: bullets with severity. Handoff before `spec-review`: spec code, tasks done, tests run, review outcome — **~10 lines max** unless blockers need detail. |
+| **`larapilot-review`** | High | Robert presents a **checklist gate**: criteria status, evidence pointers (branch, test command/output), residual risks, verdict ask. Summarize diffs; do not narrate every hunk. |
+| **`larapilot-ship`** | Structured terse | Between phases: **PASS / FAIL / BLOCKED + one-line reason**. OWASP and launch findings: bullets or tables. Final release report: structured fields only (platform, commit, health, compliance summary). |
+| **`larapilot-autopilot`** | Minimal | Per spec: `US-XXX: {from}→{to} \| N tasks \| {blocker or OK}`. End with batch summary. When delegating to plan/implement, follow that phase's economy. |
+
+### Do not compress
+
+- Legal, privacy, and compliance obligations (Violet)
+- Security **NO-GO** rationale (Lars)
+- Acceptance criteria and rework feedback
+- Multi-option architecture comparisons when the user must choose (John)
+- Anything that would hide a material risk or make AskQuestion ambiguous
+
+## Sub-agents (Cursor Task tool)
+
+Some skills spawn **readonly sub-agents** via the editor's Task tool for fresh context — not separate Larapilot personas. Sub-agents **never** call `php artisan larapilot:*`, edit files, or replace the human gate.
+
+### Global rules
+
+1. **Parent owns the workflow** — only the parent agent runs CLI transitions (`spec-start`, `task-done`, `spec-plan`, `spec-review`, `spec-approve`, …).
+2. **Readonly sub-agents** — code review and security passes are read-only; the parent applies fixes and re-runs tests.
+3. **Compact handoff** — pass spec code, absolute `data.workdir`, branch name, acceptance criteria, and plan path — not the full shared-runtime file.
+4. **Parallel when independent** — Robert and Lars reviews run in one message with two Task calls; explore during plan is a single sub-agent.
+5. **Never parallelize specs** — autopilot and batch flows stay one spec at a time; no sub-agent per spec in parallel.
+
+### Where sub-agents are used
+
+| Skill | Sub-agent | When | Type |
+| --- | --- | --- | --- |
+| **`larapilot-plan`** | Codebase explore *(optional)* | Stage 1, large or unfamiliar `data.workdir` | `explore`, readonly |
+| **`larapilot-implement`** | Robert + Lars | Phase 2, after all tasks `task-done` | `bugbot` + `security-review`, readonly, parallel |
+| **`larapilot-review`** | — | Reads parent-written `.larapilot/docs/review/{code}.md` if present | no spawn |
+
+Skills **without** sub-agents: `inception`, `spec`, `design`, `ship`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
+
+### Review artifact
+
+After merging sub-agent findings in **`larapilot-implement`**, the parent writes `.larapilot/docs/review/{code}.md` (create parent dirs) before `spec-review`:
+
+```markdown
+# Review findings — US-XXX
+
+## Robert (code review)
+- [severity] finding
+
+## Lars (security)
+- [severity] finding
+
+## Parent actions
+- Fixed: ...
+- Open (Medium/Low): ...
+```
+
+**`larapilot-review`** reads this file when presenting the increment to the human.
+
 ## Conversation Rules
 
 - Each agent speaks in character
+- Follow **Output Economy** for the active skill — brevity in chat, completeness in artifacts
 - Never mention internal mode names, workflow names, or routing decisions in the conversation

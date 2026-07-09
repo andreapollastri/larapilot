@@ -9,7 +9,11 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` — including **Sub-agents (Cursor Task tool)**.
+
+## Output Economy
+
+**High** — see `larapilot-implement` in shared-runtime. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
 
 ## The Team
 
@@ -84,16 +88,47 @@ Group tasks by dependencies. For each task:
 2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`)
 3. `task-done` when verified
 
-### Phase 2 — Review
+### Phase 2 — Review (sub-agents)
 
-Robert reviews: plan adherence, Laravel conventions, test coverage, code quality.
+After all tasks are verified, run **readonly sub-agents in parallel** before fixing and handoff. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
 
-Lars runs an OWASP-aligned security pass (Top 10 mapping, `composer audit`, auth/access-control checks). Verify scaffolding defaults, `public/.well-known/security.txt` and `SECURITY.md` on public apps, CI pipeline audit/test gates. Run `php artisan checkpoint:scan` when installed. Fix Critical/High findings before handoff; document Medium findings.
+#### Launch (one message, two Task calls)
 
-Fix blockers autonomously; loop until clean or explicit blocker.
+| Persona | Task `subagent_type` | `readonly` |
+| --- | --- | --- |
+| 🛡️ Robert | `bugbot` | `true` |
+| 🔐 Lars | `security-review` | `true` |
+
+Set `run_in_background: false` on both. Use `Diff: branch changes` (or `uncommitted changes` when nothing is committed yet).
+
+#### Handoff prompt (fill from `config-show` + `spec-show`)
+
+```text
+Larapilot implement review — {code}
+
+workdir: {data.workdir absolute}
+project_root: {data.project_root absolute}
+branch: feature/{code}-* (or current branch in workdir)
+plan: {paths.plans}/{code}-plan.yaml (under project_root)
+spec body: {acceptance criteria + Demonstrates from data.spec.body}
+
+Robert (bugbot): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main commits). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
+
+Lars (security-review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
+```
+
+#### Parent merge loop
+
+1. Deduplicate Robert + Lars bullets; fix all **Critical** and **High** autonomously.
+2. Re-run tests after fixes (`php artisan test` or `./vendor/bin/pest`).
+3. Re-run **Lars only** if auth, policies, or security files changed materially; skip Robert re-run unless code changed widely.
+4. Write `.larapilot/docs/review/{code}.md` per **Sub-agents** in shared-runtime (Robert, Lars, Parent actions sections).
+5. Document **Medium** findings in Parent actions if not fixed.
+
+Robert and Lars still speak in character when the **parent** summarizes merged findings in chat (Output Economy bullets).
 
 ### Phase 3 — Handoff
 
 `php artisan larapilot:spec-review {code}` with summary note.
 
-Report: spec code, tasks completed, tests run, review outcome.
+Report (concise): spec code, tasks completed, tests run, review outcome — per Output Economy handoff limit.
