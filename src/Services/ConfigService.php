@@ -168,7 +168,21 @@ class ConfigService
      */
     public function mockupsBrowsable(): bool
     {
-        if (! config('larapilot.enabled', true) || ! config('larapilot.mockups_route.enabled', true)) {
+        return $this->devRouteBrowsable('mockups_route');
+    }
+
+    /**
+     * Whether the workflow dashboard may be browsed in the current
+     * environment. Never true in production.
+     */
+    public function dashboardBrowsable(): bool
+    {
+        return $this->devRouteBrowsable('dashboard_route');
+    }
+
+    protected function devRouteBrowsable(string $routeKey): bool
+    {
+        if (! config('larapilot.enabled', true) || ! config("larapilot.{$routeKey}.enabled", true)) {
             return false;
         }
 
@@ -176,7 +190,7 @@ class ConfigService
             return false;
         }
 
-        $allowed = config('larapilot.mockups_route.environments');
+        $allowed = config("larapilot.{$routeKey}.environments");
 
         if (is_array($allowed) && $allowed !== []) {
             return app()->environment($allowed);

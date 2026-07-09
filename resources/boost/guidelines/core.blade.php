@@ -109,6 +109,7 @@ When planning or implementing Laravel features:
 - Specs: `.larapilot/specs/US-XXX.yaml`
 - Plans: `.larapilot/plans/US-XXX-plan.yaml`
 - Mockups: `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` only outside production; `index.html` is the default file)
+- Dashboard: `/larapilot` (read-only board, PRD, spec detail — dev/staging only; disabled in production)
 - Test results: `.larapilot/docs/test-results/`
 - Review findings: `.larapilot/docs/review/`
 - Security assessments: `.larapilot/docs/security/` (Lars OWASP + Oliver red-team)

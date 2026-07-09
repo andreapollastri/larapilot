@@ -446,15 +446,29 @@ Examples (folder → URL):
 
 Disable entirely with `LARAPILOT_MOCKUPS_ROUTE=false` in `.env`.
 
+### Workflow dashboard
+
+A read-only dashboard surfaces backlog status, rendered PRD, and spec/task detail from `.larapilot/` artifacts. Available **only outside production**.
+
+| Environment                   | URL pattern              | Access                 |
+| ----------------------------- | ------------------------ | ---------------------- |
+| `local`, `staging`, `testing` | `/larapilot`             | ✅ Board overview      |
+|                               | `/larapilot/prd`         | ✅ PRD viewer          |
+|                               | `/larapilot/specs/{code}`| ✅ Spec + tasks        |
+| `production`                  | —                        | ❌ Route disabled, 404 |
+
+Disable entirely with `LARAPILOT_DASHBOARD_ROUTE=false` in `.env`.
+
 ### Environment variables
 
 | Variable                  | Default  | Description                                      |
 | ------------------------- | -------- | ------------------------------------------------ |
-| `LARAPILOT_ENABLED`       | `true`   | Disable MCP and mockup route when `false`        |
+| `LARAPILOT_ENABLED`       | `true`   | Disable MCP and dev routes when `false`          |
 | `LARAPILOT_CONNECTOR`     | `file`   | Storage connector                                |
 | `LARAPILOT_MOCKUPS_ROUTE` | `true`   | Set `false` to disable the mockup preview route  |
+| `LARAPILOT_DASHBOARD_ROUTE` | `true` | Set `false` to disable the workflow dashboard  |
 
-When `LARAPILOT_ENABLED=false`, MCP and the mockup route are gated off. Artisan commands and `larapilot:doctor` remain available.
+When `LARAPILOT_ENABLED=false`, MCP and dev routes are gated off. Artisan commands and `larapilot:doctor` remain available.
 
 ### Worktree support
 

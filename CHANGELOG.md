@@ -22,6 +22,8 @@ All notable changes to `larapilot` will be documented in this file.
 
 - **Task body templates** — new `.larapilot/task-templates.md` (published on install/update): TASK-00 Git bootstrap, entity/non-entity/test/fix templates with `## Git Deliverables` and `## Test Data` sections; `larapilot-plan` and `larapilot-implement` reference it; `SharedRuntime::refresh()` copies all packaged docs.
 
+- **Workflow dashboard** — dev-only read-only UI at `/larapilot` (board, PRD viewer, spec/task detail). Disabled in production; configure with `LARAPILOT_DASHBOARD_ROUTE`.
+
 - **Vendor & Package Policy (Filament)** — Filament is no longer the assumed "preferred route" for admin/control panels. The team now **explicitly asks the user** (Filament vs custom panel) via AskQuestion, recommending the best-fit technology for the specific case and, above all, the option closest to the project mockups. The choice is recorded in the PRD (`## Technical Architecture`); `larapilot-spec`/`larapilot-plan` honor it (and ask when missing), `larapilot-implement` never introduces Filament on its own, and `larapilot-design` mockups no longer presuppose Filament's look — updated across `shared-runtime.md`, `core.blade.php`, all affected skills, and the README.
 
 ## [1.3.0] - 2026-07-09

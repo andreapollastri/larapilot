@@ -25,9 +25,11 @@ use Larapilot\Console\Commands\UpdateCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
+use Larapilot\Http\DashboardRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DashboardService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
@@ -44,6 +46,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
         $this->app->singleton(PlanService::class);
+        $this->app->singleton(DashboardService::class);
         $this->app->singleton(ValidationService::class);
     }
 
@@ -86,6 +89,9 @@ class LarapilotServiceProvider extends ServiceProvider
 
         Mcp::local('larapilot', LarapilotServer::class);
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapilot');
+
         MockupRouteRegistrar::register();
+        DashboardRouteRegistrar::register();
     }
 }

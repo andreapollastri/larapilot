@@ -2179,6 +2179,27 @@ So that I can access protected features.
         <p>Disable with <code>LARAPILOT_MOCKUPS_ROUTE=false</code> in <code>.env</code>.</p>
       </section>
 
+      <!-- Dashboard -->
+      <section class="doc-section" id="dashboard">
+        <div class="section-header">
+          <span class="section-label">Workflow</span>
+          <h2>Workflow Dashboard</h2>
+          <p>Read-only UI for backlog status, PRD, and spec/task detail — only outside production.</p>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Environment</th><th>URL pattern</th><th>Access</th></tr></thead>
+            <tbody>
+              <tr><td><code>local</code>, <code>staging</code>, <code>testing</code></td><td><code>/larapilot</code></td><td>✅ Board overview</td></tr>
+              <tr><td></td><td><code>/larapilot/prd</code></td><td>✅ PRD viewer</td></tr>
+              <tr><td></td><td><code>/larapilot/specs/{code}</code></td><td>✅ Spec + tasks</td></tr>
+              <tr><td><code>production</code></td><td>—</td><td>❌ Disabled (404)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Disable with <code>LARAPILOT_DASHBOARD_ROUTE=false</code> in <code>.env</code>.</p>
+      </section>
+
       <!-- Boost -->
       <section class="doc-section" id="boost">
         <div class="section-header">

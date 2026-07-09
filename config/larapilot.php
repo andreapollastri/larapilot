@@ -26,6 +26,13 @@ return [
         'environments' => ['local', 'development', 'testing', 'staging'],
     ],
 
+    'dashboard_route' => [
+        'enabled' => env('LARAPILOT_DASHBOARD_ROUTE', true),
+        'prefix' => 'larapilot',
+        'middleware' => ['web'],
+        'environments' => ['local', 'development', 'testing', 'staging'],
+    ],
+
     'workflow' => [
         'statuses' => [
             'todo' => 'TODO',
