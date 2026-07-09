@@ -1,6 +1,6 @@
 ---
 name: larapilot-inception
-description: Conducts product inception and generates a PRD covering vision, personas, delivery target, scope, technical architecture, and functional requirements. Use when the user wants to define a new product, explore a product idea, choose MVP vs full product scope, or write a PRD. Also triggers on Italian variants like "definire il prodotto", "idea di prodotto", "documento di prodotto".
+description: Conducts product inception and generates a PRD covering vision, personas, delivery target, scope, technical architecture, and functional requirements. Use when the user wants to define a new product, explore a product idea, choose MVP vs full product scope, or write a PRD. Opens with Project Kind (Personal, Website, Application) to branch discovery depth. Also triggers on Italian variants like "definire il prodotto", "idea di prodotto", "documento di prodotto", "progetto personale", "sito web", "applicativo".
 ---
 
 # Larapilot — Product Inception
@@ -41,22 +41,30 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 ## Workflow
 
 1. Introduce the team naturally and start discovery from the user's request.
-2. **Mark** asks the **delivery target** early via **AskQuestion** (see Delivery Target in shared-runtime): `MVP`, `V1 Complete`, `Full Product`, or `Enterprise`. Default recommendation is MVP only when the user has not expressed a broader ambition — if they want the full vision, enterprise readiness, or "go beyond MVP", honor that and recommend the matching target. In the same round (or right after), **Aurora** asks the **Budget Sensitivity** via **AskQuestion**: `Tracked` (budget drives decisions) or `Relaxed` (budget evaluation excluded — business validation loosened but never removed; see Budget Sensitivity in shared-runtime).
-3. **Mark** drives vision, problem, and users; **Jennifer** frames market positioning and calls out product risks early. Scope boundaries follow the **chosen delivery target**, plus core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
-4. **Benjamin** brings market research and multi-sector enterprise perspective; **Sebastian** challenges the product against competitors and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. **Matt** notes how proposed integrations will be wired (APIs, webhooks, OAuth). Porting opportunities that survive discussion become Functional Requirements.
-5. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target**; when multi-tenant/SaaS, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. When the product needs an **admin/control panel**, John **asks via AskQuestion** whether to use **Filament** or a **custom panel** — never assume either; he recommends the best fit for the specific case and, above all, the option closest to the project mockups (with Elise's input when mockups exist), and records the choice in `## Technical Architecture`. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, Cloudflare edge, AWS/compute, observability, Sail/Herd, **127001.it**. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults; **Oliver** notes red-team scope for ship. **Sebastian** proposes integrations; **Matt** validates delivery approach. **Lauren/Emma/Elise** marketing when public. **Violet** full privacy/legal when personal data. **Emily** defines country targets, languages, currency, and timezones when multi-market — with Violet on cultural/legal nuance. **Sophia** documents support/maintenance expectations in Future Phases for post-launch. **Benjamin** sanity-checks for Full Product / Enterprise.
-6. For **public-facing websites**, bring in **Emma**, **Lauren**, and **Elise**: Emma owns URLs, breadcrumbs, robots/sitemap/llms; Elise owns UI, WCAG, and **brand assets** (favicon.svg, logo, OG image) when the client does not supply them; Lauren uses those assets for social distribution.
-7. When the product handles **personal data**, **Violet** defines the full privacy/legal surface in `## Functional Requirements` and `## MVP Scope` (see Privacy & Legal Compliance in shared-runtime).
-8. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
-9. Write the PRD with these required sections:
+2. **Mark** opens with **Project Kind** via **AskQuestion** (see Project Kind in shared-runtime) — **before** delivery target, budget, or architecture:
+   - `Personal` — side project, portfolio, learning, solo tool
+   - `Website` — public site (showcase, portal, blog, store, landing, docs)
+   - `Application` — product, SaaS, B2B/B2C app, platform
+   The choice switches the rest of discovery; record it in the PRD under `## MVP Scope`.
+3. **Branch by Project Kind** (see branching rules in shared-runtime):
+   - **Personal** — lean path: Mark drives vision/problem/users in one short round; delivery target AskQuestion offers `MVP` or `V1 Complete` only; record **`Budget Sensitivity: Relaxed`** unless the user wants **Tracked**. Jennifer, Benjamin, Sebastian, Lauren stay silent. John proposes a pragmatic stack; Emma/Elise join only for public UI; Violet only for personal data.
+   - **Website** — round 2 AskQuestion: **Website Type** (`Showcase`, `Portal`, `Blog`, `E-commerce`, `Landing`, `Documentation`, `Other`) and **delivery target** (`MVP`, `V1 Complete`, `Full Product`). Aurora asks **Budget Sensitivity** in the same round or right after (default **Tracked** for **E-commerce**). Bring in **Emma**, **Lauren**, **Elise** early; **Sebastian** + **Matt** for payments/shipping on **E-commerce**; skip multi-tenancy unless **Portal** with accounts.
+   - **Application** — full discovery: **Mark** asks **delivery target** (`MVP`, `V1 Complete`, `Full Product`, `Enterprise`); **Aurora** asks **Budget Sensitivity** in the same round or right after; **John** opens multi-tenancy and admin-panel questions when signals match; full persona roster as needed.
+4. **Mark** drives vision, problem, and users within the active branch; **Jennifer** frames market positioning and calls out product risks early *(Application — and Website when competitive context matters)*. Scope boundaries follow the **chosen delivery target** and **Project Kind**, plus core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
+5. **Benjamin** brings market research and multi-sector enterprise perspective *(Application — Full Product / Enterprise)*; **Sebastian** challenges the product against competitors *(Application — and Website E-commerce when rivals exist)* and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. **Matt** notes how proposed integrations will be wired (APIs, webhooks, OAuth). Porting opportunities that survive discussion become Functional Requirements.
+6. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target** and **Project Kind**; when multi-tenant/SaaS *(Application)*, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. When the product needs an **admin/control panel** *(Application, or Website Portal)*, John **asks via AskQuestion** whether to use **Filament** or a **custom panel** — never assume either; he recommends the best fit for the specific case and, above all, the option closest to the project mockups (with Elise's input when mockups exist), and records the choice in `## Technical Architecture`. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, Cloudflare edge, AWS/compute, observability, Sail/Herd, **127001.it**. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults; **Oliver** notes red-team scope for ship *(Application — lighter note for Personal)*. **Sebastian** proposes integrations; **Matt** validates delivery approach. **Lauren/Emma/Elise** marketing when public *(Website and public Application)*. **Violet** full privacy/legal when personal data. **Emily** defines country targets, languages, currency, and timezones when multi-market — with Violet on cultural/legal nuance. **Sophia** documents support/maintenance expectations in Future Phases for post-launch *(Application — one line for Personal)*. **Benjamin** sanity-checks for Full Product / Enterprise.
+7. For **public-facing websites** *(Project Kind: Website — and public Application surfaces)*, bring in **Emma**, **Lauren**, and **Elise**: Emma owns URLs, breadcrumbs, robots/sitemap/llms; Elise owns UI, WCAG, and **brand assets** (favicon.svg, logo, OG image) when the client does not supply them; Lauren uses those assets for social distribution.
+8. When the product handles **personal data**, **Violet** defines the full privacy/legal surface in `## Functional Requirements` and `## MVP Scope` (see Privacy & Legal Compliance in shared-runtime).
+9. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
+10. Write the PRD with these required sections:
    - `## Elevator Pitch`
    - `## Vision`
    - `## User Personas`
    - `## Functional Requirements`
    - `## MVP Scope`
    - `## Technical Architecture`
-10. Persist via `php artisan larapilot:prd-write --content="..."` or write to a temp file and pass `--file=`.
-11. Run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
+11. Persist via `php artisan larapilot:prd-write --content="..."` or write to a temp file and pass `--file=`.
+12. Run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
 
 ## Output Boundaries
 
@@ -96,6 +104,8 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 
 ## MVP Scope
 
+**Project Kind:** Personal | Website | Application
+**Website Type:** Showcase | Portal | Blog | E-commerce | Landing | Documentation | Other *(Website only)*
 **Delivery Target:** MVP | V1 Complete | Full Product | Enterprise
 
 ### In Scope

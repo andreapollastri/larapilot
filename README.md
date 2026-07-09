@@ -32,9 +32,15 @@ Your editor connects to two MCP servers: **Laravel Boost** (docs, schema, Tinker
 
 ### The discovery interview
 
-Everything starts with `/larapilot-inception`. You bring a rough idea — one sentence is enough. Mark (PM), Jennifer (Strategist), and John (Architect) run a **guided conversation**, not a form to fill in one shot.
+Everything starts with `/larapilot-inception`. You bring a rough idea — one sentence is enough. **Mark** (PM) opens with a **Project Kind** choice — `Personal`, `Website`, or `Application` — which switches the rest of the interview. Jennifer (Strategist) and John (Architect) then run a **guided conversation**, not a form to fill in one shot.
 
-**What they explore:**
+**Project Kind branches:**
+
+- **Personal** — lean discovery (MVP/V1 only); Jennifer, Benjamin, Sebastian, and Lauren stay silent unless you ask; budget defaults to `Relaxed`
+- **Website** — type next (showcase, portal, blog, e-commerce, landing, docs); Emma, Lauren, and Elise lead; delivery target in round 2
+- **Application** — full discovery: delivery target, multi-tenancy, admin panel, integrations, compliance
+
+**What they explore (by branch):**
 
 - Market positioning, competitive context, and product risks (Jennifer)
 - Market research and enterprise business perspective (Benjamin)

@@ -40,6 +40,14 @@ Read PRD from `data.paths.prd`. If missing, ask for path, content, or suggest `l
 
 Read the **delivery target** from `## MVP Scope` (see Delivery Target in shared-runtime). Scope the backlog to match — do not cap at MVP when the PRD says `V1 Complete`, `Full Product`, or `Enterprise`.
 
+Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) and adjust backlog depth:
+
+| Project Kind | Backlog behavior |
+| --- | --- |
+| **Personal** | Leanest: one spec per core journey; defer polish and secondary FRs |
+| **Website** | Early specs for SEO/discoverability (`robots.txt`, sitemap, llms), content routes, and brand assets; type-specific specs (e.g. catalog/checkout for **E-commerce**) |
+| **Application** | Full FR coverage per delivery target |
+
 ## Bootstrap backlog (from PRD)
 
 | Delivery target | Backlog depth |

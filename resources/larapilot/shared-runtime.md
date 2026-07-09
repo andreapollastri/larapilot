@@ -95,11 +95,76 @@ Rules:
 3. Keep technical terms that have no natural translation (e.g. "MVP", "ADR", "CI/CD", "Eloquent") unchanged unless the target language has a standard equivalent already used in the existing artifact.
 4. Keep consistency with any existing artifact language (PRD → backlog → specs must all use the same language).
 
+## Project Kind
+
+The **first interview layer** in **`larapilot-inception`**. **Mark** asks before delivery target, budget, or deep architecture (via **AskQuestion**, right after the team intro). The choice switches the rest of discovery and is persisted in the PRD under `## MVP Scope` as:
+
+```markdown
+**Project Kind:** Personal | Website | Application
+**Website Type:** Showcase | Portal | Blog | E-commerce | Landing | Documentation | Other
+```
+
+`Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
+
+| Kind | Meaning | Discovery depth |
+| --- | --- | --- |
+| **Personal** | Solo side project, portfolio, learning experiment, or internal tool for oneself | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
+| **Website** | Public-facing site: showcase, portal, blog, store, landing, docs | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2 |
+| **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance |
+
+### Branching rules *(inception)*
+
+**Personal** — skip or lighten unless the user explicitly asks:
+
+| Persona | Behavior |
+| --- | --- |
+| Jennifer, Benjamin, Sebastian | Silent — no market positioning, enterprise research, or competitor porting |
+| Lauren | Silent — no SEM/campaigns |
+| Aurora | Do **not** run a budget round — record **`Budget Sensitivity: Relaxed`** in the PRD unless the user wants **Tracked** |
+| Oliver | Defer red-team notes to ship only |
+| Sophia | One line under Future Phases |
+| Emily | Only if the user mentions multiple locales |
+| John | Pragmatic Laravel stack — no multi-tenancy deep-dive unless asked |
+| Mark | Vision, problem, users, scope — keep it short |
+
+Delivery target AskQuestion offers **`MVP`** and **`V1 Complete`** only. If the user insists on **Full Product** or **Enterprise**, honor it — do not block.
+
+Keep active: **Mark**, **John** (minimal architecture), **Elise** (when there is UI), **Emma** (when pages are public), **Violet** (when personal data), **Lars** (security defaults), **Jack** (basic Git/CI).
+
+**Website** — round 2 via **AskQuestion**:
+
+1. **Website Type:** `Showcase` (vetrina), `Portal`, `Blog`, `E-commerce`, `Landing`, `Documentation`, `Other`
+2. **Delivery target:** `MVP`, `V1 Complete`, `Full Product` — `Enterprise` only when the user signals compliance or scale needs
+3. **Budget Sensitivity** (Aurora): default **`Tracked`** for **E-commerce**; otherwise ask in the same round or right after
+
+Active personas: **Mark**, **Emma**, **Lauren**, **Elise**, **John** (CMS, routes, caching — lighter than Application), **Violet** (forms, newsletter, cookies), **Aurora**, **Sebastian** + **Matt** (payments/shipping for **E-commerce**), **Emily** when multi-locale.
+
+Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal** with registered users or the user asks), **Oliver** (unless auth, payments, or sensitive data).
+
+**Application** — full team as the product signals require:
+
+1. **Delivery target** — all four options (`MVP` … `Enterprise`)
+2. **Budget Sensitivity** (Aurora) — same round or right after
+3. **John** — when SaaS, B2B platform, or tenant isolation is plausible, ask multi-tenancy via **AskQuestion** (see Architecture Standards)
+4. **John** — admin/control panel: **Filament** vs **custom** when applicable
+5. **Sebastian** — integrations and competitor data porting when comparable products exist
+6. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily** join when relevant
+
+### Downstream behavior
+
+All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work. If missing, infer from `## MVP Scope` / `## Technical Architecture` content or ask once.
+
+| Skill | Adjustment |
+| --- | --- |
+| **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target |
+| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets. **Application** → flows + admin when applicable |
+| **`larapilot-ship`** | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate |
+
 ## Delivery Target
 
 Larapilot uses **MVP thinking** as a default lens — smallest valuable slice, clear trade-offs, defer what is not essential — but **does not lock every project to an MVP**.
 
-During **`larapilot-inception`**, Mark asks the user to choose a **delivery target** (via **AskQuestion**, early in discovery). That choice is persisted in the PRD under `## MVP Scope` as:
+During **`larapilot-inception`**, Mark asks the user to choose a **delivery target** (via **AskQuestion**, after **Project Kind** — see branching rules above). That choice is persisted in the PRD under `## MVP Scope` as:
 
 ```markdown
 **Delivery Target:** MVP | V1 Complete | Full Product | Enterprise
@@ -121,7 +186,7 @@ Rules for all skills:
 
 ## Budget Sensitivity
 
-Budget is a default lens, not a mandatory gate. During **`larapilot-inception`**, Aurora asks the user (via **AskQuestion**, in the same round as the delivery target or right after it) whether budget should actively drive decisions. The choice is persisted in the PRD under `## Technical Architecture` as:
+Budget is a default lens, not a mandatory gate. During **`larapilot-inception`**, Aurora asks the user (via **AskQuestion**, in the same round as the delivery target or right after it) whether budget should actively drive decisions — **except** for **Personal** projects, where **`Relaxed`** is the default and Aurora only asks if the user wants **Tracked**. The choice is persisted in the PRD under `## Technical Architecture` as:
 
 ```markdown
 **Budget Sensitivity:** Tracked | Relaxed

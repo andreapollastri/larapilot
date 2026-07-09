@@ -1406,6 +1406,7 @@
         <a href="#mcp">MCP Setup</a>
         <a href="#artifacts">Artifacts</a>
         <a href="#mockups">Mockups</a>
+        <a href="#dashboard">Dashboard</a>
         <a href="#boost">Larapilot + Boost</a>
         <a href="#troubleshooting">Troubleshooting</a>
       </div>
@@ -1481,9 +1482,16 @@
         <p>Your editor connects to two MCP servers: <strong>Laravel Boost</strong> (docs, schema, Tinker) and <strong>Larapilot</strong> (backlog and workflow). Skills orchestrate the conversation; the CLI guarantees consistency; artifacts survive between sessions.</p>
 
         <h3>The discovery interview</h3>
-        <p>Everything starts with <code>/larapilot-inception</code>. You bring a rough idea — one sentence is enough. Mark (PM), Jennifer (Strategist), and John (Architect) run a <strong>guided conversation</strong>, not a form to fill in one shot.</p>
+        <p>Everything starts with <code>/larapilot-inception</code>. You bring a rough idea — one sentence is enough. Mark (PM) opens with a <strong>Project Kind</strong> choice — <code>Personal</code>, <code>Website</code>, or <code>Application</code> — which switches the rest of the interview. Jennifer (Strategist) and John (Architect) then run a <strong>guided conversation</strong>, not a form to fill in one shot.</p>
 
-        <p><strong>What they explore:</strong></p>
+        <p><strong>Project Kind branches:</strong></p>
+        <ul>
+          <li><strong>Personal</strong> — lean discovery (MVP/V1 only); Jennifer, Benjamin, Sebastian, and Lauren stay silent unless you ask; budget defaults to <code>Relaxed</code></li>
+          <li><strong>Website</strong> — type next (showcase, portal, blog, e-commerce, landing, docs); Emma, Lauren, and Elise lead; delivery target in round 2</li>
+          <li><strong>Application</strong> — full discovery: delivery target, multi-tenancy, admin panel, integrations, compliance</li>
+        </ul>
+
+        <p><strong>What they explore (by branch):</strong></p>
         <ul>
           <li>Market positioning, competitive context, and product risks (Jennifer)</li>
           <li>Market research and enterprise business perspective (Benjamin)</li>
@@ -1669,7 +1677,7 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
   }
 }</code></pre>
         </div>
-        <p><code>data.healthy</code> is <code>true</code> when config, shared runtime, and Boost are all in place. On a fresh install <code>backlog</code> and <code>prd</code> are still <code>false</code> — that's expected: they turn <code>true</code> after <code>/larapilot-inception</code> (PRD) and <code>/larapilot-spec</code> (backlog).</p>
+        <p><code>data.healthy</code> is <code>true</code> when config, shared runtime, and Boost are all in place. On a fresh install <code>backlog</code> and <code>prd</code> are still <code>false</code> — that's expected: they turn <code>true</code> after <code>/larapilot-inception</code> (PRD) and <code>/larapilot-spec</code> (backlog). In local, browse the workflow dashboard at <code>/larapilot</code> once artifacts exist.</p>
 
         <h3>6. Keep it updated</h3>
         <p>Boost publishes guidelines and skills as <strong>copies</strong> into your editor directories, so after upgrading the package one command brings everything current — the shared runtime doc, the Larapilot guidelines, and the <code>/larapilot-*</code> skills:</p>
@@ -1745,8 +1753,9 @@ php artisan larapilot:update</code></pre>
             <div class="skill-badge">/larapilot-inception</div>
             <div class="skill-body">
               <h3>Product Inception</h3>
-              <p>Guided discovery interview — not a one-shot form. The team explores your idea conversationally, then writes and validates the PRD.</p>
+              <p>Guided discovery interview — not a one-shot form. Mark opens with Project Kind (<code>Personal</code>, <code>Website</code>, <code>Application</code>); the team explores your idea conversationally, then writes and validates the PRD.</p>
               <ul>
+                <li><strong>Branches:</strong> Personal (lean), Website (type + SEO/marketing), Application (full SaaS/platform discovery)</li>
                 <li><strong>Team:</strong> Mark, Jennifer, Benjamin, Sebastian, John, Aurora; Emma, Lauren, Violet join when relevant</li>
                 <li><strong>Explores:</strong> positioning, enterprise research, competitor data porting &amp; integrations, MVP scope, budget-aligned architecture (Budget Sensitivity: Tracked or Relaxed)</li>
                 <li><strong>Interview rules:</strong> max 3 questions per round, skippable; infers from codebase first</li>
@@ -2048,9 +2057,10 @@ file:
           <table>
             <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><code>LARAPILOT_ENABLED</code></td><td><code>true</code></td><td>Disable MCP and mockup route when false</td></tr>
+              <tr><td><code>LARAPILOT_ENABLED</code></td><td><code>true</code></td><td>Disable MCP and dev routes when false</td></tr>
               <tr><td><code>LARAPILOT_CONNECTOR</code></td><td><code>file</code></td><td>Storage connector</td></tr>
-              <tr><td><code>LARAPILOT_MOCKUPS_ROUTE</code></td><td><code>true</code></td><td>Set false to disable mockup route</td></tr>
+              <tr><td><code>LARAPILOT_MOCKUPS_ROUTE</code></td><td><code>true</code></td><td>Set false to disable mockup preview route</td></tr>
+              <tr><td><code>LARAPILOT_DASHBOARD_ROUTE</code></td><td><code>true</code></td><td>Set false to disable workflow dashboard at <code>/larapilot</code></td></tr>
             </tbody>
           </table>
         </div>
@@ -2243,10 +2253,11 @@ So that I can access protected features.
           <li><strong>Validation failures</strong> — Fix <code>data.findings</code> from <code>validate-*</code></li>
           <li><strong>MCP not connecting</strong> — Register both servers from project root</li>
           <li><strong>Mockups 404</strong> — Check environment and <code>LARAPILOT_MOCKUPS_ROUTE</code></li>
+          <li><strong>Dashboard 404</strong> — Available only outside production; check <code>LARAPILOT_DASHBOARD_ROUTE</code></li>
         </ul>
 
         <h3>Disabled mode</h3>
-        <p>When <code>LARAPILOT_ENABLED=false</code>, MCP and mockup route are gated off. Artisan commands and <code>doctor</code> remain available.</p>
+        <p>When <code>LARAPILOT_ENABLED=false</code>, MCP and dev routes (<code>/mockups/*</code>, <code>/larapilot</code>) are gated off. Artisan commands and <code>doctor</code> remain available.</p>
 
         <div class="cta-band">
           <h3>Ready to ship with AI?</h3>

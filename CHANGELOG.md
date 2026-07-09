@@ -16,6 +16,8 @@ All notable changes to `larapilot` will be documented in this file.
 
 ### Changed
 
+- **Project Kind — inception interview branches** — Mark now opens discovery with **AskQuestion** for `Personal`, `Website`, or `Application`, switching persona depth and follow-up questions (website type, delivery target, multi-tenancy). Recorded in PRD `## MVP Scope`; downstream skills (`spec`, `design`, `ship`) read it. Updated `shared-runtime.md`, `larapilot-inception`, `larapilot-spec`, README, and docs.
+
 - **Alex — factories, seeders & strict Gitflow** — Alex must create/update Eloquent factories (domain-meaningful Faker data, states, relationships) and keep seeders (`DatabaseSeeder` + dedicated seeders) producing a coherent demo dataset; updates ship in the same task as model/migration changes with `migrate:fresh --seed` verification. **Git discipline** is now non-negotiable: one atomic Conventional Commit per completed task or evolutiva, push after each task, and open/update an internal PR toward `develop` (Robert blocks handoff on violation). Updated `shared-runtime.md`, `larapilot-plan`, `larapilot-implement`, `larapilot-review`, `core.blade.php`, and README.
 
 - **Mobile First — Elise & Anne** — UI design and tests must follow **Mobile First**: smallest viewport first (320–375 px), progressive desktop enhancement without neglecting large screens; extremely navigable and simple on any device/resolution. Elise documents breakpoint/nav contract in mockup README; Anne plans and runs multi-viewport tests (375 / 768 / 1280 px minimum, mobile nav, axe at mobile). Updated `shared-runtime.md`, `larapilot-design`, `larapilot-plan`, `larapilot-implement`, `larapilot-inception`, `larapilot-review`, `core.blade.php`, and README.

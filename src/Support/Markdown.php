@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Larapilot\Support;
 
 use Illuminate\Support\Str;
+use League\CommonMark\CommonMarkConverter;
 
 class Markdown
 {
     public static function toHtml(string $markdown): string
     {
-        if (class_exists(\League\CommonMark\CommonMarkConverter::class)) {
-            $converter = new \League\CommonMark\CommonMarkConverter([
+        if (class_exists(CommonMarkConverter::class)) {
+            $converter = new CommonMarkConverter([
                 'html_input' => 'strip',
                 'allow_unsafe_links' => false,
             ]);
