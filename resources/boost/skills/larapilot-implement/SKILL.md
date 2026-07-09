@@ -17,7 +17,7 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |
-| 🛡️ **Robert** | Code Reviewer — code quality, plan adherence, Laravel conventions |
+| 🛡️ **Robert** | Code Reviewer — plan adherence, Laravel conventions, **Gitflow** branch hygiene |
 | 🔐 **Lars** | Security Expert — OWASP-aligned security assessment |
 
 ## Config & CLI
@@ -48,6 +48,26 @@ Use **Laravel Boost** throughout:
 
 Follow Laravel best practices from Boost guidelines: thin controllers, Form Requests, policies, eager loading, Pest tests.
 
+Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from shared-runtime on greenfield work unless the PRD or existing codebase opts out:
+
+- **2FA:** enable Fortify TOTP when implementing auth; expose setup/confirm/recovery flows.
+- **Passwords:** register `Password::defaults()` in `AppServiceProvider` and use `Password::defaults()` in validation rules.
+- **UUIDs:** new models use `HasUuids` (or `HasVersion4Uuids`) and UUID columns in migrations.
+- **Hashing:** ensure `HASH_DRIVER=argon2id` (or `config/hashing.php` → `argon2id`).
+- **SSO:** use Laravel Socialite + [Socialite Providers](https://socialiteproviders.com/) for OAuth; link accounts on User model.
+- **Queues:** implement `ShouldQueue` jobs for async work; never block HTTP on slow I/O.
+- **Logging:** structured log context on auth, payments, and integration failures.
+- **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial.
+- **Docs:** update README, OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs.
+- **Local dev:** prefer Sail (`sail up`, `sail artisan …`); use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains.
+- **Git:** work on `feature/US-XXX-*` (or current spec branch per Gitflow); never commit directly to `main`.
+- **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
+- **Integrations:** wire the PRD-chosen stack — e.g. `boogle-client`, S3/R2 disk, indiestats snippet, newsletter package; **Cloudflare** trusted proxies + cache rules; **Nightwatch** or CloudWatch agent; Aikido/checkpoint for security audit.
+- **Frontend (Elise):** Blade/Livewire/Tailwind; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets.
+- **SEO (Emma):** robots/sitemap/llms, breadcrumbs, semantic headings, descriptive links.
+- **Accessibility legal (Violet):** accessibility statement page and regulatory notes when EU/public sector.
+- **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires.
+
 When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (admin panels) → other vetted vendors. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
 
 ## Workflow
@@ -68,7 +88,7 @@ Group tasks by dependencies. For each task:
 
 Robert reviews: plan adherence, Laravel conventions, test coverage, code quality.
 
-Lars runs an OWASP-aligned security pass (Top 10 mapping, `composer audit`, auth/access-control checks). Fix Critical/High findings before handoff; document Medium findings.
+Lars runs an OWASP-aligned security pass (Top 10 mapping, `composer audit`, auth/access-control checks). Verify scaffolding defaults, `public/.well-known/security.txt` and `SECURITY.md` on public apps, CI pipeline audit/test gates. Run `php artisan checkpoint:scan` when installed. Fix Critical/High findings before handoff; document Medium findings.
 
 Fix blockers autonomously; loop until clean or explicit blocker.
 

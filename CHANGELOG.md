@@ -2,6 +2,35 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.2.0] - 2026-07-09
+
+### Added
+
+- **Laravel Scaffolding Defaults** in `shared-runtime.md` and Boost guidelines — security baseline (Fortify 2FA, `Password::defaults()` with `uncompromised()`, UUID primary keys, Argon2id, Laravel Socialite + Socialite Providers for SSO), local dev (Laravel Sail preferred, Herd alternative, [127001.it](https://127001.it/) wildcard URLs), and an optional-integrations matrix (mainstream SaaS plus self-hosted: [Aikido](https://www.aikido.dev/), [checkpoint](https://github.com/andreapollastri/checkpoint), [newsletter](https://github.com/andreapollastri/newsletter), [indiestats](https://github.com/andreapollastri/indiestats), [boogle](https://github.com/andreapollastri/boogle), [johnny](https://github.com/andreapollastri/johnny)).
+- **Architecture Standards** (John) — scalable product depth per delivery target; queues/jobs, structured logging, service/DTO boundaries, minimal technical debt, OpenAPI/Swagger and README kept current.
+- **Multi-tenancy Architecture** (John) — mandatory pros/cons comparison across patterns: distributed monolith (one repo, N deploys, custom subdomains, optional central SSO), row-level `tenant_id`, database-per-tenant, schema-per-tenant, and package-driven (stancl/tenancy, Spatie multitenancy).
+- **Development & Delivery Standards** (Jack, Robert, Anne, Lars) — Gitflow (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`), SemVer + `CHANGELOG.md` (Keep a Changelog), `public/.well-known/security.txt` + root `SECURITY.md`, minimum CI/CD gates (Pint, Pest, `composer audit`, checkpoint), and testing bars scaled to delivery target.
+- **Security budget** (Aurora + Lars + Violet) — security spend is never the first cost cut; Lars and Violet review tooling and architecture against cybersecurity best practice and applicable regulations.
+- **Infrastructure & Cloud** (Jack + Aurora) — **Cloudflare** preferred for DNS/CDN/WAF (alternatives: AWS WAF + CloudFront, Bunny, Akamai, Fastly); AWS compute step-by-step when budget allows; **DigitalOcean** alternative; **Hetzner** and **OVH** for EU residency; observability always proposed (Laravel Nightwatch, AWS CloudWatch, or alternatives).
+- **Marketing & Growth** (Lauren + Emma + Elise + Aurora) — newsletter, campaigns, and SEM within budget; tasks baked into plan/implement, not deferred to ship only.
+- **Privacy & Legal Compliance** (Violet) — expanded surface: cookie/ToS policies, anonymization, opt-out, log retention, subprocessors, data-subject rights, and digital accessibility regulations.
+- **UX & Frontend Design** (Elise) — Laravel-aligned stack preference (Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament); default Nordic minimal aesthetic; **dark + light mode** unless explicitly opted out.
+- **Accessibility** (Elise + Emma + Violet) — WCAG 2.2 Level AA from design through ship; Emma covers semantic SEO overlap and Lighthouse Accessibility ≥ 90; Violet covers EAA, EN 301 549, Legge Stanca, ADA, and accessibility statement pages when required.
+- **SEO Structure & Discoverability** (Emma) — URL conventions, breadcrumbs with JSON-LD, and mandatory **`robots.txt`**, **`sitemap.xml`**, and **`llms.txt`** kept updated with every public route change.
+- **Brand identity & assets** (Elise → Lauren) — when the client provides no artwork, Elise creates **`favicon.svg`**, logo (SVG), coordinated brand imagery, OG/social PNG (1200×630), and apple-touch-icon; Lauren applies them to distribution and meta tags.
+
+### Changed
+
+- Persona roles updated across `shared-runtime.md`, README, and skills — John (multi-tenancy, APIs), Jack (Gitflow, CI/CD, Cloudflare, observability), Lars (`security.txt`, pipeline gates), Anne (Pest/CI test gates), Robert (branch hygiene), Emma (structural SEO + a11y overlap), Elise (Laravel UI stack, WCAG, brand assets), Lauren (marketing + Elise social assets), Violet (EAA/accessibility law).
+- **`larapilot-inception`** — PRD template extended with multi-tenancy, development/delivery, SEO/discoverability, UX/frontend, and marketing sections; workflow steps aligned to new policies.
+- **`larapilot-plan`** — plans now include Gitflow branch names, semver/CHANGELOG, security files, CI scaffold, Cloudflare/observability, multi-tenancy, accessibility, brand assets, and structural SEO tasks.
+- **`larapilot-implement`** — implementation contract covers scaffolding defaults, architecture standards, Gitflow, `security.txt`/`SECURITY.md`, frontend/a11y/SEO deliverables, and multi-tenancy patterns.
+- **`larapilot-ship`** — OWASP gate expanded (WAF/CDN, observability live); Emma launch checks include `llms.txt`, breadcrumbs, Lighthouse a11y; Violet checks digital accessibility; Lauren verifies Elise brand/social assets and `favicon.svg`.
+- **`larapilot-design`** — rewritten for Laravel stack alignment, WCAG mockup requirements, brand asset deliverables (`favicon.svg`, `logo.svg`, `og-default.png`), and Emma/Violet/Lauren collaboration notes.
+- **`larapilot-review`** — Robert presents Gitflow branch hygiene, CHANGELOG/security-file updates, and testing evidence per delivery target.
+- **`core.blade.php`** — Boost guidelines summarize scaffolding defaults, brand assets, and key policies for all Laravel work.
+- **README** — Team policies section documents architecture standards, security budget, cloud/edge/observability, marketing, privacy/legal, UX/frontend, and brand assets.
+
 ## [1.1.0] - 2026-07-09
 
 ### Added

@@ -8,6 +8,8 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Vendor & package policy:** prefer Laravel built-ins/first-party, then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels evaluate **Filament** (filamentphp.com) and its plugins as the preferred route. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
 
+**Laravel scaffolding defaults:** … **Brand (Elise):** favicon.svg, logo, OG 1200×630 for Lauren when client has no assets. See `.larapilot/shared-runtime.md`.
+
 ### When to use Larapilot
 
 Use Larapilot skills when the user wants to:

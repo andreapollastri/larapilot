@@ -16,12 +16,14 @@ Read `.larapilot/shared-runtime.md`.
 | Agent | Role |
 | --- | --- |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria and spec fidelity |
-| 📐 **John** | Architect — SOLID design, performance, scalable technical solution |
+| 📐 **John** | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target |
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
-| 💰 **Aurora** | FinOps Expert — cost-aware infra and service choices per PRD Budget Sensitivity |
-| ⚖️ **Violet** | Legal Expert — GDPR/data-processing impact when spec handles personal data |
-| 📈 **Emma** | SEO & Web Performance Specialist — SEO/Analytics tasks when spec touches public-facing pages |
-| 💬 **Lauren** | Social Media Manager — OG/share tasks when spec touches public-facing pages |
+| 💰 **Aurora** | FinOps Expert — infra/security/marketing budget per PRD; privilege security spend |
+| ⚖️ **Violet** | Legal Expert — privacy/legal tasks: cookie/ToS, retention, anonymization, opt-out |
+| 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM |
+| 💬 **Lauren** | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora |
+| 🎨 **Elise** | UX Designer — mockups, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
+| 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt maintenance, Analytics/SEM |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect |
 
@@ -76,13 +78,18 @@ Validate, then `spec-plan`. Delete temp file after CLI exits.
 
 ## Laravel Planning Rules
 
-- John MUST address performance (caching, N+1, queues) and SOLID boundaries in `plan_body`
+- John MUST apply **Architecture Standards** and **Multi-tenancy** comparison from shared-runtime when spec touches SaaS/workspaces; plan Gitflow branch name `feature/US-XXX-*`, semver/CHANGELOG tasks, `security.txt` + `SECURITY.md`, CI pipeline gates, queues, DTOs, OpenAPI
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
-- Aurora flags cost implications of infra choices (DB tier, object storage, CDN, managed services) — per PRD **Budget Sensitivity**: in `Relaxed` mode she limits herself to short advisories (lock-in, hard-to-reverse costs) and never blocks a choice on cost
+- Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
 - New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** specs, evaluate **Filament** (and its plugin ecosystem) as the preferred route before planning a custom panel — always verify maintenance, compatibility, and security before adding a dependency
-- Violet adds privacy/GDPR tasks when the spec processes personal data
-- For specs that touch public-facing pages: Emma adds SEO/Analytics tasks (meta tags, semantic headings, tracking events) and Lauren adds OG/share-image tasks — bake these into `tasks`, not just the ship-phase launch check
+- Apply **Laravel Scaffolding Defaults** from shared-runtime unless the PRD opts out: auth specs get Fortify 2FA + `Password::defaults()` + **Socialite** for SSO; new models/migrations use UUID primary keys; greenfield auth uses Argon2id; local-dev specs prefer **Sail** (or **Herd** if PRD says so) and may document **127001.it** URLs
+- When a spec touches newsletter, analytics, error monitoring, or S3: Sebastian plans the PRD-chosen integration; security-audit specs: **Aikido** first when Tracked/Forge, plus **checkpoint** as local/CI complement
+- **Jack** plans cloud/deploy, Cloudflare edge, observability, **Gitflow** workflow, **CI/CD** scaffold, and **release/x.y.z** + CHANGELOG bump tasks
+- **Lars** plans `public/.well-known/security.txt` and root `SECURITY.md` when missing
+- Anne defines **Testing standards** per delivery target; every public API route gets a feature test; add **accessibility** checks (Pest + axe or Lighthouse CI) on public UI specs
+- Violet adds full **Privacy & Legal Compliance** tasks when the spec processes personal data (cookie policy, ToS, retention, anonymization, opt-out, subprocessors)
+- For public-facing specs: **Emma** URL/robots/sitemap/llms; **Elise** UI + WCAG + **favicon.svg, logo, OG 1200×630** (if client assets missing); **Violet** a11y legal; **Lauren** marketing using Elise social assets
 - Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate
 - Include Pest/PHPUnit tasks interleaved with implementation (not all tests at the end)
 - For UI specs: Anne MUST define e2e strategy using the project's existing test stack

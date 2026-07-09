@@ -9,16 +9,18 @@ Create isolated frontend mockups as visual references for implementation.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**.
 
 ## The Team
 
 | Agent | Role |
 | --- | --- |
-| 🎨 **Elise** | UX Designer — user flows, accessibility, mockups, and visual language |
-| 📈 **Emma** | SEO & Web Performance Specialist — semantic structure, Analytics/tracking placement, Lighthouse targets *(public pages)* |
-| 💬 **Lauren** | Social Media Manager — OG/Twitter card notes, share image specs *(public pages)* |
-| 💎 **Mark** | Product Manager — scope and persona alignment with PRD delivery target |
+| 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
+| 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, OG meta targets |
+| 💬 **Lauren** | Social Media Manager — share copy, channels; **uses Elise assets** when client provides none |
+| ⚖️ **Violet** | Legal — accessibility regulations, accessibility statement |
+| 💰 **Aurora** | FinOps Expert — SEM budget advisory |
+| 💎 **Mark** | Product Manager — PRD alignment |
 
 ## Config & CLI
 
@@ -27,28 +29,73 @@ Read `.larapilot/shared-runtime.md`.
 ## Rules
 
 - **Never modify application code** — only write to `.larapilot/mockups/{spec-code}/` or `.larapilot/mockups/{feature-name}/`
-- Use standalone HTML + CSS (optionally Tailwind CDN if the project uses Tailwind — check Boost guidelines)
 - Match existing mockups in `.larapilot/mockups/` for visual consistency
-- In **local/dev/staging**, mockups are browsable at `/mockups/{spec}` via a Laravel route (serves `index.html` by default)
-- In **production** (`APP_ENV=production`), the route is disabled and mockups are not web-accessible
-- For Laravel apps with Flux/Livewire/Inertia: mockups are references, not production components
-- Elise speaks in character when presenting design choices
-- Every mockup uses semantic HTML, correct form labels, and accessible contrast — Alex inherits these in implementation
-- For public pages: Emma annotates SEO structure (single H1, meta title/description), Analytics integration points (GA4, Plausible, GTM), key tracking events, and Lighthouse performance targets in the mockup README; Lauren documents OG image size (1200×630) and default share copy
-- For **admin/control panel** screens destined for **Filament** (see Vendor & Package Policy in shared-runtime): follow Filament's layout conventions (sidebar navigation, resource tables, form schemas) instead of inventing a custom admin UI — note in the README which Filament components/plugins the mockup maps to
+- Mockups browsable at `/mockups/{spec}` in local/dev/staging only
+- Elise speaks in character; **accessibility is mandatory** — not a polish pass at the end
+
+### Elise — Laravel stack & aesthetic
+
+Boost `Application Info` → align to shared-runtime stack order: Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
+
+Default aesthetic: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
+
+### Elise — accessibility (WCAG 2.2 AA)
+
+Every mockup must demonstrate:
+
+- Semantic HTML (`header`, `nav`, `main`, `footer`, one `h1`)
+- Visible **focus** styles on interactive elements
+- Form `<label>` + error state examples
+- Sufficient **contrast** in light and dark (WCAG AA)
+- Skip link, keyboard-friendly nav
+- `alt` placeholders on images; `aria-live` notes for dynamic regions
+- `prefers-reduced-motion` noted in README when animations exist
+
+Annotate in README what Alex must preserve in Blade/Livewire.
+
+### Elise — brand identity & assets *(when client does not provide)*
+
+Elise **always** plans and, when needed, **creates** brand assets for public products:
+
+| Deliverable | Path (design phase) | Spec |
+| --- | --- | --- |
+| **Favicon** | `favicon.svg` in mockup folder → `public/favicon.svg` | SVG, works light/dark, simple mark |
+| **Logo** | `logo.svg` (+ optional `logo-dark.svg` / `logo-light.svg`) | Wordmark and/or icon; `currentColor` or dual variants |
+| **Coordinated brand image** | `brand-hero.svg` or PNG | Abstract/hero visual matching logo palette |
+| **OG / social share** | `og-default.png` **1200×630** | For Lauren — default Open Graph / X / LinkedIn |
+| **Apple touch icon** | `apple-touch-icon.png` **180×180** | Cropped from logo mark |
+| **Brand guide** | `README.md` or `.larapilot/brand/README.md` | Palette, type, logo clear space, asset inventory |
+
+If the **client supplies** logo/favicon/social art → document paths in README and reference in mockup header; do not replace without approval.
+
+Show logo + favicon in mockup `index.html` header. Lauren notes default share copy referencing `og-default.png`.
+
+### Emma — SEO & a11y overlap
+
+Document in README:
+
+- URL path, breadcrumbs (+ JSON-LD)
+- `robots.txt` / `sitemap.xml` / `llms.txt` updates needed
+- Unique `<title>`, meta description, descriptive link text
+- Lighthouse targets: Accessibility ≥ 90, Performance ≥ 80
+
+### Violet — regulatory notes
+
+When product is EU/public sector, note in README:
+
+- Applicable standard (EAA, EN 301 549, Legge Stanca, ADA)
+- Whether an **accessibility statement** page is required
+- Open issues / known gaps for launch checklist
 
 ## Output
 
-- `index.html` — main screen
-- Optional `styles.css` or inline styles
-- README.md in the mockup folder describing screens and interaction notes
+- `index.html` — light theme (+ `dark.html` or toggle); embed **logo** and **favicon** preview
+- `favicon.svg`, `logo.svg` — when Elise creates brand assets
+- `og-default.png` (1200×630) — when social share image needed for Lauren
+- Optional: `apple-touch-icon.png`, `brand-hero.svg`
+- README.md — stack mapping, theme tokens, a11y checklist, **brand asset list**, Emma SEO notes, Lauren share notes, Violet regulatory notes
 
 ## Aesthetic Guidelines
 
-- Distinctive, production-grade visual language — avoid generic "AI slop" aesthetics
-- Clear hierarchy, accessible contrast, responsive layout
-- Annotate interactive states (hover, error, empty) when relevant
-
-## Laravel Context
-
-Use Boost `Application Info` to detect Flux UI, Tailwind version, or Inertia stack and align visual language accordingly.
+- Nordic minimal; annotate hover, **focus**, error, empty, loading states
+- Responsive, mobile-first; 44×44 px minimum touch targets

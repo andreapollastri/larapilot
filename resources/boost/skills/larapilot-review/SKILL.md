@@ -31,8 +31,9 @@ Robert speaks in character. For the selected spec, he presents:
 
 - Spec title, code, acceptance criteria
 - What was demonstrated (from spec `Demonstrates`)
-- Git diff summary (if available)
-- Test evidence (Pest/PHPUnit output)
+- Git diff summary (if available) — branch follows **Gitflow** (`feature/US-XXX-*`, not direct `main` commits)
+- Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target
+- `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
 - Lars security findings from implementation (if documented)
 - Any open review notes

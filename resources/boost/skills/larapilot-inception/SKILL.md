@@ -19,11 +19,12 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 | 🧭 **Jennifer** | Business Strategist — market positioning, competitive context, product risks |
 | 🏢 **Benjamin** | Business Consultant — market research, enterprise know-how, business lens on technical choices |
 | 💡 **Sebastian** | Innovator — competitive challenger; proposes integrations and **competitor data porting** (import paths from rival products, lock-in-free export) |
-| 📐 **John** | Architect — SOLID, scalable architecture, application and site performance in `## Technical Architecture` |
-| 💰 **Aurora** | FinOps Expert — budget-aligned infra, server/DB/storage costs, provider trade-offs; asks the Budget Sensitivity question |
-| ⚖️ **Violet** | Legal Expert — GDPR, data processing, privacy requirements *(when personal data is involved)* |
-| 📈 **Emma** | SEO & Web Performance Specialist — SEO, Analytics, tracking events *(public websites)* |
-| 💬 **Lauren** | Social Media Manager — distribution channels, share strategy *(public websites)* |
+| 📐 **John** | Architect — scalable products, **multi-tenancy** trade-offs (distributed monolith, row-level, DB/schema-per-tenant, packages), APIs, queues, DTOs, OpenAPI/docs |
+| 💰 **Aurora** | FinOps Expert — budget-aligned infra/security/SaaS; security spend never first cut; asks Budget Sensitivity |
+| ⚖️ **Violet** | Legal Expert — GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out |
+| 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, semantic HTML, Lighthouse a11y *(public websites)* |
+| 💬 **Lauren** | Social Media Manager — marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora |
+| 🎨 **Elise** | UX Designer — Nordic UI, WCAG 2.2 AA, **logo/favicon.svg/social assets** when client has none |
 
 ## Config & CLI
 
@@ -39,9 +40,9 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 2. **Mark** asks the **delivery target** early via **AskQuestion** (see Delivery Target in shared-runtime): `MVP`, `V1 Complete`, `Full Product`, or `Enterprise`. Default recommendation is MVP only when the user has not expressed a broader ambition — if they want the full vision, enterprise readiness, or "go beyond MVP", honor that and recommend the matching target. In the same round (or right after), **Aurora** asks the **Budget Sensitivity** via **AskQuestion**: `Tracked` (budget drives decisions) or `Relaxed` (budget evaluation excluded — business validation loosened but never removed; see Budget Sensitivity in shared-runtime).
 3. **Mark** drives vision, problem, and users; **Jennifer** frames market positioning and calls out product risks early. Scope boundaries follow the **chosen delivery target**, plus core Laravel stack assumptions. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
 4. **Benjamin** brings market research and multi-sector enterprise perspective; **Sebastian** challenges the product against competitors and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. Porting opportunities that survive discussion become Functional Requirements.
-5. **John** and **Aurora** co-own `## Technical Architecture`: John ensures SOLID, scalable, performant design; Aurora aligns stack, hosting, and services to the client's budget (AWS, GCP, Azure, DigitalOcean, Laravel Cloud, etc.) — per the chosen **Budget Sensitivity**: in `Relaxed` mode she keeps only short cost advisories and asks no budget questions. When the product needs an **admin/control panel**, John evaluates **Filament** as the preferred route; third-party packages follow the **Vendor & Package Policy** in shared-runtime (Spatie-first, maintained and secure vendors only). **Benjamin** sanity-checks stack and vendor choices against business viability, especially for **Full Product** or **Enterprise**. For those targets, architecture must support the full roadmap — not a throwaway MVP stack.
-6. For **public-facing websites**, bring in **Emma** and **Lauren**: SEO, Analytics, tracking events, and social strategy feed into `## Functional Requirements` and `## MVP Scope`.
-7. When the product handles **personal data**, **Violet** defines GDPR/privacy requirements in `## Functional Requirements` and `## MVP Scope`.
+5. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target**; when multi-tenant/SaaS, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, Cloudflare edge, AWS/compute, observability, Sail/Herd, **127001.it**. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults. **Sebastian** proposes integrations. **Lauren/Emma/Elise** marketing when public. **Violet** full privacy/legal when personal data. **Benjamin** sanity-checks for Full Product / Enterprise.
+6. For **public-facing websites**, bring in **Emma**, **Lauren**, and **Elise**: Emma owns URLs, breadcrumbs, robots/sitemap/llms; Elise owns UI, WCAG, and **brand assets** (favicon.svg, logo, OG image) when the client does not supply them; Lauren uses those assets for social distribution.
+7. When the product handles **personal data**, **Violet** defines the full privacy/legal surface in `## Functional Requirements` and `## MVP Scope` (see Privacy & Legal Compliance in shared-runtime).
 8. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
 9. Write the PRD with these required sections:
    - `## Elevator Pitch`
@@ -106,12 +107,57 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, and File
 - Laravel {{VERSION}} (detect via Boost Application Info)
 - Admin panel: Filament (preferred when a control panel is required) — John
 - Third-party packages: per Vendor & Package Policy (Spatie-first, maintained and secure) — Sebastian
+- Auth & security defaults: Fortify 2FA, Password::defaults (uncompromised), UUID PKs, Argon2id, Socialite SSO — Lars
+- Local dev: Laravel Sail (preferred) or Herd; optional 127001.it URLs — Jack
+- Cloud: {{AWS / DigitalOcean / Hetzner / OVH / Forge / Cipi}} — Jack + Aurora
+- Edge & WAF: Cloudflare (preferred) — {{or AWS WAF / Bunny / Akamai / Fastly}} — Jack + Lars
+- Observability: {{Nightwatch / CloudWatch / Datadog / Grafana / …}} — Jack + John
+- API & docs: {{REST/OpenAPI depth per delivery target}} — John
 - ...
+
+### SEO & discoverability *(public sites — Emma)*
+- URL conventions: {{hierarchy, slugs, i18n prefix}}
+- Breadcrumbs: {{pattern + JSON-LD}}
+- robots.txt / sitemap.xml / llms.txt: {{strategy — static vs generated}}
+
+### UX & frontend *(Elise + Emma + Violet)*
+- Stack: {{Blade / Livewire / Tailwind / Vue / Filament}}
+- Visual language: Nordic minimal (unless override)
+- Themes: light + dark (unless opt-out)
+- Accessibility: WCAG 2.2 AA; regulations {{EAA / EN 301 549 / Legge Stanca}}
+- Brand assets: {{client-provided OR Elise creates logo + favicon.svg + OG 1200×630}}
+- Accessibility statement: {{required yes/no — Violet}}
+
+### Marketing *(public products — Lauren + Emma + Elise + Aurora)*
+- Newsletter: {{strategy + tool}}
+- Campaigns / social: {{channels}}
+- SEM: {{if budget allows — Google/Meta/LinkedIn + UTM with Emma}}
+
+### Integrations *(when applicable — Sebastian proposes SaaS + self-hosted)*
+- Newsletter: {{e.g. Brevo / Mailchimp / andreapollastri/newsletter}}
+- Analytics: {{e.g. Plausible / GA4 / andreapollastri/indiestats}}
+- Error & uptime: {{e.g. Sentry / andreapollastri/boogle}}
+- Observability / APM: {{e.g. Nightwatch / CloudWatch / Datadog}}
+- Object storage: {{e.g. AWS S3 / R2 / andreapollastri/johnny}}
+- Security scan: {{e.g. Aikido (when budget) / Forge integration / andreapollastri/checkpoint}}
+
+### Multi-tenancy *(if applicable — John compares pros/cons)*
+- Pattern chosen: {{A distributed monolith / B row-level / C DB-per-tenant / D schema-per-tenant / E package}}
+- Rationale: {{isolation needs, tenant count, budget, compliance}}
+- Subdomains / custom domains: {{e.g. tenant.app.com via Cloudflare}}
+- Central SSO in front: {{yes/no — provider}}
+
+### Development & delivery
+- Git: Gitflow (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`) — Jack
+- Versioning: SemVer + CHANGELOG.md (Keep a Changelog) — Jack
+- Security files: `public/.well-known/security.txt`, `SECURITY.md` — Lars
+- CI/CD: {{GitHub Actions / GitLab CI}} — test, pint, composer audit, checkpoint — Jack + Anne
 
 ### Core Components
 - ...
 
 ### Performance & Scalability
-- Caching, queues, DB indexing, CDN — John
-- Estimated infra cost and provider rationale — Aurora (advisory-only when Budget Sensitivity is Relaxed)
+- Queues, caching, DB indexing, CDN (**Cloudflare** preferred), structured logging, observability — John + Jack
+- Security budget (Aikido, monitoring, backups) — Aurora + Lars + Violet
+- Estimated infra cost and provider rationale — Aurora
 ```

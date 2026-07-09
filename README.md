@@ -288,17 +288,18 @@ Personas are lenses that make the process visible:
 | 🏢 Benjamin | Business Consultant             | Market research, enterprise know-how, business lens on technical choices |
 | 💡 Sebastian | Innovator                        | Competitive challenger, vendor integrations, competitor data porting (import from rivals, lock-in-free export) |
 | 🔎 Tom      | Requirements Analyst              | Acceptance criteria, edge cases, spec quality  |
-| 📐 John     | Architect                         | SOLID, scalable architecture, application and site performance |
+| 📐 John     | Architect                         | Scalable architecture, multi-tenancy trade-offs, APIs, queues, DTOs, OpenAPI/docs |
 | 🔧 Alex     | Full-Stack Developer              | Implementation and task breakdown              |
-| 🧪 Anne     | Test Architect                    | Test strategy and coverage                     |
-| 🛡️ Robert   | Code Reviewer                     | Code quality, plan adherence, Laravel conventions |
-| 🔐 Lars     | Security Expert                   | OWASP-aligned assessment, threat modeling, secure defaults |
-| 🚀 Jack     | DevOps Engineer                   | Deploy orchestration — Cipi (preferred), Forge, Laravel Cloud, Ploi, Kubernetes, custom |
-| 💰 Aurora   | FinOps Expert                     | SaaS budgets, cloud cost optimization, provider and infra choices by budget (advisory-only when Budget Sensitivity is Relaxed) |
-| ⚖️ Violet   | Legal Expert                      | GDPR, data processing, privacy compliance, consent and legal requirements |
-| 📈 Emma     | SEO & Web Performance Specialist  | Technical SEO, Analytics, tracking events, Lighthouse performance |
-| 💬 Lauren   | Social Media Manager              | Open Graph, share previews, distribution readiness |
-| 🎨 Elise    | UX Designer                       | User flows, accessibility, mockups, and visual language |
+| 🧪 Anne     | Test Architect                    | Pest/PHPUnit strategy, CI test gates           |
+| 🛡️ Robert   | Code Reviewer                     | Code quality, Gitflow hygiene, Laravel conventions |
+| 🔐 Lars     | Security Expert                   | OWASP, security.txt, SECURITY.md, pipeline gates |
+| 🚀 Jack     | DevOps Engineer                   | Gitflow, CI/CD, semver, Cloudflare, AWS, observability, deploy |
+| 💰 Aurora   | FinOps Expert                     | Infra/security/marketing budgets; security spend never first cut |
+| ⚖️ Violet   | Legal Expert                      | GDPR, cookie/ToS, **EAA/accessibility law**, retention, opt-out |
+| 📈 Emma     | SEO & Web Performance Specialist  | URLs, breadcrumbs, robots/sitemap/llms, semantic SEO, Lighthouse a11y |
+| 💬 Lauren   | Social Media Manager              | Marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora |
+| 🎨 Elise    | UX Designer                       | Nordic UI, WCAG 2.2 AA, **logo, favicon.svg, OG/social assets** |
+| 💬 Lauren   | Social Media Manager              | Marketing, OG/share — distributes Elise assets when needed |
 
 ### Team policies
 
@@ -307,6 +308,20 @@ Personas are lenses that make the process visible:
 **Competitor data porting** — Sebastian doesn't stop at "import/export" as a feature label: whenever comparable products exist, he must propose concrete migration paths that bring data **from competitor products into yours** (CSV/API importers, onboarding flows for switchers) and structured export so users are never locked in. These become Functional Requirements and first-class backlog specs.
 
 **Vendor & package policy** — new dependencies are evaluated in this order: Laravel built-ins/first-party → [Spatie packages](https://spatie.be/open-source/packages) (the preferred third-party source) → [Filament](https://filamentphp.com/) and its plugins (the preferred route for admin/control panels) → other community vendors. Every candidate must be actively maintained, version-compatible, and pass `composer audit` before it lands in your project.
+
+**Architecture standards** — John scopes depth to delivery target; **multi-tenancy** patterns compared with pros/cons (distributed monolith + subdomains, row-level, DB/schema-per-tenant, stancl/tenancy). APIs, queues, DTOs, OpenAPI/Swagger. Socialite SSO.
+
+**Development & delivery** — **Gitflow** (`main`, `develop`, `feature/*`, `release/*`, `hotfix/*`); **SemVer** + **CHANGELOG.md** (Keep a Changelog); **`security.txt`** + **`SECURITY.md`**; CI/CD minimum gates (Pest, Pint, `composer audit`, checkpoint).
+
+**Security budget** — Aurora privileges security spend; Lars and Violet review against best practice and regulations.
+
+**Cloud & infra** — **Cloudflare** preferred for DNS, CDN, and WAF (alternatives: AWS WAF + CloudFront, Bunny, Akamai, Fastly). Jack proposes **AWS** compute step-by-step when budget allows; **DigitalOcean** as alternative; **Hetzner** and **OVH** for EU. **Observability** always proposed: Laravel Nightwatch, AWS CloudWatch, or alternatives (Datadog, Grafana, …). Local dev: Sail or Herd; [127001.it](https://127001.it/) for wildcard local URLs.
+
+**UX & frontend** — Elise: Laravel UI, Nordic design, WCAG 2.2 AA, **logo + favicon.svg + social assets** (when client provides none). Lauren uses Elise's OG/share artwork.
+
+**Marketing** — Lauren drives newsletter, campaigns, SEM (Aurora budget), with Emma and Elise.
+
+**Privacy & legal** — Violet covers cookie policy, Terms of Service, anonymization, opt-out, log retention, subprocessors, and data-subject rights — from inception through ship.
 
 ---
 
