@@ -139,11 +139,30 @@
         .badge-done { background: color-mix(in srgb, var(--status-done) 18%, transparent); color: var(--status-done); }
 
         .priority {
+            display: inline-flex;
+            align-items: center;
             font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: var(--muted);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .priority-critical,
+        .priority-high {
+            color: #dc2626;
+            background: color-mix(in srgb, #dc2626 18%, transparent);
+        }
+
+        .priority-medium {
+            color: #ea580c;
+            background: color-mix(in srgb, #ea580c 18%, transparent);
+        }
+
+        .priority-low {
+            color: #16a34a;
+            background: color-mix(in srgb, #16a34a 18%, transparent);
         }
 
         .card {
@@ -220,7 +239,7 @@
                 <div class="brand-mark">LP</div>
                 <div>
                     <h1>Larapilot</h1>
-                    <p>Workflow dashboard (dev only)</p>
+                    <p>Workflow dashboard</p>
                 </div>
             </div>
             <nav class="nav" aria-label="Dashboard">

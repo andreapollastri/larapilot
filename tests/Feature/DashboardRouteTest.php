@@ -79,8 +79,13 @@ it('shows story points and subtask progress on the board', function (): void {
 
     $this->get('/larapilot')
         ->assertOk()
-        ->assertSee('Story points')
-        ->assertSee('Subtasks')
+        ->assertDontSee('Story points')
+        ->assertDontSee('Subtasks')
+        ->assertDontSee('% delivered')
+        ->assertDontSee('% complete')
+        ->assertDontSee('0/2 tasks')
+        ->assertSee('priority-high', false)
+        ->assertSee('board-scroll', false)
         ->assertSee('5 SP')
         ->assertSee('0/2');
 });

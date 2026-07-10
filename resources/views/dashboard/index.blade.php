@@ -37,6 +37,35 @@
         align-items: start;
     }
 
+    .board-scroll {
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .board-scroll {
+            margin: 0 -20px;
+            padding: 0 20px 4px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            scrollbar-width: thin;
+        }
+
+        .board {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 16px;
+            align-items: stretch;
+            width: max-content;
+            min-width: 100%;
+        }
+
+        .column {
+            flex: 0 0 min(85vw, 300px);
+            scroll-snap-align: start;
+        }
+    }
+
     .column {
         min-height: 120px;
     }
@@ -53,9 +82,20 @@
         text-transform: uppercase;
     }
 
+    .column-stats {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
     .column-count {
         color: var(--muted);
         font-weight: 600;
+        font-size: 0.72rem;
+        text-transform: none;
+        letter-spacing: normal;
     }
 
     .column-body {
@@ -149,25 +189,6 @@
         white-space: nowrap;
     }
 
-    .column-stats {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 2px;
-        color: var(--muted);
-        font-weight: 600;
-        font-size: 0.72rem;
-        text-transform: none;
-        letter-spacing: normal;
-    }
-
-    .metric-sub {
-        margin-top: 4px;
-        color: var(--muted);
-        font-size: 0.78rem;
-        font-weight: 500;
-    }
-
     .merge-commit {
         margin-top: 8px;
         font-size: 0.72rem;
@@ -203,16 +224,6 @@
             <div class="metric-label">WIP</div>
             <div class="metric-value">{{ $metrics['wip'] ?? 0 }}</div>
         </div>
-        <div class="card metric">
-            <div class="metric-label">Story points</div>
-            <div class="metric-value">{{ $metrics['done_points'] ?? 0 }}<span style="font-size: 1rem; color: var(--muted); font-weight: 600;"> / {{ $metrics['total_points'] ?? 0 }}</span></div>
-            <div class="metric-sub">{{ $metrics['points_completion_rate'] ?? 0 }}% delivered</div>
-        </div>
-        <div class="card metric">
-            <div class="metric-label">Subtasks</div>
-            <div class="metric-value">{{ $metrics['done_tasks'] ?? 0 }}<span style="font-size: 1rem; color: var(--muted); font-weight: 600;"> / {{ $metrics['total_tasks'] ?? 0 }}</span></div>
-            <div class="metric-sub">{{ $metrics['task_completion_rate'] ?? 0 }}% complete</div>
-        </div>
     </section>
 
     @if (($metrics['total'] ?? 0) === 0)
@@ -220,20 +231,13 @@
             <p>No backlog specs yet. Run <code>/larapilot-spec</code> to create user stories.</p>
         </div>
     @else
+        <div class="board-scroll">
         <section class="board">
             @foreach ($statusOrder as $status)
                 @php
                     $items = $columns[$status] ?? [];
                     $columnPoints = array_sum(array_map(
                         fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)),
-                        $items
-                    ));
-                    $columnTasksDone = array_sum(array_map(
-                        fn (array $spec): int => (int) (($spec['tasks']['done'] ?? 0)),
-                        $items
-                    ));
-                    $columnTasksTotal = array_sum(array_map(
-                        fn (array $spec): int => (int) (($spec['tasks']['total'] ?? 0)),
                         $items
                     ));
                     $badgeClass = match (strtoupper($status)) {
@@ -251,10 +255,7 @@
                         <div class="column-stats">
                             <span class="column-count">{{ count($items) }} specs</span>
                             @if ($columnPoints > 0)
-                                <span>{{ $columnPoints }} SP</span>
-                            @endif
-                            @if ($columnTasksTotal > 0)
-                                <span>{{ $columnTasksDone }}/{{ $columnTasksTotal }} tasks</span>
+                                <span class="points">{{ $columnPoints }} SP</span>
                             @endif
                         </div>
                     </div>
@@ -268,7 +269,16 @@
                                             <span class="points">{{ $spec['points'] }} SP</span>
                                         @endif
                                         @if (! empty($spec['priority']))
-                                            <span class="priority">{{ $spec['priority'] }}</span>
+                                            @php
+                                                $priorityClass = match (strtoupper((string) $spec['priority'])) {
+                                                    'CRITICAL' => 'priority-critical',
+                                                    'HIGH' => 'priority-high',
+                                                    'MEDIUM' => 'priority-medium',
+                                                    'LOW' => 'priority-low',
+                                                    default => 'priority-medium',
+                                                };
+                                            @endphp
+                                            <span class="priority {{ $priorityClass }}">{{ $spec['priority'] }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -306,5 +316,6 @@
                 </article>
             @endforeach
         </section>
+        </div>
     @endif
 @endsection

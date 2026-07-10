@@ -2,6 +2,16 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.5.1] - 2026-07-10
+
+### Changed
+
+- **Dashboard — board header metrics** — removed the **Story points** and **Subtasks** summary cards (including `X% delivered` and `Y% complete` completion rates). The board header now shows only the primary backlog KPIs: total specs, done, completion %, and WIP. Per-spec story-point badges, subtask progress bars (`done/total`), and per-column SP totals on the Kanban are unchanged.
+
+- **Dashboard — Kanban UX** — priority tags are color-coded (**CRITICAL/HIGH** red, **MEDIUM** orange, **LOW** green). Column headers show only spec count and total SP (blue pill badge, same style as spec cards); per-column `x/y tasks` removed. On viewports ≤768px the board scrolls horizontally as swipeable columns instead of squeezing into a five-column grid.
+
+- **Dashboard — header copy** — removed “(dev only)” from the topbar subtitle; availability is still indicated in the footer note.
+
 ## [1.5.0] - 2026-07-10
 
 ### Added
