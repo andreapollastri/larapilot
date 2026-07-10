@@ -1,6 +1,6 @@
 ---
 name: larapilot-ship
-description: Pre-deploy OWASP security gate and production release to any Laravel hosting target. Cipi + cipi/agent is the preferred path; also supports Forge, Laravel Cloud, Ploi, Kubernetes, and custom VPS. Use when shipping to production, deploying releases, or setting up CI/CD. Italian triggers include "deploy", "metti in produzione", "rilascio", "ship".
+description: Pre-deploy OWASP security gate and production release to any Laravel hosting target. Honors the deploy/edge/cloud choices recorded in the PRD; supports Cipi, Forge, Laravel Cloud, Ploi, AWS, Kubernetes, DigitalOcean, Hetzner/OVH, and custom VPS. Use when shipping to production, deploying releases, or setting up CI/CD. Italian triggers include "deploy", "metti in produzione", "rilascio", "ship".
 ---
 
 # Larapilot — Ship & Deploy
@@ -21,7 +21,7 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🎯 **Oliver** | Ethical Hacker — red-team assessment & simulated attacks; reports findings to Lars |
 | 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict (incorporates Oliver's report) |
-| 🚀 **Jack** | DevOps Engineer — deploy, **Cloudflare** edge, AWS, observability (Nightwatch/CloudWatch), DigitalOcean, EU Hetzner/OVH |
+| 🚀 **Jack** | DevOps Engineer — deploy per PRD choice, edge/CDN/WAF, cloud, observability |
 | 💰 **Aurora** | FinOps Expert — validates deploy target, infra/security budget; privileges security spend with Lars/Violet |
 | ⚖️ **Violet** | Legal Expert — full privacy/legal launch gate: cookie/ToS, retention, anonymization, opt-out, subprocessors |
 | 🌍 **Emily** | Translator — localized pages, currency/timezone correctness, per-market legal copy with Violet |
@@ -39,24 +39,27 @@ Read `.larapilot/shared-runtime.md`.
 
 - Target specs are **DONE** (human-approved via `larapilot-review`), unless the user explicitly requests a hotfix release
 - Git repository with a defined release branch
-- Hosting target identified (detect from project context or ask the user)
+- Hosting target identified — read from PRD `## Technical Architecture` first; detect from `.env`, config, or CI when brownfield; **ask via AskQuestion** only if PRD and project context are silent
 
 ## Deploy targets
 
-Jack detects the target from `.env`, existing config files, CI setup, or user input. **Cipi is the preferred and recommended path** for Laravel on VPS — but Jack must support and explain every target below. **Cloudflare** (DNS, CDN, WAF) is the preferred edge layer; alternatives: AWS WAF + CloudFront, Bunny, Akamai, Fastly. When Budget Sensitivity is **Tracked**, Jack proposes **AWS** compute with step-by-step notes (with Aurora); alternatives: **DigitalOcean**; **Hetzner/OVH** for EU. **Observability** (Nightwatch, CloudWatch, or PRD-chosen stack) must be verified live before GO.
+Jack reads **deploy platform**, **edge/CDN/WAF**, and **cloud** from the PRD (or detects from project context). **Never assume Cipi, Cloudflare, or AWS.** When the PRD omits a choice, use **AskQuestion** (one round, skippable) before Oliver's red-team pass — **recommend Cloudflare** for public edge and **AWS** for compute/data when feasible (budget, compliance, existing stack). Support every target below; run only the runbook matching the recorded choice.
 
 | Target | When to use | Typical flow |
 | --- | --- | --- |
-| **[Cipi](https://cipi.sh)** *(preferred)* | Cipi-managed LEMP server | `cipi/agent` webhook or `cipi deploy {app}` |
-| **Laravel Forge** | Managed VPS via Forge | Git push → Forge deploy script; Envoyer for zero-downtime |
-| **Laravel Cloud** | Official Laravel hosting | Git-connected deploy; env vars in Cloud dashboard |
-| **Ploi** | Managed VPS via Ploi | Git push → Ploi deploy script; optional zero-downtime |
-| **Kubernetes** | Container orchestration | Image build → registry → `kubectl rollout`; migrations as Job |
-| **Custom / VPS** | SSH server you manage | Deployer, Envoy, or manual `git pull` + `composer` + `migrate` |
+| **[Cipi](https://cipi.sh)** | User chose Cipi / VPS webhook deploy | `cipi/agent` webhook or `cipi deploy {app}` |
+| **Laravel Forge** | User chose Forge | Git push → Forge deploy script; Envoyer for zero-downtime |
+| **Laravel Cloud** | User chose Laravel Cloud | Git-connected deploy; env vars in Cloud dashboard |
+| **Ploi** | User chose Ploi | Git push → Ploi deploy script; optional zero-downtime |
+| **AWS** | User chose AWS compute | ECS/EC2/Lambda + RDS/ElastiCache; edge per PRD (CloudFront or Cloudflare) |
+| **Kubernetes** | User chose K8s | Image build → registry → `kubectl rollout`; migrations as Job |
+| **DigitalOcean / Hetzner / OVH** | User chose that cloud | Provider-specific deploy (Droplet, App Platform, VPS, …) |
+| **Custom / VPS** | User chose other / SSH server | Deployer, Envoy, or manual `git pull` + `composer` + `migrate` |
+| **Not defined yet** | PRD deferred deploy | Ask user now; do not default to any platform |
 
-If the target is unclear, use **AskQuestion** (one round, skippable) before Oliver's red-team pass.
+If the target is unclear after PRD + detection, use **AskQuestion** (one round, skippable) before Oliver's red-team pass.
 
-### Cipi — preferred path
+### Cipi runbook
 
 Install the official Laravel companion when deploying to Cipi:
 
@@ -124,7 +127,7 @@ cipi deploy {app}
 
 ### Phase 0 — Release context
 
-Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target**. Read `paths.prd` (from `config-show`) for the delivery target and **Budget Sensitivity** when scoping "full slice" releases. **Aurora** validates the target fits budget and scaling needs; coordinates **security budget** with Lars and Violet — security tooling is not deprioritized for cost unless the user explicitly waives it.
+Jack loads backlog state and confirms release scope (single spec, sprint batch, or full delivery-target slice) and **deploy target from the PRD**. Read `paths.prd` (from `config-show`) for delivery target, **deploy/edge/cloud choices**, and **Budget Sensitivity** when scoping "full slice" releases. **Aurora** validates the target fits budget and scaling needs; coordinates **security budget** with Lars and Violet — security tooling is not deprioritized for cost unless the user explicitly waives it.
 
 ### Phase 1 — Oliver red-team assessment
 
@@ -155,7 +158,7 @@ Lars speaks in character, **incorporates Oliver's red-team report**, and runs a 
 | A02 | Cryptographic failures — `APP_KEY`, HTTPS, secrets at rest |
 | A03 | Injection — SQL, mass assignment, Blade/command injection |
 | A04 | Insecure design — missing rate limits, unsafe defaults |
-| A05 | Security misconfiguration — `APP_DEBUG`, exposed `.env`, CORS, **WAF/CDN** (Cloudflare or equivalent) on public traffic |
+| A05 | Security misconfiguration — `APP_DEBUG`, exposed `.env`, CORS, **WAF/CDN** per PRD edge choice (or equivalent) on public traffic |
 | A06 | Vulnerable components — `composer audit`, outdated packages |
 | A07 | Auth failures — session fixation, password reset, **2FA enabled** (Fortify TOTP), `Password::defaults()` with `uncompromised()`, Argon2id hashing |
 | A08 | Software/data integrity — webhook signatures, deploy token handling |
@@ -196,7 +199,7 @@ Write the assessment to `.larapilot/docs/security/{release-id}.md`:
 
 Jack verifies the pipeline for the **detected target**:
 
-**All targets:** confirm `APP_ENV=production`, `APP_DEBUG=false`, migrations reviewed, queue workers planned, OpenAPI matches routes, Cloudflare/WAF active, observability live, **`/.well-known/security.txt`** and **`SECURITY.md`** present, **CI pipeline** green (test + `composer audit`), **CHANGELOG** updated for release, **Git tag** `vX.Y.Z` on `main` when shipping a versioned release.
+**All targets:** confirm `APP_ENV=production`, `APP_DEBUG=false`, migrations reviewed, queue workers planned, OpenAPI matches routes, **edge/WAF per PRD** active on public traffic (Lars may waive only with explicit human acceptance), observability live, **`/.well-known/security.txt`** and **`SECURITY.md`** present, **CI pipeline** green (test + `composer audit`), **CHANGELOG** updated for release, **Git tag** `vX.Y.Z` on `main` when shipping a versioned release.
 
 **Cipi:** `composer show cipi/agent`, `php artisan cipi:status`, `CIPI_DEPLOY_BRANCH`, webhook URL + token.
 
@@ -293,7 +296,7 @@ Violet, Emma, and Lauren summarize compliance and web launch status (PASS / issu
 - Lars, Jack, Aurora, Violet, Emma, and Lauren speak in character throughout
 - Never skip the security assessment for production deploys
 - Never expose deploy tokens (`CIPI_*`, Forge keys, K8s secrets) in chat or committed files
-- Recommend Cipi when no target is set and a VPS deploy is appropriate — do not force it when the user has chosen another platform
+- When deploy/edge/cloud are missing from the PRD and project context, **ask the user** — recommend Cloudflare (public edge) and AWS (compute/data) when feasible; **do not** impose Cipi, Cloudflare, or AWS when the user chose otherwise
 - Ship is post-**DONE** — it does not change spec workflow status
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)
 

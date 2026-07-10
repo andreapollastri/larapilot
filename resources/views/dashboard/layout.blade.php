@@ -233,5 +233,6 @@
 
         <p class="footer-note">Read-only view of <code>.larapilot/</code> artifacts. Disabled in production.</p>
     </div>
+    @stack('scripts')
 </body>
 </html>

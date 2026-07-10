@@ -14,6 +14,7 @@ class PlanService
     public function __construct(
         protected ConfigService $config,
         protected SpecService $specs,
+        protected GitService $git,
     ) {}
 
     public function path(string $code): string
@@ -60,7 +61,74 @@ class PlanService
         return is_array($parsed) ? $parsed : null;
     }
 
-    public function markTaskDone(string $code, string $taskId): void
+    /**
+     * @return array{total: int, done: int}
+     */
+    public function taskProgress(string $code): array
+    {
+        $plan = $this->read($code);
+
+        if ($plan === null) {
+            return ['total' => 0, 'done' => 0];
+        }
+
+        $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
+        $done = 0;
+
+        foreach ($tasks as $task) {
+            if (! is_array($task)) {
+                continue;
+            }
+
+            if (strtoupper((string) ($task['status'] ?? '')) === 'DONE') {
+                $done++;
+            }
+        }
+
+        return [
+            'total' => count($tasks),
+            'done' => $done,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function metrics(): array
+    {
+        $totalTasks = 0;
+        $doneTasks = 0;
+        $specsWithPlans = 0;
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            $code = (string) ($spec['code'] ?? '');
+
+            if ($code === '') {
+                continue;
+            }
+
+            $progress = $this->taskProgress($code);
+
+            if ($progress['total'] > 0) {
+                $specsWithPlans++;
+            }
+
+            $totalTasks += $progress['total'];
+            $doneTasks += $progress['done'];
+        }
+
+        return [
+            'total_tasks' => $totalTasks,
+            'done_tasks' => $doneTasks,
+            'task_completion_rate' => $totalTasks > 0 ? round($doneTasks / $totalTasks * 100, 1) : 0.0,
+            'specs_with_plans' => $specsWithPlans,
+        ];
+    }
+
+    /**
+     * @return array{sha: string, short_sha: string, subject: string, committed_at: string, url: string|null}|null
+     */
+    public function markTaskDone(string $code, string $taskId, ?string $commitSha = null): ?array
     {
         $plan = $this->read($code);
 
@@ -70,6 +138,7 @@ class PlanService
 
         $tasks = $plan['tasks'] ?? [];
         $found = false;
+        $commit = $this->git->resolveTaskCommit($code, $taskId, $commitSha);
 
         foreach ($tasks as $index => $task) {
             if (($task['id'] ?? null) === $taskId) {
@@ -77,6 +146,13 @@ class PlanService
                 if (is_string($task['body'] ?? null)) {
                     $tasks[$index]['body'] = Checklist::tick($task['body']);
                 }
+
+                if ($commit !== null) {
+                    $tasks[$index]['commit'] = $commit;
+                } else {
+                    unset($tasks[$index]['commit']);
+                }
+
                 $found = true;
                 break;
             }
@@ -87,10 +163,13 @@ class PlanService
         }
 
         $plan['tasks'] = $tasks;
+        $plan['updated_at'] = now()->toIso8601String();
 
         AtomicFile::write(
             $this->path($code),
             Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
+
+        return $commit;
     }
 }

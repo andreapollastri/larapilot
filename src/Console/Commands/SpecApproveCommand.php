@@ -10,7 +10,9 @@ use Larapilot\Support\LarapilotCommand;
 
 class SpecApproveCommand extends LarapilotCommand
 {
-    protected $signature = 'larapilot:spec-approve {code : Spec code}';
+    protected $signature = 'larapilot:spec-approve
+                            {code : Spec code}
+                            {--commit= : Optional merge commit SHA to link (auto-detected from recent history when omitted)}';
 
     protected $description = 'Mark a reviewed spec as DONE after human approval';
 
@@ -27,12 +29,19 @@ class SpecApproveCommand extends LarapilotCommand
             return $guard;
         }
 
-        $specs->tickBodyChecklist($code);
-        $specs->setStatus($code, $config->status('done'));
+        $commitOption = $this->option('commit');
+        $commitSha = is_string($commitOption) && $commitOption !== '' ? $commitOption : null;
+
+        try {
+            $commit = $specs->approve($code, $commitSha);
+        } catch (\RuntimeException $exception) {
+            return $this->failure('E_NOT_FOUND', $exception->getMessage(), $this->exitForCode('E_NOT_FOUND'));
+        }
 
         return $this->success('approve_result', [
             'code' => $code,
             'status' => $config->status('done'),
+            'merge_commit' => $commit,
         ]);
     }
 }

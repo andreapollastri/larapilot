@@ -13,6 +13,7 @@ class SpecService
 {
     public function __construct(
         protected ConfigService $config,
+        protected GitService $git,
     ) {}
 
     public function backlogPath(): string
@@ -289,6 +290,46 @@ class SpecService
         $this->persistSpec($spec);
     }
 
+    /**
+     * @return array{sha: string, short_sha: string, subject: string, committed_at: string, url: string|null}|null
+     */
+    public function approve(string $code, ?string $commitSha = null): ?array
+    {
+        $spec = $this->find($code);
+
+        if ($spec === null) {
+            throw new \RuntimeException("Spec {$code} not found.");
+        }
+
+        $this->tickBodyChecklist($code);
+
+        $spec = $this->find($code);
+
+        if ($spec === null) {
+            throw new \RuntimeException("Spec {$code} not found.");
+        }
+
+        $commit = $this->git->resolveMergeCommit($code, $commitSha);
+        $doneStatus = $this->config->status('done');
+
+        $spec['status'] = $doneStatus;
+        $spec['status_history'] = array_merge(
+            is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
+            [['status' => $doneStatus, 'at' => now()->toIso8601String()]]
+        );
+        $spec['rework'] = false;
+
+        if ($commit !== null) {
+            $spec['merge_commit'] = $commit;
+        } else {
+            unset($spec['merge_commit']);
+        }
+
+        $this->persistSpec($spec);
+
+        return $commit;
+    }
+
     public function delete(string $code): void
     {
         if ($this->find($code) === null) {
@@ -371,8 +412,20 @@ class SpecService
             $byStatus[$status] = ($byStatus[$status] ?? 0) + 1;
         }
 
+        $doneStatus = strtoupper((string) ($statuses['done'] ?? 'DONE'));
         $done = $byStatus[$statuses['done'] ?? 'DONE'] ?? 0;
         $total = count($items);
+        $totalPoints = 0;
+        $donePoints = 0;
+
+        foreach ($items as $spec) {
+            $points = max(0, (int) ($spec['points'] ?? 0));
+            $totalPoints += $points;
+
+            if (strtoupper((string) ($spec['status'] ?? '')) === $doneStatus) {
+                $donePoints += $points;
+            }
+        }
 
         return [
             'total' => $total,
@@ -381,6 +434,9 @@ class SpecService
             'by_status' => $byStatus,
             'wip' => ($byStatus[$statuses['in_progress'] ?? 'IN PROGRESS'] ?? 0)
                 + ($byStatus[$statuses['review'] ?? 'REVIEW'] ?? 0),
+            'total_points' => $totalPoints,
+            'done_points' => $donePoints,
+            'points_completion_rate' => $totalPoints > 0 ? round($donePoints / $totalPoints * 100, 1) : 0.0,
         ];
     }
 }

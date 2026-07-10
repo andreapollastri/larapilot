@@ -128,3 +128,20 @@ function planSpec(string $code = 'US-001'): void
     test()->artisan('larapilot:spec-plan', ['code' => $code, '--file' => payloadFile(planPayload(), 'tmp-plan.yaml')])
         ->assertSuccessful();
 }
+
+function initTestGitRepository(string $commitMessage): string
+{
+    $root = base_path();
+
+    if (! is_dir($root.'/.git')) {
+        shell_exec('git -C '.escapeshellarg($root).' init 2>/dev/null');
+        shell_exec('git -C '.escapeshellarg($root).' config user.email test@example.com 2>/dev/null');
+        shell_exec('git -C '.escapeshellarg($root).' config user.name "Test User" 2>/dev/null');
+    }
+
+    file_put_contents($root.'/git-test-marker.txt', uniqid('', true));
+    shell_exec('git -C '.escapeshellarg($root).' add git-test-marker.txt 2>/dev/null');
+    shell_exec('git -C '.escapeshellarg($root).' commit -m '.escapeshellarg($commitMessage).' 2>/dev/null');
+
+    return trim((string) shell_exec('git -C '.escapeshellarg($root).' rev-parse HEAD 2>/dev/null'));
+}

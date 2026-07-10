@@ -93,6 +93,8 @@ it('ticks acceptance criteria checkboxes when a spec is approved', function (): 
 
     expect(app(SpecService::class)->find('US-001')['body'])->toContain('- [ ] Happy path');
 
+    initTestGitRepository('Merge pull request #12 from user/feature/US-001-login');
+
     $this->artisan('larapilot:spec-approve', ['code' => 'US-001'])->assertSuccessful();
 
     $spec = app(SpecService::class)->find('US-001');
@@ -100,7 +102,8 @@ it('ticks acceptance criteria checkboxes when a spec is approved', function (): 
     expect($spec['status'])->toBe('DONE')
         ->and($spec['body'])->toContain('- [x] Happy path')
         ->and($spec['body'])->toContain('- [x] Error case')
-        ->and($spec['body'])->not->toContain('- [ ]');
+        ->and($spec['body'])->not->toContain('- [ ]')
+        ->and($spec['merge_commit']['subject'] ?? null)->toBe('Merge pull request #12 from user/feature/US-001-login');
 });
 
 it('sends a spec back to todo with rework feedback', function (): void {

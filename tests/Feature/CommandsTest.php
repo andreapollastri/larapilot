@@ -203,14 +203,52 @@ it('marks plan tasks as done', function (): void {
     addSpec();
     planSpec();
 
+    initTestGitRepository('feat(US-001): TASK-01 Create model');
+
     $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-01'])->assertSuccessful();
 
     $tasks = app(PlanService::class)->read('US-001')['tasks'];
 
     expect($tasks[0]['status'])->toBe('DONE')
+        ->and($tasks[0]['commit']['subject'] ?? null)->toBe('feat(US-001): TASK-01 Create model')
         ->and($tasks[1]['status'])->toBe('TODO');
 
     $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-99'])->assertExitCode(4);
+});
+
+it('links an explicit commit when marking a task done', function (): void {
+    addSpec();
+    planSpec();
+
+    $sha = initTestGitRepository('chore: unrelated commit');
+
+    $this->artisan('larapilot:task-done', [
+        'code' => 'US-001',
+        'taskId' => 'TASK-02',
+        '--commit' => $sha,
+    ])->assertSuccessful();
+
+    $task = app(PlanService::class)->read('US-001')['tasks'][1];
+
+    expect($task['status'])->toBe('DONE')
+        ->and($task['commit']['sha'])->toBe($sha);
+});
+
+it('links the merge commit when approving a spec', function (): void {
+    addSpec();
+    planSpec();
+
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
+
+    initTestGitRepository('Merge pull request #99 from user/feature/US-001-login');
+
+    $this->artisan('larapilot:spec-approve', ['code' => 'US-001'])->assertSuccessful();
+
+    $spec = app(SpecService::class)->find('US-001');
+
+    expect($spec['status'])->toBe('DONE')
+        ->and($spec['merge_commit']['subject'] ?? null)->toBe('Merge pull request #99 from user/feature/US-001-login');
 });
 
 it('deletes a spec with its files', function (): void {

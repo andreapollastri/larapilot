@@ -54,7 +54,7 @@ Add `{Model}` with migration, factory, and seeder entries so the demo dataset st
 2. Define migration columns, indexes, foreign keys
 3. Factory: domain-meaningful Faker fields; at least one `state()` (e.g. `inactive()`); relationship helpers (`for()`, `has()`, `afterCreating()`)
 4. Seeder: compose factories into linked demo records (fixed demo IDs where useful)
-5. `php artisan migrate:fresh --seed` (or `sail artisan …`)
+5. `php artisan migrate:fresh --seed` (or `sail artisan …` when the PRD chose Sail)
 6. `php artisan test` — feature/policy tests for the model
 
 ## Completion Criteria

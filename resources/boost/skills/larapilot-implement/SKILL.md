@@ -67,7 +67,7 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Logging:** structured log context on auth, payments, and integration failures.
 - **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial.
 - **Docs:** update README, OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs.
-- **Local dev:** prefer Sail (`sail up`, `sail artisan …`); use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains.
+- **Local dev:** honor the local dev method recorded in the PRD — use `sail up` / `sail artisan …` only when the PRD chose Sail; document Herd setup when Herd was chosen; when **not defined yet**, stick to generic `php artisan` in README/tasks until the user decides; use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains
 - **Git:** work on `feature/US-XXX-*` (or current spec branch per Gitflow); never commit directly to `main` or `develop`.
 - **Git discipline (strict):** after **each** completed task — one atomic [Conventional Commit](https://www.conventionalcommits.org/) (`feat(US-XXX): TASK-NN summary`), push, and open/update the internal PR toward `develop` (title/body reference spec + task id). Same rule for evolutive fixes. See **Git discipline** in shared-runtime — Robert blocks handoff if violated.
 - **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
@@ -75,7 +75,7 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Frontend (Elise):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets.
 - **SEO (Emma):** robots/sitemap/llms, breadcrumbs, semantic headings, descriptive links.
 - **Accessibility legal (Violet):** accessibility statement page and regulatory notes when EU/public sector.
-- **Integrations (Matt):** wire third-party APIs/services per plan — OAuth, webhooks, SDK/HTTP clients, queued sync, signature verification; coordinate with Alex; `Http::fake()` tests; document in README; also wire PRD-chosen stack (S3/R2, newsletter, analytics, Cloudflare proxies, observability)
+- **Integrations (Matt):** wire third-party APIs/services per plan — OAuth, webhooks, SDK/HTTP clients, queued sync, signature verification; coordinate with Alex; `Http::fake()` tests; document in README; also wire PRD-chosen stack (S3/R2, newsletter, analytics, edge proxies per PRD edge choice, observability)
 - **i18n (Emily):** `lang/` translations, locale middleware/detection, currency/timezone display, market-specific copy — with Violet on legal/cultural strings
 - **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires
 - **High-risk integrations:** note in handoff if **Oliver** red-team pass is recommended before ship (payments, OAuth, webhooks, imports)

@@ -16,6 +16,19 @@ class DashboardService
     ) {}
 
     /**
+     * @param  array<string, mixed>  $spec
+     * @return array<string, mixed>
+     */
+    protected function enrichSpec(array $spec): array
+    {
+        $code = (string) ($spec['code'] ?? '');
+
+        return array_merge($spec, [
+            'tasks' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
+        ]);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function board(): array
@@ -35,11 +48,11 @@ class DashboardService
                 $columns[$status] = [];
             }
 
-            $columns[$status][] = $spec;
+            $columns[$status][] = $this->enrichSpec($spec);
         }
 
         return [
-            'metrics' => $this->specs->metrics(),
+            'metrics' => array_merge($this->specs->metrics(), $this->plans->metrics()),
             'columns' => $columns,
             // include columns created for statuses outside the configured
             // workflow, so those specs still show on the board

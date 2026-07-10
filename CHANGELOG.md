@@ -2,6 +2,28 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.5.0] - 2026-07-10
+
+### Added
+
+- **`GitService`** — resolves git commits for workflow artifacts: auto-detects task commits from Conventional Commit subjects (`feat(US-XXX): TASK-NN …`), merge commits for spec approval (merge/PR messages referencing the spec code), and builds GitHub commit URLs from `origin` remotes. Registered in `LarapilotServiceProvider`; covered by `tests/Feature/GitServiceTest.php`.
+
+- **Git-linked workflow CLI** — `larapilot:task-done` and `larapilot:spec-approve` accept optional `--commit=`; when omitted, the most recent matching commit is auto-detected from git history. Task plans persist a `commit` object on DONE tasks; approved specs persist `merge_commit` in `backlog.yaml`. JSON envelopes return `commit` / `merge_commit` metadata.
+
+- **Dashboard — delivery metrics & traceability** — board shows **story points** (done/total, completion %) and **subtask progress** (done/total tasks, per-spec progress bars, per-column SP/task totals). Spec cards and detail pages show **merge commit** links when a spec is DONE; task accordions show linked commit SHA, subject, and remote URL. Spec detail tasks use exclusive `<details>` accordions with `@stack('scripts')` in the layout.
+
+- **Story-point metrics in `SpecService` / `PlanService`** — `metrics()` now includes `total_points`, `done_points`, `points_completion_rate`, `total_tasks`, `done_tasks`, `task_completion_rate`, and `specs_with_plans`; `DashboardService` merges spec and plan metrics and enriches board cards with per-spec `tasks` progress.
+
+- **Test helpers** — `initTestGitRepository()` in `tests/Pest.php` for feature tests that exercise git commit resolution.
+
+### Changed
+
+- **Local development environment** — Sail/Docker is no longer the assumed local stack. **Jack** now **asks the user** via AskQuestion (Sail, Herd, not defined yet, or other), recommending the best fit for team, OS, and required services. The choice is recorded in the PRD (`## Technical Architecture`); `larapilot-spec`/`larapilot-plan`/`larapilot-implement` honor it (and ask when missing) — Sail/Herd scaffold tasks are planned only when explicitly chosen. Updated `shared-runtime.md`, `larapilot-inception`, `larapilot-plan`, `larapilot-implement`, `larapilot-spec`, `task-templates.md`, and `core.blade.php`.
+
+- **Infrastructure & deploy** — Cipi, Cloudflare, and AWS are no longer assumed defaults. **Jack** now **asks the user** via AskQuestion for **deploy platform**, **edge/CDN/WAF**, and **cloud/compute** (recommending Cloudflare for public edge and AWS for compute/data when feasible). Choices are recorded in the PRD; `larapilot-spec`/`larapilot-plan`/`larapilot-implement`/`larapilot-ship` honor them (and ask when missing) — platform-specific scaffold tasks run only for explicitly chosen targets. Updated `shared-runtime.md`, all affected skills, `core.blade.php`, and `larapilot-ship`.
+
+- **`larapilot:spec-approve`** — approval logic moved to `SpecService::approve()` (checklist tick, status transition, rework reset, merge-commit link) instead of inline command handling.
+
 ## [1.4.0] - 2026-07-09
 
 ### Added

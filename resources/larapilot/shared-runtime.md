@@ -207,7 +207,7 @@ Rules for all skills:
 
 **Aurora** participates in **security spending** alongside infra and SaaS costs. Rules:
 
-1. **Security is never the first cost cut** — when Budget Sensitivity is **Tracked**, Aurora sizes Aikido, **Cloudflare WAF**, secrets management, backup, observability, and monitoring against budget but **always recommends privileging security** over nice-to-have features. If trade-offs are unavoidable, present options with security impact explicit.
+1. **Security is never the first cost cut** — when Budget Sensitivity is **Tracked**, Aurora sizes Aikido, **edge WAF** (per PRD — e.g. Cloudflare when chosen), secrets management, backup, observability, and monitoring against budget but **always recommends privileging security** over nice-to-have features. If trade-offs are unavoidable, present options with security impact explicit.
 2. **Lars** reviews every security-related spend for cybersecurity best practice (OWASP, supply chain, auth hardening, encryption at rest/transit).
 3. **Violet** reviews security and data-processing choices against applicable regulations (GDPR, ePrivacy, sector rules) — retention, subprocessors, cross-border transfers, consent.
 4. The trio collaborates at inception (PRD `## Technical Architecture`), during planning (security/infra specs), and at ship (pre-deploy gate). Aurora owns the cost frame; Lars and Violet can escalate **NO-GO** on compliance or critical security gaps regardless of budget pressure.
@@ -231,7 +231,7 @@ John designs **scalable, complete products** whose depth matches the **delivery 
 4. **DTOs & boundaries** — use Data objects / DTOs (Spatie Laravel Data, readonly PHP classes, or Form Request → DTO mappers) at API and integration boundaries when payloads are non-trivial; keep Eloquent models out of external contracts.
 5. **Technical debt** — favor clear layers (Controller → Action/Service → Model), one migration per concern, explicit interfaces only when multiple implementations exist; document trade-offs in plan/ADR notes instead of hidden shortcuts.
 6. **Technical documentation** — keep docs current with code:
-   - **README** — setup, env vars, Sail/Herd, queue worker, scheduler
+   - **README** — setup, env vars, local dev method per PRD, queue worker, scheduler
    - **OpenAPI / Swagger** — for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship phase verifies spec matches routes
    - **Inline API docs** — `/api/docs` when the stack supports it
    - Update docs in the same spec that changes the API or integration
@@ -253,7 +253,7 @@ When the product serves **multiple customers, workspaces, or isolated environmen
 **John's decision rules:**
 
 1. **Always present at least two options** (typically **A** and **B** or **E**) with explicit trade-offs and Aurora cost notes.
-2. **Pattern A (distributed monolith)** — recommend when: few tenants, high isolation need, custom domains per client, or central SSO gateway. Document: subdomain DNS (Cloudflare), deploy automation (same artifact → N targets), env/secrets per instance, shared vs per-tenant DB choice.
+2. **Pattern A (distributed monolith)** — recommend when: few tenants, high isolation need, custom domains per client, or central SSO gateway. Document: subdomain DNS (per PRD edge provider), deploy automation (same artifact → N targets), env/secrets per instance, shared vs per-tenant DB choice.
 3. **Central SSO in front of A** — propose when tenants share an identity plane: OAuth/OIDC gateway, JWT to Laravel, or Socialite against central IdP; use `*.127001.it` or `*.app.test` locally.
 4. **Never skip tenant context** in auth policies, queues, and file storage — every pattern needs explicit `TenantScope`, disk prefix, or connection resolver.
 5. Scale pattern choice to **delivery target**: MVP may start with **B** or **E** with a documented migration path to **A** or **C** for Enterprise.
@@ -303,7 +303,7 @@ Alex **always** maintains realistic, coherent demo data alongside domain code:
 3. **Relationships** — factories must respect foreign keys and cardinality; use `for()` / `has()` / `afterCreating()` so related records stay consistent.
 4. **Seeders** — maintain `database/seeders/DatabaseSeeder.php` (and dedicated seeders when the dataset is large) that compose factories into a **coherent initial dataset**: fixed demo users, cross-linked entities, volumes that exercise the UI (not empty tables, not random orphans).
 5. **Same-task updates** — any migration, model attribute, enum, or relationship change in a spec **must** update the matching factory and seeder in the **same task commit/PR** — never leave stale seed data.
-6. **Verify** — `php artisan migrate:fresh --seed` (or `sail artisan …`) must succeed and produce a meaningful local/staging environment before `task-done`.
+6. **Verify** — `php artisan migrate:fresh --seed` (or `sail artisan …` when the PRD chose Sail) must succeed and produce a meaningful local/staging environment before `task-done`.
 
 Anne uses factories in tests; seeders are the canonical demo dataset for dev, onboarding, and staging. John plans entity tasks with factory/seeder deliverables; Robert checks factory/seeder presence in review.
 
@@ -374,40 +374,59 @@ Ownership: **John** owns architecture depth, API design, queues, DTOs, doc strat
 
 ## Infrastructure & Cloud *(Jack + Aurora own)*
 
-### Edge, CDN & WAF *(Jack + Lars — always reason through edge security)*
+**Never impose deploy target, edge provider, or cloud vendor by default.** **Jack** asks via **AskQuestion** during inception (downstream skills ask only if the PRD omits a choice). After the user's answers, **recommend AWS** for compute/data and **Cloudflare** for edge when feasible — existing stack, compliance, EU residency, budget, and delivery target may favor alternatives. Record each choice in the PRD under `## Technical Architecture` so `larapilot-spec`, `larapilot-plan`, `larapilot-implement`, and `larapilot-ship` honor it instead of re-imposing defaults.
 
-**[Cloudflare](https://www.cloudflare.com/)** is the **preferred default** for every public-facing Laravel app. Jack and Lars **always** design traffic flow assuming an edge layer:
+### Deploy platform *(Jack)*
 
-| Layer | Cloudflare (preferred) | Alternatives |
-| --- | --- | --- |
-| **DNS** | Cloudflare DNS | Route 53, DigitalOcean DNS, Bunny DNS |
-| **CDN / caching** | Cloudflare CDN | AWS CloudFront, Bunny CDN, Fastly, Akamai |
-| **WAF / DDoS** | **Cloudflare WAF** (OWASP rulesets, bot fight, rate limits) | **AWS WAF** (+ CloudFront/ALB), Bunny Shield, Akamai, Fastly |
-
-Rules:
-
-1. **Propose Cloudflare first** in inception and architecture — document DNS cutover, SSL mode, cache rules, and WAF managed rules. Configure Laravel **trusted proxies** for Cloudflare IP ranges.
-2. **WAF is not optional** for production public apps — at minimum OWASP Core Ruleset, bot management, and geo/rate limits on auth and API routes. Lars validates rule coverage against OWASP A05/A07.
-3. When Cloudflare is unsuitable (compliance, existing AWS-only stack, user mandate), present **alternatives with the same capabilities** — never leave production exposed without edge protection when budget allows.
-4. **Cloudflare R2** is a valid object-storage option in the optional-integrations table (alongside S3, johnny, …).
-
-### Compute & hosting
-
-**Jack** has deep **AWS** expertise. When Budget Sensitivity is **Tracked** and budget allows, Jack **proposes AWS services** for compute/data — with step-by-step integration notes, cost estimate (coordinated with Aurora), and clear benefits. Examples: EC2/ECS/Lambda, RDS/Aurora, ElastiCache, S3, SES, SQS, Cognito, Secrets Manager. Pair **AWS WAF + CloudFront** when the stack is AWS-native instead of Cloudflare. Scale recommendations to delivery target; do not over-provision MVP.
-
-**Alternatives** (always present alongside AWS):
-
-| Context | Preferred options |
+| Option | When to recommend |
 | --- | --- |
-| **Global / budget-conscious PaaS** | **DigitalOcean** (Droplets, Managed DB, Spaces, Kubernetes) |
-| **EU data residency** | **Hetzner** (Cloud, dedicated, Storage Box) and **OVH** (Public Cloud, VPS, Object Storage) |
-| **Laravel-native deploy** | Cipi, Forge, Laravel Cloud — per existing ship skill |
+| **Cipi** | Laravel VPS with `cipi/agent` webhook deploy — see [cipi.sh](https://cipi.sh) |
+| **Laravel Forge** | Managed VPS, Git push deploy, Forge integrations (Aikido, …) |
+| **Laravel Cloud** | Official Laravel PaaS, Git-connected deploy |
+| **Ploi** | Managed VPS alternative to Forge |
+| **AWS** (ECS/EC2/Lambda) | Scalable compute with RDS/ElastiCache — **recommend when Tracked budget and scale needs make it feasible** |
+| **Kubernetes** | Container orchestration at scale |
+| **DigitalOcean** | Budget-conscious Droplets / App Platform / Managed DB |
+| **Hetzner / OVH** | EU data residency, cost-efficient VPS/cloud |
+| **Not defined yet** | Defer deploy scaffolding until `larapilot-ship` or implementation bootstrap |
+| **Other** | Custom VPS, GCP, Azure, Scaleway, existing team pipeline, … |
 
-Jack stays **open to other providers** (GCP, Azure, Scaleway, Linode, …) when the PRD, compliance, or user preference requires it. **Aurora** validates every proposal against budget; **Violet** flags EU residency and subprocessors when personal data is involved.
+### Edge, CDN & WAF *(Jack + Lars)*
 
-### Observability *(Jack + John — always propose)*
+**Never assume Cloudflare.** Ask the user; **recommend Cloudflare** for public-facing apps when feasible (DNS, CDN, WAF, DDoS in one layer). Pair **AWS WAF + CloudFront** when the PRD chose an AWS-native stack.
 
-**Always** propose an **observability stack** scaled to the delivery target. Jack and John plan it in architecture, plan tasks, and ship verification — not as an afterthought.
+| Option | Notes |
+| --- | --- |
+| **Cloudflare** | **Recommend when feasible** — document DNS cutover, SSL mode, cache rules, WAF managed rules; configure Laravel **trusted proxies** for Cloudflare IP ranges |
+| **AWS WAF + CloudFront** | When compute is AWS-native or user prefers AWS edge |
+| **Bunny CDN / Shield** | Lightweight CDN + WAF alternative |
+| **Akamai / Fastly** | Enterprise / high-traffic edge |
+| **Existing provider / no change** | Brownfield — document current edge, do not rip-and-replace without user consent |
+| **Not defined yet** | Plan edge tasks at ship; Lars still requires WAF on public production traffic when budget allows |
+| **N/A (internal only)** | Admin/API with no public web edge — Lars documents residual risk |
+
+**WAF is not optional** for production public apps when budget allows — at minimum OWASP Core Ruleset, bot management, and geo/rate limits on auth and API routes. Lars validates rule coverage against OWASP A05/A07. When Cloudflare or an equivalent edge is unsuitable, present **alternatives with the same capabilities** — never leave production exposed without edge protection when budget allows.
+
+**Cloudflare R2** remains a valid object-storage option in the optional-integrations table (alongside S3, johnny, …).
+
+### Cloud / compute & data *(Jack + Aurora)*
+
+**Never assume AWS.** Ask which provider backs managed compute, database, cache, object storage, and queues when not already fixed by the deploy platform.
+
+| Option | When to recommend |
+| --- | --- |
+| **AWS** | **Recommend when Tracked budget and requirements make it feasible** — EC2/ECS/Lambda, RDS/Aurora, ElastiCache, S3, SES, SQS, Cognito, Secrets Manager; pair **AWS WAF + CloudFront** at edge when Cloudflare was not chosen |
+| **DigitalOcean** | Droplets, Managed DB, Spaces, Kubernetes — global / budget-conscious |
+| **Hetzner / OVH** | EU data residency — **Violet** reviews subprocessors |
+| **Bundled with deploy target** | Forge, Cipi, Laravel Cloud, or Ploi host includes compute — record "bundled" and skip duplicate cloud scaffolding |
+| **Not defined yet** | Defer managed-service wiring until user decides |
+| **Other** | GCP, Azure, Scaleway, Linode, on-prem, … |
+
+Jack stays **open to other providers** when the PRD, compliance, or user preference requires it. **Aurora** validates every proposal against **Budget Sensitivity**; **Violet** flags EU residency and subprocessors when personal data is involved.
+
+### Observability *(Jack + John)*
+
+**Propose** an observability stack scaled to the delivery target; **ask via AskQuestion** when the PRD does not record a choice and the stack is not inferable from deploy/cloud answers. Plan in architecture, plan tasks, and ship verification — not as an afterthought.
 
 | Tier | Propose |
 | --- | --- |
@@ -423,7 +442,7 @@ Coverage to plan:
 - **Alerting** — PagerDuty, Slack, email, or CloudWatch alarms — on error rate spikes and downtime
 - **Logs** — centralized retention aligned with Violet's policy; structured JSON where possible
 
-Ownership: **Jack** owns provider selection, deploy runbooks, Cloudflare/AWS edge setup, and observability wiring; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
+Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
 
 ## UX & Frontend Design *(Elise owns)*
 
@@ -731,9 +750,23 @@ Use `Password::defaults()` in Form Requests and Fortify validation. Never accept
 
 ### Local development environment *(Jack / John own)*
 
-1. **Docker via Laravel Sail** — preferred local stack. Scaffold with `composer require laravel/sail --dev` and `php artisan sail:install`; document `sail up` in README. Pair with Sail services (MySQL, Redis, Mailpit, RustFS/MinIO for S3 dev) when the PRD needs them. See [Laravel Sail docs](https://laravel.com/docs/sail).
-2. **Laravel Herd** — propose as the **non-Docker alternative** on macOS/Windows when the team prefers native PHP/nginx (no containers). See [herd.laravel.com](https://herd.laravel.com/).
-3. **Local URLs** — besides `localhost`, `*.test` (Valet/Herd), and `/etc/hosts`, propose **[127001.it](https://127001.it/)** wildcard DNS (`*.127001.it` → `127.0.0.1`) for multi-tenant, OAuth, cookie-domain, and team-shareable dev URLs without hosts-file edits. Example: `APP_URL=http://myapp.127001.it`.
+**Never impose a local stack by default.** **Jack** presents the options below via **AskQuestion** during inception (downstream skills ask only if the PRD omits the choice). Recommend the best fit for the team, OS, and services the PRD needs — do not default to Sail. Record the choice in the PRD under `## Technical Architecture` → `Local dev` so `larapilot-spec`, `larapilot-plan`, and `larapilot-implement` honor it instead of re-imposing Docker.
+
+| Option | When to recommend |
+| --- | --- |
+| **Laravel Sail (Docker)** | Containerized parity with production, multiple services (MySQL, Redis, Mailpit, MinIO), reproducible onboarding for mixed OS teams |
+| **Laravel Herd** | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/) |
+| **Not defined yet** | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap |
+| **Other** | User names a specific alternative (Laravel Valet, Forge local, WSL + native PHP, existing team stack, …) |
+
+**After the choice:**
+
+- **Sail** — scaffold with `composer require laravel/sail --dev` and `php artisan sail:install`; document `sail up` / `sail artisan …` in README; pair Sail services when the PRD needs them. See [Laravel Sail docs](https://laravel.com/docs/sail).
+- **Herd** — document Herd setup in README; use `*.test` domains where helpful.
+- **Not defined yet** — README documents generic `php artisan` workflow and env prerequisites only; **do not** add Sail/Herd install tasks until the user decides.
+- **Other** — document the named stack in README; no Sail/Herd scaffolding unless the user later chooses one.
+
+**Local URLs** *(optional second AskQuestion when multi-tenant, OAuth, or cookie domains matter)* — besides `localhost`, `*.test` (Valet/Herd), and `/etc/hosts`, Jack may propose **[127001.it](https://127001.it/)** wildcard DNS (`*.127001.it` → `127.0.0.1`) for shareable dev URLs without hosts-file edits. Example: `APP_URL=http://myapp.127001.it`.
 
 ### Optional integrations *(Sebastian proposes alongside well-known options)*
 
@@ -746,7 +779,7 @@ Always present **both** mainstream SaaS/managed options and the self-hosted open
 | **Web analytics** | GA4, Plausible, Matomo, Fathom, PostHog | [andreapollastri/indiestats](https://github.com/andreapollastri/indiestats) — privacy-friendly, self-hosted analytics |
 | **Error & uptime monitoring** | Sentry, Bugsnag, Flare, Larabug | [andreapollastri/boogle](https://github.com/andreapollastri/boogle) — self-hosted bug & uptime monitor (`boogle-client` in apps) |
 | **Observability / APM** | **[Laravel Nightwatch](https://nightwatch.laravel.com/)** (preferred for Laravel), **AWS CloudWatch** (preferred on AWS), Datadog, New Relic, Grafana Cloud, Better Stack, OpenTelemetry | Laravel **Pulse**, self-hosted Grafana/Prometheus |
-| **Edge / CDN / WAF** | **[Cloudflare](https://www.cloudflare.com/)** (DNS, CDN, WAF — **preferred**), AWS WAF + CloudFront, Bunny CDN/Shield, Akamai, Fastly | nginx rate limiting, ModSecurity on VPS *(only when managed WAF budget unavailable)* |
+| **Edge / CDN / WAF** | **[Cloudflare](https://www.cloudflare.com/)** (DNS, CDN, WAF — **recommend when feasible**), AWS WAF + CloudFront, Bunny CDN/Shield, Akamai, Fastly | nginx rate limiting, ModSecurity on VPS *(only when managed WAF budget unavailable)* |
 | **Object storage (S3)** | AWS S3, Cloudflare R2, DigitalOcean Spaces, Backblaze B2, MinIO | [andreapollastri/johnny](https://github.com/andreapollastri/johnny) — self-hosted S3-compatible storage with panel and backups |
 
 **Aikido** — when the project has budget (**Budget Sensitivity: Tracked**) or deploys via **Laravel Forge**, propose [Aikido](https://www.aikido.dev/) as the primary managed AppSec layer: repo SAST, `composer.lock` / `package-lock.json` SCA, supply-chain alerts, and optional AutoFix PRs. Enable via [Forge Integrations](https://forge.laravel.com/docs/integrations/aikido) or connect the Git provider directly. Pair with **Checkpoint** for a free local/CI scan that does not require a SaaS subscription.
@@ -755,7 +788,7 @@ Always present **both** mainstream SaaS/managed options and the self-hosted open
 
 **Boogle client** — when Boogle is chosen, register `Boogle::handle($e)` in `bootstrap/app.php` (`withExceptions`) or `app/Exceptions/Handler.php` per Laravel version.
 
-Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **Oliver** owns red-team assessments (reports to Lars); **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Jack** owns Gitflow, CI/CD, semver, Sail/Herd, Cloudflare, cloud, observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Matt** delivers integrations; **Sophia** owns post-ship support/maintenance; **Emily** owns i18n/l10n; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
+Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **Oliver** owns red-team assessments (reports to Lars); **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Jack** owns Gitflow, CI/CD, semver, local dev environment choice, deploy/edge/cloud choices (per PRD), observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Matt** delivers integrations; **Sophia** owns post-ship support/maintenance; **Emily** owns i18n/l10n; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
 
 ## Assumptions and Questions
 
@@ -800,7 +833,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🧪 Anne | Test Architect | Pest/PHPUnit strategy, **multi-viewport responsive UI tests**, coverage per delivery target, CI test gates |
 | 🛡️ Robert | Code Reviewer | Code quality, Gitflow/branch hygiene, per-task commit/PR discipline, factory/seeder completeness, plan adherence, Laravel conventions |
 | 🔐 Lars | Security Expert | OWASP, security.txt, SECURITY.md, pipeline security gates, security budget with Aurora/Violet |
-| 🚀 Jack | DevOps Engineer | Gitflow, CI/CD pipelines, semver/tags, Cloudflare, AWS, observability, deploy |
+| 🚀 Jack | DevOps Engineer | Gitflow, CI/CD pipelines, semver/tags, deploy/edge/cloud (per PRD), observability |
 | 💰 Aurora | FinOps Expert | SaaS/infra/security budgets; always privilege security spend; cost optimization with Lars/Violet |
 | ⚖️ Violet | Legal Expert | GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out, subprocessors |
 | 📈 Emma | SEO & Web Performance Specialist | URLs, breadcrumbs, robots/sitemap/llms.txt, semantic SEO, Lighthouse a11y |

@@ -30,6 +30,7 @@ use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
+use Larapilot\Services\GitService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
@@ -43,6 +44,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/larapilot.php', 'larapilot');
 
         $this->app->singleton(ConfigService::class);
+        $this->app->singleton(GitService::class);
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
         $this->app->singleton(PlanService::class);

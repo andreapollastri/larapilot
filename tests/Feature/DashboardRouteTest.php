@@ -72,17 +72,36 @@ it('shows specs whose status is outside the configured workflow', function (): v
         ->assertSee('US-001');
 });
 
+it('shows story points and subtask progress on the board', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['points' => 5]);
+    planSpec();
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('Story points')
+        ->assertSee('Subtasks')
+        ->assertSee('5 SP')
+        ->assertSee('0/2');
+});
+
 it('shows spec detail with tasks', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec();
     planSpec();
+    initTestGitRepository('feat(US-001): TASK-01 Create model');
+    $this->artisan('larapilot:task-done', ['code' => 'US-001', 'taskId' => 'TASK-01'])->assertSuccessful();
 
     $this->get('/larapilot/specs/US-001')
         ->assertOk()
         ->assertSee('US-001')
+        ->assertSee('3 SP')
         ->assertSee('User Story')
         ->assertSee('TASK-01')
-        ->assertSee('Create model');
+        ->assertSee('Create model')
+        ->assertSee('feat(US-001): TASK-01 Create model')
+        ->assertSee('data-exclusive-accordion', false)
+        ->assertSee('task-accordion', false);
 });
 
 it('returns 404 for unknown specs', function (): void {
