@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>View user — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html" class="is-active">Users</a>
+        <a href="resource-list.html">Orders</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <ul class="fi-breadcrumbs" aria-label="Breadcrumb">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="resource-list.html">Users</a></li>
+            <li><span aria-current="page">Anna Rossi</span></li>
+          </ul>
+          <div class="fi-toolbar" style="margin-bottom:0">
+            <h1 style="margin:0">Anna Rossi</h1>
+            <div class="fi-toolbar__right">
+              <a href="resource-edit.html" class="fi-btn fi-btn--primary">Edit</a>
+            </div>
+          </div>
+        </header>
+        <section class="fi-section" aria-labelledby="details-heading">
+          <h2 class="fi-section__heading" id="details-heading">User details</h2>
+          <dl class="fi-infolist">
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Full name</dt>
+              <dd>Anna Rossi</dd>
+            </div>
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Email</dt>
+              <dd>anna@example.com</dd>
+            </div>
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Role</dt>
+              <dd>Admin</dd>
+            </div>
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Status</dt>
+              <dd><span class="fi-badge fi-badge--success">Active</span></dd>
+            </div>
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Created</dt>
+              <dd>Jul 1, 2026 at 09:14</dd>
+            </div>
+            <div class="fi-infolist__row">
+              <dt class="fi-infolist__label">Last login</dt>
+              <dd>Jul 10, 2026 at 18:42</dd>
+            </div>
+          </dl>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

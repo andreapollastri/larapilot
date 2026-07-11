@@ -54,6 +54,9 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 - PRD (`paths.prd`) — read delivery target and scope boundaries
+- **Client materials** (`paths.client_materials`) — mandatory when populated; cite in task notes
+- **Legacy** (`paths.legacy`) + **`{paths.research}/legacy-parity.md`** — when rewrite/port; map tasks to parity rows
+- **Reference products** (`paths.research/reference-products/`) — when spec traces to deepsearch findings
 - Mockups (`paths.mockups/{code}/`) if they exist
 - Relevant Laravel code: models, migrations, routes, tests
 - Boost `Database Schema` for data model context
@@ -61,7 +64,7 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 #### Sub-agent (optional — large or unfamiliar codebase)
 
-When `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; e.g. Cursor `explore`, Claude Code `Explore` — see **Type mapping** in shared-runtime) before Stage 2. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool: the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
+When `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; e.g. Cursor `explore`, Claude Code `Explore` — see **Type mapping** in shared-runtime) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool: the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
 
 Handoff prompt:
 
@@ -135,9 +138,10 @@ Every **Impl** and **Fix** task body MUST include:
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
 - Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
+- **Legacy specs:** plan migration/ETL tasks with dry-run, checksum/row-count verification, and rollback; explore `{paths.legacy}` when mapping behavior; never plan feature drops without PRD **Out of Scope**
 - **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
 - **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet
-- New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** specs, honor the panel route recorded in the PRD — if none is recorded, **ask the user** (Filament vs custom, never assume), recommending the best fit for the specific case and the option closest to the project mockups — always verify maintenance, compatibility, and security before adding a dependency
+- New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** and authenticated dashboard specs, honor the panel route recorded in the PRD — if none is recorded, **ask the user** (Filament vs [Laravel Starter Kit](https://laravel.com/starter-kits) vs custom, never assume), recommending the best fit for the specific case and the option closest to the project mockups — always verify maintenance, compatibility, and security before adding a dependency
 - Apply **Laravel Scaffolding Defaults** from shared-runtime unless the PRD opts out: auth specs get Fortify 2FA + `Password::defaults()` + **Socialite** for SSO; new models/migrations use UUID primary keys; greenfield auth uses Argon2id; local-dev tasks honor the **local dev method recorded in the PRD** — if none is recorded, **ask the user** (Sail, Herd, not defined yet, or other; never assume Sail); plan Sail/Herd scaffold tasks only when the PRD chose that method; may document **127001.it** URLs when the PRD calls for them
 - When a spec touches newsletter, analytics, error monitoring, or S3: Sebastian plans the PRD-chosen integration; security-audit specs: **Aikido** first when Tracked/Forge, plus **checkpoint** as local/CI complement
 - **Jack** plans deploy, edge, cloud, and observability tasks per **choices recorded in the PRD** — if deploy, edge, or cloud is missing, **ask the user** (never assume Cipi, Cloudflare, or AWS); plan Cipi/Forge/AWS/Cloudflare scaffold tasks only when explicitly chosen; also plans **Gitflow** workflow, **CI/CD** scaffold, and **release/x.y.z** + CHANGELOG bump tasks

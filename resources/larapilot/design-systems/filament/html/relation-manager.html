@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relation manager — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="resource-list.html" class="is-active">Users</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <h1>Edit user</h1>
+          <p>Embedded relation manager on edit form.</p>
+        </header>
+        <form action="#" method="post">
+          <section class="fi-section">
+            <h2 class="fi-section__heading">Profile</h2>
+            <div class="fi-form-grid">
+              <div class="fi-field">
+                <label for="name">Full name</label>
+                <input id="name" type="text" value="Anna Rossi">
+              </div>
+              <div class="fi-field">
+                <label for="email">Email</label>
+                <input id="email" type="email" value="anna@example.com">
+              </div>
+            </div>
+            <div class="fi-relation-section">
+              <div class="fi-relation-section__header">
+                <h3>Orders</h3>
+                <button type="button" class="fi-btn fi-btn--primary">Attach order</button>
+              </div>
+              <div class="fi-table-wrap">
+                <table class="fi-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Order #</th>
+                      <th scope="col">Total</th>
+                      <th scope="col">Status</th>
+                      <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>#1042</td>
+                      <td>€128.00</td>
+                      <td><span class="fi-badge fi-badge--success">Paid</span></td>
+                      <td><button type="button" class="fi-icon-btn" aria-label="Detach order">✕</button></td>
+                    </tr>
+                    <tr>
+                      <td>#1038</td>
+                      <td>€64.50</td>
+                      <td><span class="fi-badge fi-badge--warning">Pending</span></td>
+                      <td><button type="button" class="fi-icon-btn" aria-label="Detach order">✕</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+          <div class="fi-actions-bar">
+            <div class="fi-actions-bar__spacer"></div>
+            <button type="submit" class="fi-btn fi-btn--primary">Save changes</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+  <style>.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+</body>
+</html>

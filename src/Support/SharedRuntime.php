@@ -54,5 +54,32 @@ final class SharedRuntime
                 File::get(self::packageDocPath($packageFile))
             );
         }
+
+        self::refreshDesignSystems();
+    }
+
+    public static function designSystemsPackagePath(): string
+    {
+        return dirname(__DIR__, 2).'/resources/larapilot/design-systems';
+    }
+
+    public static function designSystemsProjectPath(): string
+    {
+        return base_path('.larapilot/design-systems');
+    }
+
+    /**
+     * Copy packaged design-system references into the project.
+     * Overwrites on every install/update — unlike config.yaml.
+     */
+    public static function refreshDesignSystems(): void
+    {
+        $source = self::designSystemsPackagePath();
+
+        if (! is_dir($source)) {
+            return;
+        }
+
+        File::copyDirectory($source, self::designSystemsProjectPath());
     }
 }

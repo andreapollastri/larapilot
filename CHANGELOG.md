@@ -2,6 +2,34 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.6.0] - 2026-07-11
+
+### Added
+
+- **Filament design reference for admin mockups** — packaged reference at `resources/larapilot/design-systems/filament/` merged from two Figma community kits: [Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system) (Giovanni Zanin) and [UI Kit (Free)](https://www.figma.com/community/file/1417716904167561805/filament-3-free) (VhiWEB). Includes `figma-sources.md`, `tokens.css`, `components.md`, and **17 static HTML screens** in `html/`. Copied to `.larapilot/design-systems/` on install/update. New config path `paths.design_systems`.
+
+- **Laravel Starter Kits design reference for authenticated app mockups** — packaged reference at `resources/larapilot/design-systems/starter-kit/` derived from the [official Laravel starter kits](https://laravel.com/starter-kits). Includes `sources.md`, `tokens.css` (shadcn oklch variables from react-starter-kit), `components.md`, and **7 static HTML screens** in `html/`. Copied to `.larapilot/design-systems/` on install/update.
+
+- **Client materials intake** — new config path `paths.client_materials` (`.larapilot/client-materials/`): structured folder for pre-existing documentation, analysis, briefs, and client-provided materials. Created on install with README stub. **All skills** must read and honor client materials alongside the PRD; inception cross-checks them in the interview and asks clarifying questions when needed.
+
+- **Legacy rewrite & porting** — new config path `paths.legacy` (`.larapilot/legacy/`): holds legacy codebase snapshots, schema dumps, and migration notes for rewrite/port projects. Skills enforce **zero feature and data loss** unless explicitly scoped out in the PRD; parity matrix in `{paths.research}/legacy-parity.md`; bootstrap backlog with migration specs first.
+
+- **Reference products & Sebastian deepsearch** — new config path `paths.research` (`.larapilot/research/` with `reference-products/` subfolder). During inception, Sebastian asks for competitor/inspiration URLs when useful and runs **deepsearch** (WebSearch/WebFetch) — persisting feature, UX, and design findings per product. Reports feed PRD, spec, design, and plan skills.
+
+- **`ConfigService::ensureIntakeReadmes()`** — writes README stubs into intake folders on install when missing (preserves user content on update).
+
+- **`.gitkeep` in workspace directories** — `ensureGitkeeps()` writes an empty `.gitkeep` in every Larapilot scaffold folder (including `specs/`, `plans/`, `mockups/`, all `docs/*` subfolders, intake paths, `research/reference-products/`, and `brand/`) so empty directories are tracked by Git.
+
+### Changed
+
+- **`larapilot-inception`** — workflow step 0 scans client materials and legacy folders; Sebastian deepsearch + reference-product AskQuestion; PRD template adds **Project Origin**, **Reference Products**, and **Legacy parity** sections.
+
+- **Downstream skills** (`spec`, `plan`, `implement`, `design`) — mandatory consultation of client materials, legacy, and research paths; legacy parity and migration verification in plan/implement; Elise reads reference-product research for design patterns.
+
+- **`shared-runtime.md`**, **`core.blade.php`**, **`config/larapilot.php`**, **`config.yaml.stub`**, **`InstallCommand`**, **`larapilot-design`** — document Filament mockup design system and scaffold `paths.design_systems`.
+
+- **Authenticated app UI route** — panel choice expanded from Filament vs custom to **Filament vs [Laravel Starter Kits](https://laravel.com/starter-kits) (Livewire/React/Vue/Svelte) vs custom** across `shared-runtime.md`, `core.blade.php`, and inception/spec/plan/design/implement skills. Packaged Starter Kit mockup design system (`starter-kit/`) with tokens and HTML screens; Elise must use it when the PRD chose a kit variant.
+
 ## [1.5.1] - 2026-07-10
 
 ### Changed

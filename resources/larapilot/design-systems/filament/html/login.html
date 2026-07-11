@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <main class="fi-login-page">
+    <div class="fi-login-card">
+      <div class="fi-login-card__brand">Filament Demo</div>
+      <h1>Sign in</h1>
+      <form action="#" method="post">
+        <div class="fi-field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="username" required>
+        </div>
+        <div class="fi-field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="fi-field fi-checkbox">
+          <input id="remember" name="remember" type="checkbox">
+          <label for="remember">Remember me</label>
+        </div>
+        <button type="submit" class="fi-btn fi-btn--primary">Sign in</button>
+        <p style="text-align:center;margin-top:1rem;font-size:0.8125rem">
+          <a href="#" style="color:rgb(var(--color-primary-600))">Forgot password?</a>
+        </p>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

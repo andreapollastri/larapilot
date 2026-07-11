@@ -17,6 +17,10 @@ return [
         'security' => '.larapilot/docs/security/',
         'launch' => '.larapilot/docs/launch/',
         'support' => '.larapilot/docs/support/',
+        'client_materials' => '.larapilot/client-materials/',
+        'legacy' => '.larapilot/legacy/',
+        'research' => '.larapilot/research/',
+        'design_systems' => '.larapilot/design-systems/',
     ],
 
     'mockups_route' => [

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modal — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html" class="is-active">Users</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <h1>Users</h1>
+          <p>Background page with delete confirmation modal open.</p>
+        </header>
+        <section class="fi-section" aria-hidden="true">
+          <p style="color:var(--fi-text-muted)">Table content dimmed behind modal…</p>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div class="fi-modal-backdrop" role="presentation">
+    <div class="fi-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+      <header class="fi-modal__header">
+        <h2 id="modal-title">Delete user</h2>
+      </header>
+      <div class="fi-modal__body" id="modal-desc">
+        Are you sure you want to delete <strong>Anna Rossi</strong>? This action cannot be undone.
+      </div>
+      <footer class="fi-modal__footer">
+        <button type="button" class="fi-btn fi-btn--secondary">Cancel</button>
+        <button type="button" class="fi-btn fi-btn--danger">Delete</button>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

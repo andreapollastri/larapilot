@@ -4,6 +4,10 @@ paths:
   prd: .larapilot/docs/PRD.md
   mockups: .larapilot/mockups/
   test_results: .larapilot/docs/test-results/
+  client_materials: .larapilot/client-materials/
+  legacy: .larapilot/legacy/
+  research: .larapilot/research/
+  design_systems: .larapilot/design-systems/
 
 workflow:
   statuses:

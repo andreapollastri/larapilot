@@ -102,6 +102,7 @@ The **first interview layer** in **`larapilot-inception`**. **Mark** asks before
 ```markdown
 **Project Kind:** Personal | Website | Application
 **Website Type:** Showcase | Portal | Blog | E-commerce | Landing | Documentation | Other
+**Project Origin:** Greenfield | Legacy rewrite | Legacy port
 ```
 
 `Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
@@ -146,7 +147,7 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 1. **Delivery target** — all four options (`MVP` … `Enterprise`)
 2. **Budget Sensitivity** (Aurora) — same round or right after
 3. **John** — when SaaS, B2B platform, or tenant isolation is plausible, ask multi-tenancy via **AskQuestion** (see Architecture Standards)
-4. **John** — admin/control panel: **Filament** vs **custom** when applicable
+4. **John** — admin/control panel or authenticated dashboard: **Filament** vs **[Laravel Starter Kit](https://laravel.com/starter-kits)** (Livewire/Flux, React, Vue, or Svelte) vs **custom** when applicable — never assume one route
 5. **Sebastian** — integrations and competitor data porting when comparable products exist
 6. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily** join when relevant
 
@@ -159,6 +160,78 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 | **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target |
 | **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets. **Application** → flows + admin when applicable |
 | **`larapilot-ship`** | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate |
+
+## Client Materials *(all skills — mandatory input)*
+
+**Path:** `{paths.client_materials}` (default `.larapilot/client-materials/`)
+
+Pre-existing documentation, analysis, briefs, wireframes, API specs, spreadsheets, sample data, and any other materials the client provides **before or during** discovery.
+
+### Rules for every skill
+
+1. **Always consult** — at activation, list and read every non-hidden file under `{paths.client_materials}` when the folder exists. Client materials are **mandatory inputs** alongside the PRD — never ignore them.
+2. **Inception first** — if the folder is non-empty at discovery start, the team reads, understands, and cross-checks materials **before** finalizing scope. Ambiguities, conflicts, or gaps → **AskQuestion** in the interview (max 3 per round, skippable).
+3. **PRD traceability** — when materials drive requirements, reference source files in `## Functional Requirements` (e.g. `Source: client-materials/brief.md §3`).
+4. **Conflict resolution** — if the PRD contradicts client materials, resolve during inception or flag explicitly in spec acceptance criteria; do not silently prefer one source.
+5. **Downstream** — `larapilot-spec` maps FRs to client doc sections; `larapilot-plan` cites files for parity; `larapilot-implement` verifies behavior against cited materials.
+
+### Suggested layout
+
+Flat files or subfolders; optional `INDEX.md` for large sets. Supported: Markdown, text, OpenAPI/Swagger, CSV/JSON samples, images (describe in chat), PDFs (summarize extracted content in artifacts).
+
+**Privacy:** never commit credentials, unredacted production dumps, or unlicensed third-party content.
+
+Ownership: **Mark** ensures interview covers gaps; **Tom** traces specs to sources; **John** aligns architecture to documented constraints.
+
+## Legacy Rewrite & Porting *(zero feature/data loss)*
+
+**Path:** `{paths.legacy}` (default `.larapilot/legacy/`)
+
+Legacy codebase snapshots, schema dumps, migration notes, and porting artifacts for **rewrite, port, or migration** projects.
+
+### Rules for every skill
+
+1. **Parity contract** — when `{paths.legacy}` has content beyond the README, treat every legacy feature and data entity as **in scope** until explicitly deferred in the PRD `### Out of Scope`.
+2. **Inception** — when legacy content exists or the user mentions an existing system, **Mark** asks via **AskQuestion**: greenfield vs **legacy rewrite/port**; record in PRD `## MVP Scope` as **`Project Origin: Greenfield | Legacy rewrite | Legacy port`**.
+3. **Masterful rewrite** — **John**, **Tom**, and **Alex** deliver a modern Laravel implementation that **preserves all legacy functionality and data** unless the user explicitly accepts a documented exception. Propose UX, performance, security, and stack **upgrades** as enhancements — never as excuses to drop features or data.
+4. **Parity matrix** — during inception or spec, persist `{paths.research}/legacy-parity.md` (or PRD subsection): legacy feature/module → new implementation → migration strategy → test evidence.
+5. **Data migration** — **Sebastian** + **Matt** plan import paths (ETL, dual-write, cutover); **Anne** requires row-count/checksum/spot-check verification; **Violet** reviews personal-data handling in dumps.
+6. **Explore sub-agent** — when the legacy folder is substantial, plan/implement may target `{paths.legacy}` in readonly explore sub-agents for feature mapping (see **Sub-agents**).
+7. **Downstream** — bootstrap backlog with parity and migration specs before greenfield features; implement never marks DONE without migration verification when data is in scope.
+
+Ownership: **John** architecture + cutover strategy; **Tom** acceptance criteria from legacy behavior; **Sebastian/Matt** data import; **Anne** regression + migration tests; **Robert** blocks handoff on undocumented feature drops.
+
+## Reference Products & Sebastian Deepsearch
+
+During **`larapilot-inception`**, **Sebastian** asks for **reference product URLs, apps, or sites** to study when competitive or inspirational context would help — **Application**, **Website** (especially **E-commerce**), or whenever the user mentions competitors, benchmarks, or design inspiration. On **Personal** projects, ask only when the user provides references or asks for comparison.
+
+### Interview
+
+- Ask for links, product names, or “sites to emulate” in the same discovery round as integrations/competitors when natural — skippable.
+- Fixed-choice follow-ups → **AskQuestion**; free-form URLs → chat is fine.
+
+### Deepsearch workflow *(Sebastian)*
+
+When URLs or named products are provided:
+
+1. Run **deepsearch** using editor web tools (**WebSearch**, **WebFetch**, or equivalent) — not Boost `Search Docs` (Laravel docs only).
+2. Capture: product positioning, feature set, UX flows, design language, pricing tiers, integrations, technical hints, strengths/weaknesses vs this project.
+3. Persist one report per product to `{paths.research}/reference-products/{slug}.md` with sections: **URL**, **Summary**, **Features**, **UX & design**, **Integrations**, **Ideas for this project**.
+4. Cross-link findings in the PRD under `### Reference Products` and promote surviving ideas to `## Functional Requirements` or `### Integrations`.
+5. Resolve open questions from deepsearch via **AskQuestion** in the interview when findings are ambiguous.
+
+### Downstream
+
+| Skill | Use research for |
+| --- | --- |
+| **`larapilot-spec`** | FRs and parity specs from reference features |
+| **`larapilot-design`** | Elise — layout, patterns, visual language (adapt, do not clone) |
+| **`larapilot-plan`** | Sebastian/Matt — integration and porting tasks |
+| **`larapilot-implement`** | Feature fidelity checks against documented reference behavior |
+
+**All skills** read `{paths.research}/` when planning or implementing features traced to reference products.
+
+Ownership: **Sebastian** runs deepsearch and writes reports; **Jennifer** frames positioning; **Elise** translates design patterns; **Matt** wires comparable integrations.
 
 ## Delivery Target
 
@@ -455,9 +528,65 @@ Elise privileges the **Laravel frontend ecosystem** — design and mockups must 
 3. **Tailwind CSS** — preferred utility-first styling (detect project version via Boost)
 4. **Bootstrap 5** — when the project already uses it, or for Filament-adjacent admin patterns
 5. **Vue 3** — when the stack is Inertia/Vue or a SPA island is justified
-6. **Flux UI** — when installed, align mockups and implementation to Flux components
+6. **Flux UI** — when installed or when the PRD chose the **Livewire Starter Kit**, align mockups and implementation to Flux components
+7. **Laravel Starter Kits** — when the PRD records a Starter Kit variant, align authenticated UI (dashboard, settings, auth layouts) to the kit's component library: **Flux** (Livewire), **shadcn/ui** (React), **shadcn-vue** (Vue), or **shadcn-svelte** (Svelte) — see [starter-kits docs](https://laravel.com/docs/starter-kits)
 
-Avoid introducing React, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them. Admin panels: **ask Filament vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
+Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them **or** the PRD chose the matching **Laravel Starter Kit** (Inertia variant). Authenticated app UI: **ask Filament vs Starter Kit vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
+
+### Filament admin mockups *(when PRD chose Filament)*
+
+When the PRD records **Filament** as the admin/control panel, Elise **must** design admin screens against the packaged **Filament** design reference:
+
+| Resource | Path |
+| --- | --- |
+| Index | `{paths.design_systems}/README.md` |
+| Filament reference | `{paths.design_systems}/filament/README.md` |
+| Figma merge index | `{paths.design_systems}/filament/figma-sources.md` |
+| Mockup CSS tokens | `{paths.design_systems}/filament/tokens.css` |
+| Static HTML screens | `{paths.design_systems}/filament/html/` (17 screens + catalog) |
+| Layout & components | `{paths.design_systems}/filament/components.md` |
+| Figma (external) | [Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system) · [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free) |
+
+Rules:
+
+1. **Admin/control panel screens only** — public marketing or storefront pages keep the Nordic minimal language unless scoped otherwise.
+2. Copy or link `tokens.css` into the mockup folder; load **Inter**; use the sidebar + topbar shell from `components.md`.
+3. Map each screen to Filament concepts (Resource index, form, dashboard widgets, settings) in the mockup README.
+4. Show **light + dark** for at least one key admin screen; document sidebar collapse on mobile.
+5. Custom Filament theme colors from the PRD or client materials override default amber primary — document RGB/hex for Alex's Panel `->colors()`.
+
+When Filament is **not** chosen, do not use this design system — design in the project's visual language. Mockups still inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
+
+### Starter Kit app UI *(when PRD chose a Laravel Starter Kit)*
+
+When the PRD records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI (dashboard, profile, settings, portal back-end), Elise **must** design screens against the packaged **Starter Kit Design System**:
+
+| Resource | Path |
+| --- | --- |
+| Index | `{paths.design_systems}/README.md` |
+| Starter Kit reference | `{paths.design_systems}/starter-kit/README.md` |
+| Source index | `{paths.design_systems}/starter-kit/sources.md` |
+| Mockup CSS tokens | `{paths.design_systems}/starter-kit/tokens.css` |
+| Static HTML screens | `{paths.design_systems}/starter-kit/html/` (7 screens + catalog) |
+| Layout & components | `{paths.design_systems}/starter-kit/components.md` |
+| Official docs (external) | [starter-kits](https://laravel.com/starter-kits) · [docs](https://laravel.com/docs/starter-kits) |
+
+| Variant | Component library | Docs |
+| --- | --- | --- |
+| **Livewire** | Flux UI + Tailwind CSS v4 | [Livewire starter kit](https://laravel.com/docs/starter-kits#livewire) |
+| **React** | shadcn/ui + Inertia 2 + Tailwind CSS v4 | [React starter kit](https://laravel.com/docs/starter-kits#react) |
+| **Vue** | shadcn-vue + Inertia 2 + Tailwind CSS v4 | [Vue starter kit](https://laravel.com/docs/starter-kits#vue) |
+| **Svelte** | shadcn-svelte + Inertia 2 + Tailwind CSS v4 | [Svelte starter kit](https://laravel.com/docs/starter-kits#svelte) |
+
+Rules:
+
+1. **Authenticated screens only** — light sidebar (not Filament's dark shell), Instrument Sans, neutral primary buttons.
+2. Copy or link `tokens.css` into the mockup folder; use sidebar/header layouts and auth patterns from `components.md` and `html/`.
+3. Map mockup screens to kit concepts (dashboard, profile, password, appearance, login) in the mockup README.
+4. Show **light + dark** on at least one key dashboard screen; document sidebar vs header layout choice.
+5. Greenfield: prefer `laravel new --livewire|--react|--vue|--svelte` when the PRD commits to a Starter Kit.
+
+When a **Starter Kit is not** chosen, do not use this design system. Mockups still inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
 
 ### Default visual language
 
@@ -710,7 +839,11 @@ When a feature is not worth building in-house, evaluate packages in this order:
 
 1. **Laravel built-ins and first-party packages** — framework features first; official packages (Horizon, Sanctum, Scout, Cashier, Reverb, …) next.
 2. **Spatie packages** — [spatie.be/open-source/packages](https://spatie.be/open-source/packages) is the **preferred source for third-party functionality** (permissions, media library, backups, activity log, query builder, settings, …). Check Spatie's catalog before other vendors.
-3. **Filament and its plugin ecosystem** — when the product needs an **admin/control panel**, never impose [Filament](https://filamentphp.com/): **explicitly ask the user** (via AskQuestion) whether they want Filament or a custom panel. Recommend the best-fit option for the specific case — above all the one that stays **closest to the project mockups** (a heavily custom design usually means a custom panel; standard CRUD/resource screens fit Filament well). Record the choice in the PRD under `## Technical Architecture` so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins).
+3. **Authenticated app UI route** — when the product needs an **admin/control panel**, customer dashboard, or portal back-end, never impose a single stack: **explicitly ask the user** (via AskQuestion) among:
+   - **[Filament](https://filamentphp.com/)** — dedicated admin panel (Resources, widgets, relation managers); best for internal ops and standard back-office CRUD
+   - **[Laravel Starter Kits](https://laravel.com/starter-kits)** — first-party app scaffold with auth, dashboard, profile/settings, light/dark, configurable layouts: **Livewire** (Flux UI), **React**, **Vue**, or **Svelte** (Inertia + shadcn variants); best when authenticated UI is the main product surface or a customer portal integrated into the same stack
+   - **Custom panel** — bespoke Blade/Livewire/Inertia without Filament or starter-kit conventions
+   Recommend the best-fit option for the specific case — above all the one **closest to the project mockups** (heavy custom design → custom; standard resource CRUD → Filament; customer app with auth + dashboard → Starter Kit variant matching the PRD stack). Record the choice in the PRD under `## Technical Architecture` (`Admin panel: Filament | Starter Kit (livewire|react|vue|svelte) | custom`) so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins). When a Starter Kit is chosen, scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) and align mockups to Flux or shadcn per variant — do not mix unrelated UI libraries on top.
 4. **Other community vendors** — only when nothing above fits, and with stricter vetting.
 
 Every candidate — **including** Spatie packages and Filament plugins — must pass a maintenance and security check before `composer require`:
@@ -826,7 +959,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 💎 Mark | Product Manager | Product scope, personas, delivery-target choice, scope trade-offs |
 | 🧭 Jennifer | Business Strategist | Market positioning, competitive context, product risks |
 | 🏢 Benjamin | Business Consultant | Market research, enterprise know-how, business lens on technical choices |
-| 💡 Sebastian | Innovator | Competitive challenger, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
+| 💡 Sebastian | Innovator | Competitive challenger, **reference-product deepsearch**, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
 | 🔎 Tom | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
 | 📐 John | Architect | SOLID, scalable architecture, APIs, multi-tenancy trade-offs, queues, DTOs, tech debt, OpenAPI/docs |
 | 🔧 Alex | Full-Stack Developer | Implementation, task breakdown, **factories/seeders**, per-task commits & internal PRs |

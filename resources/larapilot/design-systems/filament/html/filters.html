@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Filters — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="resource-list.html" class="is-active">Users</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <h1>Users</h1>
+          <p>Active filters — UI Kit (Free).</p>
+        </header>
+        <section class="fi-section">
+          <div class="fi-toolbar">
+            <div class="fi-toolbar__left">
+              <input class="fi-search" type="search" placeholder="Search users…">
+              <button type="button" class="fi-btn fi-btn--secondary">Filters</button>
+            </div>
+            <div class="fi-toolbar__right">
+              <a href="resource-create.html" class="fi-btn fi-btn--primary">Create user</a>
+            </div>
+          </div>
+          <div class="fi-filter-chips" aria-label="Active filters">
+            <span class="fi-filter-chip">Status: Active <button type="button" aria-label="Remove status filter">×</button></span>
+            <span class="fi-filter-chip">Role: Editor <button type="button" aria-label="Remove role filter">×</button></span>
+            <button type="button" class="fi-btn fi-btn--secondary" style="min-height:1.75rem;padding:0.25rem 0.625rem;font-size:0.8125rem">Clear all</button>
+          </div>
+          <div class="fi-table-wrap">
+            <table class="fi-table">
+              <thead>
+                <tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Status</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Anna Rossi</td>
+                  <td>anna@example.com</td>
+                  <td>Editor</td>
+                  <td><span class="fi-badge fi-badge--success">Active</span></td>
+                </tr>
+                <tr>
+                  <td>Marco Bianchi</td>
+                  <td>marco@example.com</td>
+                  <td>Editor</td>
+                  <td><span class="fi-badge fi-badge--success">Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

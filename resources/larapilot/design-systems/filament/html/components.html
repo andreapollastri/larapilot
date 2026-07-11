@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <main class="fi-gallery" style="max-width:48rem">
+    <p><a href="index.html">← All screens</a></p>
+    <h1>UI components</h1>
+    <p class="fi-gallery__intro">Atomic elements merged from <a href="https://www.figma.com/community/file/1413822581847485668/filament-3-design-system">Design System</a> and <a href="https://www.figma.com/community/file/1417716904167561805/filament-3-free">UI Kit (Free)</a>.</p>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Buttons</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <button type="button" class="fi-btn fi-btn--primary">Primary</button>
+        <button type="button" class="fi-btn fi-btn--secondary">Secondary</button>
+        <button type="button" class="fi-btn fi-btn--danger">Danger</button>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Badges</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <span class="fi-badge fi-badge--success">Success</span>
+        <span class="fi-badge fi-badge--warning">Warning</span>
+        <span class="fi-badge fi-badge--danger">Danger</span>
+        <span class="fi-badge fi-badge--info">Info</span>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Form fields</h2>
+      <div class="fi-field">
+        <label for="sample-text">Text input</label>
+        <input id="sample-text" type="text" placeholder="Placeholder">
+      </div>
+      <div class="fi-field">
+        <label for="sample-select">Select</label>
+        <select id="sample-select">
+          <option>Option A</option>
+          <option>Option B</option>
+        </select>
+      </div>
+      <div class="fi-field fi-field--error">
+        <label for="sample-error">With error</label>
+        <input id="sample-error" type="text" aria-invalid="true" aria-describedby="sample-error-msg">
+        <p class="fi-field__error" id="sample-error-msg">Validation message.</p>
+      </div>
+      <div class="fi-field fi-checkbox">
+        <input id="sample-check" type="checkbox">
+        <label for="sample-check">Checkbox label</label>
+      </div>
+      <div class="fi-field">
+        <span id="sample-toggle-label">Toggle</span>
+        <div style="margin-top:0.5rem">
+          <button type="button" class="fi-toggle is-on" aria-labelledby="sample-toggle-label" aria-pressed="true"></button>
+        </div>
+      </div>
+      <div class="fi-field fi-field--full">
+        <label>File upload</label>
+        <div class="fi-file-upload">
+          <p style="margin:0 0 0.5rem">Drag & drop files here or <strong>browse</strong></p>
+          <p style="margin:0;font-size:0.8125rem">PNG, JPG up to 2MB</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Table snippet</h2>
+      <div class="fi-table-wrap">
+        <table class="fi-table">
+          <thead>
+            <tr><th scope="col">Column</th><th scope="col">Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Row 1</td><td><span class="fi-badge fi-badge--success">Active</span></td></tr>
+            <tr><td>Row 2</td><td><span class="fi-badge fi-badge--warning">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

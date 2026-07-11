@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings — Laravel Starter Kit</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="sk-mockup">
+  <div class="sk-layout">
+    <aside class="sk-sidebar" aria-label="Sidebar">
+      <div class="sk-sidebar__header">
+        <a href="dashboard.html" class="sk-sidebar__logo">
+          <span class="sk-sidebar__logo-mark" aria-hidden="true">L</span>
+          Laravel
+        </a>
+      </div>
+      <div class="sk-sidebar__group-label">Platform</div>
+      <nav class="sk-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html" class="is-active" aria-current="page">Settings</a>
+      </nav>
+      <div class="sk-sidebar__footer">
+        <button type="button" class="sk-sidebar__user" aria-haspopup="menu">
+          <span class="sk-sidebar__avatar" aria-hidden="true">JD</span>
+          <span class="sk-sidebar__user-meta">
+            <span class="sk-sidebar__user-name">Jane Doe</span>
+            <span class="sk-sidebar__user-email">jane@example.com</span>
+          </span>
+        </button>
+      </div>
+    </aside>
+    <div class="sk-inset">
+      <header class="sk-inset-header">
+        <ol class="sk-breadcrumbs" aria-label="Breadcrumb">
+          <li><span>Settings</span></li>
+        </ol>
+      </header>
+      <main class="sk-inset-content">
+        <div class="sk-settings-layout">
+          <nav class="sk-settings-nav" aria-label="Settings sections">
+            <a href="#" class="is-active" aria-current="page">Profile</a>
+            <a href="#">Password</a>
+            <a href="#">Appearance</a>
+          </nav>
+          <div>
+            <section class="sk-card">
+              <h2 class="sk-card__title">Profile information</h2>
+              <p class="sk-card__desc">Update your name and email address.</p>
+              <form action="#" method="post">
+                <div class="sk-field">
+                  <label for="name">Name</label>
+                  <input id="name" name="name" type="text" class="sk-input" value="Jane Doe">
+                </div>
+                <div class="sk-field">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" class="sk-input" value="jane@example.com">
+                </div>
+                <div class="sk-actions">
+                  <button type="submit" class="sk-btn sk-btn--primary">Save</button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

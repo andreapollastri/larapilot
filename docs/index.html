@@ -1662,7 +1662,7 @@
         <p>Between plan and implement you can run <code>/larapilot-design</code> for UI mockups. When the backlog is stable, <code>/larapilot-autopilot</code> batch-plans and implements multiple specs. The CLI blocks invalid jumps — you cannot implement before planning or approve before review.</p>
 
         <h3>Discovery (inception)</h3>
-        <p>Everything starts with <code>/larapilot-inception</code>. You bring a rough idea — one sentence is enough. Mark (PM) asks for <strong>Project Kind</strong> (<code>Personal</code>, <code>Website</code>, <code>Application</code>), then the team runs a short guided interview — at most 3 questions per round, all skippable. When there is enough context, they write and validate <code>.larapilot/docs/PRD.md</code>. Inception does <strong>not</strong> create the backlog; that is <code>/larapilot-spec</code>.</p>
+        <p>Everything starts with <code>/larapilot-inception</code>. You bring a rough idea — one sentence is enough. Optionally place client documentation in <code>.larapilot/client-materials/</code> and legacy project snapshots in <code>.larapilot/legacy/</code> before starting — the team reads them first. Mark (PM) asks for <strong>Project Kind</strong> (<code>Personal</code>, <code>Website</code>, <code>Application</code>), then the team runs a short guided interview — at most 3 questions per round, all skippable. Sebastian may ask for reference product URLs and run <strong>deepsearch</strong> (findings land in <code>.larapilot/research/reference-products/</code>). When rewriting legacy software, every feature and dataset stays in scope unless you explicitly defer it in the PRD. When there is enough context, they write and validate <code>.larapilot/docs/PRD.md</code>. Inception does <strong>not</strong> create the backlog; that is <code>/larapilot-spec</code>.</p>
 
         <h3>Spec loop (per user story)</h3>
         <p>Each story in the backlog follows the same cycle:</p>
@@ -2075,6 +2075,9 @@ tests/Feature/RegistrationTest.php</code></pre>
             </div>
             <div class="walkthrough-body">
               <pre class="file-tree">.larapilot/
+├── client-materials/     # optional — client docs before discovery
+├── legacy/               # optional — legacy system to port
+├── research/             # deepsearch + parity notes
 ├── docs/
 │   ├── PRD.md
 │   └── review/
@@ -2164,6 +2167,9 @@ tests/Feature/</pre>
 
   - .larapilot/config.yaml
   - .larapilot/shared-runtime.md
+  - .larapilot/client-materials/
+  - .larapilot/legacy/
+  - .larapilot/research/
 
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
         </div>
@@ -2531,6 +2537,11 @@ php artisan larapilot:update</code></pre>
 ├── config.yaml
 ├── shared-runtime.md
 ├── backlog.yaml
+├── client-materials/     # client docs & analysis (always honored)
+├── legacy/               # legacy codebase to rewrite/port
+├── research/
+│   ├── reference-products/   # Sebastian deepsearch reports
+│   └── legacy-parity.md      # optional parity matrix
 ├── docs/
 │   ├── PRD.md
 │   ├── test-results/

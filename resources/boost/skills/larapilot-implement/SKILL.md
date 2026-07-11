@@ -58,6 +58,9 @@ Follow Laravel best practices from Boost guidelines: thin controllers, Form Requ
 
 Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from shared-runtime on greenfield work unless the PRD or existing codebase opts out:
 
+- **Client materials & research:** before implementing, read cited files under `{paths.client_materials}` and `{paths.research}/`; verify acceptance criteria against them
+- **Legacy rewrite/port:** when spec touches legacy parity, read `{paths.legacy}` and `{paths.research}/legacy-parity.md`; preserve behavior and data — Anne verifies migration evidence before `task-done`
+
 - **2FA:** enable Fortify TOTP when implementing auth; expose setup/confirm/recovery flows.
 - **Passwords:** register `Password::defaults()` in `AppServiceProvider` and use `Password::defaults()` in validation rules.
 - **UUIDs:** new models use `HasUuids` (or `HasVersion4Uuids`) and UUID columns in migrations.
@@ -80,7 +83,7 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires
 - **High-risk integrations:** note in handoff if **Oliver** red-team pass is recommended before ship (payments, OAuth, webhooks, imports)
 
-When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (only when the PRD/plan chose Filament for the admin panel — never introduce Filament on your own) → other vetted vendors. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
+When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (only when the PRD/plan chose Filament for the admin panel — never introduce Filament on your own) → other vetted vendors. When the PRD chose a **Laravel Starter Kit** variant, scaffold and extend per [starter-kits docs](https://laravel.com/docs/starter-kits) — never introduce a mismatched UI stack on your own. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
 
 ## Workflow
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cards & navigation — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <main class="fi-gallery" style="max-width:52rem">
+    <p><a href="index.html">← All screens</a></p>
+    <h1>Cards & navigation</h1>
+    <p class="fi-gallery__intro">Patterns from the <a href="https://www.figma.com/community/file/1417716904167561805/filament-3-free">UI Kit (Free)</a>.</p>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Cards</h2>
+      <div class="fi-card-grid">
+        <article class="fi-card">
+          <h3>Documentation</h3>
+          <p>Read the getting started guide.</p>
+        </article>
+        <article class="fi-card">
+          <h3>API keys</h3>
+          <p>Manage integration credentials.</p>
+        </article>
+        <article class="fi-card">
+          <h3>Billing</h3>
+          <p>Invoices and payment methods.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Sidebar groups</h2>
+      <div style="max-width:16rem;background:var(--fi-sidebar-bg);border-radius:var(--fi-radius-lg);padding:0.75rem;color:var(--fi-sidebar-text)">
+        <div class="fi-sidebar__brand" style="padding:0.5rem 0.75rem 1rem">Filament Demo</div>
+        <div class="fi-nav-group__label">Shop</div>
+        <nav class="fi-sidebar__nav">
+          <a href="#" class="is-active">Products</a>
+          <a href="#">Categories</a>
+        </nav>
+        <div class="fi-nav-group__label">Settings</div>
+        <nav class="fi-sidebar__nav">
+          <a href="#">Team</a>
+          <a href="#">Billing</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="fi-section">
+      <h2 class="fi-section__heading">Tabs</h2>
+      <nav class="fi-tabs" aria-label="Example tabs">
+        <a href="#" class="is-active">Overview</a>
+        <a href="#">Activity</a>
+        <a href="#">Notes</a>
+      </nav>
+      <p style="margin:0;color:var(--fi-text-muted)">Tab panel content area.</p>
+    </section>
+  </main>
+</body>
+</html>

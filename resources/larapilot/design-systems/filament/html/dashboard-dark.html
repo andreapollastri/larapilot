@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard (dark) — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard-dark.html" class="is-active" aria-current="page">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html">Users</a>
+        <a href="resource-list.html">Orders</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <h1>Dashboard</h1>
+          <p>Dark mode reference screen.</p>
+        </header>
+        <div class="fi-stat-grid">
+          <article class="fi-stat-card">
+            <div class="fi-stat-card__label">Total users</div>
+            <div class="fi-stat-card__value">1,284</div>
+            <div class="fi-stat-card__delta">+12% vs last month</div>
+          </article>
+          <article class="fi-stat-card">
+            <div class="fi-stat-card__label">New orders</div>
+            <div class="fi-stat-card__value">86</div>
+            <div class="fi-stat-card__delta">+4% vs last week</div>
+          </article>
+          <article class="fi-stat-card">
+            <div class="fi-stat-card__label">Revenue</div>
+            <div class="fi-stat-card__value">€24,580</div>
+            <div class="fi-stat-card__delta">+8% vs last month</div>
+          </article>
+        </div>
+        <section class="fi-section" aria-labelledby="recent-heading">
+          <h2 class="fi-section__heading" id="recent-heading">Recent users</h2>
+          <div class="fi-table-wrap">
+            <table class="fi-table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Anna Rossi</td>
+                  <td>anna@example.com</td>
+                  <td><span class="fi-badge fi-badge--success">Active</span></td>
+                </tr>
+                <tr>
+                  <td>Marco Bianchi</td>
+                  <td>marco@example.com</td>
+                  <td><span class="fi-badge fi-badge--warning">Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

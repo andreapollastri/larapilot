@@ -29,12 +29,13 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — read `paths.mockups`
+1. `php artisan larapilot:config-show` — read `paths.mockups`, `paths.client_materials`, `paths.research`, `paths.design_systems`
 
 ## Rules
 
 - **Never modify application code** — only write to `.larapilot/mockups/{spec-code}/` or `.larapilot/mockups/{feature-name}/`
 - Match existing mockups in `.larapilot/mockups/` for visual consistency
+- Read **`{paths.client_materials}`** (brand guidelines, wireframes) and **`{paths.research}/reference-products/`** when present — adapt patterns, do not clone competitors
 - Mockups browsable at `/mockups/{spec}` in local/dev/staging only
 - Elise speaks in character; **accessibility is mandatory** — not a polish pass at the end
 - **Mobile First is mandatory** — design smallest viewport first; desktop is progressive enhancement, never neglected
@@ -57,9 +58,35 @@ README must include a **Responsive & navigation** section Alex and Anne use as c
 
 Boost `Application Info` → align to shared-runtime stack order: Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
 
-For **admin/control panel** screens, do not presuppose Filament's look unless the PRD already chose Filament — design in the project's visual language. Mockups drive the Filament-vs-custom decision downstream (per Vendor & Package Policy), not the other way around.
+### Elise — Filament admin mockups
 
-Default aesthetic: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
+When the PRD `## Technical Architecture` records **Filament** as the panel choice (or the spec is explicitly for a Filament admin area), admin/control panel mockups **must** follow the packaged design system — read shared-runtime **Filament admin mockups** and:
+
+1. `{paths.design_systems}/filament/README.md` — rules and Figma links ([Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system), [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free))
+2. `{paths.design_systems}/filament/figma-sources.md` — merge index (which kit owns which frames)
+3. `{paths.design_systems}/filament/tokens.css` — copy into mockup folder as `filament-tokens.css`
+4. `{paths.design_systems}/filament/components.md` — shell, tables, forms, actions
+5. `{paths.design_systems}/filament/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
+
+Use Filament's visual language (sidebar, topbar, sections, amber primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
+
+When Filament is **not** chosen, design admin/dashboard screens in the project's visual language; mockups inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
+
+### Elise — Laravel Starter Kit mockups
+
+When the PRD `## Technical Architecture` records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI, admin/dashboard mockups **must** follow the packaged design system — read shared-runtime **Starter Kit app UI** and:
+
+1. `{paths.design_systems}/starter-kit/README.md` — rules and official kit links
+2. `{paths.design_systems}/starter-kit/sources.md` — variant index (React/Vue/Svelte/Livewire repos)
+3. `{paths.design_systems}/starter-kit/tokens.css` — copy into mockup folder as `starter-kit-tokens.css`
+4. `{paths.design_systems}/starter-kit/components.md` — sidebar/header shell, auth layouts, settings
+5. `{paths.design_systems}/starter-kit/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
+
+Use the kit's visual language (light sidebar, Instrument Sans, neutral primary, shadcn/Flux patterns) — **not** the Filament design system and not Nordic minimal on authenticated screens. Public-facing pages in the same spec keep Nordic minimal unless scoped as part of the authenticated shell.
+
+When a Starter Kit is **not** chosen, do not impose Flux/shadcn starter-kit patterns from this section.
+
+Default aesthetic for public UI: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
 
 ### Elise — accessibility (WCAG 2.2 AA)
 

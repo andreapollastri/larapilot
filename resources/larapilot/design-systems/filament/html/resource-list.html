@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Users — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html" class="is-active" aria-current="page">Users</a>
+        <a href="resource-list.html">Orders</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <ul class="fi-breadcrumbs" aria-label="Breadcrumb">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><span aria-current="page">Users</span></li>
+          </ul>
+          <h1>Users</h1>
+        </header>
+        <section class="fi-section">
+          <div class="fi-toolbar">
+            <div class="fi-toolbar__left">
+              <label class="visually-hidden" for="search">Search</label>
+              <input class="fi-search" id="search" type="search" placeholder="Search users…">
+              <button type="button" class="fi-btn fi-btn--secondary">Filters</button>
+            </div>
+            <div class="fi-toolbar__right">
+              <a href="resource-create.html" class="fi-btn fi-btn--primary">Create user</a>
+            </div>
+          </div>
+          <div class="fi-table-wrap">
+            <table class="fi-table">
+              <thead>
+                <tr>
+                  <th scope="col"><input type="checkbox" aria-label="Select all"></th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" aria-label="Select Anna Rossi"></td>
+                  <td><a href="resource-view.html" style="color:rgb(var(--color-primary-600));text-decoration:none;font-weight:500">Anna Rossi</a></td>
+                  <td>anna@example.com</td>
+                  <td>Admin</td>
+                  <td><span class="fi-badge fi-badge--success">Active</span></td>
+                  <td>
+                    <a href="resource-edit.html" class="fi-icon-btn" aria-label="Edit Anna Rossi">✎</a>
+                    <button type="button" class="fi-icon-btn" aria-label="Delete Anna Rossi">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" aria-label="Select Marco Bianchi"></td>
+                  <td><a href="resource-view.html" style="color:rgb(var(--color-primary-600));text-decoration:none;font-weight:500">Marco Bianchi</a></td>
+                  <td>marco@example.com</td>
+                  <td>Editor</td>
+                  <td><span class="fi-badge fi-badge--warning">Pending</span></td>
+                  <td>
+                    <a href="resource-edit.html" class="fi-icon-btn" aria-label="Edit Marco Bianchi">✎</a>
+                    <button type="button" class="fi-icon-btn" aria-label="Delete Marco Bianchi">🗑</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" aria-label="Select Sara Conti"></td>
+                  <td><a href="resource-view.html" style="color:rgb(var(--color-primary-600));text-decoration:none;font-weight:500">Sara Conti</a></td>
+                  <td>sara@example.com</td>
+                  <td>Viewer</td>
+                  <td><span class="fi-badge fi-badge--danger">Suspended</span></td>
+                  <td>
+                    <a href="resource-edit.html" class="fi-icon-btn" aria-label="Edit Sara Conti">✎</a>
+                    <button type="button" class="fi-icon-btn" aria-label="Delete Sara Conti">🗑</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <nav class="fi-pagination" aria-label="Pagination">
+            <span>Showing 1 to 3 of 128 results</span>
+            <div class="fi-pagination__controls">
+              <button type="button" disabled aria-label="Previous page">‹</button>
+              <button type="button" class="is-active" aria-current="page">1</button>
+              <button type="button">2</button>
+              <button type="button">3</button>
+              <button type="button" aria-label="Next page">›</button>
+            </div>
+          </nav>
+        </section>
+      </main>
+    </div>
+  </div>
+  <style>.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+</body>
+</html>

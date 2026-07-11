@@ -76,6 +76,10 @@ class ConfigService
                 'security' => $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
                 'launch' => $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
                 'support' => $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
+                'client_materials' => $this->absolutePath($config['paths']['client_materials'] ?? '.larapilot/client-materials/'),
+                'legacy' => $this->absolutePath($config['paths']['legacy'] ?? '.larapilot/legacy/'),
+                'research' => $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
+                'design_systems' => $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -115,10 +119,14 @@ class ConfigService
         ];
     }
 
-    public function ensureDirectories(): void
+    /**
+     * @return list<string> Absolute workspace directory paths created on install.
+     */
+    public function workspaceDirectoryPaths(): array
     {
         $config = $this->resolve();
-        $paths = [
+
+        return array_values(array_unique([
             dirname($this->configPath()),
             dirname($this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml')),
             $this->absolutePath($config['file']['specs'] ?? '.larapilot/specs/'),
@@ -129,12 +137,57 @@ class ConfigService
             $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
             $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
             $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
+            $this->absolutePath($config['paths']['client_materials'] ?? '.larapilot/client-materials/'),
+            $this->absolutePath($config['paths']['legacy'] ?? '.larapilot/legacy/'),
+            $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
+            $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/').'/reference-products',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/'),
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/filament',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/filament/html',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit/html',
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
-        ];
+            $this->absolutePath('.larapilot/brand/'),
+        ]));
+    }
 
-        foreach (array_unique($paths) as $path) {
+    public function ensureDirectories(): void
+    {
+        foreach ($this->workspaceDirectoryPaths() as $path) {
             if (! is_dir($path)) {
                 mkdir($path, 0755, true);
+            }
+        }
+
+        $this->ensureIntakeReadmes();
+        $this->ensureGitkeeps();
+    }
+
+    public function ensureGitkeeps(): void
+    {
+        foreach ($this->workspaceDirectoryPaths() as $directory) {
+            $gitkeep = rtrim($directory, '/\\').DIRECTORY_SEPARATOR.'.gitkeep';
+
+            if (! is_file($gitkeep)) {
+                AtomicFile::write($gitkeep, '');
+            }
+        }
+    }
+
+    public function ensureIntakeReadmes(): void
+    {
+        $intakeReadmes = [
+            '.larapilot/client-materials/README.md' => 'client-materials/README.md',
+            '.larapilot/legacy/README.md' => 'legacy/README.md',
+            '.larapilot/research/README.md' => 'research/README.md',
+        ];
+
+        foreach ($intakeReadmes as $projectRelative => $packageRelative) {
+            $target = $this->absolutePath($projectRelative);
+            $source = dirname(__DIR__, 2).'/resources/larapilot/'.$packageRelative;
+
+            if (! is_file($target) && is_file($source)) {
+                AtomicFile::write($target, (string) file_get_contents($source));
             }
         }
     }

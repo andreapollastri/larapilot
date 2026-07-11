@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in — Laravel Starter Kit</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="sk-mockup">
+  <main class="sk-auth-page">
+    <div class="sk-auth-card">
+      <h1>Log in to your account</h1>
+      <p class="sk-auth-card__desc">Enter your email and password below to log in</p>
+      <form action="#" method="post">
+        <div class="sk-field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" class="sk-input" autocomplete="username" required>
+        </div>
+        <div class="sk-field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" class="sk-input" autocomplete="current-password" required>
+        </div>
+        <div class="sk-field sk-checkbox">
+          <input id="remember" name="remember" type="checkbox">
+          <label for="remember">Remember me</label>
+        </div>
+        <button type="submit" class="sk-btn sk-btn--primary sk-btn--block">Log in</button>
+        <p style="text-align:center;margin-top:1rem;font-size:0.8125rem" class="sk-muted">
+          <a href="#" class="sk-btn--link" style="padding:0">Forgot your password?</a>
+        </p>
+        <p style="text-align:center;margin-top:0.75rem;font-size:0.8125rem" class="sk-muted">
+          Don't have an account? <a href="#" class="sk-btn--link" style="padding:0">Sign up</a>
+        </p>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

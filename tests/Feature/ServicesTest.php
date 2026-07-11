@@ -161,6 +161,30 @@ it('flags invalid spec codes during validation', function (): void {
     expect(array_column($plan['findings'], 'code'))->toContain('PLAN_INVALID_CODE');
 });
 
+it('creates intake directories, readme stubs, and gitkeeps on install', function (): void {
+    $config = app(ConfigService::class);
+    $config->ensureDirectories();
+
+    expect(is_dir(base_path('.larapilot/client-materials')))->toBeTrue()
+        ->and(is_dir(base_path('.larapilot/legacy')))->toBeTrue()
+        ->and(is_dir(base_path('.larapilot/research/reference-products')))->toBeTrue()
+        ->and(is_file(base_path('.larapilot/client-materials/README.md')))->toBeTrue()
+        ->and(is_file(base_path('.larapilot/legacy/README.md')))->toBeTrue()
+        ->and(is_file(base_path('.larapilot/research/README.md')))->toBeTrue();
+
+    foreach ($config->workspaceDirectoryPaths() as $directory) {
+        expect(is_file(rtrim($directory, '/\\').'/.gitkeep'))->toBeTrue();
+    }
+
+    $info = $config->setupInfo();
+
+    expect($info['paths'])->toHaveKeys(['client_materials', 'legacy', 'research', 'design_systems'])
+        ->and($info['paths']['client_materials'])->toContain('.larapilot/client-materials')
+        ->and($info['paths']['legacy'])->toContain('.larapilot/legacy')
+        ->and($info['paths']['research'])->toContain('.larapilot/research')
+        ->and($info['paths']['design_systems'])->toContain('.larapilot/design-systems');
+});
+
 it('writes files atomically, creating parent directories', function (): void {
     $path = base_path('.larapilot/deep/nested/file.txt');
 

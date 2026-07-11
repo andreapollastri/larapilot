@@ -4,9 +4,9 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
 
-**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Mark opens with **Project Kind** (`Personal`, `Website`, `Application`) — the first layer that switches persona depth and follow-up questions. **Personal** → lean path (MVP/V1, budget defaults `Relaxed`, business personas silent). **Website** → type next (showcase, portal, blog, e-commerce, landing, docs) then delivery target; Emma/Lauren/Elise lead. **Application** → full discovery: delivery target (`MVP` … `Enterprise`), Budget Sensitivity (`Tracked` or `Relaxed`), multi-tenancy, admin panel, integrations, compliance. Jennifer explores market and positioning when relevant; Benjamin brings enterprise research on Application; Sebastian proposes integrations and **competitor data porting** when comparable products exist; John and Aurora co-own scalable, budget-aligned architecture; **Jack asks local dev environment** (Sail, Herd, not defined yet, or other) via AskQuestion — never assumes Docker/Sail; **Jack asks deploy platform, edge/CDN/WAF, and cloud** — never assumes Cipi, Cloudflare, or AWS; recommends Cloudflare and AWS when feasible. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Before the interview, drop client docs in **`.larapilot/client-materials/`** and legacy snapshots in **`.larapilot/legacy/`** — skills always read them. Mark opens with **Project Kind** (`Personal`, `Website`, `Application`) — the first layer that switches persona depth and follow-up questions. **Personal** → lean path (MVP/V1, budget defaults `Relaxed`, business personas silent). **Website** → type next (showcase, portal, blog, e-commerce, landing, docs) then delivery target; Emma/Lauren/Elise lead. **Application** → full discovery: delivery target (`MVP` … `Enterprise`), Budget Sensitivity (`Tracked` or `Relaxed`), multi-tenancy, admin panel or authenticated dashboard route (Filament vs Laravel Starter Kit vs custom), integrations, compliance. Jennifer explores market and positioning when relevant; Benjamin brings enterprise research on Application; Sebastian proposes integrations, **competitor data porting**, and runs **deepsearch** on reference product URLs (reports in `.larapilot/research/reference-products/`); John and Aurora co-own scalable, budget-aligned architecture; legacy rewrite/port preserves **all features and data** unless explicitly scoped out. **Jack asks local dev environment** (Sail, Herd, not defined yet, or other) via AskQuestion — never assumes Docker/Sail; **Jack asks deploy platform, edge/CDN/WAF, and cloud** — never assumes Cipi, Cloudflare, or AWS; recommends Cloudflare and AWS when feasible. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Write and validate the PRD before creating any backlog.
 
-**Vendor & package policy:** prefer Laravel built-ins/first-party, then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels never assume **Filament** (filamentphp.com) — explicitly ask the user Filament vs custom, recommending the best fit for the specific case and the option closest to the project mockups. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
+**Vendor & package policy:** prefer Laravel built-ins/first-party (including **[Laravel Starter Kits](https://laravel.com/starter-kits)** when they fit), then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels and authenticated dashboards never assume **Filament** (filamentphp.com) — explicitly ask the user **Filament vs Starter Kit (Livewire/React/Vue/Svelte) vs custom**, recommending the best fit for the specific case and the option closest to the project mockups. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
 
 **Laravel scaffolding defaults:** … **Brand (Elise):** favicon.svg, logo, OG 1200×630 for Lauren when client has no assets. See `.larapilot/shared-runtime.md`.
 
@@ -27,7 +27,7 @@ Use Larapilot skills when the user wants to:
 | Step | Skill | Output |
 | --- | --- | --- |
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
-| Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`) |
+| Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`); Filament admin mockups use `.larapilot/design-systems/filament/` when PRD chose Filament; Starter Kit mockups use `.larapilot/design-systems/starter-kit/` when PRD chose a kit variant |
 | Backlog | `larapilot-spec` | `.larapilot/backlog.yaml`, `.larapilot/specs/` |
 | Planning | `larapilot-plan` | `.larapilot/plans/US-XXX-plan.yaml` |
 | Implementation | `larapilot-implement` | Code, tests, review notes |
@@ -115,6 +115,9 @@ When planning or implementing Laravel features:
 - Security assessments: `.larapilot/docs/security/` (Lars OWASP + Oliver red-team)
 - Support & maintenance: `.larapilot/docs/support/`
 - Launch checks (SEO/social): `.larapilot/docs/launch/`
+- Client materials: `.larapilot/client-materials/` (docs/analysis from client — always honored)
+- Legacy project: `.larapilot/legacy/` (codebase to rewrite/port — parity contract)
+- Research: `.larapilot/research/` (Sebastian deepsearch, legacy parity matrix)
 
 ### Personas
 

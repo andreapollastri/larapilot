@@ -10,7 +10,20 @@ it('installs the project scaffolding', function (): void {
 
     expect(base_path('.larapilot/config.yaml'))->toBeFile()
         ->and(base_path('.larapilot/shared-runtime.md'))->toBeFile()
-        ->and(base_path('.larapilot/task-templates.md'))->toBeFile();
+        ->and(base_path('.larapilot/task-templates.md'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/filament/tokens.css'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/filament/html/index.html'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/filament/figma-sources.md'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/filament/html/widgets-dashboard.html'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/starter-kit/tokens.css'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/starter-kit/html/index.html'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/starter-kit/sources.md'))->toBeFile()
+        ->and(base_path('.larapilot/design-systems/starter-kit/html/dashboard.html'))->toBeFile()
+        ->and(base_path('.larapilot/specs/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/plans/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/mockups/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/docs/test-results/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/research/reference-products/.gitkeep'))->toBeFile();
 });
 
 it('refuses to reinstall without force', function (): void {
@@ -32,13 +45,16 @@ it('refreshes the shared runtime via update', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
     file_put_contents(base_path('.larapilot/shared-runtime.md'), 'stale copy from an older release');
+    file_put_contents(base_path('.larapilot/design-systems/filament/tokens.css'), 'stale tokens');
 
     $this->artisan('larapilot:update', ['--skip-boost' => true])->assertSuccessful();
 
     expect(file_get_contents(base_path('.larapilot/shared-runtime.md')))
         ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/shared-runtime.md'))
         ->and(file_get_contents(base_path('.larapilot/task-templates.md')))
-        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/task-templates.md'));
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/task-templates.md'))
+        ->and(file_get_contents(base_path('.larapilot/design-systems/filament/tokens.css')))
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/design-systems/filament/tokens.css'));
 });
 
 it('keeps project config untouched during update', function (): void {

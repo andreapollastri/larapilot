@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create user — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html" class="is-active">Users</a>
+        <a href="resource-list.html">Orders</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <ul class="fi-breadcrumbs" aria-label="Breadcrumb">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="resource-list.html">Users</a></li>
+            <li><span aria-current="page">Create</span></li>
+          </ul>
+          <h1>Create user</h1>
+        </header>
+        <form action="#" method="post">
+          <section class="fi-section" aria-labelledby="profile-heading">
+            <h2 class="fi-section__heading" id="profile-heading">Profile</h2>
+            <div class="fi-form-grid">
+              <div class="fi-field">
+                <label for="name">Full name <span aria-hidden="true">*</span></label>
+                <input id="name" name="name" type="text" required>
+              </div>
+              <div class="fi-field">
+                <label for="email">Email <span aria-hidden="true">*</span></label>
+                <input id="email" name="email" type="email" required>
+              </div>
+              <div class="fi-field">
+                <label for="role">Role</label>
+                <select id="role" name="role">
+                  <option>Admin</option>
+                  <option selected>Editor</option>
+                  <option>Viewer</option>
+                </select>
+              </div>
+              <div class="fi-field">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                  <option selected>Active</option>
+                  <option>Pending</option>
+                  <option>Suspended</option>
+                </select>
+              </div>
+              <div class="fi-field fi-field--full">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="3"></textarea>
+                <p class="fi-field__hint">Optional short description shown on the profile.</p>
+              </div>
+            </div>
+          </section>
+          <section class="fi-section" aria-labelledby="security-heading">
+            <h2 class="fi-section__heading" id="security-heading">Security</h2>
+            <div class="fi-form-grid">
+              <div class="fi-field">
+                <label for="password">Password <span aria-hidden="true">*</span></label>
+                <input id="password" name="password" type="password" required>
+              </div>
+              <div class="fi-field">
+                <label for="password_confirmation">Confirm password <span aria-hidden="true">*</span></label>
+                <input id="password_confirmation" name="password_confirmation" type="password" required>
+              </div>
+            </div>
+          </section>
+          <div class="fi-actions-bar">
+            <a href="resource-list.html" class="fi-btn fi-btn--secondary">Cancel</a>
+            <div class="fi-actions-bar__spacer"></div>
+            <button type="submit" class="fi-btn fi-btn--primary">Create</button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

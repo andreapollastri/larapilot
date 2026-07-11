@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Empty state — Filament</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup">
+  <div class="fi-layout">
+    <aside class="fi-sidebar" aria-label="Main navigation">
+      <div class="fi-sidebar__brand">Filament Demo</div>
+      <nav class="fi-sidebar__nav">
+        <a href="dashboard.html">Dashboard</a>
+        <div class="fi-nav-group__label">Catalog</div>
+        <a href="resource-list.html" class="is-active">Users</a>
+        <a href="resource-list.html">Orders</a>
+        <div class="fi-nav-group__label">System</div>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </aside>
+    <div class="fi-main">
+      <header class="fi-topbar">
+        <div class="fi-topbar__spacer"></div>
+        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
+      </header>
+      <main class="fi-content">
+        <header class="fi-page-header">
+          <h1>Users</h1>
+        </header>
+        <section class="fi-section">
+          <div class="fi-toolbar">
+            <div class="fi-toolbar__left">
+              <input class="fi-search" type="search" placeholder="Search users…" disabled>
+            </div>
+            <div class="fi-toolbar__right">
+              <a href="resource-create.html" class="fi-btn fi-btn--primary">Create user</a>
+            </div>
+          </div>
+          <div class="fi-empty">
+            <div class="fi-empty__icon" aria-hidden="true">👤</div>
+            <h2 class="fi-empty__title">No users yet</h2>
+            <p class="fi-empty__text">Get started by creating your first user record.</p>
+            <a href="resource-create.html" class="fi-btn fi-btn--primary">Create user</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
