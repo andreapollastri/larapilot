@@ -42,6 +42,8 @@ Read **`data.paths.client_materials`**, **`data.paths.legacy`**, and **`data.pat
 
 Read the **delivery target** from `## MVP Scope` (see Delivery Target in shared-runtime). Scope the backlog to match — do not cap at MVP when the PRD says `V1 Complete`, `Full Product`, or `Enterprise`.
 
+Read **MoSCoW** on each `### FR-XXX` in `## Functional Requirements` (see **MoSCoW Prioritization** in shared-runtime). MoSCoW is the primary input for bootstrap/deferral; fall back to delivery target + `## MVP Scope` only when a tag is missing (legacy PRDs).
+
 Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) and adjust backlog depth:
 
 | Project Kind | Backlog behavior |
@@ -52,14 +54,25 @@ Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) a
 
 ## Bootstrap backlog (from PRD)
 
-| Delivery target | Backlog depth |
+Apply **MoSCoW** first (see shared-runtime), then delivery target:
+
+| MoSCoW | MVP | V1 Complete | Full Product / Enterprise |
+| --- | --- | --- | --- |
+| **Must** | Spec | Spec | Spec |
+| **Should** | Defer | Spec | Spec |
+| **Could** | Defer | Defer | Spec |
+| **Won't** | Skip | Skip | Skip |
+
+| Delivery target | Backlog depth (when MoSCoW tags are missing — legacy PRDs) |
 | --- | --- |
 | **MVP** | Lean: one spec per core user journey; defer secondary FRs to Future Phases |
 | **V1 Complete** | Core + essential secondary features; bounded but production-ready |
 | **Full Product** | One spec (or epic group) per FR in `## Functional Requirements`; multi-epic backlog expected |
 | **Enterprise** | Full Product breadth + compliance, integrations, observability, and ops specs |
 
-When extending an existing backlog, new specs must stay consistent with the PRD delivery target.
+Default spec **priority** from MoSCoW: **Must** → `HIGH` (compliance/security FRs → `CRITICAL`); **Should** → `MEDIUM`; **Could** → `LOW`. Cite `FR-XXX` and MoSCoW in the spec body when tracing to the PRD.
+
+When extending an existing backlog, new specs must stay consistent with the PRD delivery target and FR MoSCoW tags.
 
 ## Spec Template
 

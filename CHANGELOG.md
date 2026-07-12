@@ -2,6 +2,14 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [Unreleased]
+
+## [1.6.1] - 2026-07-12
+
+### Added
+
+- **MoSCoW prioritization on Functional Requirements** — each `### FR-XXX` in the PRD now carries `**MoSCoW:** Must | Should | Could | Won't`. Mark assigns tags during inception; `larapilot-spec` uses them as the primary input for bootstrap/deferral (with default backlog priority mapping). Documented in `shared-runtime.md`, `larapilot-inception`, `larapilot-spec`, and `core.blade.php`.
+
 ## [1.6.0] - 2026-07-11
 
 ### Added

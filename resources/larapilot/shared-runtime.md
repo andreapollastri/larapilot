@@ -157,7 +157,7 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 
 | Skill | Adjustment |
 | --- | --- |
-| **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target |
+| **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **All** → honor FR **MoSCoW** tags when bootstrapping |
 | **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets. **Application** → flows + admin when applicable |
 | **`larapilot-ship`** | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate |
 
@@ -256,6 +256,66 @@ Rules for all skills:
 2. **Never downgrade** the user's chosen target to MVP unless they explicitly change it.
 3. **MVP is a method, not a ceiling** — trade-off framing stays useful at every level; scope depth follows the target.
 4. The PRD section stays named `## MVP Scope` for validator compatibility; its body reflects the chosen target (In Scope / Out of Scope / Future Phases).
+
+## MoSCoW Prioritization *(Functional Requirements)*
+
+Every functional requirement in the PRD carries a **MoSCoW** priority — the per-FR scope lens that complements **Delivery Target** (macro) and backlog **Priority** (implementation order).
+
+During **`larapilot-inception`**, **Mark** assigns MoSCoW while drafting `## Functional Requirements` (negotiate trade-offs in discovery when the target is **MVP** or **V1 Complete**). Persist on each FR as:
+
+```markdown
+### FR-001: {{REQUIREMENT}}
+**MoSCoW:** Must | Should | Could | Won't
+```
+
+Use the English labels **Must**, **Should**, **Could**, **Won't** in every locale — MoSCoW is a standard acronym; requirement text stays in the detected artifact language.
+
+| Label | Meaning |
+| --- | --- |
+| **Must** | Non-negotiable for the chosen delivery target — launch fails without it |
+| **Should** | Important but not vital for the current target — include when target is **V1 Complete** or broader |
+| **Could** | Desirable if time/budget allows — defer unless target is **Full Product** or **Enterprise** |
+| **Won't** | Explicitly out of this release — document in `### Out of Scope`, not cancelled forever |
+
+### When to tag
+
+| Context | Rule |
+| --- | --- |
+| **All projects** | Every `### FR-XXX` gets a `**MoSCoW:**` line |
+| **Personal** | Lean tagging is fine — mostly **Must** and **Won't** |
+| **MVP / V1 Complete** | Mark must negotiate Must vs Should vs Could in the interview |
+| **Full Product / Enterprise** | Default surviving FRs to **Must**; use **Could** only for genuinely optional polish; **Won't** only with user consent |
+
+### Alignment with `## MVP Scope`
+
+Keep MoSCoW and scope sections consistent:
+
+- **Must** FRs → reflected in `### In Scope` for the chosen delivery target
+- **Should** / **Could** FRs deferred under **MVP** → listed in `### Future Phases` (not silently dropped)
+- **Won't** FRs → listed in `### Out of Scope` with brief rationale
+
+### Backlog mapping (`larapilot-spec`)
+
+When bootstrapping from the PRD, read each FR's MoSCoW tag (fallback: infer from delivery target and `## MVP Scope` when a tag is missing — legacy PRDs).
+
+| MoSCoW | MVP | V1 Complete | Full Product / Enterprise |
+| --- | --- | --- | --- |
+| **Must** | Create spec | Create spec | Create spec |
+| **Should** | Defer → Future Phases | Create spec | Create spec |
+| **Could** | Defer → Future Phases | Defer → Future Phases | Create spec |
+| **Won't** | Skip — verify `### Out of Scope` | Skip | Skip |
+
+Default backlog **Priority** from MoSCoW when creating specs: **Must** → `HIGH` (compliance/security-critical FRs → `CRITICAL`); **Should** → `MEDIUM`; **Could** → `LOW`. Tom/Mark may override per spec.
+
+### Downstream
+
+| Skill | Behavior |
+| --- | --- |
+| **`larapilot-spec`** | Primary input for bootstrap/deferral; never create specs for **Won't** FRs |
+| **`larapilot-plan`** | Plans only exist for specced FRs — no change |
+| **`larapilot-review`** | Judge delivered scope against FR MoSCoW + delivery target |
+
+Ownership: **Mark** assigns MoSCoW at inception; **Tom** preserves FR traceability in spec bodies; **Mark** reconciles tags when extending the backlog.
 
 ## Budget Sensitivity
 
