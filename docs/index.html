@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="From a rough product idea to reviewed Laravel code. Larapilot 1.6 adds packaged Filament &amp; Starter Kit design systems, client-materials intake, legacy porting, and Sebastian deepsearch — integrated with Laravel Boost.">
+    content="From a rough product idea to reviewed Laravel code. Larapilot 1.6.1 adds MoSCoW prioritization on functional requirements; 1.6 brings packaged Filament &amp; Starter Kit design systems, client-materials intake, legacy porting, and Sebastian deepsearch — integrated with Laravel Boost.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1789,7 +1789,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.6</span>
+          <span class="hero-version">v1.6.1</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -1883,7 +1883,7 @@
                       data-full="/larapilot-inception &quot;Invoicing SaaS for freelancers&quot;"></span>
                     <button class="copy-btn" data-copy="/larapilot-inception" title="Copy">Copy</button>
                   </div>
-                  <div class="terminal-result info">→ Interview done: vision, personas, MVP scope drafted</div>
+                  <div class="terminal-result info">→ Interview done: vision, personas, MoSCoW-tagged FRs drafted</div>
                 </div>
                 <div class="term-chunk">
                   <div class="terminal-comment"># The agent persists the PRD it wrote</div>
@@ -2132,6 +2132,17 @@
               skill from discovery onward.</p>
           </div>
           <div class="bento-card">
+            <div class="bento-icon red">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M4 4h10v2H4V4zM4 8h7v2H4V8zM4 12h10v2H4v-2z" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3>MoSCoW on requirements</h3>
+            <p>Every <code>FR-XXX</code> in the PRD carries <strong>Must / Should / Could / Won't</strong> — Mark tags
+              them at inception; <code>/larapilot-spec</code> uses them to bootstrap or defer backlog items.</p>
+          </div>
+          <div class="bento-card">
             <div class="bento-icon violet">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <path d="M6 14V8l3-3 3 3v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -2276,8 +2287,11 @@
           the team runs a short guided interview — at most 3 questions per round, all skippable. Sebastian may ask for
           reference product URLs and run <strong>deepsearch</strong> (findings land in
           <code>.larapilot/research/reference-products/</code>). When rewriting legacy software, every feature and
-          dataset stays in scope unless you explicitly defer it in the PRD. When there is enough context, they write and
-          validate <code>.larapilot/docs/PRD.md</code>. Inception does <strong>not</strong> create the backlog; that is
+          dataset stays in scope unless you explicitly defer it in the PRD. Mark assigns <strong>MoSCoW</strong>
+          (<code>Must</code>, <code>Should</code>, <code>Could</code>, <code>Won't</code>) on each functional
+          requirement in <code>## Functional Requirements</code> — the per-FR scope lens that complements delivery
+          target and backlog priority. When there is enough context, they write and validate
+          <code>.larapilot/docs/PRD.md</code>. Inception does <strong>not</strong> create the backlog; that is
           <code>/larapilot-spec</code>.</p>
 
         <h3>Spec loop (per user story)</h3>
@@ -2430,7 +2444,9 @@
                 <strong>Application</strong> as Project Kind. If you placed client docs in
                 <code>.larapilot/client-materials/</code>, the team reads them first. The team asks a few focused
                 questions — who uses it, MVP scope, auth approach, panel route (Starter Kit vs Filament vs custom) —
-                then drafts the PRD.</p>
+                then drafts the PRD. Mark tags each functional requirement with <strong>MoSCoW</strong> priority
+                (<code>Must</code>, <code>Should</code>, <code>Could</code>, <code>Won't</code>) so downstream skills
+                know what belongs in this release.</p>
               <div class="code-block">
                 <div class="code-block-header">What you might answer</div>
                 <pre><code>• Small dev teams (2–10 people)
@@ -2438,13 +2454,22 @@
 • Email + password auth, no SSO for now
 • Delivery target: MVP</code></pre>
               </div>
+              <div class="code-block">
+                <div class="code-block-header">Functional Requirements (excerpt)</div>
+                <pre><code>### FR-001: User registration with email and password
+**MoSCoW:** Must
+
+### FR-002: SSO via Google Workspace
+**MoSCoW:** Won't</code></pre>
+              </div>
               <p>The agent saves and validates the PRD. You now have a shared product document the whole team (human +
                 AI) can reference. Open <code>/larapilot/prd</code> to browse it with a table of contents — easier than
                 scrolling raw Markdown in the repo.</p>
               <div class="walkthrough-personas">
                 <h4>Active personas</h4>
                 <div class="persona-chips">
-                  <span class="persona-chip">💎 <strong>Mark</strong> — Project Kind, vision, MVP scope</span>
+                  <span class="persona-chip">💎 <strong>Mark</strong> — Project Kind, vision, MVP scope, MoSCoW on
+                    each FR</span>
                   <span class="persona-chip">🧭 <strong>Jennifer</strong> — positioning vs Trello/Asana/Linear</span>
                   <span class="persona-chip">🏢 <strong>Benjamin</strong> — business lens on technical choices</span>
                   <span class="persona-chip">💡 <strong>Sebastian</strong> — integrations, competitor data porting,
@@ -2498,8 +2523,12 @@
               <span>/larapilot-spec</span>
             </div>
             <div class="walkthrough-body">
-              <p>You invoke <code>/larapilot-spec</code>. Tom (Requirements Analyst) reads the PRD MVP scope and creates
-                user stories with acceptance criteria. Each story gets a code and starts as <span
+              <p>You invoke <code>/larapilot-spec</code>. Tom (Requirements Analyst) reads each FR's <strong>MoSCoW</strong>
+                tag and the delivery target, then bootstraps or defers specs accordingly — <code>Must</code> FRs become
+                stories for an MVP; <code>Should</code> / <code>Could</code> land in <code>### Future Phases</code>;
+                <code>Won't</code> FRs are skipped. Default backlog priority follows MoSCoW
+                (<code>Must</code> → <code>HIGH</code>, <code>Should</code> → <code>MEDIUM</code>,
+                <code>Could</code> → <code>LOW</code>). Each story gets a code and starts as <span
                   class="status status-todo">TODO</span>.</p>
               <div class="code-block">
                 <div class="code-block-header">backlog.yaml (excerpt)</div>
@@ -2523,7 +2552,7 @@
                 <div class="persona-chips">
                   <span class="persona-chip">🔎 <strong>Tom</strong> — acceptance criteria, edge cases, spec
                     quality</span>
-                  <span class="persona-chip">💎 <strong>Mark</strong> — prioritization, PRD delivery-target
+                  <span class="persona-chip">💎 <strong>Mark</strong> — MoSCoW → backlog priority, delivery-target
                     alignment</span>
                 </div>
                 <div class="persona-group">
@@ -3283,12 +3312,13 @@ php artisan larapilot:update</code></pre>
                   interview; Sebastian runs <strong>deepsearch</strong> on reference product URLs</li>
                 <li><strong>Team:</strong> Mark, Jennifer, Benjamin, Sebastian, John, Aurora; Emma, Lauren, Violet join
                   when relevant</li>
-                <li><strong>Explores:</strong> positioning, competitor data porting, MVP scope, budget-aligned
-                  architecture, <strong>panel route</strong> (Filament / Starter Kit / custom)</li>
+                <li><strong>Explores:</strong> positioning, competitor data porting, MVP scope, <strong>MoSCoW</strong>
+                  on each <code>FR-XXX</code>, budget-aligned architecture, <strong>panel route</strong> (Filament /
+                  Starter Kit / custom)</li>
                 <li><strong>Interview rules:</strong> max 3 questions per round, skippable; infers from codebase first
                 </li>
-                <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> with Project Origin, Reference
-                  Products, and Legacy parity when relevant</li>
+                <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> with MoSCoW-tagged Functional
+                  Requirements, Project Origin, Reference Products, and Legacy parity when relevant</li>
               </ul>
             </div>
           </div>
@@ -3313,10 +3343,17 @@ php artisan larapilot:update</code></pre>
             <div class="skill-badge">/larapilot-spec</div>
             <div class="skill-body">
               <h3>Backlog &amp; Specs</h3>
-              <p>Creates or extends the backlog with user stories from the PRD.</p>
+              <p>Creates or extends the backlog with user stories from the PRD. Reads each FR's <strong>MoSCoW</strong>
+                tag as the primary input for bootstrap vs deferral (falls back to delivery target for legacy PRDs).</p>
               <ul>
                 <li><strong>Team:</strong> Tom (Requirements Analyst), Mark (PM)</li>
-                <li><strong>Output:</strong> <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code></li>
+                <li><strong>Mapping:</strong> <code>Must</code> → spec; <code>Should</code>/<code>Could</code> deferred
+                  under MVP → Future Phases; <code>Won't</code> → skip</li>
+                <li><strong>Priority:</strong> <code>Must</code> → <code>HIGH</code> (compliance →
+                  <code>CRITICAL</code>); <code>Should</code> → <code>MEDIUM</code>; <code>Could</code> →
+                  <code>LOW</code></li>
+                <li><strong>Output:</strong> <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code> with
+                  <code>FR-XXX</code> traceability</li>
               </ul>
             </div>
           </div>
@@ -3353,8 +3390,9 @@ php artisan larapilot:update</code></pre>
             <div class="skill-badge">/larapilot-review</div>
             <div class="skill-body">
               <h3>Human Review</h3>
-              <p>Acceptance gate — Robert presents the increment and residual risks; you approve to <code>DONE</code> or
-                request changes back to <code>TODO</code>.</p>
+              <p>Acceptance gate — Robert presents the increment and residual risks; judges delivered scope against FR
+                <strong>MoSCoW</strong> tags and the PRD delivery target. You approve to <code>DONE</code> or request
+                changes back to <code>TODO</code>.</p>
               <ul>
                 <li><strong>Team:</strong> Robert (Code Reviewer)</li>
               </ul>
@@ -3497,6 +3535,17 @@ php artisan larapilot:update</code></pre>
         </div>
 
         <h3>Team policies</h3>
+        <p><strong>MoSCoW prioritization</strong> — during inception, Mark assigns <code>Must</code>,
+          <code>Should</code>, <code>Could</code>, or <code>Won't</code> on every <code>### FR-XXX</code> in
+          <code>## Functional Requirements</code>. The tag is the per-requirement scope lens alongside delivery target
+          (<code>MVP</code>, <code>V1 Complete</code>, …) and backlog priority. <code>/larapilot-spec</code> uses
+          MoSCoW as the primary input when creating or extending specs: under <strong>MVP</strong>,
+          <code>Should</code> and <code>Could</code> FRs defer to <code>### Future Phases</code> instead of becoming
+          stories; <code>Won't</code> FRs are never specced. Default spec priority maps from MoSCoW
+          (<code>Must</code> → <code>HIGH</code>, compliance-critical → <code>CRITICAL</code>;
+          <code>Should</code> → <code>MEDIUM</code>; <code>Could</code> → <code>LOW</code>). Keep tags aligned with
+          <code>### In Scope</code>, <code>### Out of Scope</code>, and <code>### Future Phases</code> in
+          <code>## MVP Scope</code>.</p>
         <p><strong>Budget Sensitivity</strong> — during inception, Aurora asks whether budget should drive decisions
           (<code>Tracked</code>, the default) or whether you want to exclude budget evaluation (<code>Relaxed</code>).
           In <code>Relaxed</code> mode the business figures stop asking budget questions and never block a choice on
@@ -3717,6 +3766,20 @@ php artisan larapilot:update</code></pre>
     └── US-001/
         └── index.html</pre>
 
+        <h3>PRD functional requirements</h3>
+        <p>Each requirement under <code>## Functional Requirements</code> uses a level-3 heading and a MoSCoW line.
+          Labels stay in English (<code>Must</code>, <code>Should</code>, <code>Could</code>, <code>Won't</code>) even
+          when requirement text is localized.</p>
+        <div class="code-block">
+          <div class="code-block-header">PRD.md (excerpt)</div>
+          <pre><code>## Functional Requirements
+
+### FR-001: User registration with email and password
+**MoSCoW:** Must
+
+### FR-002: SSO via Google Workspace
+**MoSCoW:** Won't</code></pre>
+        </div>
         <h3>Spec format</h3>
         <div class="code-block">
           <div class="code-block-header">US-001.yaml body</div>
