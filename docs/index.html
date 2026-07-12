@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="From a rough product idea to reviewed Laravel code. Larapilot brings a spec-driven AI product workflow to Laravel and PHP, integrated with Laravel Boost.">
+  <meta name="description" content="From a rough product idea to reviewed Laravel code. Larapilot 1.6 adds packaged Filament &amp; Starter Kit design systems, client-materials intake, legacy porting, and Sebastian deepsearch — integrated with Laravel Boost.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -263,6 +263,17 @@
       background: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-soft);
       animation: pulse 2s ease infinite;
+    }
+
+    .hero-version {
+      margin-left: .15rem;
+      padding: .1rem .45rem;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .02em;
     }
 
     @keyframes pulse {
@@ -1320,6 +1331,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
+          <span class="hero-version">v1.6</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -1557,6 +1569,7 @@
         <div class="doc-nav-label">Reference</div>
         <a href="#cli">Artisan CLI</a>
         <a href="#artifacts">Artifacts</a>
+        <a href="#design-systems">Design systems</a>
         <a href="#mockups">Mockups</a>
         <a href="#dashboard">Dashboard</a>
         <a href="#boost">Larapilot + Boost</a>
@@ -1602,6 +1615,20 @@
             <p>Artisan commands, Boost docs, schema, Tinker — not a separate toolchain.</p>
           </div>
           <div class="bento-card">
+            <div class="bento-icon amber">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 14l4-8 3 4 5-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Packaged design systems</h3>
+            <p>Filament and Laravel Starter Kit references — tokens, components, and static HTML screens — copied to <code>.larapilot/design-systems/</code> for consistent mockups.</p>
+          </div>
+          <div class="bento-card">
+            <div class="bento-icon indigo">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3h8a2 2 0 012 2v10l-3-2-3 2-3-2-3 2V5a2 2 0 012-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Client &amp; legacy intake</h3>
+            <p>Structured folders for client materials, legacy codebases, and competitor research — honored by every skill from discovery onward.</p>
+          </div>
+          <div class="bento-card">
             <div class="bento-icon violet">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 14V8l3-3 3 3v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="14" width="10" height="2" rx="1" fill="currentColor"/></svg>
             </div>
@@ -1625,7 +1652,7 @@
             <tbody>
               <tr><td><strong>Skills</strong></td><td><code>/larapilot-*</code> in your AI editor (via Boost)</td><td>Playbooks: personas, context to load, Artisan commands to run</td></tr>
               <tr><td><strong>Artisan CLI</strong></td><td><code>php artisan larapilot:*</code></td><td>Validates input, persists artifacts, enforces workflow transitions</td></tr>
-              <tr><td><strong>Artifacts</strong></td><td><code>.larapilot/</code> in your repo</td><td>Source of truth: PRD, backlog, specs, plans, mockups — version-controlled</td></tr>
+              <tr><td><strong>Artifacts</strong></td><td><code>.larapilot/</code> in your repo</td><td>Source of truth: PRD, backlog, specs, plans, mockups, design systems, intake folders — version-controlled</td></tr>
               <tr><td><strong>Dashboard</strong></td><td><code>/larapilot</code> in the browser <em>(local only)</em></td><td>Read-only board, PRD viewer, and spec/task detail — mirrors artifacts, no YAML editing</td></tr>
             </tbody>
           </table>
@@ -1742,7 +1769,7 @@
               <span>/larapilot-inception</span>
             </div>
             <div class="walkthrough-body">
-              <p>You invoke <code>/larapilot-inception</code> and paste your idea. Mark asks you to pick <strong>Application</strong> as Project Kind. The team asks a few focused questions — who uses it, MVP scope, auth approach — then drafts the PRD.</p>
+              <p>You invoke <code>/larapilot-inception</code> and paste your idea. Mark asks you to pick <strong>Application</strong> as Project Kind. If you placed client docs in <code>.larapilot/client-materials/</code>, the team reads them first. The team asks a few focused questions — who uses it, MVP scope, auth approach, panel route (Starter Kit vs Filament vs custom) — then drafts the PRD.</p>
               <div class="code-block">
                 <div class="code-block-header">What you might answer</div>
                 <pre><code>• Small dev teams (2–10 people)
@@ -1757,8 +1784,8 @@
                   <span class="persona-chip">💎 <strong>Mark</strong> — Project Kind, vision, MVP scope</span>
                   <span class="persona-chip">🧭 <strong>Jennifer</strong> — positioning vs Trello/Asana/Linear</span>
                   <span class="persona-chip">🏢 <strong>Benjamin</strong> — business lens on technical choices</span>
-                  <span class="persona-chip">💡 <strong>Sebastian</strong> — integrations, competitor data porting</span>
-                  <span class="persona-chip">📐 <strong>John</strong> — auth, data model, APIs, admin panel choice</span>
+                  <span class="persona-chip">💡 <strong>Sebastian</strong> — integrations, competitor data porting, reference-product deepsearch</span>
+                  <span class="persona-chip">📐 <strong>John</strong> — auth, data model, APIs, panel route (Filament / Starter Kit / custom)</span>
                   <span class="persona-chip">💰 <strong>Aurora</strong> — Budget Sensitivity (Tracked / Relaxed)</span>
                   <span class="persona-chip">⚖️ <strong>Violet</strong> — GDPR (registration = personal data)</span>
                 </div>
@@ -1836,7 +1863,7 @@
               <span>/larapilot-design US-001</span>
             </div>
             <div class="walkthrough-body">
-              <p><em>Optional, but useful before coding UI.</em> Elise builds a static HTML/CSS mockup for the registration screen. Preview it locally at <code>/mockups/US-001</code>.</p>
+              <p><em>Optional, but useful before coding UI.</em> Elise builds a static HTML/CSS mockup for the registration screen. If the PRD chose a Laravel Starter Kit for authenticated UI, she follows <code>.larapilot/design-systems/starter-kit/</code> (tokens, components, reference screens). Preview locally at <code>/mockups/US-001</code>.</p>
               <div class="walkthrough-personas">
                 <h4>Active personas</h4>
                 <div class="persona-chips">
@@ -2078,6 +2105,9 @@ tests/Feature/RegistrationTest.php</code></pre>
 ├── client-materials/     # optional — client docs before discovery
 ├── legacy/               # optional — legacy system to port
 ├── research/             # deepsearch + parity notes
+├── design-systems/       # Filament + Starter Kit references
+│   ├── filament/
+│   └── starter-kit/
 ├── docs/
 │   ├── PRD.md
 │   └── review/
@@ -2170,6 +2200,7 @@ tests/Feature/</pre>
   - .larapilot/client-materials/
   - .larapilot/legacy/
   - .larapilot/research/
+  - .larapilot/design-systems/
 
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
         </div>
@@ -2333,10 +2364,11 @@ php artisan larapilot:update</code></pre>
               <p>Guided discovery interview — not a one-shot form. Mark opens with Project Kind (<code>Personal</code>, <code>Website</code>, <code>Application</code>); the team explores your idea conversationally, then writes and validates the PRD.</p>
               <ul>
                 <li><strong>Branches:</strong> Personal (lean), Website (type + SEO/marketing), Application (full SaaS/platform discovery)</li>
+                <li><strong>Intake:</strong> reads <code>client-materials/</code> and <code>legacy/</code> before the interview; Sebastian runs <strong>deepsearch</strong> on reference product URLs</li>
                 <li><strong>Team:</strong> Mark, Jennifer, Benjamin, Sebastian, John, Aurora; Emma, Lauren, Violet join when relevant</li>
-                <li><strong>Explores:</strong> positioning, enterprise research, competitor data porting &amp; integrations, MVP scope, budget-aligned architecture (Budget Sensitivity: Tracked or Relaxed)</li>
+                <li><strong>Explores:</strong> positioning, competitor data porting, MVP scope, budget-aligned architecture, <strong>panel route</strong> (Filament / Starter Kit / custom)</li>
                 <li><strong>Interview rules:</strong> max 3 questions per round, skippable; infers from codebase first</li>
-                <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> (backlog comes later via <code>/larapilot-spec</code>)</li>
+                <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> with Project Origin, Reference Products, and Legacy parity when relevant</li>
               </ul>
             </div>
           </div>
@@ -2344,9 +2376,11 @@ php artisan larapilot:update</code></pre>
             <div class="skill-badge">/larapilot-design</div>
             <div class="skill-body">
               <h3>UI Design</h3>
-              <p>Static HTML/CSS mockups with user flows and accessible markup, previewable via dev-only route.</p>
+              <p>Static HTML/CSS mockups with user flows and accessible markup, previewable via dev-only route. Elise follows packaged design systems when the PRD chose Filament or a Laravel Starter Kit.</p>
               <ul>
                 <li><strong>Team:</strong> Elise (UX); Emma &amp; Lauren for public pages</li>
+                <li><strong>Design systems:</strong> <code>.larapilot/design-systems/filament/</code> (admin) or <code>starter-kit/</code> (authenticated app UI)</li>
+                <li><strong>Inputs:</strong> client materials, reference-product research, existing mockups for visual consistency</li>
                 <li><strong>Preview:</strong> <code>/mockups/{spec}</code> (matches folder under <code>.larapilot/mockups/</code>)</li>
               </ul>
             </div>
@@ -2369,7 +2403,9 @@ php artisan larapilot:update</code></pre>
               <p>Detailed implementation plan with tasks, file changes, and test strategy → <code>PLANNED</code>.</p>
               <ul>
                 <li><strong>Team:</strong> Tom, John, Sebastian, Aurora, Violet, Alex, Anne; Emma &amp; Lauren for public-facing specs</li>
-                <li><strong>Vendor policy:</strong> Laravel first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie</a> → <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a> &amp; plugins for admin panels → other vetted vendors — always maintained and secure</li>
+                <li><strong>Inputs:</strong> client materials, legacy parity matrix, reference-product research</li>
+                <li><strong>Panel route:</strong> honors PRD choice — <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a>, <a href="https://laravel.com/starter-kits" target="_blank" rel="noopener">Starter Kit</a>, or custom — never assumed</li>
+                <li><strong>Vendor policy:</strong> Laravel first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie</a> → Filament &amp; plugins (when chosen) → other vetted vendors — always maintained and secure</li>
               </ul>
             </div>
           </div>
@@ -2377,7 +2413,7 @@ php artisan larapilot:update</code></pre>
             <div class="skill-badge">/larapilot-implement</div>
             <div class="skill-body">
               <h3>Implementation</h3>
-              <p>Executes the plan: code, tests, task tracking, handoff to <code>REVIEW</code>.</p>
+              <p>Executes the plan: code, tests, task tracking, handoff to <code>REVIEW</code>. Honors client materials, legacy parity, and PRD panel route — never introduces Filament unless the PRD chose it.</p>
               <ul>
                 <li><strong>Team:</strong> Alex, Anne, Robert, Lars</li>
               </ul>
@@ -2449,7 +2485,9 @@ php artisan larapilot:update</code></pre>
         <h3>Team policies</h3>
         <p><strong>Budget Sensitivity</strong> — during inception, Aurora asks whether budget should drive decisions (<code>Tracked</code>, the default) or whether you want to exclude budget evaluation (<code>Relaxed</code>). In <code>Relaxed</code> mode the business figures stop asking budget questions and never block a choice on cost, but they keep flagging vendor lock-in and hard-to-reverse cost risks as short advisories. The choice is stored in the PRD under <code>## Technical Architecture</code>.</p>
         <p><strong>Competitor data porting</strong> — Sebastian doesn't stop at "import/export" as a feature label: whenever comparable products exist, he must propose concrete migration paths that bring data <strong>from competitor products into yours</strong> (CSV/API importers, onboarding flows for switchers) and structured export so users are never locked in.</p>
-        <p><strong>Vendor &amp; package policy</strong> — new dependencies are evaluated in this order: Laravel built-ins/first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie packages</a> → <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a> and its plugins → other community vendors. Every candidate must be actively maintained, version-compatible, and pass <code>composer audit</code> before it lands in your project.</p>
+        <p><strong>Authenticated app UI route</strong> — when the product needs an admin or authenticated dashboard, John asks via AskQuestion whether to use <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a>, a <a href="https://laravel.com/starter-kits" target="_blank" rel="noopener">Laravel Starter Kit</a> variant (Livewire, React, Vue, or Svelte), or a custom panel. The choice is recorded in the PRD under <code>## Technical Architecture</code>; Elise follows the packaged design system when Filament or a Starter Kit is chosen; plan and implement never introduce Filament on their own.</p>
+        <p><strong>Client materials, legacy &amp; research</strong> — place client docs in <code>.larapilot/client-materials/</code> and legacy snapshots in <code>.larapilot/legacy/</code> before inception; every skill honors them. Legacy rewrites keep zero feature and data loss unless explicitly deferred in the PRD; parity is tracked in <code>.larapilot/research/legacy-parity.md</code>. Sebastian's deepsearch reports live under <code>.larapilot/research/reference-products/</code>.</p>
+        <p><strong>Vendor &amp; package policy</strong> — new dependencies are evaluated in this order: Laravel built-ins/first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie packages</a> → <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a> and its plugins (when the PRD chose Filament) → other community vendors. Every candidate must be actively maintained, version-compatible, and pass <code>composer audit</code> before it lands in your project.</p>
       </section>
 
       <!-- CLI -->
@@ -2542,6 +2580,9 @@ php artisan larapilot:update</code></pre>
 ├── research/
 │   ├── reference-products/   # Sebastian deepsearch reports
 │   └── legacy-parity.md      # optional parity matrix
+├── design-systems/
+│   ├── filament/             # admin panel reference (17 HTML screens)
+│   └── starter-kit/          # authenticated app UI (7 HTML screens)
 ├── docs/
 │   ├── PRD.md
 │   ├── test-results/
@@ -2594,12 +2635,41 @@ So that I can access protected features.
         </ul>
       </section>
 
+      <!-- Design systems -->
+      <section class="doc-section" id="design-systems">
+        <div class="section-header">
+          <span class="section-label">Design</span>
+          <h2>Packaged design systems</h2>
+          <p>Visual references for mockups — copied to <code>.larapilot/design-systems/</code> on install and refreshed on <code>larapilot:update</code>. Elise reads them via <code>larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>System</th><th>Path</th><th>When to use</th><th>Contents</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Filament</strong></td>
+                <td><code>design-systems/filament/</code></td>
+                <td>Admin/control panel mockups when the PRD records <strong>Filament</strong> as the panel choice</td>
+                <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>, <strong>17</strong> static HTML screens in <code>html/</code> (from two Figma community kits)</td>
+              </tr>
+              <tr>
+                <td><strong>Laravel Starter Kits</strong></td>
+                <td><code>design-systems/starter-kit/</code></td>
+                <td>Authenticated app UI when the PRD records a <strong>Starter Kit</strong> variant (<code>livewire</code>, <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
+                <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <code>sources.md</code>, <strong>7</strong> static HTML screens in <code>html/</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Open <code>filament/html/index.html</code> or <code>starter-kit/html/index.html</code> locally as a visual catalog. When neither Filament nor a Starter Kit is chosen, Elise designs admin screens in the project's own visual language (Nordic minimal for public pages).</p>
+      </section>
+
       <!-- Mockups -->
       <section class="doc-section" id="mockups">
         <div class="section-header">
           <span class="section-label">Design</span>
           <h2>Mockup Preview Route</h2>
-          <p>Served via dynamic route only outside production.</p>
+          <p>Served via dynamic route only outside production. Elise writes mockups to <code>.larapilot/mockups/{spec}/</code> and follows the packaged design system when the PRD chose Filament or a Starter Kit.</p>
         </div>
         <p>Mockups live in <code>.larapilot/mockups/{spec}/</code>. The <code>{spec}</code> segment must match the folder name — typically a backlog code like <code>US-001</code>.</p>
         <div class="table-card">
@@ -2668,8 +2738,12 @@ So that I can access protected features.
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></span>
-    <span><a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.6.0</span>
+    <span>
+      <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
+      ·
+      <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a>
+    </span>
   </footer>
 
   <script>
