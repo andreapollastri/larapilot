@@ -2136,7 +2136,7 @@
         <a href="#why">Why Larapilot</a>
         <a href="#how-it-works">How it works</a>
         <a href="#walkthrough">Walkthrough</a>
-        <a href="#examples-incremental">Feature &amp; bug examples</a>
+        <a href="#examples-incremental">Examples</a>
         <a href="#quickstart">Quickstart</a>
       </div>
       <div class="doc-nav-group">
@@ -2420,9 +2420,9 @@
           <li><code>/larapilot-review US-XXX</code> — you approve → <span class="status status-done">DONE</span>, or
             send back → <span class="status status-todo">TODO</span></li>
         </ol>
-        <p>See the <a href="#walkthrough">full walkthrough</a> for a concrete example from idea to shipped MVP. After
-          the MVP is live, use <a href="#examples-incremental">feature and bug examples</a> for day-to-day evolutive
-          work.</p>
+        <p>See the <a href="#walkthrough">full walkthrough</a> for a concrete example from idea to shipped MVP. For a
+          legacy ERP rewrite, see <a href="#example-legacy-erp">Example 3</a>. After the MVP is live, use <a
+            href="#examples-incremental">feature and bug examples</a> for day-to-day evolutive work.</p>
 
         <h3>Incremental work (post-MVP)</h3>
         <p>When the PRD and backlog already exist, you do not need full inception again:</p>
@@ -3152,10 +3152,11 @@ tests/Feature/</pre>
       <section class="doc-section" id="examples-incremental">
         <div class="section-header">
           <span class="section-label">Examples</span>
-          <h2>Feature &amp; bug — practical walkthroughs</h2>
-          <p>After inception and the first backlog, most day-to-day work is <strong>one evolutiva</strong> or
-            <strong>one bug</strong> at a time. These skills run a short interactive interview (AskQuestion wizard, max
-            3 questions per round), then persist artifacts — same spec loop as greenfield work.</p>
+          <h2>Practical walkthroughs</h2>
+          <p>Three real-world scenarios: post-MVP <strong>evolutiva</strong> and <strong>bug</strong> intake, plus a
+            <strong>legacy ERP rewrite</strong> with full inception and parity contract. Feature and bug skills run a
+            short interactive interview (AskQuestion wizard, max 3 questions per round), then persist artifacts — same
+            spec loop as greenfield work.</p>
         </div>
 
         <h3>Which command when?</h3>
@@ -3424,6 +3425,167 @@ body: |
           </dl>
         </div>
 
+        <!-- Example 3: Legacy ERP rewrite -->
+        <div class="example-scenario" id="example-legacy-erp">
+          <h3>Example 3 — Legacy ERP rewrite (gestionale)</h3>
+          <p class="example-context">Context: a 15-year-old PHP 5 ERP (<em>gestionale</em>) still in production —
+            customers, sales orders, warehouse, Italian e-invoicing (<code>fatturazione elettronica</code>), accounting
+            reports. The team copied a sanitized snapshot into <code>.larapilot/legacy/</code> (code + MySQL schema dump
+            + <code>SOURCE.md</code>). Goal: rewrite on Laravel 12 + Filament with <strong>zero feature and data
+              loss</strong>, phased cutover.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Prep — before inception</div>
+            <pre><code>.larapilot/legacy/
+  SOURCE.md              # repo URL + tag
+  schema.sql             # sanitized dump
+  app/                   # legacy PHP codebase snapshot</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-inception "Rewrite our legacy ERP to Laravel — keep customers, orders, warehouse, and e-invoicing"</code></pre>
+          </div>
+
+          <p>Mark and Sabrine scan <code>.larapilot/legacy/</code> before Project Kind questions. Sabrine inventories
+            modules, tables, uploads, and integrations; Mark proposes how to treat the legacy codebase.</p>
+
+          <div class="chat-example">
+            <p><span class="speaker">💎 Mark:</span> I see a legacy ERP snapshot in <code>.larapilot/legacy/</code>.
+              Before we dive into architecture — how should we treat it?</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (project origin)</strong>
+              <ol>
+                <li><strong>Approach:</strong> Legacy rewrite · Legacy port · Partial modules only · Reference only · Decide later</li>
+                <li><strong>Cutover style:</strong> Big-bang · Phased by module · Parallel run · Unsure</li>
+                <li><strong>Data in scope:</strong> Full history · Last 24 months · Master data only · Decide in chat</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Legacy rewrite</strong>, <strong>Phased by module</strong>,
+              <strong>Full history</strong> (orders, invoices, stock movements must migrate).</p>
+            <p><span class="speaker">🔄 Sabrine:</span> I mapped five modules — anagrafica, ordini, magazzino,
+              fatturazione, report. Warehouse and e-invoicing touch 40+ legacy tables and ~12k uploaded PDF/XML files.
+            </p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 2 (scope &amp; delivery)</strong>
+              <ol>
+                <li><strong>Project Kind:</strong> Application · Website · Personal</li>
+                <li><strong>Phase 1 modules:</strong> Customers + orders · + Warehouse · + E-invoicing · All five</li>
+                <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product · Enterprise</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Application</strong>, <strong>Customers + orders</strong> (warehouse and
+              e-invoicing in Phase 2), <strong>MVP</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 3 (admin &amp; stack)</strong>
+              <ol>
+                <li><strong>Admin panel:</strong> Filament · Laravel Starter Kit · Custom panel</li>
+                <li><strong>Multi-tenancy:</strong> Single company · Multi-company (row-level) · DB per tenant</li>
+                <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Filament</strong>, <strong>Multi-company (row-level)</strong>,
+              <strong>Tracked</strong>.</p>
+            <p><span class="speaker">📐 John:</span> Row-level tenancy fits the legacy <code>company_id</code> pattern.
+              Matt will ETL from MySQL; Sabrine owns assets under <code>/uploads/fatture/</code>.</p>
+          </div>
+
+          <p>The PRD records <strong>Project Origin: Legacy rewrite</strong>, defers warehouse and e-invoicing to
+            Future Phases, and links Sabrine's parity matrix:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">PRD.md (excerpt)</div>
+            <pre><code>**Project Origin:** Legacy rewrite
+**Delivery Target:** MVP
+**Project Kind:** Application
+
+### In Scope (Phase 1 — MVP)
+- FR-001: Customer master data (parity with legacy anagrafica)
+- FR-002: Sales orders — create, edit, status workflow
+- FR-003: Multi-company access (row-level, legacy company_id)
+
+### Future Phases
+- FR-010: Warehouse / stock (legacy magazzino — Phase 2)
+- FR-011: Italian e-invoicing SDI (legacy fatturazione — Phase 2)
+- FR-012: Accounting reports (legacy report — Phase 3)
+
+### Legacy parity
+- Matrix: `.larapilot/research/legacy-parity.md`
+- Assets: migrate `/uploads/fatture/` in Phase 2 with e-invoicing</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/research/legacy-parity.md (excerpt)</div>
+            <pre><code>| Legacy module | Current impl | New impl | Migration | Status |
+| --- | --- | --- | --- | --- |
+| Anagrafica clienti | PHP forms + `clienti` table | Filament CustomerResource | ETL `clienti` → `customers` | preserve |
+| Ordini vendita | Custom MVC + 8 status codes | Order model + Filament | Map statuses 1:1 | preserve |
+| Magazzino | Stock tables + manual adjustments | — | Phase 2 | defer |
+| Fatturazione SDI | XML + PDF generation | — | Phase 2 + assets port | defer |</code></pre>
+          </div>
+
+          <p>On <code>/larapilot-spec</code>, Tom bootstraps <strong>migration and parity specs first</strong> — data
+            import before UI features:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">specs/US-001.yaml (excerpt — first story)</div>
+            <pre><code>code: US-001
+title: "Legacy schema analysis and ETL plan"
+priority: HIGH
+status: TODO
+body: |
+  #### US-001: Legacy schema analysis and ETL plan
+
+  **Epic:** EP-001 Legacy migration | **Priority:** HIGH | **Points:** 5
+  **Type:** Migration | **Traces to:** Legacy parity (anagrafica + ordini)
+
+  **User Story**
+  As a developer,
+  I want a documented ETL plan from legacy MySQL to Laravel,
+  so that customer and order data migrates without loss.
+
+  **Acceptance Criteria**
+  - [ ] Field-level mapping `clienti` → `customers`, `ordini` → `orders`
+  - [ ] Idempotent import command with dry-run
+  - [ ] Parity matrix rows updated with test evidence
+  - [ ] Sabrine signs off before US-002 (CustomerResource UI)</code></pre>
+          </div>
+
+          <div class="walkthrough-personas">
+            <h4>Active personas</h4>
+            <div class="persona-chips">
+              <span class="persona-chip">💎 <strong>Mark</strong> — Project Origin, phased MVP scope, MoSCoW on FRs</span>
+              <span class="persona-chip">🔄 <strong>Sabrine</strong> — legacy inventory, parity matrix, assets/DB porting</span>
+              <span class="persona-chip">📐 <strong>John</strong> — Filament panel, row-level multi-company</span>
+              <span class="persona-chip">🔎 <strong>Tom</strong> — acceptance criteria from legacy behaviour</span>
+            </div>
+            <div class="persona-group">
+              <h4>May join when relevant</h4>
+              <div class="persona-chips">
+                <span class="persona-chip optional">🔗 <strong>Matt</strong> — ETL/import jobs from legacy MySQL</span>
+                <span class="persona-chip optional">✍️ <strong>Marika</strong> — legacy copy → new Filament labels</span>
+                <span class="persona-chip optional">🧪 <strong>Anne</strong> — migration regression tests</span>
+                <span class="persona-chip optional">👮 <strong>Robert</strong> — blocks review if parity drops undocumented</span>
+              </div>
+            </div>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Drop legacy snapshot in <code>.larapilot/legacy/</code>; invoke inception; answer origin + scope rounds</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Writes PRD + <code>legacy-parity.md</code>; <code>/larapilot-spec</code> with migration specs first</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-plan US-001</code> → implement → <code>/larapilot-review</code> (Sabrine checks parity)</dd>
+            </div>
+          </dl>
+        </div>
+
         <h3>PRD living document — what gets updated?</h3>
         <p>The PRD stays the <strong>product contract</strong>. Not every change touches it — that would turn it into a
           bug log. Larapilot uses <strong>selective updates</strong> with a revision history for traceability.</p>
@@ -3437,6 +3599,11 @@ body: |
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
+                <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
+                <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
+              </tr>
               <tr>
                 <td>New feature (<code>/larapilot-feature</code>)</td>
                 <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
@@ -3683,8 +3850,9 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           and code.</p>
         <p>Short version: <code>/larapilot-inception</code> → <code>/larapilot-spec</code> → for each story
           <code>/larapilot-plan</code> → <code>/larapilot-implement</code> → <code>/larapilot-review</code> → optionally
-          <code>/larapilot-ship</code>. After MVP: <code>/larapilot-feature</code> or <code>/larapilot-bug</code> — see
-          <a href="#examples-incremental">examples</a>.
+          <code>/larapilot-ship</code>. Legacy rewrite? See <a href="#example-legacy-erp">ERP example</a>. After MVP:
+          <code>/larapilot-feature</code> or <code>/larapilot-bug</code> — see <a href="#examples-incremental">more
+            examples</a>.
         </p>
 
         <h3>5. Verify installation</h3>
@@ -3750,7 +3918,8 @@ php artisan larapilot:update</code></pre>
           <span class="section-label">Workflow</span>
           <h2>Spec-driven loop</h2>
           <p>After inception and spec, each user story cycles through plan → implement → review. See the <a
-              href="#walkthrough">walkthrough</a> for a full example. For post-MVP evolutive and bug intake, see <a
+              href="#walkthrough">walkthrough</a> for a greenfield MVP. For legacy ERP rewrite, see <a
+              href="#example-legacy-erp">Example 3</a>. For post-MVP evolutive and bug intake, see <a
               href="#examples-incremental">feature &amp; bug examples</a>. Optional design adds mockups before planning;
             optional ship releases to production.</p>
         </div>
@@ -3859,6 +4028,7 @@ php artisan larapilot:update</code></pre>
                 </li>
                 <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> with MoSCoW-tagged Functional
                   Requirements, Project Origin, Reference Products, and Legacy parity when relevant</li>
+                <li><strong>Walkthrough:</strong> <a href="#example-legacy-erp">Legacy ERP rewrite example</a></li>
               </ul>
             </div>
           </div>
