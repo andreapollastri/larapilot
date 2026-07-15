@@ -2160,6 +2160,16 @@
       margin-bottom: .35rem;
     }
 
+    .deep-dive-sub ul {
+      margin: 0 0 1.25rem 1.25rem;
+      color: var(--text-secondary);
+      font-size: .88rem;
+    }
+
+    .deep-dive-sub ul li {
+      margin-bottom: .35rem;
+    }
+
     @media (max-width: 768px) {
       .layer-stack {
         grid-template-columns: 1fr;
@@ -2672,16 +2682,17 @@
               <a class="doc-nav-sub" href="#example-legacy-porting" data-nav>Legacy porting</a>
               <a class="doc-nav-sub" href="#example-new-feature" data-nav>New feature</a>
               <a class="doc-nav-sub" href="#example-bug-fix" data-nav>Bug resolution</a>
-              <a href="#dashboard-api" data-nav>Dashboard &amp; API</a>
             </div>
             <div class="doc-nav-group">
               <div class="doc-nav-label">Deep Dive</div>
-              <a href="#deep-dive" data-nav>Overview</a>
+              <a class="doc-nav-sub" href="#deep-dive-how-it-works" data-nav>How it works</a>
               <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
               <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
               <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
               <a class="doc-nav-sub" href="#deep-dive-artifacts" data-nav>Artifacts</a>
               <a class="doc-nav-sub" href="#deep-dive-cli" data-nav>Artisan CLI</a>
+              <a class="doc-nav-sub" href="#deep-dive-dashboard" data-nav>Dashboard</a>
+              <a class="doc-nav-sub" href="#deep-dive-api" data-nav>API</a>
             </div>
           </div>
         </div>
@@ -3417,125 +3428,34 @@ body: |
       
       </section>
 
-      <!-- Dashboard & API -->
-      <section class="doc-section" id="dashboard-api">
-        <div class="section-header">
-          <span class="section-label">Dashboard &amp; API</span>
-          <h2>Inspect your workflow</h2>
-          <p>After install, Larapilot exposes a read-only web UI and JSON API over the artifacts in <code>.larapilot/</code>. Both are available in <strong>local, development, testing, and staging</strong> — disabled in production.</p>
-        </div>
-
-        <h3>Access the dashboard</h3>
-        <p>Start your Laravel app and open <code>/larapilot</code> (prefix configurable via <code>larapilot.dashboard_route.prefix</code>). The top navigation has three tabs:</p>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Tab</th>
-                <th>URL</th>
-                <th>What you see</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Board</strong></td>
-                <td><code>/larapilot</code></td>
-                <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> → <span class="status status-done">DONE</span>)</td>
-              </tr>
-              <tr>
-                <td><strong>PRD</strong></td>
-                <td><code>/larapilot/prd</code></td>
-                <td>Rendered <code>PRD.md</code> with a section table of contents</td>
-              </tr>
-              <tr>
-                <td><strong>API</strong></td>
-                <td><code>/larapilot/api/docs</code></td>
-                <td>Interactive OpenAPI docs for the read-only JSON API</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Board</h3>
-        <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Below, each workflow column lists spec cards you can click for detail. Each card shows the story code, title, epic, story points, priority, subtask progress bar, and merge-request link when the story is done.</p>
-
-        <h3>PRD</h3>
-        <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
-
-        <h3>Spec detail</h3>
-        <p>Click any card on the board to open <code>/larapilot/specs/{code}</code>. The page shows:</p>
-        <ul>
-          <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
-          <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
-          <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
-        </ul>
-        <p>Status badge, story points, and merge commit appear in the header. Nothing is editable — the dashboard mirrors repo state for humans reviewing progress between skill sessions.</p>
-
-        <h3>JSON API</h3>
-        <p>Same data as the UI, for scripts, CI, or external tools. Base path: <code>/larapilot/api</code>. Endpoints:</p>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Method</th>
-                <th>Path</th>
-                <th>Returns</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>GET</code></td>
-                <td><code>/larapilot/api/board</code></td>
-                <td>Metrics + specs grouped by status column</td>
-              </tr>
-              <tr>
-                <td><code>GET</code></td>
-                <td><code>/larapilot/api/specs</code></td>
-                <td>All specs; optional <code>?status=TODO</code> filter</td>
-              </tr>
-              <tr>
-                <td><code>GET</code></td>
-                <td><code>/larapilot/api/specs/{code}</code></td>
-                <td>Single spec with plan tasks and workdir</td>
-              </tr>
-              <tr>
-                <td><code>GET</code></td>
-                <td><code>/larapilot/api/prd</code></td>
-                <td>PRD Markdown content and heading index</td>
-              </tr>
-              <tr>
-                <td><code>GET</code></td>
-                <td><code>/larapilot/api/openapi.json</code></td>
-                <td>Machine-readable OpenAPI 3 spec</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Swagger UI at <code>/larapilot/api/docs</code> lets you try requests in the browser. Skills still use Artisan CLI for writes — the API is read-only.</p>
-      </section>
-
       <!-- Deep Dive -->
       <section class="doc-section" id="deep-dive">
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
-          <h2>How Larapilot works</h2>
-          <p>Skills orchestrate the conversation. Personas apply domain expertise. The workflow enforces discipline. Artifacts in the repo are the source of truth between sessions.</p>
+          <h2>Technical reference</h2>
+          <p>Skills, personas, workflow, artifacts, CLI, dashboard, and API — how every layer fits together.</p>
         </div>
 
-        <div class="layer-stack">
-          <div class="layer-card">
-            <strong>1 · Skills</strong>
-            <p><code>/larapilot-*</code> prompts published via Laravel Boost. You invoke them in the editor; the agent reads <code>SKILL.md</code> and follows the execution contract.</p>
+        <!-- How it works -->
+        <article class="deep-dive-sub" id="deep-dive-how-it-works">
+          <h3>How it works</h3>
+          <p class="lead">Three layers: skills orchestrate the conversation, artifacts in git are the source of truth, and Artisan CLI persists state under the hood.</p>
+
+          <div class="layer-stack">
+            <div class="layer-card">
+              <strong>1 · Skills</strong>
+              <p><code>/larapilot-*</code> prompts published via Laravel Boost. You invoke them in the editor; the agent reads <code>SKILL.md</code> and follows the execution contract.</p>
+            </div>
+            <div class="layer-card">
+              <strong>2 · Artifacts</strong>
+              <p>PRD, backlog, specs, plans, and review notes live under <code>.larapilot/</code> in git — durable state the agent reloads on every skill activation.</p>
+            </div>
+            <div class="layer-card">
+              <strong>3 · CLI (under the hood)</strong>
+              <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>.</p>
+            </div>
           </div>
-          <div class="layer-card">
-            <strong>2 · Artifacts</strong>
-            <p>PRD, backlog, specs, plans, and review notes live under <code>.larapilot/</code> in git — durable state the agent reloads on every skill activation.</p>
-          </div>
-          <div class="layer-card">
-            <strong>3 · CLI (under the hood)</strong>
-            <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>.</p>
-          </div>
-        </div>
+        </article>
 
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
@@ -3916,7 +3836,7 @@ body: |
             </table>
           </div>
 
-          <p>A read-only dashboard at <code>/larapilot</code> (non-production) shows backlog board, PRD, and spec detail. JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to confirm writes and status changes.</p>
+          <p>JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to confirm writes and status changes. Inspect artifacts visually via the <a href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.</p>
         </article>
 
         <!-- Artisan CLI -->
@@ -3988,6 +3908,147 @@ body: |
           </div>
 
           <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.</p>
+        </article>
+
+        <!-- Dashboard -->
+        <article class="deep-dive-sub" id="deep-dive-dashboard">
+          <h3>Dashboard</h3>
+          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read the PRD, and drill into spec detail between skill sessions — nothing is editable from the browser.</p>
+
+          <h4>Activation</h4>
+          <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes register automatically when the package boots. All of the following must be true:</p>
+          <ul>
+            <li><code>LARAPILOT_ENABLED=true</code> (default) — master switch in <code>config/larapilot.php</code></li>
+            <li><code>LARAPILOT_DASHBOARD_ROUTE=true</code> (default) — dashboard route toggle</li>
+            <li>App environment is <strong>not</strong> <code>production</code></li>
+            <li>Environment is in the allowlist: <code>local</code>, <code>development</code>, <code>testing</code>, or <code>staging</code></li>
+          </ul>
+          <p>Start your Laravel app (<code>php artisan serve</code>, Sail, Herd, etc.) and open <code>/larapilot</code>. If routes 404, check <code>APP_ENV</code> and the flags above.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">config/larapilot.php — dashboard_route</div>
+            <pre><code>'dashboard_route' => [
+    'enabled' => env('LARAPILOT_DASHBOARD_ROUTE', true),
+    'prefix' => 'larapilot',           // change to customize URL prefix
+    'middleware' => ['web'],
+    'environments' => ['local', 'development', 'testing', 'staging'],
+],</code></pre>
+          </div>
+
+          <h4>Pages</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tab</th>
+                  <th>URL</th>
+                  <th>What you see</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Board</strong></td>
+                  <td><code>/larapilot</code></td>
+                  <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> → <span class="status status-done">DONE</span>)</td>
+                </tr>
+                <tr>
+                  <td><strong>PRD</strong></td>
+                  <td><code>/larapilot/prd</code></td>
+                  <td>Rendered <code>PRD.md</code> with a section table of contents</td>
+                </tr>
+                <tr>
+                  <td><strong>API docs</strong></td>
+                  <td><code>/larapilot/api/docs</code></td>
+                  <td>Interactive OpenAPI browser for the read-only JSON API</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Board</h4>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
+
+          <h4>PRD</h4>
+          <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
+
+          <h4>Spec detail</h4>
+          <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
+          <ul>
+            <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
+            <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
+            <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
+          </ul>
+          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state — skills remain the only way to change it.</p>
+        </article>
+
+        <!-- API -->
+        <article class="deep-dive-sub" id="deep-dive-api">
+          <h3>API</h3>
+          <p class="lead">Read-only JSON API over the same artifacts as the dashboard. For scripts, CI dashboards, or external tooling — skills still use Artisan CLI for all writes.</p>
+
+          <h4>Activation</h4>
+          <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a> conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns <code>404</code> in production or when disabled.</p>
+
+          <h4>Endpoints</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Path</th>
+                  <th>Returns</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/board</code></td>
+                  <td>Metrics, status order, and specs grouped by workflow column</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/specs</code></td>
+                  <td>All specs with task progress; optional <code>?status=TODO</code> filter</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/specs/{code}</code></td>
+                  <td>Single spec with plan body, tasks, workdir, and task progress</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/prd</code></td>
+                  <td>PRD Markdown content and parsed heading index</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/openapi.json</code></td>
+                  <td>Machine-readable OpenAPI 3 document (auto-generated)</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/docs</code></td>
+                  <td>Swagger UI — try requests in the browser</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Response shape</h4>
+          <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from <code>/larapilot/api/board</code>:</p>
+          <div class="code-block">
+            <div class="code-block-header">GET /larapilot/api/board</div>
+            <pre><code>{
+  "metrics": { "total": 3, "done": 1, "completion_rate": 33.3, "wip": 1 },
+  "status_order": ["TODO", "PLANNED", "IN PROGRESS", "REVIEW", "DONE"],
+  "columns": {
+    "TODO": [{ "code": "US-002", "title": "Project Management", "task_progress": { "total": 0, "done": 0 } }],
+    "DONE": [{ "code": "US-001", "title": "User Registration", "task_progress": { "total": 4, "done": 4 } }]
+  },
+  "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
+}</code></pre>
+          </div>
+          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware. Do not expose it in production (routes are not registered there).</p>
         </article>
 
         <div class="cta-band">
