@@ -2707,101 +2707,52 @@ php artisan boost:install</code></pre>
 <!-- New product -->
         <article class="example-block" id="example-new-product">
           <h2>New product</h2>
-          <p class="example-tag"><code>/larapilot-inception</code> → <code>/larapilot-spec</code> → spec loop → <code>/larapilot-ship</code></p>
+          <p class="example-tag"><code>/larapilot-inception</code></p>
           <p class="example-context">Laravel 13 greenfield — task board with registration, projects, assignable tasks. One sentence in, PRD + backlog + code out.</p>
 
-          <div class="command-flow">
-            <div class="command-flow-label">9 prompts — design optional</div>
-            <div class="command-flow-row">
-              <code class="cmd-primary">/larapilot-inception "…"</code>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-spec</code>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-design US-001</code>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-plan US-001</code>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-implement US-001</code>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-review US-001</code>
-            </div>
-            <div class="command-flow-row" style="margin-top:.35rem;">
-              <span class="command-flow-arrow" style="opacity:.5;">↻ repeat per story</span>
-              <span class="command-flow-arrow">→</span>
-              <code>/larapilot-ship</code>
-            </div>
-            <p class="command-flow-note"><strong>Design optional.</strong> Repeat plan → implement → review per story. Track at <code>/larapilot</code>.</p>
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-inception "I want a simple team task board: registration, projects, and assignable tasks."</code></pre>
           </div>
 
-          <div class="walkthrough">
+          <p>Mark runs 3 AskQuestion rounds (max 3 questions each, skippable).</p>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">0</div>
-              <strong>Install</strong>
-              <span><a href="#quickstart">Quickstart</a></span>
+          <div class="chat-example">
+            <p><span class="speaker">💎 Mark:</span> Let's shape the MVP — who is this for and what kind of product is it?</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (product kind)</strong>
+              <ol>
+                <li><strong>Project Kind:</strong> Application · Website · Personal</li>
+                <li><strong>Audience:</strong> Small dev teams · Agencies · Solo founders</li>
+                <li><strong>Competitors in mind:</strong> Trello/Asana · Linear · None — greenfield</li>
+              </ol>
             </div>
-            <div class="walkthrough-body">
-              <div class="code-block">
-                <div class="code-block-header">Terminal — Laravel 13 project root</div>
-                <pre><code>composer require andreapollastri/larapilot --dev
-php artisan larapilot:install
-php artisan boost:install</code></pre>
-              </div>
-              <p>Enable Boost + Larapilot MCP. With <code>php artisan serve</code>, <code>/larapilot</code> shows the board once artifacts exist.</p>
+            <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>, <strong>Trello/Asana</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 2 (MVP scope)</strong>
+              <ol>
+                <li><strong>MVP features:</strong> Register + projects + tasks · + Kanban view · + Notifications</li>
+                <li><strong>Auth:</strong> Email + password · + Magic link · SSO later</li>
+                <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product</li>
+              </ol>
             </div>
+            <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no SSO for now), <strong>MVP</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 3 (stack &amp; panel)</strong>
+              <ol>
+                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament panel · Custom</li>
+                <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
+                <li><strong>GDPR:</strong> EU users expected · Internal only · Unsure</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Laravel Starter Kit</strong>, <strong>Tracked</strong>, <strong>EU users expected</strong>.</p>
+            <p><span class="speaker">📐 John:</span> Starter Kit + session auth fits Laravel 13 out of the box. I'll note Filament as a Future Phase option.</p>
+            <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.</p>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">1</div>
-              <strong>Discovery — write the PRD</strong>
-              <span>/larapilot-inception</span>
-            </div>
-            <div class="walkthrough-body">
-              <div class="code-block">
-                <div class="code-block-header">Your editor</div>
-                <pre><code>/larapilot-inception "I want a simple team task board: registration, projects, and assignable tasks."</code></pre>
-              </div>
-
-              <p>Mark runs 3 AskQuestion rounds (max 3 questions each, skippable). Drop docs in <code>client-materials/</code> first if you have them.</p>
-
-              <div class="chat-example">
-                <p><span class="speaker">💎 Mark:</span> Let's shape the MVP — who is this for and what kind of product is it?</p>
-                <div class="wizard">
-                  <strong>AskQuestion — Round 1 (product kind)</strong>
-                  <ol>
-                    <li><strong>Project Kind:</strong> Application · Website · Personal</li>
-                    <li><strong>Audience:</strong> Small dev teams · Agencies · Solo founders</li>
-                    <li><strong>Competitors in mind:</strong> Trello/Asana · Linear · None — greenfield</li>
-                  </ol>
-                </div>
-                <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>, <strong>Trello/Asana</strong>.</p>
-                <div class="wizard">
-                  <strong>AskQuestion — Round 2 (MVP scope)</strong>
-                  <ol>
-                    <li><strong>MVP features:</strong> Register + projects + tasks · + Kanban view · + Notifications</li>
-                    <li><strong>Auth:</strong> Email + password · + Magic link · SSO later</li>
-                    <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product</li>
-                  </ol>
-                </div>
-                <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no SSO for now), <strong>MVP</strong>.</p>
-                <div class="wizard">
-                  <strong>AskQuestion — Round 3 (stack &amp; panel)</strong>
-                  <ol>
-                    <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament panel · Custom</li>
-                    <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
-                    <li><strong>GDPR:</strong> EU users expected · Internal only · Unsure</li>
-                  </ol>
-                </div>
-                <p><em>You pick:</em> <strong>Laravel Starter Kit</strong>, <strong>Tracked</strong>, <strong>EU users expected</strong>.</p>
-                <p><span class="speaker">📐 John:</span> Starter Kit + session auth fits Laravel 13 out of the box. I'll note Filament as a Future Phase option.</p>
-                <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.</p>
-              </div>
-
-              <div class="code-block">
-                <div class="code-block-header">PRD.md (excerpt)</div>
-                <pre><code>**Project Kind:** Application
+          <div class="code-block">
+            <div class="code-block-header">PRD.md (excerpt)</div>
+            <pre><code>**Project Kind:** Application
 **Delivery Target:** MVP
 **Stack:** Laravel 13 · Laravel Starter Kit · Pest
 
@@ -2816,44 +2767,18 @@ php artisan boost:install</code></pre>
 
 ### FR-004: SSO via Google Workspace
 **MoSCoW:** Won't</code></pre>
-              </div>
-
-              <p>PRD at <code>.larapilot/docs/PRD.md</code> — also at <code>/larapilot/prd</code>.</p>
-
-              <dl class="walkthrough-grid">
-                <div>
-                  <dt>You do</dt>
-                  <dd>Answer 3 wizard rounds; skim the PRD</dd>
-                </div>
-                <div>
-                  <dt>Agent does</dt>
-                  <dd><code>larapilot:prd-write</code> + <code>larapilot:validate-prd</code></dd>
-                </div>
-                <div>
-                  <dt>Next step</dt>
-                  <dd><code>/larapilot-spec</code></dd>
-                </div>
-              </dl>
-            </div>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">2</div>
-              <strong>Backlog — MVP into user stories</strong>
-              <span>/larapilot-spec</span>
-            </div>
-            <div class="walkthrough-body">
-              <div class="code-block">
-                <div class="code-block-header">Your editor</div>
-                <pre><code>/larapilot-spec</code></pre>
-              </div>
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-spec</code></pre>
+          </div>
 
-              <p>Tom maps <code>Must</code> FRs to MVP stories; <code>Won't</code> skipped.</p>
+          <p>Tom maps <code>Must</code> FRs to MVP stories; <code>Won't</code> skipped.</p>
 
-              <div class="code-block">
-                <div class="code-block-header">backlog.yaml (excerpt)</div>
-                <pre><code>specs:
+          <div class="code-block">
+            <div class="code-block-header">backlog.yaml (excerpt)</div>
+            <pre><code>specs:
   - code: US-001
     title: User Registration
     status: TODO
@@ -2863,283 +2788,110 @@ php artisan boost:install</code></pre>
   - code: US-003
     title: Task Assignment
     status: TODO</code></pre>
-              </div>
-
-              <p>Three cards in <span class="status status-todo">TODO</span> at <code>/larapilot</code>.</p>
-
-              <dl class="walkthrough-grid">
-                <div>
-                  <dt>You do</dt>
-                  <dd>Review stories; ask to split or merge if needed</dd>
-                </div>
-                <div>
-                  <dt>Agent does</dt>
-                  <dd><code>larapilot:spec-add</code> + <code>larapilot:validate-spec</code></dd>
-                </div>
-                <div>
-                  <dt>Next step</dt>
-                  <dd><code>/larapilot-design US-001</code> <em>(optional)</em> or <code>/larapilot-plan US-001</code></dd>
-                </div>
-              </dl>
-            </div>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">3</div>
-              <strong>Design — mockup first screen</strong>
-              <span>/larapilot-design US-001</span>
-            </div>
-            <div class="walkthrough-body">
-              <div class="code-block">
-                <div class="code-block-header">Your editor — optional, recommended for UI</div>
-                <pre><code>/larapilot-design US-001</code></pre>
-              </div>
-
-              <p>Static HTML mockup from <code>design-systems/starter-kit/</code>. Preview: <code>/mockups/US-001</code>.</p>
-
-              <dl class="walkthrough-grid">
-                <div>
-                  <dt>You do</dt>
-                  <dd>Feedback on layout and copy</dd>
-                </div>
-                <div>
-                  <dt>Agent does</dt>
-                  <dd>Writes <code>mockups/US-001/index.html</code> (WCAG 2.2 AA)</dd>
-                </div>
-                <div>
-                  <dt>Next step</dt>
-                  <dd><code>/larapilot-plan US-001</code></dd>
-                </div>
-              </dl>
-            </div>
+          <div class="code-block">
+            <div class="code-block-header">Your editor — optional</div>
+            <pre><code>/larapilot-design US-001</code></pre>
           </div>
+          <p>Static HTML mockup from <code>design-systems/starter-kit/</code>. Preview: <code>/mockups/US-001</code>.</p>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">4</div>
-              <strong>Build loop — one story end to end</strong>
-              <span>US-001</span>
-            </div>
-            <div class="walkthrough-body">
-              <p>Three prompts, three gates — same loop for every story.</p>
-
-              <div class="code-block">
-                <div class="code-block-header">Your editor — plan → build → review</div>
-                <pre><code>/larapilot-plan US-001
+          <div class="code-block">
+            <div class="code-block-header">Your editor — US-001</div>
+            <pre><code>/larapilot-plan US-001
 /larapilot-implement US-001
 /larapilot-review US-001</code></pre>
-              </div>
+          </div>
 
-              <div class="table-card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Prompt</th>
-                      <th>Who leads</th>
-                      <th>Status change</th>
-                      <th>What lands</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>/larapilot-plan US-001</code></td>
-                      <td>John + Alex + Anne</td>
-                      <td><span class="status status-todo">TODO</span> → <span class="status status-planned">PLANNED</span></td>
-                      <td><code>plans/US-001-plan.yaml</code> — migration, controller, view, Pest tests</td>
-                    </tr>
-                    <tr>
-                      <td><code>/larapilot-implement US-001</code></td>
-                      <td>Alex + Anne + Robert + Lars</td>
-                      <td><span class="status status-planned">PLANNED</span> → <span class="status status-review">REVIEW</span></td>
-                      <td>Laravel 13 code: <code>User</code> model, <code>RegisterController</code>, Blade view, feature tests</td>
-                    </tr>
-                    <tr>
-                      <td><code>/larapilot-review US-001</code></td>
-                      <td>Robert presents · you decide</td>
-                      <td><span class="status status-review">REVIEW</span> → <span class="status status-done">DONE</span></td>
-                      <td>You say <strong>"approve"</strong> — or send back with feedback</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Prompt</th>
+                  <th>Status change</th>
+                  <th>What lands</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>/larapilot-plan US-001</code></td>
+                  <td><span class="status status-todo">TODO</span> → <span class="status status-planned">PLANNED</span></td>
+                  <td><code>plans/US-001-plan.yaml</code></td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-implement US-001</code></td>
+                  <td><span class="status status-planned">PLANNED</span> → <span class="status status-review">REVIEW</span></td>
+                  <td><code>User</code> model, <code>RegisterController</code>, Blade view, Pest tests</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-review US-001</code></td>
+                  <td><span class="status status-review">REVIEW</span> → <span class="status status-done">DONE</span></td>
+                  <td>You approve — or send back with feedback</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-              <div class="code-block">
-                <div class="code-block-header">What lands in your Laravel 13 app (US-001)</div>
-                <pre><code>database/migrations/xxxx_create_users_table.php
+          <div class="code-block">
+            <div class="code-block-header">Laravel 13 app (US-001)</div>
+            <pre><code>database/migrations/xxxx_create_users_table.php
 app/Models/User.php
 app/Http/Controllers/RegisterController.php
 app/Http/Requests/RegisterRequest.php
 resources/views/auth/register.blade.php
 routes/web.php
 tests/Feature/RegistrationTest.php</code></pre>
-              </div>
-
-              <p>Alex uses Boost; Robert and Lars review before your gate.</p>
-
-              <dl class="walkthrough-grid">
-                <div>
-                  <dt>You do</dt>
-                  <dd>Test registration locally; approve or request changes</dd>
-                </div>
-                <div>
-                  <dt>Agent does</dt>
-                  <dd>Implements tasks, runs Pest, saves review notes</dd>
-                </div>
-                <div>
-                  <dt>Board</dt>
-                  <dd>Card moves TODO → PLANNED → REVIEW → DONE</dd>
-                </div>
-              </dl>
-            </div>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">5</div>
-              <strong>Repeat — remaining stories</strong>
-              <span>US-002 · US-003</span>
-            </div>
-            <div class="walkthrough-body">
-              <div class="table-card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Story</th>
-                      <th>Prompts</th>
-                      <th>What gets built</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>US-002</code> Projects</td>
-                      <td><code>plan</code> → <code>implement</code> → <code>review</code></td>
-                      <td>Project model, CRUD, policies, Pest tests</td>
-                    </tr>
-                    <tr>
-                      <td><code>US-003</code> Tasks</td>
-                      <td><code>plan</code> → <code>implement</code> → <code>review</code></td>
-                      <td>Task model, assignment, board view, tests</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <p>Batch when stories are independent:</p>
-              <div class="code-block">
-                <div class="code-block-header">Your editor — optional accelerator</div>
-                <pre><code>/larapilot-autopilot US-002 US-003</code></pre>
-              </div>
-              <p>Chains plan + implement — you still review each spec.</p>
-            </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Story</th>
+                  <th>Prompts</th>
+                  <th>What gets built</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>US-002</code> Projects</td>
+                  <td><code>plan</code> → <code>implement</code> → <code>review</code></td>
+                  <td>Project model, CRUD, policies, Pest tests</td>
+                </tr>
+                <tr>
+                  <td><code>US-003</code> Tasks</td>
+                  <td><code>plan</code> → <code>implement</code> → <code>review</code></td>
+                  <td>Task model, assignment, board view, tests</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">6</div>
-              <strong>Ship — deploy to production</strong>
-              <span>/larapilot-ship</span>
-            </div>
-            <div class="walkthrough-body">
-              <div class="code-block">
-                <div class="code-block-header">Your editor — when every MVP story is DONE</div>
-                <pre><code>/larapilot-ship</code></pre>
-              </div>
+          <div class="code-block">
+            <div class="code-block-header">Your editor — optional batch</div>
+            <pre><code>/larapilot-autopilot US-002 US-003</code></pre>
+          </div>
+          <p>Chains plan + implement — you still run <code>/larapilot-review</code> per spec.</p>
 
-              <p>Oliver, Lars, Jack, Aurora, Violet — security gate + deploy.</p>
-
-              <dl class="walkthrough-grid">
-                <div>
-                  <dt>You do</dt>
-                  <dd>Confirm deploy target and credentials</dd>
-                </div>
-                <div>
-                  <dt>Agent does</dt>
-                  <dd>Security checks, CI/CD, release notes</dd>
-                </div>
-                <div>
-                  <dt>Result</dt>
-                  <dd>Production release 🚀</dd>
-                </div>
-              </dl>
-            </div>
+          <div class="code-block">
+            <div class="code-block-header">Your editor — when all MVP stories are DONE</div>
+            <pre><code>/larapilot-ship</code></pre>
           </div>
 
-          <div class="walkthrough-step">
-            <div class="walkthrough-head">
-              <div class="walkthrough-num">✓</div>
-              <strong>Final repo state</strong>
-              <span>.larapilot/</span>
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Answer wizard rounds; run spec loop per story; approve reviews</dd>
             </div>
-            <div class="walkthrough-body">
-              <pre class="file-tree">.larapilot/
-├── docs/PRD.md              # MoSCoW-tagged requirements
-├── backlog.yaml             # all stories DONE
-├── specs/US-001…003.yaml
-├── plans/US-001…003-plan.yaml
-└── mockups/US-001/
-
-app/                         # Laravel 13 — models, controllers, views
-database/migrations/
-tests/Feature/</pre>
-              <p>All artifacts version-controlled. Board shows 100% when MVP is done.</p>
+            <div>
+              <dt>Agent does</dt>
+              <dd>PRD → backlog → plans → Laravel code + tests under <code>.larapilot/</code></dd>
             </div>
-          </div>
-
-          </div>
-
-          <details class="personas-details">
-            <summary>Personas per skill — full roster</summary>
-            <p style="font-size:.82rem;color:var(--text-secondary);margin:.5rem 0 .75rem;">Agents speak in character (<code>💎 Mark:</code>, <code>📐 John:</code> …). <strong>Active</strong> personas drive each step; <strong>optional</strong> ones join when the PRD requires it. See <a href="#team">The AI squad</a>.</p>
-            <div class="table-card">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Skill</th>
-                    <th>Always active</th>
-                    <th>May join when relevant</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>/larapilot-inception</code></td>
-                    <td>Mark, Jennifer, Benjamin, Sebastian, John, Aurora, Violet</td>
-                    <td>Matt, Jack, Lars, Oliver, Emily, Emma, Lauren, Elise, Marika, Joe, Andrew, Sabrine, Sophia</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-spec</code></td>
-                    <td>Tom, Mark</td>
-                    <td>Sabrine, Marika, Emily, Sophia</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-design</code></td>
-                    <td>Elise</td>
-                    <td>Joe, Marika, Emma, Lauren, Emily, Violet, Aurora, Mark</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-plan</code></td>
-                    <td>Tom, John, Alex, Anne</td>
-                    <td>Sebastian, Matt, Elise, Joe, Marika, Andrew, Sabrine, Violet, Aurora, Emma, Lauren, Emily</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-implement</code></td>
-                    <td>Alex, Anne, Robert, Lars</td>
-                    <td>Andrew, Joe, Marika, Sabrine, Matt, Emily</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-review</code></td>
-                    <td>Robert</td>
-                    <td>Sabrine, Marika, Sophia</td>
-                  </tr>
-                  <tr>
-                    <td><code>/larapilot-ship</code></td>
-                    <td>Oliver, Lars, Jack, Aurora, Violet, Sophia</td>
-                    <td>Emma, Lauren, Emily</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div>
+              <dt>Next step</dt>
+              <dd>Repeat for <code>US-002</code>, <code>US-003</code> — then <code>/larapilot-ship</code></dd>
             </div>
-          </details>
+          </dl>
         </article>
 
         <!-- Legacy porting -->
