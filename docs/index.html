@@ -2569,9 +2569,6 @@
               <div class="doc-nav-label">Start</div>
               <a href="#quickstart" data-nav>Quickstart</a>
               <a href="#how-it-works" data-nav>How to use</a>
-            </div>
-            <div class="doc-nav-group">
-              <div class="doc-nav-label">Examples</div>
               <a href="#examples" data-nav>Examples</a>
               <a class="doc-nav-sub" href="#example-new-product" data-nav>New product</a>
               <a class="doc-nav-sub" href="#example-legacy-porting" data-nav>Legacy porting</a>
@@ -2591,56 +2588,48 @@
 
     <main class="doc-main prose">
 
-      <!-- Why -->
-      <section class="doc-section" id="why">
+      <!-- Quickstart -->
+      <section class="doc-section" id="quickstart">
         <div class="section-header">
-          <span class="section-label">Features</span>
-          <h2>Why Larapilot</h2>
-          <p>AI agents are fast — Larapilot gives them a product process with guardrails.</p>
+          <span class="section-label">Quickstart</span>
+          <h2>Install in 3 commands</h2>
+          <p>PHP <strong>^8.3</strong> · Laravel <strong>^12|^13</strong> · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> <code>^2.0</code> (bundled) · MCP editor (Cursor, etc.)</p>
         </div>
-        <div class="bento">
-          <div class="bento-card span-2">
-            <div class="bento-icon red">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M3 9a6 6 0 1012 0A6 6 0 003 9z" stroke="currentColor" stroke-width="1.5" />
-                <path d="M9 6v3l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-              </svg>
-            </div>
-            <h3>A workflow, not prompt lore</h3>
-            <p>Discovery → backlog → plan → implement → review → ship. CLI-enforced transitions.</p>
-          </div>
-          <div class="bento-card">
-            <div class="bento-icon indigo">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <rect x="3" y="3" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5" />
-                <path d="M6 7h6M6 9.5h4M6 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-              </svg>
-            </div>
-            <h3>Spec-driven</h3>
-            <p>The <code>spec → plan → implement</code> loop repeats per increment with enforced status transitions.</p>
-          </div>
-          <div class="bento-card">
-            <div class="bento-icon blue">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M3 5a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" stroke="currentColor"
-                  stroke-width="1.5" />
-                <path d="M3 7h12" stroke="currentColor" stroke-width="1.5" />
-              </svg>
-            </div>
-            <h3>Persistent artifacts</h3>
-            <p>PRD, backlog, specs, plans in <code>.larapilot/</code> — version-controlled.</p>
-          </div>
-          <div class="bento-card">
-            <div class="bento-icon green">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M4 14l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </div>
-            <h3>Laravel-native</h3>
-            <p>Artisan + Boost MCP — not a separate toolchain.</p>
-          </div>
+
+        <div class="code-block">
+          <div class="code-block-header">Terminal</div>
+          <pre><code>composer require andreapollastri/larapilot --dev
+php artisan larapilot:install
+php artisan boost:install</code></pre>
         </div>
+        <p>Already on Boost? <code>php artisan boost:update --discover</code>. After upgrades: <code>php artisan larapilot:update</code>.</p>
+
+        <h3>MCP servers</h3>
+        <div class="code-block">
+          <div class="code-block-header">.mcp.json</div>
+          <pre><code>{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "php",
+      "args": ["artisan", "boost:mcp"]
+    },
+    "larapilot": {
+      "command": "php",
+      "args": ["artisan", "mcp:start", "larapilot"]
+    }
+  }
+}</code></pre>
+        </div>
+
+        <h3>First run</h3>
+        <p><code>/larapilot-inception "your idea"</code> → <code>/larapilot-spec</code> → spec loop per story. Full walkthrough: <a href="#example-new-product">new product example</a>. Skill reference: <a href="#skills">all ten skills</a>.</p>
+
+        <h3>Verify</h3>
+        <div class="code-block">
+          <div class="code-block-header">Terminal</div>
+          <pre><code>php artisan larapilot:doctor</code></pre>
+        </div>
+        <p><code>healthy: true</code> when config + Boost are OK. <code>backlog</code> and <code>prd</code> stay <code>false</code> until your first workflow — expected.</p>
       </section>
 
       <!-- How it works -->
@@ -2718,50 +2707,6 @@
         </div>
 
         <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow). Walkthroughs: <a href="#examples">four examples</a>.</p>
-      </section>
-
-      <!-- Quickstart -->
-      <section class="doc-section" id="quickstart">
-        <div class="section-header">
-          <span class="section-label">Quickstart</span>
-          <h2>Install in 3 commands</h2>
-          <p>PHP <strong>^8.3</strong> · Laravel <strong>^12|^13</strong> · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> <code>^2.0</code> (bundled) · MCP editor (Cursor, etc.)</p>
-        </div>
-
-        <div class="code-block">
-          <div class="code-block-header">Terminal</div>
-          <pre><code>composer require andreapollastri/larapilot --dev
-php artisan larapilot:install
-php artisan boost:install</code></pre>
-        </div>
-        <p>Already on Boost? <code>php artisan boost:update --discover</code>. After upgrades: <code>php artisan larapilot:update</code>.</p>
-
-        <h3>MCP servers</h3>
-        <div class="code-block">
-          <div class="code-block-header">.mcp.json</div>
-          <pre><code>{
-  "mcpServers": {
-    "laravel-boost": {
-      "command": "php",
-      "args": ["artisan", "boost:mcp"]
-    },
-    "larapilot": {
-      "command": "php",
-      "args": ["artisan", "mcp:start", "larapilot"]
-    }
-  }
-}</code></pre>
-        </div>
-
-        <h3>First run</h3>
-        <p><code>/larapilot-inception "your idea"</code> → <code>/larapilot-spec</code> → spec loop per story. Full walkthrough: <a href="#example-new-product">new product example</a>. Skill reference: <a href="#skills">all ten skills</a>.</p>
-
-        <h3>Verify</h3>
-        <div class="code-block">
-          <div class="code-block-header">Terminal</div>
-          <pre><code>php artisan larapilot:doctor</code></pre>
-        </div>
-        <p><code>healthy: true</code> when config + Boost are OK. <code>backlog</code> and <code>prd</code> stay <code>false</code> until your first workflow — expected.</p>
       </section>
 
       <!-- Examples -->
