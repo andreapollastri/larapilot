@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, ship reviewed code. v1.7.1">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.7.2 adds Bootstrap 5, Tailwind, and AdminLTE mockup design systems — five packaged references for /larapilot-design. Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,6 +403,35 @@
     .hero-tagline strong {
       color: var(--text);
       font-weight: 700;
+    }
+
+    .hero-news {
+      margin-bottom: 1.35rem;
+      padding: .9rem 1rem;
+      background: var(--accent-soft);
+      border: 1px solid rgba(255, 68, 54, .18);
+      border-radius: var(--radius-sm);
+      font-size: .84rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .hero-news strong {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .hero-news ul {
+      margin: .55rem 0 0;
+      padding-left: 1.1rem;
+    }
+
+    .hero-news li {
+      margin-bottom: .2rem;
+    }
+
+    .hero-news li:last-child {
+      margin-bottom: 0;
     }
 
     /* Terminal mock */
@@ -2579,13 +2608,23 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.7.1</span>
+          <span class="hero-version">v1.7.2</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
           Spec-driven workflow for Laravel — integrated with <a href="https://laravel.com/ai/boost" target="_blank"
             rel="noopener">Laravel Boost</a>. Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
         </p>
+        <div class="hero-news">
+          <strong>New in v1.7.2</strong> — five packaged mockup design systems under
+          <code>.larapilot/design-systems/</code>:
+          <ul>
+            <li><strong>Bootstrap 5</strong> and <strong>Tailwind CSS</strong> for marketing and custom app UI</li>
+            <li><strong>AdminLTE 4</strong> for Bootstrap admin panels</li>
+            <li>Corrected <strong>Filament v3</strong> sidebar styling + Starter Kit token fixes</li>
+            <li>Sharper persona roles across discovery, review, and design-system compliance</li>
+          </ul>
+        </div>
         <p class="hero-flow">
           <code>/larapilot-inception</code> → <code>/larapilot-spec</code> →
           <code>/larapilot-plan US-XXX</code> → <code>/larapilot-implement US-XXX</code> →
@@ -3036,7 +3075,7 @@
             <div class="code-block-header">Your editor — optional</div>
             <pre><code>/larapilot-design US-001</code></pre>
           </div>
-          <p>Static HTML mockup from <code>design-systems/starter-kit/</code>. Preview: <code>/mockups/US-001</code>.</p>
+          <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>, <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>). Preview: <code>/mockups/US-001</code>.</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor — US-001</div>
@@ -3649,7 +3688,7 @@ body: |
               <span class="skill-badge">optional</span>
               <div class="skill-body">
                 <h3><code>/larapilot-design US-XXX</code></h3>
-                <p>Static HTML mockups in <code>mockups/{spec}/</code>. Preview at <code>/mockups/{spec}</code> (non-production).</p>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament, Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code> (non-production).</p>
               </div>
             </div>
             <div class="skill-item">
@@ -4261,7 +4300,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.7.1</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.7.2</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>
