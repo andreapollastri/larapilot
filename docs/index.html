@@ -911,7 +911,7 @@
     .docs-shell {
       max-width: var(--max);
       margin: 0 auto;
-      padding: 0 1.5rem 6rem;
+      padding: 4rem 1.5rem 6rem;
       display: grid;
       grid-template-columns: var(--nav-w) 1fr;
       gap: 3rem;
@@ -935,7 +935,7 @@
     }
 
     .doc-nav-head {
-      padding: 1rem 1.1rem .85rem;
+      padding: 1.1rem 1.25rem .95rem;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
@@ -969,7 +969,7 @@
     .doc-nav-scroll {
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: .85rem .75rem 1rem;
+      padding: 1rem 1rem 1.25rem;
       scrollbar-width: thin;
       scrollbar-color: var(--border-strong) transparent;
     }
@@ -1050,7 +1050,7 @@
       font-size: .82rem;
       font-weight: 500;
       color: var(--text-secondary);
-      padding: .38rem .5rem;
+      padding: .42rem .65rem;
       border-radius: var(--radius-xs);
       transition: color .15s var(--ease), background .15s var(--ease);
       line-height: 1.35;
@@ -1096,8 +1096,13 @@
 
     /* ── Sections ── */
     .doc-section {
-      margin-bottom: 3rem;
+      margin-bottom: 4.5rem;
+      padding-top: 2rem;
       scroll-margin-top: calc(var(--header-h) + 24px);
+    }
+
+    .doc-section:first-child {
+      padding-top: 0;
     }
 
     .section-header {
@@ -1693,7 +1698,7 @@
     .example-block {
       counter-increment: example-block;
       scroll-margin-top: calc(var(--header-h) + 28px);
-      margin: 3rem 0;
+      margin: 4rem 0;
       padding: 1.75rem 1.85rem;
       background: var(--surface);
       border: 2px solid var(--border);
@@ -2681,31 +2686,6 @@ php artisan boost:install</code></pre>
           </table>
         </div>
 
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Layer</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Skills</strong> — <code>/larapilot-*</code> via Boost</td>
-                <td>Playbooks + personas; orchestrate the conversation</td>
-              </tr>
-              <tr>
-                <td><strong>CLI</strong> — <code>php artisan larapilot:*</code></td>
-                <td>Validate, persist, enforce transitions</td>
-              </tr>
-              <tr>
-                <td><strong>Dashboard / API</strong> — <code>/larapilot</code> <em>(local)</em></td>
-                <td>Read-only board, PRD, specs — local/staging/testing only</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow). Walkthroughs: <a href="#examples">four examples</a>.</p>
       </section>
 
@@ -2713,8 +2693,7 @@ php artisan boost:install</code></pre>
       <section class="doc-section" id="examples">
         <div class="section-header">
           <span class="section-label">Examples</span>
-          <h2>Examples</h2>
-          <p>What you type, what the agent does, what lands in <code>.larapilot/</code> and your app. Agents speak in character (<code>💎 Mark:</code>, <code>📐 John:</code> …).</p>
+          <h2>Use cases</h2>
         </div>
 
         <nav class="examples-nav" aria-label="Example scenarios">
@@ -2743,24 +2722,6 @@ php artisan boost:install</code></pre>
             <span class="example-card-cmd">/larapilot-bug</span>
           </a>
         </nav>
-
-        <div class="examples-compare">
-          <div>
-            <strong>Pick your entry point</strong>
-            <dl>
-              <dt><code>/larapilot-inception</code></dt>
-              <dd>New product, pivot, legacy rewrite</dd>
-              <dt><code>/larapilot-feature</code></dt>
-              <dd>One capability on existing product</dd>
-              <dt><code>/larapilot-bug</code></dt>
-              <dd>Defect → fix spec or rework</dd>
-            </dl>
-          </div>
-          <div>
-            <strong>Then, per story</strong>
-            <p><code>/larapilot-plan</code> → <code>/larapilot-implement</code> → <code>/larapilot-review</code></p>
-          </div>
-        </div>
 
 <!-- New product -->
         <article class="example-block" id="example-new-product">
