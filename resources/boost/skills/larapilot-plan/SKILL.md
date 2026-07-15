@@ -19,24 +19,24 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 
 ## The Team
 
-| Agent | Role |
-| --- | --- |
-| 🔎 **Tom** | Requirements Analyst — acceptance criteria and spec fidelity |
-| 📐 **John** | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target |
+| Agent            | Role                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 🔎 **Tom**       | Requirements Analyst — acceptance criteria and spec fidelity                                                         |
+| 📐 **John**      | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target         |
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
-| 🔗 **Matt** | Integration Manager — API/service wiring tasks with Alex, John, Elise |
-| 🌍 **Emily** | Translator — locale files, currency, timezone, country-target UX *(with Violet)* |
-| 💰 **Aurora** | FinOps Expert — infra/security/marketing budget per PRD; privilege security spend |
-| ⚖️ **Violet** | Legal Expert — privacy/legal tasks: cookie/ToS, retention, anonymization, opt-out |
-| 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM |
-| 💬 **Lauren** | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora |
-| 🎨 **Elise** | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
-| ✨ **Joe** | Frontend Expert — Vite/JS architecture, animations, client performance tasks |
-| ✍️ **Marika** | Copywriter — copy tasks for views, notifications, `lang/` strings |
-| 🐘 **Andrew** | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review |
-| 🔄 **Sabrine** | Legacy Porting Specialist — parity/migration tasks mapped to `legacy-parity.md` |
-| 🔧 **Alex** | Full-Stack Developer |
-| 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest strategy |
+| 🔗 **Matt**      | Integration Manager — API/service wiring tasks with Alex, John, Elise                                                |
+| 🌍 **Emily**     | Translator — locale files, currency, timezone, country-target UX _(with Violet)_                                     |
+| 💰 **Aurora**    | FinOps Expert — infra/security/marketing budget per PRD; privilege security spend                                    |
+| ⚖️ **Violet**    | Legal Expert — privacy/legal tasks: cookie/ToS, retention, anonymization, opt-out                                    |
+| 📈 **Emma**      | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM                                                 |
+| 💬 **Lauren**    | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora                         |
+| 🎨 **Elise**     | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets**             |
+| ✨ **Joe**       | Frontend Expert — Vite/JS architecture, animations, client performance tasks                                         |
+| ✍️ **Marika**    | Copywriter — copy tasks for views, notifications, `lang/` strings                                                    |
+| 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review                            |
+| 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks mapped to `legacy-parity.md`                                      |
+| 🔧 **Alex**      | Full-Stack Developer                                                                                                 |
+| 🧪 **Anne**      | Test Architect — **multi-viewport responsive UI tests**, Pest strategy                                               |
 
 ## Config & CLI
 
@@ -91,25 +91,25 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 ```json
 {
-  "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Branch: feature/US-XXX-short-desc\n- TASK-00: bootstrap + internal PR\n- Per task: one commit, push, update PR\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n...",
-  "tasks": [
-    {
-      "id": "TASK-00",
-      "title": "Bootstrap feature branch and internal PR",
-      "body": "## Description\n...\n\n## Git Deliverables\n- Commit: chore(US-XXX): TASK-00 bootstrap feature branch\n...",
-      "type": "Impl",
-      "status": "TODO",
-      "dependencies": []
-    },
-    {
-      "id": "TASK-01",
-      "title": "...",
-      "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
-      "type": "Impl",
-      "status": "TODO",
-      "dependencies": ["TASK-00"]
-    }
-  ]
+    "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Branch: feature/US-XXX-short-desc\n- TASK-00: bootstrap + internal PR\n- Per task: one commit, push, update PR\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n...",
+    "tasks": [
+        {
+            "id": "TASK-00",
+            "title": "Bootstrap feature branch and internal PR",
+            "body": "## Description\n...\n\n## Git Deliverables\n- Commit: chore(US-XXX): TASK-00 bootstrap feature branch\n...",
+            "type": "Impl",
+            "status": "TODO",
+            "dependencies": []
+        },
+        {
+            "id": "TASK-01",
+            "title": "...",
+            "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
+            "type": "Impl",
+            "status": "TODO",
+            "dependencies": ["TASK-00"]
+        }
+    ]
 }
 ```
 
@@ -119,15 +119,16 @@ Validate, then `spec-plan`. Delete temp file after CLI exits.
 
 Use `.larapilot/task-templates.md` — do not invent ad-hoc task shapes.
 
-| Template | When |
-| --- | --- |
-| **TASK-00** | Always first — branch `feature/US-XXX-*`, push, open internal PR to `develop` |
-| **Entity task** | New/changed Eloquent model — migration + factory + seeder in the **same task** |
-| **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A` |
-| **Test task** | Anne — reuse factories; `test(US-XXX): TASK-NN` commit |
-| **Fix / evolutiva** | Rework — same Git + factory/seeder rules when schema changes |
+| Template            | When                                                                           |
+| ------------------- | ------------------------------------------------------------------------------ |
+| **TASK-00**         | Always first — branch `feature/US-XXX-*`, push, open internal PR to `develop`  |
+| **Entity task**     | New/changed Eloquent model — migration + factory + seeder in the **same task** |
+| **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A`                                  |
+| **Test task**       | Anne — reuse factories; `test(US-XXX): TASK-NN` commit                         |
+| **Fix / evolutiva** | Rework — same Git + factory/seeder rules when schema changes                   |
 
 Every **Impl** and **Fix** task body MUST include:
+
 - `## Git Deliverables` — commit message, push target, PR update line
 - `## Test Data` — factory/seeder checklist, or explicit `N/A`
 - `## Completion Criteria` — checkboxes (auto-ticked by `task-done`)

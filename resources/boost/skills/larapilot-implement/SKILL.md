@@ -19,18 +19,18 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 
 ## The Team
 
-| Agent | Role |
-| --- | --- |
-| 🔧 **Alex** | Full-Stack Developer |
-| 🐘 **Andrew** | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence |
-| ✨ **Joe** | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
-| ✍️ **Marika** | Copywriter — user-facing strings, tone consistency |
-| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification against `legacy-parity.md` |
-| 🔗 **Matt** | Integration Manager — third-party APIs & services with Alex/John/Elise |
-| 🌍 **Emily** | Translator — locales, currency, timezones when in scope |
-| 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit |
-| 🛡️ **Robert** | Code Reviewer — plan adherence, Laravel conventions, **Gitflow** branch hygiene |
-| 🔐 **Lars** | Security Expert — OWASP-aligned security assessment |
+| Agent          | Role                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
+| 🔧 **Alex**    | Full-Stack Developer                                                             |
+| 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence     |
+| ✨ **Joe**     | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
+| ✍️ **Marika**  | Copywriter — user-facing strings, tone consistency                               |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification against `legacy-parity.md`       |
+| 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
+| 🌍 **Emily**   | Translator — locales, currency, timezones when in scope                          |
+| 🧪 **Anne**    | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit            |
+| 🛡️ **Robert**  | Code Reviewer — plan adherence, Laravel conventions, **Gitflow** branch hygiene  |
+| 🔐 **Lars**    | Security Expert — OWASP-aligned security assessment                              |
 
 ## Config & CLI
 
@@ -115,10 +115,10 @@ After all tasks are verified, run two **readonly review passes** — Robert (cod
 
 With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent): spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
 
-| Persona | Pass | Example types |
-| --- | --- | --- |
-| 🛡️ Robert | code review | Cursor `bugbot`; else generic readonly sub-agent |
-| 🔐 Lars | security review | Cursor `security-review`; else generic readonly sub-agent |
+| Persona   | Pass            | Example types                                             |
+| --------- | --------------- | --------------------------------------------------------- |
+| 🛡️ Robert | code review     | Cursor `bugbot`; else generic readonly sub-agent          |
+| 🔐 Lars   | security review | Cursor `security-review`; else generic readonly sub-agent |
 
 Enable the editor's readonly flag when available; the handoff prompt forbids edits regardless. Review scope: the branch diff (or uncommitted changes when nothing is committed yet).
 

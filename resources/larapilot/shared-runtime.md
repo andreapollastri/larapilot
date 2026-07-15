@@ -19,7 +19,11 @@ Common rules:
 - Parse stderr as a JSON error envelope:
 
 ```json
-{"schema":"larapilot/v1","kind":"error","error":{"code":"E_*","message":"...","hint":"..."}}
+{
+    "schema": "larapilot/v1",
+    "kind": "error",
+    "error": { "code": "E_*", "message": "...", "hint": "..." }
+}
 ```
 
 - `php artisan larapilot:validate-*` commands return a normal stdout envelope with `kind:"validation_result"`. Structural validation outcomes are reported in `data.ok` and `data.findings`; the exit code is `0` when `data.ok` is true and `2` otherwise. Error envelopes are reserved for process failures.
@@ -28,11 +32,11 @@ Common rules:
 
 - Branch on `error.code`, never on `error.message`.
 - Treat exit codes as stable:
-  - `0`: success
-  - `1`: generic error
-  - `2`: invalid input
-  - `3`: connector/backend failure
-  - `4`: missing precondition
+    - `0`: success
+    - `1`: generic error
+    - `2`: invalid input
+    - `3`: connector/backend failure
+    - `4`: missing precondition
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, and workflow statuses.
 - `php artisan larapilot:config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
 
@@ -78,9 +82,9 @@ The CLI validator checks structure in two steps:
 
 1. **Known translations** — it recognizes common heading names (English, Italian, Spanish, French, …) for each required section.
 2. **Heading count fallback** — if a heading is not recognized word-for-word, validation still passes when the artifact has enough marked headings:
-   - **PRD:** 6 headings (`## …`) — one per required section
-   - **Spec body:** 3 headings (`## …` or `**…**`) — User Story, Demonstrates, Acceptance Criteria
-   - **Plan task:** 1 heading (`## …`) — Description per task
+    - **PRD:** 6 headings (`## …`) — one per required section
+    - **Spec body:** 3 headings (`## …` or `**…**`) — User Story, Demonstrates, Acceptance Criteria
+    - **Plan task:** 1 heading (`## …`) — Description per task
 
 Keep the same language across PRD → backlog → specs → plans.
 
@@ -107,26 +111,26 @@ The **first interview layer** in **`larapilot-inception`**. **Mark** asks before
 
 `Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
 
-| Kind | Meaning | Discovery depth |
-| --- | --- | --- |
-| **Personal** | Solo side project, portfolio, learning experiment, or internal tool for oneself | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
-| **Website** | Public-facing site: showcase, portal, blog, store, landing, docs | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2 |
-| **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance |
+| Kind            | Meaning                                                                         | Discovery depth                                                                                 |
+| --------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Personal**    | Solo side project, portfolio, learning experiment, or internal tool for oneself | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
+| **Website**     | Public-facing site: showcase, portal, blog, store, landing, docs                | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2               |
+| **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows             | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance          |
 
-### Branching rules *(inception)*
+### Branching rules _(inception)_
 
 **Personal** — skip or lighten unless the user explicitly asks:
 
-| Persona | Behavior |
-| --- | --- |
-| Jennifer, Benjamin, Sebastian | Silent — no market positioning, enterprise research, or competitor porting |
-| Lauren | Silent — no SEM/campaigns |
-| Aurora | Do **not** run a budget round — record **`Budget Sensitivity: Relaxed`** in the PRD unless the user wants **Tracked** |
-| Oliver | Defer red-team notes to ship only |
-| Sophia | One line under Future Phases |
-| Emily | Only if the user mentions multiple locales |
-| John | Pragmatic Laravel stack — no multi-tenancy deep-dive unless asked |
-| Mark | Vision, problem, users, scope — keep it short |
+| Persona                       | Behavior                                                                                                              |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Jennifer, Benjamin, Sebastian | Silent — no market positioning, enterprise research, or competitor porting                                            |
+| Lauren                        | Silent — no SEM/campaigns                                                                                             |
+| Aurora                        | Do **not** run a budget round — record **`Budget Sensitivity: Relaxed`** in the PRD unless the user wants **Tracked** |
+| Oliver                        | Defer red-team notes to ship only                                                                                     |
+| Sophia                        | One line under Future Phases                                                                                          |
+| Emily                         | Only if the user mentions multiple locales                                                                            |
+| John                          | Pragmatic Laravel stack — no multi-tenancy deep-dive unless asked                                                     |
+| Mark                          | Vision, problem, users, scope — keep it short                                                                         |
 
 Delivery target AskQuestion offers **`MVP`** and **`V1 Complete`** only. If the user insists on **Full Product** or **Enterprise**, honor it — do not block.
 
@@ -156,13 +160,13 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 
 All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work. If missing, infer from `## MVP Scope` / `## Technical Architecture` content or ask once.
 
-| Skill | Adjustment |
-| --- | --- |
-| **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
-| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation/mobile scope |
-| **`larapilot-ship`** | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate |
+| Skill                  | Adjustment                                                                                                                                                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`larapilot-spec`**   | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
+| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation/mobile scope                                                                                                               |
+| **`larapilot-ship`**   | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate                                                                                                                                                                      |
 
-## Client Materials *(all skills — mandatory input)*
+## Client Materials _(all skills — mandatory input)_
 
 **Path:** `{paths.client_materials}` (default `.larapilot/client-materials/`)
 
@@ -184,7 +188,7 @@ Flat files or subfolders; optional `INDEX.md` for large sets. Supported: Markdow
 
 Ownership: **Mark** ensures interview covers gaps; **Tom** traces specs to sources; **John** aligns architecture to documented constraints.
 
-## Legacy Rewrite & Porting *(zero feature/data loss)*
+## Legacy Rewrite & Porting _(zero feature/data loss)_
 
 **Path:** `{paths.legacy}` (default `.larapilot/legacy/`)
 
@@ -212,7 +216,7 @@ During **`larapilot-inception`**, **Sebastian** asks for **reference product URL
 - Ask for links, product names, or “sites to emulate” in the same discovery round as integrations/competitors when natural — skippable.
 - Fixed-choice follow-ups → **AskQuestion**; free-form URLs → chat is fine.
 
-### Deepsearch workflow *(Sebastian)*
+### Deepsearch workflow _(Sebastian)_
 
 When URLs or named products are provided:
 
@@ -224,12 +228,12 @@ When URLs or named products are provided:
 
 ### Downstream
 
-| Skill | Use research for |
-| --- | --- |
-| **`larapilot-spec`** | FRs and parity specs from reference features |
-| **`larapilot-design`** | Elise — layout, patterns, visual language (adapt, do not clone) |
-| **`larapilot-plan`** | Sebastian/Matt — integration and porting tasks |
-| **`larapilot-implement`** | Feature fidelity checks against documented reference behavior |
+| Skill                     | Use research for                                                |
+| ------------------------- | --------------------------------------------------------------- |
+| **`larapilot-spec`**      | FRs and parity specs from reference features                    |
+| **`larapilot-design`**    | Elise — layout, patterns, visual language (adapt, do not clone) |
+| **`larapilot-plan`**      | Sebastian/Matt — integration and porting tasks                  |
+| **`larapilot-implement`** | Feature fidelity checks against documented reference behavior   |
 
 **All skills** read `{paths.research}/` when planning or implementing features traced to reference products.
 
@@ -245,12 +249,12 @@ During **`larapilot-inception`**, Mark asks the user to choose a **delivery targ
 **Delivery Target:** MVP | V1 Complete | Full Product | Enterprise
 ```
 
-| Target | Meaning | Backlog & delivery behavior |
-| --- | --- | --- |
-| **MVP** | Smallest demonstrable slice to validate the core hypothesis | `larapilot-spec` creates a lean backlog; defer non-essential FRs explicitly |
-| **V1 Complete** | Polished first release: core journey + essential secondary features | Broader backlog than MVP; still bounded to a shippable V1 |
-| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts | `larapilot-spec` covers all FRs; multi-epic backlog is expected |
-| **Enterprise** | Full product plus compliance, integrations, scale, and operational readiness | Same breadth as Full Product, with enterprise-grade NFRs and launch criteria |
+| Target           | Meaning                                                                      | Backlog & delivery behavior                                                  |
+| ---------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **MVP**          | Smallest demonstrable slice to validate the core hypothesis                  | `larapilot-spec` creates a lean backlog; defer non-essential FRs explicitly  |
+| **V1 Complete**  | Polished first release: core journey + essential secondary features          | Broader backlog than MVP; still bounded to a shippable V1                    |
+| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts         | `larapilot-spec` covers all FRs; multi-epic backlog is expected              |
+| **Enterprise**   | Full product plus compliance, integrations, scale, and operational readiness | Same breadth as Full Product, with enterprise-grade NFRs and launch criteria |
 
 Rules for all skills:
 
@@ -259,7 +263,7 @@ Rules for all skills:
 3. **MVP is a method, not a ceiling** — trade-off framing stays useful at every level; scope depth follows the target.
 4. The PRD section stays named `## MVP Scope` for validator compatibility; its body reflects the chosen target (In Scope / Out of Scope / Future Phases).
 
-## MoSCoW Prioritization *(Functional Requirements)*
+## MoSCoW Prioritization _(Functional Requirements)_
 
 Every functional requirement in the PRD carries a **MoSCoW** priority — the per-FR scope lens that complements **Delivery Target** (macro) and backlog **Priority** (implementation order).
 
@@ -267,25 +271,26 @@ During **`larapilot-inception`**, **Mark** assigns MoSCoW while drafting `## Fun
 
 ```markdown
 ### FR-001: {{REQUIREMENT}}
+
 **MoSCoW:** Must | Should | Could | Won't
 ```
 
 Use the English labels **Must**, **Should**, **Could**, **Won't** in every locale — MoSCoW is a standard acronym; requirement text stays in the detected artifact language.
 
-| Label | Meaning |
-| --- | --- |
-| **Must** | Non-negotiable for the chosen delivery target — launch fails without it |
+| Label      | Meaning                                                                                            |
+| ---------- | -------------------------------------------------------------------------------------------------- |
+| **Must**   | Non-negotiable for the chosen delivery target — launch fails without it                            |
 | **Should** | Important but not vital for the current target — include when target is **V1 Complete** or broader |
-| **Could** | Desirable if time/budget allows — defer unless target is **Full Product** or **Enterprise** |
-| **Won't** | Explicitly out of this release — document in `### Out of Scope`, not cancelled forever |
+| **Could**  | Desirable if time/budget allows — defer unless target is **Full Product** or **Enterprise**        |
+| **Won't**  | Explicitly out of this release — document in `### Out of Scope`, not cancelled forever             |
 
 ### When to tag
 
-| Context | Rule |
-| --- | --- |
-| **All projects** | Every `### FR-XXX` gets a `**MoSCoW:**` line |
-| **Personal** | Lean tagging is fine — mostly **Must** and **Won't** |
-| **MVP / V1 Complete** | Mark must negotiate Must vs Should vs Could in the interview |
+| Context                       | Rule                                                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **All projects**              | Every `### FR-XXX` gets a `**MoSCoW:**` line                                                                          |
+| **Personal**                  | Lean tagging is fine — mostly **Must** and **Won't**                                                                  |
+| **MVP / V1 Complete**         | Mark must negotiate Must vs Should vs Could in the interview                                                          |
 | **Full Product / Enterprise** | Default surviving FRs to **Must**; use **Could** only for genuinely optional polish; **Won't** only with user consent |
 
 ### Alignment with `## MVP Scope`
@@ -300,22 +305,22 @@ Keep MoSCoW and scope sections consistent:
 
 When bootstrapping from the PRD, read each FR's MoSCoW tag (fallback: infer from delivery target and `## MVP Scope` when a tag is missing — legacy PRDs).
 
-| MoSCoW | MVP | V1 Complete | Full Product / Enterprise |
-| --- | --- | --- | --- |
-| **Must** | Create spec | Create spec | Create spec |
-| **Should** | Defer → Future Phases | Create spec | Create spec |
-| **Could** | Defer → Future Phases | Defer → Future Phases | Create spec |
-| **Won't** | Skip — verify `### Out of Scope` | Skip | Skip |
+| MoSCoW     | MVP                              | V1 Complete           | Full Product / Enterprise |
+| ---------- | -------------------------------- | --------------------- | ------------------------- |
+| **Must**   | Create spec                      | Create spec           | Create spec               |
+| **Should** | Defer → Future Phases            | Create spec           | Create spec               |
+| **Could**  | Defer → Future Phases            | Defer → Future Phases | Create spec               |
+| **Won't**  | Skip — verify `### Out of Scope` | Skip                  | Skip                      |
 
 Default backlog **Priority** from MoSCoW when creating specs: **Must** → `HIGH` (compliance/security-critical FRs → `CRITICAL`); **Should** → `MEDIUM`; **Could** → `LOW`. Tom/Mark may override per spec.
 
 ### Downstream
 
-| Skill | Behavior |
-| --- | --- |
-| **`larapilot-spec`** | Primary input for bootstrap/deferral; never create specs for **Won't** FRs |
-| **`larapilot-plan`** | Plans only exist for specced FRs — no change |
-| **`larapilot-review`** | Judge delivered scope against FR MoSCoW + delivery target |
+| Skill                  | Behavior                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **`larapilot-spec`**   | Primary input for bootstrap/deferral; never create specs for **Won't** FRs |
+| **`larapilot-plan`**   | Plans only exist for specced FRs — no change                               |
+| **`larapilot-review`** | Judge delivered scope against FR MoSCoW + delivery target                  |
 
 Ownership: **Mark** assigns MoSCoW at inception; **Tom** preserves FR traceability in spec bodies; **Mark** reconciles tags when extending the backlog.
 
@@ -327,10 +332,10 @@ Budget is a default lens, not a mandatory gate. During **`larapilot-inception`**
 **Budget Sensitivity:** Tracked | Relaxed
 ```
 
-| Mode | Meaning | Business-lens behavior (Aurora, Benjamin, Jennifer) |
-| --- | --- | --- |
-| **Tracked** *(default)* | Budget is an active constraint | Aurora sizes infra and services against the stated budget; cost concerns can reshape or block technical choices |
-| **Relaxed** | The user opted out of budget evaluation | Validation is **loosened, never removed**: no cost-based vetoes, no budget interrogation — but business figures still flag order-of-magnitude cost risks, vendor lock-in, and choices that are expensive to reverse, as short advisory notes (1–2 lines) |
+| Mode                    | Meaning                                 | Business-lens behavior (Aurora, Benjamin, Jennifer)                                                                                                                                                                                                      |
+| ----------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tracked** _(default)_ | Budget is an active constraint          | Aurora sizes infra and services against the stated budget; cost concerns can reshape or block technical choices                                                                                                                                          |
+| **Relaxed**             | The user opted out of budget evaluation | Validation is **loosened, never removed**: no cost-based vetoes, no budget interrogation — but business figures still flag order-of-magnitude cost risks, vendor lock-in, and choices that are expensive to reverse, as short advisory notes (1–2 lines) |
 
 Rules for all skills:
 
@@ -338,7 +343,7 @@ Rules for all skills:
 2. In **Relaxed** mode, never drop the business lens entirely — compress it to concise advisories and move on without asking budget questions.
 3. The user can switch mode at any time; update the PRD line when they do.
 
-### Security budget *(Aurora + Lars + Violet)*
+### Security budget _(Aurora + Lars + Violet)_
 
 **Aurora** participates in **security spending** alongside infra and SaaS costs. Rules:
 
@@ -347,16 +352,16 @@ Rules for all skills:
 3. **Violet** reviews security and data-processing choices against applicable regulations (GDPR, ePrivacy, sector rules) — retention, subprocessors, cross-border transfers, consent.
 4. The trio collaborates at inception (PRD `## Technical Architecture`), during planning (security/infra specs), and at ship (pre-deploy gate). Aurora owns the cost frame; Lars and Violet can escalate **NO-GO** on compliance or critical security gaps regardless of budget pressure.
 
-## Architecture Standards *(John owns)*
+## Architecture Standards _(John owns)_
 
 John designs **scalable, complete products** whose depth matches the **delivery target** — never a throwaway MVP stack when the target is V1 Complete, Full Product, or Enterprise.
 
-| Delivery target | Architecture depth |
-| --- | --- |
-| **MVP** | Thin vertical slice: core domain model, minimal API surface if needed, queues only where sync would block UX |
-| **V1 Complete** | Service boundaries, versioned HTTP API (Sanctum/Passport), queues for mail/webhooks/heavy work, structured logging |
-| **Full Product** | Full API catalog, rate limiting, Horizon/workers, event-driven integrations, DTOs at integration boundaries |
-| **Enterprise** | Above plus audit trails, multi-tenant isolation, ADRs, **full observability** (metrics, traces, alerting), disaster-recovery posture |
+| Delivery target  | Architecture depth                                                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **MVP**          | Thin vertical slice: core domain model, minimal API surface if needed, queues only where sync would block UX                         |
+| **V1 Complete**  | Service boundaries, versioned HTTP API (Sanctum/Passport), queues for mail/webhooks/heavy work, structured logging                   |
+| **Full Product** | Full API catalog, rate limiting, Horizon/workers, event-driven integrations, DTOs at integration boundaries                          |
+| **Enterprise**   | Above plus audit trails, multi-tenant isolation, ADRs, **full observability** (metrics, traces, alerting), disaster-recovery posture |
 
 **Always apply when architecting and planning:**
 
@@ -366,24 +371,24 @@ John designs **scalable, complete products** whose depth matches the **delivery 
 4. **DTOs & boundaries** — use Data objects / DTOs (Spatie Laravel Data, readonly PHP classes, or Form Request → DTO mappers) at API and integration boundaries when payloads are non-trivial; keep Eloquent models out of external contracts.
 5. **Technical debt** — favor clear layers (Controller → Action/Service → Model), one migration per concern, explicit interfaces only when multiple implementations exist; document trade-offs in plan/ADR notes instead of hidden shortcuts.
 6. **Technical documentation** — keep docs current with code:
-   - **README** — setup, env vars, local dev method per PRD, queue worker, scheduler
-   - **OpenAPI / Swagger** — for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship phase verifies spec matches routes
-   - **Inline API docs** — `/api/docs` when the stack supports it
-   - Update docs in the same spec that changes the API or integration
+    - **README** — setup, env vars, local dev method per PRD, queue worker, scheduler
+    - **OpenAPI / Swagger** — for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship phase verifies spec matches routes
+    - **Inline API docs** — `/api/docs` when the stack supports it
+    - Update docs in the same spec that changes the API or integration
 
 **SSO / social login** — prefer **[Laravel Socialite](https://laravel.com/docs/socialite)** with official drivers (Google, GitHub, GitLab, Microsoft, Apple, …). For providers beyond the core set, use **[Socialite Providers](https://socialiteproviders.com/)** — never roll custom OAuth unless no provider exists. Store provider IDs on the User model (UUID PK); link accounts; respect Violet's consent requirements.
 
-### Multi-tenancy *(John owns — always evaluate pros & cons)*
+### Multi-tenancy _(John owns — always evaluate pros & cons)_
 
 When the product serves **multiple customers, workspaces, or isolated environments**, John **must** compare tenancy patterns in the PRD `## Technical Architecture` (or a linked ADR) — never assume single-tenant by default if the brief implies SaaS, agencies, or per-client isolation.
 
-| Pattern | How it works | Pros | Cons | Best when |
-| --- | --- | --- | --- | --- |
-| **A — Distributed monolith** | **One repo**, same Laravel monolith **deployed to N servers** (or N Cipi/Forge sites); **custom subdomain** (or domain) per tenant; optional **central SSO** in front (Cloudflare Access, Keycloak, Auth0, Sanctum central IdP) | Strong runtime isolation, per-tenant scaling, simple mental model, easy custom domains, blast-radius containment | N deploy pipelines to patch, config drift if not automated, higher base infra cost | Few–medium tenants, enterprise clients, strict isolation without microservices |
-| **B — Row-level (`tenant_id`)** | Single deploy, single DB; `tenant_id` on rows; global scopes / middleware | Cheapest, fastest MVP, one migration path | Weakest isolation, IDOR risk if scopes fail, noisy-neighbor on shared DB | Many small tenants, early B2B SaaS, MVP validation |
-| **C — Database-per-tenant** | Single deploy; separate DB (or connection) per tenant | Strong data isolation, clean export/delete per tenant | Connection management, many DBs to migrate/backup | Compliance-heavy (GDPR erasure), medium tenant count |
-| **D — Schema-per-tenant** | Single DB, separate PostgreSQL schema per tenant | Balance of isolation and shared infra | PostgreSQL-only, migration fan-out complexity | Medium tenants on PostgreSQL |
-| **E — Package-driven** | [stancl/tenancy](https://tenancyforlaravel.com/) or [spatie/laravel-multitenancy](https://github.com/spatie/laravel-multitenancy) — subdomain identification, bootstrapped tenant context | Laravel-native, community patterns, less bespoke glue | Package constraints, learning curve | Greenfield multi-tenant Laravel with subdomain routing |
+| Pattern                         | How it works                                                                                                                                                                                                                    | Pros                                                                                                             | Cons                                                                               | Best when                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **A — Distributed monolith**    | **One repo**, same Laravel monolith **deployed to N servers** (or N Cipi/Forge sites); **custom subdomain** (or domain) per tenant; optional **central SSO** in front (Cloudflare Access, Keycloak, Auth0, Sanctum central IdP) | Strong runtime isolation, per-tenant scaling, simple mental model, easy custom domains, blast-radius containment | N deploy pipelines to patch, config drift if not automated, higher base infra cost | Few–medium tenants, enterprise clients, strict isolation without microservices |
+| **B — Row-level (`tenant_id`)** | Single deploy, single DB; `tenant_id` on rows; global scopes / middleware                                                                                                                                                       | Cheapest, fastest MVP, one migration path                                                                        | Weakest isolation, IDOR risk if scopes fail, noisy-neighbor on shared DB           | Many small tenants, early B2B SaaS, MVP validation                             |
+| **C — Database-per-tenant**     | Single deploy; separate DB (or connection) per tenant                                                                                                                                                                           | Strong data isolation, clean export/delete per tenant                                                            | Connection management, many DBs to migrate/backup                                  | Compliance-heavy (GDPR erasure), medium tenant count                           |
+| **D — Schema-per-tenant**       | Single DB, separate PostgreSQL schema per tenant                                                                                                                                                                                | Balance of isolation and shared infra                                                                            | PostgreSQL-only, migration fan-out complexity                                      | Medium tenants on PostgreSQL                                                   |
+| **E — Package-driven**          | [stancl/tenancy](https://tenancyforlaravel.com/) or [spatie/laravel-multitenancy](https://github.com/spatie/laravel-multitenancy) — subdomain identification, bootstrapped tenant context                                       | Laravel-native, community patterns, less bespoke glue                                                            | Package constraints, learning curve                                                | Greenfield multi-tenant Laravel with subdomain routing                         |
 
 **John's decision rules:**
 
@@ -395,7 +400,7 @@ When the product serves **multiple customers, workspaces, or isolated environmen
 
 Ownership: **John** selects and documents the pattern; **Andrew** validates Laravel-native tenancy packages; **Lars** reviews isolation and IDOR; **Violet** reviews data residency per tenant; **Jack** automates N-deploy or connection routing.
 
-## Development & Delivery Standards *(Jack + Robert + Anne + Lars own)*
+## Development & Delivery Standards _(Jack + Robert + Anne + Lars own)_
 
 These standards apply to **every** Laravel project unless the user explicitly opts out. Jack proposes them at inception; plans include setup tasks; ship verifies compliance.
 
@@ -403,33 +408,33 @@ These standards apply to **every** Laravel project unless the user explicitly op
 
 Propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgrade path):
 
-| Branch | Purpose |
-| --- | --- |
-| `main` | Production-ready; tagged releases only |
-| `develop` | Integration branch for the next release |
-| `feature/US-XXX-short-desc` | One spec or cohesive feature; branch from `develop` |
-| `release/x.y.z` | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop` |
-| `hotfix/x.y.z` | Urgent production fix; branch from `main`; merge → `main` + `develop` |
+| Branch                      | Purpose                                                                                  |
+| --------------------------- | ---------------------------------------------------------------------------------------- |
+| `main`                      | Production-ready; tagged releases only                                                   |
+| `develop`                   | Integration branch for the next release                                                  |
+| `feature/US-XXX-short-desc` | One spec or cohesive feature; branch from `develop`                                      |
+| `release/x.y.z`             | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop` |
+| `hotfix/x.y.z`              | Urgent production fix; branch from `main`; merge → `main` + `develop`                    |
 
 Rules: no direct commits to `main` or `develop`; PR/MR required; delete feature branches after merge; Larapilot spec codes map to `feature/US-XXX-*` branch names when possible.
 
-### Git discipline — strict per task *(Alex implements; Robert + Jack enforce)*
+### Git discipline — strict per task _(Alex implements; Robert + Jack enforce)_
 
 **Non-negotiable** on every Larapilot project unless the user explicitly opts out. Solo MVP may use GitHub Flow, but must still follow the per-task commit + internal PR rules below.
 
-| Rule | Requirement |
-| --- | --- |
-| **Branch** | One `feature/US-XXX-short-desc` per spec; branch from `develop`; never commit on `main`/`develop` |
-| **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **evolutiva** / `Fix` unit — never batch unrelated tasks in one commit |
-| **Commit message** | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched |
-| **Internal PR** | After **each** task commit: push the feature branch and **open or update** an internal PR/MR targeting `develop` — title references `US-XXX` + `TASK-NN`; body links plan task and summarizes the increment |
-| **PR lifecycle** | Keep the PR open across the spec; each new task commit updates the same PR; merge to `develop` only after human `larapilot-review` approval (or explicit waiver) |
-| **Evolutive work** | Enhancements, refactors, or follow-up fixes on an entity/feature get the same treatment: dedicated commit + PR update — even when scope is smaller than a full spec |
-| **Hygiene** | Rebase or merge `develop` into the feature branch before starting the next task when the PR has drifted; run tests before every commit; `CHANGELOG.md` Unreleased updated in the PR when user-facing behavior changes |
+| Rule                   | Requirement                                                                                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Branch**             | One `feature/US-XXX-short-desc` per spec; branch from `develop`; never commit on `main`/`develop`                                                                                                                     |
+| **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **evolutiva** / `Fix` unit — never batch unrelated tasks in one commit                                                             |
+| **Commit message**     | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched                                  |
+| **Internal PR**        | After **each** task commit: push the feature branch and **open or update** an internal PR/MR targeting `develop` — title references `US-XXX` + `TASK-NN`; body links plan task and summarizes the increment           |
+| **PR lifecycle**       | Keep the PR open across the spec; each new task commit updates the same PR; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                      |
+| **Evolutive work**     | Enhancements, refactors, or follow-up fixes on an entity/feature get the same treatment: dedicated commit + PR update — even when scope is smaller than a full spec                                                   |
+| **Hygiene**            | Rebase or merge `develop` into the feature branch before starting the next task when the PR has drifted; run tests before every commit; `CHANGELOG.md` Unreleased updated in the PR when user-facing behavior changes |
 
 Robert **rejects** implement handoff when: commits span multiple tasks, messages omit spec/task ids, no internal PR exists toward `develop`, or factory/seeder updates are missing for touched models (see below). Jack scaffolds branch protection and required PR checks in CI.
 
-### Test data — factories & seeders *(Alex owns)*
+### Test data — factories & seeders _(Alex owns)_
 
 Alex **always** maintains realistic, coherent demo data alongside domain code:
 
@@ -451,55 +456,55 @@ Anne uses factories in tests; seeders are the canonical demo dataset for dev, on
 - **Git tags** `vX.Y.Z` on `main` after each production release.
 - Laravel apps: align `composer.json` version or package release notes when shipping libraries.
 
-### Security disclosure files *(Lars imposes)*
+### Security disclosure files _(Lars imposes)_
 
-| File | Location | Purpose |
-| --- | --- | --- |
+| File               | Location                          | Purpose                                                                                                                               |
+| ------------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **`security.txt`** | `public/.well-known/security.txt` | [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116.html) — `Contact`, `Expires`, `Preferred-Languages`, `Policy` (link to SECURITY.md) |
-| **`SECURITY.md`** | Repository root | Coordinated disclosure policy, supported versions, response SLA, scope, hall of fame optional |
+| **`SECURITY.md`**  | Repository root                   | Coordinated disclosure policy, supported versions, response SLA, scope, hall of fame optional                                         |
 
 Ship gate: both files present and reachable on public apps (`https://domain/.well-known/security.txt`).
 
-### CI/CD pipeline *(Jack imposes minimum gates)*
+### CI/CD pipeline _(Jack imposes minimum gates)_
 
 Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match the host). **Minimum stages:**
 
 ```yaml
 # Conceptual minimum — adapt to host
-- lint:      vendor/bin/pint --test  (or ./vendor/bin/pint --dirty)
-- test:      php artisan test --parallel
-- audit:     composer audit
-- security:  php artisan checkpoint:scan   # when checkpoint installed
-- build:     npm ci && npm run build        # when Vite frontend exists
-- deploy:    only from main/tags; Lars GO + Jack orchestration
+- lint: vendor/bin/pint --test  (or ./vendor/bin/pint --dirty)
+- test: php artisan test --parallel
+- audit: composer audit
+- security: php artisan checkpoint:scan # when checkpoint installed
+- build: npm ci && npm run build # when Vite frontend exists
+- deploy: only from main/tags; Lars GO + Jack orchestration
 ```
 
 Rules: pipeline runs on every PR to `develop`/`main`; failing tests or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver).
 
-### Testing standards *(Anne imposes)*
+### Testing standards _(Anne imposes)_
 
-| Delivery target | Minimum bar |
-| --- | --- |
-| **MVP** | Pest/PHPUnit feature tests for critical paths (auth, payments, core API); Form Request validation tests |
-| **V1 Complete** | Above + policy tests (`Gate`/`Policy`), API contract tests, queue job tests |
+| Delivery target               | Minimum bar                                                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **MVP**                       | Pest/PHPUnit feature tests for critical paths (auth, payments, core API); Form Request validation tests                          |
+| **V1 Complete**               | Above + policy tests (`Gate`/`Policy`), API contract tests, queue job tests                                                      |
 | **Full Product / Enterprise** | Above + integration tests for external services (HTTP fake), tenancy isolation tests when multi-tenant, e2e for primary journeys |
 
 Always: use **Pest** when the project already does; `php artisan test` in CI; no untested public API routes; Anne defines strategy in every plan.
 
-### Responsive & UI testing *(Anne imposes on UI specs)*
+### Responsive & UI testing _(Anne imposes on UI specs)_
 
 Anne ensures UI work is verified **across devices and resolutions**, not only at a single desktop width:
 
-| Area | Requirement |
-| --- | --- |
-| **Viewport matrix** | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight |
-| **Mobile First alignment** | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths |
-| **Navigation** | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance) |
-| **Responsive regression** | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack |
-| **Accessibility × responsive** | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets |
-| **Lighthouse** | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs |
-| **Orientation** | When automatable, test landscape on mobile for primary screens |
-| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms) |
+| Area                            | Requirement                                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Viewport matrix**             | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight                          |
+| **Mobile First alignment**      | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths                                                    |
+| **Navigation**                  | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance)                                    |
+| **Responsive regression**       | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack |
+| **Accessibility × responsive**  | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets                                                       |
+| **Lighthouse**                  | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs                                                        |
+| **Orientation**                 | When automatable, test landscape on mobile for primary screens                                                                                                |
+| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms)                                     |
 
 Anne plans explicit **responsive test tasks** interleaved with UI implementation — not deferred to ship. Elise's mockup README breakpoint notes are the test contract.
 
@@ -507,67 +512,67 @@ Ownership: **Jack** owns Gitflow, CI/CD, versioning tags, and branch-protection 
 
 Ownership: **John** owns architecture depth, API design, queues, DTOs, doc strategy, and multi-tenancy choice; **Alex** implements, owns factories/seeders, and executes the per-task Git discipline; **Robert** reviews adherence; **Tom** reflects NFRs in acceptance criteria.
 
-## Infrastructure & Cloud *(Jack + Aurora own)*
+## Infrastructure & Cloud _(Jack + Aurora own)_
 
 **Never impose deploy target, edge provider, or cloud vendor by default.** **Jack** asks via **AskQuestion** during inception (downstream skills ask only if the PRD omits a choice). After the user's answers, **recommend AWS** for compute/data and **Cloudflare** for edge when feasible — existing stack, compliance, EU residency, budget, and delivery target may favor alternatives. Record each choice in the PRD under `## Technical Architecture` so `larapilot-spec`, `larapilot-plan`, `larapilot-implement`, and `larapilot-ship` honor it instead of re-imposing defaults.
 
-### Deploy platform *(Jack)*
+### Deploy platform _(Jack)_
 
-| Option | When to recommend |
-| --- | --- |
-| **Cipi** | Laravel VPS with `cipi/agent` webhook deploy — see [cipi.sh](https://cipi.sh) |
-| **Laravel Forge** | Managed VPS, Git push deploy, Forge integrations (Aikido, …) |
-| **Laravel Cloud** | Official Laravel PaaS, Git-connected deploy |
-| **Ploi** | Managed VPS alternative to Forge |
+| Option                   | When to recommend                                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Cipi**                 | Laravel VPS with `cipi/agent` webhook deploy — see [cipi.sh](https://cipi.sh)                              |
+| **Laravel Forge**        | Managed VPS, Git push deploy, Forge integrations (Aikido, …)                                               |
+| **Laravel Cloud**        | Official Laravel PaaS, Git-connected deploy                                                                |
+| **Ploi**                 | Managed VPS alternative to Forge                                                                           |
 | **AWS** (ECS/EC2/Lambda) | Scalable compute with RDS/ElastiCache — **recommend when Tracked budget and scale needs make it feasible** |
-| **Kubernetes** | Container orchestration at scale |
-| **DigitalOcean** | Budget-conscious Droplets / App Platform / Managed DB |
-| **Hetzner / OVH** | EU data residency, cost-efficient VPS/cloud |
-| **Not defined yet** | Defer deploy scaffolding until `larapilot-ship` or implementation bootstrap |
-| **Other** | Custom VPS, GCP, Azure, Scaleway, existing team pipeline, … |
+| **Kubernetes**           | Container orchestration at scale                                                                           |
+| **DigitalOcean**         | Budget-conscious Droplets / App Platform / Managed DB                                                      |
+| **Hetzner / OVH**        | EU data residency, cost-efficient VPS/cloud                                                                |
+| **Not defined yet**      | Defer deploy scaffolding until `larapilot-ship` or implementation bootstrap                                |
+| **Other**                | Custom VPS, GCP, Azure, Scaleway, existing team pipeline, …                                                |
 
-### Edge, CDN & WAF *(Jack + Lars)*
+### Edge, CDN & WAF _(Jack + Lars)_
 
 **Never assume Cloudflare.** Ask the user; **recommend Cloudflare** for public-facing apps when feasible (DNS, CDN, WAF, DDoS in one layer). Pair **AWS WAF + CloudFront** when the PRD chose an AWS-native stack.
 
-| Option | Notes |
-| --- | --- |
-| **Cloudflare** | **Recommend when feasible** — document DNS cutover, SSL mode, cache rules, WAF managed rules; configure Laravel **trusted proxies** for Cloudflare IP ranges |
-| **AWS WAF + CloudFront** | When compute is AWS-native or user prefers AWS edge |
-| **Bunny CDN / Shield** | Lightweight CDN + WAF alternative |
-| **Akamai / Fastly** | Enterprise / high-traffic edge |
-| **Existing provider / no change** | Brownfield — document current edge, do not rip-and-replace without user consent |
-| **Not defined yet** | Plan edge tasks at ship; Lars still requires WAF on public production traffic when budget allows |
-| **N/A (internal only)** | Admin/API with no public web edge — Lars documents residual risk |
+| Option                            | Notes                                                                                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Cloudflare**                    | **Recommend when feasible** — document DNS cutover, SSL mode, cache rules, WAF managed rules; configure Laravel **trusted proxies** for Cloudflare IP ranges |
+| **AWS WAF + CloudFront**          | When compute is AWS-native or user prefers AWS edge                                                                                                          |
+| **Bunny CDN / Shield**            | Lightweight CDN + WAF alternative                                                                                                                            |
+| **Akamai / Fastly**               | Enterprise / high-traffic edge                                                                                                                               |
+| **Existing provider / no change** | Brownfield — document current edge, do not rip-and-replace without user consent                                                                              |
+| **Not defined yet**               | Plan edge tasks at ship; Lars still requires WAF on public production traffic when budget allows                                                             |
+| **N/A (internal only)**           | Admin/API with no public web edge — Lars documents residual risk                                                                                             |
 
 **WAF is not optional** for production public apps when budget allows — at minimum OWASP Core Ruleset, bot management, and geo/rate limits on auth and API routes. Lars validates rule coverage against OWASP A05/A07. When Cloudflare or an equivalent edge is unsuitable, present **alternatives with the same capabilities** — never leave production exposed without edge protection when budget allows.
 
 **Cloudflare R2** remains a valid object-storage option in the optional-integrations table (alongside S3, johnny, …).
 
-### Cloud / compute & data *(Jack + Aurora)*
+### Cloud / compute & data _(Jack + Aurora)_
 
 **Never assume AWS.** Ask which provider backs managed compute, database, cache, object storage, and queues when not already fixed by the deploy platform.
 
-| Option | When to recommend |
-| --- | --- |
-| **AWS** | **Recommend when Tracked budget and requirements make it feasible** — EC2/ECS/Lambda, RDS/Aurora, ElastiCache, S3, SES, SQS, Cognito, Secrets Manager; pair **AWS WAF + CloudFront** at edge when Cloudflare was not chosen |
-| **DigitalOcean** | Droplets, Managed DB, Spaces, Kubernetes — global / budget-conscious |
-| **Hetzner / OVH** | EU data residency — **Violet** reviews subprocessors |
-| **Bundled with deploy target** | Forge, Cipi, Laravel Cloud, or Ploi host includes compute — record "bundled" and skip duplicate cloud scaffolding |
-| **Not defined yet** | Defer managed-service wiring until user decides |
-| **Other** | GCP, Azure, Scaleway, Linode, on-prem, … |
+| Option                         | When to recommend                                                                                                                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AWS**                        | **Recommend when Tracked budget and requirements make it feasible** — EC2/ECS/Lambda, RDS/Aurora, ElastiCache, S3, SES, SQS, Cognito, Secrets Manager; pair **AWS WAF + CloudFront** at edge when Cloudflare was not chosen |
+| **DigitalOcean**               | Droplets, Managed DB, Spaces, Kubernetes — global / budget-conscious                                                                                                                                                        |
+| **Hetzner / OVH**              | EU data residency — **Violet** reviews subprocessors                                                                                                                                                                        |
+| **Bundled with deploy target** | Forge, Cipi, Laravel Cloud, or Ploi host includes compute — record "bundled" and skip duplicate cloud scaffolding                                                                                                           |
+| **Not defined yet**            | Defer managed-service wiring until user decides                                                                                                                                                                             |
+| **Other**                      | GCP, Azure, Scaleway, Linode, on-prem, …                                                                                                                                                                                    |
 
 Jack stays **open to other providers** when the PRD, compliance, or user preference requires it. **Aurora** validates every proposal against **Budget Sensitivity**; **Violet** flags EU residency and subprocessors when personal data is involved.
 
-### Observability *(Jack + John)*
+### Observability _(Jack + John)_
 
 **Propose** an observability stack scaled to the delivery target; **ask via AskQuestion** when the PRD does not record a choice and the stack is not inferable from deploy/cloud answers. Plan in architecture, plan tasks, and ship verification — not as an afterthought.
 
-| Tier | Propose |
-| --- | --- |
-| **Preferred (Laravel)** | **[Laravel Nightwatch](https://nightwatch.laravel.com/)** — Laravel-native monitoring, logs, exceptions, performance |
-| **Preferred (AWS stack)** | **AWS CloudWatch** — metrics, logs, alarms, dashboards; X-Ray for traces when needed |
-| **Alternatives** | Datadog, New Relic, Grafana Cloud, Better Stack, OpenTelemetry collectors, Sentry (errors + performance) |
+| Tier                          | Propose                                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Preferred (Laravel)**       | **[Laravel Nightwatch](https://nightwatch.laravel.com/)** — Laravel-native monitoring, logs, exceptions, performance                        |
+| **Preferred (AWS stack)**     | **AWS CloudWatch** — metrics, logs, alarms, dashboards; X-Ray for traces when needed                                                        |
+| **Alternatives**              | Datadog, New Relic, Grafana Cloud, Better Stack, OpenTelemetry collectors, Sentry (errors + performance)                                    |
 | **Lightweight / self-hosted** | Laravel **Pulse** (dev/small prod), self-hosted Grafana + Prometheus, [boogle](https://github.com/andreapollastri/boogle) for errors/uptime |
 
 Coverage to plan:
@@ -579,7 +584,7 @@ Coverage to plan:
 
 Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
 
-## UX & Frontend Design *(Elise owns)*
+## UX & Frontend Design _(Elise owns)_
 
 Elise privileges the **Laravel frontend ecosystem** — design and mockups must map cleanly to how Laravel apps are actually built.
 
@@ -595,19 +600,19 @@ Elise privileges the **Laravel frontend ecosystem** — design and mockups must 
 
 Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them **or** the PRD chose the matching **Laravel Starter Kit** (Inertia variant). Authenticated app UI: **ask Filament vs Starter Kit vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
 
-### Filament admin mockups *(when PRD chose Filament)*
+### Filament admin mockups _(when PRD chose Filament)_
 
 When the PRD records **Filament** as the admin/control panel, Elise **must** design admin screens against the packaged **Filament** design reference:
 
-| Resource | Path |
-| --- | --- |
-| Index | `{paths.design_systems}/README.md` |
-| Filament reference | `{paths.design_systems}/filament/README.md` |
-| Figma merge index | `{paths.design_systems}/filament/figma-sources.md` |
-| Mockup CSS tokens | `{paths.design_systems}/filament/tokens.css` |
-| Static HTML screens | `{paths.design_systems}/filament/html/` (17 screens + catalog) |
-| Layout & components | `{paths.design_systems}/filament/components.md` |
-| Figma (external) | [Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system) · [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free) |
+| Resource            | Path                                                                                                                                                                                         |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Index               | `{paths.design_systems}/README.md`                                                                                                                                                           |
+| Filament reference  | `{paths.design_systems}/filament/README.md`                                                                                                                                                  |
+| Figma merge index   | `{paths.design_systems}/filament/figma-sources.md`                                                                                                                                           |
+| Mockup CSS tokens   | `{paths.design_systems}/filament/tokens.css`                                                                                                                                                 |
+| Static HTML screens | `{paths.design_systems}/filament/html/` (17 screens + catalog)                                                                                                                               |
+| Layout & components | `{paths.design_systems}/filament/components.md`                                                                                                                                              |
+| Figma (external)    | [Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system) · [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free) |
 
 Rules:
 
@@ -619,26 +624,26 @@ Rules:
 
 When Filament is **not** chosen, do not use this design system — design in the project's visual language. Mockups still inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
 
-### Starter Kit app UI *(when PRD chose a Laravel Starter Kit)*
+### Starter Kit app UI _(when PRD chose a Laravel Starter Kit)_
 
 When the PRD records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI (dashboard, profile, settings, portal back-end), Elise **must** design screens against the packaged **Starter Kit Design System**:
 
-| Resource | Path |
-| --- | --- |
-| Index | `{paths.design_systems}/README.md` |
-| Starter Kit reference | `{paths.design_systems}/starter-kit/README.md` |
-| Source index | `{paths.design_systems}/starter-kit/sources.md` |
-| Mockup CSS tokens | `{paths.design_systems}/starter-kit/tokens.css` |
-| Static HTML screens | `{paths.design_systems}/starter-kit/html/` (7 screens + catalog) |
-| Layout & components | `{paths.design_systems}/starter-kit/components.md` |
+| Resource                 | Path                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| Index                    | `{paths.design_systems}/README.md`                                                               |
+| Starter Kit reference    | `{paths.design_systems}/starter-kit/README.md`                                                   |
+| Source index             | `{paths.design_systems}/starter-kit/sources.md`                                                  |
+| Mockup CSS tokens        | `{paths.design_systems}/starter-kit/tokens.css`                                                  |
+| Static HTML screens      | `{paths.design_systems}/starter-kit/html/` (7 screens + catalog)                                 |
+| Layout & components      | `{paths.design_systems}/starter-kit/components.md`                                               |
 | Official docs (external) | [starter-kits](https://laravel.com/starter-kits) · [docs](https://laravel.com/docs/starter-kits) |
 
-| Variant | Component library | Docs |
-| --- | --- | --- |
-| **Livewire** | Flux UI + Tailwind CSS v4 | [Livewire starter kit](https://laravel.com/docs/starter-kits#livewire) |
-| **React** | shadcn/ui + Inertia 2 + Tailwind CSS v4 | [React starter kit](https://laravel.com/docs/starter-kits#react) |
-| **Vue** | shadcn-vue + Inertia 2 + Tailwind CSS v4 | [Vue starter kit](https://laravel.com/docs/starter-kits#vue) |
-| **Svelte** | shadcn-svelte + Inertia 2 + Tailwind CSS v4 | [Svelte starter kit](https://laravel.com/docs/starter-kits#svelte) |
+| Variant      | Component library                           | Docs                                                                   |
+| ------------ | ------------------------------------------- | ---------------------------------------------------------------------- |
+| **Livewire** | Flux UI + Tailwind CSS v4                   | [Livewire starter kit](https://laravel.com/docs/starter-kits#livewire) |
+| **React**    | shadcn/ui + Inertia 2 + Tailwind CSS v4     | [React starter kit](https://laravel.com/docs/starter-kits#react)       |
+| **Vue**      | shadcn-vue + Inertia 2 + Tailwind CSS v4    | [Vue starter kit](https://laravel.com/docs/starter-kits#vue)           |
+| **Svelte**   | shadcn-svelte + Inertia 2 + Tailwind CSS v4 | [Svelte starter kit](https://laravel.com/docs/starter-kits#svelte)     |
 
 Rules:
 
@@ -669,41 +674,41 @@ Document the chosen tokens (colors, type scale, radius, spacing) in mockup READM
 - Persist user preference (`localStorage` or account setting) when the app has auth
 - Accessible contrast in **both** modes (WCAG AA minimum)
 
-### Mobile first & responsive design *(Elise owns — Anne validates)*
+### Mobile first & responsive design _(Elise owns — Anne validates)_
 
 **Mobile First is mandatory** for every UI Elise designs and every screen Alex implements. Design and build for the **smallest viewport first**, then progressively enhance for tablet and desktop — **never** ship a mobile layout that feels like a shrunken desktop page, and **never** treat desktop as an afterthought.
 
-| Principle | Requirement |
-| --- | --- |
-| **Design order** | Start at **320–375 px** width; define layout, navigation, and primary actions there first; then scale up with `sm:` / `md:` / `lg:` / `xl:` (Tailwind) or equivalent breakpoints |
-| **Desktop parity** | Large screens get **enhanced** layouts (multi-column, side nav, data density) — not a different product. Core journeys must remain **equally simple** on phone, tablet, and desktop |
-| **Navigation** | **Extremely navigable** on every device: clear IA, visible wayfinding, persistent or obvious menu access, breadcrumbs on deep pages (desktop/tablet), mobile-friendly nav (hamburger, bottom bar, or tab bar — pick one pattern per app and document it) |
-| **Simplicity** | One primary action per screen where possible; minimal cognitive load; no clutter; progressive disclosure for secondary actions |
-| **Touch & pointer** | 44×44 px minimum tap targets on touch devices; adequate spacing between controls; hover/focus states for mouse/keyboard on desktop |
-| **Content** | No horizontal scroll on any breakpoint; text readable without zoom (≥16 px base on mobile); images and tables responsive (`overflow-x-auto` only as last resort for data tables) |
-| **Breakpoints to cover** | At minimum: **320**, **375**, **768**, **1024**, **1280**, **1920** px — verify layout, nav, and forms at each |
-| **Orientation** | Portrait and landscape on phones/tablets — no broken layouts on rotation |
-| **Mockups** | **Mobile screen is mandatory** (primary reference); include at least one **desktop** key screen; README documents breakpoint behavior and nav pattern |
+| Principle                | Requirement                                                                                                                                                                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Design order**         | Start at **320–375 px** width; define layout, navigation, and primary actions there first; then scale up with `sm:` / `md:` / `lg:` / `xl:` (Tailwind) or equivalent breakpoints                                                                         |
+| **Desktop parity**       | Large screens get **enhanced** layouts (multi-column, side nav, data density) — not a different product. Core journeys must remain **equally simple** on phone, tablet, and desktop                                                                      |
+| **Navigation**           | **Extremely navigable** on every device: clear IA, visible wayfinding, persistent or obvious menu access, breadcrumbs on deep pages (desktop/tablet), mobile-friendly nav (hamburger, bottom bar, or tab bar — pick one pattern per app and document it) |
+| **Simplicity**           | One primary action per screen where possible; minimal cognitive load; no clutter; progressive disclosure for secondary actions                                                                                                                           |
+| **Touch & pointer**      | 44×44 px minimum tap targets on touch devices; adequate spacing between controls; hover/focus states for mouse/keyboard on desktop                                                                                                                       |
+| **Content**              | No horizontal scroll on any breakpoint; text readable without zoom (≥16 px base on mobile); images and tables responsive (`overflow-x-auto` only as last resort for data tables)                                                                         |
+| **Breakpoints to cover** | At minimum: **320**, **375**, **768**, **1024**, **1280**, **1920** px — verify layout, nav, and forms at each                                                                                                                                           |
+| **Orientation**          | Portrait and landscape on phones/tablets — no broken layouts on rotation                                                                                                                                                                                 |
+| **Mockups**              | **Mobile screen is mandatory** (primary reference); include at least one **desktop** key screen; README documents breakpoint behavior and nav pattern                                                                                                    |
 
 Elise annotates in mockup README: mobile nav pattern, breakpoint strategy, which content hides/collapses vs reflows, and desktop enhancements. Alex implements the same contract; Anne tests it.
 
-### Accessibility *(Elise leads — Emma & Violet collaborate)*
+### Accessibility _(Elise leads — Emma & Violet collaborate)_
 
 Accessibility is **not optional** for public-facing products. Elise designs for it from the first mockup; Emma and Violet cover SEO and legal dimensions together.
 
 **Elise — design & implementation standards:**
 
-| Area | Requirement |
-| --- | --- |
-| **WCAG** | Target **WCAG 2.2 Level AA** (AAA for contrast where feasible) |
-| **Semantics** | Correct landmarks (`header`, `nav`, `main`, `footer`), heading hierarchy (one H1), native HTML before ARIA |
-| **Keyboard** | Full keyboard operability; visible `:focus` / `focus-visible`; skip-to-content link |
-| **Forms** | `<label>` associated with every control; errors linked via `aria-describedby`; logical tab order |
-| **Media** | Meaningful `alt` on images; captions/transcripts for video/audio |
-| **Motion** | Respect `prefers-reduced-motion` |
-| **Touch** | Minimum 44×44 px tap targets on mobile |
-| **Live regions** | `aria-live` for dynamic Livewire updates when content changes without full reload |
-| **Themes** | Contrast verified in **both** light and dark modes |
+| Area             | Requirement                                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| **WCAG**         | Target **WCAG 2.2 Level AA** (AAA for contrast where feasible)                                             |
+| **Semantics**    | Correct landmarks (`header`, `nav`, `main`, `footer`), heading hierarchy (one H1), native HTML before ARIA |
+| **Keyboard**     | Full keyboard operability; visible `:focus` / `focus-visible`; skip-to-content link                        |
+| **Forms**        | `<label>` associated with every control; errors linked via `aria-describedby`; logical tab order           |
+| **Media**        | Meaningful `alt` on images; captions/transcripts for video/audio                                           |
+| **Motion**       | Respect `prefers-reduced-motion`                                                                           |
+| **Touch**        | Minimum 44×44 px tap targets on mobile                                                                     |
+| **Live regions** | `aria-live` for dynamic Livewire updates when content changes without full reload                          |
+| **Themes**       | Contrast verified in **both** light and dark modes                                                         |
 
 Mockups annotate focus states, error states, and screen-reader-only text where non-obvious.
 
@@ -718,18 +723,18 @@ Mockups annotate focus states, error states, and screen-reader-only text where n
 
 **Violet — regulations & compliance:**
 
-| Context | Violet evaluates |
-| --- | --- |
-| **EU / EEA** | [European Accessibility Act](https://employment-social.ec.europa.eu/policies-and activities/mainstreaming-implementation-eu-disability-rights/european-accessibility-act_en) (EAA), **EN 301 549**, accessibility statement when required |
-| **Italy** | Legge 4/2004 (Stanca) for public administration and contracted entities |
-| **US** | ADA / Section 508 when the product serves US public sector or market |
-| **Documentation** | Publish an **accessibility statement** page (reachability, contact, conformance level, known gaps) when legally required |
+| Context           | Violet evaluates                                                                                                                                                                                                                          |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **EU / EEA**      | [European Accessibility Act](https://employment-social.ec.europa.eu/policies-and activities/mainstreaming-implementation-eu-disability-rights/european-accessibility-act_en) (EAA), **EN 301 549**, accessibility statement when required |
+| **Italy**         | Legge 4/2004 (Stanca) for public administration and contracted entities                                                                                                                                                                   |
+| **US**            | ADA / Section 508 when the product serves US public sector or market                                                                                                                                                                      |
+| **Documentation** | Publish an **accessibility statement** page (reachability, contact, conformance level, known gaps) when legally required                                                                                                                  |
 
 Elise, Emma, and Violet **triangulate** in inception (PRD NFRs), plan (a11y tasks), design (mockup README), implement, and ship. Violet can flag launch blockers on legal a11y gaps; Emma flags Lighthouse/SEO-a11y failures; Elise flags WCAG design gaps.
 
 Ownership: **Elise** owns WCAG UX implementation and **mobile-first responsive design**; **Joe** owns frontend engineering, visual polish, animations, and client-side performance; **Emma** owns SEO-accessibility overlap and Lighthouse a11y audits; **Violet** owns regulatory conformance and accessibility statement; **Alex** implements; **Anne** validates responsive UI and accessibility in tests (multi-viewport Pest browser, axe, Lighthouse mobile).
 
-### Brand identity & assets *(Elise owns — supplies Lauren when client does not)*
+### Brand identity & assets _(Elise owns — supplies Lauren when client does not)_
 
 Elise **always** plans brand touchpoints for public-facing products — not only UI screens.
 
@@ -737,14 +742,14 @@ Elise **always** plans brand touchpoints for public-facing products — not only
 
 **When the client does not provide** them, **Elise creates** a coherent minimal identity aligned with the Nordic visual language:
 
-| Asset | Format | Notes |
-| --- | --- | --- |
-| **Favicon** | **`favicon.svg`** (mandatory) | Crisp at any size; works in light/dark browser chrome; place in `public/favicon.svg` |
-| **Logo** | **SVG** (`logo.svg`) | Wordmark and/or mark; readable small; variants for light/dark backgrounds |
-| **Coordinated brand image** | SVG or PNG | Hero/empty-state illustration or abstract mark extending logo palette — same radius, stroke, and neutrals |
-| **Apple touch icon** | PNG 180×180 | Generated from logo mark |
-| **OG / social share** | PNG **1200×630** | Default Open Graph + Twitter/X/LinkedIn share image for **Lauren** |
-| **Social profile square** | PNG **400×400** optional | Avatar-style crop of logo mark for social channels |
+| Asset                       | Format                        | Notes                                                                                                     |
+| --------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Favicon**                 | **`favicon.svg`** (mandatory) | Crisp at any size; works in light/dark browser chrome; place in `public/favicon.svg`                      |
+| **Logo**                    | **SVG** (`logo.svg`)          | Wordmark and/or mark; readable small; variants for light/dark backgrounds                                 |
+| **Coordinated brand image** | SVG or PNG                    | Hero/empty-state illustration or abstract mark extending logo palette — same radius, stroke, and neutrals |
+| **Apple touch icon**        | PNG 180×180                   | Generated from logo mark                                                                                  |
+| **OG / social share**       | PNG **1200×630**              | Default Open Graph + Twitter/X/LinkedIn share image for **Lauren**                                        |
+| **Social profile square**   | PNG **400×400** optional      | Avatar-style crop of logo mark for social channels                                                        |
 
 Deliverables live in `public/` (favicon, touch icon) and `.larapilot/brand/` or `public/images/brand/` (logo, OG template, brand guide snippet) until Alex wires them into the app layout.
 
@@ -759,7 +764,7 @@ Rules:
 
 Ownership: **Elise** creates logo, favicon, and coordinated imagery; **Lauren** applies social assets to campaigns and meta; **Alex** commits files to `public/` and layout; **Emma** validates OG tags reference live asset URLs.
 
-## SEO Structure & Discoverability *(Emma owns)*
+## SEO Structure & Discoverability _(Emma owns)_
 
 For **every public-facing website**, Emma owns structural SEO — not only meta tags. These artifacts are **mandatory** and must stay **updated** when routes, pages, or content change (same spec that adds a page updates the files).
 
@@ -776,13 +781,13 @@ For **every public-facing website**, Emma owns structural SEO — not only meta 
 - **JSON-LD** `BreadcrumbList` structured data on every page with breadcrumbs
 - Labels match page `<title>` / H1 semantics; last item is current page (not linked)
 
-### Mandatory files *(keep current)*
+### Mandatory files _(keep current)_
 
-| File | Location | Purpose |
-| --- | --- | --- |
-| **`robots.txt`** | `public/robots.txt` or dynamic route | Crawl rules; reference sitemap URL; block staging/admin paths |
-| **`sitemap.xml`** | `public/sitemap.xml` or generated route/command | All public indexable URLs; `lastmod` when content changes; split sitemap index when >50k URLs |
-| **`llms.txt`** | `public/llms.txt` or `public/.well-known/llms.txt` | LLM/crawler guidance (allowed paths, site summary, contact) — structural counterpart to `robots.txt` for AI agents |
+| File              | Location                                           | Purpose                                                                                                            |
+| ----------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **`robots.txt`**  | `public/robots.txt` or dynamic route               | Crawl rules; reference sitemap URL; block staging/admin paths                                                      |
+| **`sitemap.xml`** | `public/sitemap.xml` or generated route/command    | All public indexable URLs; `lastmod` when content changes; split sitemap index when >50k URLs                      |
+| **`llms.txt`**    | `public/llms.txt` or `public/.well-known/llms.txt` | LLM/crawler guidance (allowed paths, site summary, contact) — structural counterpart to `robots.txt` for AI agents |
 
 Rules:
 
@@ -793,18 +798,18 @@ Rules:
 
 Ownership: **Emma** owns URL design, breadcrumbs, and the three files; **John** aligns route naming; **Elise** reflects hierarchy in accessible UX; **Emma + Elise** align semantic HTML and headings; **Lauren/Emma** coordinate campaign landing URLs.
 
-## Copywriting & Content *(Marika owns)*
+## Copywriting & Content _(Marika owns)_
 
 **Marika** is the team's **copywriter**: she crafts and refines user-facing text for **websites** and **applications** — headlines, body copy, CTAs, microcopy, empty states, onboarding, notifications, and in-app messaging.
 
-| Area | Marika's role |
-| --- | --- |
-| **Creation** | Invent fresh copy aligned with brand voice, audience, and product goals |
-| **Review** | Audit existing texts in the codebase, mockups, PRD, or legacy system; suggest improvements |
-| **Tone** | Deliver in any mood the user requests — professional, creative, playful, technical, minimal, premium, … |
-| **Scope** | **Website** surfaces (landing, blog, marketing) and **application** UI (dashboards, forms, errors, tooltips) |
+| Area            | Marika's role                                                                                                 |
+| --------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Creation**    | Invent fresh copy aligned with brand voice, audience, and product goals                                       |
+| **Review**      | Audit existing texts in the codebase, mockups, PRD, or legacy system; suggest improvements                    |
+| **Tone**        | Deliver in any mood the user requests — professional, creative, playful, technical, minimal, premium, …       |
+| **Scope**       | **Website** surfaces (landing, blog, marketing) and **application** UI (dashboards, forms, errors, tooltips)  |
 | **Legacy port** | With **Sabrine**, preserve or improve legacy content during rewrite — map every legacy string to its new home |
-| **i18n** | Coordinate with **Emily** on translatable copy structure; **Violet** on legal/disclaimer wording |
+| **i18n**        | Coordinate with **Emily** on translatable copy structure; **Violet** on legal/disclaimer wording              |
 
 Rules:
 
@@ -816,11 +821,11 @@ Rules:
 
 Ownership: **Marika** owns copy creation and review; **Lauren** owns campaign/channel distribution; **Emily** owns translation; **Elise** aligns copy length with layout; **Violet** approves legal strings.
 
-## Laravel Ecosystem Expertise *(Andrew owns)*
+## Laravel Ecosystem Expertise _(Andrew owns)_
 
 **Andrew** is the **Laravel Expert**: he supports design, architecture, development, and review with deep knowledge of **Laravel** and its ecosystem — ensuring every implementation follows **Laravel best practices** and **community standards**.
 
-### Authoritative sources *(Andrew consults continuously)*
+### Authoritative sources _(Andrew consults continuously)_
 
 - [laravel.com](https://laravel.com/) — framework docs, starter kits, release notes
 - [laracasts.com](https://laracasts.com/) — patterns, courses, community guidance
@@ -832,13 +837,13 @@ Ownership: **Marika** owns copy creation and review; **Lauren** owns campaign/ch
 - [laravel-news.com](https://laravel-news.com/) — packages, tutorials, ecosystem updates
 - Other authoritative Laravel sources (official package docs, maintainer blogs) when relevant
 
-| Phase | Andrew's role |
-| --- | --- |
-| **Architecture** | Advise **John** on Laravel-native patterns (Eloquent, queues, events, policies, Fortify, Sanctum, Horizon, …) |
-| **Planning** | Flag anti-patterns in plans; recommend first-party, Spatie, or Filament solutions per Vendor & Package Policy |
-| **Implementation** | Guide **Alex** on idiomatic Laravel code — service containers, Form Requests, API resources, testing with Pest |
-| **Review** | Second lens with **Robert** on Laravel conventions, package choice, and framework version alignment |
-| **Frontend bridge** | Coordinate with **Joe** and **Elise** on Livewire, Inertia, Flux, Filament, and Starter Kit stacks |
+| Phase               | Andrew's role                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Architecture**    | Advise **John** on Laravel-native patterns (Eloquent, queues, events, policies, Fortify, Sanctum, Horizon, …)  |
+| **Planning**        | Flag anti-patterns in plans; recommend first-party, Spatie, or Filament solutions per Vendor & Package Policy  |
+| **Implementation**  | Guide **Alex** on idiomatic Laravel code — service containers, Form Requests, API resources, testing with Pest |
+| **Review**          | Second lens with **Robert** on Laravel conventions, package choice, and framework version alignment            |
+| **Frontend bridge** | Coordinate with **Joe** and **Elise** on Livewire, Inertia, Flux, Filament, and Starter Kit stacks             |
 
 Rules:
 
@@ -849,19 +854,19 @@ Rules:
 
 Ownership: **Andrew** owns Laravel ecosystem best practices; **John** owns architecture; **Alex** implements; **Robert** enforces in review.
 
-## Frontend Engineering & Visual Impact *(Joe owns)*
+## Frontend Engineering & Visual Impact _(Joe owns)_
 
 **Joe** is the **Frontend Expert**: graphic designer with deep **frontend and JavaScript** experience. He supports **design**, **architecture**, and **development** to deliver websites and applications with **strong visual impact**, **impeccable coordinated branding**, and **excellent usability**.
 
-| Area | Joe's expertise |
-| --- | --- |
-| **Web frontend** | Blade, Livewire, Tailwind, Vue/React/Svelte (Inertia), Vite, responsive layouts, component polish |
-| **Visual impact** | Typography, spacing, motion, hierarchy — elevates Elise's UX into production-grade UI |
-| **Animations** | Web animations including **Three.js** and similar libraries for immersive experiences when scoped |
-| **Mobile apps** | Hybrid and **native** mobile development; app-store constraints, offline behavior, push notifications |
-| **API integration** | Client-side API consumption, auth flows, real-time (Echo/Reverb), error and loading states |
-| **Performance** | Client-side optimization — bundle size, lazy loading, image strategy, Core Web Vitals, Lighthouse performance |
-| **Coordinated image** | Ensures visual consistency across web, app, and marketing surfaces with **Elise** and **Marika** |
+| Area                  | Joe's expertise                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Web frontend**      | Blade, Livewire, Tailwind, Vue/React/Svelte (Inertia), Vite, responsive layouts, component polish             |
+| **Visual impact**     | Typography, spacing, motion, hierarchy — elevates Elise's UX into production-grade UI                         |
+| **Animations**        | Web animations including **Three.js** and similar libraries for immersive experiences when scoped             |
+| **Mobile apps**       | Hybrid and **native** mobile development; app-store constraints, offline behavior, push notifications         |
+| **API integration**   | Client-side API consumption, auth flows, real-time (Echo/Reverb), error and loading states                    |
+| **Performance**       | Client-side optimization — bundle size, lazy loading, image strategy, Core Web Vitals, Lighthouse performance |
+| **Coordinated image** | Ensures visual consistency across web, app, and marketing surfaces with **Elise** and **Marika**              |
 
 Rules:
 
@@ -873,7 +878,7 @@ Rules:
 
 Ownership: **Joe** owns frontend engineering, visual polish, animations, and client performance; **Elise** owns UX/wireframes; **Alex** implements; **Andrew** aligns Laravel frontend stack choices; **Anne** tests responsive UI.
 
-## Marketing & Growth *(Lauren + Emma + Elise + Aurora)*
+## Marketing & Growth _(Lauren + Emma + Elise + Aurora)_
 
 **Lauren** (Social Media Manager) drives **marketing initiatives**, not only share metadata:
 
@@ -885,56 +890,56 @@ Lauren collaborates with **Emma** (SEO, Analytics, UTM strategy, landing-page pe
 
 Ownership: **Lauren** proposes initiatives and applies Elise's social assets; **Emma** owns measurable tracking; **Elise** owns campaign UX and default brand/social artwork; **Aurora** approves or defers spend per Budget Sensitivity.
 
-## Privacy & Legal Compliance *(Violet owns)*
+## Privacy & Legal Compliance _(Violet owns)_
 
 **Violet** evaluates **every legal and privacy surface**, not only GDPR bullets in the PRD:
 
-| Area | Violet checks |
-| --- | --- |
-| **Legal pages** | Privacy policy, Terms of Service, Cookie Policy — reachable, dated, localized when required |
-| **Consent** | Cookie banner, granular opt-in/opt-out, marketing consent separate from essential cookies |
-| **Data subject rights** | Access, rectification, erasure, portability, objection — flows documented and implementable |
-| **Anonymization & pseudonymization** | PII minimization in analytics, logs, and exports; hashing where identification is not required |
-| **Retention** | Defined periods for user data, logs, backups, and audit trails; automated pruning where possible |
-| **Processors & transfers** | DPA status, subprocessor list, EU residency, SCCs for non-EU transfers |
-| **Children / special categories** | Heightened safeguards when applicable |
-| **Digital accessibility** | EAA / EN 301 549 / national laws (e.g. Legge Stanca); accessibility statement page when required — coordinate with **Elise** and **Emma** |
+| Area                                 | Violet checks                                                                                                                             |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Legal pages**                      | Privacy policy, Terms of Service, Cookie Policy — reachable, dated, localized when required                                               |
+| **Consent**                          | Cookie banner, granular opt-in/opt-out, marketing consent separate from essential cookies                                                 |
+| **Data subject rights**              | Access, rectification, erasure, portability, objection — flows documented and implementable                                               |
+| **Anonymization & pseudonymization** | PII minimization in analytics, logs, and exports; hashing where identification is not required                                            |
+| **Retention**                        | Defined periods for user data, logs, backups, and audit trails; automated pruning where possible                                          |
+| **Processors & transfers**           | DPA status, subprocessor list, EU residency, SCCs for non-EU transfers                                                                    |
+| **Children / special categories**    | Heightened safeguards when applicable                                                                                                     |
+| **Digital accessibility**            | EAA / EN 301 549 / national laws (e.g. Legge Stanca); accessibility statement page when required — coordinate with **Elise** and **Emma** |
 
 Violet works with **Lars** on security controls that implement privacy (encryption, access control, breach logging) and with **Aurora** when compliance tooling has cost implications. Ship phase: Violet issues PASS / issues for launch blockers.
 
 Ownership: **Violet** owns legal/privacy requirements from inception through ship; **Lars** implements security controls; **Emma/Lauren** ensure tracking respects consent; **Emily** aligns legal pages and consent copy per locale with Violet.
 
-## Internationalization & localization *(Emily owns — Violet collaborates)*
+## Internationalization & localization _(Emily owns — Violet collaborates)_
 
 When the product serves **multiple countries, languages, or currencies**, Emily owns locale strategy from inception through maintenance:
 
-| Area | Requirement |
-| --- | --- |
-| **Languages** | Laravel `lang/` JSON/PHP files; `__()` / `@lang` everywhere user-facing; fallback locale documented; RTL when target markets require it |
+| Area                | Requirement                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Languages**       | Laravel `lang/` JSON/PHP files; `__()` / `@lang` everywhere user-facing; fallback locale documented; RTL when target markets require it                                        |
 | **Country targets** | PRD records primary and secondary markets; Emily defines supported locales, default locale, and detection strategy (URL prefix, subdomain, user preference, `Accept-Language`) |
-| **Currency** | Display and settlement rules per market; use Laravel Money / brick/money or PRD-chosen package; never hard-code a single currency when multi-market |
-| **Time zones** | Store UTC in DB; display with user/org timezone (`Carbon`, `config/app.php` timezone strategy); document DST behavior |
-| **Formats** | Dates, numbers, addresses, phone numbers per locale — not US-default everywhere |
-| **Cultural UX** | With **Violet**: tone, imagery, color sensitivities, local holidays, measurement units, and regulatory copy differences per country |
-| **SEO per locale** | Coordinate with **Emma**: `hreflang`, localized URLs, translated meta titles/descriptions |
-| **Tests** | **Anne** adds locale-switch and format assertions when Emily defines multi-market scope |
+| **Currency**        | Display and settlement rules per market; use Laravel Money / brick/money or PRD-chosen package; never hard-code a single currency when multi-market                            |
+| **Time zones**      | Store UTC in DB; display with user/org timezone (`Carbon`, `config/app.php` timezone strategy); document DST behavior                                                          |
+| **Formats**         | Dates, numbers, addresses, phone numbers per locale — not US-default everywhere                                                                                                |
+| **Cultural UX**     | With **Violet**: tone, imagery, color sensitivities, local holidays, measurement units, and regulatory copy differences per country                                            |
+| **SEO per locale**  | Coordinate with **Emma**: `hreflang`, localized URLs, translated meta titles/descriptions                                                                                      |
+| **Tests**           | **Anne** adds locale-switch and format assertions when Emily defines multi-market scope                                                                                        |
 
 Emily asks early in inception (via **AskQuestion** when relevant): single-market vs multi-market, target countries, languages, and currency model.
 
 Ownership: **Emily** owns translations, locale config, currency/timezone UX; **Violet** owns legal/compliance per country; **Alex** implements; **Matt** wires locale-aware third-party APIs (payment, shipping, tax); **Emma** owns hreflang and localized SEO.
 
-## Integrations & APIs *(Matt owns — Sebastian proposes, John architects)*
+## Integrations & APIs _(Matt owns — Sebastian proposes, John architects)_
 
 **Matt** is the hands-on **Integration Manager**: he works closely with **Alex** (implementation), **John** (architecture), and **Elise** (integration UX) to wire the product to **external APIs and third-party services**.
 
-| Responsibility | Owner |
-| --- | --- |
-| **Discovery & innovation** | **Sebastian** proposes integrations, competitor data porting, and vendor options at inception/plan |
-| **Architecture fit** | **John** — API boundaries, queues, webhooks, DTOs, rate limits, idempotency |
-| **Delivery & wiring** | **Matt** — OAuth flows, API keys/secrets, SDK clients, webhook handlers, retry/backoff, sandbox vs production config |
-| **Integration UX** | **Elise** — connection wizards, error states, status dashboards; **Matt** validates against API constraints |
-| **Security** | **Lars** vets auth, scopes, and data flows; **Oliver** may target integration endpoints in red-team passes |
-| **i18n-aware APIs** | **Emily** — locale headers, market-specific payment/shipping/tax providers per country target |
+| Responsibility             | Owner                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Discovery & innovation** | **Sebastian** proposes integrations, competitor data porting, and vendor options at inception/plan                   |
+| **Architecture fit**       | **John** — API boundaries, queues, webhooks, DTOs, rate limits, idempotency                                          |
+| **Delivery & wiring**      | **Matt** — OAuth flows, API keys/secrets, SDK clients, webhook handlers, retry/backoff, sandbox vs production config |
+| **Integration UX**         | **Elise** — connection wizards, error states, status dashboards; **Matt** validates against API constraints          |
+| **Security**               | **Lars** vets auth, scopes, and data flows; **Oliver** may target integration endpoints in red-team passes           |
+| **i18n-aware APIs**        | **Emily** — locale headers, market-specific payment/shipping/tax providers per country target                        |
 
 Matt plans and implements: REST/GraphQL clients, Laravel HTTP + Saloon (when adopted), webhooks (`Route::post` + signature verification), OAuth (Socialite or custom), queue-based sync jobs, and OpenAPI documentation for **outbound** product APIs.
 
@@ -942,15 +947,15 @@ Deliverables: integration config in `.env.example`, README integration section, 
 
 Ownership: **Sebastian** proposes; **Matt** delivers integrations; **John** architects; **Lars** secures; **Alex** codes under Matt's contract.
 
-## Red team & penetration testing *(Oliver owns — reports to Lars)*
+## Red team & penetration testing _(Oliver owns — reports to Lars)_
 
 **Oliver** is the **Ethical Hacker / red team**: he performs active security assessments and simulated attacks against the application and public site to find vulnerabilities **before** attackers do. Findings are reported to **Lars**, who prioritizes remediation and coordinates with Alex.
 
-| Phase | Oliver's role |
-| --- | --- |
-| **Pre-ship** | Mandatory red-team pass in `larapilot-ship` before Lars GO — auth bypass, IDOR, injection, SSRF, file upload, API abuse, session fixation, rate-limit evasion |
-| **Post-integration** | Targeted pass when Matt ships high-risk integrations (payments, webhooks, OAuth, file import) |
-| **Maintenance** | Re-test after Sophia routes critical security bugs or Lars requests regression |
+| Phase                | Oliver's role                                                                                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pre-ship**         | Mandatory red-team pass in `larapilot-ship` before Lars GO — auth bypass, IDOR, injection, SSRF, file upload, API abuse, session fixation, rate-limit evasion |
+| **Post-integration** | Targeted pass when Matt ships high-risk integrations (payments, webhooks, OAuth, file import)                                                                 |
+| **Maintenance**      | Re-test after Sophia routes critical security bugs or Lars requests regression                                                                                |
 
 Oliver does **not** fix code — he documents attack paths, PoC steps, severity, and affected endpoints. Lars merges Oliver's report with blue-team OWASP review; Critical/High findings block ship until fixed or explicitly waived.
 
@@ -958,18 +963,18 @@ Reports: `{paths.security}/red-team-{release-or-spec}.md` (from `config-show`).
 
 Ownership: **Oliver** owns offensive testing and red-team reports; **Lars** owns remediation priority, security gates, and GO/NO-GO; **Alex** fixes; **Anne** adds regression tests for confirmed vulnerabilities.
 
-## Maintenance & support *(Sophia owns — post-ship)*
+## Maintenance & support _(Sophia owns — post-ship)_
 
 After specs reach **DONE** and the product is live, **Sophia** owns the **support and maintenance** loop:
 
-| Responsibility | Sophia |
-| --- | --- |
-| **Bug intake** | Collect user/stakeholder reports; normalize into `.larapilot/docs/support/intake.md` (or dated files under `{paths.support}`) |
-| **Triage** | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature |
-| **Routing** | Critical security → **Lars** + **Oliver** re-test; functional bugs → new `US-XXX` spec via `larapilot-spec` or `larapilot-spec-request-changes` rework |
-| **Documentation** | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release |
-| **Software updates** | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs |
-| **Long-term hygiene** | Scheduled reviews: stale integrations (**Matt**), locale drift (**Emily**), test debt (**Anne**) |
+| Responsibility        | Sophia                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Bug intake**        | Collect user/stakeholder reports; normalize into `.larapilot/docs/support/intake.md` (or dated files under `{paths.support}`)                          |
+| **Triage**            | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature                                                               |
+| **Routing**           | Critical security → **Lars** + **Oliver** re-test; functional bugs → new `US-XXX` spec via `larapilot-spec` or `larapilot-spec-request-changes` rework |
+| **Documentation**     | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release                                                              |
+| **Software updates**  | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs |
+| **Long-term hygiene** | Scheduled reviews: stale integrations (**Matt**), locale drift (**Emily**), test debt (**Anne**)                                                       |
 
 Sophia does not bypass the workflow — every fix goes through spec → plan → implement → review like greenfield work, but may use `hotfix/*` Gitflow branches for Critical production issues (**Jack**).
 
@@ -982,10 +987,10 @@ When a feature is not worth building in-house, evaluate packages in this order:
 1. **Laravel built-ins and first-party packages** — framework features first; official packages (Horizon, Sanctum, Scout, Cashier, Reverb, …) next.
 2. **Spatie packages** — [spatie.be/open-source/packages](https://spatie.be/open-source/packages) is the **preferred source for third-party functionality** (permissions, media library, backups, activity log, query builder, settings, …). Check Spatie's catalog before other vendors.
 3. **Authenticated app UI route** — when the product needs an **admin/control panel**, customer dashboard, or portal back-end, never impose a single stack: **explicitly ask the user** (via AskQuestion) among:
-   - **[Filament](https://filamentphp.com/)** — dedicated admin panel (Resources, widgets, relation managers); best for internal ops and standard back-office CRUD
-   - **[Laravel Starter Kits](https://laravel.com/starter-kits)** — first-party app scaffold with auth, dashboard, profile/settings, light/dark, configurable layouts: **Livewire** (Flux UI), **React**, **Vue**, or **Svelte** (Inertia + shadcn variants); best when authenticated UI is the main product surface or a customer portal integrated into the same stack
-   - **Custom panel** — bespoke Blade/Livewire/Inertia without Filament or starter-kit conventions
-   Recommend the best-fit option for the specific case — above all the one **closest to the project mockups** (heavy custom design → custom; standard resource CRUD → Filament; customer app with auth + dashboard → Starter Kit variant matching the PRD stack). Record the choice in the PRD under `## Technical Architecture` (`Admin panel: Filament | Starter Kit (livewire|react|vue|svelte) | custom`) so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins). When a Starter Kit is chosen, scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) and align mockups to Flux or shadcn per variant — do not mix unrelated UI libraries on top.
+    - **[Filament](https://filamentphp.com/)** — dedicated admin panel (Resources, widgets, relation managers); best for internal ops and standard back-office CRUD
+    - **[Laravel Starter Kits](https://laravel.com/starter-kits)** — first-party app scaffold with auth, dashboard, profile/settings, light/dark, configurable layouts: **Livewire** (Flux UI), **React**, **Vue**, or **Svelte** (Inertia + shadcn variants); best when authenticated UI is the main product surface or a customer portal integrated into the same stack
+    - **Custom panel** — bespoke Blade/Livewire/Inertia without Filament or starter-kit conventions
+      Recommend the best-fit option for the specific case — above all the one **closest to the project mockups** (heavy custom design → custom; standard resource CRUD → Filament; customer app with auth + dashboard → Starter Kit variant matching the PRD stack). Record the choice in the PRD under `## Technical Architecture` (`Admin panel: Filament | Starter Kit (livewire|react|vue|svelte) | custom`) so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins). When a Starter Kit is chosen, scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) and align mockups to Flux or shadcn per variant — do not mix unrelated UI libraries on top.
 4. **Other community vendors** — only when nothing above fits, and with stricter vetting.
 
 Every candidate — **including** Spatie packages and Filament plugins — must pass a maintenance and security check before `composer require`:
@@ -1002,7 +1007,7 @@ Ownership: **Sebastian** proposes vendor and service integrations; **Matt** owns
 
 These are **project-wide defaults** for Laravel apps built with Larapilot. Apply them unless the PRD, user, or an existing codebase explicitly opts out.
 
-### Security baseline *(Lars owns)*
+### Security baseline _(Lars owns)_
 
 1. **Two-factor authentication (2FA)** — for any app with user accounts, plan and implement TOTP 2FA. Prefer **Laravel Fortify** (or Jetstream/Breeze with Fortify) with 2FA enabled; treat it as on by default for admin and user-facing auth.
 2. **Password rules** — register global defaults in `AppServiceProvider::boot()`:
@@ -1023,16 +1028,16 @@ Use `Password::defaults()` in Form Requests and Fortify validation. Never accept
 4. **Password hashing** — use **Argon2id** (`HASH_DRIVER=argon2id` in `.env`, or `'driver' => 'argon2id'` in `config/hashing.php`). Do not default to bcrypt on greenfield projects.
 5. **SSO / social login** — use **[Laravel Socialite](https://laravel.com/docs/socialite)**; extend via **[Socialite Providers](https://socialiteproviders.com/)** when the driver is not built-in. See Architecture Standards for linking and consent rules.
 
-### Local development environment *(Jack / John own)*
+### Local development environment _(Jack / John own)_
 
 **Never impose a local stack by default.** **Jack** presents the options below via **AskQuestion** during inception (downstream skills ask only if the PRD omits the choice). Recommend the best fit for the team, OS, and services the PRD needs — do not default to Sail. Record the choice in the PRD under `## Technical Architecture` → `Local dev` so `larapilot-spec`, `larapilot-plan`, and `larapilot-implement` honor it instead of re-imposing Docker.
 
-| Option | When to recommend |
-| --- | --- |
+| Option                    | When to recommend                                                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **Laravel Sail (Docker)** | Containerized parity with production, multiple services (MySQL, Redis, Mailpit, MinIO), reproducible onboarding for mixed OS teams |
-| **Laravel Herd** | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/) |
-| **Not defined yet** | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap |
-| **Other** | User names a specific alternative (Laravel Valet, Forge local, WSL + native PHP, existing team stack, …) |
+| **Laravel Herd**          | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/)                            |
+| **Not defined yet**       | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap                                    |
+| **Other**                 | User names a specific alternative (Laravel Valet, Forge local, WSL + native PHP, existing team stack, …)                           |
 
 **After the choice:**
 
@@ -1041,21 +1046,21 @@ Use `Password::defaults()` in Form Requests and Fortify validation. Never accept
 - **Not defined yet** — README documents generic `php artisan` workflow and env prerequisites only; **do not** add Sail/Herd install tasks until the user decides.
 - **Other** — document the named stack in README; no Sail/Herd scaffolding unless the user later chooses one.
 
-**Local URLs** *(optional second AskQuestion when multi-tenant, OAuth, or cookie domains matter)* — besides `localhost`, `*.test` (Valet/Herd), and `/etc/hosts`, Jack may propose **[127001.it](https://127001.it/)** wildcard DNS (`*.127001.it` → `127.0.0.1`) for shareable dev URLs without hosts-file edits. Example: `APP_URL=http://myapp.127001.it`.
+**Local URLs** _(optional second AskQuestion when multi-tenant, OAuth, or cookie domains matter)_ — besides `localhost`, `*.test` (Valet/Herd), and `/etc/hosts`, Jack may propose **[127001.it](https://127001.it/)** wildcard DNS (`*.127001.it` → `127.0.0.1`) for shareable dev URLs without hosts-file edits. Example: `APP_URL=http://myapp.127001.it`.
 
-### Optional integrations *(Sebastian proposes alongside well-known options)*
+### Optional integrations _(Sebastian proposes alongside well-known options)_
 
 Always present **both** mainstream SaaS/managed options and the self-hosted open-source alternatives below. Let the user choose; do not silently omit either category.
 
-| Need | Well-known options | Also propose (open-source / self-hosted) |
-| --- | --- | --- |
-| **Security audit** | **[Aikido](https://www.aikido.dev/)** (SAST + SCA, auto-triage, PR checks, Laravel/Forge integration — **propose first when Budget Sensitivity is Tracked**), `composer audit`, GitHub Dependabot, Enlightn | [andreapollastri/checkpoint](https://github.com/andreapollastri/checkpoint) — `php artisan checkpoint:scan`; optional local/CI gate before deploy |
-| **Newsletter / email lists** | Mailchimp, Brevo, ConvertKit, Customer.io, MailerLite | [andreapollastri/newsletter](https://github.com/andreapollastri/newsletter) — self-hosted newsletter system |
-| **Web analytics** | GA4, Plausible, Matomo, Fathom, PostHog | [andreapollastri/indiestats](https://github.com/andreapollastri/indiestats) — privacy-friendly, self-hosted analytics |
-| **Error & uptime monitoring** | Sentry, Bugsnag, Flare, Larabug | [andreapollastri/boogle](https://github.com/andreapollastri/boogle) — self-hosted bug & uptime monitor (`boogle-client` in apps) |
-| **Observability / APM** | **[Laravel Nightwatch](https://nightwatch.laravel.com/)** (preferred for Laravel), **AWS CloudWatch** (preferred on AWS), Datadog, New Relic, Grafana Cloud, Better Stack, OpenTelemetry | Laravel **Pulse**, self-hosted Grafana/Prometheus |
-| **Edge / CDN / WAF** | **[Cloudflare](https://www.cloudflare.com/)** (DNS, CDN, WAF — **recommend when feasible**), AWS WAF + CloudFront, Bunny CDN/Shield, Akamai, Fastly | nginx rate limiting, ModSecurity on VPS *(only when managed WAF budget unavailable)* |
-| **Object storage (S3)** | AWS S3, Cloudflare R2, DigitalOcean Spaces, Backblaze B2, MinIO | [andreapollastri/johnny](https://github.com/andreapollastri/johnny) — self-hosted S3-compatible storage with panel and backups |
+| Need                          | Well-known options                                                                                                                                                                                          | Also propose (open-source / self-hosted)                                                                                                          |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Security audit**            | **[Aikido](https://www.aikido.dev/)** (SAST + SCA, auto-triage, PR checks, Laravel/Forge integration — **propose first when Budget Sensitivity is Tracked**), `composer audit`, GitHub Dependabot, Enlightn | [andreapollastri/checkpoint](https://github.com/andreapollastri/checkpoint) — `php artisan checkpoint:scan`; optional local/CI gate before deploy |
+| **Newsletter / email lists**  | Mailchimp, Brevo, ConvertKit, Customer.io, MailerLite                                                                                                                                                       | [andreapollastri/newsletter](https://github.com/andreapollastri/newsletter) — self-hosted newsletter system                                       |
+| **Web analytics**             | GA4, Plausible, Matomo, Fathom, PostHog                                                                                                                                                                     | [andreapollastri/indiestats](https://github.com/andreapollastri/indiestats) — privacy-friendly, self-hosted analytics                             |
+| **Error & uptime monitoring** | Sentry, Bugsnag, Flare, Larabug                                                                                                                                                                             | [andreapollastri/boogle](https://github.com/andreapollastri/boogle) — self-hosted bug & uptime monitor (`boogle-client` in apps)                  |
+| **Observability / APM**       | **[Laravel Nightwatch](https://nightwatch.laravel.com/)** (preferred for Laravel), **AWS CloudWatch** (preferred on AWS), Datadog, New Relic, Grafana Cloud, Better Stack, OpenTelemetry                    | Laravel **Pulse**, self-hosted Grafana/Prometheus                                                                                                 |
+| **Edge / CDN / WAF**          | **[Cloudflare](https://www.cloudflare.com/)** (DNS, CDN, WAF — **recommend when feasible**), AWS WAF + CloudFront, Bunny CDN/Shield, Akamai, Fastly                                                         | nginx rate limiting, ModSecurity on VPS _(only when managed WAF budget unavailable)_                                                              |
+| **Object storage (S3)**       | AWS S3, Cloudflare R2, DigitalOcean Spaces, Backblaze B2, MinIO                                                                                                                                             | [andreapollastri/johnny](https://github.com/andreapollastri/johnny) — self-hosted S3-compatible storage with panel and backups                    |
 
 **Aikido** — when the project has budget (**Budget Sensitivity: Tracked**) or deploys via **Laravel Forge**, propose [Aikido](https://www.aikido.dev/) as the primary managed AppSec layer: repo SAST, `composer.lock` / `package-lock.json` SCA, supply-chain alerts, and optional AutoFix PRs. Enable via [Forge Integrations](https://forge.laravel.com/docs/integrations/aikido) or connect the Git provider directly. Pair with **Checkpoint** for a free local/CI scan that does not require a SaaS subscription.
 
@@ -1096,32 +1101,32 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 
 ### The Larapilot Team
 
-| Persona | Role | Main expertise |
-| --- | --- | --- |
-| 💎 Mark | Product Manager | Product scope, personas, delivery-target choice, scope trade-offs |
-| 🧭 Jennifer | Business Strategist | Market positioning, competitive context, product risks |
-| 🏢 Benjamin | Business Consultant | Market research, enterprise know-how, business lens on technical choices |
-| 💡 Sebastian | Innovator | Competitive challenger, **reference-product deepsearch**, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
-| 🔎 Tom | Requirements Analyst | Acceptance criteria, edge cases, spec quality |
-| 📐 John | Architect | SOLID, scalable architecture, APIs, multi-tenancy trade-offs, queues, DTOs, tech debt, OpenAPI/docs |
-| 🔧 Alex | Full-Stack Developer | Implementation, task breakdown, **factories/seeders**, per-task commits & internal PRs |
-| 🧪 Anne | Test Architect | Pest/PHPUnit strategy, **multi-viewport responsive UI tests**, coverage per delivery target, CI test gates |
-| 🛡️ Robert | Code Reviewer | Code quality, Gitflow/branch hygiene, per-task commit/PR discipline, factory/seeder completeness, plan adherence, Laravel conventions |
-| 🔐 Lars | Security Expert | OWASP, security.txt, SECURITY.md, pipeline security gates, security budget with Aurora/Violet |
-| 🚀 Jack | DevOps Engineer | Gitflow, CI/CD pipelines, semver/tags, deploy/edge/cloud (per PRD), observability |
-| 💰 Aurora | FinOps Expert | SaaS/infra/security budgets; always privilege security spend; cost optimization with Lars/Violet |
-| ⚖️ Violet | Legal Expert | GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out, subprocessors |
-| 📈 Emma | SEO & Web Performance Specialist | URLs, breadcrumbs, robots/sitemap/llms.txt, semantic SEO, Lighthouse a11y |
-| 💬 Lauren | Social Media Manager | Marketing, campaigns, SEM, OG/share — distributes Elise brand/social assets |
-| 🎨 Elise | UX Designer | Nordic UI, **mobile-first responsive**, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets** |
-| ✨ Joe | Frontend Expert | Visual impact, JS frontend, **Three.js** animations, hybrid/native mobile, API integration, client performance |
-| ✍️ Marika | Copywriter | Website & app copy — creation, review, any tone; legacy content mapping with Sabrine |
-| 🔄 Sabrine | Legacy Porting Specialist | Legacy analysis, content/feature inventory, parity matrix, porting proposals, review parity checks |
-| 🐘 Andrew | Laravel Expert | Laravel & ecosystem best practices — [laravel.com](https://laravel.com/), Laracasts, Filament, Spatie, Laravel Daily, Laravel News, … |
-| 🔗 Matt | Integration Manager | Third-party APIs & services — works with Alex, John, Elise; Sebastian proposes, Matt delivers |
-| 🎯 Oliver | Ethical Hacker | Red-team assessments & simulated attacks; findings → Lars |
-| 🎧 Sophia | Support Manager | Post-ship bug intake/triage, maintenance backlog, docs & software updates with Lars |
-| 🌍 Emily | Translator | Multilingual UI, currency, timezones, country-target culture — with Violet |
+| Persona      | Role                             | Main expertise                                                                                                                                           |
+| ------------ | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 💎 Mark      | Product Manager                  | Product scope, personas, delivery-target choice, scope trade-offs                                                                                        |
+| 🧭 Jennifer  | Business Strategist              | Market positioning, competitive context, product risks                                                                                                   |
+| 🏢 Benjamin  | Business Consultant              | Market research, enterprise know-how, business lens on technical choices                                                                                 |
+| 💡 Sebastian | Innovator                        | Competitive challenger, **reference-product deepsearch**, vendor integrations, competitor data porting (import from rival products, lock-in-free export) |
+| 🔎 Tom       | Requirements Analyst             | Acceptance criteria, edge cases, spec quality                                                                                                            |
+| 📐 John      | Architect                        | SOLID, scalable architecture, APIs, multi-tenancy trade-offs, queues, DTOs, tech debt, OpenAPI/docs                                                      |
+| 🔧 Alex      | Full-Stack Developer             | Implementation, task breakdown, **factories/seeders**, per-task commits & internal PRs                                                                   |
+| 🧪 Anne      | Test Architect                   | Pest/PHPUnit strategy, **multi-viewport responsive UI tests**, coverage per delivery target, CI test gates                                               |
+| 🛡️ Robert    | Code Reviewer                    | Code quality, Gitflow/branch hygiene, per-task commit/PR discipline, factory/seeder completeness, plan adherence, Laravel conventions                    |
+| 🔐 Lars      | Security Expert                  | OWASP, security.txt, SECURITY.md, pipeline security gates, security budget with Aurora/Violet                                                            |
+| 🚀 Jack      | DevOps Engineer                  | Gitflow, CI/CD pipelines, semver/tags, deploy/edge/cloud (per PRD), observability                                                                        |
+| 💰 Aurora    | FinOps Expert                    | SaaS/infra/security budgets; always privilege security spend; cost optimization with Lars/Violet                                                         |
+| ⚖️ Violet    | Legal Expert                     | GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out, subprocessors                                                                   |
+| 📈 Emma      | SEO & Web Performance Specialist | URLs, breadcrumbs, robots/sitemap/llms.txt, semantic SEO, Lighthouse a11y                                                                                |
+| 💬 Lauren    | Social Media Manager             | Marketing, campaigns, SEM, OG/share — distributes Elise brand/social assets                                                                              |
+| 🎨 Elise     | UX Designer                      | Nordic UI, **mobile-first responsive**, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets**                                        |
+| ✨ Joe       | Frontend Expert                  | Visual impact, JS frontend, **Three.js** animations, hybrid/native mobile, API integration, client performance                                           |
+| ✍️ Marika    | Copywriter                       | Website & app copy — creation, review, any tone; legacy content mapping with Sabrine                                                                     |
+| 🔄 Sabrine   | Legacy Porting Specialist        | Legacy analysis, content/feature inventory, parity matrix, porting proposals, review parity checks                                                       |
+| 👾 Andrew    | Laravel Expert                   | Laravel & ecosystem best practices — [laravel.com](https://laravel.com/), Laracasts, Filament, Spatie, Laravel Daily, Laravel News, …                    |
+| 🔗 Matt      | Integration Manager              | Third-party APIs & services — works with Alex, John, Elise; Sebastian proposes, Matt delivers                                                            |
+| 🎯 Oliver    | Ethical Hacker                   | Red-team assessments & simulated attacks; findings → Lars                                                                                                |
+| 🎧 Sophia    | Support Manager                  | Post-ship bug intake/triage, maintenance backlog, docs & software updates with Lars                                                                      |
+| 🌍 Emily     | Translator                       | Multilingual UI, currency, timezones, country-target culture — with Violet                                                                               |
 
 ## File Output Rules
 
@@ -1144,16 +1149,16 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 
 ### Per-phase chat style
 
-| Skill / phase | Economy level | Chat behavior |
-| --- | --- | --- |
-| **`larapilot-inception`** | Clarity first | Discovery needs rationale for trade-offs (tenancy, budget, compliance). Still: no filler, no recap of what the user already said, at most 3 questions per round. Persona blocks: **2–4 sentences** when contributing. PRD file: formal and complete. |
-| **`larapilot-spec`** | Moderate | Brief announce of bootstrap vs extend and epic/priority choices. Spec markdown bodies: full user story and acceptance criteria — never shortened. |
-| **`larapilot-plan`** | Split | Team brief: **1–3 sentences per agent** (already required). Between stages: status and blockers only. `plan_body` and task bodies: detailed execution contracts — do not strip. |
-| **`larapilot-design`** | Moderate | Elise explains stack and a11y choices in character, briefly. Mockup `README.md` and checklists: complete (a11y, SEO, brand assets). |
-| **`larapilot-implement`** | High | Default line: **task → action → result → next**. No Laravel tutorials unless blocked. Robert/Lars findings: bullets with severity. Handoff before `spec-review`: spec code, tasks done, tests run, review outcome — **~10 lines max** unless blockers need detail. |
-| **`larapilot-review`** | High | Robert presents a **checklist gate**: criteria status, evidence pointers (branch, test command/output), residual risks, verdict ask. Summarize diffs; do not narrate every hunk. |
-| **`larapilot-ship`** | Structured terse | Between phases: **PASS / FAIL / BLOCKED + one-line reason**. OWASP and launch findings: bullets or tables. Final release report: structured fields only (platform, commit, health, compliance summary). |
-| **`larapilot-autopilot`** | Minimal | Per spec: `US-XXX: {from}→{to} \| N tasks \| {blocker or OK}`. End with batch summary. When delegating to plan/implement, follow that phase's economy. |
+| Skill / phase             | Economy level    | Chat behavior                                                                                                                                                                                                                                                      |
+| ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`larapilot-inception`** | Clarity first    | Discovery needs rationale for trade-offs (tenancy, budget, compliance). Still: no filler, no recap of what the user already said, at most 3 questions per round. Persona blocks: **2–4 sentences** when contributing. PRD file: formal and complete.               |
+| **`larapilot-spec`**      | Moderate         | Brief announce of bootstrap vs extend and epic/priority choices. Spec markdown bodies: full user story and acceptance criteria — never shortened.                                                                                                                  |
+| **`larapilot-plan`**      | Split            | Team brief: **1–3 sentences per agent** (already required). Between stages: status and blockers only. `plan_body` and task bodies: detailed execution contracts — do not strip.                                                                                    |
+| **`larapilot-design`**    | Moderate         | Elise explains stack and a11y choices in character, briefly. Mockup `README.md` and checklists: complete (a11y, SEO, brand assets).                                                                                                                                |
+| **`larapilot-implement`** | High             | Default line: **task → action → result → next**. No Laravel tutorials unless blocked. Robert/Lars findings: bullets with severity. Handoff before `spec-review`: spec code, tasks done, tests run, review outcome — **~10 lines max** unless blockers need detail. |
+| **`larapilot-review`**    | High             | Robert presents a **checklist gate**: criteria status, evidence pointers (branch, test command/output), residual risks, verdict ask. Summarize diffs; do not narrate every hunk.                                                                                   |
+| **`larapilot-ship`**      | Structured terse | Between phases: **PASS / FAIL / BLOCKED + one-line reason**. OWASP and launch findings: bullets or tables. Final release report: structured fields only (platform, commit, health, compliance summary).                                                            |
+| **`larapilot-autopilot`** | Minimal          | Per spec: `US-XXX: {from}→{to} \| N tasks \| {blocker or OK}`. End with batch summary. When delegating to plan/implement, follow that phase's economy.                                                                                                             |
 
 ### Do not compress
 
@@ -1179,11 +1184,11 @@ Some skills spawn **readonly sub-agents** for fresh context via the editor's sub
 
 ### Where sub-agents are used
 
-| Skill | Sub-agent | When | Role |
-| --- | --- | --- | --- |
-| **`larapilot-plan`** | Codebase explore *(optional)* | Stage 1, large or unfamiliar `data.workdir` | readonly codebase mapping |
-| **`larapilot-implement`** | Robert + Lars | Phase 2, after all tasks `task-done` | readonly code review + security review, parallel |
-| **`larapilot-review`** | — | Reads parent-written `{paths.review}/{code}.md` if present | no spawn |
+| Skill                     | Sub-agent                     | When                                                       | Role                                             |
+| ------------------------- | ----------------------------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| **`larapilot-plan`**      | Codebase explore _(optional)_ | Stage 1, large or unfamiliar `data.workdir`                | readonly codebase mapping                        |
+| **`larapilot-implement`** | Robert + Lars                 | Phase 2, after all tasks `task-done`                       | readonly code review + security review, parallel |
+| **`larapilot-review`**    | —                             | Reads parent-written `{paths.review}/{code}.md` if present | no spawn                                         |
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
@@ -1197,12 +1202,15 @@ After merging sub-agent findings in **`larapilot-implement`**, the parent writes
 # Review findings — US-XXX
 
 ## Robert (code review)
+
 - [severity] finding
 
 ## Lars (security)
+
 - [severity] finding
 
 ## Parent actions
+
 - Fixed: ...
 - Open (Medium/Low): ...
 ```

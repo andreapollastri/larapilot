@@ -9,7 +9,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **New personas — Marika, Sabrine, Andrew, Joe**
     - **✍️ Marika** (Copywriter) — creates and reviews website & application copy in any tone; maps legacy content during porting.
     - **🔄 Sabrine** (Legacy Porting Specialist) — leads legacy analysis, content/feature inventory, parity matrix, porting proposals, and review parity checks.
-    - **🐘 Andrew** (Laravel Expert) — Laravel & ecosystem best practices from laravel.com, Laracasts, Filament, Spatie, Laravel Daily, Filament Examples, Laravel.io, Laravel News, and other authoritative sources.
+    - **� Andrew** (Laravel Expert) — Laravel & ecosystem best practices from laravel.com, Laracasts, Filament, Spatie, Laravel Daily, Filament Examples, Laravel.io, Laravel News, and other authoritative sources.
     - **✨ Joe** (Frontend Expert) — visual impact, JS frontend, Three.js animations, hybrid/native mobile, API integration, client-side performance.
     - Updated `shared-runtime.md`, all affected skills, `core.blade.php`, `legacy/README.md`, and docs.
 

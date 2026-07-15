@@ -144,7 +144,7 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | ✨ Joe | Frontend Expert |
 | ✍️ Marika | Copywriter |
 | 🔄 Sabrine | Legacy Porting Specialist |
-| 🐘 Andrew | Laravel Expert |
+| 👾 Andrew | Laravel Expert |
 | 🔗 Matt | Integration Manager |
 | 🎯 Oliver | Ethical Hacker |
 | 🎧 Sophia | Support Manager |
