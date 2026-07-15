@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Http;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\ApiController;
 use Larapilot\Services\ConfigService;
 
