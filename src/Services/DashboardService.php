@@ -14,6 +14,7 @@ class DashboardService
         protected PlanService $plans,
         protected PrdService $prd,
         protected MockupService $mockups,
+        protected InternalFeedbackService $feedback,
     ) {}
 
     /**
@@ -27,6 +28,7 @@ class DashboardService
         return array_merge($spec, [
             'tasks' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
             'mockups' => $code !== '' ? $this->mockups->summary($code) : ['available' => false, 'screen_count' => 0],
+            'feedback' => $code !== '' ? $this->feedback->summary($code, $spec) : ['enabled' => false, 'available' => false, 'entry_count' => 0, 'blocking_count' => 0, 'writable' => false, 'path' => ''],
         ]);
     }
 
@@ -113,6 +115,7 @@ class DashboardService
             'plan_html' => is_array($plan)
                 ? Markdown::toHtml((string) ($plan['plan_body'] ?? ''))
                 : null,
+            'feedback' => $this->feedback->forSpec($code, $data['spec']),
         ];
     }
 }

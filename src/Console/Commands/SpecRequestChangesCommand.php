@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
 use Symfony\Component\Yaml\Yaml;
@@ -13,12 +14,16 @@ class SpecRequestChangesCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-request-changes
                             {code : Spec code}
-                            {--file= : Feedback YAML or JSON file}';
+                            {--file= : Feedback YAML or JSON file}
+                            {--include-feedback : Append blocking internal-feedback comments marked [blocks-merge]}';
 
     protected $description = 'Send a spec in REVIEW back to TODO with rework feedback';
 
-    public function handle(SpecService $specs, ConfigService $config): int
-    {
+    public function handle(
+        SpecService $specs,
+        ConfigService $config,
+        InternalFeedbackService $feedback,
+    ): int {
         $code = (string) $this->argument('code');
         $spec = $specs->find($code);
 
@@ -39,32 +44,43 @@ class SpecRequestChangesCommand extends LarapilotCommand
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         $raw = file_get_contents($file) ?: '';
 
-        $feedback = match ($extension) {
+        $payload = match ($extension) {
             'json' => json_decode($raw, true),
             default => Yaml::parse($raw),
         };
 
-        if (! is_array($feedback)) {
+        if (! is_array($payload)) {
             return $this->failure('E_INVALID_INPUT', 'Invalid feedback payload.', $this->exitForCode('E_INVALID_INPUT'));
         }
 
-        $body = (string) ($spec['body'] ?? '');
-        $feedbackMarkdown = (string) ($feedback['markdown'] ?? $feedback['body'] ?? '');
+        $feedbackMarkdown = trim((string) ($payload['markdown'] ?? $payload['body'] ?? ''));
 
-        if ($feedbackMarkdown !== '') {
-            $body .= "\n\n## Rework Feedback\n\n".$feedbackMarkdown;
+        if ($this->option('include-feedback')) {
+            $fromFeedback = $feedback->blockingMarkdown($code);
+
+            if ($fromFeedback !== '') {
+                $feedbackMarkdown = trim($feedbackMarkdown) === ''
+                    ? $fromFeedback
+                    : trim($feedbackMarkdown)."\n\n".$fromFeedback;
+            }
         }
 
-        $specs->update($code, [
-            'body' => $body,
-            'rework' => true,
-            'status' => $config->status('todo'),
-        ]);
+        if ($feedbackMarkdown === '') {
+            return $this->failure(
+                'E_INVALID_INPUT',
+                'Feedback markdown is empty.',
+                $this->exitForCode('E_INVALID_INPUT'),
+                'Provide markdown/body in the payload or use --include-feedback with blocking comments.'
+            );
+        }
+
+        $specs->requestChanges($code, $feedbackMarkdown);
 
         return $this->success('request_changes_result', [
             'code' => $code,
             'status' => $config->status('todo'),
             'rework' => true,
+            'included_feedback' => (bool) $this->option('include-feedback'),
         ]);
     }
 }

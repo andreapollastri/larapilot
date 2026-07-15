@@ -6,6 +6,9 @@ namespace Larapilot\Http\Controllers;
 
 use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
+use Larapilot\Support\MockupAssetResolver;
+use Larapilot\Support\MockupCssProcessor;
+use Larapilot\Support\MockupHtmlProcessor;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MockupController
@@ -26,9 +29,16 @@ class MockupController
         'svg' => 'image/svg+xml',
         'webp' => 'image/webp',
         'md' => 'text/markdown',
+        'woff' => 'font/woff',
+        'woff2' => 'font/woff2',
     ];
 
-    public function __construct(protected ConfigService $config) {}
+    public function __construct(
+        protected ConfigService $config,
+        protected MockupAssetResolver $assets,
+        protected MockupHtmlProcessor $htmlProcessor,
+        protected MockupCssProcessor $cssProcessor,
+    ) {}
 
     public function __invoke(string $spec, ?string $path = null): Response|BinaryFileResponse
     {
@@ -40,13 +50,78 @@ class MockupController
             abort(404);
         }
 
+        if ($path === null && str_contains($spec, '.')) {
+            $orphan = $this->assets->resolveOrphanAsset($spec);
+
+            if ($orphan !== null) {
+                return $this->fileResponse($orphan, $spec);
+            }
+        }
+
         $relativePath = $this->resolveRelativePath($path);
-        $absolutePath = $this->resolveAbsolutePath($spec, $relativePath);
+        $mockupsRoot = rtrim($this->mockupsRoot(), DIRECTORY_SEPARATOR);
+        $specRoot = $mockupsRoot.DIRECTORY_SEPARATOR.$spec;
+        $absolutePath = $this->assets->resolveMockupFile($mockupsRoot, $spec.'/'.$relativePath);
+
+        if ($absolutePath === null) {
+            $absolutePath = $this->resolveFallbackAsset($specRoot, $spec, $relativePath);
+        }
 
         if ($absolutePath === null || ! is_file($absolutePath)) {
             abort(404);
         }
 
+        if ($this->isHtml($relativePath)) {
+            $html = (string) file_get_contents($absolutePath);
+
+            return response(
+                $this->htmlProcessor->process($html, $spec, $specRoot, $relativePath),
+                200,
+                ['Content-Type' => 'text/html; charset=UTF-8']
+            );
+        }
+
+        if ($this->isCss($relativePath)) {
+            $css = (string) file_get_contents($absolutePath);
+
+            return response(
+                $this->cssProcessor->process($css, $spec, $specRoot, $relativePath, $this->detectDesignSystemFromFilename($relativePath)),
+                200,
+                ['Content-Type' => 'text/css; charset=UTF-8']
+            );
+        }
+
+        return $this->fileResponse($absolutePath, $relativePath);
+    }
+
+    protected function resolveFallbackAsset(string $specRoot, string $spec, string $relativePath): ?string
+    {
+        $resolved = $this->assets->resolveAssetReference(
+            $spec,
+            $specRoot,
+            dirname(str_replace('\\', '/', $relativePath)) === '.'
+                ? ''
+                : dirname(str_replace('\\', '/', $relativePath)),
+            basename($relativePath),
+            $this->detectDesignSystemFromFilename($relativePath)
+        );
+
+        return $resolved['path'] ?? null;
+    }
+
+    protected function detectDesignSystemFromFilename(string $relativePath): ?string
+    {
+        $basename = basename($relativePath);
+
+        if (preg_match('/^(filament|starter-kit|bootstrap-5|tailwind|adminlte)-tokens\.css$/', $basename, $matches) === 1) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    protected function fileResponse(string $absolutePath, string $relativePath): BinaryFileResponse
+    {
         return response()->file($absolutePath, [
             'Content-Type' => $this->mimeType($relativePath),
         ]);
@@ -68,33 +143,21 @@ class MockupController
         return $path;
     }
 
-    protected function resolveAbsolutePath(string $spec, string $relativePath): ?string
-    {
-        if (str_contains($relativePath, "\0") || str_contains($relativePath, '..')) {
-            return null;
-        }
-
-        $root = rtrim($this->mockupsRoot(), DIRECTORY_SEPARATOR);
-        $absolute = $root.DIRECTORY_SEPARATOR.$spec.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
-        $realRoot = realpath($root);
-        $realFile = realpath($absolute);
-
-        if ($realRoot === false || $realFile === false) {
-            return null;
-        }
-
-        if (! str_starts_with($realFile, $realRoot.DIRECTORY_SEPARATOR) && $realFile !== $realRoot) {
-            return null;
-        }
-
-        return $realFile;
-    }
-
     protected function mockupsRoot(): string
     {
-        $config = $this->config->resolve();
+        return $this->assets->mockupsRoot();
+    }
 
-        return $this->config->absolutePath($config['paths']['mockups'] ?? '.larapilot/mockups/');
+    protected function isHtml(string $relativePath): bool
+    {
+        $extension = strtolower(pathinfo($relativePath, PATHINFO_EXTENSION));
+
+        return in_array($extension, ['html', 'htm'], true);
+    }
+
+    protected function isCss(string $relativePath): bool
+    {
+        return strtolower(pathinfo($relativePath, PATHINFO_EXTENSION)) === 'css';
     }
 
     protected function mimeType(string $relativePath): string

@@ -184,6 +184,46 @@ class OpenApiService
                         ],
                         'required' => ['path', 'screens', 'browsable'],
                     ],
+                    'FeedbackSummary' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'enabled' => ['type' => 'boolean'],
+                            'available' => ['type' => 'boolean'],
+                            'entry_count' => ['type' => 'integer', 'minimum' => 0],
+                            'blocking_count' => ['type' => 'integer', 'minimum' => 0],
+                            'writable' => ['type' => 'boolean'],
+                            'path' => ['type' => 'string', 'example' => '.larapilot/internal-feedback/US-001.md'],
+                        ],
+                        'required' => ['enabled', 'entry_count', 'blocking_count', 'writable', 'path'],
+                    ],
+                    'FeedbackEntry' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'at' => ['type' => 'string'],
+                            'author' => ['type' => 'string'],
+                            'status' => ['type' => 'string'],
+                            'body' => ['type' => 'string'],
+                            'blocks_merge' => ['type' => 'boolean'],
+                        ],
+                        'required' => ['at', 'author', 'status', 'body', 'blocks_merge'],
+                    ],
+                    'FeedbackDetail' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'enabled' => ['type' => 'boolean'],
+                            'writable' => ['type' => 'boolean'],
+                            'path' => ['type' => 'string'],
+                            'entry_count' => ['type' => 'integer', 'minimum' => 0],
+                            'blocking_count' => ['type' => 'integer', 'minimum' => 0],
+                            'content' => ['type' => 'string', 'nullable' => true],
+                            'html' => ['type' => 'string', 'nullable' => true],
+                            'entries' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/FeedbackEntry'],
+                            ],
+                        ],
+                        'required' => ['enabled', 'writable', 'path', 'entry_count', 'blocking_count', 'entries'],
+                    ],
                     'Epic' => [
                         'type' => 'object',
                         'properties' => [
@@ -216,6 +256,7 @@ class OpenApiService
                             'merge_commit' => ['type' => 'object', 'additionalProperties' => true],
                             'task_progress' => ['$ref' => '#/components/schemas/TaskProgress'],
                             'mockups' => ['$ref' => '#/components/schemas/MockupSummary'],
+                            'feedback' => ['$ref' => '#/components/schemas/FeedbackSummary'],
                         ],
                         'required' => ['code', 'title', 'status'],
                     ],
@@ -289,6 +330,7 @@ class OpenApiService
                             'workdir' => ['type' => 'string'],
                             'task_progress' => ['$ref' => '#/components/schemas/TaskProgress'],
                             'mockups' => ['$ref' => '#/components/schemas/MockupDetail', 'nullable' => true],
+                            'feedback' => ['$ref' => '#/components/schemas/FeedbackDetail'],
                         ],
                     ],
                     'PrdHeading' => [

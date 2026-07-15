@@ -31,6 +31,10 @@ class DashboardRouteRegistrar
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec');
+
+                Route::post('/specs/{code}/comments', [DashboardController::class, 'storeComment'])
+                    ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
+                    ->name('larapilot.dashboard.spec.comments.store');
             });
     }
 }

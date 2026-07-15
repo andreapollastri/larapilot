@@ -290,6 +290,33 @@ class SpecService
         $this->persistSpec($spec);
     }
 
+    public function requestChanges(string $code, string $feedbackMarkdown): void
+    {
+        $spec = $this->find($code);
+
+        if ($spec === null) {
+            throw new \RuntimeException("Spec {$code} not found.");
+        }
+
+        $body = (string) ($spec['body'] ?? '');
+
+        if (trim($feedbackMarkdown) !== '') {
+            $body .= "\n\n## Rework Feedback\n\n".trim($feedbackMarkdown);
+        }
+
+        $todoStatus = $this->config->status('todo');
+
+        $spec['body'] = $body;
+        $spec['status'] = $todoStatus;
+        $spec['rework'] = true;
+        $spec['status_history'] = array_merge(
+            is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
+            [['status' => $todoStatus, 'at' => now()->toIso8601String()]]
+        );
+
+        $this->persistSpec($spec);
+    }
+
     /**
      * @return array{sha: string, short_sha: string, subject: string, committed_at: string, url: string|null}|null
      */

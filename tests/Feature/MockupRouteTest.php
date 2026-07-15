@@ -79,3 +79,128 @@ it('hides mockups when the route is disabled by config', function (): void {
 
     $this->get('/mockups/US-001')->assertNotFound();
 });
+
+it('rewrites parent-relative tokens.css in mockup html to design-system assets', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $mockupDir = base_path('.larapilot/mockups/US-001');
+    mkdir($mockupDir, 0755, true);
+    file_put_contents($mockupDir.'/index.html', <<<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="fi-mockup"><p>Dashboard</p></body>
+</html>
+HTML);
+
+    $this->get('/mockups/US-001')
+        ->assertOk()
+        ->assertSee('/mockup-assets/design-systems/filament/tokens.css', false);
+
+    $this->get('/mockup-assets/design-systems/filament/tokens.css')
+        ->assertOk()
+        ->assertHeader('content-type', 'text/css; charset=UTF-8');
+});
+
+it('serves orphan tokens.css requests resolved from design systems', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->get('/mockups/tokens.css')
+        ->assertOk()
+        ->assertHeader('content-type', 'text/css; charset=UTF-8');
+});
+
+it('hides mockup asset routes in production environment', function (): void {
+    $this->app['env'] = 'production';
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->get('/mockup-assets/design-systems/filament/tokens.css')->assertNotFound();
+});
+
+it('rewrites filament-tokens.css in mockup html to design-system assets', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $mockupDir = base_path('.larapilot/mockups/US-001');
+    mkdir($mockupDir, 0755, true);
+    file_put_contents($mockupDir.'/index.html', <<<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="filament-tokens.css">
+</head>
+<body class="fi-mockup"><p>Dashboard</p></body>
+</html>
+HTML);
+
+    $this->get('/mockups/US-001')
+        ->assertOk()
+        ->assertSee('/mockup-assets/design-systems/filament/tokens.css', false);
+});
+
+it('serves orphan filament-tokens.css requests resolved from design systems', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->get('/mockups/filament-tokens.css')
+        ->assertOk()
+        ->assertHeader('content-type', 'text/css; charset=UTF-8');
+});
+
+it('rewrites logo.svg references and serves nested brand assets', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+
+    $mockupDir = base_path('.larapilot/mockups/US-001');
+    $assetsDir = $mockupDir.'/assets';
+    mkdir($assetsDir, 0755, true);
+    file_put_contents($assetsDir.'/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    file_put_contents($mockupDir.'/index.html', <<<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <img src="logo.svg" alt="Logo">
+</body>
+</html>
+HTML);
+
+    $this->get('/mockups/US-001')
+        ->assertOk()
+        ->assertSee('/mockups/US-001/assets/logo.svg', false);
+
+    $this->get('/mockups/US-001/assets/logo.svg')
+        ->assertOk()
+        ->assertHeader('content-type', 'image/svg+xml');
+});
+
+it('serves orphan logo.svg requests from nested mockup folders', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+
+    $mockupDir = base_path('.larapilot/mockups/US-001/assets');
+    mkdir($mockupDir, 0755, true);
+    file_put_contents($mockupDir.'/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+
+    $this->get('/mockups/logo.svg')
+        ->assertOk()
+        ->assertHeader('content-type', 'image/svg+xml');
+});
+
+it('rewrites url() references inside mockup css files', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+
+    $mockupDir = base_path('.larapilot/mockups/US-001');
+    mkdir($mockupDir, 0755, true);
+    file_put_contents($mockupDir.'/logo.svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    file_put_contents($mockupDir.'/app.css', <<<'CSS'
+.brand {
+  background-image: url("logo.svg");
+}
+CSS);
+    file_put_contents($mockupDir.'/index.html', '<link rel="stylesheet" href="app.css">');
+
+    $this->get('/mockups/US-001/app.css')
+        ->assertOk()
+        ->assertSee('url("/mockups/US-001/logo.svg")', false);
+});

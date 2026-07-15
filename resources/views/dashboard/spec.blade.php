@@ -268,6 +268,105 @@
         color: var(--muted);
         font-size: 0.82rem;
     }
+
+    .feedback-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #b45309;
+        background: color-mix(in srgb, #f59e0b 14%, transparent);
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .feedback-alert {
+        margin: 0 24px 0;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+    }
+
+    .feedback-alert--success {
+        background: color-mix(in srgb, #10b981 12%, transparent);
+        border: 1px solid color-mix(in srgb, #10b981 35%, var(--border));
+        color: #047857;
+    }
+
+    .feedback-alert--error {
+        background: color-mix(in srgb, #ef4444 10%, transparent);
+        border: 1px solid color-mix(in srgb, #ef4444 35%, var(--border));
+        color: #b91c1c;
+    }
+
+    .feedback-form {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    .feedback-form label {
+        display: grid;
+        gap: 6px;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .feedback-form input[type="text"],
+    .feedback-form textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font: inherit;
+    }
+
+    .feedback-form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .feedback-form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .feedback-checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+
+    .feedback-submit {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 18px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .feedback-closed {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
+
+    .feedback-meta {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
 </style>
 @endpush
 
@@ -316,8 +415,18 @@
                     };
                 @endphp
                 <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                @if (! empty($feedback['enabled']) && ! empty($feedback['blocking_count']))
+                    <span class="feedback-badge" title="Blocking comments">{{ $feedback['blocking_count'] }} blocking</span>
+                @endif
             </div>
         </header>
+
+        @if (session('larapilot_success'))
+            <p class="feedback-alert feedback-alert--success">{{ session('larapilot_success') }}</p>
+        @endif
+        @if (session('larapilot_error'))
+            <p class="feedback-alert feedback-alert--error">{{ session('larapilot_error') }}</p>
+        @endif
 
         <div class="spec-grid">
             <section class="card panel">
@@ -354,6 +463,48 @@
                         Artifacts in <code>{{ $mockups['path'] ?? '' }}</code>
                         @if (empty($mockups['browsable']))
                             — preview route disabled in this environment
+                        @endif
+                    </p>
+                </section>
+            @endif
+
+            @if (! empty($feedback['enabled']))
+                <section class="card panel">
+                    <h3>Internal feedback ({{ $feedback['entry_count'] ?? 0 }})</h3>
+                    @if (! empty($feedback['html']))
+                        <div class="markdown">{!! $feedback['html'] !!}</div>
+                    @else
+                        <p class="empty" style="padding: 12px 0; text-align: left;">No comments yet. PM and dev can log decisions and questions here until the story is DONE.</p>
+                    @endif
+
+                    @if (! empty($feedback['writable']))
+                        <form class="feedback-form" method="post" action="{{ route('larapilot.dashboard.spec.comments.store', $spec['code']) }}">
+                            @csrf
+                            <label>
+                                Author
+                                <input type="text" name="author" value="{{ old('author', 'PM') }}" maxlength="80" required>
+                            </label>
+                            <label>
+                                Comment
+                                <textarea name="message" required maxlength="10000" placeholder="Scope clarification, review note, implementation question…">{{ old('message') }}</textarea>
+                            </label>
+                            <div class="feedback-form-actions">
+                                <label class="feedback-checkbox">
+                                    <input type="checkbox" name="blocks_merge" value="1" @checked(old('blocks_merge'))>
+                                    Blocks merge / needs rework
+                                </label>
+                                <button type="submit" class="feedback-submit">Add comment</button>
+                            </div>
+                        </form>
+                    @else
+                        <p class="feedback-closed">Comments are closed because this user story is DONE.</p>
+                    @endif
+
+                    <p class="feedback-meta">
+                        Logged in <code>{{ $feedback['path'] ?? '' }}</code>
+                        @if (! empty($feedback['blocking_count']))
+                            — {{ $feedback['blocking_count'] }} blocking comment(s). Promote with
+                            <code>php artisan larapilot:spec-request-changes {{ $spec['code'] }} --file=... --include-feedback</code>
                         @endif
                     </p>
                 </section>

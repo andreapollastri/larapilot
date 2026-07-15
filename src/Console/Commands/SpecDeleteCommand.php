@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Console\Commands;
 
+use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
 
@@ -13,7 +14,7 @@ class SpecDeleteCommand extends LarapilotCommand
 
     protected $description = 'Remove a spec from the backlog together with its spec and plan files';
 
-    public function handle(SpecService $specs): int
+    public function handle(SpecService $specs, InternalFeedbackService $feedback): int
     {
         $code = (string) $this->argument('code');
 
@@ -22,6 +23,7 @@ class SpecDeleteCommand extends LarapilotCommand
         }
 
         $specs->delete($code);
+        $feedback->delete($code);
 
         return $this->success('spec_delete_result', [
             'code' => $code,

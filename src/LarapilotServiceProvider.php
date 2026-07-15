@@ -12,6 +12,7 @@ use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
+use Larapilot\Console\Commands\SpecCommentCommand;
 use Larapilot\Console\Commands\SpecDeleteCommand;
 use Larapilot\Console\Commands\SpecListCommand;
 use Larapilot\Console\Commands\SpecNextCommand;
@@ -27,18 +28,23 @@ use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
 use Larapilot\Http\ApiRouteRegistrar;
 use Larapilot\Http\DashboardRouteRegistrar;
+use Larapilot\Http\MockupAssetsRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\GitService;
+use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
 use Larapilot\Services\ValidationService;
+use Larapilot\Support\MockupAssetResolver;
+use Larapilot\Support\MockupCssProcessor;
+use Larapilot\Support\MockupHtmlProcessor;
 use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
@@ -52,7 +58,11 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
         $this->app->singleton(PlanService::class);
+        $this->app->singleton(MockupAssetResolver::class);
+        $this->app->singleton(MockupHtmlProcessor::class);
+        $this->app->singleton(MockupCssProcessor::class);
         $this->app->singleton(MockupService::class);
+        $this->app->singleton(InternalFeedbackService::class);
         $this->app->singleton(DashboardService::class);
         $this->app->singleton(ApiService::class);
         $this->app->singleton(OpenApiService::class);
@@ -78,6 +88,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecPlanCommand::class,
                 SpecStartCommand::class,
                 SpecReviewCommand::class,
+                SpecCommentCommand::class,
                 SpecRequestChangesCommand::class,
                 TaskDoneCommand::class,
                 MetricsCommand::class,
@@ -101,6 +112,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapilot');
 
         MockupRouteRegistrar::register();
+        MockupAssetsRouteRegistrar::register();
         DashboardRouteRegistrar::register();
         ApiRouteRegistrar::register();
     }

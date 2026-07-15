@@ -2,6 +2,23 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.8.0] - 2026-07-15
+
+### Added
+
+- **Internal feedback on user stories** — PM and dev comments persist as append-only markdown in `.larapilot/internal-feedback/{code}.md`, visible on the workflow dashboard and JSON API until the spec reaches **DONE**.
+- **`larapilot:spec-comment`** — append a comment from the CLI (`--author`, `--message`, optional `--blocks-merge`).
+- **Dashboard comment form** — post comments from spec detail (dev/staging only); blocking comments flagged with `[blocks-merge]`.
+- **`--include-feedback` on `spec-request-changes`** — promotes blocking internal comments into `## Rework Feedback` when sending a spec back to TODO.
+- **`LARAPILOT_COMMENTS_ENABLED`** — env toggle (default `true`) to enable or disable comments globally via `config/larapilot.php`.
+
+### Fixed
+
+- **Mockup asset resolution** — `filament-tokens.css` (and other `{system}-tokens.css` aliases) now resolve to packaged design-system `tokens.css`; orphan requests like `/mockups/filament-tokens.css` work when the browser resolves parent-relative paths incorrectly.
+- **Brand assets in mockups** — `logo.svg`, `favicon.svg`, and similar files are found in nested mockup folders; `srcset`, inline `style url()`, and CSS `url()` references are rewritten to working preview URLs.
+- **Design-system paths** — references to `.larapilot/design-systems/{system}/…` in mockup HTML resolve to `/mockup-assets/design-systems/…`.
+- **`spec-request-changes`** — now records `status_history` via `SpecService::requestChanges()`.
+
 ## [1.7.3] - 2026-07-15
 
 ### Added
@@ -12,6 +29,7 @@ All notable changes to `larapilot` will be documented in this file.
 ### Changed
 
 - **Workflow API & OpenAPI** — `mockups` summary on board/spec list items; full `mockups` object (screens, entry URL) on spec detail.
+- **Mockup asset serving** — HTML mockups rewrite relative `tokens.css` and sibling asset paths to working URLs; packaged design-system files are served at `/mockup-assets/design-systems/` (dev/staging only) so screens copied from `design-systems/*/html/` render with CSS in the dashboard iframe and `/mockups/{spec}` preview.
 - **Docs site** — v1.7.3 release note and dashboard spec-detail copy for mockup preview.
 
 ## [1.7.2] - 2026-07-15

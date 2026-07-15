@@ -212,6 +212,15 @@
         text-transform: uppercase;
         color: #7c3aed;
     }
+
+    .feedback-indicator {
+        margin-top: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #b45309;
+    }
 </style>
 @endpush
 
@@ -294,6 +303,14 @@
                                 <h3>{{ $spec['title'] ?? 'Untitled' }}</h3>
                                 @if (! empty($spec['mockups']['available']))
                                     <div class="mockup-indicator">Mockup</div>
+                                @endif
+                                @if (! empty($spec['feedback']['entry_count']))
+                                    <div class="feedback-indicator">
+                                        {{ $spec['feedback']['entry_count'] }} comment{{ $spec['feedback']['entry_count'] === 1 ? '' : 's' }}
+                                        @if (! empty($spec['feedback']['blocking_count']))
+                                            · {{ $spec['feedback']['blocking_count'] }} blocking
+                                        @endif
+                                    </div>
                                 @endif
                                 @if (! empty($spec['epic']['title']))
                                     <p>{{ $spec['epic']['title'] }}</p>

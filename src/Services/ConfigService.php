@@ -80,6 +80,7 @@ class ConfigService
                 'legacy' => $this->absolutePath($config['paths']['legacy'] ?? '.larapilot/legacy/'),
                 'research' => $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
                 'design_systems' => $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/'),
+                'internal_feedback' => $this->absolutePath($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -152,6 +153,7 @@ class ConfigService
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/tailwind/html',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte/html',
+            $this->absolutePath($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'),
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
             $this->absolutePath('.larapilot/brand/'),
         ]));
@@ -186,6 +188,7 @@ class ConfigService
             '.larapilot/client-materials/README.md' => 'client-materials/README.md',
             '.larapilot/legacy/README.md' => 'legacy/README.md',
             '.larapilot/research/README.md' => 'research/README.md',
+            '.larapilot/internal-feedback/README.md' => 'internal-feedback/README.md',
         ];
 
         foreach ($intakeReadmes as $projectRelative => $packageRelative) {
@@ -256,5 +259,14 @@ class ConfigService
         }
 
         return true;
+    }
+
+    public function commentsEnabled(): bool
+    {
+        if (! config('larapilot.enabled', true)) {
+            return false;
+        }
+
+        return (bool) config('larapilot.comments.enabled', true);
     }
 }

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.7.3 links /larapilot-design mockups to the workflow dashboard — embedded preview on each user story. Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.0 adds internal PM/dev feedback on each user story until DONE. Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2579,7 +2579,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.7.3</span>
+          <span class="hero-version">v1.8.0</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -2808,6 +2808,7 @@
             <div class="doc-nav-group">
               <a href="#deep-dive" data-nav>Deep Dive</a>
               <a class="doc-nav-sub" href="#deep-dive-how-it-works" data-nav>How it works</a>
+              <a class="doc-nav-sub" href="#deep-dive-update" data-nav>Upgrade</a>
               <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
               <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
               <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
@@ -2853,7 +2854,26 @@
           </ol>
         </div>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) · MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
-        <p>Already on Boost? <code>php artisan boost:update --discover</code>. After upgrades: <code>php artisan larapilot:update</code>.</p>
+        <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick up new skills.</p>
+
+        <h3>Upgrade</h3>
+        <p>After a new Larapilot release — pull the package with Composer, then refresh project assets with Artisan. Details: <a href="#deep-dive-update">Upgrade</a>.</p>
+        <div class="install-commands">
+          <div class="install-commands-header">Terminal</div>
+          <ol class="install-commands-list">
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">1</span>
+              <code class="install-command-text">composer update andreapollastri/larapilot</code>
+              <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot" title="Copy command">Copy</button>
+            </li>
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">2</span>
+              <code class="install-command-text">php artisan larapilot:update</code>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update" title="Copy command">Copy</button>
+            </li>
+          </ol>
+        </div>
+        <p>Verify with <code>php artisan larapilot:doctor</code>. Runtime-only refresh (skip Boost republish): <code>php artisan larapilot:update --skip-boost</code>.</p>
 
         <h3>First run</h3>
         <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product example</a>.</p>
@@ -3594,9 +3614,77 @@ body: |
             </div>
             <div class="layer-card">
               <strong>3 · CLI (under the hood)</strong>
-              <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>.</p>
+              <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>. After a package upgrade, run <a href="#deep-dive-update">Composer + <code>larapilot:update</code></a> to refresh shared runtime and Boost skills.</p>
             </div>
           </div>
+        </article>
+
+        <!-- Upgrade -->
+        <article class="deep-dive-sub" id="deep-dive-update">
+          <h3>Upgrade</h3>
+          <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new version, then refresh the files Larapilot publishes into your project — without touching your workflow data in <code>.larapilot/config.yaml</code>, specs, plans, or PRD.</p>
+
+          <div class="install-commands">
+            <div class="install-commands-header">Terminal — after each release</div>
+            <ol class="install-commands-list">
+              <li class="install-command">
+                <span class="install-command-num" aria-hidden="true">1</span>
+                <code class="install-command-text">composer update andreapollastri/larapilot</code>
+                <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot" title="Copy command">Copy</button>
+              </li>
+              <li class="install-command">
+                <span class="install-command-num" aria-hidden="true">2</span>
+                <code class="install-command-text">php artisan larapilot:update</code>
+                <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update" title="Copy command">Copy</button>
+              </li>
+            </ol>
+          </div>
+
+          <h4>What each step does</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>Updates</th>
+                  <th>Leaves untouched</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>composer update andreapollastri/larapilot</code></td>
+                  <td>PHP package in <code>vendor/</code> — services, CLI, dashboard, design-system packages, Boost resources bundled with Larapilot</td>
+                  <td>Your <code>.larapilot/</code> project config and workflow artifacts</td>
+                </tr>
+                <tr>
+                  <td><code>php artisan larapilot:update</code></td>
+                  <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged <code>.larapilot/design-systems/</code> references; re-runs <code>boost:update</code> to republish guidelines and <code>/larapilot-*</code> skills</td>
+                  <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned files</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Options &amp; checks</h4>
+          <ul>
+            <li><code>php artisan larapilot:update --skip-boost</code> — refresh shared runtime and design-system copies only; run <code>php artisan boost:update</code> yourself when you want new skills/guidelines</li>
+            <li><code>php artisan larapilot:doctor</code> — verify install health after an upgrade</li>
+            <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and skills are missing</li>
+          </ul>
+
+          <h4>Automate with Composer (optional)</h4>
+          <p>Add a <code>post-update-cmd</code> hook so <code>larapilot:update</code> runs whenever Larapilot is updated via Composer:</p>
+          <div class="code-block">
+            <div class="code-block-header">composer.json — scripts</div>
+            <pre><code>"scripts": {
+    "post-update-cmd": [
+        "@php artisan larapilot:update --skip-boost"
+    ]
+}</code></pre>
+          </div>
+          <p>Omit <code>--skip-boost</code> if you always want Boost guidelines and skills republished on every Composer update. Run <code>php artisan boost:update</code> manually when you use <code>--skip-boost</code> in the hook.</p>
+
+          <div class="cli-note"><strong>Do not re-run <code>larapilot:install</code> on an existing project</strong> unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for routine upgrades.</div>
         </article>
 
         <!-- Skills -->
@@ -4334,7 +4422,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.7.3</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.0</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

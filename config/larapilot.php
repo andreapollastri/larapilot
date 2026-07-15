@@ -21,11 +21,23 @@ return [
         'legacy' => '.larapilot/legacy/',
         'research' => '.larapilot/research/',
         'design_systems' => '.larapilot/design-systems/',
+        'internal_feedback' => '.larapilot/internal-feedback/',
+    ],
+
+    'comments' => [
+        'enabled' => env('LARAPILOT_COMMENTS_ENABLED', true),
     ],
 
     'mockups_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockups',
+        'middleware' => ['web'],
+        'environments' => ['local', 'development', 'testing', 'staging'],
+    ],
+
+    'mockup_assets_route' => [
+        'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
+        'prefix' => 'mockup-assets',
         'middleware' => ['web'],
         'environments' => ['local', 'development', 'testing', 'staging'],
     ],
