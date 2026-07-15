@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.7.2 adds Bootstrap 5, Tailwind, and AdminLTE mockup design systems — five packaged references for /larapilot-design. Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, ship reviewed code. v1.7.2">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,35 +403,6 @@
     .hero-tagline strong {
       color: var(--text);
       font-weight: 700;
-    }
-
-    .hero-news {
-      margin-bottom: 1.35rem;
-      padding: .9rem 1rem;
-      background: var(--accent-soft);
-      border: 1px solid rgba(255, 68, 54, .18);
-      border-radius: var(--radius-sm);
-      font-size: .84rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .hero-news strong {
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-
-    .hero-news ul {
-      margin: .55rem 0 0;
-      padding-left: 1.1rem;
-    }
-
-    .hero-news li {
-      margin-bottom: .2rem;
-    }
-
-    .hero-news li:last-child {
-      margin-bottom: 0;
     }
 
     /* Terminal mock */
@@ -2615,16 +2586,6 @@
           Spec-driven workflow for Laravel — integrated with <a href="https://laravel.com/ai/boost" target="_blank"
             rel="noopener">Laravel Boost</a>. Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
         </p>
-        <div class="hero-news">
-          <strong>New in v1.7.2</strong> — five packaged mockup design systems under
-          <code>.larapilot/design-systems/</code>:
-          <ul>
-            <li><strong>Bootstrap 5</strong> and <strong>Tailwind CSS</strong> for marketing and custom app UI</li>
-            <li><strong>AdminLTE 4</strong> for Bootstrap admin panels</li>
-            <li>Corrected <strong>Filament v3</strong> sidebar styling + Starter Kit token fixes</li>
-            <li>Sharper persona roles across discovery, review, and design-system compliance</li>
-          </ul>
-        </div>
         <p class="hero-flow">
           <code>/larapilot-inception</code> → <code>/larapilot-spec</code> →
           <code>/larapilot-plan US-XXX</code> → <code>/larapilot-implement US-XXX</code> →
@@ -2851,6 +2812,7 @@
               <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
               <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
               <a class="doc-nav-sub" href="#deep-dive-artifacts" data-nav>Artifacts</a>
+              <a class="doc-nav-sub" href="#deep-dive-design-systems" data-nav>Design systems</a>
               <a class="doc-nav-sub" href="#deep-dive-cli" data-nav>Artisan CLI</a>
               <a class="doc-nav-sub" href="#deep-dive-dashboard" data-nav>Dashboard</a>
               <a class="doc-nav-sub" href="#deep-dive-api" data-nav>API</a>
@@ -3021,7 +2983,7 @@
             <div class="wizard">
               <strong>AskQuestion — Round 3 (stack &amp; panel)</strong>
               <ol>
-                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament panel · Custom</li>
+                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament · AdminLTE · Bootstrap 5 · Tailwind CSS · Custom</li>
                 <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
                 <li><strong>GDPR:</strong> EU users expected · Internal only · Unsure</li>
               </ol>
@@ -3225,7 +3187,7 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="wizard">
               <strong>AskQuestion — Round 3 (admin &amp; stack)</strong>
               <ol>
-                <li><strong>Admin panel:</strong> Filament · Laravel Starter Kit · Custom panel</li>
+                <li><strong>Admin panel:</strong> Filament · AdminLTE · Laravel Starter Kit · Bootstrap 5 · Custom panel</li>
                 <li><strong>Multi-tenancy:</strong> Single company · Multi-company (row-level) · DB per tenant</li>
                 <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
               </ol>
@@ -3613,7 +3575,7 @@ body: |
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
           <h2>Technical reference</h2>
-          <p>Skills, personas, workflow, artifacts, CLI, dashboard, and API — how every layer fits together.</p>
+          <p>Skills, personas, workflow, artifacts, design systems, CLI, dashboard, and API — how every layer fits together.</p>
         </div>
 
         <!-- How it works -->
@@ -3732,7 +3694,7 @@ body: |
         <!-- Personas -->
         <article class="deep-dive-sub" id="deep-dive-personas">
           <h3>Personas</h3>
-          <p class="lead">Personas are lenses, not costumes. Each skill activates a subset of the squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind of scrutiny to the work at hand.</p>
+          <p class="lead"><strong>27 personas</strong> are lenses, not costumes. Each skill activates a subset of the squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind of scrutiny to the work at hand. <strong>Zoey</strong> (AI Guru) is active in every skill; <strong>Albert</strong>, <strong>Ricky</strong>, and refined <strong>Joe</strong> roles landed in v1.7.1.</p>
 
           <div class="persona-phases">
             <div class="persona-phase">
@@ -4065,6 +4027,11 @@ body: |
                   <td>Static HTML previews served at <code>/mockups/{spec}</code> (dev/staging only)</td>
                 </tr>
                 <tr>
+                  <td><code>design-systems/</code></td>
+                  <td><code>larapilot:install</code> · <code>larapilot:update</code></td>
+                  <td>Packaged mockup references — Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE — see <a href="#deep-dive-design-systems">design systems</a></td>
+                </tr>
+                <tr>
                   <td>Laravel app code</td>
                   <td><code>/larapilot-implement</code></td>
                   <td>Models, controllers, views, migrations, Pest tests — outside <code>.larapilot/</code></td>
@@ -4074,6 +4041,58 @@ body: |
           </div>
 
           <p>JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to confirm writes and status changes. Inspect artifacts visually via the <a href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.</p>
+        </article>
+
+        <!-- Design systems -->
+        <article class="deep-dive-sub" id="deep-dive-design-systems">
+          <h3>Design systems</h3>
+          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code> picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency through implement and review.</p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>System</th>
+                  <th>Path</th>
+                  <th>When to use</th>
+                  <th>Contents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Filament</strong></td>
+                  <td><code>design-systems/filament/</code></td>
+                  <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>, <strong>17</strong> HTML screens — v3 light sidebar (corrected in v1.7.2)</td>
+                </tr>
+                <tr>
+                  <td><strong>Laravel Starter Kits</strong></td>
+                  <td><code>design-systems/starter-kit/</code></td>
+                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>, <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
+                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Bootstrap 5</strong></td>
+                  <td><code>design-systems/bootstrap-5/</code></td>
+                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a Starter Kit)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing, dashboard, login, settings, components)</td>
+                </tr>
+                <tr>
+                  <td><strong>Tailwind CSS</strong></td>
+                  <td><code>design-systems/tailwind/</code></td>
+                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament, Starter Kit, or Bootstrap</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens</td>
+                </tr>
+                <tr>
+                  <td><strong>AdminLTE</strong></td>
+                  <td><code>design-systems/adminlte/</code></td>
+                  <td>Admin/control panel mockups when the PRD records <strong>AdminLTE 4</strong></td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard, resource list, login, settings, components)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
         </article>
 
         <!-- Artisan CLI -->
