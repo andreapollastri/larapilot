@@ -330,13 +330,6 @@
         resize: vertical;
     }
 
-    .feedback-form-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
 
     .feedback-checkbox {
         display: inline-flex;
@@ -362,10 +355,261 @@
         font-size: 0.88rem;
     }
 
-    .feedback-meta {
-        margin-top: 10px;
+    .feedback-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .feedback-accordion {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+    }
+
+    .feedback-accordion--blocking {
+        border-color: color-mix(in srgb, #f59e0b 45%, var(--border));
+        background: color-mix(in srgb, #f59e0b 6%, var(--surface));
+    }
+
+    .feedback-accordion[open] {
+        border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    }
+
+    .feedback-accordion-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        cursor: pointer;
+        list-style: none;
+        flex-wrap: wrap;
+        user-select: none;
+    }
+
+    .feedback-accordion-summary::-webkit-details-marker,
+    .feedback-accordion-summary::marker {
+        display: none;
+        content: '';
+    }
+
+    .feedback-accordion-title {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .feedback-accordion-chevron {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        color: var(--muted);
+        transition: transform 0.15s ease, color 0.15s ease;
+    }
+
+    .feedback-accordion[open] .feedback-accordion-chevron {
+        transform: rotate(90deg);
+        color: var(--accent);
+    }
+
+    .feedback-accordion-headline {
+        min-width: 0;
+    }
+
+    .feedback-accordion-headline strong {
+        font-size: 0.92rem;
+    }
+
+    .feedback-accordion-preview {
+        margin-top: 4px;
         color: var(--muted);
         font-size: 0.82rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .feedback-accordion:not([open]) .feedback-accordion-preview {
+        display: block;
+    }
+
+    .feedback-accordion[open] .feedback-accordion-preview {
+        display: none;
+    }
+
+    .feedback-accordion-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .feedback-status {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+    }
+
+    .feedback-rework-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #b45309;
+        background: color-mix(in srgb, #f59e0b 18%, transparent);
+        padding: 3px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .feedback-accordion-panel {
+        padding: 0 16px 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    .feedback-accordion:not([open]) .feedback-accordion-panel {
+        display: none;
+    }
+
+    .feedback-body {
+        padding: 14px 0 0;
+    }
+
+    .feedback-form label.required::after {
+        content: ' *';
+        color: #ef4444;
+        font-weight: 700;
+    }
+
+    .md-editor {
+        display: grid;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--surface);
+    }
+
+    .md-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+        flex-wrap: wrap;
+    }
+
+    .md-toolbar button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        width: 30px;
+        height: 28px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 700;
+        font-family: inherit;
+    }
+
+    .md-toolbar button:hover,
+    .md-toolbar button.is-active {
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+
+    .md-toolbar-divider {
+        width: 1px;
+        height: 18px;
+        background: var(--border);
+        margin: 0 4px;
+    }
+
+    .md-editor textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 12px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        resize: vertical;
+    }
+
+    .md-editor textarea:focus {
+        outline: none;
+    }
+
+    .md-preview {
+        display: none;
+        padding: 12px;
+        border-top: 1px solid var(--border);
+        min-height: 120px;
+        font-size: 0.92rem;
+    }
+
+    .md-editor.is-preview .md-preview {
+        display: block;
+    }
+
+    .md-editor.is-preview textarea {
+        display: none;
+    }
+
+    .feedback-form-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+    }
+
+    .feedback-form-footer-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .feedback-form-log {
+        color: var(--muted);
+        font-size: 0.78rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 280px;
+    }
+
+    .feedback-form-log code {
+        font-size: 0.76rem;
+    }
+
+    .feedback-form-blocking-hint {
+        color: #b45309;
+        font-size: 0.76rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .field-error {
+        color: #b91c1c;
+        font-size: 0.78rem;
+        font-weight: 500;
     }
 </style>
 @endpush
@@ -471,8 +715,36 @@
             @if (! empty($feedback['enabled']))
                 <section class="card panel">
                     <h3>Internal feedback ({{ $feedback['entry_count'] ?? 0 }})</h3>
-                    @if (! empty($feedback['html']))
-                        <div class="markdown">{!! $feedback['html'] !!}</div>
+                    @if (! empty($feedback['entries']))
+                        <div class="feedback-list" data-exclusive-accordion>
+                            @foreach ($feedback['entries'] as $entry)
+                                <details class="feedback-accordion @if (! empty($entry['blocks_merge'])) feedback-accordion--blocking @endif">
+                                    <summary class="feedback-accordion-summary" aria-label="Toggle comment from {{ $entry['author'] }}">
+                                        <div class="feedback-accordion-title">
+                                            <svg class="feedback-accordion-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                            </svg>
+                                            <div class="feedback-accordion-headline">
+                                                <strong>{{ $entry['author'] }}</strong>
+                                                <span style="color: var(--muted); font-weight: 500;"> · {{ $entry['at'] }}</span>
+                                                @if (! empty($entry['preview']))
+                                                    <div class="feedback-accordion-preview">{{ $entry['preview'] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="feedback-accordion-meta">
+                                            @if (! empty($entry['blocks_merge']))
+                                                <span class="feedback-rework-badge">Needs rework</span>
+                                            @endif
+                                            <span class="feedback-status">{{ $entry['status'] }}</span>
+                                        </div>
+                                    </summary>
+                                    <div class="feedback-accordion-panel">
+                                        <div class="feedback-body markdown">{!! $entry['body_html'] !!}</div>
+                                    </div>
+                                </details>
+                            @endforeach
+                        </div>
                     @else
                         <p class="empty" style="padding: 12px 0; text-align: left;">No comments yet. PM and dev can log decisions and questions here until the story is DONE.</p>
                     @endif
@@ -480,33 +752,66 @@
                     @if (! empty($feedback['writable']))
                         <form class="feedback-form" method="post" action="{{ route('larapilot.dashboard.spec.comments.store', $spec['code']) }}">
                             @csrf
-                            <label>
+                            <label class="required">
                                 Author
-                                <input type="text" name="author" value="{{ old('author', 'PM') }}" maxlength="80" required>
+                                <input
+                                    type="text"
+                                    name="author"
+                                    value="{{ old('author') }}"
+                                    maxlength="80"
+                                    placeholder="PM"
+                                    required
+                                    autocomplete="off"
+                                >
+                                @error('author')
+                                    <span class="field-error">{{ $message }}</span>
+                                @enderror
                             </label>
-                            <label>
+                            <label class="required">
                                 Comment
-                                <textarea name="message" required maxlength="10000" placeholder="Scope clarification, review note, implementation question…">{{ old('message') }}</textarea>
+                                <div class="md-editor" data-md-editor>
+                                    <div class="md-toolbar" role="toolbar" aria-label="Markdown formatting">
+                                        <button type="button" data-md-action="bold" title="Bold"><strong>B</strong></button>
+                                        <button type="button" data-md-action="italic" title="Italic"><em>I</em></button>
+                                        <button type="button" data-md-action="code" title="Inline code">&lt;&gt;</button>
+                                        <span class="md-toolbar-divider" aria-hidden="true"></span>
+                                        <button type="button" data-md-action="ul" title="Bullet list">•</button>
+                                        <button type="button" data-md-action="link" title="Link">🔗</button>
+                                        <span class="md-toolbar-divider" aria-hidden="true"></span>
+                                        <button type="button" data-md-action="preview" title="Toggle preview">👁</button>
+                                    </div>
+                                    <textarea
+                                        name="message"
+                                        required
+                                        maxlength="10000"
+                                        placeholder="Scope clarification, review note, implementation question…"
+                                        data-md-input
+                                    >{{ old('message') }}</textarea>
+                                    <div class="md-preview markdown" data-md-preview aria-hidden="true"></div>
+                                </div>
+                                @error('message')
+                                    <span class="field-error">{{ $message }}</span>
+                                @enderror
                             </label>
-                            <div class="feedback-form-actions">
-                                <label class="feedback-checkbox">
-                                    <input type="checkbox" name="blocks_merge" value="1" @checked(old('blocks_merge'))>
-                                    Blocks merge / needs rework
-                                </label>
+                            <div class="feedback-form-footer">
+                                <div class="feedback-form-footer-left">
+                                    <label class="feedback-checkbox">
+                                        <input type="checkbox" name="blocks_merge" value="1" @checked(old('blocks_merge'))>
+                                        Blocks merge / needs rework
+                                    </label>
+                                    <span class="feedback-form-log" title="{{ $feedback['path'] ?? '' }}">
+                                        <code>{{ $feedback['path_short'] ?? $feedback['path'] ?? '' }}</code>
+                                    </span>
+                                    @if (! empty($feedback['blocking_count']))
+                                        <span class="feedback-form-blocking-hint">{{ $feedback['blocking_count'] }} blocking</span>
+                                    @endif
+                                </div>
                                 <button type="submit" class="feedback-submit">Add comment</button>
                             </div>
                         </form>
                     @else
                         <p class="feedback-closed">Comments are closed because this user story is DONE.</p>
                     @endif
-
-                    <p class="feedback-meta">
-                        Logged in <code>{{ $feedback['path'] ?? '' }}</code>
-                        @if (! empty($feedback['blocking_count']))
-                            — {{ $feedback['blocking_count'] }} blocking comment(s). Promote with
-                            <code>php artisan larapilot:spec-request-changes {{ $spec['code'] }} --file=... --include-feedback</code>
-                        @endif
-                    </p>
                 </section>
             @endif
 
@@ -576,13 +881,17 @@
 @push('scripts')
 <script>
     document.querySelectorAll('[data-exclusive-accordion]').forEach(function (accordion) {
-        accordion.querySelectorAll('.task-accordion').forEach(function (item) {
+        var selector = accordion.classList.contains('feedback-list')
+            ? '.feedback-accordion'
+            : '.task-accordion';
+
+        accordion.querySelectorAll(selector).forEach(function (item) {
             item.addEventListener('toggle', function () {
                 if (! item.open) {
                     return;
                 }
 
-                accordion.querySelectorAll('.task-accordion').forEach(function (other) {
+                accordion.querySelectorAll(selector).forEach(function (other) {
                     if (other !== item) {
                         other.open = false;
                     }
@@ -590,5 +899,105 @@
             });
         });
     });
+
+    document.querySelectorAll('[data-md-editor]').forEach(function (editor) {
+        var textarea = editor.querySelector('[data-md-input]');
+        var preview = editor.querySelector('[data-md-preview]');
+
+        if (! textarea || ! preview) {
+            return;
+        }
+
+        function wrapSelection(before, after, placeholder) {
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            var selected = textarea.value.slice(start, end) || placeholder || '';
+            var next = textarea.value.slice(0, start) + before + selected + after + textarea.value.slice(end);
+            textarea.value = next;
+            var cursor = start + before.length + selected.length + after.length;
+            textarea.focus();
+            textarea.setSelectionRange(start + before.length, start + before.length + selected.length);
+            renderPreview();
+        }
+
+        function prefixLines(prefix) {
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            var value = textarea.value;
+            var lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            var lineEnd = value.indexOf('\n', end);
+            if (lineEnd === -1) {
+                lineEnd = value.length;
+            }
+            var block = value.slice(lineStart, lineEnd);
+            var lines = block.split('\n').map(function (line) {
+                return line.startsWith(prefix) ? line : prefix + line;
+            });
+            textarea.value = value.slice(0, lineStart) + lines.join('\n') + value.slice(lineEnd);
+            textarea.focus();
+            renderPreview();
+        }
+
+        function renderPreview() {
+            var text = textarea.value;
+            preview.innerHTML = text.trim() === ''
+                ? '<p style="color: var(--muted); margin: 0;">Preview will appear here…</p>'
+                : window.larapilotMarkdownPreview(text);
+        }
+
+        editor.querySelectorAll('[data-md-action]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var action = button.getAttribute('data-md-action');
+
+                if (action === 'preview') {
+                    editor.classList.toggle('is-preview');
+                    button.classList.toggle('is-active', editor.classList.contains('is-preview'));
+                    renderPreview();
+                    return;
+                }
+
+                if (action === 'bold') {
+                    wrapSelection('**', '**', 'bold text');
+                } else if (action === 'italic') {
+                    wrapSelection('*', '*', 'italic text');
+                } else if (action === 'code') {
+                    wrapSelection('`', '`', 'code');
+                } else if (action === 'ul') {
+                    prefixLines('- ');
+                } else if (action === 'link') {
+                    wrapSelection('[', '](https://)', 'label');
+                }
+            });
+        });
+
+        textarea.addEventListener('input', function () {
+            if (editor.classList.contains('is-preview')) {
+                renderPreview();
+            }
+        });
+    });
+
+    window.larapilotMarkdownPreview = function (text) {
+        var escaped = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        return escaped
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/^- (.+)$/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>\n?)+/g, function (match) {
+                return '<ul>' + match + '</ul>';
+            })
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/^(?!<[hulo])/gm, '<p>')
+            .replace(/<\/p><p><\/p>/g, '</p>');
+    };
 </script>
 @endpush

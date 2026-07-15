@@ -2,6 +2,14 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.8.1] - 2026-07-15
+
+### Changed
+
+- **Internal feedback dashboard** — comment list uses task-style accordions with author, date, status, and a closed-state preview; blocking comments show a prominent **Needs rework** badge.
+- **Comment form** — Author and Comment are required (no pre-filled author); simple visual Markdown toolbar with live preview; log path, blocking checkbox, and submit control on one compact footer row.
+- **Filament design system** — default primary palette is **slate** (not amber/orange) in `tokens.css` and packaged HTML mockups.
+
 ## [1.8.0] - 2026-07-15
 
 ### Added

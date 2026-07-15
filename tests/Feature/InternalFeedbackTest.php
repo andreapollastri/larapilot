@@ -80,16 +80,32 @@ it('includes blocking internal feedback in request changes', function (): void {
         ->and($spec['status_history'])->not->toBeEmpty();
 });
 
-it('shows internal feedback on the dashboard spec page', function (): void {
+it('rejects empty dashboard comment submissions', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'PLANNED']);
+
+    $this->from(route('larapilot.dashboard.spec', 'US-001'))
+        ->post('/larapilot/specs/US-001/comments', [
+            'author' => '',
+            'message' => '',
+        ])
+        ->assertSessionHasErrors(['author', 'message']);
+});
+
+it('shows feedback entries in accordion on the dashboard spec page', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec(['status' => 'REVIEW']);
 
     app(InternalFeedbackService::class)->append('US-001', 'Dev', 'Need API contract clarification.');
+    app(InternalFeedbackService::class)->append('US-001', 'PM', 'Blocking issue.', statusAt: 'REVIEW', blocksMerge: true);
 
     $this->get('/larapilot/specs/US-001')
         ->assertOk()
         ->assertSee('Internal feedback')
-        ->assertSee('Need API contract clarification', false);
+        ->assertSee('feedback-accordion', false)
+        ->assertSee('Need API contract clarification', false)
+        ->assertSee('Needs rework', false)
+        ->assertSee('placeholder="PM"', false);
 });
 
 it('accepts dashboard comment submissions when enabled', function (): void {

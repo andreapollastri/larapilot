@@ -67,7 +67,7 @@ HTML skeleton:
 
 | Variant | Use |
 | --- | --- |
-| Primary (amber) | Main CTA — Save, Create, Submit |
+| Primary (slate) | Main CTA — Save, Create, Submit |
 | Secondary (outline) | Cancel, Back |
 | Danger (red) | Delete, destructive confirm |
 | Ghost/link | Tertiary actions in tables |

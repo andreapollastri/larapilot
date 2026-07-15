@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.0 adds internal PM/dev feedback on each user story until DONE. Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.1 polishes internal PM/dev feedback on the dashboard (accordion list, Markdown editor) and sets Filament primary to slate. Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2579,7 +2579,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.8.0</span>
+          <span class="hero-version">v1.8.1</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -4074,6 +4074,7 @@ body: |
 ├── specs/US-XXX.yaml        <span class="comment"># user story + acceptance criteria</span>
 ├── plans/US-XXX-plan.yaml   <span class="comment"># tasks, deliverables, test strategy</span>
 ├── mockups/{spec}/          <span class="comment"># HTML mockups (optional)</span>
+├── internal-feedback/       <span class="comment"># PM/dev comments per spec (append-only)</span>
 ├── client-materials/        <span class="comment"># drop client docs before inception</span>
 ├── legacy/                  <span class="comment"># legacy snapshot for rewrite/port</span>
 ├── research/                <span class="comment"># deepsearch, parity matrices</span>
@@ -4115,6 +4116,11 @@ body: |
                   <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); linked in the <a href="#deep-dive-dashboard">dashboard</a> and JSON API when present</td>
                 </tr>
                 <tr>
+                  <td><code>internal-feedback/{code}.md</code></td>
+                  <td>Dashboard · <code>larapilot:spec-comment</code></td>
+                  <td>Append-only PM/dev notes until the spec is <span class="status status-done">DONE</span>; blocking comments flagged with <code>[blocks-merge]</code></td>
+                </tr>
+                <tr>
                   <td><code>design-systems/</code></td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code></td>
                   <td>Packaged mockup references — Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE — see <a href="#deep-dive-design-systems">design systems</a></td>
@@ -4151,7 +4157,7 @@ body: |
                   <td><strong>Filament</strong></td>
                   <td><code>design-systems/filament/</code></td>
                   <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>, <strong>17</strong> HTML screens — v3 light sidebar (corrected in v1.7.2)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>, <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)</td>
                 </tr>
                 <tr>
                   <td><strong>Laravel Starter Kits</strong></td>
@@ -4224,8 +4230,8 @@ body: |
                 </tr>
                 <tr>
                   <td>Backlog</td>
-                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> · <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> · <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code></td>
-                  <td><code>/larapilot-spec</code>, shortcuts</td>
+                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> · <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> · <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> · <code>larapilot:spec-comment</code></td>
+                  <td><code>/larapilot-spec</code>, shortcuts, dashboard comments</td>
                 </tr>
                 <tr>
                   <td>Planning</td>
@@ -4239,7 +4245,7 @@ body: |
                 </tr>
                 <tr>
                   <td>Review</td>
-                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code></td>
+                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code> (<code>--include-feedback</code>)</td>
                   <td><code>/larapilot-review</code></td>
                 </tr>
                 <tr>
@@ -4257,7 +4263,7 @@ body: |
         <!-- Dashboard -->
         <article class="deep-dive-sub" id="deep-dive-dashboard">
           <h3>Dashboard</h3>
-          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read the PRD, and drill into spec detail between skill sessions — nothing is editable from the browser.</p>
+          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read the PRD, and drill into spec detail between skill sessions. You can also post <strong>internal feedback</strong> comments from the spec page (dev/staging only) — workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes register automatically when the package boots. All of the following must be true:</p>
@@ -4310,7 +4316,7 @@ body: |
           </div>
 
           <h4>Board</h4>
-          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, blocking-feedback badge when present, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
@@ -4320,6 +4326,7 @@ body: |
           <ul>
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via <code>/mockups/{code}</code> in dev/staging)</li>
+            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview); blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar until the story is <span class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.</li>
             <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
             <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
           </ul>
@@ -4348,17 +4355,17 @@ body: |
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
-                  <td>Metrics, status order, and specs grouped by workflow column (includes <code>mockups</code> per spec)</td>
+                  <td>Metrics, status order, and specs grouped by workflow column (includes <code>mockups</code> and <code>feedback</code> summary per spec)</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress and <code>mockups</code> summary; optional <code>?status=TODO</code> filter</td>
+                  <td>All specs with task progress, <code>mockups</code> and <code>feedback</code> summary; optional <code>?status=TODO</code> filter</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs/{code}</code></td>
-                  <td>Single spec with plan body, tasks, workdir, task progress, and <code>mockups</code> when HTML exists</td>
+                  <td>Single spec with plan body, tasks, workdir, task progress, <code>mockups</code> when HTML exists, and <code>feedback</code> metadata</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -4391,7 +4398,8 @@ body: |
       "code": "US-002",
       "title": "Project Management",
       "task_progress": { "total": 0, "done": 0 },
-      "mockups": { "available": false, "screen_count": 0 }
+      "mockups": { "available": false, "screen_count": 0 },
+      "feedback": { "enabled": true, "available": false, "entry_count": 0, "blocking_count": 0, "writable": true }
     }],
     "DONE": [{
       "code": "US-001",
@@ -4422,7 +4430,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.0</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.1</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

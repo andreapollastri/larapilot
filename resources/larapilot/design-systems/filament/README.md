@@ -46,7 +46,7 @@ Do **not** use this for public marketing pages, storefronts, or custom panels â€
 
    | Token | Tailwind base | Usage |
    | --- | --- | --- |
-   | `primary` | Amber | Primary buttons, active nav, links |
+   | `primary` | Slate | Primary buttons, active nav, links |
    | `success` | Green | Success badges, notifications |
    | `warning` | Amber | Warnings |
    | `danger` | Red | Destructive actions, errors |

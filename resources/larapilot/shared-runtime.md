@@ -766,7 +766,7 @@ Rules:
 2. Copy or link `tokens.css` into the mockup folder; load **Inter**; use the **light sidebar** + topbar shell from `components.md` (Filament v3 default — not a dark sidebar).
 3. Map each screen to Filament concepts (Resource index, form, dashboard widgets, settings) in the mockup README.
 4. Show **light + dark** for at least one key admin screen; document sidebar collapse on mobile.
-5. Custom Filament theme colors from the PRD or client materials override default amber primary — document RGB/hex for Alex's Panel `->colors()`.
+5. Custom Filament theme colors from the PRD or client materials override default slate primary — document RGB/hex for Alex's Panel `->colors()`.
 
 When Filament is **not** chosen, do not use this design system — design in the project's visual language. Mockups still inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
 

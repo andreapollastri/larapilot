@@ -72,7 +72,7 @@ When the PRD `## Technical Architecture` records **Filament** as the panel choic
 4. `{paths.design_systems}/filament/components.md` — shell, tables, forms, actions
 5. `{paths.design_systems}/filament/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
 
-Use Filament's visual language (light sidebar, topbar, sections, amber primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
+Use Filament's visual language (light sidebar, topbar, sections, slate primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
 
 When Filament is **not** chosen, design admin/dashboard screens in the project's visual language; mockups inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
 

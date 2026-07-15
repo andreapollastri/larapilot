@@ -73,7 +73,7 @@ class InternalFeedbackService
      *     blocking_count: int,
      *     content: string|null,
      *     html: string|null,
-     *     entries: list<array{at: string, author: string, status: string, body: string, blocks_merge: bool}>
+     *     entries: list<array{at: string, author: string, status: string, body: string, body_html: string, preview: string, blocks_merge: bool}>
      * }
      */
     public function forSpec(string $code, ?array $spec = null): array
@@ -81,6 +81,8 @@ class InternalFeedbackService
         $spec ??= $this->specs->find($code);
         $content = $this->read($code);
         $entries = $content !== null ? $this->parseEntries($content) : [];
+        $entries = array_map(fn (array $entry): array => $this->enrichEntry($entry), $entries);
+        $entries = array_reverse($entries);
         $blocking = array_values(array_filter(
             $entries,
             fn (array $entry): bool => $entry['blocks_merge']
@@ -90,6 +92,7 @@ class InternalFeedbackService
             'enabled' => $this->enabled(),
             'writable' => $this->canComment($spec),
             'path' => $this->config->relativePath($this->filePath($code)),
+            'path_short' => $this->shortPath($code),
             'entry_count' => count($entries),
             'blocking_count' => count($blocking),
             'content' => $content,
@@ -248,5 +251,33 @@ MD;
         }
 
         return $entries;
+    }
+
+    /**
+     * @param  array{at: string, author: string, status: string, body: string, blocks_merge: bool}  $entry
+     * @return array{at: string, author: string, status: string, body: string, body_html: string, preview: string, blocks_merge: bool}
+     */
+    protected function enrichEntry(array $entry): array
+    {
+        $body = $entry['body'];
+        $plain = trim(preg_replace('/\s+/', ' ', strip_tags(Markdown::toHtml($body))) ?? '');
+        $preview = $plain;
+
+        if (strlen($preview) > 120) {
+            $preview = substr($preview, 0, 117).'…';
+        }
+
+        return array_merge($entry, [
+            'body_html' => Markdown::toHtml($body),
+            'preview' => $preview,
+        ]);
+    }
+
+    protected function shortPath(string $code): string
+    {
+        $config = $this->config->resolve();
+        $base = trim((string) ($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'), '/');
+
+        return $base.'/'.$code.'.md';
     }
 }
