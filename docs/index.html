@@ -1917,6 +1917,124 @@
       color: var(--text-secondary);
     }
 
+    /* ── Install commands (quickstart) ── */
+    .install-commands {
+      margin: 1rem 0 .65rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+    }
+
+    .install-commands-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .6rem 1rem;
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .install-commands-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .install-command {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background .15s var(--ease);
+    }
+
+    .install-command:last-child {
+      border-bottom: none;
+    }
+
+    @media (hover: hover) {
+      .install-command:hover {
+        background: var(--surface-hover);
+      }
+    }
+
+    .install-command-num {
+      flex-shrink: 0;
+      width: 1.45rem;
+      height: 1.45rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 50%;
+      font-size: .68rem;
+      font-weight: 700;
+      font-family: var(--font);
+      line-height: 1;
+    }
+
+    .install-command-text {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      letter-spacing: -.01em;
+    }
+
+    .install-copy-btn {
+      flex-shrink: 0;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      color: var(--text-tertiary);
+      padding: .28rem .55rem;
+      font-size: .68rem;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all .15s var(--ease);
+    }
+
+    .install-copy-btn:hover,
+    .install-copy-btn:focus-visible {
+      color: var(--text);
+      border-color: var(--border-strong);
+      background: var(--surface);
+      outline: none;
+    }
+
+    .install-copy-btn.copied {
+      color: var(--green);
+      border-color: rgba(22, 163, 74, .35);
+      background: var(--green-soft);
+    }
+
+    .install-requirements {
+      font-size: .72rem;
+      color: var(--text-tertiary);
+      margin: 0 0 1.5rem;
+      line-height: 1.55;
+      max-width: 620px;
+    }
+
+    .install-requirements strong {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
     /* ── Tables ── */
     .table-card {
       border: 1px solid var(--border);
@@ -2710,19 +2828,34 @@
         <div class="section-header">
           <span class="section-label">Quickstart</span>
           <h2>Install in 3 commands</h2>
-          <p>PHP <strong>^8.3</strong> · Laravel <strong>^12|^13</strong> · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> <code>^2.0</code> (bundled) · MCP editor (Cursor, etc.)</p>
+          <p>Add Larapilot to your Laravel app, scaffold the <code>.larapilot/</code> workspace, and publish the <code>/larapilot-*</code> skills via Laravel Boost.</p>
         </div>
 
-        <div class="code-block">
-          <div class="code-block-header">Terminal</div>
-          <pre><code>composer require andreapollastri/larapilot --dev
-php artisan larapilot:install
-php artisan boost:install</code></pre>
+        <div class="install-commands">
+          <div class="install-commands-header">Terminal</div>
+          <ol class="install-commands-list">
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">1</span>
+              <code class="install-command-text">composer require andreapollastri/larapilot --dev</code>
+              <button type="button" class="install-copy-btn" data-copy="composer require andreapollastri/larapilot --dev" title="Copy command">Copy</button>
+            </li>
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">2</span>
+              <code class="install-command-text">php artisan larapilot:install</code>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:install" title="Copy command">Copy</button>
+            </li>
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">3</span>
+              <code class="install-command-text">php artisan boost:install</code>
+              <button type="button" class="install-copy-btn" data-copy="php artisan boost:install" title="Copy command">Copy</button>
+            </li>
+          </ol>
         </div>
+        <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) · MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
         <p>Already on Boost? <code>php artisan boost:update --discover</code>. After upgrades: <code>php artisan larapilot:update</code>.</p>
 
         <h3>First run</h3>
-        <p><code>/larapilot-inception "your idea"</code> → <code>/larapilot-spec</code> → spec loop per story. Full walkthrough: <a href="#example-new-product">new product example</a>. Technical reference: <a href="#deep-dive-skills">all ten skills</a>.</p>
+        <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product example</a>.</p>
       </section>
 
       <!-- How it works -->
@@ -4088,6 +4221,20 @@ body: |
     window.addEventListener('scroll', () => {
       header.classList.toggle('scrolled', window.scrollY > 20);
     }, { passive: true });
+
+    document.querySelectorAll('.install-copy-btn[data-copy]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copy || '');
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 1500);
+        } catch (_) { }
+      });
+    });
 
     function closeMenu() {
       docNav.classList.remove('open');
