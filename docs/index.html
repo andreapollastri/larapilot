@@ -2042,6 +2042,130 @@
       margin: 0 0 0 1rem;
     }
 
+    /* ── Deep Dive ── */
+    .deep-dive-sub {
+      margin-top: 2.75rem;
+      padding-top: 2.25rem;
+      border-top: 1px solid var(--border);
+      scroll-margin-top: calc(var(--header-h) + 24px);
+    }
+
+    .deep-dive-sub:first-of-type {
+      margin-top: 1.5rem;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .deep-dive-sub h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: .65rem;
+    }
+
+    .deep-dive-sub > p.lead {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      max-width: 68ch;
+    }
+
+    .layer-stack {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    .layer-card {
+      padding: 1.1rem 1.15rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .layer-card strong {
+      display: block;
+      font-size: .84rem;
+      margin-bottom: .3rem;
+    }
+
+    .layer-card p {
+      font-size: .8rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.55;
+    }
+
+    .persona-phases {
+      display: grid;
+      gap: .85rem;
+      margin: 1.25rem 0 1.5rem;
+    }
+
+    .persona-phase {
+      padding: 1rem 1.15rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .persona-phase h4 {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-tertiary);
+      margin-bottom: .45rem;
+    }
+
+    .persona-phase p {
+      font-size: .84rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .cli-note {
+      font-size: .84rem;
+      color: var(--text-secondary);
+      padding: .85rem 1rem;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.25rem;
+    }
+
+    .cli-note strong {
+      color: var(--text);
+    }
+
+    .deep-dive-sub h4 {
+      font-size: .92rem;
+      font-weight: 700;
+      margin: 1.5rem 0 .75rem;
+      letter-spacing: -.01em;
+    }
+
+    .deep-dive-sub h4:first-of-type {
+      margin-top: 0;
+    }
+
+    .deep-dive-sub ol {
+      margin: 0 0 1.25rem 1.25rem;
+      color: var(--text-secondary);
+      font-size: .88rem;
+    }
+
+    .deep-dive-sub ol li {
+      margin-bottom: .35rem;
+    }
+
+    @media (max-width: 768px) {
+      .layer-stack {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* ── Team ── */
     .team-grid {
       display: grid;
@@ -2099,6 +2223,10 @@
       margin: 1rem 0 1.5rem;
       overflow-x: auto;
       white-space: pre;
+    }
+
+    .file-tree .comment {
+      color: var(--text-tertiary);
     }
 
     .check {
@@ -2293,7 +2421,7 @@
           <a href="#quickstart">Quickstart</a>
           <a href="#how-it-works">How to use</a>
           <a href="#examples">Examples</a>
-          <a href="#workflow">Workflow</a>
+          <a href="#deep-dive">Deep Dive</a>
         </nav>
         <button class="menu-toggle" id="menuBtn" aria-label="Menu">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -2339,7 +2467,7 @@
         </div>
         <div class="hero-stats">
           <div class="hero-stat"><strong>10 skills</strong><span>Full workflow coverage</span></div>
-          <div class="hero-stat"><strong>20+ commands</strong><span>Agent-friendly CLI</span></div>
+          <div class="hero-stat"><strong>Skills-first</strong><span>Editor-native workflow</span></div>
           <div class="hero-stat"><strong>MCP native</strong><span>Cursor &amp; Boost ready</span></div>
         </div>
       </div>
@@ -2358,7 +2486,7 @@
             <button class="terminal-tab" role="tab" data-step="1" aria-selected="false">inception</button>
             <button class="terminal-tab" role="tab" data-step="2" aria-selected="false">specs</button>
             <button class="terminal-tab" role="tab" data-step="3" aria-selected="false">plan</button>
-            <button class="terminal-tab" role="tab" data-step="4" aria-selected="false">build</button>
+            <button class="terminal-tab" role="tab" data-step="4" aria-selected="false">implement</button>
             <button class="terminal-tab" role="tab" data-step="5" aria-selected="false">ship</button>
           </div>
           <div class="terminal-body">
@@ -2405,8 +2533,7 @@
 
               <div class="terminal-step" data-step="1">
                 <div class="term-chunk">
-                  <div class="terminal-comment"># In your AI editor — Mark (PM), Jennifer &amp; John run product
-                    discovery</div>
+                  <div class="terminal-comment"># In your AI editor — Mark runs guided product discovery</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
                     <span class="cmd"
@@ -2416,30 +2543,23 @@
                   <div class="terminal-result info">→ Interview done: vision, personas, MoSCoW-tagged FRs drafted</div>
                 </div>
                 <div class="term-chunk">
-                  <div class="terminal-comment"># The agent persists the PRD it wrote</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:prd-write --file=PRD.md"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:prd-write --file=PRD.md"
-                      title="Copy">Copy</button>
-                  </div>
+                  <div class="terminal-comment"># Skill persists PRD.md under .larapilot/docs/</div>
                   <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
   <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
   <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"write_result"</span><span class="punct">,</span>
   <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"path"</span><span class="punct">:</span> <span class="str">".larapilot/docs/PRD.md"</span><span class="punct">,</span> <span class="key">"bytes"</span><span class="punct">:</span> <span class="num">18240</span> <span class="punct">}</span>
 <span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ PRD.md saved — the single source of truth</div>
+                  <div class="terminal-result success">✓ PRD.md — the single source of truth</div>
                 </div>
               </div>
 
               <div class="terminal-step" data-step="2">
                 <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-spec — turn the PRD into user stories, then load them</div>
+                  <div class="terminal-comment"># /larapilot-spec — PRD MoSCoW → user stories in backlog</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-add --file=specs.yaml"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-add --file=specs.yaml"
-                      title="Copy">Copy</button>
+                    <span class="cmd" data-full="/larapilot-spec"></span>
+                    <button class="copy-btn" data-copy="/larapilot-spec" title="Copy">Copy</button>
                   </div>
                   <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
   <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
@@ -2456,22 +2576,13 @@
 
               <div class="terminal-step" data-step="3">
                 <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-plan — pick the top-priority spec…</div>
+                  <div class="terminal-comment"># /larapilot-plan — technical plan for the top-priority spec</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-next"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-next" title="Copy">Copy</button>
+                    <span class="cmd" data-full="/larapilot-plan US-001"></span>
+                    <button class="copy-btn" data-copy="/larapilot-plan US-001" title="Copy">Copy</button>
                   </div>
                   <div class="terminal-result info">→ US-001 · "User can sign in with email" · HIGH</div>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># …and save the implementation plan the agent drafted</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-plan US-001 --file=plan.yaml"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-plan US-001 --file=plan.yaml"
-                      title="Copy">Copy</button>
-                  </div>
                   <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
   <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
   <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"plan_result"</span><span class="punct">,</span>
@@ -2483,57 +2594,39 @@
 
               <div class="terminal-step" data-step="4">
                 <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-implement — Alex &amp; Anne start building…</div>
+                  <div class="terminal-comment"># /larapilot-implement — Alex, Anne &amp; team ship the spec</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-start US-001"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-start US-001"
-                      title="Copy">Copy</button>
+                    <span class="cmd" data-full="/larapilot-implement US-001"></span>
+                    <button class="copy-btn" data-copy="/larapilot-implement US-001" title="Copy">Copy</button>
                   </div>
                   <div class="terminal-result progress">✓ US-001 → IN PROGRESS</div>
                 </div>
                 <div class="term-chunk">
-                  <div class="terminal-comment"># …and ticks off tasks as they ship</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:task-done US-001 TASK-01"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:task-done US-001 TASK-01"
-                      title="Copy">Copy</button>
-                  </div>
+                  <div class="terminal-comment"># Tasks complete → spec moves to REVIEW</div>
                   <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
   <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
   <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"task_done_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"task_id"</span><span class="punct">:</span> <span class="str">"TASK-01"</span><span class="punct">,</span> <span class="key">"status"</span><span class="punct">:</span> <span class="str st st-done">"DONE"</span> <span class="punct">}</span>
+  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"tasks_done"</span><span class="punct">:</span> <span class="num">4</span><span class="punct">,</span> <span class="key">"status"</span><span class="punct">:</span> <span class="str st st-review">"REVIEW"</span> <span class="punct">}</span>
 <span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ TASK-01 done · 3 tasks to go</div>
+                  <div class="terminal-result success">✓ 4/4 tasks done · ready for review</div>
                 </div>
               </div>
 
               <div class="terminal-step" data-step="5">
                 <div class="term-chunk">
-                  <div class="terminal-comment"># All tasks done — hand the spec over for code review</div>
+                  <div class="terminal-comment"># /larapilot-review — human approves. Human-in-the-loop, always.</div>
                   <div class="terminal-line">
                     <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-review US-001"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-review US-001"
-                      title="Copy">Copy</button>
-                  </div>
-                  <div class="terminal-result review">✓ US-001 → REVIEW</div>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-review — a human approves. Human-in-the-loop, always.</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:spec-approve US-001"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:spec-approve US-001"
-                      title="Copy">Copy</button>
+                    <span class="cmd" data-full="/larapilot-review US-001"></span>
+                    <button class="copy-btn" data-copy="/larapilot-review US-001" title="Copy">Copy</button>
                   </div>
                   <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
   <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
   <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"approve_result"</span><span class="punct">,</span>
   <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"status"</span><span class="punct">:</span> <span class="str st st-done">"DONE"</span> <span class="punct">}</span>
 <span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ US-001 shipped — spec-next is already waiting 🔁</div>
+                  <div class="terminal-result success">✓ US-001 shipped — next spec is waiting 🔁</div>
                 </div>
               </div>
 
@@ -2546,7 +2639,7 @@
                   aria-label="Step 2 · inception"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="2" aria-label="Step 3 · specs"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="3" aria-label="Step 4 · plan"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="4" aria-label="Step 5 · build"></button>
+                <button class="terminal-progress-dot" type="button" data-dot="4" aria-label="Step 5 · implement"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="5" aria-label="Step 6 · ship"></button>
                 <span class="terminal-progress-label" id="terminalLabel"><span
                     class="status-pill setup">SETUP</span>installed in two commands</span>
@@ -2581,10 +2674,13 @@
               <a class="doc-nav-sub" href="#example-bug-fix" data-nav>Bug resolution</a>
             </div>
             <div class="doc-nav-group">
-              <div class="doc-nav-label">Workflow</div>
-              <a href="#workflow" data-nav>Process</a>
-              <a href="#skills" data-nav>Skills</a>
-              <a href="#team" data-nav>AI Team</a>
+              <div class="doc-nav-label">Deep Dive</div>
+              <a href="#deep-dive" data-nav>Overview</a>
+              <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
+              <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
+              <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
+              <a class="doc-nav-sub" href="#deep-dive-artifacts" data-nav>Artifacts</a>
+              <a class="doc-nav-sub" href="#deep-dive-cli" data-nav>Artisan CLI</a>
             </div>
           </div>
         </div>
@@ -2627,7 +2723,7 @@ php artisan boost:install</code></pre>
         </div>
 
         <h3>First run</h3>
-        <p><code>/larapilot-inception "your idea"</code> → <code>/larapilot-spec</code> → spec loop per story. Full walkthrough: <a href="#example-new-product">new product example</a>. Skill reference: <a href="#skills">all ten skills</a>.</p>
+        <p><code>/larapilot-inception "your idea"</code> → <code>/larapilot-spec</code> → spec loop per story. Full walkthrough: <a href="#example-new-product">new product example</a>. Technical reference: <a href="#deep-dive-skills">all ten skills</a>.</p>
 
         <h3>Verify</h3>
         <div class="code-block">
@@ -2642,7 +2738,7 @@ php artisan boost:install</code></pre>
         <div class="section-header">
           <span class="section-label">Usage</span>
           <h2>How to use</h2>
-          <p>Run skills in your editor. The CLI persists artifacts under <code>.larapilot/</code> and enforces status transitions.</p>
+          <p>Run <code>/larapilot-*</code> skills in your editor. Each skill orchestrates the conversation; artifacts land in <code>.larapilot/</code> and status transitions are enforced automatically.</p>
         </div>
 
         <div class="command-flow">
@@ -2868,7 +2964,7 @@ tests/Feature/RegistrationTest.php</code></pre>
                 <tr>
                   <th>Story</th>
                   <th>Prompts</th>
-                  <th>What gets built</th>
+                  <th>What gets implemented</th>
                 </tr>
               </thead>
               <tbody>
@@ -3136,7 +3232,7 @@ body: |
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd><code>validate-spec</code> → <code>spec-add</code>; optional <code>prd-write</code> for FR-011</dd>
+              <dd>Validates and persists <code>US-011</code> spec; updates PRD with <code>FR-011</code> when needed</dd>
             </div>
             <div>
               <dt>Next step</dt>
@@ -3210,14 +3306,14 @@ body: |
   3. Complete OAuth — redirect returns to /login with error
 - **Expected / Actual:** Expected dashboard · Actual login error
 - **Affected spec:** US-003
-- **Routed to:** spec-request-changes US-003
+- **Routed to:** rework on US-003 via <code>/larapilot-bug</code>
 - **Security:** unsure — Lars/Oliver tagged</code></pre>
           </div>
 
-          <p>Maps to <code>US-003</code> → <code>spec-request-changes</code> (back to <span class="status status-todo">TODO</span>). PRD update only if requirement gap (e.g. Safari never specified).</p>
+          <p>Maps to <code>US-003</code> — skill sends it back to <span class="status status-todo">TODO</span> with rework feedback. PRD update only if requirement gap (e.g. Safari never specified).</p>
 
           <div class="code-block">
-            <div class="code-block-header">Rework feedback (passed to spec-request-changes)</div>
+            <div class="code-block-header">Rework feedback (attached to US-003)</div>
             <pre><code>## Bug report — 2026-07-15
 **Severity:** High
 **Steps to reproduce:** Safari 17+ → Sign in with Google → redirect error
@@ -3240,7 +3336,7 @@ body: |
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd>Writes <code>support/intake.md</code>; <code>spec-request-changes</code> or <code>spec-add</code></dd>
+              <dd>Writes <code>support/intake.md</code>; routes rework or creates a fix spec</dd>
             </div>
             <div>
               <dt>Next step</dt>
@@ -3285,7 +3381,7 @@ body: |
               <tr>
                 <td>Review rework</td>
                 <td><strong>No</strong></td>
-                <td><code>spec-request-changes</code> only</td>
+                <td><code>/larapilot-review</code> feedback only</td>
               </tr>
               <tr>
                 <td>Hotfix production</td>
@@ -3334,7 +3430,7 @@ body: |
                 <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
               </tr>
               <tr>
-                <td>4. Build</td>
+                <td>4. Implement</td>
                 <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
                   <code>/larapilot-review</code></td>
               </tr>
@@ -3344,249 +3440,481 @@ body: |
       
       </section>
 
-      <!-- Workflow -->
-      <section class="doc-section" id="workflow">
+      <!-- Deep Dive -->
+      <section class="doc-section" id="deep-dive">
         <div class="section-header">
-          <span class="section-label">Workflow</span>
-          <h2>Spec-driven loop</h2>
-          <p>Per-story cycle after inception + spec. Walkthroughs: <a href="#examples">examples</a>.</p>
+          <span class="section-label">Deep Dive</span>
+          <h2>How Larapilot works</h2>
+          <p>Skills orchestrate the conversation. Personas apply domain expertise. The workflow enforces discipline. Artifacts in the repo are the source of truth between sessions.</p>
         </div>
 
-        <h3>Workflow states</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Meaning</th>
-                <th>Next step</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="status status-todo">TODO</span></td>
-                <td>Spec exists, not yet planned</td>
-                <td><code>/larapilot-plan</code></td>
-              </tr>
-              <tr>
-                <td><span class="status status-planned">PLANNED</span></td>
-                <td>Technical plan complete</td>
-                <td><code>/larapilot-implement</code></td>
-              </tr>
-              <tr>
-                <td><span class="status status-progress">IN PROGRESS</span></td>
-                <td>Implementation started</td>
-                <td>Complete tasks → review</td>
-              </tr>
-              <tr>
-                <td><span class="status status-review">REVIEW</span></td>
-                <td>Ready for human review</td>
-                <td><code>/larapilot-review</code></td>
-              </tr>
-              <tr>
-                <td><span class="status status-done">DONE</span></td>
-                <td>Accepted (human-gated)</td>
-                <td>Next spec or <code>/larapilot-ship</code></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="layer-stack">
+          <div class="layer-card">
+            <strong>1 · Skills</strong>
+            <p><code>/larapilot-*</code> prompts published via Laravel Boost. You invoke them in the editor; the agent reads <code>SKILL.md</code> and follows the execution contract.</p>
+          </div>
+          <div class="layer-card">
+            <strong>2 · Artifacts</strong>
+            <p>PRD, backlog, specs, plans, and review notes live under <code>.larapilot/</code> in git — durable state the agent reloads on every skill activation.</p>
+          </div>
+          <div class="layer-card">
+            <strong>3 · CLI (under the hood)</strong>
+            <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>.</p>
+          </div>
         </div>
 
-        <h3>Transition guards</h3>
-        <p>CLI blocks invalid jumps — e.g. no implement before plan, no approve before review.</p>
-      </section>
+        <!-- Skills -->
+        <article class="deep-dive-sub" id="deep-dive-skills">
+          <h3>Skills</h3>
+          <p class="lead">Ten editor-native skills cover the full product lifecycle. Each is a <code>SKILL.md</code> file with a name, description, persona roster, execution steps, and allowed CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).</p>
 
-      <!-- Skills -->
-      <section class="doc-section" id="skills">
-        <div class="section-header">
-          <span class="section-label">Skills</span>
-          <h2>Skills reference</h2>
-          <p>Ten <code>/larapilot-*</code> skills via Boost (+ coding <strong>guidelines</strong>, not a skill). Personas: <a href="#team">AI squad</a>.</p>
-        </div>
+          <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
+          <ol>
+            <li>Loads the skill instructions and <code>.larapilot/shared-runtime.md</code></li>
+            <li>Reads current artifacts (PRD, spec, backlog status)</li>
+            <li>Runs the guided conversation with the right personas</li>
+            <li>Persists output via Artisan commands defined in the skill — never inventing its own file writes</li>
+          </ol>
 
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Skill</th>
-                <th>Output</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>/larapilot-inception</code></td>
-                <td><code>PRD.md</code> — guided discovery, MoSCoW on FRs · <a href="#example-new-product">example</a></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-feature "…"</code></td>
-                <td>New <code>US-XXX</code> spec (+ optional PRD FR) · <a href="#example-new-feature">example</a></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-bug "…"</code></td>
-                <td><code>intake.md</code> + fix spec or rework · <a href="#example-bug-fix">example</a></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-spec</code></td>
-                <td><code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code> from PRD MoSCoW</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-design US-XXX</code></td>
-                <td>HTML mockups in <code>mockups/</code> — preview <code>/mockups/{spec}</code></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-plan US-XXX</code></td>
-                <td><code>plans/US-XXX-plan.yaml</code> → <span class="status status-planned">PLANNED</span></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-implement US-XXX</code></td>
-                <td>Laravel code + tests → <span class="status status-review">REVIEW</span></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-review US-XXX</code></td>
-                <td>Your approval → <span class="status status-done">DONE</span> or back to <span class="status status-todo">TODO</span></td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-ship</code></td>
-                <td>OWASP gate + deploy runbook</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot-autopilot US-XXX …</code></td>
-                <td>Batch plan + implement (you still review each)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+          <div class="skills-grid">
+            <div class="skill-item">
+              <span class="skill-badge">discovery</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-inception</code></h3>
+                <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.</p>
+                <ul>
+                  <li>Mark opens with Project Kind (Personal · Website · Application)</li>
+                  <li>AskQuestion rounds (max 3 questions each, skippable)</li>
+                  <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present</li>
+                </ul>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">shortcut</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-feature "…"</code></h3>
+                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD FR).</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">shortcut</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-bug "…"</code></h3>
+                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">backlog</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-spec</code></h3>
+                <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code>.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">optional</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-design US-XXX</code></h3>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>. Preview at <code>/mockups/{spec}</code> (non-production).</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">plan</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-plan US-XXX</code></h3>
+                <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>. Status → <span class="status status-planned">PLANNED</span>.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">implement</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-implement US-XXX</code></h3>
+                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span class="status status-review">REVIEW</span> when all tasks complete.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">review</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-review US-XXX</code></h3>
+                <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback → <span class="status status-todo">TODO</span>.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">optional</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-ship</code></h3>
+                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span class="status status-done">DONE</span>.</p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">batch</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-autopilot US-XXX …</code></h3>
+                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. You still run <code>/larapilot-review</code> per story.</p>
+              </div>
+            </div>
+          </div>
+        </article>
 
-      <!-- Team -->
-      <section class="doc-section" id="team">
-        <div class="section-header">
-          <span class="section-label">Team</span>
-          <h2>The AI squad</h2>
-          <p>Personas visible in chat during skills — <code>💎 Mark:</code>, <code>📐 John:</code>, etc.</p>
-        </div>
-        <div class="team-grid">
-          <div class="team-card">
-            <div class="team-avatar">💎</div>
-            <div class="team-name">Mark</div>
-            <div class="team-role">Product Manager</div>
+        <!-- Personas -->
+        <article class="deep-dive-sub" id="deep-dive-personas">
+          <h3>Personas</h3>
+          <p class="lead">Personas are lenses, not costumes. Each skill activates a subset of the squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind of scrutiny to the work at hand.</p>
+
+          <div class="persona-phases">
+            <div class="persona-phase">
+              <h4>Discovery</h4>
+              <p><strong>Mark</strong> drives scope and MoSCoW. <strong>Jennifer</strong> and <strong>Benjamin</strong> frame market context. <strong>John</strong> and <strong>Aurora</strong> co-own architecture. <strong>Sabrine</strong> leads legacy parity when <code>legacy/</code> has content. <strong>Elise</strong>, <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces.</p>
+            </div>
+            <div class="persona-phase">
+              <h4>Planning</h4>
+              <p><strong>Tom</strong> sharpens acceptance criteria. <strong>John</strong> designs the technical approach. <strong>Anne</strong> defines test strategy. <strong>Andrew</strong> enforces Laravel conventions. Optional sub-agents explore the codebase in readonly mode.</p>
+            </div>
+            <div class="persona-phase">
+              <h4>Implementation</h4>
+              <p><strong>Alex</strong> writes code. <strong>Anne</strong> ships multi-viewport Pest tests. <strong>Robert</strong> checks plan adherence and Gitflow. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Joe</strong>, <strong>Marika</strong>, <strong>Matt</strong> join when frontend, copy, or integrations are in scope.</p>
+            </div>
+            <div class="persona-phase">
+              <h4>Ship &amp; support</h4>
+              <p><strong>Jack</strong> owns CI/CD and deploy. <strong>Oliver</strong> red-teams before launch. <strong>Sophia</strong> routes bugs. <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.</p>
+            </div>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">🧭</div>
-            <div class="team-name">Jennifer</div>
-            <div class="team-role">Business Strategist</div>
+
+          <p>Output economy varies by phase: concise status lines during implement/review; full artifacts and code stay complete. See <code>.larapilot/shared-runtime.md</code> for brevity rules.</p>
+
+          <div class="team-grid">
+            <div class="team-card">
+              <div class="team-avatar">💎</div>
+              <div class="team-name">Mark</div>
+              <div class="team-role">Product Manager</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🧭</div>
+              <div class="team-name">Jennifer</div>
+              <div class="team-role">Business Strategist</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🏢</div>
+              <div class="team-name">Benjamin</div>
+              <div class="team-role">Business Consultant</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">💡</div>
+              <div class="team-name">Sebastian</div>
+              <div class="team-role">Innovator</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🔎</div>
+              <div class="team-name">Tom</div>
+              <div class="team-role">Requirements Analyst</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">📐</div>
+              <div class="team-name">John</div>
+              <div class="team-role">Architect</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🔧</div>
+              <div class="team-name">Alex</div>
+              <div class="team-role">Full-Stack Developer</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🧪</div>
+              <div class="team-name">Anne</div>
+              <div class="team-role">Test Architect</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🛡️</div>
+              <div class="team-name">Robert</div>
+              <div class="team-role">Code Reviewer</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🔐</div>
+              <div class="team-name">Lars</div>
+              <div class="team-role">Security Expert</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🚀</div>
+              <div class="team-name">Jack</div>
+              <div class="team-role">DevOps Engineer</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">💰</div>
+              <div class="team-name">Aurora</div>
+              <div class="team-role">FinOps Expert</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">⚖️</div>
+              <div class="team-name">Violet</div>
+              <div class="team-role">Legal Expert</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">📈</div>
+              <div class="team-name">Emma</div>
+              <div class="team-role">SEO &amp; Web Performance</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">💬</div>
+              <div class="team-name">Lauren</div>
+              <div class="team-role">Social Media Manager</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🎨</div>
+              <div class="team-name">Elise</div>
+              <div class="team-role">UX Designer</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">✨</div>
+              <div class="team-name">Joe</div>
+              <div class="team-role">Frontend Expert</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">✍️</div>
+              <div class="team-name">Marika</div>
+              <div class="team-role">Copywriter</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🔄</div>
+              <div class="team-name">Sabrine</div>
+              <div class="team-role">Legacy Porting &amp; Migration</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">👾</div>
+              <div class="team-name">Andrew</div>
+              <div class="team-role">Laravel Expert</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🔗</div>
+              <div class="team-name">Matt</div>
+              <div class="team-role">Integration Manager</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🎯</div>
+              <div class="team-name">Oliver</div>
+              <div class="team-role">Ethical Hacker</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🎧</div>
+              <div class="team-name">Sophia</div>
+              <div class="team-role">Support Manager</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">🌍</div>
+              <div class="team-name">Emily</div>
+              <div class="team-role">Translator</div>
+            </div>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">🏢</div>
-            <div class="team-name">Benjamin</div>
-            <div class="team-role">Business Consultant</div>
+        </article>
+
+        <!-- Workflow -->
+        <article class="deep-dive-sub" id="deep-dive-workflow">
+          <h3>Workflow</h3>
+          <p class="lead">Every user story moves through a strict state machine. Skills drive transitions; invalid jumps are blocked automatically. After inception and backlog creation, you repeat the per-story loop until the MVP is shipped.</p>
+
+          <div class="command-flow">
+            <div class="command-flow-label">Greenfield — repeat per story</div>
+            <div class="command-flow-row">
+              <code class="cmd-primary">/larapilot-inception "…"</code>
+              <span class="command-flow-arrow">→</span>
+              <code>/larapilot-spec</code>
+              <span class="command-flow-arrow">→</span>
+              <code>/larapilot-plan US-XXX</code>
+              <span class="command-flow-arrow">→</span>
+              <code>/larapilot-implement US-XXX</code>
+              <span class="command-flow-arrow">→</span>
+              <code>/larapilot-review US-XXX</code>
+            </div>
+            <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan · <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> · <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.</p>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">💡</div>
-            <div class="team-name">Sebastian</div>
-            <div class="team-role">Innovator</div>
+
+          <h4>Status machine</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Meaning</th>
+                  <th>Skill to advance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="status status-todo">TODO</span></td>
+                  <td>Spec exists in backlog, not yet planned</td>
+                  <td><code>/larapilot-plan US-XXX</code></td>
+                </tr>
+                <tr>
+                  <td><span class="status status-planned">PLANNED</span></td>
+                  <td>Technical plan written and validated</td>
+                  <td><code>/larapilot-implement US-XXX</code></td>
+                </tr>
+                <tr>
+                  <td><span class="status status-progress">IN PROGRESS</span></td>
+                  <td>Implementation underway — tasks ticking off</td>
+                  <td>Skill completes tasks → auto <span class="status status-review">REVIEW</span></td>
+                </tr>
+                <tr>
+                  <td><span class="status status-review">REVIEW</span></td>
+                  <td>Code delivered, awaiting human acceptance</td>
+                  <td><code>/larapilot-review US-XXX</code></td>
+                </tr>
+                <tr>
+                  <td><span class="status status-done">DONE</span></td>
+                  <td>Human-approved — spec is shipped</td>
+                  <td>Next <code>US-XXX</code> or <code>/larapilot-ship</code></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">🔎</div>
-            <div class="team-name">Tom</div>
-            <div class="team-role">Requirements Analyst</div>
+
+          <h4>Transition guards</h4>
+          <p>The workflow engine rejects invalid state changes — for example, you cannot implement before planning, or approve before review. When you reject a review, the spec returns to <span class="status status-todo">TODO</span> with your feedback attached so the agent can replan and reimplement.</p>
+
+          <h4>Human-in-the-loop</h4>
+          <p>Discovery interviews use AskQuestion wizards. Review is always yours — the agent proposes, you approve or send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance.</p>
+        </article>
+
+        <!-- Artifacts -->
+        <article class="deep-dive-sub" id="deep-dive-artifacts">
+          <h3>Artifacts</h3>
+          <p class="lead">Everything the workflow produces lives in <code>.larapilot/</code> inside your repo. Skills read and write these files; they survive across editor sessions and give every agent the same ground truth.</p>
+
+          <div class="file-tree">.larapilot/
+├── config.yaml              <span class="comment"># project config (created on install)</span>
+├── shared-runtime.md        <span class="comment"># rules every skill reads at activation</span>
+├── task-templates.md      <span class="comment"># plan/implement task body shapes</span>
+├── backlog.yaml             <span class="comment"># spec index + statuses</span>
+├── docs/
+│   ├── PRD.md               <span class="comment"># living product contract</span>
+│   ├── test-results/        <span class="comment"># per-spec test evidence</span>
+│   ├── review/              <span class="comment"># Robert/Lars findings</span>
+│   ├── security/            <span class="comment"># OWASP assessments</span>
+│   ├── launch/              <span class="comment"># SEO/social launch checks</span>
+│   └── support/             <span class="comment"># bug intake, triage notes</span>
+├── specs/US-XXX.yaml        <span class="comment"># user story + acceptance criteria</span>
+├── plans/US-XXX-plan.yaml   <span class="comment"># tasks, deliverables, test strategy</span>
+├── mockups/{spec}/          <span class="comment"># HTML mockups (optional)</span>
+├── client-materials/        <span class="comment"># drop client docs before inception</span>
+├── legacy/                  <span class="comment"># legacy snapshot for rewrite/port</span>
+├── research/                <span class="comment"># deepsearch, parity matrices</span>
+└── design-systems/          <span class="comment"># Filament / Starter Kit tokens</span></div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Artifact</th>
+                  <th>Written by</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>PRD.md</code></td>
+                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
+                  <td>Vision, personas, MoSCoW FRs, architecture — updated selectively on scope changes</td>
+                </tr>
+                <tr>
+                  <td><code>backlog.yaml</code></td>
+                  <td><code>/larapilot-spec</code></td>
+                  <td>Ordered list of specs with status, priority, and traceability to FRs</td>
+                </tr>
+                <tr>
+                  <td><code>specs/US-XXX.yaml</code></td>
+                  <td><code>/larapilot-spec</code>, shortcuts</td>
+                  <td>User story body, acceptance criteria, epic link, priority</td>
+                </tr>
+                <tr>
+                  <td><code>plans/US-XXX-plan.yaml</code></td>
+                  <td><code>/larapilot-plan</code></td>
+                  <td>Task breakdown with Git deliverables, test data, and dependencies</td>
+                </tr>
+                <tr>
+                  <td><code>mockups/{spec}/</code></td>
+                  <td><code>/larapilot-design</code></td>
+                  <td>Static HTML previews served at <code>/mockups/{spec}</code> (dev/staging only)</td>
+                </tr>
+                <tr>
+                  <td>Laravel app code</td>
+                  <td><code>/larapilot-implement</code></td>
+                  <td>Models, controllers, views, migrations, Pest tests — outside <code>.larapilot/</code></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">📐</div>
-            <div class="team-name">John</div>
-            <div class="team-role">Architect</div>
+
+          <p>A read-only dashboard at <code>/larapilot</code> (non-production) shows backlog board, PRD, and spec detail. JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to confirm writes and status changes.</p>
+        </article>
+
+        <!-- Artisan CLI -->
+        <article class="deep-dive-sub" id="deep-dive-cli">
+          <h3>Artisan CLI</h3>
+          <p class="lead">Optional and under the hood. Skills call these commands — you do not need to memorize them. They persist artifacts, validate YAML/Markdown, enforce workflow guards, and return structured JSON for the agent to parse.</p>
+
+          <div class="cli-note"><strong>You interact via skills.</strong> The CLI is the persistence layer agents use internally. Run commands manually only for debugging, scripting, or CI — e.g. <code>php artisan larapilot:doctor</code> to verify install health.</div>
+
+          <h4>JSON envelope</h4>
+          <div class="code-block">
+            <div class="code-block-header">stdout — every command</div>
+            <pre><code>{
+  "schema": "larapilot/v1",
+  "kind": "plan_result",
+  "data": { "code": "US-001", "task_count": 4 }
+}</code></pre>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">🔧</div>
-            <div class="team-name">Alex</div>
-            <div class="team-role">Full-Stack Developer</div>
+          <p>Errors return <code>"kind": "error"</code> with <code>code</code>, <code>message</code>, and optional <code>hint</code>. Skills never invent persistence — they always go through these commands.</p>
+
+          <h4>Command reference</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Commands</th>
+                  <th>Used by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Setup</td>
+                  <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> · <code>larapilot:config-show</code></td>
+                  <td>Install, upgrades, diagnostics</td>
+                </tr>
+                <tr>
+                  <td>PRD</td>
+                  <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code></td>
+                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
+                </tr>
+                <tr>
+                  <td>Backlog</td>
+                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> · <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> · <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code></td>
+                  <td><code>/larapilot-spec</code>, shortcuts</td>
+                </tr>
+                <tr>
+                  <td>Planning</td>
+                  <td><code>larapilot:spec-plan</code> · <code>larapilot:validate-plan</code></td>
+                  <td><code>/larapilot-plan</code></td>
+                </tr>
+                <tr>
+                  <td>Execution</td>
+                  <td><code>larapilot:spec-start</code> · <code>larapilot:task-done</code> · <code>larapilot:spec-review</code></td>
+                  <td><code>/larapilot-implement</code></td>
+                </tr>
+                <tr>
+                  <td>Review</td>
+                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code></td>
+                  <td><code>/larapilot-review</code></td>
+                </tr>
+                <tr>
+                  <td>Metrics</td>
+                  <td><code>larapilot:metrics</code></td>
+                  <td>Dashboard, progress reporting</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="team-card">
-            <div class="team-avatar">🧪</div>
-            <div class="team-name">Anne</div>
-            <div class="team-role">Test Architect</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🛡️</div>
-            <div class="team-name">Robert</div>
-            <div class="team-role">Code Reviewer</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🔐</div>
-            <div class="team-name">Lars</div>
-            <div class="team-role">Security Expert</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🚀</div>
-            <div class="team-name">Jack</div>
-            <div class="team-role">DevOps Engineer</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">💰</div>
-            <div class="team-name">Aurora</div>
-            <div class="team-role">FinOps Expert</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">⚖️</div>
-            <div class="team-name">Violet</div>
-            <div class="team-role">Legal Expert</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">📈</div>
-            <div class="team-name">Emma</div>
-            <div class="team-role">SEO &amp; Web Performance</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">💬</div>
-            <div class="team-name">Lauren</div>
-            <div class="team-role">Social Media Manager</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🎨</div>
-            <div class="team-name">Elise</div>
-            <div class="team-role">UX Designer</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">✨</div>
-            <div class="team-name">Joe</div>
-            <div class="team-role">Frontend Expert</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">✍️</div>
-            <div class="team-name">Marika</div>
-            <div class="team-role">Copywriter</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🔄</div>
-            <div class="team-name">Sabrine</div>
-            <div class="team-role">Legacy Porting &amp; Migration</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">👾</div>
-            <div class="team-name">Andrew</div>
-            <div class="team-role">Laravel Expert</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🔗</div>
-            <div class="team-name">Matt</div>
-            <div class="team-role">Integration Manager</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🎯</div>
-            <div class="team-name">Oliver</div>
-            <div class="team-role">Ethical Hacker</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🎧</div>
-            <div class="team-name">Sophia</div>
-            <div class="team-role">Support Manager</div>
-          </div>
-          <div class="team-card">
-            <div class="team-avatar">🌍</div>
-            <div class="team-name">Emily</div>
-            <div class="team-role">Translator</div>
-          </div>
-        </div>
+
+          <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.</p>
+        </article>
 
         <div class="cta-band">
           <h3>Ready to ship with AI?</h3>
@@ -3783,7 +4111,7 @@ body: |
         { status: 'PRD', cls: 'setup', text: 'discovery → .larapilot/docs/PRD.md' },
         { status: 'TODO', cls: 'todo', text: '3 user stories in the backlog' },
         { status: 'PLANNED', cls: 'planned', text: 'US-001 planned · 4 tasks' },
-        { status: 'IN PROGRESS', cls: 'progress', text: 'building · 1 of 4 tasks done' },
+        { status: 'IN PROGRESS', cls: 'progress', text: 'implementing · 4/4 tasks done' },
         { status: 'DONE', cls: 'done', text: 'reviewed, approved, shipped' },
       ];
 
