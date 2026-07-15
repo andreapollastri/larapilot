@@ -405,35 +405,6 @@
       font-weight: 700;
     }
 
-    .hero-news {
-      margin-bottom: 1.35rem;
-      padding: .9rem 1rem;
-      background: var(--accent-soft);
-      border: 1px solid rgba(255, 68, 54, .18);
-      border-radius: var(--radius-sm);
-      font-size: .84rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .hero-news strong {
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-
-    .hero-news ul {
-      margin: .55rem 0 0;
-      padding-left: 1.1rem;
-    }
-
-    .hero-news li {
-      margin-bottom: .2rem;
-    }
-
-    .hero-news li:last-child {
-      margin-bottom: 0;
-    }
-
     /* Terminal mock */
     .hero-visual {
       position: relative;
@@ -2615,16 +2586,6 @@
           Spec-driven workflow for Laravel — integrated with <a href="https://laravel.com/ai/boost" target="_blank"
             rel="noopener">Laravel Boost</a>. Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
         </p>
-        <div class="hero-news">
-          <strong>New in v1.7.3</strong> — mockups from <code>/larapilot-design</code> are linked to user stories in the
-          <a href="#deep-dive-dashboard">workflow dashboard</a>:
-          <ul>
-            <li><strong>Board</strong> — mockup indicator on spec cards when HTML exists in <code>.larapilot/mockups/{code}/</code></li>
-            <li><strong>Spec detail</strong> — embedded preview iframe, screen links, and artifact path on <code>/larapilot/specs/{code}</code></li>
-            <li><strong>JSON API</strong> — <code>mockups</code> metadata on board items and spec detail (OpenAPI updated)</li>
-            <li>Served via the existing dev-only <code>/mockups/{spec}</code> route — no storage symlink required</li>
-          </ul>
-        </div>
         <p class="hero-flow">
           <code>/larapilot-inception</code> → <code>/larapilot-spec</code> →
           <code>/larapilot-plan US-XXX</code> → <code>/larapilot-implement US-XXX</code> →
