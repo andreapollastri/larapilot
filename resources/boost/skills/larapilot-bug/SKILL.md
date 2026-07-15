@@ -193,7 +193,7 @@ Offer:
 
 ## Example
 
-**Invoke:** `/larapilot-bug "Il login SSO fallisce su Safari"`
+**Invoke:** `/larapilot-bug "SSO login fails on Safari"`
 
 **Context:** B2B app in production; `US-003` (SSO auth) DONE; Chrome OK, Safari fails after OAuth redirect.
 

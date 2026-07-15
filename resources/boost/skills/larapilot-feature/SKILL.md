@@ -161,7 +161,7 @@ Offer clearly:
 
 ## Example
 
-**Invoke:** `/larapilot-feature "Aggiungere export PDF fatture"`
+**Invoke:** `/larapilot-feature "Add PDF export for invoices"`
 
 **Context:** Invoicing SaaS; PRD exists; `US-001`–`US-010` DONE; stakeholder wants PDF download on invoice detail.
 

@@ -223,7 +223,7 @@ After inception and an initial backlog exist, use **`larapilot-feature`** for **
 
 **Do not use** for bulk backlog creation (`larapilot-spec`) or bug fixes (`larapilot-bug`).
 
-**Examples (docs):** `/larapilot-feature "Aggiungere export PDF fatture"` → `US-011` + optional `FR-011`; see `docs/index.html#examples-incremental`.
+**Examples (docs):** `/larapilot-feature "Add PDF export for invoices"` → `US-011` + optional `FR-011`; see `docs/index.html#examples-incremental`.
 
 ## Bug Intake (`larapilot-bug`)
 
@@ -244,7 +244,7 @@ Use **`larapilot-bug`** to triage **one defect** and route it into the normal wo
 
 Every fix follows spec → plan → implement → review — same as greenfield work.
 
-**Examples (docs):** `/larapilot-bug "Il login SSO fallisce su Safari"` → `intake.md` + rework on `US-003` or new fix spec; see `docs/index.html#examples-incremental`.
+**Examples (docs):** `/larapilot-bug "SSO login fails on Safari"` → `intake.md` + rework on `US-003` or new fix spec; see `docs/index.html#examples-incremental`.
 
 ## PRD Living Document _(selective updates — not every change)_
 

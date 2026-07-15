@@ -2152,6 +2152,7 @@
         <a href="#design-systems">Design systems</a>
         <a href="#mockups">Mockups</a>
         <a href="#dashboard">Dashboard</a>
+        <a href="#api">Workflow API</a>
         <a href="#boost">Larapilot + Boost</a>
       </div>
     </aside>
@@ -2263,7 +2264,7 @@
           <span class="section-label">Architecture</span>
           <h2>How it works</h2>
           <p>Larapilot is a product process backed by files and a CLI — not a one-shot prompt. Three layers cooperate; a
-            local dashboard gives humans a live read-only view of the same artifacts.</p>
+            local dashboard and JSON API give humans a live read-only view of the same artifacts.</p>
         </div>
 
         <div class="table-card">
@@ -2297,6 +2298,12 @@
                 <td><code>/larapilot</code> in the browser <em>(local only)</em></td>
                 <td>Read-only board, PRD viewer, and spec/task detail — mirrors artifacts, no YAML editing</td>
               </tr>
+              <tr>
+                <td><strong>Workflow API</strong></td>
+                <td><code>/larapilot/api/*</code> via HTTP client <em>(local only)</em></td>
+                <td>Read-only JSON for board, specs (filter by status), PRD — OpenAPI 3.1 + Swagger UI at
+                  <code>/larapilot/api/docs</code></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -2305,7 +2312,7 @@
           <strong>Larapilot</strong> (backlog and workflow). Skills orchestrate the conversation; the CLI guarantees
           consistency; artifacts survive between sessions. When you run the app locally, open the <a
             href="#dashboard">workflow dashboard</a> at <code>/larapilot</code> to see backlog status at a glance
-          without opening YAML files.
+          without opening YAML files — or call the <a href="#api">JSON API</a> from scripts and integrations.
         </p>
 
         <h3>Workflow dashboard (local)</h3>
@@ -3180,7 +3187,7 @@ tests/Feature/</pre>
 
           <div class="code-block">
             <div class="code-block-header">Your editor</div>
-            <pre><code>/larapilot-feature "Aggiungere export PDF fatture"</code></pre>
+            <pre><code>/larapilot-feature "Add PDF export for invoices"</code></pre>
           </div>
 
           <p>Mark and Tom read the PRD and backlog first (<code>larapilot:config-show</code>,
@@ -3188,8 +3195,8 @@ tests/Feature/</pre>
           </p>
 
           <div class="chat-example">
-            <p><span class="speaker">💎 Mark:</span> Capito — export PDF delle fatture dalla schermata di dettaglio.
-              Allineiamo scope e priorità.</p>
+            <p><span class="speaker">💎 Mark:</span> Got it — PDF export for invoices from the detail page.
+              Let's align scope and priority.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 1 (scope &amp; priority)</strong>
               <ol>
@@ -3218,7 +3225,7 @@ tests/Feature/</pre>
             </div>
             <p><em>You pick:</em> <strong>MEDIUM</strong> (Should), <strong>EP-002 Invoicing</strong>,
               <strong>US-004</strong>.</p>
-            <p><span class="speaker">🔎 Tom:</span> Acceptance criteria — confermi prima che scrivo la spec?</p>
+            <p><span class="speaker">🔎 Tom:</span> Acceptance criteria — can you confirm before I write the spec?</p>
             <ul style="margin:.5rem 0 0 1.15rem;font-size:.875rem;">
               <li>Download PDF from invoice detail (happy path)</li>
               <li>403 when user lacks permission on that invoice</li>
@@ -3294,14 +3301,14 @@ body: |
 
           <div class="code-block">
             <div class="code-block-header">Your editor</div>
-            <pre><code>/larapilot-bug "Il login SSO fallisce su Safari"</code></pre>
+            <pre><code>/larapilot-bug "SSO login fails on Safari"</code></pre>
           </div>
 
           <p>Sophia loads backlog and support history, restates the issue, then triages with AskQuestion.</p>
 
           <div class="chat-example">
-            <p><span class="speaker">🎧 Sophia:</span> Segnalazione ricevuta — SSO ok su Chrome, fallisce su Safari.
-              Classifichiamo e instradiamo.</p>
+            <p><span class="speaker">🎧 Sophia:</span> Report received — SSO works on Chrome, fails on Safari.
+              Let's classify and route.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 1 (severity &amp; environment)</strong>
               <ol>
@@ -3481,8 +3488,8 @@ body: |
             <tbody>
               <tr>
                 <td>1. Invoke</td>
-                <td><code>/larapilot-feature "Aggiungere export PDF fatture"</code></td>
-                <td><code>/larapilot-bug "Il login SSO fallisce su Safari"</code></td>
+                <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
+                <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
               </tr>
               <tr>
                 <td>2. Interview</td>
@@ -3858,7 +3865,7 @@ php artisan larapilot:update</code></pre>
               <p>Mini-inception for <strong>one new capability</strong> on an existing project — interactive
                 AskQuestion rounds, then a single backlog spec. Requires a PRD; does not replace full inception.</p>
               <ul>
-                <li><strong>Example:</strong> <code>/larapilot-feature "Aggiungere export PDF fatture"</code></li>
+                <li><strong>Example:</strong> <code>/larapilot-feature "Add PDF export for invoices"</code></li>
                 <li><strong>Team:</strong> Mark, Tom; John/Andrew for architecture; Sabrine when legacy/scraping applies
                 </li>
                 <li><strong>Interview:</strong> MoSCoW, FR traceability, mockup-first, epic/priority placement</li>
@@ -3874,7 +3881,7 @@ php artisan larapilot:update</code></pre>
               <p>Sophia-led triage for defects and regressions — severity, reproduce steps, routing to fix spec or
                 rework on an existing story.</p>
               <ul>
-                <li><strong>Example:</strong> <code>/larapilot-bug "Il login SSO fallisce su Safari"</code></li>
+                <li><strong>Example:</strong> <code>/larapilot-bug "SSO login fails on Safari"</code></li>
                 <li><strong>Team:</strong> Sophia, Tom, Anne; Lars/Oliver for security; Jack for Critical hotfix</li>
                 <li><strong>Log:</strong> <code>.larapilot/docs/support/intake.md</code></li>
                 <li><strong>Route:</strong> <code>spec-add</code> (new fix) or <code>spec-request-changes</code>

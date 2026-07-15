@@ -11,7 +11,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **`/larapilot-bug`** — Sophia-led bug triage with interactive intake: severity, environment, security, routing to `spec-add` (fix spec) or `spec-request-changes` (rework); logs to `{paths.support}/intake.md`; Critical production → `hotfix/*` note.
 - **Legacy folder — proactive refactor proposal in inception** — when `.larapilot/legacy/` has content, Mark (with Sabrine) asks via AskQuestion whether to pursue legacy rewrite/port before deep discovery.
 - **Sabrine — expanded expertise** — content scraping/extraction, DB migration, and assets porting (legacy → new); updated across `shared-runtime.md`, inception/spec/plan skills, `core.blade.php`, and `legacy/README.md`.
-- **Docs — feature & bug walkthroughs** — `docs/index.html#examples-incremental` with full interactive examples for `/larapilot-feature "Aggiungere export PDF fatture"` and `/larapilot-bug "Il login SSO fallisce su Safari"`.
+- **Docs — feature & bug walkthroughs** — `docs/index.html#examples-incremental` with full interactive examples for `/larapilot-feature "Add PDF export for invoices"` and `/larapilot-bug "SSO login fails on Safari"`.
 - **PRD Living Document** — selective PRD updates (features + requirement gaps only); `## PRD Revision History`; bugs/rework/hotfixes stay in specs + `support/intake.md`. Documented in `shared-runtime.md`, `larapilot-feature`, `larapilot-bug`, `larapilot-review`, `larapilot-spec`, inception template, `core.blade.php`, and docs.
 
 - **New personas — Marika, Sabrine, Andrew, Joe**
