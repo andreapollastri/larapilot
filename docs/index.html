@@ -1079,6 +1079,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+
       .doc-nav-indicator,
       .doc-nav-progress span {
         transition: none;
@@ -2190,7 +2191,7 @@
       margin-bottom: .65rem;
     }
 
-    .deep-dive-sub > p.lead {
+    .deep-dive-sub>p.lead {
       color: var(--text-secondary);
       margin-bottom: 1.25rem;
       max-width: 68ch;
@@ -2602,7 +2603,8 @@
             GitHub
           </a>
         </div>
-        <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.</p>
+        <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.
+        </p>
       </div>
       <div class="hero-visual">
         <div class="terminal-glow"></div>
@@ -2772,7 +2774,8 @@
                   aria-label="Step 2 · inception"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="2" aria-label="Step 3 · specs"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="3" aria-label="Step 4 · plan"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="4" aria-label="Step 5 · implement"></button>
+                <button class="terminal-progress-dot" type="button" data-dot="4"
+                  aria-label="Step 5 · implement"></button>
                 <button class="terminal-progress-dot" type="button" data-dot="5" aria-label="Step 6 · ship"></button>
                 <span class="terminal-progress-label" id="terminalLabel"><span
                     class="status-pill setup">SETUP</span>installed in two commands</span>
@@ -2830,7 +2833,8 @@
         <div class="section-header">
           <span class="section-label">Quickstart</span>
           <h2>Install in 3 commands</h2>
-          <p>Add Larapilot to your Laravel app, scaffold the <code>.larapilot/</code> workspace, and publish the <code>/larapilot-*</code> skills via Laravel Boost.</p>
+          <p>Add Larapilot to your Laravel app, scaffold the <code>.larapilot/</code> workspace, and publish the
+            <code>/larapilot-*</code> skills via Laravel Boost.</p>
         </div>
 
         <div class="install-commands">
@@ -2839,44 +2843,55 @@
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">1</span>
               <code class="install-command-text">composer require andreapollastri/larapilot --dev</code>
-              <button type="button" class="install-copy-btn" data-copy="composer require andreapollastri/larapilot --dev" title="Copy command">Copy</button>
+              <button type="button" class="install-copy-btn"
+                data-copy="composer require andreapollastri/larapilot --dev" title="Copy command">Copy</button>
             </li>
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">2</span>
               <code class="install-command-text">php artisan larapilot:install</code>
-              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:install" title="Copy command">Copy</button>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:install"
+                title="Copy command">Copy</button>
             </li>
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">3</span>
               <code class="install-command-text">php artisan boost:install</code>
-              <button type="button" class="install-copy-btn" data-copy="php artisan boost:install" title="Copy command">Copy</button>
+              <button type="button" class="install-copy-btn" data-copy="php artisan boost:install"
+                title="Copy command">Copy</button>
             </li>
           </ol>
         </div>
-        <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) · MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
-        <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick up new skills.</p>
+        <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a
+            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) ·
+          MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
+        <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick
+          up new skills.</p>
 
         <h3>Upgrade</h3>
-        <p>After a new Larapilot release — pull the package with Composer, then refresh project assets with Artisan. Details: <a href="#deep-dive-update">Upgrade</a>.</p>
+        <p>After a new Larapilot release — pull the package with Composer, then refresh project assets with Artisan.
+          Details: <a href="#deep-dive-update">Upgrade</a>.</p>
         <div class="install-commands">
           <div class="install-commands-header">Terminal</div>
           <ol class="install-commands-list">
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">1</span>
               <code class="install-command-text">composer update andreapollastri/larapilot</code>
-              <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot" title="Copy command">Copy</button>
+              <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot"
+                title="Copy command">Copy</button>
             </li>
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">2</span>
               <code class="install-command-text">php artisan larapilot:update</code>
-              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update" title="Copy command">Copy</button>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update"
+                title="Copy command">Copy</button>
             </li>
           </ol>
         </div>
-        <p>Verify with <code>php artisan larapilot:doctor</code>. Runtime-only refresh (skip Boost republish): <code>php artisan larapilot:update --skip-boost</code>.</p>
+        <p>Verify with <code>php artisan larapilot:doctor</code>. Runtime-only refresh (skip Boost republish):
+          <code>php artisan larapilot:update --skip-boost</code>.</p>
 
         <h3>First run</h3>
-        <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product example</a>.</p>
+        <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product
+            example</a>.</p>
       </section>
 
       <!-- How it works -->
@@ -2884,7 +2899,8 @@
         <div class="section-header">
           <span class="section-label">Usage</span>
           <h2>How to use</h2>
-          <p>Run <code>/larapilot-*</code> skills in your editor. Each skill orchestrates the conversation; artifacts land in <code>.larapilot/</code> and status transitions are enforced automatically.</p>
+          <p>Run <code>/larapilot-*</code> skills in your editor. Each skill orchestrates the conversation; artifacts
+            land in <code>.larapilot/</code> and status transitions are enforced automatically.</p>
         </div>
 
         <div class="command-flow">
@@ -2900,10 +2916,14 @@
             <span class="command-flow-arrow">→</span>
             <code>/larapilot-review US-XXX</code>
           </div>
-          <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan · <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> · <code>/larapilot-autopilot</code> to batch plan+implement.</p>
+          <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
+            <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
+            <code>/larapilot-autopilot</code> to batch plan+implement.</p>
         </div>
 
-        <p>Git: Larapilot follows <strong>Gitflow</strong> — one <code>feature/US-XXX-*</code> branch per story, atomic commits per plan task, and internal PRs toward <code>develop</code>. <a href="#deep-dive-gitflow">Branch conventions</a>.</p>
+        <p>Git: Larapilot follows <strong>Gitflow</strong> — one <code>feature/US-XXX-*</code> branch per story, atomic
+          commits per plan task, and internal PRs toward <code>develop</code>. <a href="#deep-dive-gitflow">Branch
+            conventions</a>.</p>
 
         <div class="table-card">
           <table>
@@ -2930,7 +2950,8 @@
           </table>
         </div>
 
-        <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow). Walkthroughs: <a href="#examples">four examples</a>.</p>
+        <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow).
+          Walkthroughs: <a href="#examples">four examples</a>.</p>
       </section>
 
       <!-- Examples -->
@@ -2967,11 +2988,12 @@
           </a>
         </nav>
 
-<!-- New product -->
+        <!-- New product -->
         <article class="example-block" id="example-new-product">
           <h2>New product</h2>
           <p class="example-tag"><code>/larapilot-inception</code></p>
-          <p class="example-context">Laravel 13 greenfield — task board with registration, projects, assignable tasks. One sentence in, PRD + backlog + code out.</p>
+          <p class="example-context">Laravel 13 greenfield — task board with registration, projects, assignable tasks.
+            One sentence in, PRD + backlog + code out.</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor</div>
@@ -2981,7 +3003,8 @@
           <p>Mark runs 3 AskQuestion rounds (max 3 questions each, skippable).</p>
 
           <div class="chat-example">
-            <p><span class="speaker">💎 Mark:</span> Let's shape the MVP — who is this for and what kind of product is it?</p>
+            <p><span class="speaker">💎 Mark:</span> Let's shape the MVP — who is this for and what kind of product is
+              it?</p>
             <div class="wizard">
               <strong>AskQuestion — Round 1 (product kind)</strong>
               <ol>
@@ -2990,7 +3013,8 @@
                 <li><strong>Competitors in mind:</strong> Trello/Asana · Linear · None — greenfield</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>, <strong>Trello/Asana</strong>.</p>
+            <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>,
+              <strong>Trello/Asana</strong>.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (MVP scope)</strong>
               <ol>
@@ -2999,18 +3023,23 @@
                 <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no SSO for now), <strong>MVP</strong>.</p>
+            <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no
+              SSO for now), <strong>MVP</strong>.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 3 (stack &amp; panel)</strong>
               <ol>
-                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament · AdminLTE · Bootstrap 5 · Tailwind CSS · Custom</li>
+                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament · AdminLTE · Bootstrap 5 ·
+                  Tailwind CSS · Custom</li>
                 <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
                 <li><strong>GDPR:</strong> EU users expected · Internal only · Unsure</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Laravel Starter Kit</strong>, <strong>Tracked</strong>, <strong>EU users expected</strong>.</p>
-            <p><span class="speaker">📐 John:</span> Starter Kit + session auth fits Laravel 13 out of the box. I'll note Filament as a Future Phase option.</p>
-            <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.</p>
+            <p><em>You pick:</em> <strong>Laravel Starter Kit</strong>, <strong>Tracked</strong>, <strong>EU users
+                expected</strong>.</p>
+            <p><span class="speaker">📐 John:</span> Starter Kit + session auth fits Laravel 13 out of the box. I'll
+              note Filament as a Future Phase option.</p>
+            <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.
+            </p>
           </div>
 
           <div class="code-block">
@@ -3057,7 +3086,10 @@
             <div class="code-block-header">Your editor — optional</div>
             <pre><code>/larapilot-design US-001</code></pre>
           </div>
-          <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>, <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>). Preview at <code>/mockups/US-001</code> — and in the <a href="#deep-dive-dashboard">dashboard</a> on the US detail page (embedded preview + screen links).</p>
+          <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>,
+            <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>).
+            Preview at <code>/mockups/US-001</code> — and in the <a href="#deep-dive-dashboard">dashboard</a> on the US
+            detail page (embedded preview + screen links).</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor — US-001</div>
@@ -3078,17 +3110,20 @@
               <tbody>
                 <tr>
                   <td><code>/larapilot-plan US-001</code></td>
-                  <td><span class="status status-todo">TODO</span> → <span class="status status-planned">PLANNED</span></td>
+                  <td><span class="status status-todo">TODO</span> → <span class="status status-planned">PLANNED</span>
+                  </td>
                   <td><code>plans/US-001-plan.yaml</code></td>
                 </tr>
                 <tr>
                   <td><code>/larapilot-implement US-001</code></td>
-                  <td><span class="status status-planned">PLANNED</span> → <span class="status status-review">REVIEW</span></td>
+                  <td><span class="status status-planned">PLANNED</span> → <span
+                      class="status status-review">REVIEW</span></td>
                   <td><code>User</code> model, <code>RegisterController</code>, Blade view, Pest tests</td>
                 </tr>
                 <tr>
                   <td><code>/larapilot-review US-001</code></td>
-                  <td><span class="status status-review">REVIEW</span> → <span class="status status-done">DONE</span></td>
+                  <td><span class="status status-review">REVIEW</span> → <span class="status status-done">DONE</span>
+                  </td>
                   <td>You approve — or send back with feedback</td>
                 </tr>
               </tbody>
@@ -3161,7 +3196,8 @@ tests/Feature/RegistrationTest.php</code></pre>
         <article class="example-block" id="example-legacy-porting">
           <h2>Legacy porting</h2>
           <p class="example-tag"><code>/larapilot-inception</code></p>
-          <p class="example-context">15-year PHP ERP in <code>.larapilot/legacy/</code> — rewrite on Laravel 12 + Filament, zero feature/data loss, phased cutover.</p>
+          <p class="example-context">15-year PHP ERP in <code>.larapilot/legacy/</code> — rewrite on Laravel 12 +
+            Filament, zero feature/data loss, phased cutover.</p>
 
           <div class="code-block">
             <div class="code-block-header">Prep — before inception</div>
@@ -3184,13 +3220,16 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="wizard">
               <strong>AskQuestion — Round 1 (project origin)</strong>
               <ol>
-                <li><strong>Approach:</strong> Legacy rewrite · Legacy port · Partial modules only · Reference only · Decide later</li>
+                <li><strong>Approach:</strong> Legacy rewrite · Legacy port · Partial modules only · Reference only ·
+                  Decide later</li>
                 <li><strong>Cutover style:</strong> Big-bang · Phased by module · Parallel run · Unsure</li>
-                <li><strong>Data in scope:</strong> Full history · Last 24 months · Master data only · Decide in chat</li>
+                <li><strong>Data in scope:</strong> Full history · Last 24 months · Master data only · Decide in chat
+                </li>
               </ol>
             </div>
             <p><em>You pick:</em> <strong>Legacy rewrite</strong>, <strong>Phased by module</strong>,
-              <strong>Full history</strong> (orders, invoices, stock movements must migrate).</p>
+              <strong>Full history</strong> (orders, invoices, stock movements must migrate).
+            </p>
             <p><span class="speaker">🔄 Sabrine:</span> I mapped five modules — anagrafica, ordini, magazzino,
               fatturazione, report. Warehouse and e-invoicing touch 40+ legacy tables and ~12k uploaded PDF/XML files.
             </p>
@@ -3207,18 +3246,21 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="wizard">
               <strong>AskQuestion — Round 3 (admin &amp; stack)</strong>
               <ol>
-                <li><strong>Admin panel:</strong> Filament · AdminLTE · Laravel Starter Kit · Bootstrap 5 · Custom panel</li>
+                <li><strong>Admin panel:</strong> Filament · AdminLTE · Laravel Starter Kit · Bootstrap 5 · Custom panel
+                </li>
                 <li><strong>Multi-tenancy:</strong> Single company · Multi-company (row-level) · DB per tenant</li>
                 <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
               </ol>
             </div>
             <p><em>You pick:</em> <strong>Filament</strong>, <strong>Multi-company (row-level)</strong>,
-              <strong>Tracked</strong>.</p>
+              <strong>Tracked</strong>.
+            </p>
             <p><span class="speaker">📐 John:</span> Row-level tenancy fits the legacy <code>company_id</code> pattern.
               Matt will ETL from MySQL; Sabrine owns assets under <code>/uploads/fatture/</code>.</p>
           </div>
 
-          <p>PRD records <strong>Project Origin: Legacy rewrite</strong> + parity matrix. Migration specs come first on <code>/larapilot-spec</code>.</p>
+          <p>PRD records <strong>Project Origin: Legacy rewrite</strong> + parity matrix. Migration specs come first on
+            <code>/larapilot-spec</code>.</p>
 
           <div class="code-block">
             <div class="code-block-header">PRD.md (excerpt)</div>
@@ -3280,15 +3322,18 @@ body: |
           <dl class="walkthrough-grid">
             <div>
               <dt>You do</dt>
-              <dd>Drop legacy snapshot in <code>.larapilot/legacy/</code>; invoke inception; answer origin + scope rounds</dd>
+              <dd>Drop legacy snapshot in <code>.larapilot/legacy/</code>; invoke inception; answer origin + scope
+                rounds</dd>
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd>Writes PRD + <code>legacy-parity.md</code>; <code>/larapilot-spec</code> with migration specs first</dd>
+              <dd>Writes PRD + <code>legacy-parity.md</code>; <code>/larapilot-spec</code> with migration specs first
+              </dd>
             </div>
             <div>
               <dt>Next step</dt>
-              <dd><code>/larapilot-plan US-001</code> → implement → <code>/larapilot-review</code> (Sabrine checks parity)</dd>
+              <dd><code>/larapilot-plan US-001</code> → implement → <code>/larapilot-review</code> (Sabrine checks
+                parity)</dd>
             </div>
           </dl>
         </article>
@@ -3318,12 +3363,14 @@ body: |
                 <li><strong>Persona:</strong> Freelancer · Accountant · Admin</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Should</strong>, <strong>Extends FR-004</strong>, <strong>Freelancer</strong>.</p>
+            <p><em>You pick:</em> <strong>Should</strong>, <strong>Extends FR-004</strong>, <strong>Freelancer</strong>.
+            </p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (delivery shape)</strong>
               <ol>
                 <li><strong>Complexity:</strong> Small (1 spec) · Medium · Large (split epics)</li>
-                <li><strong>Mockup first?</strong> Yes — /larapilot-design · No — plan directly · Already have mockups</li>
+                <li><strong>Mockup first?</strong> Yes — /larapilot-design · No — plan directly · Already have mockups
+                </li>
                 <li><strong>Legacy touch?</strong> No · Maps to legacy parity · Needs scraping/porting</li>
               </ol>
             </div>
@@ -3337,7 +3384,8 @@ body: |
               </ol>
             </div>
             <p><em>You pick:</em> <strong>MEDIUM</strong> (Should), <strong>EP-002 Invoicing</strong>,
-              <strong>US-004</strong>.</p>
+              <strong>US-004</strong>.
+            </p>
             <p><span class="speaker">🔎 Tom:</span> Acceptance criteria — can you confirm before I write the spec?</p>
             <ul style="margin:.5rem 0 0 1.15rem;font-size:.875rem;">
               <li>Download PDF from invoice detail (happy path)</li>
@@ -3425,7 +3473,8 @@ body: |
               </ol>
             </div>
             <p><em>You pick:</em> <strong>Always</strong> (Safari 17+), <strong>Auth / SSO</strong>,
-              <strong>Yes — US-003</strong>.</p>
+              <strong>Yes — US-003</strong>.
+            </p>
             <div class="wizard">
               <strong>AskQuestion — Round 3 (routing)</strong>
               <ol>
@@ -3458,7 +3507,8 @@ body: |
 - **Security:** unsure — Lars/Oliver tagged</code></pre>
           </div>
 
-          <p>Maps to <code>US-003</code> — skill sends it back to <span class="status status-todo">TODO</span> with rework feedback. PRD update only if requirement gap (e.g. Safari never specified).</p>
+          <p>Maps to <code>US-003</code> — skill sends it back to <span class="status status-todo">TODO</span> with
+            rework feedback. PRD update only if requirement gap (e.g. Safari never specified).</p>
 
           <div class="code-block">
             <div class="code-block-header">Rework feedback (attached to US-003)</div>
@@ -3475,7 +3525,8 @@ body: |
           </div>
 
           <h4>New fix spec instead?</h4>
-          <p>No matching story → new <code>US-XXX</code> with <strong>Type: Fix</strong>. Critical production → Jack's <code>hotfix/*</code> note.</p>
+          <p>No matching story → new <code>US-XXX</code> with <strong>Type: Fix</strong>. Critical production → Jack's
+            <code>hotfix/*</code> note.</p>
 
           <dl class="walkthrough-grid">
             <div>
@@ -3496,96 +3547,98 @@ body: |
 
         <article class="example-appendix" id="examples-prd-living">
           <h3>PRD living document</h3>
-          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they reveal a requirement gap.</p>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Change type</th>
-                <th>Update PRD?</th>
-                <th>Where it lives</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
-                <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
-                <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
-              </tr>
-              <tr>
-                <td>New feature (<code>/larapilot-feature</code>)</td>
-                <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
-                <td>PRD + spec + revision history</td>
-              </tr>
-              <tr>
-                <td>Routine bug</td>
-                <td><strong>No</strong></td>
-                <td><code>support/intake.md</code> + fix spec or rework</td>
-              </tr>
-              <tr>
-                <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
-                <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
-                <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
-              </tr>
-              <tr>
-                <td>Review rework</td>
-                <td><strong>No</strong></td>
-                <td><code>/larapilot-review</code> feedback only</td>
-              </tr>
-              <tr>
-                <td>Hotfix production</td>
-                <td><strong>No</strong></td>
-                <td>Spec + app <code>CHANGELOG.md</code></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="code-block">
-          <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
-          <pre><code>## PRD Revision History
+          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they
+            reveal a requirement gap.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Change type</th>
+                  <th>Update PRD?</th>
+                  <th>Where it lives</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
+                  <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
+                  <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
+                </tr>
+                <tr>
+                  <td>New feature (<code>/larapilot-feature</code>)</td>
+                  <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
+                  <td>PRD + spec + revision history</td>
+                </tr>
+                <tr>
+                  <td>Routine bug</td>
+                  <td><strong>No</strong></td>
+                  <td><code>support/intake.md</code> + fix spec or rework</td>
+                </tr>
+                <tr>
+                  <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
+                  <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
+                  <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
+                </tr>
+                <tr>
+                  <td>Review rework</td>
+                  <td><strong>No</strong></td>
+                  <td><code>/larapilot-review</code> feedback only</td>
+                </tr>
+                <tr>
+                  <td>Hotfix production</td>
+                  <td><strong>No</strong></td>
+                  <td>Spec + app <code>CHANGELOG.md</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
+            <pre><code>## PRD Revision History
 
 | Date | Trigger | Summary |
 | --- | --- | --- |
 | 2026-07-01 | larapilot-inception | Initial PRD |
 | 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
 | 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |</code></pre>
-        </div>
-        <p>Unclear? Default: spec only — safer than polluting the PRD.</p>
+          </div>
+          <p>Unclear? Default: spec only — safer than polluting the PRD.</p>
 
-        <h3>Feature vs bug — at a glance</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Step</th>
-                <th><code>/larapilot-feature</code></th>
-                <th><code>/larapilot-bug</code></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1. Invoke</td>
-                <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
-                <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
-              </tr>
-              <tr>
-                <td>2. Interview</td>
-                <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
-                <td>Sophia + Tom — severity, env, security, routing (3 rounds)</td>
-              </tr>
-              <tr>
-                <td>3. Persist</td>
-                <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
-                <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
-              </tr>
-              <tr>
-                <td>4. Implement</td>
-                <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
-                  <code>/larapilot-review</code></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          <h3>Feature vs bug — at a glance</h3>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th><code>/larapilot-feature</code></th>
+                  <th><code>/larapilot-bug</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1. Invoke</td>
+                  <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
+                  <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
+                </tr>
+                <tr>
+                  <td>2. Interview</td>
+                  <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
+                  <td>Sophia + Tom — severity, env, security, routing (3 rounds)</td>
+                </tr>
+                <tr>
+                  <td>3. Persist</td>
+                  <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
+                  <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
+                </tr>
+                <tr>
+                  <td>4. Implement</td>
+                  <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
+                    <code>/larapilot-review</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
       </section>
@@ -3595,26 +3648,33 @@ body: |
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
           <h2>Technical reference</h2>
-          <p>Skills, personas, workflow, artifacts, design systems, CLI, dashboard, and API — how every layer fits together.</p>
+          <p>Skills, personas, workflow, artifacts, design systems, CLI, dashboard, and API — how every layer fits
+            together.</p>
         </div>
 
         <!-- How it works -->
         <article class="deep-dive-sub" id="deep-dive-how-it-works">
           <h3>How it works</h3>
-          <p class="lead">Three layers: skills orchestrate the conversation, artifacts in git are the source of truth, and Artisan CLI persists state under the hood.</p>
+          <p class="lead">Three layers: skills orchestrate the conversation, artifacts in git are the source of truth,
+            and Artisan CLI persists state under the hood.</p>
 
           <div class="layer-stack">
             <div class="layer-card">
               <strong>1 · Skills</strong>
-              <p><code>/larapilot-*</code> prompts published via Laravel Boost. You invoke them in the editor; the agent reads <code>SKILL.md</code> and follows the execution contract.</p>
+              <p><code>/larapilot-*</code> prompts published via Laravel Boost. You invoke them in the editor; the agent
+                reads <code>SKILL.md</code> and follows the execution contract.</p>
             </div>
             <div class="layer-card">
               <strong>2 · Artifacts</strong>
-              <p>PRD, backlog, specs, plans, and review notes live under <code>.larapilot/</code> in git — durable state the agent reloads on every skill activation.</p>
+              <p>PRD, backlog, specs, plans, and review notes live under <code>.larapilot/</code> in git — durable state
+                the agent reloads on every skill activation.</p>
             </div>
             <div class="layer-card">
               <strong>3 · CLI (under the hood)</strong>
-              <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>. After a package upgrade, run <a href="#deep-dive-update">Composer + <code>larapilot:update</code></a> to refresh shared runtime and Boost skills.</p>
+              <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You
+                rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>. After a package upgrade, run
+                <a href="#deep-dive-update">Composer + <code>larapilot:update</code></a> to refresh shared runtime and
+                Boost skills.</p>
             </div>
           </div>
         </article>
@@ -3622,7 +3682,9 @@ body: |
         <!-- Upgrade -->
         <article class="deep-dive-sub" id="deep-dive-update">
           <h3>Upgrade</h3>
-          <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new version, then refresh the files Larapilot publishes into your project — without touching your workflow data in <code>.larapilot/config.yaml</code>, specs, plans, or PRD.</p>
+          <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new version, then
+            refresh the files Larapilot publishes into your project — without touching your workflow data in
+            <code>.larapilot/config.yaml</code>, specs, plans, or PRD.</p>
 
           <div class="install-commands">
             <div class="install-commands-header">Terminal — after each release</div>
@@ -3630,12 +3692,14 @@ body: |
               <li class="install-command">
                 <span class="install-command-num" aria-hidden="true">1</span>
                 <code class="install-command-text">composer update andreapollastri/larapilot</code>
-                <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot" title="Copy command">Copy</button>
+                <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot"
+                  title="Copy command">Copy</button>
               </li>
               <li class="install-command">
                 <span class="install-command-num" aria-hidden="true">2</span>
                 <code class="install-command-text">php artisan larapilot:update</code>
-                <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update" title="Copy command">Copy</button>
+                <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:update"
+                  title="Copy command">Copy</button>
               </li>
             </ol>
           </div>
@@ -3653,13 +3717,17 @@ body: |
               <tbody>
                 <tr>
                   <td><code>composer update andreapollastri/larapilot</code></td>
-                  <td>PHP package in <code>vendor/</code> — services, CLI, dashboard, design-system packages, Boost resources bundled with Larapilot</td>
+                  <td>PHP package in <code>vendor/</code> — services, CLI, dashboard, design-system packages, Boost
+                    resources bundled with Larapilot</td>
                   <td>Your <code>.larapilot/</code> project config and workflow artifacts</td>
                 </tr>
                 <tr>
                   <td><code>php artisan larapilot:update</code></td>
-                  <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged <code>.larapilot/design-systems/</code> references; re-runs <code>boost:update</code> to republish guidelines and <code>/larapilot-*</code> skills</td>
-                  <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned files</td>
+                  <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged
+                    <code>.larapilot/design-systems/</code> references; re-runs <code>boost:update</code> to republish
+                    guidelines and <code>/larapilot-*</code> skills</td>
+                  <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned
+                    files</td>
                 </tr>
               </tbody>
             </table>
@@ -3667,13 +3735,16 @@ body: |
 
           <h4>Options &amp; checks</h4>
           <ul>
-            <li><code>php artisan larapilot:update --skip-boost</code> — refresh shared runtime and design-system copies only; run <code>php artisan boost:update</code> yourself when you want new skills/guidelines</li>
+            <li><code>php artisan larapilot:update --skip-boost</code> — refresh shared runtime and design-system copies
+              only; run <code>php artisan boost:update</code> yourself when you want new skills/guidelines</li>
             <li><code>php artisan larapilot:doctor</code> — verify install health after an upgrade</li>
-            <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and skills are missing</li>
+            <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and
+              skills are missing</li>
           </ul>
 
           <h4>Automate with Composer (optional)</h4>
-          <p>Add a <code>post-update-cmd</code> hook so <code>larapilot:update</code> runs whenever Larapilot is updated via Composer:</p>
+          <p>Add a <code>post-update-cmd</code> hook so <code>larapilot:update</code> runs whenever Larapilot is updated
+            via Composer:</p>
           <div class="code-block">
             <div class="code-block-header">composer.json — scripts</div>
             <pre><code>"scripts": {
@@ -3682,15 +3753,22 @@ body: |
     ]
 }</code></pre>
           </div>
-          <p>Omit <code>--skip-boost</code> if you always want Boost guidelines and skills republished on every Composer update. Run <code>php artisan boost:update</code> manually when you use <code>--skip-boost</code> in the hook.</p>
+          <p>Omit <code>--skip-boost</code> if you always want Boost guidelines and skills republished on every Composer
+            update. Run <code>php artisan boost:update</code> manually when you use <code>--skip-boost</code> in the
+            hook.</p>
 
-          <div class="cli-note"><strong>Do not re-run <code>larapilot:install</code> on an existing project</strong> unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for routine upgrades.</div>
+          <div class="cli-note"><strong>Do not re-run <code>larapilot:install</code> on an existing project</strong>
+            unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for
+            routine upgrades.</div>
         </article>
 
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead">Ten editor-native skills cover the full product lifecycle. Each is a <code>SKILL.md</code> file with a name, description, persona roster, execution steps, and allowed CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).</p>
+          <p class="lead">Ten editor-native skills cover the full product lifecycle. Each is a <code>SKILL.md</code>
+            file with a name, description, persona roster, execution steps, and allowed CLI calls. Laravel Boost
+            publishes them on <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside
+            (not a skill).</p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
           <ol>
@@ -3717,7 +3795,8 @@ body: |
               <span class="skill-badge">shortcut</span>
               <div class="skill-body">
                 <h3><code>/larapilot-feature "…"</code></h3>
-                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD FR).</p>
+                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
+                  FR).</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3731,49 +3810,58 @@ body: |
               <span class="skill-badge">backlog</span>
               <div class="skill-body">
                 <h3><code>/larapilot-spec</code></h3>
-                <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code>.</p>
+                <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code>
+                  + <code>specs/US-XXX.yaml</code>.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">optional</span>
               <div class="skill-body">
                 <h3><code>/larapilot-design US-XXX</code></h3>
-                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament, Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code> (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.</p>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
+                  Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
+                  (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
+                </p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">plan</span>
               <div class="skill-body">
                 <h3><code>/larapilot-plan US-XXX</code></h3>
-                <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>. Status → <span class="status status-planned">PLANNED</span>.</p>
+                <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>.
+                  Status → <span class="status status-planned">PLANNED</span>.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">implement</span>
               <div class="skill-body">
                 <h3><code>/larapilot-implement US-XXX</code></h3>
-                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span class="status status-review">REVIEW</span> when all tasks complete.</p>
+                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span
+                    class="status status-review">REVIEW</span> when all tasks complete.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">review</span>
               <div class="skill-body">
                 <h3><code>/larapilot-review US-XXX</code></h3>
-                <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback → <span class="status status-todo">TODO</span>.</p>
+                <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback →
+                  <span class="status status-todo">TODO</span>.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">optional</span>
               <div class="skill-body">
                 <h3><code>/larapilot-ship</code></h3>
-                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span class="status status-done">DONE</span>.</p>
+                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
+                    class="status status-done">DONE</span>.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">batch</span>
               <div class="skill-body">
                 <h3><code>/larapilot-autopilot US-XXX …</code></h3>
-                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. You still run <code>/larapilot-review</code> per story.</p>
+                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. You still run
+                  <code>/larapilot-review</code> per story.</p>
               </div>
             </div>
           </div>
@@ -3782,32 +3870,58 @@ body: |
         <!-- Personas -->
         <article class="deep-dive-sub" id="deep-dive-personas">
           <h3>Personas</h3>
-          <p class="lead"><strong>27 personas</strong> are lenses, not costumes. Each skill activates a subset of the squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind of scrutiny to the work at hand. <strong>Zoey</strong> (AI Guru) is active in every skill; <strong>Albert</strong>, <strong>Ricky</strong>, and refined <strong>Joe</strong> roles landed in v1.7.1.</p>
+          <p class="lead"><strong>27 personas</strong> are lenses, not costumes. Each skill activates a subset of the
+            squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind
+            of scrutiny to the work at hand. <strong>Zoey</strong> (AI Guru) is active in every skill;
+            <strong>Albert</strong>, <strong>Ricky</strong>, and refined <strong>Joe</strong> roles landed in v1.7.1.
+          </p>
 
           <div class="persona-phases">
             <div class="persona-phase">
               <h4>Discovery</h4>
-              <p><strong>Zoey</strong> sharpens user intent and flags session-budget risks. <strong>Mark</strong> drives scope and MoSCoW. <strong>Jennifer</strong> and <strong>Benjamin</strong> frame market context. <strong>John</strong> and <strong>Aurora</strong> co-own architecture — Aurora brings SaaS economics, storage/compute sizing, and proactive cost optimization. <strong>Sabrine</strong> leads legacy parity when <code>legacy/</code> has content. <strong>Elise</strong> and <strong>Joe</strong> co-own the design system. <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces; <strong>Ricky</strong> for mobile apps; <strong>Albert</strong> scopes baseline + optional extended documentation.</p>
+              <p><strong>Zoey</strong> sharpens user intent and flags session-budget risks. <strong>Mark</strong> drives
+                scope and MoSCoW. <strong>Jennifer</strong> and <strong>Benjamin</strong> frame market context.
+                <strong>John</strong> and <strong>Aurora</strong> co-own architecture — Aurora brings SaaS economics,
+                storage/compute sizing, and proactive cost optimization. <strong>Sabrine</strong> leads legacy parity
+                when <code>legacy/</code> has content. <strong>Elise</strong> and <strong>Joe</strong> co-own the design
+                system. <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces; <strong>Ricky</strong>
+                for mobile apps; <strong>Albert</strong> scopes baseline + optional extended documentation.</p>
             </div>
             <div class="persona-phase">
               <h4>Planning</h4>
-              <p><strong>Zoey</strong> recommends sub-agent vs inline passes. <strong>Tom</strong> sharpens acceptance criteria. <strong>John</strong> designs the technical approach. <strong>Anne</strong> defines test strategy including manual handoff when needed. <strong>Andrew</strong> enforces Laravel conventions. <strong>Albert</strong> plans baseline docs on every spec and extended deliverables when approved. <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. Optional sub-agents explore the codebase in readonly mode.</p>
+              <p><strong>Zoey</strong> recommends sub-agent vs inline passes. <strong>Tom</strong> sharpens acceptance
+                criteria. <strong>John</strong> designs the technical approach. <strong>Anne</strong> defines test
+                strategy including manual handoff when needed. <strong>Andrew</strong> enforces Laravel conventions.
+                <strong>Albert</strong> plans baseline docs on every spec and extended deliverables when approved.
+                <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. Optional sub-agents explore
+                the codebase in readonly mode.</p>
             </div>
             <div class="persona-phase">
               <h4>Implementation</h4>
-              <p><strong>Alex</strong> writes code and optimizes FE/BE integration. <strong>Anne</strong> ships multi-viewport/device Pest tests and documents manual tests for the human. <strong>Robert</strong> checks plan adherence and Gitflow — involves <strong>Sabrine</strong> on refactoring/porting. <strong>Joe</strong> enforces design-system consistency. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Ricky</strong>, <strong>Marika</strong>, <strong>Matt</strong>, and <strong>Albert</strong> join when mobile, copy, integrations, or docs are in scope.</p>
+              <p><strong>Alex</strong> writes code and optimizes FE/BE integration. <strong>Anne</strong> ships
+                multi-viewport/device Pest tests and documents manual tests for the human. <strong>Robert</strong>
+                checks plan adherence and Gitflow — involves <strong>Sabrine</strong> on refactoring/porting.
+                <strong>Joe</strong> enforces design-system consistency. <strong>Lars</strong> runs OWASP-aligned
+                security review. <strong>Ricky</strong>, <strong>Marika</strong>, <strong>Matt</strong>, and
+                <strong>Albert</strong> join when mobile, copy, integrations, or docs are in scope.</p>
             </div>
             <div class="persona-phase">
               <h4>Review</h4>
-              <p><strong>Robert</strong> presents the human gate with <strong>Sabrine</strong> on refactoring/porting specs. <strong>Joe</strong> checks design-system compliance. <strong>Marika</strong> and <strong>Emily</strong> verify typos and translation consistency. <strong>Anne</strong> attaches automated evidence and manual test recommendations.</p>
+              <p><strong>Robert</strong> presents the human gate with <strong>Sabrine</strong> on refactoring/porting
+                specs. <strong>Joe</strong> checks design-system compliance. <strong>Marika</strong> and
+                <strong>Emily</strong> verify typos and translation consistency. <strong>Anne</strong> attaches
+                automated evidence and manual test recommendations.</p>
             </div>
             <div class="persona-phase">
               <h4>Ship &amp; support</h4>
-              <p><strong>Jack</strong> owns CI/CD and deploy. <strong>Oliver</strong> red-teams before launch. <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs. <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.</p>
+              <p><strong>Jack</strong> owns CI/CD and deploy. <strong>Oliver</strong> red-teams before launch.
+                <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs.
+                <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.</p>
             </div>
           </div>
 
-          <p>Output economy varies by phase: concise status lines during implement/review; full artifacts and code stay complete. See <code>.larapilot/shared-runtime.md</code> for brevity rules.</p>
+          <p>Output economy varies by phase: concise status lines during implement/review; full artifacts and code stay
+            complete. See <code>.larapilot/shared-runtime.md</code> for brevity rules.</p>
 
           <div class="team-grid">
             <div class="team-card">
@@ -3951,7 +4065,9 @@ body: |
         <!-- Workflow -->
         <article class="deep-dive-sub" id="deep-dive-workflow">
           <h3>Workflow</h3>
-          <p class="lead">Every user story moves through a strict state machine on a <strong>Gitflow</strong> branch model. Skills drive transitions; invalid jumps are blocked automatically. After inception and backlog creation, you repeat the per-story loop until the MVP is shipped.</p>
+          <p class="lead">Every user story moves through a strict state machine on a <strong>Gitflow</strong> branch
+            model. Skills drive transitions; invalid jumps are blocked automatically. After inception and backlog
+            creation, you repeat the per-story loop until the MVP is shipped.</p>
 
           <div class="command-flow">
             <div class="command-flow-label">Greenfield — repeat per story</div>
@@ -3966,11 +4082,16 @@ body: |
               <span class="command-flow-arrow">→</span>
               <code>/larapilot-review US-XXX</code>
             </div>
-            <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan · <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> · <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.</p>
+            <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
+              <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
+              <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-feature</code> or
+              <code>/larapilot-bug</code> on existing products.</p>
           </div>
 
           <h4 id="deep-dive-gitflow">Git workflow — Gitflow</h4>
-          <p>Larapilot is built around <strong>Gitflow</strong>. Branch names, per-task commits, and internal PRs are part of the implement/review contract — <strong>Jack</strong> proposes the workflow at inception; <strong>Robert</strong> blocks review when Git discipline is violated.</p>
+          <p>Larapilot is built around <strong>Gitflow</strong>. Branch names, per-task commits, and internal PRs are
+            part of the implement/review contract — <strong>Jack</strong> proposes the workflow at inception;
+            <strong>Robert</strong> blocks review when Git discipline is violated.</p>
 
           <div class="table-card">
             <table>
@@ -3995,17 +4116,22 @@ body: |
                 </tr>
                 <tr>
                   <td><code>release/x.y.z</code></td>
-                  <td>Release prep — version bump, changelog, final QA; merge → <code>main</code> + back-merge → <code>develop</code></td>
+                  <td>Release prep — version bump, changelog, final QA; merge → <code>main</code> + back-merge →
+                    <code>develop</code></td>
                 </tr>
                 <tr>
                   <td><code>hotfix/x.y.z</code></td>
-                  <td>Urgent production fix; branch from <code>main</code>; merge → <code>main</code> + <code>develop</code></td>
+                  <td>Urgent production fix; branch from <code>main</code>; merge → <code>main</code> +
+                    <code>develop</code></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <p>No direct commits to <code>main</code> or <code>develop</code>. Each plan task gets one atomic Conventional Commit, a push, and an open or updated internal PR toward <code>develop</code>. Critical production defects route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Solo MVP teams may use GitHub Flow with the same per-task commit rules — full details in <code>.larapilot/shared-runtime.md</code>.</p>
+          <p>No direct commits to <code>main</code> or <code>develop</code>. Each plan task gets one atomic Conventional
+            Commit, a push, and an open or updated internal PR toward <code>develop</code>. Critical production defects
+            route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Solo MVP teams may use GitHub Flow with
+            the same per-task commit rules — full details in <code>.larapilot/shared-runtime.md</code>.</p>
 
           <h4>Status machine</h4>
           <div class="table-card">
@@ -4048,37 +4174,44 @@ body: |
           </div>
 
           <h4>Transition guards</h4>
-          <p>The workflow engine rejects invalid state changes — for example, you cannot implement before planning, or approve before review. When you reject a review, the spec returns to <span class="status status-todo">TODO</span> with your feedback attached so the agent can replan and reimplement.</p>
+          <p>The workflow engine rejects invalid state changes — for example, you cannot implement before planning, or
+            approve before review. When you reject a review, the spec returns to <span
+              class="status status-todo">TODO</span> with your feedback attached so the agent can replan and
+            reimplement.</p>
 
           <h4>Human-in-the-loop</h4>
-          <p>Discovery interviews use AskQuestion wizards. Review is always yours — the agent proposes, you approve or send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance.</p>
+          <p>Discovery interviews use AskQuestion wizards. Review is always yours — the agent proposes, you approve or
+            send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance.</p>
         </article>
 
         <!-- Artifacts -->
         <article class="deep-dive-sub" id="deep-dive-artifacts">
           <h3>Artifacts</h3>
-          <p class="lead">Everything the workflow produces lives in <code>.larapilot/</code> inside your repo. Skills read and write these files; they survive across editor sessions and give every agent the same ground truth.</p>
+          <p class="lead">Everything the workflow produces lives in <code>.larapilot/</code> inside your repo. Skills
+            read and write these files; they survive across editor sessions and give every agent the same ground truth.
+          </p>
 
           <div class="file-tree">.larapilot/
-├── config.yaml              <span class="comment"># project config (created on install)</span>
-├── shared-runtime.md        <span class="comment"># rules every skill reads at activation</span>
-├── task-templates.md      <span class="comment"># plan/implement task body shapes</span>
-├── backlog.yaml             <span class="comment"># spec index + statuses</span>
-├── docs/
-│   ├── PRD.md               <span class="comment"># living product contract</span>
-│   ├── test-results/        <span class="comment"># per-spec test evidence</span>
-│   ├── review/              <span class="comment"># Robert/Lars findings</span>
-│   ├── security/            <span class="comment"># OWASP assessments</span>
-│   ├── launch/              <span class="comment"># SEO/social launch checks</span>
-│   └── support/             <span class="comment"># bug intake, triage notes</span>
-├── specs/US-XXX.yaml        <span class="comment"># user story + acceptance criteria</span>
-├── plans/US-XXX-plan.yaml   <span class="comment"># tasks, deliverables, test strategy</span>
-├── mockups/{spec}/          <span class="comment"># HTML mockups (optional)</span>
-├── internal-feedback/       <span class="comment"># PM/dev comments per spec (append-only)</span>
-├── client-materials/        <span class="comment"># drop client docs before inception</span>
-├── legacy/                  <span class="comment"># legacy snapshot for rewrite/port</span>
-├── research/                <span class="comment"># deepsearch, parity matrices</span>
-└── design-systems/          <span class="comment"># Filament / Starter Kit / Bootstrap / Tailwind / AdminLTE</span></div>
+            ├── config.yaml <span class="comment"># project config (created on install)</span>
+            ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
+            ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
+            ├── backlog.yaml <span class="comment"># spec index + statuses</span>
+            ├── docs/
+            │ ├── PRD.md <span class="comment"># living product contract</span>
+            │ ├── test-results/ <span class="comment"># per-spec test evidence</span>
+            │ ├── review/ <span class="comment"># Robert/Lars findings</span>
+            │ ├── security/ <span class="comment"># OWASP assessments</span>
+            │ ├── launch/ <span class="comment"># SEO/social launch checks</span>
+            │ └── support/ <span class="comment"># bug intake, triage notes</span>
+            ├── specs/US-XXX.yaml <span class="comment"># user story + acceptance criteria</span>
+            ├── plans/US-XXX-plan.yaml <span class="comment"># tasks, deliverables, test strategy</span>
+            ├── mockups/{spec}/ <span class="comment"># HTML mockups (optional)</span>
+            ├── internal-feedback/ <span class="comment"># PM/dev comments per spec (append-only)</span>
+            ├── client-materials/ <span class="comment"># drop client docs before inception</span>
+            ├── legacy/ <span class="comment"># legacy snapshot for rewrite/port</span>
+            ├── research/ <span class="comment"># deepsearch, parity matrices</span>
+            └── design-systems/ <span class="comment"># Filament / Starter Kit / Bootstrap / Tailwind / AdminLTE</span>
+          </div>
 
           <div class="table-card">
             <table>
@@ -4113,17 +4246,20 @@ body: |
                 <tr>
                   <td><code>mockups/{spec}/</code></td>
                   <td><code>/larapilot-design</code></td>
-                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); linked in the <a href="#deep-dive-dashboard">dashboard</a> and JSON API when present</td>
+                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); linked in the <a
+                      href="#deep-dive-dashboard">dashboard</a> and JSON API when present</td>
                 </tr>
                 <tr>
                   <td><code>internal-feedback/{code}.md</code></td>
                   <td>Dashboard · <code>larapilot:spec-comment</code></td>
-                  <td>Append-only PM/dev notes until the spec is <span class="status status-done">DONE</span>; blocking comments flagged with <code>[blocks-merge]</code></td>
+                  <td>Append-only PM/dev notes until the spec is <span class="status status-done">DONE</span>; blocking
+                    comments flagged with <code>[blocks-merge]</code></td>
                 </tr>
                 <tr>
                   <td><code>design-systems/</code></td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code></td>
-                  <td>Packaged mockup references — Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE — see <a href="#deep-dive-design-systems">design systems</a></td>
+                  <td>Packaged mockup references — Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE — see <a
+                      href="#deep-dive-design-systems">design systems</a></td>
                 </tr>
                 <tr>
                   <td>Laravel app code</td>
@@ -4134,13 +4270,19 @@ body: |
             </table>
           </div>
 
-          <p>JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to confirm writes and status changes. Inspect artifacts visually via the <a href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.</p>
+          <p>JSON responses from CLI commands use schema <code>larapilot/v1</code> — skills parse these envelopes to
+            confirm writes and status changes. Inspect artifacts visually via the <a
+              href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.
+          </p>
         </article>
 
         <!-- Design systems -->
         <article class="deep-dive-sub" id="deep-dive-design-systems">
           <h3>Design systems</h3>
-          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code> picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency through implement and review.</p>
+          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on
+            <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
+            picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency
+            through implement and review.</p>
 
           <div class="table-card">
             <table>
@@ -4157,44 +4299,57 @@ body: |
                   <td><strong>Filament</strong></td>
                   <td><code>design-systems/filament/</code></td>
                   <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>, <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
+                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)</td>
                 </tr>
                 <tr>
                   <td><strong>Laravel Starter Kits</strong></td>
                   <td><code>design-systems/starter-kit/</code></td>
-                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>, <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
-                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML screens</td>
+                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>,
+                    <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
+                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML
+                    screens</td>
                 </tr>
                 <tr>
                   <td><strong>Bootstrap 5</strong></td>
                   <td><code>design-systems/bootstrap-5/</code></td>
-                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a Starter Kit)</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing, dashboard, login, settings, components)</td>
+                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a
+                    Starter Kit)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing,
+                    dashboard, login, settings, components)</td>
                 </tr>
                 <tr>
                   <td><strong>Tailwind CSS</strong></td>
                   <td><code>design-systems/tailwind/</code></td>
-                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament, Starter Kit, or Bootstrap</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens</td>
+                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament,
+                    Starter Kit, or Bootstrap</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens
+                  </td>
                 </tr>
                 <tr>
                   <td><strong>AdminLTE</strong></td>
                   <td><code>design-systems/adminlte/</code></td>
                   <td>Admin/control panel mockups when the PRD records <strong>AdminLTE 4</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard, resource list, login, settings, components)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard,
+                    resource list, login, settings, components)</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
+          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
+            <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
         </article>
 
         <!-- Artisan CLI -->
         <article class="deep-dive-sub" id="deep-dive-cli">
           <h3>Artisan CLI</h3>
-          <p class="lead">Optional and under the hood. Skills call these commands — you do not need to memorize them. They persist artifacts, validate YAML/Markdown, enforce workflow guards, and return structured JSON for the agent to parse.</p>
+          <p class="lead">Optional and under the hood. Skills call these commands — you do not need to memorize them.
+            They persist artifacts, validate YAML/Markdown, enforce workflow guards, and return structured JSON for the
+            agent to parse.</p>
 
-          <div class="cli-note"><strong>You interact via skills.</strong> The CLI is the persistence layer agents use internally. Run commands manually only for debugging, scripting, or CI — e.g. <code>php artisan larapilot:doctor</code> to verify install health.</div>
+          <div class="cli-note"><strong>You interact via skills.</strong> The CLI is the persistence layer agents use
+            internally. Run commands manually only for debugging, scripting, or CI — e.g.
+            <code>php artisan larapilot:doctor</code> to verify install health.</div>
 
           <h4>JSON envelope</h4>
           <div class="code-block">
@@ -4205,7 +4360,8 @@ body: |
   "data": { "code": "US-001", "task_count": 4 }
 }</code></pre>
           </div>
-          <p>Errors return <code>"kind": "error"</code> with <code>code</code>, <code>message</code>, and optional <code>hint</code>. Skills never invent persistence — they always go through these commands.</p>
+          <p>Errors return <code>"kind": "error"</code> with <code>code</code>, <code>message</code>, and optional
+            <code>hint</code>. Skills never invent persistence — they always go through these commands.</p>
 
           <h4>Command reference</h4>
           <div class="table-card">
@@ -4220,7 +4376,8 @@ body: |
               <tbody>
                 <tr>
                   <td>Setup</td>
-                  <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> · <code>larapilot:config-show</code></td>
+                  <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
+                    <code>larapilot:config-show</code></td>
                   <td>Install, upgrades, diagnostics</td>
                 </tr>
                 <tr>
@@ -4230,7 +4387,10 @@ body: |
                 </tr>
                 <tr>
                   <td>Backlog</td>
-                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> · <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> · <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> · <code>larapilot:spec-comment</code></td>
+                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> ·
+                    <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> ·
+                    <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> ·
+                    <code>larapilot:spec-comment</code></td>
                   <td><code>/larapilot-spec</code>, shortcuts, dashboard comments</td>
                 </tr>
                 <tr>
@@ -4240,12 +4400,14 @@ body: |
                 </tr>
                 <tr>
                   <td>Execution</td>
-                  <td><code>larapilot:spec-start</code> · <code>larapilot:task-done</code> · <code>larapilot:spec-review</code></td>
+                  <td><code>larapilot:spec-start</code> · <code>larapilot:task-done</code> ·
+                    <code>larapilot:spec-review</code></td>
                   <td><code>/larapilot-implement</code></td>
                 </tr>
                 <tr>
                   <td>Review</td>
-                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code> (<code>--include-feedback</code>)</td>
+                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code>
+                    (<code>--include-feedback</code>)</td>
                   <td><code>/larapilot-review</code></td>
                 </tr>
                 <tr>
@@ -4257,23 +4419,30 @@ body: |
             </table>
           </div>
 
-          <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.</p>
+          <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside
+            <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.</p>
         </article>
 
         <!-- Dashboard -->
         <article class="deep-dive-sub" id="deep-dive-dashboard">
           <h3>Dashboard</h3>
-          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read the PRD, and drill into spec detail between skill sessions. You can also post <strong>internal feedback</strong> comments from the spec page (dev/staging only) — workflow state still changes only via skills/CLI.</p>
+          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
+            the PRD, and drill into spec detail between skill sessions. You can also post <strong>internal
+              feedback</strong> comments from the spec page (dev/staging only) — workflow state still changes only via
+            skills/CLI.</p>
 
           <h4>Activation</h4>
-          <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes register automatically when the package boots. All of the following must be true:</p>
+          <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes
+            register automatically when the package boots. All of the following must be true:</p>
           <ul>
             <li><code>LARAPILOT_ENABLED=true</code> (default) — master switch in <code>config/larapilot.php</code></li>
             <li><code>LARAPILOT_DASHBOARD_ROUTE=true</code> (default) — dashboard route toggle</li>
             <li>App environment is <strong>not</strong> <code>production</code></li>
-            <li>Environment is in the allowlist: <code>local</code>, <code>development</code>, <code>testing</code>, or <code>staging</code></li>
+            <li>Environment is in the allowlist: <code>local</code>, <code>development</code>, <code>testing</code>, or
+              <code>staging</code></li>
           </ul>
-          <p>Start your Laravel app (<code>php artisan serve</code>, Sail, Herd, etc.) and open <code>/larapilot</code>. If routes 404, check <code>APP_ENV</code> and the flags above.</p>
+          <p>Start your Laravel app (<code>php artisan serve</code>, Sail, Herd, etc.) and open <code>/larapilot</code>.
+            If routes 404, check <code>APP_ENV</code> and the flags above.</p>
 
           <div class="code-block">
             <div class="code-block-header">config/larapilot.php — dashboard_route</div>
@@ -4299,7 +4468,8 @@ body: |
                 <tr>
                   <td><strong>Board</strong></td>
                   <td><code>/larapilot</code></td>
-                  <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> → <span class="status status-done">DONE</span>)</td>
+                  <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> →
+                    <span class="status status-done">DONE</span>)</td>
                 </tr>
                 <tr>
                   <td><strong>PRD</strong></td>
@@ -4316,30 +4486,48 @@ body: |
           </div>
 
           <h4>Board</h4>
-          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, pill badges for comment and blocking counts when feedback exists, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists
+            spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML
+            exists, pill badges for comment and blocking counts when feedback exists, and merge-request link when the
+            story is <span class="status status-done">DONE</span>.</p>
 
           <h4>PRD</h4>
-          <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
+          <p>The living product document from <code>/larapilot-inception</code> (and later
+            <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the
+            sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
+          </p>
 
           <h4>Spec detail</h4>
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
           <ul>
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
-            <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via <code>/mockups/{code}</code> in dev/staging)</li>
-            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview); blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and compact footer (blocking checkbox, log path) until the story is <span class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.</li>
+            <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
+              <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
+              <code>/mockups/{code}</code> in dev/staging)</li>
+            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
+              blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
+              compact footer (blocking checkbox, log path) until the story is <span
+                class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.
+            </li>
             <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
-            <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
+            <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done
+            </li>
           </ul>
-          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state — skills remain the only way to change it.</p>
+          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state —
+            skills remain the only way to change it.</p>
         </article>
 
         <!-- API -->
         <article class="deep-dive-sub" id="deep-dive-api">
           <h3>API</h3>
-          <p class="lead">JSON API over the same artifacts as the dashboard. Read endpoints for scripts, CI dashboards, or external tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled. Workflow state still changes only via skills/CLI.</p>
+          <p class="lead">JSON API over the same artifacts as the dashboard. Read endpoints for scripts, CI dashboards,
+            or external tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled.
+            Workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
-          <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a> conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns <code>404</code> in production or when disabled.</p>
+          <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a>
+            conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns
+            <code>404</code> in production or when disabled.</p>
 
           <h4>Endpoints</h4>
           <div class="table-card">
@@ -4355,22 +4543,26 @@ body: |
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
-                  <td>Metrics, status order, and specs grouped by workflow column — each spec includes <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
+                  <td>Metrics, status order, and specs grouped by workflow column — each spec includes
+                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress, mockup screens, feedback entries; optional <code>?status=TODO</code> filter</td>
+                  <td>All specs with task progress, mockup screens, feedback entries; optional <code>?status=TODO</code>
+                    filter</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs/{code}</code></td>
-                  <td>Single spec with plan body, tasks, workdir, task progress; each spec embeds <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
+                  <td>Single spec with plan body, tasks, workdir, task progress; each spec embeds
+                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
                 </tr>
                 <tr>
                   <td><code>POST</code></td>
                   <td><code>/larapilot/api/specs/{code}/comments</code></td>
-                  <td>Append internal feedback — JSON body: <code>author</code>, <code>message</code>, optional <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.</td>
+                  <td>Append internal feedback — JSON body: <code>author</code>, <code>message</code>, optional
+                    <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.</td>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
@@ -4391,7 +4583,8 @@ body: |
           </div>
 
           <h4>Response shape</h4>
-          <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from <code>/larapilot/api/board</code>:</p>
+          <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from
+            <code>/larapilot/api/board</code>:</p>
           <div class="code-block">
             <div class="code-block-header">GET /larapilot/api/board</div>
             <pre><code>{
@@ -4432,7 +4625,10 @@ body: |
   "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
 }</code></pre>
           </div>
-          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware. Do not expose it in production (routes are not registered there). Mockup preview URLs are absolute in API responses when the mockup route is browsable. Comment writes honor <code>LARAPILOT_COMMENTS_ENABLED</code> and reject DONE specs with <code>422</code>.</p>
+          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware.
+            Do not expose it in production (routes are not registered there). Mockup preview URLs are absolute in API
+            responses when the mockup route is browsable. Comment writes honor <code>LARAPILOT_COMMENTS_ENABLED</code>
+            and reject DONE specs with <code>422</code>.</p>
         </article>
 
         <div class="cta-band">
@@ -4850,8 +5046,8 @@ body: |
       }
     })();
   </script>
-  <script async src="https://stats.web.ap.it/i/719c2bd4-e315-45e9-bbd1-0a4419810c96.js"></script>
-  <noscript><img src="https://stats.web.ap.it/collect/pixel.gif?k=719c2bd4-e315-45e9-bbd1-0a4419810c96&p=/" width="1"
+  <script async src="https://stats.web.ap.it/i/2e869bda-e245-41d3-9d90-d6fa82116ebd.js"></script>
+  <noscript><img src="https://stats.web.ap.it/collect/pixel.gif?k=2e869bda-e245-41d3-9d90-d6fa82116ebd&p=/" width="1"
       height="1" /></noscript>
 </body>
 
