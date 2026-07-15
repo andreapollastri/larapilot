@@ -391,23 +391,18 @@
       margin-bottom: 2.5rem;
     }
 
-    .hero-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .hero-stat strong {
-      display: block;
-      font-size: 1.1rem;
-      font-weight: 700;
+    .hero-tagline {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--text-secondary);
       letter-spacing: -.02em;
+      line-height: 1.5;
+      max-width: 30rem;
     }
 
-    .hero-stat span {
-      font-size: .78rem;
-      color: var(--text-tertiary);
-      font-weight: 500;
+    .hero-tagline strong {
+      color: var(--text);
+      font-weight: 700;
     }
 
     /* Terminal mock */
@@ -1763,6 +1758,20 @@
       margin-top: 1.75rem;
     }
 
+    .example-appendix {
+      scroll-margin-top: calc(var(--header-h) + 24px);
+      margin: 3rem 0 0;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .example-appendix h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin: 0 0 .75rem;
+    }
+
     .walkthrough-head strong {
       font-size: .92rem;
       font-weight: 700;
@@ -2475,11 +2484,7 @@
             GitHub
           </a>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat"><strong>10 skills</strong><span>Full workflow coverage</span></div>
-          <div class="hero-stat"><strong>Laravel-first</strong><span>Runs on Boost</span></div>
-          <div class="hero-stat"><strong>Human Gate</strong><span>Human-in-the-loop</span></div>
-        </div>
+        <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.</p>
       </div>
       <div class="hero-visual">
         <div class="terminal-glow"></div>
@@ -2685,6 +2690,7 @@
             </div>
             <div class="doc-nav-group">
               <div class="doc-nav-label">Deep Dive</div>
+              <a href="#deep-dive" data-nav>Deep Dive</a>
               <a class="doc-nav-sub" href="#deep-dive-how-it-works" data-nav>How it works</a>
               <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
               <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
@@ -3334,8 +3340,9 @@ body: |
         </article>
 
 
-        <h3 id="examples-prd-living">PRD living document</h3>
-        <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they reveal a requirement gap.</p>
+        <article class="example-appendix" id="examples-prd-living">
+          <h3>PRD living document</h3>
+          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they reveal a requirement gap.</p>
         <div class="table-card">
           <table>
             <thead>
@@ -3425,7 +3432,8 @@ body: |
             </tbody>
           </table>
         </div>
-      
+        </article>
+
       </section>
 
       <!-- Deep Dive -->
@@ -4222,10 +4230,28 @@ body: |
         rebuildSections();
         updateActiveNav();
       }, { passive: true });
-      window.addEventListener('load', () => {
+      function syncHashNav() {
+        const hash = location.hash.slice(1);
+        if (!hash) return;
+        const match = sections.find(section => section.id === hash);
+        if (match) {
+          pendingNavId = hash;
+          setActiveItem(match);
+        }
+      }
+
+      window.addEventListener('hashchange', () => {
         rebuildSections();
+        syncHashNav();
         updateActiveNav();
       });
+
+      window.addEventListener('load', () => {
+        rebuildSections();
+        syncHashNav();
+        updateActiveNav();
+      });
+      syncHashNav();
       updateActiveNav();
     })();
 
