@@ -1083,6 +1083,13 @@
       color: var(--text-secondary);
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .doc-nav-indicator,
+      .doc-nav-progress span {
+        transition: none;
+      }
+    }
+
     .doc-main {
       min-width: 0;
     }
@@ -2282,7 +2289,6 @@
           <a href="#how-it-works">How to use</a>
           <a href="#examples">Examples</a>
           <a href="#workflow">Workflow</a>
-          <a href="#cli">CLI</a>
         </nav>
         <button class="menu-toggle" id="menuBtn" aria-label="Menu">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -2551,34 +2557,35 @@
   <!-- Docs -->
   <div class="docs-shell">
     <aside class="doc-nav" id="docNav">
-      <div class="doc-nav-group">
-        <div class="doc-nav-label">Overview</div>
-        <a href="#quickstart">Quickstart</a>
-        <a href="#how-it-works">How to use</a>
-        <a href="#examples">Examples</a>
+      <div class="doc-nav-head">
+        <span class="doc-nav-title">On this page</span>
+        <div class="doc-nav-progress" aria-hidden="true"><span id="navProgressBar"></span></div>
       </div>
-      <div class="doc-nav-group">
-        <div class="doc-nav-label">Examples</div>
-        <a href="#examples">All examples</a>
-        <a class="doc-nav-sub" href="#example-new-product">New product</a>
-        <a class="doc-nav-sub" href="#example-legacy-porting">Legacy porting</a>
-        <a class="doc-nav-sub" href="#example-new-feature">New feature</a>
-        <a class="doc-nav-sub" href="#example-bug-fix">Bug resolution</a>
-      </div>
-      <div class="doc-nav-group">
-        <div class="doc-nav-label">Workflow</div>
-        <a href="#workflow">Process</a>
-        <a href="#skills">Skills</a>
-        <a href="#team">AI Team</a>
-      </div>
-      <div class="doc-nav-group">
-        <div class="doc-nav-label">Reference</div>
-        <a href="#cli">Artisan CLI</a>
-        <a href="#design-systems">Design systems</a>
-        <a href="#mockups">Mockups</a>
-        <a href="#dashboard">Dashboard</a>
-        <a href="#api">Workflow API</a>
-        <a href="#boost">Larapilot + Boost</a>
+      <div class="doc-nav-scroll">
+        <div class="doc-nav-track" id="docNavTrack">
+          <div class="doc-nav-rail" aria-hidden="true"><span class="doc-nav-indicator" id="navIndicator"></span></div>
+          <div class="doc-nav-groups">
+            <div class="doc-nav-group">
+              <div class="doc-nav-label">Start</div>
+              <a href="#quickstart" data-nav>Quickstart</a>
+              <a href="#how-it-works" data-nav>How to use</a>
+            </div>
+            <div class="doc-nav-group">
+              <div class="doc-nav-label">Examples</div>
+              <a href="#examples" data-nav>Examples</a>
+              <a class="doc-nav-sub" href="#example-new-product" data-nav>New product</a>
+              <a class="doc-nav-sub" href="#example-legacy-porting" data-nav>Legacy porting</a>
+              <a class="doc-nav-sub" href="#example-new-feature" data-nav>New feature</a>
+              <a class="doc-nav-sub" href="#example-bug-fix" data-nav>Bug resolution</a>
+            </div>
+            <div class="doc-nav-group">
+              <div class="doc-nav-label">Workflow</div>
+              <a href="#workflow" data-nav>Process</a>
+              <a href="#skills" data-nav>Skills</a>
+              <a href="#team" data-nav>AI Team</a>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -2704,7 +2711,7 @@
               </tr>
               <tr>
                 <td><strong>Dashboard / API</strong> — <code>/larapilot</code> <em>(local)</em></td>
-                <td>Read-only board, PRD, specs — see <a href="#dashboard">dashboard</a> · <a href="#api">API</a></td>
+                <td>Read-only board, PRD, specs — local/staging/testing only</td>
               </tr>
             </tbody>
           </table>
@@ -3675,381 +3682,12 @@ body: |
           </div>
         </div>
 
-      </section>
-
-      <!-- CLI -->
-      <section class="doc-section" id="cli">
-        <div class="section-header">
-          <span class="section-label">Reference</span>
-          <h2>Artisan CLI</h2>
-          <p>Skills call these commands; you rarely run them manually.</p>
-        </div>
-
-        <h3>Setup &amp; diagnostics</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>larapilot:install</code></td>
-                <td>Initialize project</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:update</code></td>
-                <td>Refresh runtime + skills after upgrade</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:doctor</code></td>
-                <td>Diagnose installation</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:config-show</code></td>
-                <td>Project metadata</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:metrics</code></td>
-                <td>Backlog progress</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>PRD</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>larapilot:prd-write</code></td>
-                <td>Save PRD</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:validate-prd</code></td>
-                <td>Validate PRD structure</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Backlog &amp; specs</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>larapilot:spec-list</code></td>
-                <td>List backlog</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-add</code></td>
-                <td>Add specs</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-show {code}</code></td>
-                <td>Show spec + tasks</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-next</code></td>
-                <td>Auto-select next spec</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:validate-spec</code></td>
-                <td>Validate spec payload</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-delete {code}</code></td>
-                <td>Remove spec + plan files</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Planning &amp; implementation</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>larapilot:validate-plan {code}</code></td>
-                <td>Validate plan payload</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-plan {code}</code></td>
-                <td>Save plan → PLANNED</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-start {code}</code></td>
-                <td>→ IN PROGRESS</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:task-done {code} {taskId}</code></td>
-                <td>Mark task complete</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-review {code}</code></td>
-                <td>→ REVIEW</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Review &amp; approval</h3>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>larapilot:spec-approve {code}</code></td>
-                <td>→ DONE</td>
-              </tr>
-              <tr>
-                <td><code>larapilot:spec-request-changes {code}</code></td>
-                <td>→ TODO with feedback</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Design systems -->
-      <section class="doc-section" id="design-systems">
-        <div class="section-header">
-          <span class="section-label">Design</span>
-          <h2>Packaged design systems</h2>
-          <p>Filament + Starter Kit references in <code>.larapilot/design-systems/</code> for mockups.</p>
-        </div>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>System</th>
-                <th>Path</th>
-                <th>When to use</th>
-                <th>Contents</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Filament</strong></td>
-                <td><code>design-systems/filament/</code></td>
-                <td>Admin/control panel mockups when the PRD records <strong>Filament</strong> as the panel choice</td>
-                <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                  <strong>17</strong> static HTML screens in <code>html/</code> (from two Figma community kits)
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Laravel Starter Kits</strong></td>
-                <td><code>design-systems/starter-kit/</code></td>
-                <td>Authenticated app UI when the PRD records a <strong>Starter Kit</strong> variant
-                  (<code>livewire</code>, <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
-                <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <code>sources.md</code>,
-                  <strong>7</strong> static HTML screens in <code>html/</code>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Open <code>filament/html/index.html</code> or <code>starter-kit/html/index.html</code> locally as a catalog.</p>
-      </section>
-
-      <!-- Mockups -->
-      <section class="doc-section" id="mockups">
-        <div class="section-header">
-          <span class="section-label">Design</span>
-          <h2>Mockup preview</h2>
-          <p><code>/mockups/{spec}</code> in local/staging/testing — disabled in production.</p>
-        </div>
-        <p>Mockups in <code>.larapilot/mockups/{spec}/</code>. Disable: <code>LARAPILOT_MOCKUPS_ROUTE=false</code>.</p>
-      </section>
-
-      <!-- Dashboard -->
-      <section class="doc-section" id="dashboard">
-        <div class="section-header">
-          <span class="section-label">Workflow</span>
-          <h2>Workflow Dashboard</h2>
-          <p>Read-only board, PRD, specs — local/staging/testing only. Links to <a href="#api">JSON API</a>.</p>
-        </div>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Environment</th>
-                <th>URL pattern</th>
-                <th>Access</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>local</code>, <code>staging</code>, <code>testing</code></td>
-                <td><code>/larapilot</code></td>
-                <td>✅ Board overview</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td><code>/larapilot/prd</code></td>
-                <td>✅ PRD viewer</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td><code>/larapilot/specs/{code}</code></td>
-                <td>✅ Spec + tasks</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td><code>/larapilot/api/docs</code></td>
-                <td>✅ Swagger UI (see <a href="#api">Workflow API</a>)</td>
-              </tr>
-              <tr>
-                <td><code>production</code></td>
-                <td>—</td>
-                <td>❌ Disabled (404)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Disable: <code>LARAPILOT_DASHBOARD_ROUTE=false</code> (also disables API).</p>
-      </section>
-
-      <!-- Workflow API -->
-      <section class="doc-section" id="api">
-        <div class="section-header">
-          <span class="section-label">Workflow</span>
-          <h2>Workflow API</h2>
-          <p>Read-only JSON at <code>/larapilot/api/</code> — same access as dashboard. Swagger: <code>/larapilot/api/docs</code>.</p>
-        </div>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Endpoint</th>
-                <th>Method</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>/larapilot/api/board</code></td>
-                <td><code>GET</code></td>
-                <td>Full Kanban snapshot: metrics, status order, columns with all user stories and task progress</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot/api/specs</code></td>
-                <td><code>GET</code></td>
-                <td>List all backlog specs; optional <code>?status=TODO</code> filter (case-insensitive)</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot/api/specs/{code}</code></td>
-                <td><code>GET</code></td>
-                <td>Single user story with plan summary, tasks, workdir, and task progress</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot/api/prd</code></td>
-                <td><code>GET</code></td>
-                <td>PRD markdown and parsed section headings (<code>404</code> when no PRD exists)</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot/api/openapi.json</code></td>
-                <td><code>GET</code></td>
-                <td>OpenAPI 3.1 machine-readable spec (server URL resolved from the current request)</td>
-              </tr>
-              <tr>
-                <td><code>/larapilot/api/docs</code></td>
-                <td><code>GET</code></td>
-                <td>Swagger UI — browse and try all endpoints from the browser</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="code-block">
-          <div class="code-block-header">Example</div>
-          <pre><code>curl -s http://127.0.0.1:8000/larapilot/api/board | jq '.metrics'
-curl -s "http://127.0.0.1:8000/larapilot/api/specs?status=IN%20PROGRESS"
-curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></pre>
-        </div>
-        <p>Local/staging/testing only. Disable: <code>LARAPILOT_DASHBOARD_ROUTE=false</code>.</p>
-      </section>
-
-      <!-- Boost -->
-      <section class="doc-section" id="boost">
-        <div class="section-header">
-          <span class="section-label">Integration</span>
-          <h2>Larapilot + Boost</h2>
-          <p>Complementary tools — use both together.</p>
-        </div>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Concern</th>
-                <th>Larapilot</th>
-                <th>Laravel Boost</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Product workflow</td>
-                <td class="check">✓</td>
-                <td class="dash">—</td>
-              </tr>
-              <tr>
-                <td>PRD, backlog, plans</td>
-                <td class="check">✓</td>
-                <td class="dash">—</td>
-              </tr>
-              <tr>
-                <td>Laravel docs search</td>
-                <td class="dash">—</td>
-                <td class="check">✓</td>
-              </tr>
-              <tr>
-                <td>Database schema/query</td>
-                <td class="dash">—</td>
-                <td class="check">✓</td>
-              </tr>
-              <tr>
-                <td>Tinker, logs, routes</td>
-                <td class="dash">—</td>
-                <td class="check">✓</td>
-              </tr>
-              <tr>
-                <td>Coding guidelines</td>
-                <td>partial</td>
-                <td class="check">✓</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <div class="cta-band">
           <h3>Ready to ship with AI?</h3>
           <p>Install Larapilot and give your agent a real product process.</p>
           <a class="btn btn-accent" href="#quickstart">Get started →</a>
         </div>
+
       </section>
 
     </main>
@@ -4180,6 +3818,7 @@ curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></p
       }
 
       window.addEventListener('scroll', onScroll, { passive: true });
+      docNav.querySelector('.doc-nav-scroll')?.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', () => {
         rebuildSections();
         updateActiveNav();
