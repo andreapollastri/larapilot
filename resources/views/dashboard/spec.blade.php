@@ -331,14 +331,6 @@
     }
 
 
-    .feedback-checkbox {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.88rem;
-        font-weight: 500;
-    }
-
     .feedback-submit {
         border: 0;
         border-radius: 999px;
@@ -485,12 +477,6 @@
         padding: 14px 0 0;
     }
 
-    .feedback-form label.required::after {
-        content: ' *';
-        color: #ef4444;
-        font-weight: 700;
-    }
-
     .md-editor {
         display: grid;
         gap: 0;
@@ -570,29 +556,42 @@
 
     .feedback-form-footer {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
         margin-top: 4px;
     }
 
-    .feedback-form-footer-left {
+    .feedback-form-options {
         display: flex;
-        align-items: center;
-        gap: 14px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 6px;
         min-width: 0;
         flex: 1;
     }
 
+    .feedback-checkbox {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        width: fit-content;
+    }
+
+    .feedback-checkbox input {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
     .feedback-form-log {
+        margin: 0;
+        padding-left: calc(1rem + 8px);
         color: var(--muted);
         font-size: 0.78rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 280px;
     }
 
     .feedback-form-log code {
@@ -600,10 +599,10 @@
     }
 
     .feedback-form-blocking-hint {
+        margin-left: 0.35em;
         color: #b45309;
         font-size: 0.76rem;
         font-weight: 600;
-        white-space: nowrap;
     }
 
     .field-error {
@@ -752,7 +751,7 @@
                     @if (! empty($feedback['writable']))
                         <form class="feedback-form" method="post" action="{{ route('larapilot.dashboard.spec.comments.store', $spec['code']) }}">
                             @csrf
-                            <label class="required">
+                            <label>
                                 Author
                                 <input
                                     type="text"
@@ -767,7 +766,7 @@
                                     <span class="field-error">{{ $message }}</span>
                                 @enderror
                             </label>
-                            <label class="required">
+                            <label>
                                 Comment
                                 <div class="md-editor" data-md-editor>
                                     <div class="md-toolbar" role="toolbar" aria-label="Markdown formatting">
@@ -794,17 +793,17 @@
                                 @enderror
                             </label>
                             <div class="feedback-form-footer">
-                                <div class="feedback-form-footer-left">
+                                <div class="feedback-form-options">
                                     <label class="feedback-checkbox">
                                         <input type="checkbox" name="blocks_merge" value="1" @checked(old('blocks_merge'))>
-                                        Blocks merge / needs rework
+                                        <span>Blocks merge / needs rework</span>
                                     </label>
-                                    <span class="feedback-form-log" title="{{ $feedback['path'] ?? '' }}">
+                                    <p class="feedback-form-log" title="{{ $feedback['path'] ?? '' }}">
                                         <code>{{ $feedback['path_short'] ?? $feedback['path'] ?? '' }}</code>
-                                    </span>
-                                    @if (! empty($feedback['blocking_count']))
-                                        <span class="feedback-form-blocking-hint">{{ $feedback['blocking_count'] }} blocking</span>
-                                    @endif
+                                        @if (! empty($feedback['blocking_count']))
+                                            <span class="feedback-form-blocking-hint">· {{ $feedback['blocking_count'] }} blocking</span>
+                                        @endif
+                                    </p>
                                 </div>
                                 <button type="submit" class="feedback-submit">Add comment</button>
                             </div>

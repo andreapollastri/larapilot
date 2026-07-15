@@ -21,13 +21,23 @@ class MockupService
         $relativePath = $this->relativeMockupPath($code);
         $screens = $this->discoverScreens($code);
 
+        $entry = $this->entryScreen($screens);
+
         return [
             'available' => $screens !== [],
             'path' => $relativePath,
             'screen_count' => count($screens),
-            'entry' => $this->entryScreen($screens),
-            'entry_url' => $this->screenUrl($code, $this->entryScreen($screens)),
+            'entry' => $entry,
+            'entry_url' => $this->screenUrl($code, $entry),
             'browsable' => $this->config->mockupsBrowsable(),
+            'screens' => array_map(
+                fn (string $file): array => [
+                    'file' => $file,
+                    'label' => $this->screenLabel($file),
+                    'url' => $this->screenUrl($code, $file),
+                ],
+                $screens
+            ),
         ];
     }
 

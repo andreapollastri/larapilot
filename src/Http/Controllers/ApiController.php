@@ -9,7 +9,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\OpenApiService;
+use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
 
 class ApiController
@@ -18,6 +20,8 @@ class ApiController
         protected ConfigService $config,
         protected ApiService $api,
         protected OpenApiService $openApi,
+        protected SpecService $specs,
+        protected InternalFeedbackService $feedback,
     ) {}
 
     public function board(): JsonResponse
@@ -51,6 +55,56 @@ class ApiController
         }
 
         return response()->json($data);
+    }
+
+    public function storeComment(Request $request, string $code): JsonResponse
+    {
+        $this->guard();
+
+        if (! SpecCode::isValid($code)) {
+            abort(404);
+        }
+
+        if (! $this->config->commentsEnabled()) {
+            abort(404);
+        }
+
+        $spec = $this->specs->find($code);
+
+        if ($spec === null) {
+            abort(404);
+        }
+
+        if (! $this->feedback->canComment($spec)) {
+            return response()->json([
+                'message' => 'Comments are closed for this user story.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'author' => ['required', 'string', 'max:80'],
+            'message' => ['required', 'string', 'max:10000'],
+            'blocks_merge' => ['sometimes', 'boolean'],
+        ]);
+
+        try {
+            $result = $this->api->storeComment(
+                $code,
+                $validated['author'],
+                $validated['message'],
+                (bool) ($validated['blocks_merge'] ?? false)
+            );
+        } catch (\InvalidArgumentException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        } catch (\RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        if ($result === null) {
+            abort(404);
+        }
+
+        return response()->json($result, 201);
     }
 
     public function prd(): JsonResponse

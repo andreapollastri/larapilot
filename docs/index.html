@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.1 polishes internal PM/dev feedback on the dashboard (accordion list, Markdown editor) and sets Filament primary to slate. Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.2 polishes dashboard feedback indicators (pill badges on the board, compact comment form). Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2579,7 +2579,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.8.1</span>
+          <span class="hero-version">v1.8.2</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -4309,14 +4309,14 @@ body: |
                 <tr>
                   <td><strong>API docs</strong></td>
                   <td><code>/larapilot/api/docs</code></td>
-                  <td>Interactive OpenAPI browser for the read-only JSON API</td>
+                  <td>Interactive OpenAPI browser for the workflow JSON API</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <h4>Board</h4>
-          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, blocking-feedback badge when present, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, pill badges for comment and blocking counts when feedback exists, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
@@ -4326,7 +4326,7 @@ body: |
           <ul>
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via <code>/mockups/{code}</code> in dev/staging)</li>
-            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview); blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar until the story is <span class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.</li>
+            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview); blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and compact footer (blocking checkbox, log path) until the story is <span class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.</li>
             <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
             <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
           </ul>
@@ -4336,7 +4336,7 @@ body: |
         <!-- API -->
         <article class="deep-dive-sub" id="deep-dive-api">
           <h3>API</h3>
-          <p class="lead">Read-only JSON API over the same artifacts as the dashboard. For scripts, CI dashboards, or external tooling — skills still use Artisan CLI for all writes.</p>
+          <p class="lead">JSON API over the same artifacts as the dashboard. Read endpoints for scripts, CI dashboards, or external tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled. Workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a> conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns <code>404</code> in production or when disabled.</p>
@@ -4355,18 +4355,22 @@ body: |
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
-                  <td>Metrics, status order, and specs grouped by workflow column (includes <code>mockups</code> and <code>feedback</code> summary per spec)</td>
+                  <td>Metrics, status order, and specs grouped by workflow column — each spec includes <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress, <code>mockups</code> and <code>feedback</code> summary; optional <code>?status=TODO</code> filter</td>
+                  <td>All specs with task progress, mockup screens, feedback entries; optional <code>?status=TODO</code> filter</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs/{code}</code></td>
-                  <td>Single spec with plan body, tasks, workdir, task progress, <code>mockups</code> when HTML exists, and <code>feedback</code> metadata</td>
+                  <td>Single spec with plan body, tasks, workdir, task progress; each spec embeds <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
                 </tr>
+                <tr>
+                  <td><code>POST</code></td>
+                  <td><code>/larapilot/api/specs/{code}/comments</code></td>
+                  <td>Append internal feedback — JSON body: <code>author</code>, <code>message</code>, optional <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.</td>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
@@ -4398,8 +4402,8 @@ body: |
       "code": "US-002",
       "title": "Project Management",
       "task_progress": { "total": 0, "done": 0 },
-      "mockups": { "available": false, "screen_count": 0 },
-      "feedback": { "enabled": true, "available": false, "entry_count": 0, "blocking_count": 0, "writable": true }
+      "mockups": { "available": false, "screen_count": 0, "screens": [] },
+      "feedback": { "enabled": true, "available": false, "entry_count": 0, "blocking_count": 0, "writable": true, "entries": [] }
     }],
     "DONE": [{
       "code": "US-001",
@@ -4408,14 +4412,27 @@ body: |
       "mockups": {
         "available": true,
         "screen_count": 2,
-        "entry_url": "/mockups/US-001"
+        "entry_url": "https://app.test/mockups/US-001",
+        "screens": [
+          { "file": "index.html", "label": "Index", "url": "https://app.test/mockups/US-001" },
+          { "file": "desktop.html", "label": "Desktop", "url": "https://app.test/mockups/US-001/desktop.html" }
+        ]
+      },
+      "feedback": {
+        "enabled": true,
+        "entry_count": 1,
+        "blocking_count": 0,
+        "writable": true,
+        "entries": [
+          { "at": "2026-07-15 17:00", "author": "PM", "status": "REVIEW", "body": "Looks good.", "blocks_merge": false }
+        ]
       }
     }]
   },
   "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
 }</code></pre>
           </div>
-          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware. Do not expose it in production (routes are not registered there).</p>
+          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware. Do not expose it in production (routes are not registered there). Mockup preview URLs are absolute in API responses when the mockup route is browsable. Comment writes honor <code>LARAPILOT_COMMENTS_ENABLED</code> and reject DONE specs with <code>422</code>.</p>
         </article>
 
         <div class="cta-band">
@@ -4430,7 +4447,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.1</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.2</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

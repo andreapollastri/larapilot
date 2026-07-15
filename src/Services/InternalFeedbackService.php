@@ -109,7 +109,8 @@ class InternalFeedbackService
      *     entry_count: int,
      *     blocking_count: int,
      *     writable: bool,
-     *     path: string
+     *     path: string,
+     *     entries: list<array{at: string, author: string, status: string, body: string, body_html: string, preview: string, blocks_merge: bool}>
      * }
      */
     public function summary(string $code, ?array $spec = null): array
@@ -123,6 +124,7 @@ class InternalFeedbackService
             'blocking_count' => $detail['blocking_count'],
             'writable' => $detail['writable'],
             'path' => $detail['path'],
+            'entries' => $detail['entries'],
         ];
     }
 

@@ -2,6 +2,18 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.8.2] - 2026-07-15
+
+### Added
+
+- **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback via JSON (`author`, `message`, optional `blocks_merge`); returns updated feedback snapshot. OpenAPI updated.
+
+### Changed
+
+- **Dashboard board** — comment and blocking counts shown as pill badges with icons (alongside the mockup indicator).
+- **Comment form** — footer stacks blocking checkbox, log path, and blocking count for a cleaner compact layout.
+- **Workflow API GET responses** — board, spec list, and spec detail now include full `feedback.entries` and `mockups.screens` (absolute preview URLs when browsable) on each user story; spec detail also embeds both on the nested `spec` object.
+
 ## [1.8.1] - 2026-07-15
 
 ### Changed

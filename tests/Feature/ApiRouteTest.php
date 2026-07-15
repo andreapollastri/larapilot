@@ -14,7 +14,11 @@ it('serves the board API in local environment', function (): void {
         ->assertJsonStructure([
             'metrics',
             'status_order',
-            'columns',
+            'columns' => [
+                'TODO' => [
+                    ['code', 'mockups', 'feedback'],
+                ],
+            ],
             'workflow',
         ])
         ->assertJsonPath('columns.TODO.0.code', 'US-001')
@@ -34,7 +38,7 @@ it('lists all specs via the API', function (): void {
             'status',
             'count',
             'items' => [
-                ['code', 'title', 'status', 'task_progress'],
+                ['code', 'title', 'status', 'task_progress', 'mockups', 'feedback'],
             ],
             'summary',
         ]);
@@ -71,7 +75,10 @@ it('shows a spec with plan and tasks via the API', function (): void {
         ->assertJsonPath('tasks.0.id', 'TASK-01')
         ->assertJsonPath('task_progress.total', 2)
         ->assertJsonPath('task_progress.done', 0)
-        ->assertJsonPath('mockups', null);
+        ->assertJsonPath('mockups.available', false)
+        ->assertJsonPath('mockups.screens', [])
+        ->assertJsonPath('spec.mockups.available', false)
+        ->assertJsonPath('spec.feedback.entries', []);
 });
 
 it('includes mockup metadata in the API when HTML exists', function (): void {
@@ -85,13 +92,24 @@ it('includes mockup metadata in the API when HTML exists', function (): void {
     $this->getJson('/larapilot/api/specs/US-001')
         ->assertOk()
         ->assertJsonPath('mockups.entry', 'index.html')
-        ->assertJsonPath('mockups.entry_url', route('larapilot.mockups.show', ['spec' => 'US-001'], absolute: false))
-        ->assertJsonCount(2, 'mockups.screens');
+        ->assertJsonPath('mockups.entry_url', url(route('larapilot.mockups.show', ['spec' => 'US-001'], absolute: false)))
+        ->assertJsonCount(2, 'mockups.screens')
+        ->assertJsonPath('mockups.screens.1.file', 'index.html')
+        ->assertJsonPath('mockups.screens.1.url', url(route('larapilot.mockups.show', ['spec' => 'US-001'], absolute: false)))
+        ->assertJsonPath('spec.mockups.screen_count', 2)
+        ->assertJsonCount(2, 'spec.mockups.screens');
 
     $this->getJson('/larapilot/api/board')
         ->assertOk()
         ->assertJsonPath('columns.TODO.0.mockups.available', true)
-        ->assertJsonPath('columns.TODO.0.mockups.screen_count', 2);
+        ->assertJsonPath('columns.TODO.0.mockups.screen_count', 2)
+        ->assertJsonCount(2, 'columns.TODO.0.mockups.screens')
+        ->assertJsonPath('columns.TODO.0.task_progress.total', 0);
+
+    $this->getJson('/larapilot/api/specs')
+        ->assertOk()
+        ->assertJsonPath('items.0.mockups.screen_count', 2)
+        ->assertJsonCount(2, 'items.0.mockups.screens');
 });
 
 it('returns the PRD via the API', function (): void {
@@ -132,6 +150,7 @@ it('serves the OpenAPI document', function (): void {
                 '/board',
                 '/specs',
                 '/specs/{code}',
+                '/specs/{code}/comments',
                 '/prd',
             ],
         ]);
@@ -185,4 +204,57 @@ it('includes specs with unknown statuses on the board API', function (): void {
     $this->getJson('/larapilot/api/board')
         ->assertOk()
         ->assertJsonPath('columns.BLOCKED.0.code', 'US-001');
+});
+
+it('accepts internal feedback comments via the API', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'PLANNED']);
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Clarified acceptance criteria in chat.',
+    ])
+        ->assertCreated()
+        ->assertJsonPath('code', 'US-001')
+        ->assertJsonPath('entry_count', 1)
+        ->assertJsonPath('feedback.entries.0.author', 'PM')
+        ->assertJsonPath('feedback.entries.0.body', 'Clarified acceptance criteria in chat.')
+        ->assertJsonStructure(['mockups' => ['screens']]);
+
+    expect(file_get_contents(base_path('.larapilot/internal-feedback/US-001.md')))
+        ->toContain('Clarified acceptance criteria in chat.');
+});
+
+it('rejects invalid API comment submissions', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'PLANNED']);
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => '',
+        'message' => '',
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['author', 'message']);
+});
+
+it('rejects API comments on done specs', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'DONE']);
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Too late.',
+    ])->assertUnprocessable()
+        ->assertJsonPath('message', 'Comments are closed for this user story.');
+});
+
+it('hides API comment endpoint when comments are disabled', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'PLANNED']);
+
+    config()->set('larapilot.comments.enabled', false);
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Should not work.',
+    ])->assertNotFound();
 });

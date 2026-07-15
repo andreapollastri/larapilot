@@ -18,9 +18,10 @@ class OpenApiService
             'info' => [
                 'title' => 'Larapilot Workflow API',
                 'version' => '1.0.0',
-                'description' => 'Read-only JSON API for the Larapilot workflow board. '
-                    .'Exposes backlog specs (user stories), plans, tasks, and the PRD from `.larapilot/` artifacts. '
-                    .'Available only in the same environments where the `/larapilot` dashboard is browsable (never in production).',
+                'description' => 'JSON API for the Larapilot workflow board. '
+                    .'Exposes backlog specs (user stories), plans, tasks, mockups, internal feedback, and the PRD from `.larapilot/` artifacts. '
+                    .'Read endpoints are available in the same environments where the `/larapilot` dashboard is browsable (never in production). '
+                    .'POST `/specs/{code}/comments` appends internal feedback when comments are enabled.',
             ],
             'servers' => [
                 ['url' => $baseUrl],
@@ -28,6 +29,7 @@ class OpenApiService
             'tags' => [
                 ['name' => 'Board', 'description' => 'Kanban board overview'],
                 ['name' => 'Specs', 'description' => 'User stories (backlog specs)'],
+                ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
             ],
             'paths' => [
@@ -104,6 +106,44 @@ class OpenApiService
                         ],
                     ],
                 ],
+                '/specs/{code}/comments' => [
+                    'post' => [
+                        'tags' => ['Feedback'],
+                        'summary' => 'Add internal feedback comment',
+                        'description' => 'Appends a PM/dev comment to the spec\'s internal feedback log (`.larapilot/internal-feedback/{code}.md`). '
+                            .'Comments are rejected when disabled globally, when the spec is DONE, or when author/message are missing.',
+                        'operationId' => 'createSpecComment',
+                        'parameters' => [
+                            [
+                                'name' => 'code',
+                                'in' => 'path',
+                                'required' => true,
+                                'description' => 'Spec code (e.g. US-001)',
+                                'schema' => ['type' => 'string', 'pattern' => '^[A-Za-z0-9][A-Za-z0-9._-]*$'],
+                            ],
+                        ],
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => ['$ref' => '#/components/schemas/CommentCreateRequest'],
+                                ],
+                            ],
+                        ],
+                        'responses' => [
+                            '201' => [
+                                'description' => 'Comment appended',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/CommentCreateResponse'],
+                                    ],
+                                ],
+                            ],
+                            '404' => ['$ref' => '#/components/responses/NotFound'],
+                            '422' => ['$ref' => '#/components/responses/UnprocessableEntity'],
+                        ],
+                    ],
+                ],
                 '/prd' => [
                     'get' => [
                         'tags' => ['PRD'],
@@ -139,6 +179,19 @@ class OpenApiService
                             ],
                         ],
                     ],
+                    'UnprocessableEntity' => [
+                        'description' => 'Validation or business rule failure',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'message' => ['type' => 'string', 'example' => 'Comments are closed for this user story.'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'schemas' => [
                     'TaskProgress' => [
@@ -158,8 +211,12 @@ class OpenApiService
                             'entry' => ['type' => 'string', 'nullable' => true, 'example' => 'index.html'],
                             'entry_url' => ['type' => 'string', 'nullable' => true, 'example' => '/mockups/US-001'],
                             'browsable' => ['type' => 'boolean'],
+                            'screens' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/MockupScreen'],
+                            ],
                         ],
-                        'required' => ['available', 'screen_count'],
+                        'required' => ['available', 'screen_count', 'screens'],
                     ],
                     'MockupScreen' => [
                         'type' => 'object',
@@ -193,8 +250,12 @@ class OpenApiService
                             'blocking_count' => ['type' => 'integer', 'minimum' => 0],
                             'writable' => ['type' => 'boolean'],
                             'path' => ['type' => 'string', 'example' => '.larapilot/internal-feedback/US-001.md'],
+                            'entries' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/FeedbackEntryDetail'],
+                            ],
                         ],
-                        'required' => ['enabled', 'entry_count', 'blocking_count', 'writable', 'path'],
+                        'required' => ['enabled', 'entry_count', 'blocking_count', 'writable', 'path', 'entries'],
                     ],
                     'FeedbackEntry' => [
                         'type' => 'object',
@@ -206,6 +267,19 @@ class OpenApiService
                             'blocks_merge' => ['type' => 'boolean'],
                         ],
                         'required' => ['at', 'author', 'status', 'body', 'blocks_merge'],
+                    ],
+                    'FeedbackEntryDetail' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'at' => ['type' => 'string'],
+                            'author' => ['type' => 'string'],
+                            'status' => ['type' => 'string'],
+                            'body' => ['type' => 'string'],
+                            'body_html' => ['type' => 'string'],
+                            'preview' => ['type' => 'string'],
+                            'blocks_merge' => ['type' => 'boolean'],
+                        ],
+                        'required' => ['at', 'author', 'status', 'body', 'body_html', 'preview', 'blocks_merge'],
                     ],
                     'FeedbackDetail' => [
                         'type' => 'object',
@@ -219,10 +293,31 @@ class OpenApiService
                             'html' => ['type' => 'string', 'nullable' => true],
                             'entries' => [
                                 'type' => 'array',
-                                'items' => ['$ref' => '#/components/schemas/FeedbackEntry'],
+                                'items' => ['$ref' => '#/components/schemas/FeedbackEntryDetail'],
                             ],
                         ],
                         'required' => ['enabled', 'writable', 'path', 'entry_count', 'blocking_count', 'entries'],
+                    ],
+                    'CommentCreateRequest' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'author' => ['type' => 'string', 'maxLength' => 80, 'example' => 'PM'],
+                            'message' => ['type' => 'string', 'maxLength' => 10000, 'example' => 'Please confirm Safari SSO scope.'],
+                            'blocks_merge' => ['type' => 'boolean', 'default' => false],
+                        ],
+                        'required' => ['author', 'message'],
+                    ],
+                    'CommentCreateResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'example' => 'US-001'],
+                            'path' => ['type' => 'string', 'example' => '.larapilot/internal-feedback/US-001.md'],
+                            'entry_count' => ['type' => 'integer', 'minimum' => 0],
+                            'blocking_count' => ['type' => 'integer', 'minimum' => 0],
+                            'feedback' => ['$ref' => '#/components/schemas/FeedbackDetail'],
+                            'mockups' => ['$ref' => '#/components/schemas/MockupDetail'],
+                        ],
+                        'required' => ['code', 'path', 'entry_count', 'blocking_count', 'feedback', 'mockups'],
                     ],
                     'Epic' => [
                         'type' => 'object',

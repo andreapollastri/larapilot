@@ -147,7 +147,19 @@ it('exposes feedback metadata via the API', function (): void {
         ->assertOk()
         ->assertJsonPath('feedback.entry_count', 1)
         ->assertJsonPath('feedback.blocking_count', 1)
-        ->assertJsonPath('feedback.writable', true);
+        ->assertJsonPath('feedback.writable', true)
+        ->assertJsonPath('feedback.entries.0.author', 'PM')
+        ->assertJsonPath('feedback.entries.0.blocks_merge', true);
+
+    $this->getJson('/larapilot/api/board')
+        ->assertOk()
+        ->assertJsonPath('columns.REVIEW.0.feedback.entry_count', 1)
+        ->assertJsonPath('columns.REVIEW.0.feedback.entries.0.body', 'Blocking issue.');
+
+    $this->getJson('/larapilot/api/specs')
+        ->assertOk()
+        ->assertJsonPath('items.0.feedback.entry_count', 1)
+        ->assertJsonCount(1, 'items.0.feedback.entries');
 });
 
 it('deletes internal feedback when a spec is removed', function (): void {
