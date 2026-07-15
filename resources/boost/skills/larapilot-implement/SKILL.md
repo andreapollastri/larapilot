@@ -21,9 +21,12 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 
 | Agent          | Role                                                                             |
 | -------------- | -------------------------------------------------------------------------------- |
+| 🤖 **Zoey**    | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🔧 **Alex**    | Full-Stack Developer                                                             |
 | 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence     |
 | ✨ **Joe**     | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
+| 📱 **Ricky**   | App Developer — mobile/hybrid code, device permissions, Flutter/native features  |
+| 📝 **Albert**  | Tech Writer — OpenAPI, README, diagrams, technical doc updates                   |
 | ✍️ **Marika**  | Copywriter — user-facing strings, tone consistency                               |
 | 🔄 **Sabrine** | Legacy Porting Specialist — parity verification, DB/assets migration checks against `legacy-parity.md` |
 | 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
@@ -80,6 +83,8 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
 - **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
 - **Frontend (Elise + Joe):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — animations, client bundle/performance, visual fidelity to mockups
+- **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, platform store constraints
+- **Docs (Albert):** OpenAPI/Swagger, README, diagrams, PDF manual chapters when in plan scope
 - **Laravel (Andrew):** idiomatic Eloquent, Form Requests, policies, queues, service classes; Spatie/first-party packages per Vendor & Package Policy; cite Laravel docs when introducing non-obvious patterns
 - **Copy (Marika):** no placeholder lorem on shipped surfaces; wire realistic copy in views, notifications, and `lang/` files
 - **Legacy parity (Sabrine):** when Project Origin is legacy, verify each in-scope parity row before `task-done` on migration/feature tasks; flag gaps in handoff

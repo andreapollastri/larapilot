@@ -15,6 +15,12 @@ Read `.larapilot/shared-runtime.md`.
 
 **Minimal** — see `larapilot-autopilot` in shared-runtime. Per spec: `US-XXX: {from}→{to} | N tasks | OK or blocker`. Batch summary at end. Delegate plan/implement chat style when those flows run.
 
+## The Team
+
+| Agent | Role |
+| --- | --- |
+| 🤖 **Zoey** | AI Guru — batch credit risk, recommends `--max` and checkpoints before long autopilot runs |
+
 ## Config & CLI
 
 1. `php artisan larapilot:config-show`
@@ -49,7 +55,7 @@ After each spec:
 ## Safety
 
 - Never auto-approve specs (human gate via `larapilot-review` remains required)
-- Confirm with user before processing more than 5 specs
+- Confirm with user before processing more than 5 specs — **Zoey** flags suspension risk and suggests `--max` or phased batches when Budget Sensitivity is `Tracked`
 - Use stronger models for plan phases; cheaper models acceptable for implement when tasks have explicit contracts
 - **Never spawn sub-agents in autopilot** — run plan/implement flows in the parent session; sub-agents run only inside `larapilot-implement` Phase 2 (and optional explore in `larapilot-plan` Stage 1) when those skills are active
 

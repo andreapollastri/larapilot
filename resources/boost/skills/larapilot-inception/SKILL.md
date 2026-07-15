@@ -15,6 +15,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 
 | Agent            | Role                                                                                                                                                                                |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🤖 **Zoey**      | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)*                                                                        |
 | 💎 **Mark**      | Product Manager — delivery-target choice, product scope, personas, trade-offs                                                                                                       |
 | 🧭 **Jennifer**  | Business Strategist — market positioning, competitive context, product risks                                                                                                        |
 | 🏢 **Benjamin**  | Business Consultant — market research, enterprise know-how, business lens on technical choices                                                                                      |
@@ -25,7 +26,9 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 | 📈 **Emma**      | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, semantic HTML, Lighthouse a11y _(public websites)_                                                                                |
 | 💬 **Lauren**    | Social Media Manager — marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora                                                                                  |
 | 🎨 **Elise**     | UX Designer — Nordic UI, WCAG 2.2 AA, **mobile-first responsive**, **logo/favicon.svg/social assets** when client has none                                                          |
-| ✨ **Joe**       | Frontend Expert — visual impact, JS frontend, animations, hybrid/native mobile, client performance                                                                                  |
+| ✨ **Joe**       | Frontend Expert — visual impact, JS frontend, animations, client performance                                                                                                         |
+| 📱 **Ricky**     | App Developer — native/hybrid mobile, Flutter, device APIs (camera, mic, sensors, Bluetooth, NFC/RFID), store constraints                                                         |
+| 📝 **Albert**    | Tech Writer — documentation scope, OpenAPI, diagrams, PDF client manuals                                                                                                            |
 | ✍️ **Marika**    | Copywriter — website & app copy, review & tone _(Website, Application)_                                                                                                             |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — legacy analysis, **content scraping**, **DB & assets porting**, parity matrix, porting proposals _(legacy rewrite/port)_                               |
 | 👾 **Andrew**    | Laravel Expert — ecosystem best practices, community standards                                                                                                                      |
@@ -55,7 +58,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
       The choice switches the rest of discovery; record it in the PRD under `## MVP Scope`.
 3. **Branch by Project Kind** (see branching rules in shared-runtime):
     - **Personal** — lean path: Mark drives vision/problem/users in one short round; delivery target AskQuestion offers `MVP` or `V1 Complete` only; record **`Budget Sensitivity: Relaxed`** unless the user wants **Tracked**. Jennifer, Benjamin, Sebastian, Lauren stay silent. John proposes a pragmatic stack; Emma/Elise join only for public UI; Violet only for personal data.
-    - **Website** — round 2 AskQuestion: **Website Type** (`Showcase`, `Portal`, `Blog`, `E-commerce`, `Landing`, `Documentation`, `Other`) and **delivery target** (`MVP`, `V1 Complete`, `Full Product`). Aurora asks **Budget Sensitivity** in the same round or right after (default **Tracked** for **E-commerce**). Bring in **Emma**, **Lauren**, **Elise**, **Marika** early; **Sebastian** + **Matt** for payments/shipping on **E-commerce**; **Joe** when rich frontend or animations matter; skip multi-tenancy unless **Portal** with accounts.
+    - **Website** — round 2 AskQuestion: **Website Type** (`Showcase`, `Portal`, `Blog`, `E-commerce`, `Landing`, `Documentation`, `Other`) and **delivery target** (`MVP`, `V1 Complete`, `Full Product`). Aurora asks **Budget Sensitivity** in the same round or right after (default **Tracked** for **E-commerce**). Bring in **Emma**, **Lauren**, **Elise**, **Marika** early; **Sebastian** + **Matt** for payments/shipping on **E-commerce**; **Joe** when rich frontend or animations matter; **Albert** when **Documentation** type or technical docs are required; **Ricky** when mobile/hybrid app or device APIs are in scope; skip multi-tenancy unless **Portal** with accounts.
     - **Application** — full discovery: **Mark** asks **delivery target** (`MVP`, `V1 Complete`, `Full Product`, `Enterprise`); **Aurora** asks **Budget Sensitivity** in the same round or right after; **John** opens multi-tenancy and admin-panel questions when signals match; full persona roster as needed.
 4. **Mark** drives vision, problem, and users within the active branch; **Jennifer** frames market positioning and calls out product risks early _(Application — and Website when competitive context matters)_. Scope boundaries follow the **chosen delivery target** and **Project Kind**, plus core Laravel stack assumptions. For each functional requirement, **Mark** assigns **MoSCoW** (`Must` / `Should` / `Could` / `Won't`) — negotiate Must vs Should vs Could when the target is **MVP** or **V1 Complete** (see **MoSCoW Prioritization** in shared-runtime); align tags with `### In Scope`, `### Out of Scope`, and `### Future Phases`. When asking multiple-choice questions, use **AskQuestion** (see Assumptions and Questions in shared-runtime) — persona intro stays in chat, options go in the wizard.
 5. **Benjamin** brings market research and multi-sector enterprise perspective _(Application — Full Product / Enterprise)_; **Sebastian** challenges the product against competitors _(Application — and Website E-commerce when rivals exist)_ and **MUST propose**, whenever comparable products exist: (a) **integrations** with complementary services and APIs, and (b) **competitor data porting** — concrete import paths that let users of rival products migrate their data into this one (CSV/API importers, onboarding flows for switchers), plus structured export so the product never locks users in. When competitive or inspirational context helps, **Sebastian asks for reference product URLs, apps, or sites** (skippable) and runs **deepsearch** (WebSearch/WebFetch) — persist reports to `{paths.research}/reference-products/{slug}.md` and cross-link in the PRD (see **Reference Products & Sebastian Deepsearch** in shared-runtime). **Matt** notes how proposed integrations will be wired (APIs, webhooks, OAuth). Porting opportunities that survive discussion become Functional Requirements.
@@ -196,10 +199,10 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - Key messages: {{headlines, CTAs, value props}}
 - Legacy copy inventory: {{when porting — map to new surfaces}}
 
-### UX & frontend _(Elise + Joe + Emma + Violet)_
+### UX & frontend _(Elise + Joe + Ricky + Emma + Violet)_
 
 - Stack: {{Blade / Livewire / Tailwind / Vue / React / Svelte / Flux / Filament / Starter Kit variant}}
-- Visual language: Nordic minimal (unless override); Joe — animations {{Three.js / CSS / none}}, mobile app scope {{hybrid / native / web-only}}
+- Visual language: Nordic minimal (unless override); Joe — animations {{Three.js / CSS / none}}; Ricky — mobile app scope {{hybrid / native / web+PWA / web-only}}, device APIs {{camera / mic / GPS / Bluetooth / NFC / …}}
 - Themes: light + dark (unless opt-out)
 - **Layout: Mobile First** — design 320–375 px first; progressive desktop enhancement; extremely navigable and simple on any device/resolution
 - Responsive breakpoints: 320, 375, 768, 1024, 1280, 1920 px; mobile nav pattern documented
@@ -219,6 +222,13 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - Newsletter: {{strategy + tool}}
 - Campaigns / social: {{channels}}
 - SEM: {{if budget allows — Google/Meta/LinkedIn + UTM with Emma}}
+
+### Documentation _(Albert + Emily)_
+
+- Developer docs: {{README, OpenAPI/Swagger, integration guides}}
+- Diagrams: {{draw.io / Mermaid — architecture, deployment, key flows}}
+- Client manuals: {{PDF user manual — EN default; localized editions when multi-market}}
+- Doc site: {{if Documentation product — structure and publish target}}
 
 ### Integrations _(when applicable — Sebastian proposes SaaS + self-hosted)_
 

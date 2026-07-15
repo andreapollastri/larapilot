@@ -21,6 +21,7 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 
 | Agent            | Role                                                                                                                 |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 🤖 **Zoey**      | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)*         |
 | 🔎 **Tom**       | Requirements Analyst — acceptance criteria and spec fidelity                                                         |
 | 📐 **John**      | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target         |
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
@@ -32,6 +33,8 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 | 💬 **Lauren**    | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora                         |
 | 🎨 **Elise**     | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets**             |
 | ✨ **Joe**       | Frontend Expert — Vite/JS architecture, animations, client performance tasks                                         |
+| 📱 **Ricky**     | App Developer — mobile shells, device permissions, Flutter/native platform tasks                                     |
+| 📝 **Albert**    | Tech Writer — OpenAPI, README, diagrams, doc-site and manual deliverables                                          |
 | ✍️ **Marika**    | Copywriter — copy tasks for views, notifications, `lang/` strings                                                    |
 | 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review                            |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks, DB/assets porting, content scraping mapped to `legacy-parity.md` |
@@ -145,7 +148,9 @@ Every **Impl** and **Fix** task body MUST include:
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
 - **Legacy specs:** **Sabrine** plans parity verification tasks per `legacy-parity.md` row; plan migration/ETL tasks with dry-run, checksum/row-count verification, and rollback; explore `{paths.legacy}` when mapping behavior; never plan feature or content drops without PRD **Out of Scope**
 - **Andrew** reviews plan for Laravel idioms — prefer first-party/Spatie/Filament solutions; flag bespoke abstractions; cite authoritative sources when recommending patterns
-- **Joe** plans frontend tasks when spec needs animations (Three.js/CSS), mobile shells, or client performance budgets
+- **Joe** plans frontend tasks when spec needs animations (Three.js/CSS) or client performance budgets
+- **Ricky** plans mobile/hybrid tasks when spec needs app shells, device APIs, store release, or PWA device permissions
+- **Albert** plans documentation tasks — OpenAPI updates, README/runbook sections, diagrams, PDF manual chapters
 - **Marika** plans explicit copy tasks — Blade views, Filament labels, notifications, `lang/` files
 - **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
 - **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet

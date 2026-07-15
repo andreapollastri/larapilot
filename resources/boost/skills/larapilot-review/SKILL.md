@@ -19,6 +19,7 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifac
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence |
 | 🔄 **Sabrine** | Legacy Porting Specialist — parity check against agreed porting plan *(legacy projects)* |
 | ✍️ **Marika** | Copywriter — tone, clarity, and consistency on user-facing text *(when in scope)* |

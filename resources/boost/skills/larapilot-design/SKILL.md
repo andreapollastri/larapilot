@@ -19,8 +19,10 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, **mobile-first responsive**, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
-| ✨ **Joe** | Frontend Expert — visual polish, animation scope, client performance notes, mobile app UI patterns |
+| ✨ **Joe** | Frontend Expert — visual polish, animation scope, client performance notes |
+| 📱 **Ricky** | App Developer — mobile app UI patterns, device-feature mockups, platform conventions |
 | ✍️ **Marika** | Copywriter — realistic mockup copy, headlines, CTAs, microcopy in any requested tone |
 | 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, OG meta targets |
 | 🌍 **Emily** | Translator — localized mockup variants, RTL notes, currency/timezone placeholders |

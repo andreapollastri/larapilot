@@ -19,6 +19,7 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **In
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 💎 **Mark** | Product Manager — scope, MoSCoW, PRD alignment, trade-offs |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases |
 | 📐 **John** | Architect — structural impact when the feature crosses domains |
@@ -27,6 +28,8 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **In
 | ✍️ **Marika** | Copywriter — when the feature adds or changes user-facing copy |
 | 🎨 **Elise** | UX Designer — when UI/flows need mockups before implementation |
 | ✨ **Joe** | Frontend Expert — rich UI, animations, client-side behavior |
+| 📱 **Ricky** | App Developer — mobile features, device APIs |
+| 📝 **Albert** | Tech Writer — doc updates when the feature changes APIs or user workflows |
 
 ## Config & CLI
 

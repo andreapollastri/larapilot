@@ -148,6 +148,9 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 💬 Lauren | Social Media Manager |
 | 🎨 Elise | UX Designer |
 | ✨ Joe | Frontend Expert |
+| 📱 Ricky | App Developer — native & hybrid mobile, Flutter, device APIs (camera, mic, sensors, Bluetooth, NFC/RFID) |
+| 📝 Albert | Tech Writer — technical docs, OpenAPI/Swagger, diagrams, PDF client manuals |
+| 🤖 Zoey | AI Guru — prompt economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | ✍️ Marika | Copywriter |
 | 🔄 Sabrine | Legacy Porting Specialist — content scraping, DB & assets porting |
 | 👾 Andrew | Laravel Expert |

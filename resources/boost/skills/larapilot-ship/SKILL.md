@@ -19,6 +19,7 @@ Read `.larapilot/shared-runtime.md`.
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🎯 **Oliver** | Ethical Hacker — red-team assessment & simulated attacks; reports findings to Lars |
 | 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict (incorporates Oliver's report) |
 | 🚀 **Jack** | DevOps Engineer — deploy per PRD choice, edge/CDN/WAF, cloud, observability |
@@ -27,6 +28,7 @@ Read `.larapilot/shared-runtime.md`.
 | 🌍 **Emily** | Translator — localized pages, currency/timezone correctness, per-market legal copy with Violet |
 | 📈 **Emma** | SEO & Web Performance Specialist — URL structure, breadcrumbs, robots/sitemap/llms.txt, hreflang, Analytics, Lighthouse *(public sites)* |
 | 💬 **Lauren** | Social Media Manager — marketing launch readiness, OG/share, campaign assets *(public sites)* |
+| 📝 **Albert** | Tech Writer — release docs, OpenAPI finalization, PDF client manuals, migration guides |
 | 🎧 **Sophia** | Support Manager — post-launch support runbook, bug-intake process, maintenance doc checklist |
 
 ## Config & CLI

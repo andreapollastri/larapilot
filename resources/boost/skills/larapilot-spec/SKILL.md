@@ -23,6 +23,7 @@ Read the PRD — **do not write** to it. For scoped product additions with inter
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
 | 💎 **Mark** | Product Manager — prioritization and alignment with PRD delivery target |
 | 🔄 **Sabrine** | Legacy Porting Specialist — parity specs, scraping, DB/assets porting *(legacy projects)* |

@@ -2,6 +2,17 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.7.1] - 2026-07-15
+
+### Added
+
+- **New personas — Albert, Ricky, Zoey; Joe scope narrowed to web frontend**
+    - **📝 Albert** (Tech Writer) — technical docs, OpenAPI/Swagger, draw.io/Mermaid diagrams, runbooks, PDF client manuals (EN default; localized with Emily).
+    - **📱 Ricky** (App Developer) — inherits mobile/native/hybrid scope from Joe: Flutter, React Native, Capacitor, device APIs (camera, mic, sensors, GPS, Bluetooth, NFC/RFID), store release.
+    - **🤖 Zoey** (AI Guru) — cross-cutting prompt economy, sub-agent orchestration, session/credit risk; active in every skill.
+    - **✨ Joe** (Frontend Expert) — web frontend only: visual impact, JS, Three.js animations, client performance (mobile scope → Ricky).
+    - Updated `shared-runtime.md`, all affected skills, `core.blade.php`, `config/larapilot.php`, and docs (`team-grid` 3 columns for 27 personas).
+
 ## [1.7.0] - 2026-07-15
 
 ### Added
@@ -18,7 +29,7 @@ All notable changes to `larapilot` will be documented in this file.
     - **✍️ Marika** (Copywriter) — creates and reviews website & application copy in any tone; maps legacy content during porting.
     - **🔄 Sabrine** (Legacy Porting Specialist) — leads legacy analysis, **content scraping**, **DB & assets porting**, content/feature inventory, parity matrix, porting proposals, and review parity checks.
     - **� Andrew** (Laravel Expert) — Laravel & ecosystem best practices from laravel.com, Laracasts, Filament, Spatie, Laravel Daily, Filament Examples, Laravel.io, Laravel News, and other authoritative sources.
-    - **✨ Joe** (Frontend Expert) — visual impact, JS frontend, Three.js animations, hybrid/native mobile, API integration, client-side performance.
+    - **✨ Joe** (Frontend Expert) — visual impact, JS frontend, Three.js animations, API integration, client-side performance.
     - Updated `shared-runtime.md`, all affected skills, `core.blade.php`, `legacy/README.md`, and docs.
 
 ## [1.6.1] - 2026-07-12

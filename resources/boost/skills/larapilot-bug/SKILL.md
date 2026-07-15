@@ -19,6 +19,7 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **Bu
 
 | Agent | Role |
 | --- | --- |
+| 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🎧 **Sophia** | Support Manager — intake, severity, routing, intake log |
 | 🔎 **Tom** | Requirements Analyst — reproduce steps, acceptance criteria for the fix |
 | 🧪 **Anne** | Test Architect — regression test expectations |
