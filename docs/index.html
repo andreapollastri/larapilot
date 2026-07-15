@@ -374,6 +374,7 @@
 
     .hero-flow {
       margin-top: 1.1rem;
+      margin-bottom: 1.75rem;
       font-size: .88rem;
       color: var(--text-secondary);
       line-height: 1.7;
@@ -4053,18 +4054,69 @@ curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></p
       });
     });
 
-    const sections = document.querySelectorAll('.doc-section[id], .hero[id], .example-block[id]');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          navLinks.forEach(link => {
-            link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
-          });
-        }
-      });
-    }, { rootMargin: '-15% 0px -75% 0px' });
+    /* Sidebar highlight — scroll position, single active link */
+    (function initNavSpy() {
+      const offset = () => {
+        const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
+        return headerH + 28;
+      };
 
-    sections.forEach(s => observer.observe(s));
+      const sectionIds = [...new Set(
+        [...navLinks].map(link => link.getAttribute('href').slice(1)).filter(Boolean)
+      )];
+
+      let navSections = sectionIds
+        .map(id => ({ id, el: document.getElementById(id) }))
+        .filter(s => s.el)
+        .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
+
+      function rebuildSections() {
+        navSections = sectionIds
+          .map(id => ({ id, el: document.getElementById(id) }))
+          .filter(s => s.el)
+          .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
+      }
+
+      function updateActiveNav() {
+        if (!navSections.length) return;
+
+        const line = offset();
+        let activeId = null;
+
+        for (const section of navSections) {
+          if (section.el.getBoundingClientRect().top <= line) {
+            activeId = section.id;
+          }
+        }
+
+        const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+        if (nearBottom) {
+          activeId = navSections[navSections.length - 1].id;
+        }
+
+        navLinks.forEach(link => {
+          link.classList.toggle('active', activeId !== null && link.getAttribute('href') === '#' + activeId);
+        });
+      }
+
+      let ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateActiveNav();
+          ticking = false;
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => {
+        rebuildSections();
+        updateActiveNav();
+      }, { passive: true });
+      window.addEventListener('load', updateActiveNav);
+      updateActiveNav();
+    })();
 
     /* ── Interactive terminal ── */
     (function initTerminal() {
