@@ -1,14 +1,88 @@
 # Larapilot
 
-**From a rough product idea to reviewed Laravel code, with an AI product team that follows a real process.**
+**From product idea to reviewed Laravel code — with an AI product team that follows a real process.**
 
-AI agents are fast, but isolated prompts are not a product process. Larapilot turns your assistant into a disciplined squad with a real workflow — discovery → backlog → plan → implement → review → ship — backed by version-controlled artifacts in `.larapilot/`.
+Larapilot is a spec-driven workflow for Laravel projects, integrated with [Laravel Boost](https://laravel.com/ai/boost). Install the package, run `/larapilot-*` skills in your AI editor, and ship backlog artifacts, plans, and reviewed code from `.larapilot/`.
 
-Larapilot ports the [ARchetipo](https://github.com/techreloaded-ar/ARchetipo) spec-driven workflow to **Laravel and PHP**, integrated with [Laravel Boost](https://laravel.com/ai/boost). Artisan commands and Boost skills/MCP tools give your AI agent a disciplined product process and deep Laravel context.
+**The agent proposes. You approve what ships.** Human-in-the-loop, always.
 
-See [Why Larapilot](https://larapilot.web.ap.it/#why), [How it works](https://larapilot.web.ap.it/#how-it-works), and the [end-to-end walkthrough](https://larapilot.web.ap.it/#walkthrough) for the full picture.
+📖 **Documentation:** [larapilot.web.ap.it](https://larapilot.web.ap.it) · [Walkthrough](https://larapilot.web.ap.it/#walkthrough) · [API](https://larapilot.web.ap.it/#deep-dive-api)
 
-📖 **Full documentation:** [larapilot.web.ap.it](https://larapilot.web.ap.it)
+---
+
+## Why Larapilot
+
+AI agents are fast, but isolated prompts are not a product process. Larapilot gives your assistant a disciplined squad — discovery → backlog → plan → implement → review → ship — with **27 personas** (Mark, John, Alex, Anne, …) as review lenses, not costumes.
+
+Each skill orchestrates the conversation. **Artisan commands** persist state; **Boost skills** drive the workflow in chat; **MCP** exposes Laravel context and workflow tools to your editor.
+
+---
+
+## Core loop
+
+Greenfield — repeat steps 3–5 per user story:
+
+```
+/larapilot-inception "…"  →  /larapilot-spec  →  /larapilot-plan US-XXX
+  →  /larapilot-implement US-XXX  →  /larapilot-review US-XXX
+```
+
+| When | Start with |
+| --- | --- |
+| New product, pivot, or legacy rewrite | `/larapilot-inception` |
+| One new capability on an existing product | `/larapilot-feature "…"` |
+| Defect or regression | `/larapilot-bug "…"` |
+
+Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement.
+
+Git discipline is part of the contract: **Gitflow**, one `feature/US-XXX-*` branch per story, atomic commits per plan task. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
+
+---
+
+## What lands in `.larapilot/`
+
+| Path | Purpose |
+| --- | --- |
+| `config.yaml` | Project workflow config |
+| `docs/PRD.md` | Product Requirements Document |
+| `backlog/` | User stories (`US-XXX`) with status machine |
+| `plans/` | Technical plans and tasks per spec |
+| `mockups/{spec}/` | Static HTML previews (optional) |
+| `internal-feedback/{code}.md` | PM/dev comments until **DONE** |
+| `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) |
+
+Skills write artifacts; the workflow engine blocks invalid state transitions (e.g. implement before plan, approve before review).
+
+---
+
+## Skills
+
+Published via Laravel Boost after `php artisan boost:install`:
+
+| Skill | Role |
+| --- | --- |
+| `/larapilot-inception` | Product discovery → PRD |
+| `/larapilot-spec` | MoSCoW backlog from PRD |
+| `/larapilot-feature` | Mini-inception for one evolutiva |
+| `/larapilot-bug` | Bug triage → fix spec or rework |
+| `/larapilot-design` | Static HTML mockups from design system |
+| `/larapilot-plan` | Technical plan + tasks for a spec |
+| `/larapilot-implement` | Code + tests on a feature branch |
+| `/larapilot-review` | Human gate → **DONE** or rework |
+| `/larapilot-ship` | Release checklist when MVP is done |
+| `/larapilot-autopilot` | Batch plan + implement |
+
+---
+
+## Dashboard & API (dev/staging)
+
+When the dashboard is browsable (never in production):
+
+- **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
+- **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
+- **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
+
+Workflow **state** still changes only via skills or Artisan — not from the dashboard or API.
 
 ---
 
@@ -17,7 +91,7 @@ See [Why Larapilot](https://larapilot.web.ap.it/#why), [How it works](https://la
 - PHP **^8.3**
 - Laravel **^12** or **^13**
 - [Laravel Boost](https://laravel.com/ai/boost) `^2.0` (installed automatically)
-- An AI editor with MCP support (Cursor, Claude Code, etc.)
+- MCP-capable editor (Cursor, Claude Code, VS Code, …)
 
 ---
 
@@ -29,40 +103,58 @@ php artisan larapilot:install
 php artisan boost:install
 ```
 
-If needed, register both MCP servers in your editor:
+Already on Boost? Refresh skills once:
+
+```bash
+php artisan boost:update --discover
+```
+
+Register MCP servers in your editor if needed:
 
 ```json
 {
-    "mcpServers": {
-        "laravel-boost": {
-            "command": "php",
-            "args": ["artisan", "boost:mcp"]
-        },
-        "larapilot": {
-            "command": "php",
-            "args": ["artisan", "mcp:start", "larapilot"]
-        }
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "php",
+      "args": ["artisan", "boost:mcp"]
+    },
+    "larapilot": {
+      "command": "php",
+      "args": ["artisan", "mcp:start", "larapilot"]
     }
+  }
 }
 ```
 
-Start with `/larapilot-inception` in your AI editor, then follow the spec-driven loop for each user story.
+First run in your editor:
 
-Step-by-step guide and a full walkthrough (idea → PRD → backlog → code → ship): [Walkthrough](https://larapilot.web.ap.it/#walkthrough)
+```
+/larapilot-inception "your product idea"
+```
 
-Other commands:
+Then `/larapilot-spec`, and the per-story loop above.
+
+### Upgrade
 
 ```bash
-# Update
 composer update andreapollastri/larapilot
 php artisan larapilot:update
-
-# Verify installation
 php artisan larapilot:doctor
 ```
+
+Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --skip-boost`.
+
+---
+
+## Learn more
+
+- [Why & how it works](https://larapilot.web.ap.it/#how-it-works)
+- [Four walkthrough examples](https://larapilot.web.ap.it/#examples) — new product, legacy port, feature, bug
+- [Design systems](https://larapilot.web.ap.it/#deep-dive-design-systems)
+- [Team personas](https://larapilot.web.ap.it/#deep-dive-team)
 
 ---
 
 ## License
 
-MIT © Andrea Pollastri
+MIT © [Andrea Pollastri](https://web.ap.it)
