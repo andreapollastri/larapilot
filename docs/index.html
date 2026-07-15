@@ -2350,7 +2350,8 @@
         </div>
         <p>Available in <code>local</code>, <code>staging</code>, and <code>testing</code>; returns 404 in production.
           Refresh the page after each skill run to pick up status changes. Disable with
-          <code>LARAPILOT_DASHBOARD_ROUTE=false</code>.
+          <code>LARAPILOT_DASHBOARD_ROUTE=false</code> (this also disables the API — same access gate).
+          For JSON endpoints and Swagger UI, see the <a href="#api">Workflow API</a> reference.
         </p>
 
         <h3>The process in two parts</h3>
@@ -2482,7 +2483,8 @@
         <p>Steps 4–6 repeat for each user story. Step 3 is optional. When every story is <span
             class="status status-done">DONE</span>, run <code>/larapilot-ship</code> to deploy.</p>
         <p>Throughout the loop, keep <code>/larapilot</code> open in a browser tab — the board updates as each skill
-          moves stories through the workflow. You do not drive Larapilot from the dashboard; it is a mirror of what
+          moves stories through the workflow. For automation, poll <code>/larapilot/api/board</code> or filter specs by
+          status via the <a href="#api">workflow API</a>. You do not drive Larapilot from the dashboard; it is a mirror of what
           skills and the CLI already wrote to disk.</p>
 
         <h3>Personas per skill</h3>
@@ -2991,7 +2993,8 @@ tests/Feature/RegistrationTest.php</code></pre>
               </div>
               <p>The same numbers appear on the dashboard board header (total specs, done, completion %, WIP). Use
                 whichever view fits your workflow — CLI for scripts and CI, <code>/larapilot</code> for a visual Kanban
-                while you work in the editor.</p>
+                while you work in the editor, or <code>/larapilot/api/board</code> for programmatic access (see
+                <a href="#api">Workflow API</a>).</p>
               <div class="walkthrough-personas">
                 <h4>Active personas (per story)</h4>
                 <div class="persona-chips">
@@ -3710,7 +3713,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
         <p><code>data.healthy</code> is <code>true</code> when config, shared runtime, and Boost are all in place. On a
           fresh install <code>backlog</code> and <code>prd</code> are still <code>false</code> — that's expected: they
           turn <code>true</code> after <code>/larapilot-inception</code> (PRD) and <code>/larapilot-spec</code>
-          (backlog). In local, browse the workflow dashboard at <code>/larapilot</code> once artifacts exist.</p>
+          (backlog). In local, browse the workflow dashboard at <code>/larapilot</code> or call the
+          <a href="#api">JSON API</a> once artifacts exist.</p>
 
         <h3>6. Keep it updated</h3>
         <p>Boost publishes guidelines and skills as <strong>copies</strong> into your editor directories, so after
@@ -4492,7 +4496,8 @@ So that I can access protected features.
         <div class="section-header">
           <span class="section-label">Workflow</span>
           <h2>Workflow Dashboard</h2>
-          <p>Read-only UI for backlog status, PRD, and spec/task detail — only outside production.</p>
+          <p>Read-only UI for backlog status, PRD, and spec/task detail — only outside production. The dashboard nav
+            also links to the <a href="#api">JSON API</a> and Swagger UI.</p>
         </div>
         <div class="table-card">
           <table>
@@ -4520,6 +4525,11 @@ So that I can access protected features.
                 <td>✅ Spec + tasks</td>
               </tr>
               <tr>
+                <td></td>
+                <td><code>/larapilot/api/docs</code></td>
+                <td>✅ Swagger UI (see <a href="#api">Workflow API</a>)</td>
+              </tr>
+              <tr>
                 <td><code>production</code></td>
                 <td>—</td>
                 <td>❌ Disabled (404)</td>
@@ -4527,7 +4537,71 @@ So that I can access protected features.
             </tbody>
           </table>
         </div>
-        <p>Disable with <code>LARAPILOT_DASHBOARD_ROUTE=false</code> in <code>.env</code>.</p>
+        <p>Disable with <code>LARAPILOT_DASHBOARD_ROUTE=false</code> in <code>.env</code>. This also disables all
+          <code>/larapilot/api/*</code> routes.</p>
+      </section>
+
+      <!-- Workflow API -->
+      <section class="doc-section" id="api">
+        <div class="section-header">
+          <span class="section-label">Workflow</span>
+          <h2>Workflow API</h2>
+          <p>Read-only JSON endpoints under <code>/larapilot/api/</code> — same access rules as the dashboard. Use from
+            CI scripts, local tooling, or any HTTP client. Interactive docs at <code>/larapilot/api/docs</code> (also
+            linked from the dashboard nav as <strong>API</strong>).</p>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Endpoint</th>
+                <th>Method</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/larapilot/api/board</code></td>
+                <td><code>GET</code></td>
+                <td>Full Kanban snapshot: metrics, status order, columns with all user stories and task progress</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot/api/specs</code></td>
+                <td><code>GET</code></td>
+                <td>List all backlog specs; optional <code>?status=TODO</code> filter (case-insensitive)</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot/api/specs/{code}</code></td>
+                <td><code>GET</code></td>
+                <td>Single user story with plan summary, tasks, workdir, and task progress</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot/api/prd</code></td>
+                <td><code>GET</code></td>
+                <td>PRD markdown and parsed section headings (<code>404</code> when no PRD exists)</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot/api/openapi.json</code></td>
+                <td><code>GET</code></td>
+                <td>OpenAPI 3.1 machine-readable spec (server URL resolved from the current request)</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot/api/docs</code></td>
+                <td><code>GET</code></td>
+                <td>Swagger UI — browse and try all endpoints from the browser</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header">Example</div>
+          <pre><code>curl -s http://127.0.0.1:8000/larapilot/api/board | jq '.metrics'
+curl -s "http://127.0.0.1:8000/larapilot/api/specs?status=IN%20PROGRESS"
+curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></pre>
+        </div>
+        <p>Available in <code>local</code>, <code>staging</code>, and <code>testing</code>; returns 404 in production.
+          No authentication — dev-only companion, never exposed in production. Disable with
+          <code>LARAPILOT_DASHBOARD_ROUTE=false</code>.</p>
       </section>
 
       <!-- Boost -->

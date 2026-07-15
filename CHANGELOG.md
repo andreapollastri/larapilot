@@ -6,7 +6,7 @@ All notable changes to `larapilot` will be documented in this file.
 
 ### Added
 
-- **Workflow JSON API** — read-only REST endpoints under `/larapilot/api/` (same access rules as the dashboard): `GET /board` (full Kanban snapshot), `GET /specs` (optional `?status=` filter), `GET /specs/{code}` (spec + plan + tasks), `GET /prd`. OpenAPI 3.1 spec at `/larapilot/api/openapi.json` and Swagger UI at `/larapilot/api/docs`, linked from the dashboard nav.
+- **Workflow JSON API** — read-only REST endpoints under `/larapilot/api/` (same access rules as the dashboard): `GET /board` (full Kanban snapshot), `GET /specs` (optional `?status=` filter), `GET /specs/{code}` (spec + plan + tasks), `GET /prd`. OpenAPI 3.1 spec at `/larapilot/api/openapi.json` and Swagger UI at `/larapilot/api/docs`, linked from the dashboard nav. Documented in `docs/index.html` (`#api`, `#dashboard`).
 - **`/larapilot-feature`** — mini-inception for one new evolutiva on an existing project: interactive AskQuestion rounds (MoSCoW, FR traceability, mockup-first, legacy touch), optional PRD `FR-XXX` sync, spec via `spec-add`. Mark + Tom lead; Sabrine/John/Andrew join when relevant.
 - **`/larapilot-bug`** — Sophia-led bug triage with interactive intake: severity, environment, security, routing to `spec-add` (fix spec) or `spec-request-changes` (rework); logs to `{paths.support}/intake.md`; Critical production → `hotfix/*` note.
 - **Legacy folder — proactive refactor proposal in inception** — when `.larapilot/legacy/` has content, Mark (with Sabrine) asks via AskQuestion whether to pursue legacy rewrite/port before deep discovery.
