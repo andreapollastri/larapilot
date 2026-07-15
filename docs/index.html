@@ -1697,7 +1697,7 @@
 
     .example-block {
       counter-increment: example-block;
-      scroll-margin-top: calc(var(--header-h) + 28px);
+      scroll-margin-top: calc(var(--header-h) + 24px);
       margin: 4rem 0;
       padding: 1.75rem 1.85rem;
       background: var(--surface);
@@ -2563,7 +2563,7 @@
   <div class="docs-shell">
     <aside class="doc-nav" id="docNav">
       <div class="doc-nav-head">
-        <span class="doc-nav-title">On this page</span>
+        <span class="doc-nav-title">DOCUMENTATION</span>
         <div class="doc-nav-progress" aria-hidden="true"><span id="navProgressBar"></span></div>
       </div>
       <div class="doc-nav-scroll">
@@ -2571,7 +2571,7 @@
           <div class="doc-nav-rail" aria-hidden="true"><span class="doc-nav-indicator" id="navIndicator"></span></div>
           <div class="doc-nav-groups">
             <div class="doc-nav-group">
-              <div class="doc-nav-label">Start</div>
+              <div class="doc-nav-label">Tutorial</div>
               <a href="#quickstart" data-nav>Quickstart</a>
               <a href="#how-it-works" data-nav>How to use</a>
               <a href="#examples" data-nav>Examples</a>
@@ -3642,7 +3642,7 @@ body: |
     (function initNavSpy() {
       const readOffset = () => {
         const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
-        return headerH + 32;
+        return headerH + 24;
       };
 
       const navItems = [...navLinks].map(link => {
@@ -3654,6 +3654,11 @@ body: |
         return el.getBoundingClientRect().top + window.scrollY;
       }
 
+      function scrollMarginTop(el) {
+        const value = parseFloat(getComputedStyle(el).scrollMarginTop);
+        return Number.isFinite(value) ? value : readOffset();
+      }
+
       function sectionDocs(navList) {
         return navList
           .map(item => ({ ...item, top: sectionTop(item.el) }))
@@ -3661,6 +3666,7 @@ body: |
       }
 
       let sections = sectionDocs(navItems);
+      let pendingNavId = null;
 
       function rebuildSections() {
         sections = sectionDocs(navItems);
@@ -3685,14 +3691,37 @@ body: |
         navProgressBar.style.width = `${pct}%`;
       }
 
+      function setActiveItem(activeItem) {
+        let activeLink = null;
+        navLinks.forEach(link => {
+          const on = activeItem !== null && link.getAttribute('href') === '#' + activeItem.id;
+          link.classList.toggle('active', on);
+          if (on) activeLink = link;
+        });
+        positionIndicator(activeLink);
+      }
+
       function updateActiveNav() {
         if (!sections.length) return;
 
-        const line = window.scrollY + readOffset();
+        if (pendingNavId) {
+          const pending = sections.find(section => section.id === pendingNavId);
+          if (pending) {
+            const targetY = pending.top - scrollMarginTop(pending.el);
+            if (Math.abs(window.scrollY - targetY) > 2) {
+              setActiveItem(pending);
+              updateProgress();
+              return;
+            }
+          }
+          pendingNavId = null;
+        }
+
+        const scrollY = window.scrollY;
         let activeItem = null;
 
         for (const section of sections) {
-          if (section.top <= line + 1) {
+          if (scrollY >= section.top - scrollMarginTop(section.el) - 1) {
             activeItem = section;
           }
         }
@@ -3702,16 +3731,17 @@ body: |
           activeItem = sections[sections.length - 1];
         }
 
-        let activeLink = null;
-        navLinks.forEach(link => {
-          const on = activeItem !== null && link.getAttribute('href') === '#' + activeItem.id;
-          link.classList.toggle('active', on);
-          if (on) activeLink = link;
-        });
-
-        positionIndicator(activeLink);
+        setActiveItem(activeItem);
         updateProgress();
       }
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          pendingNavId = link.getAttribute('href').slice(1);
+          const pending = sections.find(section => section.id === pendingNavId);
+          if (pending) setActiveItem(pending);
+        });
+      });
 
       let ticking = false;
       function onScroll() {
