@@ -4427,6 +4427,8 @@ body: |
 
     /* Sidebar — scroll spy + sliding rail indicator */
     (function initNavSpy() {
+      const navScroll = docNav.querySelector('.doc-nav-scroll');
+
       const readOffset = () => {
         const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
         return headerH + 24;
@@ -4437,26 +4439,11 @@ body: |
         return { id, link, el: document.getElementById(id) };
       }).filter(item => item.el);
 
-      function sectionTop(el) {
-        return el.getBoundingClientRect().top + window.scrollY;
-      }
+      let pendingNavId = null;
 
       function scrollMarginTop(el) {
         const value = parseFloat(getComputedStyle(el).scrollMarginTop);
         return Number.isFinite(value) ? value : readOffset();
-      }
-
-      function sectionDocs(navList) {
-        return navList
-          .map(item => ({ ...item, top: sectionTop(item.el) }))
-          .sort((a, b) => a.top - b.top);
-      }
-
-      let sections = sectionDocs(navItems);
-      let pendingNavId = null;
-
-      function rebuildSections() {
-        sections = sectionDocs(navItems);
       }
 
       function positionIndicator(activeLink) {
@@ -4469,6 +4456,17 @@ body: |
         const y = linkRect.top - trackRect.top + linkRect.height / 2 - 3.5;
         navIndicator.style.transform = `translateY(${y}px)`;
         navIndicator.style.opacity = '1';
+      }
+
+      function scrollNavLinkIntoView(activeLink) {
+        if (!navScroll || !activeLink) return;
+        const containerRect = navScroll.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        if (linkRect.top < containerRect.top + 8) {
+          navScroll.scrollTop += linkRect.top - containerRect.top - 8;
+        } else if (linkRect.bottom > containerRect.bottom - 8) {
+          navScroll.scrollTop += linkRect.bottom - containerRect.bottom + 8;
+        }
       }
 
       function updateProgress() {
@@ -4486,46 +4484,60 @@ body: |
           if (on) activeLink = link;
         });
         positionIndicator(activeLink);
+        scrollNavLinkIntoView(activeLink);
       }
 
-      function updateActiveNav() {
-        if (!sections.length) return;
-
-        if (pendingNavId) {
-          const pending = sections.find(section => section.id === pendingNavId);
-          if (pending) {
-            const targetY = pending.top - scrollMarginTop(pending.el);
-            if (Math.abs(window.scrollY - targetY) > 2) {
-              setActiveItem(pending);
-              updateProgress();
-              return;
-            }
-          }
-          pendingNavId = null;
-        }
-
-        const scrollY = window.scrollY;
+      function activeItemFromScroll() {
+        const offset = readOffset();
         let activeItem = null;
 
-        for (const section of sections) {
-          if (scrollY >= section.top - scrollMarginTop(section.el) - 1) {
-            activeItem = section;
+        for (const item of navItems) {
+          if (item.el.getBoundingClientRect().top <= offset + 1) {
+            activeItem = item;
           }
         }
 
         const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-        if (nearBottom) {
-          activeItem = sections[sections.length - 1];
+        if (nearBottom && navItems.length) {
+          activeItem = navItems[navItems.length - 1];
         }
 
-        setActiveItem(activeItem);
+        return activeItem;
+      }
+
+      function updateActiveNav() {
+        if (!navItems.length) return;
+
+        if (pendingNavId) {
+          const pending = navItems.find(item => item.id === pendingNavId);
+          const scrollActive = activeItemFromScroll();
+
+          if (pending) {
+            const targetY = pending.el.getBoundingClientRect().top + window.scrollY - scrollMarginTop(pending.el);
+            const atTarget = Math.abs(window.scrollY - targetY) <= 2;
+
+            if (!atTarget && scrollActive?.id !== pendingNavId) {
+              pendingNavId = null;
+            } else if (!atTarget) {
+              setActiveItem(pending);
+              updateProgress();
+              return;
+            } else {
+              pendingNavId = null;
+            }
+          } else {
+            pendingNavId = null;
+          }
+        }
+
+        setActiveItem(activeItemFromScroll());
         updateProgress();
       }
 
       navLinks.forEach(link => {
         link.addEventListener('click', () => {
           pendingNavId = link.getAttribute('href').slice(1);
-          const pending = sections.find(section => section.id === pendingNavId);
+          const pending = navItems.find(item => item.id === pendingNavId);
           if (pending) setActiveItem(pending);
         });
       });
@@ -4541,33 +4553,13 @@ body: |
       }
 
       window.addEventListener('scroll', onScroll, { passive: true });
-      docNav.querySelector('.doc-nav-scroll')?.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', () => {
-        rebuildSections();
-        updateActiveNav();
+      navScroll?.addEventListener('scroll', () => {
+        const activeLink = docNav.querySelector('a[data-nav].active');
+        positionIndicator(activeLink);
       }, { passive: true });
-      function syncHashNav() {
-        const hash = location.hash.slice(1);
-        if (!hash) return;
-        const match = sections.find(section => section.id === hash);
-        if (match) {
-          pendingNavId = hash;
-          setActiveItem(match);
-        }
-      }
-
-      window.addEventListener('hashchange', () => {
-        rebuildSections();
-        syncHashNav();
-        updateActiveNav();
-      });
-
-      window.addEventListener('load', () => {
-        rebuildSections();
-        syncHashNav();
-        updateActiveNav();
-      });
-      syncHashNav();
+      window.addEventListener('resize', updateActiveNav, { passive: true });
+      window.addEventListener('hashchange', updateActiveNav);
+      window.addEventListener('load', updateActiveNav);
       updateActiveNav();
     })();
 
