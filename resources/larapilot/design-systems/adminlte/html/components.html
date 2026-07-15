@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components — AdminLTE</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/css/adminlte.min.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <div class="app-wrapper">
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar">
+              <i class="bi bi-list"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+      <div class="sidebar-brand">
+        <a href="index.html" class="brand-link"><span class="brand-text fw-light">Admin<b>LTE</b></span></a>
+      </div>
+      <div class="sidebar-wrapper">
+        <nav class="mt-2" aria-label="Main navigation">
+          <ul class="nav sidebar-menu flex-column" role="menu">
+            <li class="nav-item"><a href="components.html" class="nav-link active" aria-current="page"><i class="nav-icon bi bi-ui-checks"></i><p>Components</p></a></li>
+            <li class="nav-item"><a href="index.html" class="nav-link"><i class="nav-icon bi bi-grid"></i><p>Catalog</p></a></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <div class="app-content-header">
+        <div class="container-fluid"><h3 class="mb-0">Components</h3></div>
+      </div>
+
+      <div class="app-content">
+        <div class="container-fluid">
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="info-box">
+                <span class="info-box-icon text-bg-info"><i class="bi bi-envelope"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Messages</span>
+                  <span class="info-box-number">1,410</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-box">
+                <span class="info-box-icon text-bg-success"><i class="bi bi-check-lg"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Tasks done</span>
+                  <span class="info-box-number">92</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-box">
+                <span class="info-box-icon text-bg-warning"><i class="bi bi-exclamation-triangle"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Warnings</span>
+                  <span class="info-box-number">3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header">
+              <h3 class="card-title">Collapsible card</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Collapse card">
+                  <i data-lte-icon="expand" class="bi bi-dash-lg"></i>
+                  <i data-lte-icon="collapse" class="bi bi-plus-lg"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-lte-toggle="card-remove" aria-label="Remove card">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="mb-3">AdminLTE card tools use <code>data-lte-toggle</code> attributes — no custom JS required.</p>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary">Primary</button>
+                <button type="button" class="btn btn-secondary">Secondary</button>
+                <button type="button" class="btn btn-danger">Danger</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Changes saved successfully.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              <div class="alert alert-warning" role="alert">Your trial ends in 3 days.</div>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2">Badges</p>
+              <span class="badge text-bg-primary me-1">Primary</span>
+              <span class="badge text-bg-success me-1">Success</span>
+              <span class="badge text-bg-warning me-1">Warning</span>
+              <span class="badge text-bg-danger">Danger</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/js/adminlte.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Landing — Tailwind CSS</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
+  </script>
+</head>
+<body class="min-h-screen bg-white font-sans text-slate-900 antialiased">
+  <header class="border-b border-slate-200">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Main">
+      <a href="landing.html" class="text-lg font-semibold text-indigo-600">Nordic Flow</a>
+      <div class="hidden items-center gap-6 md:flex">
+        <a href="#features" class="text-sm text-slate-600 hover:text-slate-900">Features</a>
+        <a href="#pricing" class="text-sm text-slate-600 hover:text-slate-900">Pricing</a>
+        <a href="login.html" class="text-sm text-slate-600 hover:text-slate-900">Log in</a>
+        <a href="login.html" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Start free trial</a>
+      </div>
+      <a href="login.html" class="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white md:hidden">Try free</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="bg-gradient-to-b from-slate-50 to-white py-20">
+      <div class="mx-auto max-w-3xl px-6 text-center">
+        <span class="mb-4 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">New · Workflow automation</span>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Build beautiful products with pure Tailwind</h1>
+        <p class="mt-4 text-lg text-slate-600">Marketing pages and app dashboards using utility classes only — no component library required.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a href="dashboard.html" class="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-500">View app demo</a>
+          <a href="#features" class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">Explore features</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="py-16">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mb-12 text-center">
+          <h2 class="text-2xl font-bold">Ship site and app from one stack</h2>
+          <p class="mt-2 text-slate-600">Landing, auth, dashboard, and component patterns included.</p>
+        </div>
+        <div class="grid gap-8 md:grid-cols-3">
+          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">⚡</div>
+            <h3 class="font-semibold">Utility-first</h3>
+            <p class="mt-2 text-sm text-slate-600">Compose layouts with Tailwind classes — easy to port into Blade or Livewire.</p>
+          </article>
+          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">📱</div>
+            <h3 class="font-semibold">Responsive</h3>
+            <p class="mt-2 text-sm text-slate-600">Mobile-first breakpoints with collapsible sidebar and stacked grids.</p>
+          </article>
+          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">🌙</div>
+            <h3 class="font-semibold">Dark mode ready</h3>
+            <p class="mt-2 text-sm text-slate-600">Use <code class="rounded bg-slate-100 px-1">dark:</code> variants on key app screens.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="border-t border-slate-200 bg-slate-50 py-16">
+      <div class="mx-auto max-w-md px-6 text-center">
+        <h2 class="text-2xl font-bold">Simple pricing</h2>
+        <p class="mt-2 text-slate-600">One plan for growing teams.</p>
+        <div class="mt-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+          <p class="text-sm text-slate-500">Pro</p>
+          <p class="mt-1 text-4xl font-bold">€29<span class="text-base font-normal text-slate-500">/mo</span></p>
+          <ul class="mt-6 space-y-2 text-left text-sm text-slate-600">
+            <li>✓ Unlimited projects</li>
+            <li>✓ Team seats</li>
+            <li>✓ Email support</li>
+          </ul>
+          <a href="login.html" class="mt-6 block rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-500">Get started</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-200 bg-slate-100 py-10">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 text-sm text-slate-500">
+      <span>© 2026 Nordic Flow</span>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-slate-700">Privacy</a>
+        <a href="#" class="hover:text-slate-700">Terms</a>
+        <a href="index.html" class="hover:text-slate-700">Design catalog</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

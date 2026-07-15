@@ -27,9 +27,9 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **In
 | 🔄 **Sabrine** | Legacy Porting Specialist — when the feature maps to legacy parity rows or needs scraped/porting work |
 | ✍️ **Marika** | Copywriter — when the feature adds or changes user-facing copy |
 | 🎨 **Elise** | UX Designer — when UI/flows need mockups before implementation |
-| ✨ **Joe** | Frontend Expert — rich UI, animations, client-side behavior |
+| ✨ **Joe** | Frontend Expert — **design system**, rich UI, animations, client-side behavior |
 | 📱 **Ricky** | App Developer — mobile features, device APIs |
-| 📝 **Albert** | Tech Writer — doc updates when the feature changes APIs or user workflows |
+| 📝 **Albert** | Tech Writer — **baseline doc updates always**; proposes extended docs (PDF tutorial, diagrams) via AskQuestion |
 
 ## Config & CLI
 

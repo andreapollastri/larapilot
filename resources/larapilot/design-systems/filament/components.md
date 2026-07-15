@@ -17,9 +17,9 @@ Reference for Elise when building admin mockups. Match the merged Figma kits ([D
 └─────────────┴──────────────────────────────────────┘
 ```
 
-- **Sidebar:** dark zinc background; brand at top; nav groups with icons + labels; active item uses primary background.
-- **Topbar:** white (light) / gray-900 (dark); global search optional; user avatar dropdown on the right.
-- **Content area:** gray-100 (light) / gray-900 (dark) canvas; white cards for sections.
+- **Sidebar:** light white/gray-50 background (Filament v3 default — **not** a dark shell); brand in a header strip; nav groups with icons + labels; active item uses subtle primary-50 fill + primary-600 text (dark mode: gray-800 fill + primary-400 text).
+- **Topbar:** white (light) / gray-900 (dark); sticky with subtle shadow; global search optional; user avatar dropdown on the right.
+- **Content area:** gray-50 canvas; white cards for sections.
 
 HTML skeleton:
 

@@ -276,6 +276,12 @@ body.sk-mockup {
   border: 1px solid var(--border); background: var(--secondary); color: var(--secondary-foreground);
 }
 
+.sk-badge--destructive {
+  border-color: transparent;
+  background: color-mix(in oklch, var(--destructive) 15%, transparent);
+  color: var(--destructive);
+}
+
 .sk-gallery { max-width: 64rem; margin: 0 auto; padding: 2rem 1.5rem; }
 .sk-gallery h1 { margin: 0 0 0.5rem; }
 .sk-gallery__intro { color: var(--muted-foreground); margin: 0 0 2rem; }

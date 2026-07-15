@@ -39,14 +39,18 @@
   --color-danger-600: 220 38 38;
   --color-info-600: 37 99 235;
 
-  /* Surfaces — light */
+  /* Surfaces — light (matches Filament v3 demo: light sidebar, gray canvas) */
   --fi-body-bg: rgb(var(--color-gray-50));
-  --fi-panel-bg: rgb(var(--color-gray-100));
-  --fi-sidebar-bg: rgb(var(--color-gray-900));
-  --fi-sidebar-text: rgb(var(--color-gray-300));
-  --fi-sidebar-text-active: rgb(255 255 255);
-  --fi-sidebar-active-bg: rgb(var(--color-primary-600));
+  --fi-panel-bg: rgb(var(--color-gray-50));
+  --fi-sidebar-bg: rgb(255 255 255);
+  --fi-sidebar-border: rgb(var(--color-gray-200));
+  --fi-sidebar-text: rgb(var(--color-gray-600));
+  --fi-sidebar-text-hover: rgb(var(--color-gray-950));
+  --fi-sidebar-text-active: rgb(var(--color-primary-600));
+  --fi-sidebar-hover-bg: rgb(var(--color-gray-100));
+  --fi-sidebar-active-bg: rgb(var(--color-primary-50));
   --fi-topbar-bg: rgb(255 255 255);
+  --fi-topbar-ring: rgb(var(--color-gray-950) / 0.05);
   --fi-card-bg: rgb(255 255 255);
   --fi-border: rgb(var(--color-gray-200));
   --fi-text: rgb(var(--color-gray-950));
@@ -62,10 +66,16 @@
 
 .dark {
   --fi-body-bg: rgb(var(--color-gray-950));
-  --fi-panel-bg: rgb(var(--color-gray-900));
-  --fi-sidebar-bg: rgb(var(--color-gray-950));
+  --fi-panel-bg: rgb(var(--color-gray-950));
+  --fi-sidebar-bg: rgb(var(--color-gray-900));
+  --fi-sidebar-border: rgb(var(--color-gray-800));
   --fi-sidebar-text: rgb(var(--color-gray-400));
+  --fi-sidebar-text-hover: rgb(var(--color-gray-50));
+  --fi-sidebar-text-active: rgb(var(--color-primary-400));
+  --fi-sidebar-hover-bg: rgb(var(--color-gray-800));
+  --fi-sidebar-active-bg: rgb(var(--color-gray-800));
   --fi-topbar-bg: rgb(var(--color-gray-900));
+  --fi-topbar-ring: rgb(255 255 255 / 0.1);
   --fi-card-bg: rgb(var(--color-gray-900));
   --fi-border: rgb(var(--color-gray-800));
   --fi-text: rgb(var(--color-gray-50));
@@ -97,16 +107,32 @@ body.fi-mockup {
 .fi-sidebar {
   width: var(--fi-sidebar-width);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--fi-sidebar-bg);
   color: var(--fi-sidebar-text);
-  padding: 1rem 0.75rem;
+  border-right: 1px solid var(--fi-sidebar-border);
+  padding: 0;
+}
+
+.fi-sidebar__header {
+  display: flex;
+  align-items: center;
+  min-height: var(--fi-topbar-height);
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--fi-sidebar-border);
 }
 
 .fi-sidebar__brand {
   font-weight: 600;
   font-size: 1rem;
-  color: var(--fi-sidebar-text-active);
-  padding: 0.5rem 0.75rem 1.25rem;
+  color: var(--fi-sidebar-text-hover);
+  text-decoration: none;
+}
+
+.fi-sidebar__nav {
+  padding: 0.75rem;
+  flex: 1;
 }
 
 .fi-sidebar__nav a {
@@ -118,11 +144,12 @@ body.fi-mockup {
   color: inherit;
   text-decoration: none;
   margin-bottom: 0.125rem;
+  font-weight: 500;
 }
 
 .fi-sidebar__nav a:hover {
-  background: rgb(var(--color-gray-800));
-  color: var(--fi-sidebar-text-active);
+  background: var(--fi-sidebar-hover-bg);
+  color: var(--fi-sidebar-text-hover);
 }
 
 .fi-sidebar__nav a.is-active {
@@ -141,10 +168,14 @@ body.fi-mockup {
   height: var(--fi-topbar-height);
   background: var(--fi-topbar-bg);
   border-bottom: 1px solid var(--fi-border);
+  box-shadow: 0 1px 2px 0 var(--fi-topbar-ring);
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
   gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .fi-content {
@@ -462,7 +493,7 @@ body.fi-mockup {
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgb(var(--color-gray-500));
+  color: var(--fi-text-muted);
   padding: 1rem 0.75rem 0.375rem;
 }
 

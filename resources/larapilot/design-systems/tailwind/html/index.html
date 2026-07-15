@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tailwind CSS — Screens</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
+  </script>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-900">
+  <main class="tw-gallery">
+    <h1 class="text-2xl font-bold">Tailwind CSS</h1>
+    <p class="tw-gallery__intro">Pure utility-class mockups via Tailwind CDN — <a href="https://tailwindcss.com/docs" class="text-indigo-600 hover:underline">tailwindcss.com</a>. See <a href="../sources.md" class="text-indigo-600 hover:underline">sources.md</a>.</p>
+
+    <div class="tw-gallery__grid">
+      <a class="tw-gallery__card" href="landing.html"><h2>Landing</h2><p>Marketing hero, features, pricing</p></a>
+      <a class="tw-gallery__card" href="dashboard.html"><h2>Dashboard</h2><p>Sidebar app shell + stats + table</p></a>
+      <a class="tw-gallery__card" href="login.html"><h2>Login</h2><p>Centered auth card</p></a>
+      <a class="tw-gallery__card" href="settings.html"><h2>Settings</h2><p>Profile form in app shell</p></a>
+      <a class="tw-gallery__card" href="components.html"><h2>Components</h2><p>Buttons, inputs, alerts, modal</p></a>
+    </div>
+  </main>
+</body>
+</html>

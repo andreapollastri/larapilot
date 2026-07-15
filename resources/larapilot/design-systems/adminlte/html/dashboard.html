@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — AdminLTE</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/css/adminlte.min.css">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <div class="app-wrapper">
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button" aria-label="Toggle sidebar">
+              <i class="bi bi-list"></i>
+            </a>
+          </li>
+          <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" aria-label="Notifications"><i class="bi bi-bell"></i></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html"><i class="bi bi-person-circle"></i> Jane Doe</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+      <div class="sidebar-brand">
+        <a href="dashboard.html" class="brand-link">
+          <span class="brand-text fw-light">Admin<b>LTE</b></span>
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <nav class="mt-2" aria-label="Main navigation">
+          <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
+            <li class="nav-item">
+              <a href="dashboard.html" class="nav-link active" aria-current="page">
+                <i class="nav-icon bi bi-speedometer"></i>
+                <p>Dashboard</p>
+              </a>
+            </li>
+            <li class="nav-header">Catalog</li>
+            <li class="nav-item">
+              <a href="resource-list.html" class="nav-link">
+                <i class="nav-icon bi bi-people"></i>
+                <p>Customers</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="resource-list.html" class="nav-link">
+                <i class="nav-icon bi bi-cart"></i>
+                <p>Orders</p>
+              </a>
+            </li>
+            <li class="nav-header">Account</li>
+            <li class="nav-item">
+              <a href="settings.html" class="nav-link">
+                <i class="nav-icon bi bi-gear"></i>
+                <p>Settings</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="login.html" class="nav-link">
+                <i class="nav-icon bi bi-box-arrow-right"></i>
+                <p>Log out</p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <div class="app-content-header">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-end mb-0">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-3 col-6">
+              <div class="small-box text-bg-primary">
+                <div class="inner">
+                  <h3>150</h3>
+                  <p>New Orders</p>
+                </div>
+                <div class="small-box-icon"><i class="bi bi-cart-plus"></i></div>
+                <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                  More info <i class="bi bi-link-45deg"></i>
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-3 col-6">
+              <div class="small-box text-bg-success">
+                <div class="inner">
+                  <h3>53<sup style="font-size:20px">%</sup></h3>
+                  <p>Bounce Rate</p>
+                </div>
+                <div class="small-box-icon"><i class="bi bi-graph-up"></i></div>
+                <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                  More info <i class="bi bi-link-45deg"></i>
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-3 col-6">
+              <div class="small-box text-bg-warning">
+                <div class="inner">
+                  <h3>44</h3>
+                  <p>User Registrations</p>
+                </div>
+                <div class="small-box-icon"><i class="bi bi-person-plus"></i></div>
+                <a href="#" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                  More info <i class="bi bi-link-45deg"></i>
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-3 col-6">
+              <div class="small-box text-bg-danger">
+                <div class="inner">
+                  <h3>65</h3>
+                  <p>Unique Visitors</p>
+                </div>
+                <div class="small-box-icon"><i class="bi bi-pie-chart"></i></div>
+                <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                  More info <i class="bi bi-link-45deg"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recent orders</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-striped table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#1042</td>
+                    <td>Anna Rossi</td>
+                    <td><span class="badge text-bg-success">Paid</span></td>
+                    <td>€128.00</td>
+                  </tr>
+                  <tr>
+                    <td>#1041</td>
+                    <td>Marco Bianchi</td>
+                    <td><span class="badge text-bg-warning">Pending</span></td>
+                    <td>€64.50</td>
+                  </tr>
+                  <tr>
+                    <td>#1040</td>
+                    <td>Lucia Verdi</td>
+                    <td><span class="badge text-bg-danger">Failed</span></td>
+                    <td>€210.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/js/adminlte.min.js"></script>
+</body>
+</html>

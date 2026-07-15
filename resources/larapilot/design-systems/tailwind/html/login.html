@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login — Tailwind CSS</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
+  </script>
+</head>
+<body class="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans text-slate-900 antialiased">
+  <main class="w-full max-w-sm">
+    <div class="mb-6 text-center">
+      <a href="landing.html" class="text-lg font-bold text-indigo-600">Nordic Flow</a>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h1 class="text-center text-xl font-semibold">Sign in</h1>
+      <p class="mt-1 text-center text-sm text-slate-600">Enter your credentials to continue.</p>
+      <form class="mt-6 space-y-4">
+        <div>
+          <label for="email" class="mb-1 block text-sm font-medium">Email</label>
+          <input id="email" type="email" required placeholder="you@example.com" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label for="password" class="mb-1 block text-sm font-medium">Password</label>
+          <input id="password" type="password" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <label class="flex items-center gap-2 text-sm text-slate-600">
+          <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+          Remember me
+        </label>
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Log in</button>
+      </form>
+      <p class="mt-4 text-center text-sm text-slate-500">
+        <a href="#" class="text-indigo-600 hover:underline">Forgot password?</a>
+        · <a href="landing.html" class="text-indigo-600 hover:underline">Back to site</a>
+      </p>
+    </div>
+  </main>
+</body>
+</html>

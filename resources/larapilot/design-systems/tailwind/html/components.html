@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components — Tailwind CSS</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
+  </script>
+</head>
+<body class="min-h-screen bg-slate-50 px-4 py-8 font-sans text-slate-900 antialiased">
+  <main class="mx-auto max-w-3xl space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold">Components</h1>
+      <p class="text-slate-600">Pure Tailwind utilities for static mockups. <a href="index.html" class="text-indigo-600 hover:underline">← Back to catalog</a></p>
+    </div>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 font-semibold">Buttons</h2>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">Primary</button>
+        <button type="button" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Secondary</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Ghost</button>
+        <button type="button" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500">Danger</button>
+        <button type="button" class="text-sm font-medium text-indigo-600 underline-offset-4 hover:underline">Link</button>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 font-semibold">Alerts & badges</h2>
+      <div class="space-y-3">
+        <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800" role="alert">Changes saved successfully.</div>
+        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="alert">Your trial ends in 3 days.</div>
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Primary</span>
+          <span class="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Success</span>
+          <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">Warning</span>
+          <span class="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Danger</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 font-semibold">Form controls</h2>
+      <div class="space-y-4">
+        <div>
+          <label for="demo-email" class="mb-1 block text-sm font-medium">Email</label>
+          <input id="demo-email" type="email" placeholder="you@example.com" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600">
+          Accept terms
+        </label>
+      </div>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 font-semibold">Modal (static preview)</h2>
+      <div class="relative rounded-lg border border-slate-200 bg-slate-900/40 p-8">
+        <div class="mx-auto max-w-md rounded-xl bg-white p-6 shadow-xl" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+          <h2 id="modal-title" class="text-lg font-semibold">Confirm deletion</h2>
+          <p class="mt-2 text-sm text-slate-600">This action cannot be undone. All project data will be permanently removed.</p>
+          <div class="mt-6 flex justify-end gap-2">
+            <button type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
+            <button type="button" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500">Delete</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

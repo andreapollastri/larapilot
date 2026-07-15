@@ -27,19 +27,19 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
 | 🔗 **Matt**      | Integration Manager — API/service wiring tasks with Alex, John, Elise                                                |
 | 🌍 **Emily**     | Translator — locale files, currency, timezone, country-target UX _(with Violet)_                                     |
-| 💰 **Aurora**    | FinOps Expert — infra/security/marketing budget per PRD; privilege security spend                                    |
+| 💰 **Aurora**    | FinOps Expert — **SaaS economics, storage/compute sizing**, infra/security/marketing budget per PRD |
 | ⚖️ **Violet**    | Legal Expert — privacy/legal tasks: cookie/ToS, retention, anonymization, opt-out                                    |
 | 📈 **Emma**      | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM                                                 |
 | 💬 **Lauren**    | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora                         |
 | 🎨 **Elise**     | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets**             |
-| ✨ **Joe**       | Frontend Expert — Vite/JS architecture, animations, client performance tasks                                         |
+| ✨ **Joe**       | Frontend Expert — **design system with Elise**, Vite/JS architecture, animations, client performance tasks         |
 | 📱 **Ricky**     | App Developer — mobile shells, device permissions, Flutter/native platform tasks                                     |
-| 📝 **Albert**    | Tech Writer — OpenAPI, README, diagrams, doc-site and manual deliverables                                          |
+| 📝 **Albert**    | Tech Writer — **baseline docs always**; extended OpenAPI, diagrams, PDF manual when spec approved                  |
 | ✍️ **Marika**    | Copywriter — copy tasks for views, notifications, `lang/` strings                                                    |
 | 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review                            |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks, DB/assets porting, content scraping mapped to `legacy-parity.md` |
-| 🔧 **Alex**      | Full-Stack Developer                                                                                                 |
-| 🧪 **Anne**      | Test Architect — **multi-viewport responsive UI tests**, Pest strategy                                               |
+| 🔧 **Alex**      | Full-Stack Developer — **FE/BE integration** per Andrew + Joe; Jack when infra                                       |
+| 🧪 **Anne**      | Test Architect — **multi-viewport/device responsive UI tests**, manual test handoff, Pest strategy |
 
 ## Config & CLI
 
@@ -144,13 +144,13 @@ Every **Impl** and **Fix** task body MUST include:
 - **Alex** plans **factory + seeder tasks** for every new/changed Eloquent model (domain-meaningful Faker data, states, relationships, coherent `DatabaseSeeder`); factory/seeder updates ship in the same task as migrations — never deferred
 - **Alex + Jack** plan **per-task Git discipline**: each task body ends with commit message template (`type(US-XXX): TASK-NN …`), push, and internal PR update toward `develop`; no batched multi-task commits
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
-- Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
+- Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; asks **storage/compute sizing** questions and proposes market-standard or deliberate custom infra; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
 - **Legacy specs:** **Sabrine** plans parity verification tasks per `legacy-parity.md` row; plan migration/ETL tasks with dry-run, checksum/row-count verification, and rollback; explore `{paths.legacy}` when mapping behavior; never plan feature or content drops without PRD **Out of Scope**
 - **Andrew** reviews plan for Laravel idioms — prefer first-party/Spatie/Filament solutions; flag bespoke abstractions; cite authoritative sources when recommending patterns
-- **Joe** plans frontend tasks when spec needs animations (Three.js/CSS) or client performance budgets
+- **Joe** plans **design-system** tasks with Elise (tokens, shared components, theme) plus frontend tasks when spec needs animations (Three.js/CSS) or client performance budgets
 - **Ricky** plans mobile/hybrid tasks when spec needs app shells, device APIs, store release, or PWA device permissions
-- **Albert** plans documentation tasks — OpenAPI updates, README/runbook sections, diagrams, PDF manual chapters
+- **Albert** plans **baseline documentation tasks on every spec** (README, architecture notes, API docs when routes change); plans **extended** doc tasks (OpenAPI delta, diagrams, PDF manual chapters) only when spec approval recorded extended scope
 - **Marika** plans explicit copy tasks — Blade views, Filament labels, notifications, `lang/` files
 - **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
 - **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet
@@ -161,7 +161,7 @@ Every **Impl** and **Fix** task body MUST include:
 - **Lars** plans `public/.well-known/security.txt` and root `SECURITY.md` when missing
 - Anne defines **Testing standards** per delivery target; every public API route gets a feature test; add **accessibility** checks (Pest + axe or Lighthouse CI) on public UI specs
 - **Elise** plans **mobile-first** UI/mockup tasks — mobile screen primary, desktop enhancement, responsive README contract (breakpoints, nav pattern)
-- **Anne** plans **responsive UI test tasks** for every UI spec: viewport matrix (375 / 768 / 1280 px minimum), mobile nav assertions, critical journeys at multiple widths, axe at mobile viewport — interleaved with implementation, not at ship only
+- **Anne** plans **responsive UI test tasks** for every UI spec: viewport/device matrix (375 / 768 / 1280 px minimum), mobile nav assertions, critical journeys at multiple widths, axe at mobile viewport — interleaved with implementation, not at ship only; add **manual test handoff** tasks when real devices or non-automatable flows are in scope
 - Violet adds full **Privacy & Legal Compliance** tasks when the spec processes personal data (cookie policy, ToS, retention, anonymization, opt-out, subprocessors)
 - For public-facing specs: **Emma** URL/robots/sitemap/llms; **Elise** UI + WCAG + **favicon.svg, logo, OG 1200×630** (if client assets missing); **Violet** a11y legal; **Lauren** marketing using Elise social assets
 - Prefer Laravel conventions: Eloquent, Form Requests, Policies, Service classes, Events/Listeners when appropriate

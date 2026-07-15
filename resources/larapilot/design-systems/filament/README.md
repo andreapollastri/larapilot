@@ -40,7 +40,7 @@ Do **not** use this for public marketing pages, storefronts, or custom panels �
    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
    ```
 
-3. **Layout** — follow `components.md` for shell (sidebar + topbar), page header, sections, tables, forms, actions, and empty states. **Starting points:** copy or adapt screens from `{paths.design_systems}/filament/html/` (catalog at `index.html`).
+3. **Layout** — follow `components.md` for shell (light sidebar + topbar), page header, sections, tables, forms, actions, and empty states. **Starting points:** copy or adapt screens from `{paths.design_systems}/filament/html/` (catalog at `index.html`).
 
 4. **Colors** — use CSS variables from `tokens.css`. Default semantic palette matches Filament out of the box:
 

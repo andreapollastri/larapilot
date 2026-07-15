@@ -21,14 +21,14 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 | 🏢 **Benjamin**  | Business Consultant — market research, enterprise know-how, business lens on technical choices                                                                                      |
 | 💡 **Sebastian** | Innovator — competitive challenger; **reference-product deepsearch**; proposes integrations and **competitor data porting** (import paths from rival products, lock-in-free export) |
 | 📐 **John**      | Architect — scalable products, **multi-tenancy** trade-offs (distributed monolith, row-level, DB/schema-per-tenant, packages), APIs, queues, DTOs, OpenAPI/docs                     |
-| 💰 **Aurora**    | FinOps Expert — budget-aligned infra/security/SaaS; security spend never first cut; asks Budget Sensitivity                                                                         |
+| 💰 **Aurora**    | FinOps Expert — **SaaS economics, storage/compute sizing**, budget-aligned infra/security; asks Budget Sensitivity |
 | ⚖️ **Violet**    | Legal Expert — GDPR, cookie/ToS, **EAA/accessibility regulations**, retention, opt-out                                                                                              |
 | 📈 **Emma**      | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, semantic HTML, Lighthouse a11y _(public websites)_                                                                                |
 | 💬 **Lauren**    | Social Media Manager — marketing (newsletter, campaigns, SEM), OG/share — with Emma, Elise, Aurora                                                                                  |
 | 🎨 **Elise**     | UX Designer — Nordic UI, WCAG 2.2 AA, **mobile-first responsive**, **logo/favicon.svg/social assets** when client has none                                                          |
-| ✨ **Joe**       | Frontend Expert — visual impact, JS frontend, animations, client performance                                                                                                         |
-| 📱 **Ricky**     | App Developer — native/hybrid mobile, Flutter, device APIs (camera, mic, sensors, Bluetooth, NFC/RFID), store constraints                                                         |
-| 📝 **Albert**    | Tech Writer — documentation scope, OpenAPI, diagrams, PDF client manuals                                                                                                            |
+| ✨ **Joe**       | Frontend Expert — **design system with Elise**, visual impact, JS frontend, animations, client performance |
+| 📱 **Ricky**     | App Developer — native/hybrid mobile, Flutter, device APIs (camera, mic, sensors, Bluetooth, NFC/RFID), store constraints |
+| 📝 **Albert**    | Tech Writer — **baseline technical docs always**; optional extended docs (OpenAPI, diagrams, PDF client tutorials) |
 | ✍️ **Marika**    | Copywriter — website & app copy, review & tone _(Website, Application)_                                                                                                             |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — legacy analysis, **content scraping**, **DB & assets porting**, parity matrix, porting proposals _(legacy rewrite/port)_                               |
 | 👾 **Andrew**    | Laravel Expert — ecosystem best practices, community standards                                                                                                                      |

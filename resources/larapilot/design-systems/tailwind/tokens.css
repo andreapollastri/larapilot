@@ -1,0 +1,28 @@
+/**
+ * Tailwind mockup helpers — minimal gallery/catalog styles only.
+ * Screens use Tailwind utility classes via CDN; this file is optional for catalog pages.
+ */
+
+.tw-gallery { max-width: 64rem; margin: 0 auto; padding: 2rem 1.5rem; }
+.tw-gallery__intro { color: rgb(71 85 105); margin-bottom: 2rem; }
+.tw-gallery__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+.tw-gallery__card {
+  display: block;
+  padding: 1.25rem;
+  background: white;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tw-gallery__card:hover {
+  border-color: rgb(129 140 248);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.06);
+}
+.tw-gallery__card h2 { margin: 0 0 0.375rem; font-size: 1rem; font-weight: 600; }
+.tw-gallery__card p { margin: 0; font-size: 0.8125rem; color: rgb(100 116 139); }

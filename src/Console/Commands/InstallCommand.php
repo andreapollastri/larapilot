@@ -40,7 +40,7 @@ class InstallCommand extends LarapilotCommand
         $this->line('  - .larapilot/client-materials/');
         $this->line('  - .larapilot/legacy/');
         $this->line('  - .larapilot/research/');
-        $this->line('  - .larapilot/design-systems/ (Filament + Starter Kit references for mockups)');
+        $this->line('  - .larapilot/design-systems/ (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE references for mockups)');
         $this->newLine();
         $this->line('Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.');
 

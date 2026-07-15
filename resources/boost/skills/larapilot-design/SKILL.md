@@ -21,14 +21,14 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
 | 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, **mobile-first responsive**, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
-| ✨ **Joe** | Frontend Expert — visual polish, animation scope, client performance notes |
+| ✨ **Joe** | Frontend Expert — **design system with Elise**, visual polish, animation scope, client performance notes |
 | 📱 **Ricky** | App Developer — mobile app UI patterns, device-feature mockups, platform conventions |
 | ✍️ **Marika** | Copywriter — realistic mockup copy, headlines, CTAs, microcopy in any requested tone |
 | 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, OG meta targets |
 | 🌍 **Emily** | Translator — localized mockup variants, RTL notes, currency/timezone placeholders |
 | 💬 **Lauren** | Social Media Manager — share copy, channels; **uses Elise assets** when client provides none |
 | ⚖️ **Violet** | Legal — accessibility regulations, accessibility statement |
-| 💰 **Aurora** | FinOps Expert — SEM budget advisory |
+| 💰 **Aurora** | FinOps Expert — SEM budget advisory, SaaS/pricing ideas when relevant |
 | 💎 **Mark** | Product Manager — PRD alignment |
 
 ## Config & CLI
@@ -72,7 +72,7 @@ When the PRD `## Technical Architecture` records **Filament** as the panel choic
 4. `{paths.design_systems}/filament/components.md` — shell, tables, forms, actions
 5. `{paths.design_systems}/filament/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
 
-Use Filament's visual language (sidebar, topbar, sections, amber primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
+Use Filament's visual language (light sidebar, topbar, sections, amber primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
 
 When Filament is **not** chosen, design admin/dashboard screens in the project's visual language; mockups inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
 
@@ -89,6 +89,42 @@ When the PRD `## Technical Architecture` records a **[Laravel Starter Kit](https
 Use the kit's visual language (light sidebar, Instrument Sans, neutral primary, shadcn/Flux patterns) — **not** the Filament design system and not Nordic minimal on authenticated screens. Public-facing pages in the same spec keep Nordic minimal unless scoped as part of the authenticated shell.
 
 When a Starter Kit is **not** chosen, do not impose Flux/shadcn starter-kit patterns from this section.
+
+### Elise — Bootstrap 5 mockups
+
+When the PRD `## Technical Architecture` records **Bootstrap 5** for marketing or app UI, mockups **must** follow the packaged design system — read shared-runtime **Bootstrap 5 UI** and:
+
+1. `{paths.design_systems}/bootstrap-5/README.md` — rules and [Bootstrap 5.3 docs](https://getbootstrap.com/docs/5.3/)
+2. `{paths.design_systems}/bootstrap-5/sources.md` — component index
+3. `{paths.design_systems}/bootstrap-5/tokens.css` — copy into mockup folder as `bootstrap-tokens.css`
+4. `{paths.design_systems}/bootstrap-5/components.md` — app shell, marketing sections, forms
+5. `{paths.design_systems}/bootstrap-5/html/` — packaged static screens (start from `index.html` catalog)
+
+Use native Bootstrap components — **not** Filament, Starter Kit, or Nordic Tailwind-only patterns on Bootstrap-scoped screens.
+
+### Elise — Tailwind CSS mockups
+
+When the PRD records **Tailwind CSS** (without Filament, Starter Kit, or Bootstrap) for marketing or custom app UI, mockups **must** follow the packaged design system — read shared-runtime **Tailwind CSS UI** and:
+
+1. `{paths.design_systems}/tailwind/README.md` — rules and [Tailwind docs](https://tailwindcss.com/docs)
+2. `{paths.design_systems}/tailwind/sources.md` — pattern index
+3. `{paths.design_systems}/tailwind/components.md` — utility-class layouts for site + app
+4. `{paths.design_systems}/tailwind/html/` — packaged static screens (start from `index.html` catalog)
+
+Use **pure Tailwind utility classes** in HTML (CDN for mockups). Do not mix Filament or Starter Kit shells on Tailwind-scoped screens.
+
+### Elise — AdminLTE mockups
+
+When the PRD `## Technical Architecture` records **[AdminLTE](https://adminlte.io/)** for admin/control panel UI, mockups **must** follow the packaged design system — read shared-runtime **AdminLTE admin UI** and:
+
+1. `{paths.design_systems}/adminlte/README.md` — rules and [adminlte.io](https://adminlte.io/) links
+2. `{paths.design_systems}/adminlte/sources.md` — v4 docs, npm/Packagist, demo URLs
+3. `{paths.design_systems}/adminlte/components.md` — `app-wrapper`, sidebar, widgets, tables
+4. `{paths.design_systems}/adminlte/html/` — packaged static screens (start from `index.html` catalog)
+
+Use AdminLTE v4 visual language (dark sidebar, `small-box`, Bootstrap Icons, `data-lte-toggle` plugins) — **not** Filament, Starter Kit, or Nordic minimal on admin screens.
+
+When AdminLTE is **not** chosen, do not impose AdminLTE patterns from this section.
 
 Default aesthetic for public UI: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
 

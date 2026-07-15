@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Landing — Bootstrap 5</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bs-mockup">
+  <header class="bs-site-header">
+    <nav class="navbar navbar-expand-lg container py-3" aria-label="Main">
+      <a class="navbar-brand fw-semibold" href="landing.html">Acme SaaS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Log in</a></li>
+          <li class="nav-item"><a class="btn btn-primary ms-lg-2" href="login.html">Start free trial</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="bs-hero">
+      <div class="container text-center">
+        <span class="badge text-bg-primary-subtle text-primary mb-3">New · Analytics dashboard</span>
+        <h1 class="bs-hero__title mb-3">Ship faster with a Bootstrap-native workspace</h1>
+        <p class="lead text-secondary mx-auto mb-4" style="max-width: 36rem">Plan, build, and launch Laravel products with familiar Bootstrap components — no custom CSS framework lock-in.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <a class="btn btn-primary btn-lg" href="dashboard.html">View app demo</a>
+          <a class="btn btn-outline-secondary btn-lg" href="#features">Explore features</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="py-5">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="h3 fw-bold">Everything you need to go live</h2>
+          <p class="text-secondary">Marketing site and authenticated app patterns in one design system.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <div class="bs-feature-icon mb-3" aria-hidden="true">⚡</div>
+                <h3 class="h5">Fast setup</h3>
+                <p class="text-secondary mb-0">Drop-in layouts for landing pages, dashboards, and auth flows.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <div class="bs-feature-icon mb-3" aria-hidden="true">📊</div>
+                <h3 class="h5">App-ready</h3>
+                <p class="text-secondary mb-0">Sidebar shell, tables, forms, and settings screens out of the box.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <div class="bs-feature-icon mb-3" aria-hidden="true">♿</div>
+                <h3 class="h5">Accessible</h3>
+                <p class="text-secondary mb-0">Bootstrap 5.3 components with labels, focus states, and semantic HTML.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="py-5 bg-body-tertiary">
+      <div class="container text-center">
+        <h2 class="h3 fw-bold mb-3">Simple pricing</h2>
+        <p class="text-secondary mb-4">Start free, upgrade when your team grows.</p>
+        <div class="card shadow-sm mx-auto" style="max-width: 22rem">
+          <div class="card-body p-4">
+            <p class="text-secondary mb-1">Pro</p>
+            <p class="display-6 fw-bold mb-3">€29<span class="fs-6 fw-normal text-secondary">/mo</span></p>
+            <ul class="list-unstyled text-start text-secondary mb-4">
+              <li class="mb-2">✓ Unlimited projects</li>
+              <li class="mb-2">✓ Team collaboration</li>
+              <li>✓ Priority support</li>
+            </ul>
+            <a class="btn btn-primary w-100" href="login.html">Get started</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bs-site-footer">
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+      <span>© 2026 Acme SaaS</span>
+      <div class="d-flex gap-3">
+        <a href="#" class="link-secondary">Privacy</a>
+        <a href="#" class="link-secondary">Terms</a>
+        <a href="index.html" class="link-secondary">Design catalog</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

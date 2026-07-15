@@ -6,12 +6,25 @@ All notable changes to `larapilot` will be documented in this file.
 
 ### Added
 
+- **Bootstrap 5 design reference** — packaged reference at `resources/larapilot/design-systems/bootstrap-5/` with `tokens.css`, `components.md`, `sources.md`, and **6 static HTML screens** (landing, dashboard, login, settings, components). Copied to `.larapilot/design-systems/` on install/update.
+- **AdminLTE design reference** — packaged reference at `resources/larapilot/design-systems/adminlte/` derived from [AdminLTE 4](https://adminlte.io/) (Bootstrap 5.3 admin template). Includes `tokens.css`, `components.md`, `sources.md`, and **6 static HTML screens** (dashboard, resource list, login, settings, components). Copied on install/update.
+
 - **New personas — Albert, Ricky, Zoey; Joe scope narrowed to web frontend**
     - **📝 Albert** (Tech Writer) — technical docs, OpenAPI/Swagger, draw.io/Mermaid diagrams, runbooks, PDF client manuals (EN default; localized with Emily).
     - **📱 Ricky** (App Developer) — inherits mobile/native/hybrid scope from Joe: Flutter, React Native, Capacitor, device APIs (camera, mic, sensors, GPS, Bluetooth, NFC/RFID), store release.
     - **🤖 Zoey** (AI Guru) — cross-cutting prompt economy, sub-agent orchestration, session/credit risk; active in every skill.
     - **✨ Joe** (Frontend Expert) — web frontend only: visual impact, JS, Three.js animations, client performance (mobile scope → Ricky).
     - Updated `shared-runtime.md`, all affected skills, `core.blade.php`, `config/larapilot.php`, and docs (`team-grid` 3 columns for 27 personas).
+
+### Changed
+
+- **Filament design system accuracy** — sidebar now matches Filament v3 default (light background, subtle primary active state, header strip) instead of the incorrect dark sidebar; updated `tokens.css`, `components.md`, and all packaged HTML shells.
+- **Starter Kit tokens** — added missing `.sk-badge--destructive` variant.
+- **`shared-runtime.md`**, **`larapilot-design`**, **`core.blade.php`**, **`InstallCommand`**, **`ConfigService`** — document Bootstrap 5 and Tailwind design systems.
+
+### Changed
+
+- **Persona profile refinements** — Joe (design system with Elise, design → implement → review), Albert (baseline technical docs always + extended scope per spec approval), Alex (FE/BE integration per Andrew/Joe, Jack when infra), Aurora (SaaS economics, storage/compute sizing, proactive cost optimization), Robert + Sabrine (refactoring/porting review gate), Emily + Marika (typo/translation consistency in review), Anne (device coverage + manual test handoff to humans).
 
 ## [1.7.0] - 2026-07-15
 

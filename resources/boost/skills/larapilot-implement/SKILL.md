@@ -22,17 +22,17 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 | Agent          | Role                                                                             |
 | -------------- | -------------------------------------------------------------------------------- |
 | 🤖 **Zoey**    | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
-| 🔧 **Alex**    | Full-Stack Developer                                                             |
+| 🔧 **Alex**    | Full-Stack Developer — **FE/BE integration** per Andrew + Joe; involves Jack when infra |
 | 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence     |
-| ✨ **Joe**     | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
+| ✨ **Joe**     | Frontend Expert — **design system** compliance, JS/CSS polish, animations, client performance, visual fidelity |
 | 📱 **Ricky**   | App Developer — mobile/hybrid code, device permissions, Flutter/native features  |
-| 📝 **Albert**  | Tech Writer — OpenAPI, README, diagrams, technical doc updates                   |
+| 📝 **Albert**  | Tech Writer — baseline + scoped docs: OpenAPI, README, diagrams, PDF manual chapters |
 | ✍️ **Marika**  | Copywriter — user-facing strings, tone consistency                               |
 | 🔄 **Sabrine** | Legacy Porting Specialist — parity verification, DB/assets migration checks against `legacy-parity.md` |
 | 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
 | 🌍 **Emily**   | Translator — locales, currency, timezones when in scope                          |
-| 🧪 **Anne**    | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit            |
-| 🛡️ **Robert**  | Code Reviewer — plan adherence, Laravel conventions, **Gitflow** branch hygiene  |
+| 🧪 **Anne**    | Test Architect — multi-viewport/device tests, Pest/PHPUnit; **manual test handoff** when automation is insufficient |
+| 🛡️ **Robert**  | Code Reviewer — plan adherence, Laravel conventions, **Gitflow**; involves **Sabrine** on refactoring/porting |
 | 🔐 **Lars**    | Security Expert — OWASP-aligned security assessment                              |
 
 ## Config & CLI
@@ -82,9 +82,10 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Git discipline (strict):** after **each** completed task — one atomic [Conventional Commit](https://www.conventionalcommits.org/) (`feat(US-XXX): TASK-NN summary`), push, and open/update the internal PR toward `develop` (title/body reference spec + task id). Same rule for evolutive fixes. See **Git discipline** in shared-runtime — Robert blocks handoff if violated.
 - **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
 - **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
-- **Frontend (Elise + Joe):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — animations, client bundle/performance, visual fidelity to mockups
+- **Alex:** optimizes **FE/BE integration** following **Andrew** (Laravel seams) and **Joe** (design system/UI); involves **Jack** when choices touch deploy, CDN, queues, storage, or CI runners
+- **Frontend (Elise + Joe):** Blade/Livewire/Tailwind; **design system aligned with Elise** from mockups through code; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — design-system tokens/components, animations, client bundle/performance, visual fidelity to mockups
 - **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, platform store constraints
-- **Docs (Albert):** OpenAPI/Swagger, README, diagrams, PDF manual chapters when in plan scope
+- **Docs (Albert):** maintain **baseline** README/architecture/API docs on every spec; extended OpenAPI, diagrams, PDF manual chapters only when scoped in plan
 - **Laravel (Andrew):** idiomatic Eloquent, Form Requests, policies, queues, service classes; Spatie/first-party packages per Vendor & Package Policy; cite Laravel docs when introducing non-obvious patterns
 - **Copy (Marika):** no placeholder lorem on shipped surfaces; wire realistic copy in views, notifications, and `lang/` files
 - **Legacy parity (Sabrine):** when Project Origin is legacy, verify each in-scope parity row before `task-done` on migration/feature tasks; flag gaps in handoff

@@ -30,6 +30,7 @@ Read the PRD — **do not write** to it. For scoped product additions with inter
 | ✍️ **Marika** | Copywriter — content/copy user stories when PRD defines copy scope |
 | 🎧 **Sophia** | Support Manager — triages post-launch bugs into backlog specs *(maintenance mode)* |
 | 🌍 **Emily** | Translator — i18n user stories when PRD defines multi-market scope |
+| 📝 **Albert** | Tech Writer — **baseline technical docs always**; proposes extended documentation scope per spec via AskQuestion |
 
 ## Config & CLI
 
@@ -136,3 +137,4 @@ Validate first, then `spec-add`. Delete temp file after CLI exits.
 - **Reference products:** when `{paths.research}/reference-products/` exists, create specs for adopted features traced to deepsearch reports
 - **Sophia (maintenance mode):** when routing bugs from `{paths.support}/intake.md`, prefer `/larapilot-bug` for interactive triage; otherwise create focused fix specs with reproduce steps, severity, and affected release; security bugs tag Lars/Oliver in spec body
 - **Emily:** split i18n specs per locale/market when PRD defines multi-country scope (translations, currency, timezone, localized legal pages)
+- **Albert:** every project assumes **baseline technical documentation** (README, architecture notes, API docs when routes exist). When adding specs for human approval, **Albert proposes via AskQuestion** whether the spec needs **extended documentation** (OpenAPI delta, diagrams, runbook section, **PDF client tutorial chapter**) beyond the baseline — record the choice in the spec body or PRD

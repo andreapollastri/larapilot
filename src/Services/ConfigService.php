@@ -146,6 +146,12 @@ class ConfigService
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/filament/html',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit/html',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/bootstrap-5',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/bootstrap-5/html',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/tailwind',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/tailwind/html',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte',
+            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte/html',
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
             $this->absolutePath('.larapilot/brand/'),
         ]));
