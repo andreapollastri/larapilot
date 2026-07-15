@@ -22,8 +22,6 @@ All notable changes to `larapilot` will be documented in this file.
 - **Starter Kit tokens** — added missing `.sk-badge--destructive` variant.
 - **`shared-runtime.md`**, **`larapilot-design`**, **`core.blade.php`**, **`InstallCommand`**, **`ConfigService`** — document Bootstrap 5 and Tailwind design systems.
 
-### Changed
-
 - **Persona profile refinements** — Joe (design system with Elise, design → implement → review), Albert (baseline technical docs always + extended scope per spec approval), Alex (FE/BE integration per Andrew/Joe, Jack when infra), Aurora (SaaS economics, storage/compute sizing, proactive cost optimization), Robert + Sabrine (refactoring/porting review gate), Emily + Marika (typo/translation consistency in review), Anne (device coverage + manual test handoff to humans).
 
 ## [1.7.0] - 2026-07-15
