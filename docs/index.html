@@ -52,7 +52,7 @@
       --shadow-lg: 0 20px 50px rgba(0, 0, 0, .08);
       --font: "Plus Jakarta Sans", system-ui, sans-serif;
       --mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
-      --nav-w: 260px;
+      --nav-w: 248px;
       --header-h: 64px;
       --max: 1120px;
       --ease: cubic-bezier(.4, 0, .2, 1);
@@ -921,15 +921,114 @@
     .doc-nav {
       position: sticky;
       top: calc(var(--header-h) + 1.5rem);
-      padding: 1.25rem;
-      background: var(--surface);
+      max-height: calc(100vh - var(--header-h) - 3rem);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      background: rgba(255, 255, 255, .88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .doc-nav-head {
+      padding: 1rem 1.1rem .85rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .doc-nav-title {
+      display: block;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-tertiary);
+      margin-bottom: .65rem;
+    }
+
+    .doc-nav-progress {
+      height: 3px;
+      background: var(--bg-alt);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .doc-nav-progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff7a6e);
+      border-radius: 99px;
+      transition: width .12s linear;
+    }
+
+    .doc-nav-scroll {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: .85rem .75rem 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+
+    .doc-nav-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .doc-nav-scroll::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 99px;
+    }
+
+    .doc-nav-track {
+      position: relative;
+      display: flex;
+      gap: 0;
+    }
+
+    .doc-nav-rail {
+      position: relative;
+      width: 14px;
+      flex-shrink: 0;
+      margin-right: .15rem;
+    }
+
+    .doc-nav-rail::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: .45rem;
+      bottom: .45rem;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--border) 8%, var(--border) 92%, transparent);
+    }
+
+    .doc-nav-indicator {
+      position: absolute;
+      left: 2px;
+      top: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px var(--accent-glow);
+      transform: translateY(0);
+      opacity: 0;
+      transition: transform .22s var(--ease), opacity .18s var(--ease);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .doc-nav-groups {
+      flex: 1;
+      min-width: 0;
     }
 
     .doc-nav-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.1rem;
     }
 
     .doc-nav-group:last-child {
@@ -937,24 +1036,24 @@
     }
 
     .doc-nav-label {
-      font-size: .68rem;
+      font-size: .65rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .08em;
+      letter-spacing: .09em;
       color: var(--text-tertiary);
-      padding: 0 .5rem;
-      margin-bottom: .4rem;
+      padding: 0 .45rem;
+      margin-bottom: .35rem;
     }
 
     .doc-nav a {
       display: block;
-      font-size: .84rem;
+      font-size: .82rem;
       font-weight: 500;
       color: var(--text-secondary);
-      padding: .4rem .65rem;
+      padding: .38rem .5rem;
       border-radius: var(--radius-xs);
-      transition: all .15s var(--ease);
-      border-left: 2px solid transparent;
+      transition: color .15s var(--ease), background .15s var(--ease);
+      line-height: 1.35;
     }
 
     .doc-nav a:hover {
@@ -964,8 +1063,24 @@
 
     .doc-nav a.active {
       color: var(--accent-dark);
+      font-weight: 700;
       background: var(--accent-soft);
-      border-left-color: var(--accent);
+    }
+
+    .doc-nav a.doc-nav-sub {
+      padding-left: .85rem;
+      font-size: .76rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+    }
+
+    .doc-nav a.doc-nav-sub.active {
+      color: var(--accent-dark);
+      font-weight: 600;
+    }
+
+    .doc-nav a.doc-nav-sub:hover {
+      color: var(--text-secondary);
     }
 
     .doc-main {
@@ -1636,16 +1751,6 @@
       margin-top: 1.75rem;
     }
 
-    .doc-nav a.doc-nav-sub {
-      padding-left: 1.35rem;
-      font-size: .78rem;
-      color: var(--text-tertiary);
-    }
-
-    .doc-nav a.doc-nav-sub:hover {
-      color: var(--text-secondary);
-    }
-
     .walkthrough-head strong {
       font-size: .92rem;
       font-weight: 700;
@@ -2125,6 +2230,11 @@
         border-radius: 0;
         transform: translateX(-100%);
         transition: transform .3s var(--ease);
+        border-right: 1px solid var(--border);
+      }
+
+      .doc-nav-scroll {
+        flex: 1;
       }
 
       .doc-nav.open {
@@ -2464,7 +2574,6 @@
       <div class="doc-nav-group">
         <div class="doc-nav-label">Reference</div>
         <a href="#cli">Artisan CLI</a>
-        <a href="#artifacts">Artifacts</a>
         <a href="#design-systems">Design systems</a>
         <a href="#mockups">Mockups</a>
         <a href="#dashboard">Dashboard</a>
@@ -2592,10 +2701,6 @@
               <tr>
                 <td><strong>CLI</strong> — <code>php artisan larapilot:*</code></td>
                 <td>Validate, persist, enforce transitions</td>
-              </tr>
-              <tr>
-                <td><strong>Artifacts</strong> — <code>.larapilot/</code></td>
-                <td>PRD, backlog, specs, plans — version-controlled</td>
               </tr>
               <tr>
                 <td><strong>Dashboard / API</strong> — <code>/larapilot</code> <em>(local)</em></td>
@@ -3731,74 +3836,6 @@ body: |
         </div>
       </section>
 
-      <!-- Artifacts -->
-      <section class="doc-section" id="artifacts">
-        <div class="section-header">
-          <span class="section-label">Structure</span>
-          <h2>Project Artifacts</h2>
-          <p>All artifacts stored under <code>.larapilot/</code> in your repository.</p>
-        </div>
-        <pre class="file-tree">.larapilot/
-├── config.yaml
-├── shared-runtime.md
-├── backlog.yaml
-├── client-materials/     # client docs & analysis (always honored)
-├── legacy/               # legacy codebase to rewrite/port
-├── research/
-│   ├── reference-products/   # Sebastian deepsearch reports
-│   └── legacy-parity.md      # optional parity matrix
-├── design-systems/
-│   ├── filament/             # admin panel reference (17 HTML screens)
-│   └── starter-kit/          # authenticated app UI (7 HTML screens)
-├── docs/
-│   ├── PRD.md              # product contract + optional PRD Revision History
-│   ├── support/
-│   │   └── intake.md       # bug triage log (larapilot-bug)
-│   ├── test-results/
-│   ├── security/
-│   └── launch/
-├── specs/
-│   ├── US-001.yaml
-│   └── US-002.yaml
-├── plans/
-│   ├── US-001-plan.yaml
-│   └── US-002-plan.yaml
-└── mockups/
-    └── US-001/
-        └── index.html</pre>
-
-        <h3>PRD &amp; spec format</h3>
-        <p>Each <code>FR-XXX</code> gets <strong>MoSCoW</strong>. Scope changes → <code>## PRD Revision History</code> (<a href="#examples-prd-living">details</a>).</p>
-        <div class="code-block">
-          <div class="code-block-header">PRD.md (excerpt)</div>
-          <pre><code>## Functional Requirements
-
-### FR-001: User registration with email and password
-**MoSCoW:** Must
-
-### FR-002: SSO via Google Workspace
-**MoSCoW:** Won't</code></pre>
-        </div>
-        <h3>Spec format</h3>
-        <div class="code-block">
-          <div class="code-block-header">US-001.yaml body</div>
-          <pre><code>#### US-001: User Registration
-
-**Epic:** EP-001 | **Priority:** HIGH | **Points:** 5 | **Status:** TODO
-
-**User Story**
-As a new visitor,
-I want to create an account,
-So that I can access protected features.
-
-**Acceptance Criteria**
-- [ ] AC-001: Email validation enforced
-- [ ] AC-002: Password minimum 8 characters</code></pre>
-        </div>
-        <h3>Language</h3>
-        <p>Content in any language; structure fixed. Validator accepts translated section headings when enough marked headings exist.</p>
-      </section>
-
       <!-- Design systems -->
       <section class="doc-section" id="design-systems">
         <div class="section-header">
@@ -4030,7 +4067,10 @@ curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></p
     const docNav = document.getElementById('docNav');
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
-    const navLinks = docNav.querySelectorAll('a[href^="#"]');
+    const navLinks = docNav.querySelectorAll('a[data-nav]');
+    const navIndicator = document.getElementById('navIndicator');
+    const navProgressBar = document.getElementById('navProgressBar');
+    const navTrack = document.getElementById('docNavTrack');
 
     window.addEventListener('scroll', () => {
       header.classList.toggle('scrolled', window.scrollY > 20);
@@ -4054,49 +4094,79 @@ curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></p
       });
     });
 
-    /* Sidebar highlight — scroll position, single active link */
+    /* Sidebar — scroll spy + sliding rail indicator */
     (function initNavSpy() {
-      const offset = () => {
+      const readOffset = () => {
         const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
-        return headerH + 28;
+        return headerH + 32;
       };
 
-      const sectionIds = [...new Set(
-        [...navLinks].map(link => link.getAttribute('href').slice(1)).filter(Boolean)
-      )];
+      const navItems = [...navLinks].map(link => {
+        const id = link.getAttribute('href').slice(1);
+        return { id, link, el: document.getElementById(id) };
+      }).filter(item => item.el);
 
-      let navSections = sectionIds
-        .map(id => ({ id, el: document.getElementById(id) }))
-        .filter(s => s.el)
-        .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
+      function sectionTop(el) {
+        return el.getBoundingClientRect().top + window.scrollY;
+      }
+
+      function sectionDocs(navList) {
+        return navList
+          .map(item => ({ ...item, top: sectionTop(item.el) }))
+          .sort((a, b) => a.top - b.top);
+      }
+
+      let sections = sectionDocs(navItems);
 
       function rebuildSections() {
-        navSections = sectionIds
-          .map(id => ({ id, el: document.getElementById(id) }))
-          .filter(s => s.el)
-          .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
+        sections = sectionDocs(navItems);
+      }
+
+      function positionIndicator(activeLink) {
+        if (!navIndicator || !navTrack || !activeLink) {
+          if (navIndicator) navIndicator.style.opacity = '0';
+          return;
+        }
+        const trackRect = navTrack.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        const y = linkRect.top - trackRect.top + linkRect.height / 2 - 3.5;
+        navIndicator.style.transform = `translateY(${y}px)`;
+        navIndicator.style.opacity = '1';
+      }
+
+      function updateProgress() {
+        if (!navProgressBar) return;
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0;
+        navProgressBar.style.width = `${pct}%`;
       }
 
       function updateActiveNav() {
-        if (!navSections.length) return;
+        if (!sections.length) return;
 
-        const line = offset();
-        let activeId = null;
+        const line = window.scrollY + readOffset();
+        let activeItem = null;
 
-        for (const section of navSections) {
-          if (section.el.getBoundingClientRect().top <= line) {
-            activeId = section.id;
+        for (const section of sections) {
+          if (section.top <= line + 1) {
+            activeItem = section;
           }
         }
 
-        const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+        const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
         if (nearBottom) {
-          activeId = navSections[navSections.length - 1].id;
+          activeItem = sections[sections.length - 1];
         }
 
+        let activeLink = null;
         navLinks.forEach(link => {
-          link.classList.toggle('active', activeId !== null && link.getAttribute('href') === '#' + activeId);
+          const on = activeItem !== null && link.getAttribute('href') === '#' + activeItem.id;
+          link.classList.toggle('active', on);
+          if (on) activeLink = link;
         });
+
+        positionIndicator(activeLink);
+        updateProgress();
       }
 
       let ticking = false;
@@ -4114,7 +4184,10 @@ curl -s http://127.0.0.1:8000/larapilot/api/specs/US-001 | jq '.tasks'</code></p
         rebuildSections();
         updateActiveNav();
       }, { passive: true });
-      window.addEventListener('load', updateActiveNav);
+      window.addEventListener('load', () => {
+        rebuildSections();
+        updateActiveNav();
+      });
       updateActiveNav();
     })();
 
