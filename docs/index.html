@@ -2882,6 +2882,8 @@
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan · <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> · <code>/larapilot-autopilot</code> to batch plan+implement.</p>
         </div>
 
+        <p>Git: Larapilot follows <strong>Gitflow</strong> — one <code>feature/US-XXX-*</code> branch per story, atomic commits per plan task, and internal PRs toward <code>develop</code>. <a href="#deep-dive-gitflow">Branch conventions</a>.</p>
+
         <div class="table-card">
           <table>
             <thead>
@@ -3841,7 +3843,7 @@ body: |
         <!-- Workflow -->
         <article class="deep-dive-sub" id="deep-dive-workflow">
           <h3>Workflow</h3>
-          <p class="lead">Every user story moves through a strict state machine. Skills drive transitions; invalid jumps are blocked automatically. After inception and backlog creation, you repeat the per-story loop until the MVP is shipped.</p>
+          <p class="lead">Every user story moves through a strict state machine on a <strong>Gitflow</strong> branch model. Skills drive transitions; invalid jumps are blocked automatically. After inception and backlog creation, you repeat the per-story loop until the MVP is shipped.</p>
 
           <div class="command-flow">
             <div class="command-flow-label">Greenfield — repeat per story</div>
@@ -3858,6 +3860,44 @@ body: |
             </div>
             <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan · <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> · <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.</p>
           </div>
+
+          <h4 id="deep-dive-gitflow">Git workflow — Gitflow</h4>
+          <p>Larapilot is built around <strong>Gitflow</strong>. Branch names, per-task commits, and internal PRs are part of the implement/review contract — <strong>Jack</strong> proposes the workflow at inception; <strong>Robert</strong> blocks review when Git discipline is violated.</p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Branch</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>main</code></td>
+                  <td>Production-ready; tagged releases only</td>
+                </tr>
+                <tr>
+                  <td><code>develop</code></td>
+                  <td>Integration branch for the next release</td>
+                </tr>
+                <tr>
+                  <td><code>feature/US-XXX-short-desc</code></td>
+                  <td>One user story or cohesive feature; branch from <code>develop</code></td>
+                </tr>
+                <tr>
+                  <td><code>release/x.y.z</code></td>
+                  <td>Release prep — version bump, changelog, final QA; merge → <code>main</code> + back-merge → <code>develop</code></td>
+                </tr>
+                <tr>
+                  <td><code>hotfix/x.y.z</code></td>
+                  <td>Urgent production fix; branch from <code>main</code>; merge → <code>main</code> + <code>develop</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>No direct commits to <code>main</code> or <code>develop</code>. Each plan task gets one atomic Conventional Commit, a push, and an open or updated internal PR toward <code>develop</code>. Critical production defects route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Solo MVP teams may use GitHub Flow with the same per-task commit rules — full details in <code>.larapilot/shared-runtime.md</code>.</p>
 
           <h4>Status machine</h4>
           <div class="table-card">
