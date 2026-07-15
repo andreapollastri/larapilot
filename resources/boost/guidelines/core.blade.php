@@ -4,7 +4,9 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Three layers:** Boost skills orchestrate the conversation; `php artisan larapilot:*` persists artifacts and enforces workflow via JSON envelopes; `.larapilot/` in the repo is the source of truth between sessions.
 
-**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Before the interview, drop client docs in **`.larapilot/client-materials/`** and legacy snapshots in **`.larapilot/legacy/`** — skills always read them. Mark opens with **Project Kind** (`Personal`, `Website`, `Application`) — the first layer that switches persona depth and follow-up questions. **Personal** → lean path (MVP/V1, budget defaults `Relaxed`, business personas silent). **Website** → type next (showcase, portal, blog, e-commerce, landing, docs) then delivery target; Emma/Lauren/Elise/Marika lead; Joe when rich frontend matters. **Application** → full discovery: delivery target (`MVP` … `Enterprise`), Budget Sensitivity (`Tracked` or `Relaxed`), multi-tenancy, admin panel or authenticated dashboard route (Filament vs Laravel Starter Kit vs custom), integrations, compliance. **Sabrine** leads legacy rewrite/port analysis when `.larapilot/legacy/` has content. **Andrew** advises Laravel ecosystem best practices; **Marika** owns copy; **Joe** owns frontend engineering and visual impact. Jennifer explores market and positioning when relevant; Benjamin brings enterprise research on Application; Sebastian proposes integrations, **competitor data porting**, and runs **deepsearch** on reference product URLs (reports in `.larapilot/research/reference-products/`); John and Aurora co-own scalable, budget-aligned architecture; legacy rewrite/port preserves **all features and data** unless explicitly scoped out. **Jack asks local dev environment** (Sail, Herd, not defined yet, or other) via AskQuestion — never assumes Docker/Sail; **Jack asks deploy platform, edge/CDN/WAF, and cloud** — never assumes Cipi, Cloudflare, or AWS; recommends Cloudflare and AWS when feasible. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Each functional requirement in the PRD carries a **MoSCoW** tag (`Must` / `Should` / `Could` / `Won't`); `larapilot-spec` uses it to bootstrap or defer backlog specs. Write and validate the PRD before creating any backlog.
+**Discovery interview (`larapilot-inception`):** a guided conversation (not a one-shot form). Before the interview, drop client docs in **`.larapilot/client-materials/`** and legacy snapshots in **`.larapilot/legacy/`** — skills always read them. When **`.larapilot/legacy/`** has content, Mark (with **Sabrine**) proactively asks via **AskQuestion** whether to pursue a **legacy rewrite/port** before deep discovery. Mark opens with **Project Kind** (`Personal`, `Website`, `Application`) — the first layer that switches persona depth and follow-up questions. **Personal** → lean path (MVP/V1, budget defaults `Relaxed`, business personas silent). **Website** → type next (showcase, portal, blog, e-commerce, landing, docs) then delivery target; Emma/Lauren/Elise/Marika lead; Joe when rich frontend matters. **Application** → full discovery: delivery target (`MVP` … `Enterprise`), Budget Sensitivity (`Tracked` or `Relaxed`), multi-tenancy, admin panel or authenticated dashboard route (Filament vs Laravel Starter Kit vs custom), integrations, compliance. **Sabrine** leads legacy rewrite/port analysis, **content scraping**, and **DB/assets porting** when `.larapilot/legacy/` has content. **Andrew** advises Laravel ecosystem best practices; **Marika** owns copy; **Joe** owns frontend engineering and visual impact. Jennifer explores market and positioning when relevant; Benjamin brings enterprise research on Application; Sebastian proposes integrations, **competitor data porting**, and runs **deepsearch** on reference product URLs (reports in `.larapilot/research/reference-products/`); John and Aurora co-own scalable, budget-aligned architecture; legacy rewrite/port preserves **all features and data** unless explicitly scoped out. **Jack asks local dev environment** (Sail, Herd, not defined yet, or other) via AskQuestion — never assumes Docker/Sail; **Jack asks deploy platform, edge/CDN/WAF, and cloud** — never assumes Cipi, Cloudflare, or AWS; recommends Cloudflare and AWS when feasible. Ask at most 3 critical questions per round (skippable); present fixed options via **AskQuestion**, not plain-text A/B/C lists. Each functional requirement in the PRD carries a **MoSCoW** tag (`Must` / `Should` / `Could` / `Won't`); `larapilot-spec` uses it to bootstrap or defer backlog specs. Write and validate the PRD before creating any backlog.
+
+**Post-inception shortcuts:** **`larapilot-feature`** — mini-inception for one new evolutiva → spec; **`larapilot-bug`** — Sophia-led bug triage → fix spec or rework. The PRD is a **living product contract** — updated selectively on scope changes (features, requirement gaps), not on every bug or rework; see **PRD Living Document** in `.larapilot/shared-runtime.md`.
 
 **Vendor & package policy:** prefer Laravel built-ins/first-party (including **[Laravel Starter Kits](https://laravel.com/starter-kits)** when they fit), then **Spatie** packages (spatie.be/open-source/packages) for third-party functionality; for admin/control panels and authenticated dashboards never assume **Filament** (filamentphp.com) — explicitly ask the user **Filament vs Starter Kit (Livewire/React/Vue/Svelte) vs custom**, recommending the best fit for the specific case and the option closest to the project mockups. Always verify a package is maintained, compatible, and secure (`composer audit`) before requiring it.
 
@@ -16,6 +18,8 @@ Use Larapilot skills when the user wants to:
 
 - Define a product vision or write a PRD
 - Create or extend a backlog of user stories / specs
+- Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
+- Report or triage a **bug** (`larapilot-bug`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -27,6 +31,8 @@ Use Larapilot skills when the user wants to:
 | Step | Skill | Output |
 | --- | --- | --- |
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
+| Feature / evolutiva | `larapilot-feature` | New `US-XXX` spec (+ optional PRD `FR-XXX`) |
+| Bug report | `larapilot-bug` | Fix spec or rework + `{paths.support}/intake.md` |
 | Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`); Filament admin mockups use `.larapilot/design-systems/filament/` when PRD chose Filament; Starter Kit mockups use `.larapilot/design-systems/starter-kit/` when PRD chose a kit variant |
 | Backlog | `larapilot-spec` | `.larapilot/backlog.yaml`, `.larapilot/specs/` |
 | Planning | `larapilot-plan` | `.larapilot/plans/US-XXX-plan.yaml` |
@@ -104,7 +110,7 @@ When planning or implementing Laravel features:
 
 ### Artifacts live in the repo
 
-- PRD: `.larapilot/docs/PRD.md`
+- PRD: `.larapilot/docs/PRD.md` (living product contract — selective updates per **PRD Living Document**; revision history tracks scope changes)
 - Backlog: `.larapilot/backlog.yaml`
 - Specs: `.larapilot/specs/US-XXX.yaml`
 - Plans: `.larapilot/plans/US-XXX-plan.yaml`
@@ -143,7 +149,7 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 🎨 Elise | UX Designer |
 | ✨ Joe | Frontend Expert |
 | ✍️ Marika | Copywriter |
-| 🔄 Sabrine | Legacy Porting Specialist |
+| 🔄 Sabrine | Legacy Porting Specialist — content scraping, DB & assets porting |
 | 👾 Andrew | Laravel Expert |
 | 🔗 Matt | Integration Manager |
 | 🎯 Oliver | Ethical Hacker |

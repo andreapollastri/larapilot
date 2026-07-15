@@ -80,5 +80,6 @@ Delete temp file after CLI exits.
 - Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
 - Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP. Read `paths.prd` (from `config-show`) when the delivered increment looks narrower than the spec and you need to confirm that's actually the chosen target
+- **`spec-request-changes` never updates the PRD** — rework is spec/plan level per **PRD Living Document** in shared-runtime; suggest `/larapilot-feature` if the gap is new product scope
 - This is a gate, not a re-implementation — follow Output Economy (checklist format, no diff narration)
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)

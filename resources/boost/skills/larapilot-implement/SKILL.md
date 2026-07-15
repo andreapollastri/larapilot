@@ -25,7 +25,7 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 | 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence     |
 | ✨ **Joe**     | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
 | ✍️ **Marika**  | Copywriter — user-facing strings, tone consistency                               |
-| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification against `legacy-parity.md`       |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification, DB/assets migration checks against `legacy-parity.md` |
 | 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
 | 🌍 **Emily**   | Translator — locales, currency, timezones when in scope                          |
 | 🧪 **Anne**    | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit            |

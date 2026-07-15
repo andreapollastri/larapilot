@@ -1242,6 +1242,105 @@
       background: var(--green);
     }
 
+    .example-scenario {
+      margin: 2rem 0 2.5rem;
+      padding-top: .5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .example-scenario:first-of-type {
+      border-top: none;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .example-scenario h3 {
+      margin: 0 0 .35rem;
+      font-size: 1.15rem;
+    }
+
+    .example-scenario .example-context {
+      font-size: .875rem;
+      color: var(--text-secondary);
+      margin: 0 0 1rem;
+    }
+
+    .chat-example {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.15rem;
+      font-size: .875rem;
+      line-height: 1.7;
+      margin: 1rem 0;
+    }
+
+    .chat-example p {
+      margin: 0 0 .65rem;
+    }
+
+    .chat-example p:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-example .speaker {
+      font-weight: 600;
+    }
+
+    .chat-example .wizard {
+      margin: .75rem 0;
+      padding: .75rem .9rem;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      font-size: .8125rem;
+    }
+
+    .chat-example .wizard strong {
+      display: block;
+      margin-bottom: .35rem;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-tertiary);
+    }
+
+    .chat-example .wizard ol {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    .example-compare {
+      display: grid;
+      gap: .85rem;
+      margin: 1.25rem 0 1.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .example-compare {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .example-compare div {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .9rem 1rem;
+      font-size: .875rem;
+    }
+
+    .example-compare dt {
+      font-weight: 700;
+      margin-bottom: .35rem;
+    }
+
+    .example-compare dd {
+      margin: 0;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
     .walkthrough-head strong {
       font-size: .92rem;
       font-weight: 700;
@@ -1808,7 +1907,7 @@
           </a>
         </div>
         <div class="hero-stats">
-          <div class="hero-stat"><strong>8 skills</strong><span>Full workflow coverage</span></div>
+          <div class="hero-stat"><strong>10 skills</strong><span>Full workflow coverage</span></div>
           <div class="hero-stat"><strong>20+ commands</strong><span>Agent-friendly CLI</span></div>
           <div class="hero-stat"><strong>MCP native</strong><span>Cursor &amp; Boost ready</span></div>
         </div>
@@ -1867,7 +1966,7 @@
                   </div>
                   <pre class="terminal-output"
                     aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
-  <span class="punct">-</span> guidelines + <span class="num">8</span> <span class="str">/larapilot-*</span> skills
+  <span class="punct">-</span> guidelines + <span class="num">10</span> <span class="str">/larapilot-*</span> skills
   <span class="punct">(</span><span class="str">inception</span><span class="punct">,</span> <span class="str">design</span><span class="punct">,</span> <span class="str">spec</span><span class="punct">,</span> <span class="str">plan</span><span class="punct">,</span> <span class="str">implement</span><span class="punct">,</span> <span class="str">review</span><span class="punct">,</span> <span class="str">ship</span><span class="punct">,</span> <span class="str">autopilot</span><span class="punct">)</span></pre>
                   <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
                 </div>
@@ -2037,6 +2136,7 @@
         <a href="#why">Why Larapilot</a>
         <a href="#how-it-works">How it works</a>
         <a href="#walkthrough">Walkthrough</a>
+        <a href="#examples-incremental">Feature &amp; bug examples</a>
         <a href="#quickstart">Quickstart</a>
       </div>
       <div class="doc-nav-group">
@@ -2278,14 +2378,18 @@
             </tbody>
           </table>
         </div>
-        <p>Between plan and implement you can run <code>/larapilot-design</code> for UI mockups. When the backlog is
+        <p>Between plan and implement you can run <code>/larapilot-design</code> for UI mockups. After the backlog
+          exists, use <code>/larapilot-feature</code> for single evolutive and <code>/larapilot-bug</code> for defect
+          intake. When the backlog is
           stable, <code>/larapilot-autopilot</code> batch-plans and implements multiple specs. The CLI blocks invalid
           jumps — you cannot implement before planning or approve before review.</p>
 
         <h3>Discovery (inception)</h3>
         <p>Everything starts with <code>/larapilot-inception</code>. You bring a rough idea — one sentence is enough.
           Optionally place client documentation in <code>.larapilot/client-materials/</code> and legacy project
-          snapshots in <code>.larapilot/legacy/</code> before starting — the team reads them first. Mark (PM) asks for
+          snapshots in <code>.larapilot/legacy/</code> before starting — the team reads them first. When legacy content
+          is present, Mark (with Sabrine) proactively asks whether to pursue a <strong>legacy rewrite/port</strong>.
+          Mark (PM) asks for
           <strong>Project Kind</strong> (<code>Personal</code>, <code>Website</code>, <code>Application</code>), then
           the team runs a short guided interview — at most 3 questions per round, all skippable. Sebastian may ask for
           reference product URLs and run <strong>deepsearch</strong> (findings land in
@@ -2308,7 +2412,20 @@
           <li><code>/larapilot-review US-XXX</code> — you approve → <span class="status status-done">DONE</span>, or
             send back → <span class="status status-todo">TODO</span></li>
         </ol>
-        <p>See the <a href="#walkthrough">full walkthrough</a> for a concrete example from idea to shipped MVP.</p>
+        <p>See the <a href="#walkthrough">full walkthrough</a> for a concrete example from idea to shipped MVP. After
+          the MVP is live, use <a href="#examples-incremental">feature and bug examples</a> for day-to-day evolutive
+          work.</p>
+
+        <h3>Incremental work (post-MVP)</h3>
+        <p>When the PRD and backlog already exist, you do not need full inception again:</p>
+        <ul>
+          <li><code>/larapilot-feature "…"</code> — one new capability with a short guided interview → new
+            <code>US-XXX</code> spec</li>
+          <li><code>/larapilot-bug "…"</code> — Sophia triages a defect → fix spec or rework on an existing story</li>
+        </ul>
+        <p>Both commands reuse the normal spec loop (<code>plan</code> → <code>implement</code> →
+          <code>review</code>). See <a href="#examples-incremental">practical examples</a> with the exact prompts
+          above.</p>
       </section>
 
       <!-- Walkthrough -->
@@ -2378,6 +2495,16 @@
                 <td>Matt, Jack, Lars, Oliver, Emily, Emma, Lauren, Elise, Marika, Joe, Andrew, Sabrine, Sophia</td>
               </tr>
               <tr>
+                <td><code>/larapilot-feature</code></td>
+                <td>Mark, Tom</td>
+                <td>John, Andrew, Sabrine, Marika, Elise, Joe</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot-bug</code></td>
+                <td>Sophia, Tom</td>
+                <td>Anne, Lars, Oliver, Jack, Sabrine</td>
+              </tr>
+              <tr>
                 <td><code>/larapilot-spec</code></td>
                 <td>Tom, Mark</td>
                 <td>Sabrine, Marika, Emily, Sophia</td>
@@ -2434,7 +2561,7 @@
                 until inception and spec create the first artifacts.</p>
               <div class="walkthrough-personas">
                 <p style="font-size:.8rem;color:var(--text-tertiary);margin:0;">No personas yet — install publishes
-                  <strong>guidelines</strong> (coding rules) and the eight <code>/larapilot-*</code> skill playbooks.
+                  <strong>guidelines</strong> (coding rules) and the ten <code>/larapilot-*</code> skill playbooks.
                   Personas appear when you invoke a skill.
                 </p>
               </div>
@@ -3011,6 +3138,372 @@ tests/Feature/</pre>
         </div>
       </section>
 
+      <!-- Incremental examples -->
+      <section class="doc-section" id="examples-incremental">
+        <div class="section-header">
+          <span class="section-label">Examples</span>
+          <h2>Feature &amp; bug — practical walkthroughs</h2>
+          <p>After inception and the first backlog, most day-to-day work is <strong>one evolutiva</strong> or
+            <strong>one bug</strong> at a time. These skills run a short interactive interview (AskQuestion wizard, max
+            3 questions per round), then persist artifacts — same spec loop as greenfield work.</p>
+        </div>
+
+        <h3>Which command when?</h3>
+        <dl class="example-compare">
+          <div>
+            <dt><code>/larapilot-feature</code></dt>
+            <dd>New capability the product should gain — export, integration, UI improvement, admin screen. Requires
+              <code>.larapilot/docs/PRD.md</code>. Mini-inception: MoSCoW, FR traceability, optional mockup-first.</dd>
+          </div>
+          <div>
+            <dt><code>/larapilot-bug</code></dt>
+            <dd>Something broken vs expected behaviour — regression, browser quirk, SSO failure. Sophia triages severity
+              and environment, logs <code>support/intake.md</code>, routes to fix spec or rework.</dd>
+          </div>
+          <div>
+            <dt><code>/larapilot-spec</code> (bulk)</dt>
+            <dd>Bootstrap the whole backlog from the PRD, or append several stories at once without the guided
+              interview.</dd>
+          </div>
+          <div>
+            <dt><code>/larapilot-inception</code></dt>
+            <dd>Greenfield product or a vision pivot — full PRD discovery. Not for single evolutive or bug fixes.</dd>
+          </div>
+        </dl>
+
+        <!-- Example 1: Feature -->
+        <div class="example-scenario">
+          <h3>Example 1 — Export PDF invoices</h3>
+          <p class="example-context">Context: invoicing SaaS already shipped. PRD exists; stories
+            <code>US-001</code>–<code>US-010</code> are <span class="status status-done">DONE</span>. A stakeholder
+            asks for PDF export on the invoice detail page.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-feature "Aggiungere export PDF fatture"</code></pre>
+          </div>
+
+          <p>Mark and Tom read the PRD and backlog first (<code>larapilot:config-show</code>,
+            <code>larapilot:spec-list</code>), confirm there is no duplicate spec, then run three AskQuestion rounds.
+          </p>
+
+          <div class="chat-example">
+            <p><span class="speaker">💎 Mark:</span> Capito — export PDF delle fatture dalla schermata di dettaglio.
+              Allineiamo scope e priorità.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (scope &amp; priority)</strong>
+              <ol>
+                <li><strong>MoSCoW:</strong> Should · Must · Could</li>
+                <li><strong>Traces to:</strong> New FR-011 · Extends FR-004 (Invoicing) · Standalone enhancement</li>
+                <li><strong>Persona:</strong> Freelancer · Accountant · Admin</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Should</strong>, <strong>Extends FR-004</strong>, <strong>Freelancer</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 2 (delivery shape)</strong>
+              <ol>
+                <li><strong>Complexity:</strong> Small (1 spec) · Medium · Large (split epics)</li>
+                <li><strong>Mockup first?</strong> Yes — /larapilot-design · No — plan directly · Already have mockups</li>
+                <li><strong>Legacy touch?</strong> No · Maps to legacy parity · Needs scraping/porting</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Small</strong>, <strong>No — plan directly</strong>, <strong>No</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 3 (backlog placement)</strong>
+              <ol>
+                <li><strong>Priority:</strong> HIGH · MEDIUM · LOW · CRITICAL</li>
+                <li><strong>Epic:</strong> EP-002 Invoicing · New epic · Other</li>
+                <li><strong>Blocked by:</strong> None · US-004 (Invoice detail UI)</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>MEDIUM</strong> (Should), <strong>EP-002 Invoicing</strong>,
+              <strong>US-004</strong>.</p>
+            <p><span class="speaker">🔎 Tom:</span> Acceptance criteria — confermi prima che scrivo la spec?</p>
+            <ul style="margin:.5rem 0 0 1.15rem;font-size:.875rem;">
+              <li>Download PDF from invoice detail (happy path)</li>
+              <li>403 when user lacks permission on that invoice</li>
+              <li>PDF includes line items, tax breakdown, company logo from tenant settings</li>
+            </ul>
+          </div>
+
+          <p>Because this extends invoicing scope, Mark appends <code>FR-011</code> to the PRD (MoSCoW:
+            <strong>Should</strong>), then the agent validates and adds one spec:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">specs/US-011.yaml (excerpt)</div>
+            <pre><code>code: US-011
+title: "Export invoice as PDF"
+priority: MEDIUM
+status: TODO
+body: |
+  #### US-011: Export invoice as PDF
+
+  **Epic:** EP-002 | **Priority:** MEDIUM | **Points:** 3 | **Status:** TODO
+  **Blocked by:** US-004
+  **Type:** Feature | Evolutiva
+  **Traces to:** FR-011 (MoSCoW: Should), extends FR-004
+
+  **User Story**
+  As a freelancer,
+  I want to download a PDF of an invoice from its detail page,
+  so that I can archive or send it to clients offline.
+
+  **Acceptance Criteria**
+  - [ ] PDF download from invoice detail for authorized users
+  - [ ] 403 when the user cannot view the invoice
+  - [ ] PDF contains line items, tax breakdown, and tenant logo</code></pre>
+          </div>
+
+          <div class="walkthrough-personas">
+            <h4>Active personas</h4>
+            <div class="persona-chips">
+              <span class="persona-chip">💎 <strong>Mark</strong> — MoSCoW, FR-011, epic placement</span>
+              <span class="persona-chip">🔎 <strong>Tom</strong> — acceptance criteria, edge cases</span>
+            </div>
+            <div class="persona-group">
+              <h4>May join when relevant</h4>
+              <div class="persona-chips">
+                <span class="persona-chip optional">👾 <strong>Andrew</strong> — e.g. Spatie Laravel PDF vs DomPDF</span>
+                <span class="persona-chip optional">📐 <strong>John</strong> — queue vs sync generation</span>
+              </div>
+            </div>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Invoke with a one-line description; answer 3 wizard rounds; confirm AC</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd><code>validate-spec</code> → <code>spec-add</code>; optional <code>prd-write</code> for FR-011</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-plan US-011</code></dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Example 2: Bug -->
+        <div class="example-scenario">
+          <h3>Example 2 — SSO login fails on Safari</h3>
+          <p class="example-context">Context: B2B app in production. Auth shipped in <code>US-003</code>
+            (<span class="status status-done">DONE</span>). Users report Socialite/OAuth login works in Chrome but
+            fails in Safari — likely cookie or redirect handling.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-bug "Il login SSO fallisce su Safari"</code></pre>
+          </div>
+
+          <p>Sophia loads backlog and support history, restates the issue, then triages with AskQuestion.</p>
+
+          <div class="chat-example">
+            <p><span class="speaker">🎧 Sophia:</span> Segnalazione ricevuta — SSO ok su Chrome, fallisce su Safari.
+              Classifichiamo e instradiamo.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (severity &amp; environment)</strong>
+              <ol>
+                <li><strong>Severity:</strong> Critical · High · Medium · Low</li>
+                <li><strong>Environment:</strong> Production · Staging · Local · Unknown</li>
+                <li><strong>Security-related?</strong> Yes · No · Unsure</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>High</strong>, <strong>Production</strong>, <strong>Unsure</strong>
+              (auth boundary — Lars will review).</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 2 (reproduction)</strong>
+              <ol>
+                <li><strong>Reproducible?</strong> Always · Sometimes · Once · Not yet tried</li>
+                <li><strong>Affected area:</strong> Auth / SSO · Billing · Other · Unknown</li>
+                <li><strong>Maps to existing spec?</strong> Yes — US-003 · No — new fix spec · Unsure</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Always</strong> (Safari 17+), <strong>Auth / SSO</strong>,
+              <strong>Yes — US-003</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 3 (routing)</strong>
+              <ol>
+                <li><strong>Preferred path:</strong> Rework existing spec · New fix spec · Log only</li>
+                <li><strong>Urgency:</strong> Hotfix now · Next sprint · Backlog</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Rework existing spec</strong>, <strong>Next sprint</strong> (High but not
+              Critical — no <code>hotfix/*</code> branch).</p>
+            <p><span class="speaker">🔎 Tom:</span> Steps to reproduce documented for the rework payload.</p>
+          </div>
+
+          <p>Sophia appends a normalized entry to the support log:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/docs/support/intake.md (excerpt)</div>
+            <pre><code>## BUG-20260715-sso-safari
+
+- **Reported:** 2026-07-15
+- **Severity:** High
+- **Environment:** Production
+- **Summary:** SSO login fails on Safari; works on Chrome
+- **Steps to reproduce:**
+  1. Open app in Safari 17+
+  2. Click "Sign in with Google"
+  3. Complete OAuth — redirect returns to /login with error
+- **Expected / Actual:** Expected dashboard · Actual login error
+- **Affected spec:** US-003
+- **Routed to:** spec-request-changes US-003
+- **Security:** unsure — Lars/Oliver tagged</code></pre>
+          </div>
+
+          <p>Because the bug maps to a <span class="status status-done">DONE</span> auth story, the agent calls
+            <code>spec-request-changes US-003</code> (status back to <span class="status status-todo">TODO</span>) with
+            added acceptance criteria — not a brand-new spec. <strong>PRD update is optional:</strong> if Safari support
+            was never explicit, Mark adds a bullet under <code>FR-003</code> and a row in
+            <code>## PRD Revision History</code> — never a <code>FR-012: Fix Safari</code>.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Rework feedback (passed to spec-request-changes)</div>
+            <pre><code>## Bug report — 2026-07-15
+**Severity:** High
+**Steps to reproduce:** Safari 17+ → Sign in with Google → redirect error
+**Expected / Actual:** Dashboard vs login error
+
+**Additional acceptance criteria:**
+- [ ] SSO login succeeds on Safari 17+ (macOS and iOS)
+- [ ] SameSite / session cookie behaviour verified for OAuth callback
+- [ ] Regression test covers Safari user-agent (Anne)
+- [ ] Lars/Oliver review if cookie or state token issue confirmed</code></pre>
+          </div>
+
+          <div class="walkthrough-personas">
+            <h4>Active personas</h4>
+            <div class="persona-chips">
+              <span class="persona-chip">🎧 <strong>Sophia</strong> — triage, intake log, routing</span>
+              <span class="persona-chip">🔎 <strong>Tom</strong> — reproduce steps, fix AC</span>
+            </div>
+            <div class="persona-group">
+              <h4>May join when relevant</h4>
+              <div class="persona-chips">
+                <span class="persona-chip optional">🔐 <strong>Lars</strong> · 🎯 <strong>Oliver</strong> — auth/cookie
+                  review</span>
+                <span class="persona-chip optional">🧪 <strong>Anne</strong> — Safari regression test</span>
+                <span class="persona-chip optional">🚀 <strong>Jack</strong> — <code>hotfix/*</code> if Critical +
+                  Production</span>
+              </div>
+            </div>
+          </div>
+
+          <h4>When the agent creates a new fix spec instead</h4>
+          <p>If the bug does <strong>not</strong> map to an existing story (e.g. a typo on a new page), Sophia creates
+            <code>US-012</code> with <strong>Type: Fix</strong>, priority from severity (Critical →
+            <code>CRITICAL</code>), then you run <code>/larapilot-plan US-012</code>. Critical production outages also
+            get Jack's <code>hotfix/US-012-short-desc</code> note from <code>main</code>.</p>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Describe the defect in one line; answer triage wizard; add reproduce steps if asked in chat</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Writes <code>support/intake.md</code>; <code>spec-request-changes</code> or <code>spec-add</code></dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-plan US-003</code> (rework) or <code>/larapilot-plan US-012</code> (new fix)</dd>
+            </div>
+          </dl>
+        </div>
+
+        <h3>PRD living document — what gets updated?</h3>
+        <p>The PRD stays the <strong>product contract</strong>. Not every change touches it — that would turn it into a
+          bug log. Larapilot uses <strong>selective updates</strong> with a revision history for traceability.</p>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Change type</th>
+                <th>Update PRD?</th>
+                <th>Where it lives</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>New feature (<code>/larapilot-feature</code>)</td>
+                <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
+                <td>PRD + spec + revision history</td>
+              </tr>
+              <tr>
+                <td>Routine bug</td>
+                <td><strong>No</strong></td>
+                <td><code>support/intake.md</code> + fix spec or rework</td>
+              </tr>
+              <tr>
+                <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
+                <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
+                <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
+              </tr>
+              <tr>
+                <td>Review rework</td>
+                <td><strong>No</strong></td>
+                <td><code>spec-request-changes</code> only</td>
+              </tr>
+              <tr>
+                <td>Hotfix production</td>
+                <td><strong>No</strong></td>
+                <td>Spec + app <code>CHANGELOG.md</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="code-block">
+          <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
+          <pre><code>## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| 2026-07-01 | larapilot-inception | Initial PRD |
+| 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
+| 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |</code></pre>
+        </div>
+        <p>When unsure, the agent asks: <em>product requirement gap or implementation fix?</em> Default if unclear:
+          <strong>spec only</strong> — safer than polluting the PRD.</p>
+
+        <h3>End-to-end flow (both commands)</h3>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th><code>/larapilot-feature</code></th>
+                <th><code>/larapilot-bug</code></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Invoke</td>
+                <td><code>/larapilot-feature "Aggiungere export PDF fatture"</code></td>
+                <td><code>/larapilot-bug "Il login SSO fallisce su Safari"</code></td>
+              </tr>
+              <tr>
+                <td>2. Interview</td>
+                <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
+                <td>Sophia + Tom — severity, env, security, routing (3 rounds)</td>
+              </tr>
+              <tr>
+                <td>3. Persist</td>
+                <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
+                <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
+              </tr>
+              <tr>
+                <td>4. Build</td>
+                <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
+                  <code>/larapilot-review</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- Quickstart -->
       <section class="doc-section" id="quickstart">
         <div class="section-header">
@@ -3057,7 +3550,7 @@ tests/Feature/</pre>
 Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.</code></pre>
         </div>
 
-        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the eight <code>/larapilot-*</code> skills
+        <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the ten <code>/larapilot-*</code> skills
           (<code>inception</code>, <code>design</code>, <code>spec</code>, <code>plan</code>, <code>implement</code>,
           <code>review</code>, <code>ship</code>, <code>autopilot</code>) and the coding <strong>guidelines</strong>
           (not a skill) available to your AI editor:
@@ -3135,6 +3628,14 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
                 <td>Product discovery → <code>.larapilot/docs/PRD.md</code></td>
               </tr>
               <tr>
+                <td><code>/larapilot-feature</code></td>
+                <td>One evolutiva → new <code>US-XXX</code> spec</td>
+              </tr>
+              <tr>
+                <td><code>/larapilot-bug</code></td>
+                <td>Bug triage → fix spec or rework</td>
+              </tr>
+              <tr>
                 <td><code>/larapilot-design</code></td>
                 <td>UI mockups → <code>.larapilot/mockups/{spec}/</code></td>
               </tr>
@@ -3172,7 +3673,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           and code.</p>
         <p>Short version: <code>/larapilot-inception</code> → <code>/larapilot-spec</code> → for each story
           <code>/larapilot-plan</code> → <code>/larapilot-implement</code> → <code>/larapilot-review</code> → optionally
-          <code>/larapilot-ship</code>.
+          <code>/larapilot-ship</code>. After MVP: <code>/larapilot-feature</code> or <code>/larapilot-bug</code> — see
+          <a href="#examples-incremental">examples</a>.
         </p>
 
         <h3>5. Verify installation</h3>
@@ -3237,7 +3739,8 @@ php artisan larapilot:update</code></pre>
           <span class="section-label">Workflow</span>
           <h2>Spec-driven loop</h2>
           <p>After inception and spec, each user story cycles through plan → implement → review. See the <a
-              href="#walkthrough">walkthrough</a> for a full example. Optional design adds mockups before planning;
+              href="#walkthrough">walkthrough</a> for a full example. For post-MVP evolutive and bug intake, see <a
+              href="#examples-incremental">feature &amp; bug examples</a>. Optional design adds mockups before planning;
             optional ship releases to production.</p>
         </div>
 
@@ -3318,8 +3821,8 @@ php artisan larapilot:update</code></pre>
           <span class="section-label">Skills</span>
           <h2>Eight skills, full coverage</h2>
           <p>Published via Laravel Boost and invoked in your AI agent. Boost also publishes <strong>guidelines</strong>
-            (coding rules — not a skill). These eight <code>/larapilot-*</code> skills cover the workflow: inception,
-            design, spec, plan, implement, review, ship, autopilot.</p>
+            (coding rules — not a skill). These ten <code>/larapilot-*</code> skills cover the workflow: inception,
+            feature, bug, design, spec, plan, implement, review, ship, autopilot.</p>
         </div>
 
         <div class="skills-grid">
@@ -3345,6 +3848,38 @@ php artisan larapilot:update</code></pre>
                 </li>
                 <li><strong>Output:</strong> <code>.larapilot/docs/PRD.md</code> with MoSCoW-tagged Functional
                   Requirements, Project Origin, Reference Products, and Legacy parity when relevant</li>
+              </ul>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-badge">/larapilot-feature</div>
+            <div class="skill-body">
+              <h3>Feature / Evolutiva</h3>
+              <p>Mini-inception for <strong>one new capability</strong> on an existing project — interactive
+                AskQuestion rounds, then a single backlog spec. Requires a PRD; does not replace full inception.</p>
+              <ul>
+                <li><strong>Example:</strong> <code>/larapilot-feature "Aggiungere export PDF fatture"</code></li>
+                <li><strong>Team:</strong> Mark, Tom; John/Andrew for architecture; Sabrine when legacy/scraping applies
+                </li>
+                <li><strong>Interview:</strong> MoSCoW, FR traceability, mockup-first, epic/priority placement</li>
+                <li><strong>Output:</strong> new <code>US-XXX</code> spec (+ optional PRD <code>FR-XXX</code>)</li>
+                <li><strong>Walkthrough:</strong> <a href="#examples-incremental">PDF export example</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-badge">/larapilot-bug</div>
+            <div class="skill-body">
+              <h3>Bug Report</h3>
+              <p>Sophia-led triage for defects and regressions — severity, reproduce steps, routing to fix spec or
+                rework on an existing story.</p>
+              <ul>
+                <li><strong>Example:</strong> <code>/larapilot-bug "Il login SSO fallisce su Safari"</code></li>
+                <li><strong>Team:</strong> Sophia, Tom, Anne; Lars/Oliver for security; Jack for Critical hotfix</li>
+                <li><strong>Log:</strong> <code>.larapilot/docs/support/intake.md</code></li>
+                <li><strong>Route:</strong> <code>spec-add</code> (new fix) or <code>spec-request-changes</code>
+                  (rework)</li>
+                <li><strong>Walkthrough:</strong> <a href="#examples-incremental">SSO Safari example</a></li>
               </ul>
             </div>
           </div>
@@ -3560,7 +4095,7 @@ php artisan larapilot:update</code></pre>
           <div class="team-card">
             <div class="team-avatar">🔄</div>
             <div class="team-name">Sabrine</div>
-            <div class="team-role">Legacy Porting Specialist</div>
+            <div class="team-role">Legacy Porting &amp; Migration — scraping, DB/assets porting</div>
           </div>
           <div class="team-card">
             <div class="team-avatar">👾</div>
@@ -3770,7 +4305,9 @@ php artisan larapilot:update</code></pre>
 │   ├── filament/             # admin panel reference (17 HTML screens)
 │   └── starter-kit/          # authenticated app UI (7 HTML screens)
 ├── docs/
-│   ├── PRD.md
+│   ├── PRD.md              # product contract + optional PRD Revision History
+│   ├── support/
+│   │   └── intake.md       # bug triage log (larapilot-bug)
 │   ├── test-results/
 │   ├── security/
 │   └── launch/
@@ -3787,7 +4324,8 @@ php artisan larapilot:update</code></pre>
         <h3>PRD functional requirements</h3>
         <p>Each requirement under <code>## Functional Requirements</code> uses a level-3 heading and a MoSCoW line.
           Labels stay in English (<code>Must</code>, <code>Should</code>, <code>Could</code>, <code>Won't</code>) even
-          when requirement text is localized.</p>
+          when requirement text is localized. After inception, scope changes append rows to
+          <code>## PRD Revision History</code> — see <a href="#examples-incremental">PRD living document</a>.</p>
         <div class="code-block">
           <div class="code-block-header">PRD.md (excerpt)</div>
           <pre><code>## Functional Requirements

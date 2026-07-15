@@ -2,13 +2,20 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [Unreleased]
+## [1.7.0] - 2026-07-15
 
 ### Added
 
+- **`/larapilot-feature`** — mini-inception for one new evolutiva on an existing project: interactive AskQuestion rounds (MoSCoW, FR traceability, mockup-first, legacy touch), optional PRD `FR-XXX` sync, spec via `spec-add`. Mark + Tom lead; Sabrine/John/Andrew join when relevant.
+- **`/larapilot-bug`** — Sophia-led bug triage with interactive intake: severity, environment, security, routing to `spec-add` (fix spec) or `spec-request-changes` (rework); logs to `{paths.support}/intake.md`; Critical production → `hotfix/*` note.
+- **Legacy folder — proactive refactor proposal in inception** — when `.larapilot/legacy/` has content, Mark (with Sabrine) asks via AskQuestion whether to pursue legacy rewrite/port before deep discovery.
+- **Sabrine — expanded expertise** — content scraping/extraction, DB migration, and assets porting (legacy → new); updated across `shared-runtime.md`, inception/spec/plan skills, `core.blade.php`, and `legacy/README.md`.
+- **Docs — feature & bug walkthroughs** — `docs/index.html#examples-incremental` with full interactive examples for `/larapilot-feature "Aggiungere export PDF fatture"` and `/larapilot-bug "Il login SSO fallisce su Safari"`.
+- **PRD Living Document** — selective PRD updates (features + requirement gaps only); `## PRD Revision History`; bugs/rework/hotfixes stay in specs + `support/intake.md`. Documented in `shared-runtime.md`, `larapilot-feature`, `larapilot-bug`, `larapilot-review`, `larapilot-spec`, inception template, `core.blade.php`, and docs.
+
 - **New personas — Marika, Sabrine, Andrew, Joe**
     - **✍️ Marika** (Copywriter) — creates and reviews website & application copy in any tone; maps legacy content during porting.
-    - **🔄 Sabrine** (Legacy Porting Specialist) — leads legacy analysis, content/feature inventory, parity matrix, porting proposals, and review parity checks.
+    - **🔄 Sabrine** (Legacy Porting Specialist) — leads legacy analysis, **content scraping**, **DB & assets porting**, content/feature inventory, parity matrix, porting proposals, and review parity checks.
     - **� Andrew** (Laravel Expert) — Laravel & ecosystem best practices from laravel.com, Laracasts, Filament, Spatie, Laravel Daily, Filament Examples, Laravel.io, Laravel News, and other authoritative sources.
     - **✨ Joe** (Frontend Expert) — visual impact, JS frontend, Three.js animations, hybrid/native mobile, API integration, client-side performance.
     - Updated `shared-runtime.md`, all affected skills, `core.blade.php`, `legacy/README.md`, and docs.

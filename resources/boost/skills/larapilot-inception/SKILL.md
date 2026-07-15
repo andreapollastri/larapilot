@@ -27,7 +27,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 | 🎨 **Elise**     | UX Designer — Nordic UI, WCAG 2.2 AA, **mobile-first responsive**, **logo/favicon.svg/social assets** when client has none                                                          |
 | ✨ **Joe**       | Frontend Expert — visual impact, JS frontend, animations, hybrid/native mobile, client performance                                                                                  |
 | ✍️ **Marika**    | Copywriter — website & app copy, review & tone _(Website, Application)_                                                                                                             |
-| 🔄 **Sabrine**   | Legacy Porting Specialist — legacy analysis, parity matrix, porting proposals _(legacy rewrite/port)_                                                                               |
+| 🔄 **Sabrine**   | Legacy Porting Specialist — legacy analysis, **content scraping**, **DB & assets porting**, parity matrix, porting proposals _(legacy rewrite/port)_                               |
 | 👾 **Andrew**    | Laravel Expert — ecosystem best practices, community standards                                                                                                                      |
 | 🔗 **Matt**      | Integration Manager — third-party APIs & services (with Sebastian/John/Alex)                                                                                                        |
 | 🌍 **Emily**     | Translator — locales, currency, timezones, country-target culture _(with Violet)_                                                                                                   |
@@ -46,7 +46,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 
 0. Run `php artisan larapilot:config-show` and note `{paths.client_materials}`, `{paths.legacy}`, `{paths.research}`.
     - If **`{paths.client_materials}`** contains files beyond `README.md`, read **every** document first — summarize key requirements, constraints, and open questions in chat. Cross-check throughout discovery; use **AskQuestion** for ambiguities (max 3 per round).
-    - If **`{paths.legacy}`** contains legacy artifacts, flag **legacy rewrite/port** mode — **Sabrine** scans for modules, content, data models, and integrations to preserve (see **Legacy Rewrite & Porting** in shared-runtime).
+    - If **`{paths.legacy}`** contains legacy artifacts beyond `README.md`, **Sabrine** scans for modules, content, data models, assets, and integrations to preserve (see **Legacy Rewrite & Porting** in shared-runtime). **Mark** (with Sabrine) **MUST** propose a legacy refactor/port via **AskQuestion** immediately after the team intro and **before** Project Kind or delivery-target questions — options: **Legacy rewrite** | **Legacy port** | **Partial modules only** | **Reference only** (greenfield; legacy as inspiration) | **Decide later** (skippable). Record **`Project Origin`** in the PRD. When the user picks partial scope, clarify which modules are in/out in chat before continuing.
 1. Introduce the team naturally and start discovery from the user's request.
 2. **Mark** opens with **Project Kind** via **AskQuestion** (see Project Kind in shared-runtime) — **before** delivery target, budget, or architecture:
     - `Personal` — side project, portfolio, learning, solo tool
@@ -62,7 +62,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 6. **John** and **Aurora** co-own `## Technical Architecture`: John ensures scalable design per **delivery target** and **Project Kind**; when multi-tenant/SaaS _(Application)_, compares **tenancy patterns** (distributed monolith on N servers + custom subdomains + optional central SSO, row-level, DB-per-tenant, stancl/tenancy) with pros/cons. When the product needs an **admin/control panel** or authenticated dashboard _(Application, or Website Portal)_, John **asks via AskQuestion** whether to use **Filament**, a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (Livewire/Flux, React, Vue, or Svelte), or a **custom panel** — never assume any route; he recommends the best fit for the specific case and, above all, the option closest to the project mockups (with Elise's input when mockups exist), and records the choice in `## Technical Architecture`. **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, observability; **asks via AskQuestion** (never assume defaults): **local dev environment** (Sail/Docker, Herd, not defined yet, or other); **deploy platform** (Cipi, Forge, Laravel Cloud, Ploi, AWS, Kubernetes, DigitalOcean, Hetzner/OVH, not defined yet, or other); **edge/CDN/WAF** (Cloudflare, AWS WAF+CloudFront, Bunny, Akamai/Fastly, existing/no change, not defined yet, or N/A for internal-only) — **recommends Cloudflare when feasible** for public apps; **cloud/compute & data** (AWS, DigitalOcean, Hetzner/OVH, bundled with deploy target, not defined yet, or other) — **recommends AWS when Tracked budget and requirements make it feasible**. Records all choices in `## Technical Architecture`; optionally proposes **127001.it** URLs when multi-tenant/OAuth/cookie domains matter. **Lars** imposes `security.txt`, `SECURITY.md`, pipeline security gates, scaffolding defaults; **Oliver** notes red-team scope for ship _(Application — lighter note for Personal)_. **Sebastian** proposes integrations; **Matt** validates delivery approach. **Lauren/Emma/Elise** marketing when public _(Website and public Application)_. **Violet** full privacy/legal when personal data. **Emily** defines country targets, languages, currency, and timezones when multi-market — with Violet on cultural/legal nuance. **Sophia** documents support/maintenance expectations in Future Phases for post-launch _(Application — one line for Personal)_. **Benjamin** sanity-checks for Full Product / Enterprise.
 7. For **public-facing websites** _(Project Kind: Website — and public Application surfaces)_, bring in **Emma**, **Lauren**, and **Elise**: Emma owns URLs, breadcrumbs, robots/sitemap/llms; Elise owns UI, WCAG, and **brand assets** (favicon.svg, logo, OG image) when the client does not supply them; Lauren uses those assets for social distribution.
 8. When the product handles **personal data**, **Violet** defines the full privacy/legal surface in `## Functional Requirements` and `## MVP Scope` (see Privacy & Legal Compliance in shared-runtime).
-9. **Legacy rewrite/port** — when `{paths.legacy}` has content or **Project Origin** is legacy: **Sabrine** leads analysis — inventories every content item and functionality, documents current implementation, maps to the new stack, and proposes discard/reorganize/reimplement options for user approval. **John** + **Tom** draft parity scope; **Sabrine** writes `{paths.research}/legacy-parity.md` (legacy item → current impl → new impl → migration strategy). **Sebastian** + **Matt** note data-import paths; **Marika** maps legacy copy. No feature, content, or data drop without explicit PRD **Out of Scope** entry.
+9. **Legacy rewrite/port** — when `{paths.legacy}` has content or **Project Origin** is legacy: **Sabrine** leads analysis — inventories every content item and functionality, **scrapes or extracts content** from legacy sources (code, dumps, exports, permitted public URLs), and plans **DB migration** and **assets porting** (uploads, media, static files). She documents current implementation, maps to the new stack, and proposes discard/reorganize/reimplement options for user approval. **John** + **Tom** draft parity scope; **Sabrine** writes `{paths.research}/legacy-parity.md` (legacy item → current impl → new impl → migration/assets strategy). **Sebastian** + **Matt** note data-import paths; **Marika** maps legacy copy. No feature, content, or data drop without explicit PRD **Out of Scope** entry.
 10. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
 11. Write the PRD with these required sections:
 
@@ -72,6 +72,16 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - `## Functional Requirements`
 - `## MVP Scope`
 - `## Technical Architecture`
+
+- `## PRD Revision History` _(optional at inception — append rows on post-inception scope edits per **PRD Living Document**)_
+
+```markdown
+## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| {{DATE}} | larapilot-inception | Initial PRD |
+```
 
 12. Persist via `php artisan larapilot:prd-write --content="..."` or write to a temp file and pass `--file=`.
 13. Run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
@@ -174,9 +184,9 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 
 ### Legacy parity _(when Project Origin is legacy rewrite/port — Sabrine)_
 
-- Parity matrix: `{paths.research}/legacy-parity.md` — content + features + implementation mapping
+- Parity matrix: `{paths.research}/legacy-parity.md` — content + features + implementation + assets mapping
 - Sabrine proposals: {{preserve / reorganize / reimplement / discard-with-consent per item}}
-- Data migration strategy — Sebastian/Matt
+- DB migration & assets porting strategy — Sabrine + Matt + John
 - Copy migration — Marika
 - Explicit **Out of Scope** exceptions only with user consent
 
@@ -250,4 +260,10 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 - Queues, caching, DB indexing, CDN per PRD edge choice, structured logging, observability — John + Jack
 - Security budget (Aikido, monitoring, backups) — Aurora + Lars + Violet
 - Estimated infra cost and provider rationale — Aurora
+
+## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| {{DATE}} | larapilot-inception | Initial PRD |
 ```

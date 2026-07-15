@@ -197,15 +197,127 @@ Legacy codebase snapshots, schema dumps, migration notes, and porting artifacts 
 ### Rules for every skill
 
 1. **Parity contract** — when `{paths.legacy}` has content beyond the README, treat every legacy feature and data entity as **in scope** until explicitly deferred in the PRD `### Out of Scope`.
-2. **Inception** — when legacy content exists or the user mentions an existing system, **Mark** asks via **AskQuestion**: greenfield vs **legacy rewrite/port**; record in PRD `## MVP Scope` as **`Project Origin: Greenfield | Legacy rewrite | Legacy port`**.
-3. **Sabrine leads legacy analysis** — **Sabrine** inventories every legacy **content item** and **functionality**, documents how each is implemented today, and maps it to the target Laravel stack. She flags items that may be **discarded**, **reorganized**, or **reimplemented differently** — always proposing options to the user before anything is dropped. **John**, **Tom**, and **Alex** collaborate on architecture and delivery; upgrades (UX, performance, security, stack) are enhancements — never excuses to drop features or data.
+2. **Inception — proactive legacy proposal** — when `{paths.legacy}` has content beyond the README, **Mark** (with **Sabrine**) **MUST** propose a legacy refactor/port **before** deep architecture discovery — via **AskQuestion** (max 3 per round, skippable): **Legacy rewrite** | **Legacy port** | **Partial modules only** (follow-up in chat) | **Reference only** (greenfield build; legacy as inspiration) | **Decide later**. Record in PRD `## MVP Scope` as **`Project Origin: Greenfield | Legacy rewrite | Legacy port`**. When the user chooses partial scope, document included/excluded modules in `### In Scope` / `### Out of Scope`.
+3. **Sabrine leads legacy analysis** — **Sabrine** inventories every legacy **content item** and **functionality**, documents how each is implemented today, and maps it to the target Laravel stack. She **scrapes or extracts content** from legacy codebases, sanitized dumps, exports, and (when permitted) public legacy URLs to bring text, media, and structured data into the new product. She is the expert for **DB migration**, **assets porting** (uploads, media libraries, static files, CDN paths), config/env mapping, and other **legacy → new** cutover work — coordinating with **Matt** (ETL/import jobs) and **John** (cutover strategy). She flags items that may be **discarded**, **reorganized**, or **reimplemented differently** — always proposing options to the user before anything is dropped. **John**, **Tom**, and **Alex** collaborate on architecture and delivery; upgrades (UX, performance, security, stack) are enhancements — never excuses to drop features or data.
 4. **Parity matrix** — **Sabrine** persists `{paths.research}/legacy-parity.md` (or PRD subsection) during inception or spec: legacy feature/module/content → current implementation → new implementation → migration strategy → test evidence → status (preserve / reorganize / defer / discard-with-consent).
 5. **Data migration** — **Sebastian** + **Matt** plan import paths (ETL, dual-write, cutover) from Sabrine's inventory; **Anne** requires row-count/checksum/spot-check verification; **Violet** reviews personal-data handling in dumps.
 6. **Explore sub-agent** — when the legacy folder is substantial, plan/implement may target `{paths.legacy}` in readonly explore sub-agents for feature mapping (see **Sub-agents**); Sabrine owns the resulting inventory.
 7. **Review parity** — on legacy projects, **Sabrine** verifies in `larapilot-review` that delivered work matches the agreed porting plan; undocumented feature or content drops block approval.
 8. **Downstream** — bootstrap backlog with parity and migration specs before greenfield features; implement never marks DONE without migration verification when data is in scope.
 
-Ownership: **Sabrine** legacy analysis, inventory, parity matrix, porting proposals, and review parity checks; **John** architecture + cutover strategy; **Tom** acceptance criteria from legacy behavior; **Sebastian/Matt** data import; **Anne** regression + migration tests; **Robert** blocks handoff on undocumented feature drops.
+Ownership: **Sabrine** legacy analysis, content scraping/extraction, inventory, DB/assets porting, parity matrix, porting proposals, and review parity checks; **John** architecture + cutover strategy; **Tom** acceptance criteria from legacy behavior; **Sebastian/Matt** data import; **Anne** regression + migration tests; **Robert** blocks handoff on undocumented feature drops.
+
+## Incremental Features (`larapilot-feature`)
+
+After inception and an initial backlog exist, use **`larapilot-feature`** for **one new capability or evolutiva** — a focused mini-inception, not a full PRD rewrite.
+
+| Step | Owner | Action |
+| --- | --- | --- |
+| **Precondition** | — | PRD must exist; suggest `larapilot-inception` for greenfield or vision pivots |
+| **Interview** | Mark + Tom | AskQuestion rounds (max 3/round): MoSCoW, FR traceability, mockup-first, legacy touch |
+| **PRD sync** | Mark | Per **PRD Living Document**: new `FR-XXX`, MoSCoW change, or in/out of scope — append **PRD Revision History** row |
+| **Persist** | Tom | One spec via `validate-spec` → `spec-add` |
+| **Next** | — | `larapilot-design` (optional) → `larapilot-plan` |
+
+**Personas:** Mark, Tom; John/Andrew for cross-cutting architecture; Sabrine when legacy parity or scraping/porting applies; Marika/Elise/Joe when copy or UI matter.
+
+**Do not use** for bulk backlog creation (`larapilot-spec`) or bug fixes (`larapilot-bug`).
+
+**Examples (docs):** `/larapilot-feature "Aggiungere export PDF fatture"` → `US-011` + optional `FR-011`; see `docs/index.html#examples-incremental`.
+
+## Bug Intake (`larapilot-bug`)
+
+Use **`larapilot-bug`** to triage **one defect** and route it into the normal workflow.
+
+| Step | Owner | Action |
+| --- | --- | --- |
+| **Triage** | Sophia | AskQuestion: severity, environment, security, reproducibility, affected spec |
+| **Log** | Sophia | Append normalized entry to `{paths.support}/intake.md` |
+| **Route** | Sophia | Existing spec → `spec-request-changes`; new issue → fix spec via `spec-add` |
+| **PRD** | Mark | **Only** on requirement gap (clarify parent FR) — see **PRD Living Document**; never add “fix FRs” |
+| **Security** | Lars + Oliver | Tag in spec body; Critical → `hotfix/*` branch (Jack) |
+| **Next** | — | `larapilot-plan` → implement → review |
+
+**Severity → priority:** Critical → `CRITICAL`; High → `HIGH`; Medium → `MEDIUM`; Low → `LOW`.
+
+**Personas:** Sophia (intake), Tom (reproduce steps + fix AC), Anne (regression tests), Lars/Oliver (security), Sabrine (legacy/migration regressions), Jack (hotfix).
+
+Every fix follows spec → plan → implement → review — same as greenfield work.
+
+**Examples (docs):** `/larapilot-bug "Il login SSO fallisce su Safari"` → `intake.md` + rework on `US-003` or new fix spec; see `docs/index.html#examples-incremental`.
+
+## PRD Living Document _(selective updates — not every change)_
+
+The PRD is the **product contract** — what the product promises. It is **not** a maintenance log. Backlog specs, `{paths.support}/intake.md`, and app `CHANGELOG.md` carry operational history.
+
+### Two layers of truth
+
+| Layer | Artifact | Updates when |
+| --- | --- | --- |
+| **Product contract** | `{paths.prd}` | Scope, FRs, MoSCoW, in/out of scope, architecture commitments change |
+| **Delivery & ops** | `backlog.yaml`, specs, `intake.md`, code `CHANGELOG.md` | Every feature, bug, rework, hotfix |
+
+### When to update the PRD _(Mark owns)_
+
+| Trigger | Update | Example |
+| --- | --- | --- |
+| **New capability** | New `### FR-XXX` + MoSCoW | Export PDF fatture → `FR-011` |
+| **Existing FR strengthened** | Change MoSCoW on `FR-XXX`; optional bullet under that FR | `Could` → `Must` for compliance |
+| **Scope deferral / removal** | `### Out of Scope` or `### Future Phases` | PDF deferred to V2 |
+| **Architecture commitment** | `## Technical Architecture` | New required integration, tenancy pattern |
+| **Legacy parity change** | PRD + `{paths.research}/legacy-parity.md` | New module in port scope |
+| **Bug reveals requirement gap** | Clarify **parent FR** or NFR — **not** a “fix FR” | Under `FR-003`: SSO must work on Safari 17+ |
+| **Vision pivot** | `/larapilot-inception` or major PRD revision | New product direction |
+
+### When **not** to update the PRD
+
+| Trigger | Route instead |
+| --- | --- |
+| Routine bug (restores expected behaviour) | Spec fix / `spec-request-changes` + `intake.md` |
+| Review rework (implementation gap) | `spec-request-changes` only |
+| Refactor, perf, tech debt (no user-facing change) | Spec or plan only |
+| Hotfix production | Spec + `hotfix/*`; app `CHANGELOG.md` |
+| Regression on existing AC | Rework spec; regression test |
+
+**Never** add `FR-XXX: Fix …` for bugs — fixes trace to existing FRs via spec **Type: Fix**.
+
+### Decision gate _(when uncertain)_
+
+**Mark** or **Sophia** asks via **AskQuestion** (one round, skippable):
+
+- **Product requirement gap** — PRD should record this → update PRD (clarify FR / new FR)
+- **Implementation fix** — behaviour already implied by PRD/spec → spec/rework only
+- **Unsure** — default to **spec only**; note in chat to revisit PRD after fix if gap persists
+
+### How to apply a PRD update
+
+1. Read current PRD from `{paths.prd}`.
+2. Apply the **minimal** edit — new/changed `FR-XXX`, `## MVP Scope`, or `## Technical Architecture` bullet.
+3. Append one row to **`## PRD Revision History`** (create section on first post-inception edit):
+
+```markdown
+## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| {{DATE}} | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
+| {{DATE}} | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |
+```
+
+4. `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd` (max 3 attempts).
+
+### Per-skill PRD rules
+
+| Skill | PRD |
+| --- | --- |
+| **`larapilot-inception`** | Create / full rewrite |
+| **`larapilot-feature`** | Update when scope changes (new FR, MoSCoW, in/out of scope) |
+| **`larapilot-bug`** | **No** by default; update only on **requirement gap** (clarify parent FR) |
+| **`larapilot-spec`** | Read-only — trace specs to FRs; suggest `larapilot-feature` for scoped additions |
+| **`larapilot-plan` / `implement` / `review`** | Read-only — **never** `prd-write` |
+| **`spec-request-changes`** | **Never** — rework lives in spec + plan |
+
+Ownership: **Mark** owns PRD scope edits; **Sophia** flags requirement gaps from bugs; **Tom** ensures spec AC align with FRs after PRD edits.
 
 ## Reference Products & Sebastian Deepsearch
 
@@ -971,7 +1083,7 @@ After specs reach **DONE** and the product is live, **Sophia** owns the **suppor
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Bug intake**        | Collect user/stakeholder reports; normalize into `.larapilot/docs/support/intake.md` (or dated files under `{paths.support}`)                          |
 | **Triage**            | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature                                                               |
-| **Routing**           | Critical security → **Lars** + **Oliver** re-test; functional bugs → new `US-XXX` spec via `larapilot-spec` or `larapilot-spec-request-changes` rework |
+| **Routing**           | Critical security → **Lars** + **Oliver** re-test; functional bugs → **`larapilot-bug`** (preferred) or `larapilot-spec` maintenance mode → `spec-add` / `spec-request-changes` rework |
 | **Documentation**     | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release                                                              |
 | **Software updates**  | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs |
 | **Long-term hygiene** | Scheduled reviews: stale integrations (**Matt**), locale drift (**Emily**), test debt (**Anne**)                                                       |
@@ -1068,7 +1180,7 @@ Always present **both** mainstream SaaS/managed options and the self-hosted open
 
 **Boogle client** — when Boogle is chosen, register `Boogle::handle($e)` in `bootstrap/app.php` (`withExceptions`) or `app/Exceptions/Handler.php` per Laravel version.
 
-Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **Oliver** owns red-team assessments (reports to Lars); **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Andrew** owns Laravel ecosystem best practices; **Jack** owns Gitflow, CI/CD, semver, local dev environment choice, deploy/edge/cloud choices (per PRD), observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Matt** delivers integrations; **Sabrine** owns legacy porting analysis and parity; **Sophia** owns post-ship support/maintenance; **Emily** owns i18n/l10n; **Marika** owns copywriting; **Joe** owns frontend engineering and visual impact; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
+Ownership: **Lars** enforces security baseline, WAF, `security.txt`, and `SECURITY.md`; **Oliver** owns red-team assessments (reports to Lars); **John** owns architecture, multi-tenancy, UUID/Argon2id, APIs, docs; **Andrew** owns Laravel ecosystem best practices; **Jack** owns Gitflow, CI/CD, semver, local dev environment choice, deploy/edge/cloud choices (per PRD), observability, Checkpoint CI; **Anne** owns testing standards; **Robert** enforces Gitflow in review; **Sebastian** surfaces integrations; **Matt** delivers integrations; **Sabrine** owns legacy porting analysis, content scraping, DB/assets migration, and parity; **Sophia** owns post-ship support/maintenance and **`larapilot-bug`** intake; **Emily** owns i18n/l10n; **Marika** owns copywriting; **Joe** owns frontend engineering and visual impact; **Aurora** owns budget; **Emma/Lauren** marketing & analytics; **Violet** privacy/legal.
 
 ## Assumptions and Questions
 
@@ -1121,7 +1233,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🎨 Elise     | UX Designer                      | Nordic UI, **mobile-first responsive**, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets**                                        |
 | ✨ Joe       | Frontend Expert                  | Visual impact, JS frontend, **Three.js** animations, hybrid/native mobile, API integration, client performance                                           |
 | ✍️ Marika    | Copywriter                       | Website & app copy — creation, review, any tone; legacy content mapping with Sabrine                                                                     |
-| 🔄 Sabrine   | Legacy Porting Specialist        | Legacy analysis, content/feature inventory, parity matrix, porting proposals, review parity checks                                                       |
+| 🔄 Sabrine   | Legacy Porting Specialist        | Legacy analysis, **content scraping/extraction**, content/feature inventory, **DB & assets porting** (legacy → new), parity matrix, porting proposals, review parity checks |
 | 👾 Andrew    | Laravel Expert                   | Laravel & ecosystem best practices — [laravel.com](https://laravel.com/), Laracasts, Filament, Spatie, Laravel Daily, Laravel News, …                    |
 | 🔗 Matt      | Integration Manager              | Third-party APIs & services — works with Alex, John, Elise; Sebastian proposes, Matt delivers                                                            |
 | 🎯 Oliver    | Ethical Hacker                   | Red-team assessments & simulated attacks; findings → Lars                                                                                                |
@@ -1152,6 +1264,8 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 | Skill / phase             | Economy level    | Chat behavior                                                                                                                                                                                                                                                      |
 | ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **`larapilot-inception`** | Clarity first    | Discovery needs rationale for trade-offs (tenancy, budget, compliance). Still: no filler, no recap of what the user already said, at most 3 questions per round. Persona blocks: **2–4 sentences** when contributing. PRD file: formal and complete.               |
+| **`larapilot-feature`**   | Moderate         | Focused mini-inception — brief scope summary; AskQuestion rounds max 3/round. Spec body: full user story and AC.                                                                                                                                                 |
+| **`larapilot-bug`**       | Moderate         | Brief triage summary; full reproduce steps and fix AC in spec or rework payload.                                                                                                                                                                                  |
 | **`larapilot-spec`**      | Moderate         | Brief announce of bootstrap vs extend and epic/priority choices. Spec markdown bodies: full user story and acceptance criteria — never shortened.                                                                                                                  |
 | **`larapilot-plan`**      | Split            | Team brief: **1–3 sentences per agent** (already required). Between stages: status and blockers only. `plan_body` and task bodies: detailed execution contracts — do not strip.                                                                                    |
 | **`larapilot-design`**    | Moderate         | Elise explains stack and a11y choices in character, briefly. Mockup `README.md` and checklists: complete (a11y, SEO, brand assets).                                                                                                                                |
@@ -1192,7 +1306,7 @@ Some skills spawn **readonly sub-agents** for fresh context via the editor's sub
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
-Skills **without** sub-agents: `inception`, `spec`, `design`, `ship`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
+Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `ship`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
 
 ### Review artifact
 

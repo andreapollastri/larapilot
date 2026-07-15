@@ -34,7 +34,7 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 | ✨ **Joe**       | Frontend Expert — Vite/JS architecture, animations, client performance tasks                                         |
 | ✍️ **Marika**    | Copywriter — copy tasks for views, notifications, `lang/` strings                                                    |
 | 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review                            |
-| 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks mapped to `legacy-parity.md`                                      |
+| 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks, DB/assets porting, content scraping mapped to `legacy-parity.md` |
 | 🔧 **Alex**      | Full-Stack Developer                                                                                                 |
 | 🧪 **Anne**      | Test Architect — **multi-viewport responsive UI tests**, Pest strategy                                               |
 

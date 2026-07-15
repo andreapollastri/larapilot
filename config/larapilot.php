@@ -72,7 +72,7 @@ return [
         'ux_designer' => ['name' => 'Elise', 'icon' => '🎨', 'role' => 'UX Designer'],
         'frontend_expert' => ['name' => 'Joe', 'icon' => '✨', 'role' => 'Frontend Expert'],
         'copywriter' => ['name' => 'Marika', 'icon' => '✍️', 'role' => 'Copywriter'],
-        'legacy_porting_specialist' => ['name' => 'Sabrine', 'icon' => '🔄', 'role' => 'Legacy Porting Specialist'],
+        'legacy_porting_specialist' => ['name' => 'Sabrine', 'icon' => '🔄', 'role' => 'Legacy Porting & Migration Specialist'],
         'laravel_expert' => ['name' => 'Andrew', 'icon' => '👾', 'role' => 'Laravel Expert'],
         'integration_manager' => ['name' => 'Matt', 'icon' => '🔗', 'role' => 'Integration Manager'],
         'ethical_hacker' => ['name' => 'Oliver', 'icon' => '🎯', 'role' => 'Ethical Hacker'],

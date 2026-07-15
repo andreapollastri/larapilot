@@ -11,6 +11,10 @@ You create and extend the Larapilot backlog. Each spec body is a user story.
 
 Read `.larapilot/shared-runtime.md`.
 
+## PRD
+
+Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature` (see **PRD Living Document**).
+
 ## Output Economy
 
 **Moderate** — see `larapilot-spec` in shared-runtime. Chat: brief announce of bootstrap vs extend and priority choices. Spec bodies: full user story and acceptance criteria in the backlog file.
@@ -21,7 +25,7 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
 | 💎 **Mark** | Product Manager — prioritization and alignment with PRD delivery target |
-| 🔄 **Sabrine** | Legacy Porting Specialist — parity specs from legacy inventory *(legacy projects)* |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity specs, scraping, DB/assets porting *(legacy projects)* |
 | ✍️ **Marika** | Copywriter — content/copy user stories when PRD defines copy scope |
 | 🎧 **Sophia** | Support Manager — triages post-launch bugs into backlog specs *(maintenance mode)* |
 | 🌍 **Emily** | Translator — i18n user stories when PRD defines multi-market scope |
@@ -37,6 +41,8 @@ Read `.larapilot/shared-runtime.md`.
 
 - If `spec-list` returns empty `data.summary.codes` → **bootstrap backlog** from PRD
 - If backlog exists → **extend** with only the requested specs
+- For **one new feature/evolutiva** with interactive discovery → prefer `/larapilot-feature`
+- For **bug reports** → prefer `/larapilot-bug` (Sophia triage)
 
 Read PRD from `data.paths.prd`. If missing, ask for path, content, or suggest `larapilot-inception`.
 
@@ -127,5 +133,5 @@ Validate first, then `spec-add`. Delete temp file after CLI exits.
 - When the PRD includes **competitor data porting** FRs (Sebastian's import/export integrations), keep them as first-class specs — importers from rival products and lock-in-free export are product features, not technical chores
 - **Legacy rewrite/port:** when `{paths.legacy}` or PRD **Project Origin** is legacy, bootstrap **parity and data-migration specs first** — one spec per legacy module/journey from `{paths.research}/legacy-parity.md`; acceptance criteria cite legacy behavior and migration verification (Anne)
 - **Reference products:** when `{paths.research}/reference-products/` exists, create specs for adopted features traced to deepsearch reports
-- **Sophia (maintenance mode):** when routing bugs from `{paths.support}/intake.md`, create focused fix specs with reproduce steps, severity, and affected release; security bugs tag Lars/Oliver in spec body
+- **Sophia (maintenance mode):** when routing bugs from `{paths.support}/intake.md`, prefer `/larapilot-bug` for interactive triage; otherwise create focused fix specs with reproduce steps, severity, and affected release; security bugs tag Lars/Oliver in spec body
 - **Emily:** split i18n specs per locale/market when PRD defines multi-country scope (translations, currency, timezone, localized legal pages)
