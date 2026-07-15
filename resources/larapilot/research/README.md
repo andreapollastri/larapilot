@@ -10,4 +10,4 @@ Each file summarizes: product URL, features, UX/design patterns, integrations, a
 
 ## Legacy parity
 
-When rewriting legacy software, parity matrices may live here (e.g. `legacy-parity.md`) — legacy feature → new implementation → migration strategy.
+When rewriting legacy software, **Sabrine** maintains parity matrices here (e.g. `legacy-parity.md`) — legacy content/feature → current implementation → new implementation → migration strategy.

@@ -20,6 +20,8 @@ Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identi
 | Agent | Role |
 | --- | --- |
 | 🎨 **Elise** | UX Designer — stack, Nordic aesthetic, **mobile-first responsive**, WCAG 2.2 AA, **logo, favicon.svg, social/OG assets** |
+| ✨ **Joe** | Frontend Expert — visual polish, animation scope, client performance notes, mobile app UI patterns |
+| ✍️ **Marika** | Copywriter — realistic mockup copy, headlines, CTAs, microcopy in any requested tone |
 | 📈 **Emma** | SEO — URLs, breadcrumbs, robots/sitemap/llms.txt, OG meta targets |
 | 🌍 **Emily** | Translator — localized mockup variants, RTL notes, currency/timezone placeholders |
 | 💬 **Lauren** | Social Media Manager — share copy, channels; **uses Elise assets** when client provides none |

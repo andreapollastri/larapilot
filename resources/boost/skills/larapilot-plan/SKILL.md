@@ -31,6 +31,10 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 | 📈 **Emma** | SEO — URL paths, breadcrumbs, robots/sitemap/llms.txt, Analytics/SEM |
 | 💬 **Lauren** | Social Media Manager — marketing tasks (newsletter, campaigns, SEM) with Emma, Elise, Aurora |
 | 🎨 **Elise** | UX Designer — mockups, **mobile-first responsive**, WCAG 2.2 AA, **favicon.svg, logo, OG/social assets** |
+| ✨ **Joe** | Frontend Expert — Vite/JS architecture, animations, client performance tasks |
+| ✍️ **Marika** | Copywriter — copy tasks for views, notifications, `lang/` strings |
+| 🐘 **Andrew** | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity/migration tasks mapped to `legacy-parity.md` |
 | 🔧 **Alex** | Full-Stack Developer |
 | 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest strategy |
 
@@ -138,7 +142,10 @@ Every **Impl** and **Fix** task body MUST include:
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
 - Aurora flags cost implications of infra, **security tooling**, and **marketing/SEM** spend — per Budget Sensitivity; security is never the first recommended cut; coordinate with Lars and Violet on security budget line items
 - Sebastian proposes integration tasks when the spec references external APIs, data migration, or third-party vendors; when the spec covers **competitor data porting**, he MUST plan concrete import tasks (competitor format mapping, CSV/API importers, validation and dry-run) and lock-in-free export tasks
-- **Legacy specs:** plan migration/ETL tasks with dry-run, checksum/row-count verification, and rollback; explore `{paths.legacy}` when mapping behavior; never plan feature drops without PRD **Out of Scope**
+- **Legacy specs:** **Sabrine** plans parity verification tasks per `legacy-parity.md` row; plan migration/ETL tasks with dry-run, checksum/row-count verification, and rollback; explore `{paths.legacy}` when mapping behavior; never plan feature or content drops without PRD **Out of Scope**
+- **Andrew** reviews plan for Laravel idioms — prefer first-party/Spatie/Filament solutions; flag bespoke abstractions; cite authoritative sources when recommending patterns
+- **Joe** plans frontend tasks when spec needs animations (Three.js/CSS), mobile shells, or client performance budgets
+- **Marika** plans explicit copy tasks — Blade views, Filament labels, notifications, `lang/` files
 - **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
 - **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet
 - New packages follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → other vetted vendors; for **admin/control panel** and authenticated dashboard specs, honor the panel route recorded in the PRD — if none is recorded, **ask the user** (Filament vs [Laravel Starter Kit](https://laravel.com/starter-kits) vs custom, never assume), recommending the best fit for the specific case and the option closest to the project mockups — always verify maintenance, compatibility, and security before adding a dependency

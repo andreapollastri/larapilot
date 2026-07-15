@@ -2118,7 +2118,8 @@
             </div>
             <h3>Packaged design systems</h3>
             <p>Filament and Laravel Starter Kit references — tokens, components, and static HTML screens — copied to
-              <code>.larapilot/design-systems/</code> for consistent mockups.</p>
+              <code>.larapilot/design-systems/</code> for consistent mockups.
+            </p>
           </div>
           <div class="bento-card">
             <div class="bento-icon indigo">
@@ -2204,7 +2205,8 @@
           <strong>Larapilot</strong> (backlog and workflow). Skills orchestrate the conversation; the CLI guarantees
           consistency; artifacts survive between sessions. When you run the app locally, open the <a
             href="#dashboard">workflow dashboard</a> at <code>/larapilot</code> to see backlog status at a glance
-          without opening YAML files.</p>
+          without opening YAML files.
+        </p>
 
         <h3>Workflow dashboard (local)</h3>
         <p>The dashboard is a dev-only companion to <code>.larapilot/</code> — it reads the same files the CLI writes
@@ -2241,7 +2243,8 @@
         </div>
         <p>Available in <code>local</code>, <code>staging</code>, and <code>testing</code>; returns 404 in production.
           Refresh the page after each skill run to pick up status changes. Disable with
-          <code>LARAPILOT_DASHBOARD_ROUTE=false</code>.</p>
+          <code>LARAPILOT_DASHBOARD_ROUTE=false</code>.
+        </p>
 
         <h3>The process in two parts</h3>
         <p>Larapilot splits work into a <strong>project phase</strong> (once) and a <strong>spec loop</strong> (repeat
@@ -2292,7 +2295,8 @@
           requirement in <code>## Functional Requirements</code> — the per-FR scope lens that complements delivery
           target and backlog priority. When there is enough context, they write and validate
           <code>.larapilot/docs/PRD.md</code>. Inception does <strong>not</strong> create the backlog; that is
-          <code>/larapilot-spec</code>.</p>
+          <code>/larapilot-spec</code>.
+        </p>
 
         <h3>Spec loop (per user story)</h3>
         <p>Each story in the backlog follows the same cycle:</p>
@@ -2319,7 +2323,8 @@
         <p>Agents speak in character (<code>💎 Mark:</code>, <code>📐 John:</code> …) so you see which lens is working.
           <strong>Active</strong> personas drive the step in this scenario; <strong>optional</strong> ones join when the
           PRD, spec, or product type requires it (public site, integrations, multi-market, etc.). Full roster: <a
-            href="#team">The AI squad</a>.</p>
+            href="#team">The AI squad</a>.
+        </p>
 
         <h3>The scenario</h3>
         <p>You have a new Laravel 12 project and open your AI editor. Your first message:</p>
@@ -2370,37 +2375,38 @@
               <tr>
                 <td><code>/larapilot-inception</code></td>
                 <td>Mark, Jennifer, Benjamin, Sebastian, John, Aurora, Violet</td>
-                <td>Matt, Jack, Lars, Oliver, Emily, Emma, Lauren, Elise, Sophia</td>
+                <td>Matt, Jack, Lars, Oliver, Emily, Emma, Lauren, Elise, Marika, Joe, Andrew, Sabrine, Sophia</td>
               </tr>
               <tr>
                 <td><code>/larapilot-spec</code></td>
                 <td>Tom, Mark</td>
-                <td>Emily, Sophia</td>
+                <td>Sabrine, Marika, Emily, Sophia</td>
               </tr>
               <tr>
                 <td><code>/larapilot-design</code></td>
                 <td>Elise</td>
-                <td>Emma, Lauren, Emily, Violet, Aurora, Mark</td>
+                <td>Joe, Marika, Emma, Lauren, Emily, Violet, Aurora, Mark</td>
               </tr>
               <tr>
                 <td><code>/larapilot-plan</code></td>
                 <td>Tom, John, Alex, Anne</td>
-                <td>Sebastian, Matt, Elise, Violet, Aurora, Emma, Lauren, Emily</td>
+                <td>Sebastian, Matt, Elise, Joe, Marika, Andrew, Sabrine, Violet, Aurora, Emma, Lauren, Emily</td>
               </tr>
               <tr>
                 <td><code>/larapilot-implement</code></td>
                 <td>Alex, Anne, Robert, Lars</td>
-                <td>Matt, Emily</td>
+                <td>Andrew, Joe, Marika, Sabrine, Matt, Emily</td>
               </tr>
               <tr>
                 <td><code>/larapilot-review</code></td>
                 <td>Robert</td>
-                <td>Sophia</td>
+                <td>Sabrine, Marika, Sophia</td>
               </tr>
               <tr>
                 <td><code>/larapilot-autopilot</code></td>
                 <td colspan="2">Inherits plan + implement personas (no review until you invoke
-                  <code>/larapilot-review</code>)</td>
+                  <code>/larapilot-review</code>)
+                </td>
               </tr>
               <tr>
                 <td><code>/larapilot-ship</code></td>
@@ -2422,13 +2428,15 @@
             <div class="walkthrough-body">
               <p>From your Laravel project root: <code>composer require andreapollastri/larapilot --dev</code>, then
                 <code>php artisan larapilot:install</code> and <code>php artisan boost:install</code>. Enable Boost +
-                Larapilot MCP servers in your editor. You are ready to invoke skills.</p>
+                Larapilot MCP servers in your editor. You are ready to invoke skills.
+              </p>
               <p>With <code>php artisan serve</code> running, <code>/larapilot</code> is already wired — it stays empty
                 until inception and spec create the first artifacts.</p>
               <div class="walkthrough-personas">
                 <p style="font-size:.8rem;color:var(--text-tertiary);margin:0;">No personas yet — install publishes
                   <strong>guidelines</strong> (coding rules) and the eight <code>/larapilot-*</code> skill playbooks.
-                  Personas appear when you invoke a skill.</p>
+                  Personas appear when you invoke a skill.
+                </p>
               </div>
             </div>
           </div>
@@ -2446,7 +2454,8 @@
                 questions — who uses it, MVP scope, auth approach, panel route (Starter Kit vs Filament vs custom) —
                 then drafts the PRD. Mark tags each functional requirement with <strong>MoSCoW</strong> priority
                 (<code>Must</code>, <code>Should</code>, <code>Could</code>, <code>Won't</code>) so downstream skills
-                know what belongs in this release.</p>
+                know what belongs in this release.
+              </p>
               <div class="code-block">
                 <div class="code-block-header">What you might answer</div>
                 <pre><code>• Small dev teams (2–10 people)
@@ -2523,13 +2532,15 @@
               <span>/larapilot-spec</span>
             </div>
             <div class="walkthrough-body">
-              <p>You invoke <code>/larapilot-spec</code>. Tom (Requirements Analyst) reads each FR's <strong>MoSCoW</strong>
+              <p>You invoke <code>/larapilot-spec</code>. Tom (Requirements Analyst) reads each FR's
+                <strong>MoSCoW</strong>
                 tag and the delivery target, then bootstraps or defers specs accordingly — <code>Must</code> FRs become
                 stories for an MVP; <code>Should</code> / <code>Could</code> land in <code>### Future Phases</code>;
                 <code>Won't</code> FRs are skipped. Default backlog priority follows MoSCoW
                 (<code>Must</code> → <code>HIGH</code>, <code>Should</code> → <code>MEDIUM</code>,
                 <code>Could</code> → <code>LOW</code>). Each story gets a code and starts as <span
-                  class="status status-todo">TODO</span>.</p>
+                  class="status status-todo">TODO</span>.
+              </p>
               <div class="code-block">
                 <div class="code-block-header">backlog.yaml (excerpt)</div>
                 <pre><code>specs:
@@ -2592,7 +2603,8 @@
               <p><em>Optional, but useful before coding UI.</em> Elise builds a static HTML/CSS mockup for the
                 registration screen. If the PRD chose a Laravel Starter Kit for authenticated UI, she follows
                 <code>.larapilot/design-systems/starter-kit/</code> (tokens, components, reference screens). Preview
-                locally at <code>/mockups/US-001</code>.</p>
+                locally at <code>/mockups/US-001</code>.
+              </p>
               <div class="walkthrough-personas">
                 <h4>Active personas</h4>
                 <div class="persona-chips">
@@ -2769,7 +2781,8 @@ tests/Feature/RegistrationTest.php</code></pre>
                 and the review summary. You try the registration flow locally.</p>
               <p><strong>If it looks good</strong> — say "approve". Status becomes <span
                   class="status status-done">DONE</span> and the card lands in the Done column on
-                <code>/larapilot</code>.</p>
+                <code>/larapilot</code>.
+              </p>
               <p><strong>If something is missing</strong> — describe the issue (e.g. "add password confirmation field").
                 Status goes back to <span class="status status-todo">TODO</span> with your feedback and the board
                 reflects the rollback. Re-run plan → implement → review.</p>
@@ -2866,7 +2879,8 @@ tests/Feature/RegistrationTest.php</code></pre>
                 </div>
                 <p style="font-size:.8rem;color:var(--text-tertiary);margin:.65rem 0 0;">
                   <code>/larapilot-autopilot</code> chains plan + implement — same personas, no human review until you
-                  run <code>/larapilot-review</code> per spec.</p>
+                  run <code>/larapilot-review</code> per spec.
+                </p>
               </div>
             </div>
           </div>
@@ -2880,7 +2894,8 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="walkthrough-body">
               <p>When every MVP story is <span class="status status-done">DONE</span>, invoke
                 <code>/larapilot-ship</code>. Oliver runs red-team checks; Lars issues the OWASP GO/NO-GO. Jack handles
-                deploy. Aurora validates infra budget.</p>
+                deploy. Aurora validates infra budget.
+              </p>
               <div class="walkthrough-personas">
                 <h4>Active personas</h4>
                 <div class="persona-chips">
@@ -2978,6 +2993,10 @@ tests/Feature/</pre>
                   <span class="persona-chip">🎨 Elise</span>
                   <span class="persona-chip">🎯 Oliver</span>
                   <span class="persona-chip">🎧 Sophia</span>
+                  <span class="persona-chip optional">✨ Joe</span>
+                  <span class="persona-chip optional">✍️ Marika</span>
+                  <span class="persona-chip optional">🔄 Sabrine</span>
+                  <span class="persona-chip optional">🐘 Andrew</span>
                   <span class="persona-chip optional">🔗 Matt</span>
                   <span class="persona-chip optional">📈 Emma</span>
                   <span class="persona-chip optional">💬 Lauren</span>
@@ -3041,7 +3060,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
         <p><strong>1c — Publish skills via Laravel Boost.</strong> Makes the eight <code>/larapilot-*</code> skills
           (<code>inception</code>, <code>design</code>, <code>spec</code>, <code>plan</code>, <code>implement</code>,
           <code>review</code>, <code>ship</code>, <code>autopilot</code>) and the coding <strong>guidelines</strong>
-          (not a skill) available to your AI editor:</p>
+          (not a skill) available to your AI editor:
+        </p>
         <div class="code-block">
           <div class="code-block-header">Terminal</div>
           <pre><code>php artisan boost:install</code></pre>
@@ -3051,11 +3071,13 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           the Larapilot skills.</p>
         <p>On an already-installed project, <code>larapilot:install</code> fails fast and points you to
           <code>larapilot:update</code> (after upgrades) or <code>--force</code> (to overwrite config).
-          <code>larapilot:update</code> never touches <code>.larapilot/config.yaml</code>.</p>
+          <code>larapilot:update</code> never touches <code>.larapilot/config.yaml</code>.
+        </p>
 
         <h3>2. Enable MCP servers</h3>
         <p>Your editor needs both servers: <strong>Boost</strong> for Laravel context (docs, schema, Tinker) and
-          <strong>Larapilot</strong> for workflow state.</p>
+          <strong>Larapilot</strong> for workflow state.
+        </p>
         <div class="table-card">
           <table>
             <thead>
@@ -3080,7 +3102,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           </table>
         </div>
         <p>Concrete example for editors with a JSON MCP config (Cursor: <code>.cursor/mcp.json</code>, Claude Code:
-          <code>.mcp.json</code>):</p>
+          <code>.mcp.json</code>):
+        </p>
         <div class="code-block">
           <div class="code-block-header">.mcp.json</div>
           <pre><code>{
@@ -3149,7 +3172,8 @@ Next: run php artisan boost:install (or boost:update --discover) to publish AI s
           and code.</p>
         <p>Short version: <code>/larapilot-inception</code> → <code>/larapilot-spec</code> → for each story
           <code>/larapilot-plan</code> → <code>/larapilot-implement</code> → <code>/larapilot-review</code> → optionally
-          <code>/larapilot-ship</code>.</p>
+          <code>/larapilot-ship</code>.
+        </p>
 
         <h3>5. Verify installation</h3>
         <div class="code-block">
@@ -3191,7 +3215,8 @@ php artisan larapilot:update</code></pre>
         <p><code>larapilot:update</code> never touches <code>.larapilot/config.yaml</code> — your project customizations
           survive — and re-runs <code>boost:update</code> with the editor and agent choices you already made during
           <code>boost:install</code> (no questions asked). Pass <code>--skip-boost</code> to refresh only the shared
-          runtime and manage Boost publishing yourself.</p>
+          runtime and manage Boost publishing yourself.
+        </p>
         <p>To keep the project aligned automatically, hook it into Composer in your app's <code>composer.json</code>:
         </p>
         <div class="code-block">
@@ -3304,7 +3329,8 @@ php artisan larapilot:update</code></pre>
               <h3>Product Inception</h3>
               <p>Guided discovery interview — not a one-shot form. Mark opens with Project Kind (<code>Personal</code>,
                 <code>Website</code>, <code>Application</code>); the team explores your idea conversationally, then
-                writes and validates the PRD.</p>
+                writes and validates the PRD.
+              </p>
               <ul>
                 <li><strong>Branches:</strong> Personal (lean), Website (type + SEO/marketing), Application (full
                   SaaS/platform discovery)</li>
@@ -3329,13 +3355,16 @@ php artisan larapilot:update</code></pre>
               <p>Static HTML/CSS mockups with user flows and accessible markup, previewable via dev-only route. Elise
                 follows packaged design systems when the PRD chose Filament or a Laravel Starter Kit.</p>
               <ul>
-                <li><strong>Team:</strong> Elise (UX); Emma &amp; Lauren for public pages</li>
+                <li><strong>Team:</strong> Elise (UX); Joe &amp; Marika for frontend/copy; Emma &amp; Lauren for public
+                  pages</li>
                 <li><strong>Design systems:</strong> <code>.larapilot/design-systems/filament/</code> (admin) or
-                  <code>starter-kit/</code> (authenticated app UI)</li>
+                  <code>starter-kit/</code> (authenticated app UI)
+                </li>
                 <li><strong>Inputs:</strong> client materials, reference-product research, existing mockups for visual
                   consistency</li>
                 <li><strong>Preview:</strong> <code>/mockups/{spec}</code> (matches folder under
-                  <code>.larapilot/mockups/</code>)</li>
+                  <code>.larapilot/mockups/</code>)
+                </li>
               </ul>
             </div>
           </div>
@@ -3346,14 +3375,16 @@ php artisan larapilot:update</code></pre>
               <p>Creates or extends the backlog with user stories from the PRD. Reads each FR's <strong>MoSCoW</strong>
                 tag as the primary input for bootstrap vs deferral (falls back to delivery target for legacy PRDs).</p>
               <ul>
-                <li><strong>Team:</strong> Tom (Requirements Analyst), Mark (PM)</li>
+                <li><strong>Team:</strong> Tom (Requirements Analyst), Mark (PM); Sabrine for legacy parity</li>
                 <li><strong>Mapping:</strong> <code>Must</code> → spec; <code>Should</code>/<code>Could</code> deferred
                   under MVP → Future Phases; <code>Won't</code> → skip</li>
                 <li><strong>Priority:</strong> <code>Must</code> → <code>HIGH</code> (compliance →
                   <code>CRITICAL</code>); <code>Should</code> → <code>MEDIUM</code>; <code>Could</code> →
-                  <code>LOW</code></li>
+                  <code>LOW</code>
+                </li>
                 <li><strong>Output:</strong> <code>backlog.yaml</code> + <code>specs/US-XXX.yaml</code> with
-                  <code>FR-XXX</code> traceability</li>
+                  <code>FR-XXX</code> traceability
+                </li>
               </ul>
             </div>
           </div>
@@ -3363,8 +3394,9 @@ php artisan larapilot:update</code></pre>
               <h3>Technical Planning</h3>
               <p>Detailed implementation plan with tasks, file changes, and test strategy → <code>PLANNED</code>.</p>
               <ul>
-                <li><strong>Team:</strong> Tom, John, Sebastian, Aurora, Violet, Alex, Anne; Emma &amp; Lauren for
-                  public-facing specs</li>
+                <li><strong>Team:</strong> Tom, John, Sebastian, Aurora, Violet, Alex, Anne, Andrew; Emma &amp; Lauren
+                  for
+                  public-facing specs; Sabrine for legacy porting</li>
                 <li><strong>Inputs:</strong> client materials, legacy parity matrix, reference-product research</li>
                 <li><strong>Panel route:</strong> honors PRD choice — <a href="https://filamentphp.com/" target="_blank"
                     rel="noopener">Filament</a>, <a href="https://laravel.com/starter-kits" target="_blank"
@@ -3382,7 +3414,7 @@ php artisan larapilot:update</code></pre>
               <p>Executes the plan: code, tests, task tracking, handoff to <code>REVIEW</code>. Honors client materials,
                 legacy parity, and PRD panel route — never introduces Filament unless the PRD chose it.</p>
               <ul>
-                <li><strong>Team:</strong> Alex, Anne, Robert, Lars</li>
+                <li><strong>Team:</strong> Alex, Anne, Robert, Lars, Andrew; Joe &amp; Marika for UI/copy specs</li>
               </ul>
             </div>
           </div>
@@ -3392,9 +3424,10 @@ php artisan larapilot:update</code></pre>
               <h3>Human Review</h3>
               <p>Acceptance gate — Robert presents the increment and residual risks; judges delivered scope against FR
                 <strong>MoSCoW</strong> tags and the PRD delivery target. You approve to <code>DONE</code> or request
-                changes back to <code>TODO</code>.</p>
+                changes back to <code>TODO</code>.
+              </p>
               <ul>
-                <li><strong>Team:</strong> Robert (Code Reviewer)</li>
+                <li><strong>Team:</strong> Robert (Code Reviewer); Sabrine checks legacy parity when applicable</li>
               </ul>
             </div>
           </div>
@@ -3404,12 +3437,14 @@ php artisan larapilot:update</code></pre>
               <h3>Ship &amp; Deploy</h3>
               <p>OWASP security gate and production release. <a href="https://cipi.sh">Cipi</a> +
                 <code>cipi/agent</code> is the preferred path; also supports Forge, Laravel Cloud, Ploi, Kubernetes, and
-                custom VPS.</p>
+                custom VPS.
+              </p>
               <ul>
                 <li><strong>Team:</strong> Lars, Jack, Aurora, Violet, Emma &amp; Lauren (public sites)</li>
                 <li><strong>Gate:</strong> OWASP Top 10 assessment → <code>.larapilot/docs/security/</code></li>
                 <li><strong>Launch:</strong> SEO, Analytics, Lighthouse, GDPR, social →
-                  <code>.larapilot/docs/launch/</code></li>
+                  <code>.larapilot/docs/launch/</code>
+                </li>
                 <li><strong>Deploy:</strong> platform-specific runbook (Cipi webhook, Forge push, K8s rollout, …)</li>
               </ul>
             </div>
@@ -3513,6 +3548,26 @@ php artisan larapilot:update</code></pre>
             <div class="team-role">UX Designer</div>
           </div>
           <div class="team-card">
+            <div class="team-avatar">✨</div>
+            <div class="team-name">Joe</div>
+            <div class="team-role">Frontend Expert</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">✍️</div>
+            <div class="team-name">Marika</div>
+            <div class="team-role">Copywriter</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">🔄</div>
+            <div class="team-name">Sabrine</div>
+            <div class="team-role">Legacy Porting Specialist</div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">🐘</div>
+            <div class="team-name">Andrew</div>
+            <div class="team-role">Laravel Expert</div>
+          </div>
+          <div class="team-card">
             <div class="team-avatar">🔗</div>
             <div class="team-name">Matt</div>
             <div class="team-role">Integration Manager</div>
@@ -3534,43 +3589,6 @@ php artisan larapilot:update</code></pre>
           </div>
         </div>
 
-        <h3>Team policies</h3>
-        <p><strong>MoSCoW prioritization</strong> — during inception, Mark assigns <code>Must</code>,
-          <code>Should</code>, <code>Could</code>, or <code>Won't</code> on every <code>### FR-XXX</code> in
-          <code>## Functional Requirements</code>. The tag is the per-requirement scope lens alongside delivery target
-          (<code>MVP</code>, <code>V1 Complete</code>, …) and backlog priority. <code>/larapilot-spec</code> uses
-          MoSCoW as the primary input when creating or extending specs: under <strong>MVP</strong>,
-          <code>Should</code> and <code>Could</code> FRs defer to <code>### Future Phases</code> instead of becoming
-          stories; <code>Won't</code> FRs are never specced. Default spec priority maps from MoSCoW
-          (<code>Must</code> → <code>HIGH</code>, compliance-critical → <code>CRITICAL</code>;
-          <code>Should</code> → <code>MEDIUM</code>; <code>Could</code> → <code>LOW</code>). Keep tags aligned with
-          <code>### In Scope</code>, <code>### Out of Scope</code>, and <code>### Future Phases</code> in
-          <code>## MVP Scope</code>.</p>
-        <p><strong>Budget Sensitivity</strong> — during inception, Aurora asks whether budget should drive decisions
-          (<code>Tracked</code>, the default) or whether you want to exclude budget evaluation (<code>Relaxed</code>).
-          In <code>Relaxed</code> mode the business figures stop asking budget questions and never block a choice on
-          cost, but they keep flagging vendor lock-in and hard-to-reverse cost risks as short advisories. The choice is
-          stored in the PRD under <code>## Technical Architecture</code>.</p>
-        <p><strong>Competitor data porting</strong> — Sebastian doesn't stop at "import/export" as a feature label:
-          whenever comparable products exist, he must propose concrete migration paths that bring data <strong>from
-            competitor products into yours</strong> (CSV/API importers, onboarding flows for switchers) and structured
-          export so users are never locked in.</p>
-        <p><strong>Authenticated app UI route</strong> — when the product needs an admin or authenticated dashboard,
-          John asks via AskQuestion whether to use <a href="https://filamentphp.com/" target="_blank"
-            rel="noopener">Filament</a>, a <a href="https://laravel.com/starter-kits" target="_blank"
-            rel="noopener">Laravel Starter Kit</a> variant (Livewire, React, Vue, or Svelte), or a custom panel. The
-          choice is recorded in the PRD under <code>## Technical Architecture</code>; Elise follows the packaged design
-          system when Filament or a Starter Kit is chosen; plan and implement never introduce Filament on their own.</p>
-        <p><strong>Client materials, legacy &amp; research</strong> — place client docs in
-          <code>.larapilot/client-materials/</code> and legacy snapshots in <code>.larapilot/legacy/</code> before
-          inception; every skill honors them. Legacy rewrites keep zero feature and data loss unless explicitly deferred
-          in the PRD; parity is tracked in <code>.larapilot/research/legacy-parity.md</code>. Sebastian's deepsearch
-          reports live under <code>.larapilot/research/reference-products/</code>.</p>
-        <p><strong>Vendor &amp; package policy</strong> — new dependencies are evaluated in this order: Laravel
-          built-ins/first-party → <a href="https://spatie.be/open-source/packages" target="_blank" rel="noopener">Spatie
-            packages</a> → <a href="https://filamentphp.com/" target="_blank" rel="noopener">Filament</a> and its
-          plugins (when the PRD chose Filament) → other community vendors. Every candidate must be actively maintained,
-          version-compatible, and pass <code>composer audit</code> before it lands in your project.</p>
       </section>
 
       <!-- CLI -->
@@ -3845,7 +3863,8 @@ So that I can access protected features.
           <h2>Packaged design systems</h2>
           <p>Visual references for mockups — copied to <code>.larapilot/design-systems/</code> on install and refreshed
             on <code>larapilot:update</code>. Elise reads them via <code>larapilot:config-show</code> →
-            <code>paths.design_systems</code>.</p>
+            <code>paths.design_systems</code>.
+          </p>
         </div>
         <div class="table-card">
           <table>
@@ -3863,7 +3882,8 @@ So that I can access protected features.
                 <td><code>design-systems/filament/</code></td>
                 <td>Admin/control panel mockups when the PRD records <strong>Filament</strong> as the panel choice</td>
                 <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                  <strong>17</strong> static HTML screens in <code>html/</code> (from two Figma community kits)</td>
+                  <strong>17</strong> static HTML screens in <code>html/</code> (from two Figma community kits)
+                </td>
               </tr>
               <tr>
                 <td><strong>Laravel Starter Kits</strong></td>
@@ -3871,7 +3891,8 @@ So that I can access protected features.
                 <td>Authenticated app UI when the PRD records a <strong>Starter Kit</strong> variant
                   (<code>livewire</code>, <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
                 <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <code>sources.md</code>,
-                  <strong>7</strong> static HTML screens in <code>html/</code></td>
+                  <strong>7</strong> static HTML screens in <code>html/</code>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -3888,7 +3909,8 @@ So that I can access protected features.
           <h2>Mockup Preview Route</h2>
           <p>Served via dynamic route only outside production. Elise writes mockups to
             <code>.larapilot/mockups/{spec}/</code> and follows the packaged design system when the PRD chose Filament
-            or a Starter Kit.</p>
+            or a Starter Kit.
+          </p>
         </div>
         <p>Mockups live in <code>.larapilot/mockups/{spec}/</code>. The <code>{spec}</code> segment must match the
           folder name — typically a backlog code like <code>US-001</code>.</p>

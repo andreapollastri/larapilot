@@ -21,6 +21,8 @@ Read `.larapilot/shared-runtime.md`.
 | --- | --- |
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases, spec quality |
 | 💎 **Mark** | Product Manager — prioritization and alignment with PRD delivery target |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity specs from legacy inventory *(legacy projects)* |
+| ✍️ **Marika** | Copywriter — content/copy user stories when PRD defines copy scope |
 | 🎧 **Sophia** | Support Manager — triages post-launch bugs into backlog specs *(maintenance mode)* |
 | 🌍 **Emily** | Translator — i18n user stories when PRD defines multi-market scope |
 

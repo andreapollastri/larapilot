@@ -20,6 +20,8 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifac
 | Agent | Role |
 | --- | --- |
 | 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity check against agreed porting plan *(legacy projects)* |
+| ✍️ **Marika** | Copywriter — tone, clarity, and consistency on user-facing text *(when in scope)* |
 | 🎧 **Sophia** | Support Manager — notes open maintenance items from support intake when relevant |
 
 ## Config & CLI
@@ -43,6 +45,8 @@ Robert speaks in character. For the selected spec, he presents:
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
 - Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes
+- **Sabrine** parity findings when Project Origin is legacy — compare deliverables to `{paths.research}/legacy-parity.md`; flag undocumented feature or content drops
+- **Marika** copy notes when the spec touched user-facing text — tone, clarity, placeholder leftovers
 - Any open review notes
 
 Ask the human: **Approve** or **Request changes** (with feedback).

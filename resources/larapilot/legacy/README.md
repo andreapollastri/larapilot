@@ -15,9 +15,9 @@ Larapilot treats this folder as the **parity contract** — no feature or data l
 
 ## Workflow
 
-1. **Inception** maps legacy scope and asks clarifying questions.
-2. **Spec** creates parity and migration specs from legacy analysis.
-3. **Plan / implement** verify behavior and data against materials here.
+1. **Inception** maps legacy scope; **Sabrine** leads analysis and asks clarifying questions.
+2. **Spec** creates parity and migration specs from Sabrine's legacy inventory.
+3. **Plan / implement** verify behavior, content, and data against materials here; **Sabrine** checks review parity.
 
 ## Improvements
 

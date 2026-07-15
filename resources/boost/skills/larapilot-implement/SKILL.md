@@ -22,6 +22,10 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 | Agent | Role |
 | --- | --- |
 | 🔧 **Alex** | Full-Stack Developer |
+| 🐘 **Andrew** | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence |
+| ✨ **Joe** | Frontend Expert — JS/CSS polish, animations, client performance, visual fidelity |
+| ✍️ **Marika** | Copywriter — user-facing strings, tone consistency |
+| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification against `legacy-parity.md` |
 | 🔗 **Matt** | Integration Manager — third-party APIs & services with Alex/John/Elise |
 | 🌍 **Emily** | Translator — locales, currency, timezones when in scope |
 | 🧪 **Anne** | Test Architect — **multi-viewport responsive UI tests**, Pest/PHPUnit |
@@ -75,7 +79,10 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Git discipline (strict):** after **each** completed task — one atomic [Conventional Commit](https://www.conventionalcommits.org/) (`feat(US-XXX): TASK-NN summary`), push, and open/update the internal PR toward `develop` (title/body reference spec + task id). Same rule for evolutive fixes. See **Git discipline** in shared-runtime — Robert blocks handoff if violated.
 - **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
 - **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
-- **Frontend (Elise):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets.
+- **Frontend (Elise + Joe):** Blade/Livewire/Tailwind; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — animations, client bundle/performance, visual fidelity to mockups
+- **Laravel (Andrew):** idiomatic Eloquent, Form Requests, policies, queues, service classes; Spatie/first-party packages per Vendor & Package Policy; cite Laravel docs when introducing non-obvious patterns
+- **Copy (Marika):** no placeholder lorem on shipped surfaces; wire realistic copy in views, notifications, and `lang/` files
+- **Legacy parity (Sabrine):** when Project Origin is legacy, verify each in-scope parity row before `task-done` on migration/feature tasks; flag gaps in handoff
 - **SEO (Emma):** robots/sitemap/llms, breadcrumbs, semantic headings, descriptive links.
 - **Accessibility legal (Violet):** accessibility statement page and regulatory notes when EU/public sector.
 - **Integrations (Matt):** wire third-party APIs/services per plan — OAuth, webhooks, SDK/HTTP clients, queued sync, signature verification; coordinate with Alex; `Http::fake()` tests; document in README; also wire PRD-chosen stack (S3/R2, newsletter, analytics, edge proxies per PRD edge choice, observability)
