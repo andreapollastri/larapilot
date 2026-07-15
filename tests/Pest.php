@@ -145,3 +145,22 @@ function initTestGitRepository(string $commitMessage): string
 
     return trim((string) shell_exec('git -C '.escapeshellarg($root).' rev-parse HEAD 2>/dev/null'));
 }
+
+/**
+ * @param  array<string, string>  $files
+ */
+function addMockup(string $code = 'US-001', array $files = []): void
+{
+    $mockupDir = base_path('.larapilot/mockups/'.$code);
+    mkdir($mockupDir, 0755, true);
+
+    foreach ($files as $name => $contents) {
+        $path = $mockupDir.'/'.$name;
+
+        if (str_contains($name, '/')) {
+            mkdir(dirname($path), 0755, true);
+        }
+
+        file_put_contents($path, $contents);
+    }
+}

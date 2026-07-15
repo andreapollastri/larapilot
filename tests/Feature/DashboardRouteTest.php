@@ -101,12 +101,40 @@ it('shows spec detail with tasks', function (): void {
         ->assertOk()
         ->assertSee('US-001')
         ->assertSee('3 SP')
-        ->assertSee('User Story')
+        ->assertSee('User story')
         ->assertSee('TASK-01')
         ->assertSee('Create model')
         ->assertSee('feat(US-001): TASK-01 Create model')
         ->assertSee('data-exclusive-accordion', false)
         ->assertSee('task-accordion', false);
+});
+
+it('links mockups to spec detail when HTML exists', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+    addMockup('US-001', [
+        'index.html' => '<html><body>Login mockup</body></html>',
+        'dark.html' => '<html><body>Dark login</body></html>',
+    ]);
+
+    $this->get('/larapilot/specs/US-001')
+        ->assertOk()
+        ->assertSee('Mockups', false)
+        ->assertSee('<iframe', false)
+        ->assertSee('/mockups/US-001', false)
+        ->assertSee('/mockups/US-001/dark.html', false)
+        ->assertSee('.larapilot/mockups/US-001/', false);
+});
+
+it('shows mockup indicator on board cards', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+    addMockup('US-001', ['index.html' => '<html><body>Mockup</body></html>']);
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('mockup-indicator', false)
+        ->assertSee('Mockup');
 });
 
 it('returns 404 for unknown specs', function (): void {

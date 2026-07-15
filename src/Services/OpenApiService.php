@@ -149,6 +149,41 @@ class OpenApiService
                         ],
                         'required' => ['total', 'done'],
                     ],
+                    'MockupSummary' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'available' => ['type' => 'boolean'],
+                            'path' => ['type' => 'string', 'example' => '.larapilot/mockups/US-001/'],
+                            'screen_count' => ['type' => 'integer', 'minimum' => 0],
+                            'entry' => ['type' => 'string', 'nullable' => true, 'example' => 'index.html'],
+                            'entry_url' => ['type' => 'string', 'nullable' => true, 'example' => '/mockups/US-001'],
+                            'browsable' => ['type' => 'boolean'],
+                        ],
+                        'required' => ['available', 'screen_count'],
+                    ],
+                    'MockupScreen' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'file' => ['type' => 'string', 'example' => 'index.html'],
+                            'label' => ['type' => 'string', 'example' => 'Index'],
+                            'url' => ['type' => 'string', 'nullable' => true, 'example' => '/mockups/US-001'],
+                        ],
+                        'required' => ['file', 'label'],
+                    ],
+                    'MockupDetail' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'path' => ['type' => 'string'],
+                            'entry' => ['type' => 'string', 'nullable' => true],
+                            'entry_url' => ['type' => 'string', 'nullable' => true],
+                            'browsable' => ['type' => 'boolean'],
+                            'screens' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/MockupScreen'],
+                            ],
+                        ],
+                        'required' => ['path', 'screens', 'browsable'],
+                    ],
                     'Epic' => [
                         'type' => 'object',
                         'properties' => [
@@ -180,6 +215,7 @@ class OpenApiService
                             'worktree' => ['type' => 'string'],
                             'merge_commit' => ['type' => 'object', 'additionalProperties' => true],
                             'task_progress' => ['$ref' => '#/components/schemas/TaskProgress'],
+                            'mockups' => ['$ref' => '#/components/schemas/MockupSummary'],
                         ],
                         'required' => ['code', 'title', 'status'],
                     ],
@@ -252,6 +288,7 @@ class OpenApiService
                             ],
                             'workdir' => ['type' => 'string'],
                             'task_progress' => ['$ref' => '#/components/schemas/TaskProgress'],
+                            'mockups' => ['$ref' => '#/components/schemas/MockupDetail', 'nullable' => true],
                         ],
                     ],
                     'PrdHeading' => [

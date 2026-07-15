@@ -209,6 +209,65 @@
         font-weight: 700;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+
+    .mockup-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #7c3aed;
+        background: color-mix(in srgb, #7c3aed 12%, transparent);
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+
+    .mockup-preview {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+    }
+
+    .mockup-preview iframe {
+        display: block;
+        width: 100%;
+        min-height: 420px;
+        border: 0;
+        background: #fff;
+    }
+
+    .mockup-screens {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .mockup-screen-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: inherit;
+        text-decoration: none;
+        transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .mockup-screen-link:hover {
+        border-color: #7c3aed;
+        color: #7c3aed;
+        text-decoration: none;
+    }
+
+    .mockup-path {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
 </style>
 @endpush
 
@@ -239,6 +298,9 @@
                 @endif
             </div>
             <div class="spec-badges">
+                @if (! empty($mockups))
+                    <span class="mockup-badge" title="{{ count($mockups['screens'] ?? []) }} screen(s)">Mockup</span>
+                @endif
                 @if (! empty($spec['points']))
                     <span class="points">{{ $spec['points'] }} SP</span>
                 @endif
@@ -262,6 +324,40 @@
                 <h3>User story</h3>
                 <div class="markdown">{!! $spec_html !!}</div>
             </section>
+
+            @if (! empty($mockups))
+                <section class="card panel">
+                    <h3>Mockups</h3>
+                    @if (! empty($mockups['entry_url']))
+                        <div class="mockup-preview">
+                            <iframe
+                                src="{{ $mockups['entry_url'] }}"
+                                title="Mockup preview for {{ $spec['code'] }}"
+                                loading="lazy"
+                            ></iframe>
+                        </div>
+                    @endif
+                    @if (! empty($mockups['screens']))
+                        <div class="mockup-screens">
+                            @foreach ($mockups['screens'] as $screen)
+                                @if (! empty($screen['url']))
+                                    <a class="mockup-screen-link" href="{{ $screen['url'] }}" target="_blank" rel="noopener noreferrer">
+                                        {{ $screen['label'] ?? $screen['file'] }}
+                                    </a>
+                                @else
+                                    <span class="mockup-screen-link">{{ $screen['label'] ?? $screen['file'] }}</span>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                    <p class="mockup-path">
+                        Artifacts in <code>{{ $mockups['path'] ?? '' }}</code>
+                        @if (empty($mockups['browsable']))
+                            — preview route disabled in this environment
+                        @endif
+                    </p>
+                </section>
+            @endif
 
             @if ($plan_html)
                 <section class="card panel">

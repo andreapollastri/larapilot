@@ -13,6 +13,7 @@ class DashboardService
         protected SpecService $specs,
         protected PlanService $plans,
         protected PrdService $prd,
+        protected MockupService $mockups,
     ) {}
 
     /**
@@ -25,6 +26,7 @@ class DashboardService
 
         return array_merge($spec, [
             'tasks' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
+            'mockups' => $code !== '' ? $this->mockups->summary($code) : ['available' => false, 'screen_count' => 0],
         ]);
     }
 
@@ -106,6 +108,7 @@ class DashboardService
             'spec' => $data['spec'],
             'tasks' => $tasks,
             'workdir' => $data['workdir'],
+            'mockups' => $this->mockups->forSpec($code),
             'spec_html' => Markdown::toHtml((string) ($data['spec']['body'] ?? '')),
             'plan_html' => is_array($plan)
                 ? Markdown::toHtml((string) ($plan['plan_body'] ?? ''))

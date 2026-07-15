@@ -203,6 +203,15 @@
         color: var(--muted);
         font-size: 0.85rem;
     }
+
+    .mockup-indicator {
+        margin-top: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #7c3aed;
+    }
 </style>
 @endpush
 
@@ -283,6 +292,9 @@
                                     </div>
                                 </div>
                                 <h3>{{ $spec['title'] ?? 'Untitled' }}</h3>
+                                @if (! empty($spec['mockups']['available']))
+                                    <div class="mockup-indicator">Mockup</div>
+                                @endif
                                 @if (! empty($spec['epic']['title']))
                                     <p>{{ $spec['epic']['title'] }}</p>
                                 @endif

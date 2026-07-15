@@ -70,7 +70,28 @@ it('shows a spec with plan and tasks via the API', function (): void {
         ->assertJsonCount(2, 'tasks')
         ->assertJsonPath('tasks.0.id', 'TASK-01')
         ->assertJsonPath('task_progress.total', 2)
-        ->assertJsonPath('task_progress.done', 0);
+        ->assertJsonPath('task_progress.done', 0)
+        ->assertJsonPath('mockups', null);
+});
+
+it('includes mockup metadata in the API when HTML exists', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+    addMockup('US-001', [
+        'index.html' => '<html><body>Mockup</body></html>',
+        'desktop.html' => '<html><body>Desktop</body></html>',
+    ]);
+
+    $this->getJson('/larapilot/api/specs/US-001')
+        ->assertOk()
+        ->assertJsonPath('mockups.entry', 'index.html')
+        ->assertJsonPath('mockups.entry_url', route('larapilot.mockups.show', ['spec' => 'US-001'], absolute: false))
+        ->assertJsonCount(2, 'mockups.screens');
+
+    $this->getJson('/larapilot/api/board')
+        ->assertOk()
+        ->assertJsonPath('columns.TODO.0.mockups.available', true)
+        ->assertJsonPath('columns.TODO.0.mockups.screen_count', 2);
 });
 
 it('returns the PRD via the API', function (): void {

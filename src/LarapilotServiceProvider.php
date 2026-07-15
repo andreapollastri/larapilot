@@ -33,6 +33,7 @@ use Larapilot\Services\ApiService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\GitService;
+use Larapilot\Services\MockupService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
@@ -51,6 +52,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
         $this->app->singleton(PlanService::class);
+        $this->app->singleton(MockupService::class);
         $this->app->singleton(DashboardService::class);
         $this->app->singleton(ApiService::class);
         $this->app->singleton(OpenApiService::class);

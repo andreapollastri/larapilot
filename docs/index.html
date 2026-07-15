@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, ship reviewed code. v1.7.2">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.7.3 links /larapilot-design mockups to the workflow dashboard — embedded preview on each user story. Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,6 +403,35 @@
     .hero-tagline strong {
       color: var(--text);
       font-weight: 700;
+    }
+
+    .hero-news {
+      margin-bottom: 1.35rem;
+      padding: .9rem 1rem;
+      background: var(--accent-soft);
+      border: 1px solid rgba(255, 68, 54, .18);
+      border-radius: var(--radius-sm);
+      font-size: .84rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .hero-news strong {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .hero-news ul {
+      margin: .55rem 0 0;
+      padding-left: 1.1rem;
+    }
+
+    .hero-news li {
+      margin-bottom: .2rem;
+    }
+
+    .hero-news li:last-child {
+      margin-bottom: 0;
     }
 
     /* Terminal mock */
@@ -2579,13 +2608,23 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.7.2</span>
+          <span class="hero-version">v1.7.3</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
           Spec-driven workflow for Laravel — integrated with <a href="https://laravel.com/ai/boost" target="_blank"
             rel="noopener">Laravel Boost</a>. Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
         </p>
+        <div class="hero-news">
+          <strong>New in v1.7.3</strong> — mockups from <code>/larapilot-design</code> are linked to user stories in the
+          <a href="#deep-dive-dashboard">workflow dashboard</a>:
+          <ul>
+            <li><strong>Board</strong> — mockup indicator on spec cards when HTML exists in <code>.larapilot/mockups/{code}/</code></li>
+            <li><strong>Spec detail</strong> — embedded preview iframe, screen links, and artifact path on <code>/larapilot/specs/{code}</code></li>
+            <li><strong>JSON API</strong> — <code>mockups</code> metadata on board items and spec detail (OpenAPI updated)</li>
+            <li>Served via the existing dev-only <code>/mockups/{spec}</code> route — no storage symlink required</li>
+          </ul>
+        </div>
         <p class="hero-flow">
           <code>/larapilot-inception</code> → <code>/larapilot-spec</code> →
           <code>/larapilot-plan US-XXX</code> → <code>/larapilot-implement US-XXX</code> →
@@ -3037,7 +3076,7 @@
             <div class="code-block-header">Your editor — optional</div>
             <pre><code>/larapilot-design US-001</code></pre>
           </div>
-          <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>, <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>). Preview: <code>/mockups/US-001</code>.</p>
+          <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>, <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>). Preview at <code>/mockups/US-001</code> — and in the <a href="#deep-dive-dashboard">dashboard</a> on the US detail page (embedded preview + screen links).</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor — US-001</div>
@@ -3650,7 +3689,7 @@ body: |
               <span class="skill-badge">optional</span>
               <div class="skill-body">
                 <h3><code>/larapilot-design US-XXX</code></h3>
-                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament, Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code> (non-production).</p>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament, Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code> (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -4024,7 +4063,7 @@ body: |
                 <tr>
                   <td><code>mockups/{spec}/</code></td>
                   <td><code>/larapilot-design</code></td>
-                  <td>Static HTML previews served at <code>/mockups/{spec}</code> (dev/staging only)</td>
+                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); linked in the <a href="#deep-dive-dashboard">dashboard</a> and JSON API when present</td>
                 </tr>
                 <tr>
                   <td><code>design-systems/</code></td>
@@ -4222,7 +4261,7 @@ body: |
           </div>
 
           <h4>Board</h4>
-          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML exists, and merge-request link when the story is <span class="status status-done">DONE</span>.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.</p>
@@ -4231,6 +4270,7 @@ body: |
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
           <ul>
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
+            <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via <code>/mockups/{code}</code> in dev/staging)</li>
             <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
             <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done</li>
           </ul>
@@ -4259,17 +4299,17 @@ body: |
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
-                  <td>Metrics, status order, and specs grouped by workflow column</td>
+                  <td>Metrics, status order, and specs grouped by workflow column (includes <code>mockups</code> per spec)</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress; optional <code>?status=TODO</code> filter</td>
+                  <td>All specs with task progress and <code>mockups</code> summary; optional <code>?status=TODO</code> filter</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs/{code}</code></td>
-                  <td>Single spec with plan body, tasks, workdir, and task progress</td>
+                  <td>Single spec with plan body, tasks, workdir, task progress, and <code>mockups</code> when HTML exists</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -4298,8 +4338,22 @@ body: |
   "metrics": { "total": 3, "done": 1, "completion_rate": 33.3, "wip": 1 },
   "status_order": ["TODO", "PLANNED", "IN PROGRESS", "REVIEW", "DONE"],
   "columns": {
-    "TODO": [{ "code": "US-002", "title": "Project Management", "task_progress": { "total": 0, "done": 0 } }],
-    "DONE": [{ "code": "US-001", "title": "User Registration", "task_progress": { "total": 4, "done": 4 } }]
+    "TODO": [{
+      "code": "US-002",
+      "title": "Project Management",
+      "task_progress": { "total": 0, "done": 0 },
+      "mockups": { "available": false, "screen_count": 0 }
+    }],
+    "DONE": [{
+      "code": "US-001",
+      "title": "User Registration",
+      "task_progress": { "total": 4, "done": 4 },
+      "mockups": {
+        "available": true,
+        "screen_count": 2,
+        "entry_url": "/mockups/US-001"
+      }
+    }]
   },
   "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
 }</code></pre>
@@ -4319,7 +4373,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.7.2</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.7.3</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

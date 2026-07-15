@@ -2,6 +2,18 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.7.3] - 2026-07-15
+
+### Added
+
+- **Dashboard mockup linking** — when `/larapilot-design` produced HTML in `.larapilot/mockups/{spec}/`, the workflow dashboard and JSON API now surface it on the board (indicator) and spec detail (embedded preview iframe, screen links, artifact path). Served via the existing dev-only `/mockups/{spec}` route — no storage symlink required.
+- **`MockupService`** — discovers HTML screens per spec code and builds preview URLs when the mockup route is browsable.
+
+### Changed
+
+- **Workflow API & OpenAPI** — `mockups` summary on board/spec list items; full `mockups` object (screens, entry URL) on spec detail.
+- **Docs site** — v1.7.3 release note and dashboard spec-detail copy for mockup preview.
+
 ## [1.7.2] - 2026-07-15
 
 Website version update and minor fixies.

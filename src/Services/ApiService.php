@@ -14,6 +14,7 @@ class ApiService
         protected SpecService $specs,
         protected PlanService $plans,
         protected PrdService $prd,
+        protected MockupService $mockups,
     ) {}
 
     /**
@@ -76,6 +77,7 @@ class ApiService
             'tasks' => $data['tasks'],
             'workdir' => $data['workdir'],
             'task_progress' => $this->plans->taskProgress($code),
+            'mockups' => $this->mockups->forSpec($code),
         ];
     }
 
@@ -106,6 +108,7 @@ class ApiService
 
         return array_merge($spec, [
             'task_progress' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
+            'mockups' => $code !== '' ? $this->mockups->summary($code) : ['available' => false, 'screen_count' => 0],
         ]);
     }
 }
