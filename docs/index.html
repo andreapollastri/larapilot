@@ -4455,7 +4455,7 @@ body: |
                 <tr>
                   <td><code>design-systems/</code></td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code></td>
-                  <td>Packaged mockup references — Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE — see <a
+                  <td>Packaged mockup references + optional custom folders — see <a
                       href="#deep-dive-design-systems">design systems</a></td>
                 </tr>
                 <tr>
@@ -4535,6 +4535,20 @@ body: |
           </div>
           <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
             <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
+
+          <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
+          <p>You can add <strong>your own</strong> design system or UI template under
+            <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
+            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.</p>
+          <ul>
+            <li>Drop tokens, component notes, HTML starters, and brand assets in that folder (same shape as the packaged
+              ones helps: <code>README.md</code>, <code>tokens.css</code>, <code>components.md</code>, optional
+              <code>html/</code>).</li>
+            <li>Record the choice in the PRD (or tell the agent during inception/design) so Elise, Joe, and Alex treat it
+              as the source of truth for mockups and shipped UI.</li>
+            <li><code>larapilot:update</code> refreshes only the packaged systems — your custom folder is never
+              overwritten.</li>
+          </ul>
         </article>
 
         <!-- Artisan CLI -->
