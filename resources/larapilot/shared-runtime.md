@@ -37,8 +37,56 @@ Common rules:
     - `2`: invalid input
     - `3`: connector/backend failure
     - `4`: missing precondition
-- When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, and workflow statuses.
+- When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `php artisan larapilot:config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
+- `config-show` also returns `data.settings` (`effort`, `git_mode`, `testing`, `auto_approve`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+
+## Project Settings
+
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: **`STANDARD` / `GITFLOW` / `NORMAL` / `NO`**.
+
+### Effort (`settings.effort`)
+
+Controls token economy and process depth across all skills.
+
+| Value | Behavior |
+| --- | --- |
+| **`ECO`** | Token economy. **Never spawn sub-agents** (explore, Robert, Lars, or any other) — always stay in the parent session with inline checklists. **Defer documentation theater** — no Albert baseline/extended doc tasks, no PDF/diagrams/runbooks, no README rewrites, no AskQuestion for extended docs — **except OpenAPI/Swagger: still update when public/partner API routes change** (see **Technical Documentation**). Skip optional deepsearch, Oliver red-team, and non-essential persona rounds. Prefer one-voice summaries. No E2E/browser planning. Implement: task → code → minimal tests → commit (per git_mode) → next. Review: short checklist only. Workflow artifacts (PRD/spec/plan/AC) still required. |
+| **`STANDARD`** | Normal Larapilot behavior (**default**). Full skill contracts without forcing every optional deep pass. |
+| **`MAX`** | **Deep** mode on every process and flow. Prefer thorough persona rounds, always run optional explore/review sub-agents when the editor supports them, expand plan/test strategy, and surface residual risks. Treat "optional" research and verification as in-scope unless the user waives them. |
+
+Zoey may remind the team once per skill when `effort` is `ECO` or `MAX`. Do not narrate the setting on every message.
+
+### Git mode (`settings.git_mode`)
+
+| Value | Behavior |
+| --- | --- |
+| **`NO_GITFLOW`** | No Gitflow ceremony. Work on the current branch; Conventional Commits still preferred. No mandatory `feature/US-XXX-*`, TASK-00 bootstrap, or internal PR. Do not push unless the user explicitly asks. |
+| **`GITFLOW`** | Gitflow **without automatic push** (**default**). One `feature/US-XXX-*` from `develop`, one atomic commit per task, prepare/update an internal PR description toward `develop`. **Do not `git push` or open/update the remote PR unless the user explicitly asks** in the session. |
+| **`GITFLOW_PUSH`** | Full Gitflow **with** push: after each task commit, `git push` the feature branch and open/update the internal PR/MR toward `develop`. |
+
+Push is **never** implied by `GITFLOW` alone — only `GITFLOW_PUSH` enables automatic push/PR remote updates.
+
+### Testing (`settings.testing`)
+
+Anne scales plan tasks, implement verification, and review evidence to this bar — **independent of** delivery target (delivery target may still add domain cases within the bar).
+
+| Value | Behavior |
+| --- | --- |
+| **`MINIMAL`** | Critical-path Pest/PHPUnit only (auth, payments, core API happy paths + key validation). No Playwright, Laravel Dusk, Pest browser, viewport matrix, axe automation, or journey E2E. |
+| **`NORMAL`** | Standard feature/unit/policy/API/queue tests and review evidence (**default**). **No** Playwright, Dusk, Pest browser E2E, or multi-viewport browser suites. Manual test handoff notes are OK when helpful. |
+| **`BEST`** | All imaginable automation for the stack: above + integration/HTTP fakes, tenancy isolation when multi-tenant, primary-journey E2E, Playwright or Dusk (or Pest browser), viewport matrix (375 / 768 / 1280), axe at mobile, Lighthouse a11y when public UI — match project tooling. |
+
+**Do not** plan or run Playwright/Dusk/E2E/viewport-browser work under `MINIMAL` or `NORMAL`. Those belong to `BEST` only.
+
+### Auto-approve (`settings.auto_approve`)
+
+| Value | Behavior |
+| --- | --- |
+| **`NO`** | Human gate required (**default**). Specs stop at `REVIEW`; only a human Approve via `/larapilot-review` → `spec-approve` moves to `DONE`. |
+| **`YES`** | After implement reaches `REVIEW`, **`/larapilot-autopilot`** may present a short Robert checklist and call `php artisan larapilot:spec-approve {code}` without waiting for a human verdict. Standalone `/larapilot-review` still presents the checklist; when `YES` and the user (or autopilot) did not request changes, it may approve in the same turn. |
+
+`YES` explicitly opts out of the default human-in-the-loop DONE gate for batch delivery. Prefer `NO` unless the user accepts that risk.
 
 ## Laravel Boost Integration
 
@@ -502,10 +550,10 @@ John designs **scalable, complete products** whose depth matches the **delivery 
 3. **Service integration** — encapsulate third-party APIs in dedicated service classes; use Events/Listeners for side effects; prefer Spatie packages or Laravel first-party over ad-hoc HTTP in controllers.
 4. **DTOs & boundaries** — use Data objects / DTOs (Spatie Laravel Data, readonly PHP classes, or Form Request → DTO mappers) at API and integration boundaries when payloads are non-trivial; keep Eloquent models out of external contracts.
 5. **Technical debt** — favor clear layers (Controller → Action/Service → Model), one migration per concern, explicit interfaces only when multiple implementations exist; document trade-offs in plan/ADR notes instead of hidden shortcuts.
-6. **Technical documentation** — keep docs current with code:
-    - **README** — setup, env vars, local dev method per PRD, queue worker, scheduler
-    - **OpenAPI / Swagger** — for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship phase verifies spec matches routes
-    - **Inline API docs** — `/api/docs` when the stack supports it
+6. **Technical documentation** — keep docs current with code (under **`ECO`**: OpenAPI still required when APIs change; other docs deferred — see **Technical Documentation → Effort gate**):
+    - **README** — setup, env vars, local dev method per PRD, queue worker, scheduler _(deferred under `ECO`)_
+    - **OpenAPI / Swagger** — for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship phase verifies spec matches routes _(always, including `ECO`)_
+    - **Inline API docs** — `/api/docs` when the stack supports it _(deferred under `ECO` unless it is the OpenAPI surface)_
     - Update docs in the same spec that changes the API or integration
 
 **SSO / social login** — prefer **[Laravel Socialite](https://laravel.com/docs/socialite)** with official drivers (Google, GitHub, GitLab, Microsoft, Apple, …). For providers beyond the core set, use **[Socialite Providers](https://socialiteproviders.com/)** — never roll custom OAuth unless no provider exists. Store provider IDs on the User model (UUID PK); link accounts; respect Violet's consent requirements.
@@ -536,9 +584,11 @@ Ownership: **John** selects and documents the pattern; **Andrew** validates Lara
 
 These standards apply to **every** Laravel project unless the user explicitly opts out. Jack proposes them at inception; plans include setup tasks; ship verifies compliance.
 
-### Git workflow — Gitflow
+### Git workflow — Gitflow _(gated by `settings.git_mode`)_
 
-Propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgrade path):
+Honor **`data.settings.git_mode`** from `config-show` (see **Project Settings**). When `NO_GITFLOW`, skip this section's branch/PR ceremony.
+
+When `GITFLOW` or `GITFLOW_PUSH`, propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgrade path):
 
 | Branch                      | Purpose                                                                                  |
 | --------------------------- | ---------------------------------------------------------------------------------------- |
@@ -548,23 +598,27 @@ Propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgra
 | `release/x.y.z`             | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop` |
 | `hotfix/x.y.z`              | Urgent production fix; branch from `main`; merge → `main` + `develop`                    |
 
-Rules: no direct commits to `main` or `develop`; PR/MR required; delete feature branches after merge; Larapilot spec codes map to `feature/US-XXX-*` branch names when possible.
+Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required before merge; delete feature branches after merge; Larapilot spec codes map to `feature/US-XXX-*` branch names when possible.
 
-### Git discipline — strict per task _(Alex implements; Robert + Jack enforce)_
+### Git discipline — per task _(Alex implements; Robert + Jack enforce; gated by `settings.git_mode`)_
 
-**Non-negotiable** on every Larapilot project unless the user explicitly opts out. Solo MVP may use GitHub Flow, but must still follow the per-task commit + internal PR rules below.
+| `git_mode` | Discipline |
+| --- | --- |
+| **`NO_GITFLOW`** | Commits on the current branch; Conventional Commits preferred; **no** TASK-00 bootstrap, feature-branch mandate, or internal PR. **No push** unless the user asks. |
+| **`GITFLOW`** | Branch + atomic commits + prepare PR body/title locally (**default**). **Never auto-push**; remote PR open/update only if the user asks in-session. |
+| **`GITFLOW_PUSH`** | Same as `GITFLOW` **plus** push after each task commit and open/update internal PR toward `develop`. |
 
-| Rule                   | Requirement                                                                                                                                                                                                           |
+| Rule                   | Requirement (`GITFLOW` / `GITFLOW_PUSH`)                                                                                                                                                                              |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Branch**             | One `feature/US-XXX-short-desc` per spec; branch from `develop`; never commit on `main`/`develop`                                                                                                                     |
 | **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **evolutiva** / `Fix` unit — never batch unrelated tasks in one commit                                                             |
 | **Commit message**     | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched                                  |
-| **Internal PR**        | After **each** task commit: push the feature branch and **open or update** an internal PR/MR targeting `develop` — title references `US-XXX` + `TASK-NN`; body links plan task and summarizes the increment           |
-| **PR lifecycle**       | Keep the PR open across the spec; each new task commit updates the same PR; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                      |
-| **Evolutive work**     | Enhancements, refactors, or follow-up fixes on an entity/feature get the same treatment: dedicated commit + PR update — even when scope is smaller than a full spec                                                   |
-| **Hygiene**            | Rebase or merge `develop` into the feature branch before starting the next task when the PR has drifted; run tests before every commit; `CHANGELOG.md` Unreleased updated in the PR when user-facing behavior changes |
+| **Internal PR**        | Prepare PR toward `develop` (title `US-XXX` + `TASK-NN`). **Push + open/update remote PR only when `git_mode` is `GITFLOW_PUSH`** (or the user explicitly requests push)                                              |
+| **PR lifecycle**       | Keep one PR per spec; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                                                                           |
+| **Evolutive work**     | Enhancements/refactors get the same commit (+ push/PR when `GITFLOW_PUSH`) treatment                                                                                                                                  |
+| **Hygiene**            | Rebase or merge `develop` when drifted; run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes                                                                             |
 
-Robert **rejects** implement handoff when: commits span multiple tasks, messages omit spec/task ids, no internal PR exists toward `develop`, or factory/seeder updates are missing for touched models (see below). Jack scaffolds branch protection and required PR checks in CI.
+Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward `develop`. Under **`GITFLOW`**, missing remote push/PR is **not** a reject reason. Jack scaffolds branch protection and required PR checks in CI when Gitflow is active.
 
 ### Code review gate _(Robert owns — Sabrine on refactoring/porting)_
 
@@ -625,19 +679,31 @@ Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match th
 
 Rules: pipeline runs on every PR to `develop`/`main`; failing tests or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver).
 
-### Testing standards _(Anne imposes)_
+### Testing standards _(Anne imposes — gated by `settings.testing`)_
 
-| Delivery target               | Minimum bar                                                                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP**                       | Pest/PHPUnit feature tests for critical paths (auth, payments, core API); Form Request validation tests                          |
-| **V1 Complete**               | Above + policy tests (`Gate`/`Policy`), API contract tests, queue job tests                                                      |
-| **Full Product / Enterprise** | Above + integration tests for external services (HTTP fake), tenancy isolation tests when multi-tenant, e2e for primary journeys |
+Honor **`data.settings.testing`** from `config-show` (see **Project Settings**). Delivery target may add domain cases **within** that bar — it must not upgrade `MINIMAL`/`NORMAL` into browser E2E.
 
-Always: use **Pest** when the project already does; `php artisan test` in CI; no untested public API routes; Anne defines strategy in every plan.
+| `testing` | Bar |
+| --- | --- |
+| **`MINIMAL`** | Critical-path Pest/PHPUnit only (auth, payments, core API + key Form Request validation). No browser/E2E tooling. |
+| **`NORMAL`** | Feature/unit/policy/API/queue tests scaled to delivery target (**default**). **No** Playwright, Dusk, Pest browser, or journey E2E. |
+| **`BEST`** | Full bar: `NORMAL` + integration (`Http::fake`), tenancy isolation when multi-tenant, primary-journey E2E, and **Responsive & UI testing** below. |
 
-### Responsive & UI testing _(Anne imposes on UI specs)_
+Delivery-target hints **inside** the active bar:
 
-Anne ensures UI work is verified **across devices and resolutions**, not only at a single desktop width:
+| Delivery target               | Within `NORMAL` / `BEST`                                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **MVP**                       | Critical paths + Form Request validation                                                                         |
+| **V1 Complete**               | Above + policy tests (`Gate`/`Policy`), API contract tests, queue job tests                                      |
+| **Full Product / Enterprise** | Above + integration tests; tenancy isolation when multi-tenant; **E2E only if `testing` is `BEST`**              |
+
+Always: use **Pest** when the project already does; `php artisan test` in CI; no untested public API routes under `NORMAL`/`BEST`; Anne defines strategy in every plan.
+
+### Responsive & UI testing _(Anne — **`settings.testing: BEST` only**)_
+
+When `testing` is **`MINIMAL`** or **`NORMAL`**, skip automated viewport/browser suites; optional short **Manual tests recommended** notes are enough for UI specs.
+
+When `testing` is **`BEST`**, Anne verifies UI **across devices and resolutions**:
 
 | Area                            | Requirement                                                                                                                                                   |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -650,11 +716,11 @@ Anne ensures UI work is verified **across devices and resolutions**, not only at
 | **Orientation**                 | When automatable, test landscape on mobile for primary screens                                                                                                |
 | **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms)                                     |
 | **Device coverage**             | Anne tests **every device class** the stack supports — phone, tablet, desktop, and (when in scope) PWA/app shells; use the project's Pest browser, Dusk, or Playwright matrix |
-| **Manual test handoff**         | When automation cannot run reliably (real devices, biometric auth, store builds, payment hardware, exotic browsers, accessibility with assistive tech), Anne **documents manual test steps** for the human — what to run, on which device, expected outcome |
+| **Manual test handoff**         | When automation cannot run reliably, Anne **documents manual test steps** for the human                                                                       |
 
-Anne plans explicit **responsive test tasks** interleaved with UI implementation — not deferred to ship. Elise's mockup README breakpoint notes are the test contract. At review, Anne attaches automated evidence **and** a **Manual tests recommended** section when human verification is still required.
+Under **`BEST`**, Anne plans explicit **responsive test tasks** interleaved with UI implementation. Elise's mockup README breakpoint notes are the test contract. At review, Anne attaches automated evidence **and** a **Manual tests recommended** section when human verification is still required.
 
-Ownership: **Jack** owns Gitflow, CI/CD, versioning tags, and branch-protection scaffold; **Robert** enforces branch hygiene, per-task commit/PR discipline, and factory/seeder completeness in review; **Anne** owns test strategy **including multi-viewport UI/responsive tests**; **Lars** owns `security.txt`, `SECURITY.md`, and pipeline security gates.
+Ownership: **Jack** owns Gitflow (when enabled), CI/CD, versioning tags, and branch-protection scaffold; **Robert** enforces branch hygiene per `git_mode`, per-task commits, and factory/seeder completeness in review; **Anne** owns test strategy per `settings.testing`; **Lars** owns `security.txt`, `SECURITY.md`, and pipeline security gates.
 
 Ownership: **John** owns architecture depth, API design, queues, DTOs, doc strategy, and multi-tenancy choice; **Alex** implements, owns factories/seeders, and executes the per-task Git discipline; **Robert** reviews adherence; **Tom** reflects NFRs in acceptance criteria.
 
@@ -1149,7 +1215,7 @@ Ownership: **Ricky** owns mobile/native/hybrid apps and device APIs; **Joe** own
 
 ### Documentation baseline _(always on — extended scope per spec)_
 
-Every Larapilot project carries a **baseline technical documentation layer** by default — Albert never treats docs as optional at the project level:
+Every Larapilot project carries a **baseline technical documentation layer** by default — Albert never treats docs as optional at the project level — **except when `settings.effort` is `ECO`** (see Effort gate below).
 
 | Tier              | Always present                                                                                     |
 | ----------------- | -------------------------------------------------------------------------------------------------- |
@@ -1159,12 +1225,22 @@ Every Larapilot project carries a **baseline technical documentation layer** by 
 
 Rules:
 
-1. **Inception** — Albert records the baseline doc set in the PRD; notes optional extended deliverables (PDF manual, doc site) without assuming them globally.
-2. **Spec approval (`larapilot-spec`)** — when adding or presenting user stories for human approval, **Albert proposes via AskQuestion** whether this spec needs **extended documentation** beyond the baseline (e.g. OpenAPI delta, runbook section, diagram, **PDF tutorial chapter for the client**). Default answer may be baseline-only; extended scope is explicit per spec.
-3. **Plan** — explicit doc tasks per spec: baseline updates always; extended tasks only when approved.
-4. **Implement** — Albert writes or updates docs alongside code; never leaves API routes undocumented when OpenAPI is in scope.
-5. **Ship** — verifies baseline completeness before release; extended PDF manuals when scoped.
-6. **Maintenance** — keeps docs in sync with **Sophia** on every maintenance release; flags stale OpenAPI or runbooks in review.
+1. **Inception** — Albert records the baseline doc set in the PRD; notes optional extended deliverables (PDF manual, doc site) without assuming them globally. Under **`ECO`**: one-line note that docs are deferred; no baseline doc inventory.
+2. **Spec approval (`larapilot-spec`)** — when adding or presenting user stories for human approval, **Albert proposes via AskQuestion** whether this spec needs **extended documentation** beyond the baseline (e.g. OpenAPI delta, runbook section, diagram, **PDF tutorial chapter for the client**). Default answer may be baseline-only; extended scope is explicit per spec. Under **`ECO`**: **skip this AskQuestion** entirely.
+3. **Plan** — explicit doc tasks per spec: baseline updates always; extended tasks only when approved. Under **`ECO`**: omit Albert/doc tasks **except** an OpenAPI update task when the spec changes public/partner HTTP APIs.
+4. **Implement** — Albert writes or updates docs alongside code; never leaves API routes undocumented when OpenAPI is in scope. Under **`ECO`**: skip README/diagrams/PDF/runbooks — **still update OpenAPI/Swagger** in the same task that changes API routes.
+5. **Ship** — verifies baseline completeness before release; extended PDF manuals when scoped. Under **`ECO`**: skip README/PDF completeness gates; **still require OpenAPI to match routes** when APIs exist.
+6. **Maintenance** — keeps docs in sync with **Sophia** on every maintenance release; flags stale OpenAPI or runbooks in review. Under **`ECO`**: skip non-OpenAPI docs sync; keep OpenAPI current when APIs change.
+
+### Effort gate — `ECO` docs deferral
+
+When `settings.effort` is **`ECO`**:
+
+| Still required | Deferred / skipped |
+| --- | --- |
+| Workflow artifacts: PRD, specs, plans, AC, review checklist | Albert baseline + extended doc tasks (README, architecture notes, runbooks) |
+| **OpenAPI/Swagger** when public/partner API routes change (`public/openapi.yaml`, Scramble, L5-Swagger, or equivalent) | Diagrams (draw.io/Mermaid), PDF manuals, Postman collections, doc-site polish |
+| Code comments only when needed to unblock the next task | AskQuestion for extended docs; CHANGELOG narrative passes (unless a one-line Unreleased bump is required for a versioned release the user asked for) |
 
 Ownership: **Albert** owns technical documentation, baseline project docs, and client manuals; **Marika** owns product/marketing copy (not technical docs); **John** owns API design accuracy; **Emily** owns manual localization; **Alex** implements doc-site routes when applicable.
 
@@ -1435,7 +1511,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🎨 Elise     | UX Designer                      | Nordic UI, **mobile-first responsive**, dark+light, WCAG 2.2 AA, **logo, favicon.svg, coordinated social assets**                                        |
 | ✨ Joe       | Frontend Expert                  | **Design system with Elise** (design → implement → review), visual impact, JS/**Three.js**, client performance                                              |
 | 📱 Ricky     | App Developer                    | Native & hybrid mobile (**Flutter**, RN, Capacitor), device APIs (camera, mic, sensors, GPS, Bluetooth, NFC/RFID), store release, PWA device permissions |
-| 📝 Albert    | Tech Writer                      | **Baseline technical docs always**; proposes extended docs per spec; OpenAPI, diagrams, runbooks, **PDF client tutorials** (EN; localized with Emily)       |
+| 📝 Albert    | Tech Writer                      | **Baseline technical docs** (deferred under `effort: ECO`); proposes extended docs per spec; OpenAPI, diagrams, runbooks, **PDF client tutorials** (EN; localized with Emily) |
 | 🤖 Zoey      | AI Guru                          | Prompt sharpening, output economy, sub-agent orchestration, session/credit risk, task decomposition — **active in every skill**                          |
 | ✍️ Marika    | Copywriter                       | Website & app copy — creation, review, any tone; **typo/consistency checks with Emily** in review; legacy content mapping with Sabrine                  |
 | 🔄 Sabrine   | Legacy Porting Specialist        | Legacy analysis, **content scraping/extraction**, content/feature inventory, **DB & assets porting** (legacy → new), parity matrix, porting proposals, review parity checks |
@@ -1478,6 +1554,7 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 | **`larapilot-review`**    | High             | Robert presents a **checklist gate**: criteria status, evidence pointers (branch, test command/output), residual risks, verdict ask. Summarize diffs; do not narrate every hunk.                                                                                   |
 | **`larapilot-ship`**      | Structured terse | Between phases: **PASS / FAIL / BLOCKED + one-line reason**. OWASP and launch findings: bullets or tables. Final release report: structured fields only (platform, commit, health, compliance summary).                                                            |
 | **`larapilot-autopilot`** | Minimal          | Per spec: `US-XXX: {from}→{to} \| N tasks \| {blocker or OK}`. End with batch summary. When delegating to plan/implement, follow that phase's economy.                                                                                                             |
+| **`larapilot-settings`**  | High             | One-line current values; AskQuestion options; confirm saved triple. No product narrative.                                                                                                                                                                         |
 
 ### Do not compress
 
@@ -1492,6 +1569,8 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 Some skills spawn **readonly sub-agents** for fresh context via the editor's sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent) — not separate Larapilot personas. Sub-agents **never** call `php artisan larapilot:*`, edit files, or replace the human gate.
 
 **Capability check:** sub-agents are an optimization, not a requirement. If the editor has no sub-agent tool, skip the spawn and run the same pass **inline in the parent session** using the handoff prompt as a checklist — every flow below produces the same artifacts either way.
+
+**Effort gate:** when `settings.effort` is **`ECO`**, **do not spawn any sub-agents** — no explore, no Robert/Lars, no parallel Task/Agent calls. Run every pass **inline in the parent** with a minimal checklist. When **`MAX`**, always run the sub-agents listed below when the editor supports them. When **`STANDARD`**, follow each skill's default (optional explore; implement still runs Robert + Lars).
 
 ### Global rules
 
@@ -1511,7 +1590,7 @@ Some skills spawn **readonly sub-agents** for fresh context via the editor's sub
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
-Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `ship`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
+Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `ship`, `settings`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
 
 ### Review artifact
 

@@ -9,13 +9,15 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Sub-agents**.
+Read `.larapilot/shared-runtime.md` — including **Project Settings**, **Sub-agents**, and Git/testing gates.
 
-Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections verbatim.
+Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections per `data.settings`.
 
 ## Output Economy
 
 **High** — see `larapilot-implement` in shared-runtime. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
+
+When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** (no README/diagrams/PDF/runbooks) but **still update OpenAPI/Swagger** when public/partner API routes change; short inline Robert/Lars checklist only; one-line status; no deep security narration unless blocked. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
 
 ## The Team
 
@@ -37,7 +39,7 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
+1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`) and honor them for the whole run
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
@@ -76,16 +78,15 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **Queues:** implement `ShouldQueue` jobs for async work; never block HTTP on slow I/O.
 - **Logging:** structured log context on auth, payments, and integration failures.
 - **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial.
-- **Docs:** update README, OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs.
+- **Docs:** update OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs — **including under `ECO`**. README and other prose docs: only when `effort` is not `ECO`.
 - **Local dev:** honor the local dev method recorded in the PRD — use `sail up` / `sail artisan …` only when the PRD chose Sail; document Herd setup when Herd was chosen; when **not defined yet**, stick to generic `php artisan` in README/tasks until the user decides; use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains
-- **Git:** work on `feature/US-XXX-*` (or current spec branch per Gitflow); never commit directly to `main` or `develop`.
-- **Git discipline (strict):** after **each** completed task — one atomic [Conventional Commit](https://www.conventionalcommits.org/) (`feat(US-XXX): TASK-NN summary`), push, and open/update the internal PR toward `develop` (title/body reference spec + task id). Same rule for evolutive fixes. See **Git discipline** in shared-runtime — Robert blocks handoff if violated.
+- **Git:** honor `settings.git_mode`. `NO_GITFLOW` → current branch, commits only. `GITFLOW` → `feature/US-XXX-*` + atomic commits + prepare PR **without push**. `GITFLOW_PUSH` → same **plus** push and open/update internal PR toward `develop` after each task. Never commit directly to `main`/`develop` in Gitflow modes. See **Git discipline** in shared-runtime.
 - **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
 - **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
 - **Alex:** optimizes **FE/BE integration** following **Andrew** (Laravel seams) and **Joe** (design system/UI); involves **Jack** when choices touch deploy, CDN, queues, storage, or CI runners
 - **Frontend (Elise + Joe):** Blade/Livewire/Tailwind; **design system aligned with Elise** from mockups through code; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — design-system tokens/components, animations, client bundle/performance, visual fidelity to mockups
 - **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, platform store constraints
-- **Docs (Albert):** maintain **baseline** README/architecture/API docs on every spec; extended OpenAPI, diagrams, PDF manual chapters only when scoped in plan
+- **Docs (Albert):** when not `ECO`, maintain **baseline** README/architecture docs on every spec; diagrams/PDF only when scoped in plan. Under **`ECO`**: skip README/diagrams/PDF — **still update OpenAPI** when API routes change
 - **Laravel (Andrew):** idiomatic Eloquent, Form Requests, policies, queues, service classes; Spatie/first-party packages per Vendor & Package Policy; cite Laravel docs when introducing non-obvious patterns
 - **Copy (Marika):** no placeholder lorem on shipped surfaces; wire realistic copy in views, notifications, and `lang/` files
 - **Legacy parity (Sabrine):** when Project Origin is legacy, verify each in-scope parity row before `task-done` on migration/feature tasks; flag gaps in handoff
@@ -109,17 +110,19 @@ From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
 Group tasks by dependencies. For each task:
 
 1. Alex implements per task body contract — including factory/seeder updates when the task touches entities
-2. Anne writes/runs tests (`php artisan test` or `./vendor/bin/pest`) — for UI tasks: assert at **375 / 768 / 1280 px** minimum; mobile nav and CTAs reachable; axe at mobile viewport when applicable
-3. Alex commits (one atomic commit per task), pushes, and opens/updates internal PR to `develop`
+2. Anne writes/runs tests per `settings.testing` (`php artisan test` or `./vendor/bin/pest`). **BEST** only: UI viewport matrix 375 / 768 / 1280, browser/E2E tooling, axe at mobile. **NORMAL**/**MINIMAL**: no Playwright/Dusk/E2E
+3. Alex commits (one atomic commit per task). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks)
 4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
 
 ### Phase 2 — Review (sub-agents or inline)
 
-After all tasks are verified, run two **readonly review passes** — Robert (code review) and Lars (security) — before fixing and handoff. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
+After all tasks are verified, run review per `settings.effort`: **`ECO`** → **no sub-agents**; short inline Robert/Lars checklist only. **`STANDARD`** → two **readonly** passes (Robert + Lars). **`MAX`** → always spawn sub-agents when available, deeper findings. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
 
 #### Launch
 
-With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent): spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
+**`ECO`:** do not use the sub-agent tool — stay in the parent and run the inline checklist below.
+
+With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent) and `effort` is **`STANDARD`** or **`MAX`**: spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
 
 | Persona   | Pass            | Example types                                             |
 | --------- | --------------- | --------------------------------------------------------- |
@@ -128,7 +131,7 @@ With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent):
 
 Enable the editor's readonly flag when available; the handoff prompt forbids edits regardless. Review scope: the branch diff (or uncommitted changes when nothing is committed yet).
 
-**Inline fallback** — no sub-agent tool: the parent runs the same two passes itself, sequentially (Robert, then Lars), using the handoff prompt below as a checklist. All later steps are identical.
+**Inline fallback** — `ECO`, or no sub-agent tool: the parent runs the same two passes itself, sequentially (Robert, then Lars), using the handoff prompt below as a checklist (`ECO`: keep findings to Critical/High bullets only). All later steps are identical.
 
 #### Handoff prompt (fill from `config-show` + `spec-show`)
 

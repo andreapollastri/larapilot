@@ -28,7 +28,7 @@ Read `.larapilot/shared-runtime.md` for Language Policy, Agent Persona, Output E
 | 🎨 **Elise**     | UX Designer — Nordic UI, WCAG 2.2 AA, **mobile-first responsive**, **logo/favicon.svg/social assets** when client has none                                                          |
 | ✨ **Joe**       | Frontend Expert — **design system with Elise**, visual impact, JS frontend, animations, client performance |
 | 📱 **Ricky**     | App Developer — native/hybrid mobile, Flutter, device APIs (camera, mic, sensors, Bluetooth, NFC/RFID), store constraints |
-| 📝 **Albert**    | Tech Writer — **baseline technical docs always**; optional extended docs (OpenAPI, diagrams, PDF client tutorials) |
+| 📝 **Albert**    | Tech Writer — **baseline technical docs** (deferred under `effort: ECO`); optional extended docs (OpenAPI, diagrams, PDF client tutorials) |
 | ✍️ **Marika**    | Copywriter — website & app copy, review & tone _(Website, Application)_                                                                                                             |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — legacy analysis, **content scraping**, **DB & assets porting**, parity matrix, porting proposals _(legacy rewrite/port)_                               |
 | 👾 **Andrew**    | Laravel Expert — ecosystem best practices, community standards                                                                                                                      |

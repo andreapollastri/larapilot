@@ -70,6 +70,30 @@ it('memoizes project config and refreshes it after writes', function (): void {
     expect($config->resolve()['connector'])->toBe('custom');
 });
 
+it('exposes default project settings and updates them', function (): void {
+    $config = app(ConfigService::class);
+
+    expect($config->settings())->toBe([
+        'effort' => 'STANDARD',
+        'git_mode' => 'GITFLOW',
+        'testing' => 'NORMAL',
+        'auto_approve' => 'NO',
+    ])->and($config->autoApproveEnabled())->toBeFalse();
+
+    $updated = $config->updateSettings([
+        'effort' => 'MAX',
+        'git_mode' => 'NO_GITFLOW',
+        'auto_approve' => 'YES',
+    ]);
+
+    expect($updated['effort'])->toBe('MAX')
+        ->and($updated['git_mode'])->toBe('NO_GITFLOW')
+        ->and($updated['testing'])->toBe('NORMAL')
+        ->and($updated['auto_approve'])->toBe('YES')
+        ->and($config->autoApproveEnabled())->toBeTrue()
+        ->and($config->setupInfo()['settings']['effort'])->toBe('MAX');
+});
+
 it('requires marked-up sections in spec bodies', function (): void {
     $validation = app(ValidationService::class);
 

@@ -9,11 +9,13 @@ Present the delivered increment and execute the human verdict.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifact from implement).
+Read `.larapilot/shared-runtime.md` — including **Project Settings** and **Sub-agents** (review artifact from implement).
 
 ## Output Economy
 
 **High** — see `larapilot-review` in shared-runtime. Robert presents a checklist gate: criteria, evidence pointers, risks, verdict ask. Summarize diffs; do not narrate every hunk.
+
+When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + verdict); **do not block on missing README/PDF**; **do block if public API routes changed without OpenAPI update**. When **`MAX`**: expand residual risks, design-system, docs, and copy notes.
 
 ## The Team
 
@@ -30,11 +32,13 @@ Read `.larapilot/shared-runtime.md` — including **Sub-agents** (review artifac
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
+1. `php artisan larapilot:config-show` — honor `data.settings` (git/testing evidence; `auto_approve`)
 2. `php artisan larapilot:spec-list --status=REVIEW`
 3. `php artisan larapilot:spec-show {code}`
 4. On approval: `php artisan larapilot:spec-approve {code}`
 5. On rework: `php artisan larapilot:spec-request-changes {code} --file=...`
+
+When `settings.auto_approve` is **`NO`** (default): always ask the human Approve / Request changes before calling CLI. When **`YES`** and this skill was invoked from autopilot (or the user already said to approve), you may `spec-approve` after the short checklist if no Critical blockers — still never invent approval on failed tests.
 
 ## Presentation
 
@@ -42,16 +46,16 @@ Robert speaks in character. For the selected spec, he presents:
 
 - Spec title, code, acceptance criteria
 - What was demonstrated (from spec `Demonstrates`)
-- Git diff summary (if available) — branch follows **Gitflow** (`feature/US-XXX-*`, not direct `main`/`develop` commits); **one commit per task** with Conventional Commit messages; **internal PR** open/updated toward `develop`
+- Git evidence per `settings.git_mode` — `NO_GITFLOW`: commits on current branch; `GITFLOW`: feature branch + per-task commits (remote PR optional); `GITFLOW_PUSH`: feature branch + push + internal PR toward `develop`. Do **not** reject for missing push/PR when mode is `GITFLOW` or `NO_GITFLOW`
 - Factory/seeder evidence — factories exist/updated for touched models; `migrate:fresh --seed` produces coherent demo data (or note if spec is non-data)
-- Test evidence (Pest/PHPUnit output) — meets **Testing standards** for delivery target; UI specs include **responsive tests** at 375 / 768 / 1280 px
-- Mockup/responsive evidence — mobile-first mockup or implementation; nav usable on phone and desktop; no clipped CTAs at mobile widths
+- Test evidence (Pest/PHPUnit) — meets **`settings.testing`** bar (`MINIMAL` / `NORMAL` / `BEST`). Demand Playwright/Dusk/viewport E2E **only** when `testing` is `BEST`
+- Mockup/responsive evidence — smoke usability on phone/desktop; automated multi-viewport only when `BEST`
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
 - Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes
 - **Sabrine** parity findings when Project Origin is legacy **or the spec is refactoring/porting** — compare deliverables to `{paths.research}/legacy-parity.md` and porting/refactoring AC; flag undocumented feature or content drops; **Robert does not approve without Sabrine sign-off**
-- **Marika** + **Emily** copy/i18n notes when the spec touched user-facing text — typos, tone, clarity, **translation consistency** between source and `lang/` files
-- **Joe** design-system notes when UI changed — token/component drift vs Elise mockups and agreed design system
+- **Marika** + **Emily** copy/i18n notes when the spec touched user-facing text — typos, tone, clarity, **translation consistency** between source and `lang/` files _(skip or one-liner under `effort: ECO`)_
+- **Joe** design-system notes when UI changed — token/component drift vs Elise mockups and agreed design system _(skip or one-liner under `effort: ECO`)_
 - **Anne** manual test handoff — list tests the human should run on real devices or outside automation (when applicable)
 - Any open review notes
 

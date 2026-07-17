@@ -10,6 +10,7 @@ use Larapilot\Console\Commands\DoctorCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
+use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
 use Larapilot\Console\Commands\SpecCommentCommand;
@@ -79,6 +80,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 UpdateCommand::class,
                 DoctorCommand::class,
                 ConfigShowCommand::class,
+                SettingsSetCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
                 SpecListCommand::class,

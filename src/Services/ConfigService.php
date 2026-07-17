@@ -85,8 +85,141 @@ class ConfigService
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
             'workflow' => $config['workflow'] ?? config('larapilot.workflow'),
+            'settings' => $this->settings(),
             'personas' => config('larapilot.personas'),
         ];
+    }
+
+    /**
+     * Agent-facing settings. `auto_approve` is always the string YES|NO
+     * (YAML stores a boolean — YES/NO are YAML 1.1 bool tokens).
+     *
+     * @return array{effort: string, git_mode: string, testing: string, auto_approve: string}
+     */
+    public function settings(): array
+    {
+        $config = $this->resolve();
+        $raw = is_array($config['settings'] ?? null) ? $config['settings'] : [];
+        $merged = array_replace($this->defaultSettings(), array_intersect_key($raw, $this->defaultSettings()));
+
+        return [
+            'effort' => (string) $merged['effort'],
+            'git_mode' => (string) $merged['git_mode'],
+            'testing' => (string) $merged['testing'],
+            'auto_approve' => $this->normalizeAutoApprove($merged['auto_approve'] ?? false),
+        ];
+    }
+
+    /**
+     * @return array{effort: string, git_mode: string, testing: string, auto_approve: bool}
+     */
+    public function defaultSettings(): array
+    {
+        $defaults = config('larapilot.settings', []);
+
+        return [
+            'effort' => (string) ($defaults['effort'] ?? 'STANDARD'),
+            'git_mode' => (string) ($defaults['git_mode'] ?? 'GITFLOW'),
+            'testing' => (string) ($defaults['testing'] ?? 'NORMAL'),
+            'auto_approve' => $this->autoApproveToBool($defaults['auto_approve'] ?? false),
+        ];
+    }
+
+    /**
+     * Persist one or more project settings into `.larapilot/config.yaml` without
+     * wiping unrelated top-level keys the user may have added.
+     *
+     * @param  array<string, string|bool>  $partial
+     * @return array{effort: string, git_mode: string, testing: string, auto_approve: string}
+     */
+    public function updateSettings(array $partial): array
+    {
+        $path = $this->configPath();
+
+        if (! is_file($path)) {
+            $this->writeProjectConfig();
+        }
+
+        $parsed = Yaml::parseFile($path);
+        $existing = is_array($parsed) ? $parsed : [];
+
+        $current = is_array($existing['settings'] ?? null) ? $existing['settings'] : [];
+        $settings = array_replace($this->defaultSettings(), array_intersect_key($current, $this->defaultSettings()));
+        $settings['auto_approve'] = $this->autoApproveToBool($settings['auto_approve'] ?? false);
+
+        foreach ($partial as $key => $value) {
+            if (! array_key_exists($key, $this->defaultSettings())) {
+                continue;
+            }
+
+            $settings[$key] = $key === 'auto_approve'
+                ? $this->autoApproveToBool($value)
+                : $value;
+        }
+
+        $existing['settings'] = $settings;
+
+        AtomicFile::write(
+            $path,
+            Yaml::dump($existing, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+        );
+
+        $this->resolved = null;
+
+        return $this->settings();
+    }
+
+    public function autoApproveEnabled(): bool
+    {
+        return $this->settings()['auto_approve'] === 'YES';
+    }
+
+    protected function normalizeAutoApprove(mixed $value): string
+    {
+        return $this->autoApproveToBool($value) ? 'YES' : 'NO';
+    }
+
+    protected function autoApproveToBool(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $normalized = strtoupper(trim((string) $value));
+
+        return in_array($normalized, ['YES', 'SI', 'TRUE', 'ON', '1'], true);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedEfforts(): array
+    {
+        return ['ECO', 'STANDARD', 'MAX'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedGitModes(): array
+    {
+        return ['NO_GITFLOW', 'GITFLOW', 'GITFLOW_PUSH'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedTestingModes(): array
+    {
+        return ['MINIMAL', 'NORMAL', 'BEST'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedAutoApproveModes(): array
+    {
+        return ['YES', 'NO'];
     }
 
     public function absolutePath(string $relative): string
@@ -114,6 +247,7 @@ class ConfigService
     {
         return [
             'connector' => config('larapilot.connector', 'file'),
+            'settings' => $this->defaultSettings(),
             'paths' => config('larapilot.paths'),
             'workflow' => config('larapilot.workflow'),
             'file' => config('larapilot.file'),

@@ -2,6 +2,22 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.9.0] - 2026-07-17
+
+### Added
+
+- **`/larapilot-settings`** — AskQuestion skill to persist project settings in `.larapilot/config.yaml`.
+- **`larapilot:settings-set`** — CLI to write `settings.effort`, `settings.git_mode`, and `settings.testing` (exposed on `config-show` as `data.settings`).
+- **Project settings defaults** — `effort: STANDARD`, `git_mode: GITFLOW`, `testing: NORMAL`, `auto_approve: NO`.
+- **`settings.auto_approve`** — `YES`/`NO` (default `NO`). When `YES`, `/larapilot-autopilot` may call `spec-approve` after implement without waiting for a human verdict.
+
+### Changed
+
+- **Git discipline** — automatic push + remote PR is no longer implied by Gitflow. Use `git_mode: GITFLOW_PUSH` for the previous push-after-each-task behavior; default `GITFLOW` keeps branches/commits/PR prep local.
+- **Testing bar** — default is now `NORMAL` (standard Pest/feature/policy tests **without** Playwright/Dusk/E2E). Full browser/viewport/E2E suite requires `testing: BEST`.
+- **Effort modes** — `ECO` reduces tokens (**never spawn sub-agents**; **defers documentation** except **OpenAPI** when APIs change; no README/PDF/diagram theater; skips deep reviews/E2E); `MAX` forces deep passes on every flow.
+- **Shared runtime, task templates, plan/implement/review skills, Boost guidelines** — honor `data.settings` throughout.
+
 ## [1.8.2] - 2026-07-15
 
 ### Added

@@ -33,9 +33,9 @@ Greenfield — repeat steps 3–5 per user story:
 | One new capability on an existing product | `/larapilot-feature "…"` |
 | Defect or regression | `/larapilot-bug "…"` |
 
-Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement.
+Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement · `/larapilot-settings` for project effort / git / testing modes.
 
-Git discipline is part of the contract: **Gitflow**, one `feature/US-XXX-*` branch per story, atomic commits per plan task. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
+Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
 
 ---
 
@@ -43,7 +43,7 @@ Git discipline is part of the contract: **Gitflow**, one `feature/US-XXX-*` bran
 
 | Path | Purpose |
 | --- | --- |
-| `config.yaml` | Project workflow config |
+| `config.yaml` | Project workflow config + `settings` (`effort`, `git_mode`, `testing`, `auto_approve`) |
 | `docs/PRD.md` | Product Requirements Document |
 | `backlog/` | User stories (`US-XXX`) with status machine |
 | `plans/` | Technical plans and tasks per spec |
@@ -71,6 +71,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
+| `/larapilot-settings` | Persist effort / git mode / testing / auto-approve for the project |
 
 ---
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Larapilot\Services\ConfigService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
 
@@ -301,4 +302,78 @@ it('reports metrics for the backlog', function (): void {
     $this->artisan('larapilot:metrics')
         ->assertSuccessful()
         ->expectsOutputToContain('"total":2,"done":1');
+});
+
+it('installs default project settings into config.yaml', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $yaml = file_get_contents(base_path('.larapilot/config.yaml'));
+
+    expect($yaml)->toContain('effort: STANDARD')
+        ->and($yaml)->toContain('git_mode: GITFLOW')
+        ->and($yaml)->toContain('testing: NORMAL')
+        ->and($yaml)->toContain('auto_approve: false');
+});
+
+it('persists project settings via settings-set', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', [
+        '--effort' => 'ECO',
+        '--git-mode' => 'GITFLOW_PUSH',
+        '--testing' => 'BEST',
+        '--auto-approve' => 'YES',
+    ])->assertSuccessful();
+
+    $settings = app(ConfigService::class)->settings();
+
+    expect($settings)->toBe([
+        'effort' => 'ECO',
+        'git_mode' => 'GITFLOW_PUSH',
+        'testing' => 'BEST',
+        'auto_approve' => 'YES',
+    ])
+        ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
+        ->and(app(ConfigService::class)->autoApproveEnabled())->toBeTrue();
+});
+
+it('accepts SI alias for auto-approve yes', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', ['--auto-approve' => 'SI'])
+        ->assertSuccessful()
+        ->expectsOutputToContain('"auto_approve":"YES"');
+});
+
+it('accepts friendly git-mode aliases on settings-set', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', ['--git-mode' => 'GITFLOW + PUSH'])
+        ->assertSuccessful()
+        ->expectsOutputToContain('"git_mode":"GITFLOW_PUSH"');
+});
+
+it('rejects invalid settings-set values', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', ['--effort' => 'TURBO'])
+        ->assertExitCode(2)
+        ->expectsOutputToContain('E_INVALID_INPUT');
+
+    $this->artisan('larapilot:settings-set')
+        ->assertExitCode(2)
+        ->expectsOutputToContain('at least one');
+});
+
+it('preserves unrelated config keys when updating settings', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    file_put_contents(base_path('.larapilot/config.yaml'), "connector: file\ncustom: kept\nsettings:\n  effort: STANDARD\n");
+
+    $this->artisan('larapilot:settings-set', ['--testing' => 'MINIMAL'])->assertSuccessful();
+
+    $yaml = file_get_contents(base_path('.larapilot/config.yaml'));
+
+    expect($yaml)->toContain('custom: kept')
+        ->and($yaml)->toContain('testing: MINIMAL');
 });

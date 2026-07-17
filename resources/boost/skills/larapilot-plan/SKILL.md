@@ -9,9 +9,9 @@ Produce a detailed implementation plan for one spec and persist it via the CLI.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Sub-agents** (optional explore in Stage 1).
+Read `.larapilot/shared-runtime.md` — including **Project Settings**, **Sub-agents** (optional explore in Stage 1).
 
-Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 bootstrap, entity, non-entity, test, fix).
+Read `.larapilot/task-templates.md` — copy task body structures gated by `data.settings` (TASK-00 only for Gitflow modes; Anne depth per `testing`).
 
 ## Output Economy
 
@@ -43,7 +43,7 @@ Read `.larapilot/task-templates.md` — copy task body structures (TASK-00 boots
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
+1. `php artisan larapilot:config-show` — **read `data.settings`** and scale Git/Test Strategy accordingly
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO`
 3. `php artisan larapilot:validate-plan {code} --file=...`
 4. `php artisan larapilot:spec-plan {code} --file=...`
@@ -71,7 +71,9 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 #### Sub-agent (optional — large or unfamiliar codebase)
 
-When `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; e.g. Cursor `explore`, Claude Code `Explore` — see **Type mapping** in shared-runtime) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool: the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
+When `settings.effort` is **`ECO`**, **never spawn an explore sub-agent** — the parent explores inline only.
+
+Otherwise, when `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; e.g. Cursor `explore`, Claude Code `Explore` — see **Type mapping** in shared-runtime) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool (or `ECO`): the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
 
 Handoff prompt:
 
@@ -94,7 +96,7 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 ```json
 {
-    "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Branch: feature/US-XXX-short-desc\n- TASK-00: bootstrap + internal PR\n- Per task: one commit, push, update PR\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n...",
+    "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Mode: {from settings.git_mode}\n- Branch/PR/push rules per Project Settings\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n- Bar: {from settings.testing} — no Playwright/E2E unless BEST\n...",
     "tasks": [
         {
             "id": "TASK-00",
@@ -150,7 +152,7 @@ Every **Impl** and **Fix** task body MUST include:
 - **Andrew** reviews plan for Laravel idioms — prefer first-party/Spatie/Filament solutions; flag bespoke abstractions; cite authoritative sources when recommending patterns
 - **Joe** plans **design-system** tasks with Elise (tokens, shared components, theme) plus frontend tasks when spec needs animations (Three.js/CSS) or client performance budgets
 - **Ricky** plans mobile/hybrid tasks when spec needs app shells, device APIs, store release, or PWA device permissions
-- **Albert** plans **baseline documentation tasks on every spec** (README, architecture notes, API docs when routes change); plans **extended** doc tasks (OpenAPI delta, diagrams, PDF manual chapters) only when spec approval recorded extended scope
+- **Albert** plans **baseline documentation tasks on every spec** (README, architecture notes, API docs when routes change); plans **extended** doc tasks (diagrams, PDF manual chapters) only when spec approval recorded extended scope. Under **`effort: ECO`**: omit README/architecture/PDF/diagram tasks — **still plan OpenAPI update** when the spec changes public/partner HTTP APIs
 - **Marika** plans explicit copy tasks — Blade views, Filament labels, notifications, `lang/` files
 - **Matt** owns integration **delivery tasks**: HTTP clients, webhooks, OAuth, queue sync, `.env.example` keys, `Http::fake()` tests, integration README — coordinates with Alex and John
 - **Emily** plans i18n/l10n tasks when spec touches locales: `lang/` files, currency display, timezone prefs, hreflang with Emma, cultural copy review with Violet

@@ -29,7 +29,7 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **In
 | 🎨 **Elise** | UX Designer — when UI/flows need mockups before implementation |
 | ✨ **Joe** | Frontend Expert — **design system**, rich UI, animations, client-side behavior |
 | 📱 **Ricky** | App Developer — mobile features, device APIs |
-| 📝 **Albert** | Tech Writer — **baseline doc updates always**; proposes extended docs (PDF tutorial, diagrams) via AskQuestion |
+| 📝 **Albert** | Tech Writer — **baseline doc updates** (under `ECO`: OpenAPI only when APIs change); proposes extended docs (PDF tutorial, diagrams) via AskQuestion when not ECO |
 
 ## Config & CLI
 

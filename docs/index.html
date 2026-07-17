@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.8.2 polishes dashboard feedback indicators (pill badges on the board, compact comment form). Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. v1.9.0 adds /larapilot-settings — effort, git mode, testing depth, and auto-approve. Install, run /larapilot-* skills, ship reviewed code.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2164,6 +2164,18 @@
       margin-bottom: .5rem;
     }
 
+    .skill-cli {
+      font-size: .78rem;
+      color: var(--text-tertiary);
+      margin: .35rem 0 0;
+      line-height: 1.45;
+    }
+
+    .skill-cli code {
+      font-size: .74rem;
+      color: var(--text-secondary);
+    }
+
     .skill-body ul {
       font-size: .8rem;
       color: var(--text-secondary);
@@ -2580,7 +2592,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.8.2</span>
+          <span class="hero-version">v1.9.0</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -2660,8 +2672,8 @@
                   </div>
                   <pre class="terminal-output"
                     aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
-  <span class="punct">-</span> guidelines + <span class="num">10</span> <span class="str">/larapilot-*</span> skills
-  <span class="punct">(</span><span class="str">inception</span><span class="punct">,</span> <span class="str">design</span><span class="punct">,</span> <span class="str">spec</span><span class="punct">,</span> <span class="str">plan</span><span class="punct">,</span> <span class="str">implement</span><span class="punct">,</span> <span class="str">review</span><span class="punct">,</span> <span class="str">ship</span><span class="punct">,</span> <span class="str">autopilot</span><span class="punct">)</span></pre>
+  <span class="punct">-</span> guidelines + <span class="num">11</span> <span class="str">/larapilot-*</span> skills
+  <span class="punct">(</span><span class="str">inception</span><span class="punct">…</span> <span class="str">settings</span><span class="punct">)</span></pre>
                   <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
                 </div>
               </div>
@@ -2813,6 +2825,7 @@
               <a class="doc-nav-sub" href="#deep-dive-how-it-works" data-nav>How it works</a>
               <a class="doc-nav-sub" href="#deep-dive-update" data-nav>Upgrade</a>
               <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
+              <a class="doc-nav-sub" href="#deep-dive-settings" data-nav>Settings</a>
               <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
               <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
               <a class="doc-nav-sub" href="#deep-dive-artifacts" data-nav>Artifacts</a>
@@ -2918,12 +2931,15 @@
           </div>
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
-            <code>/larapilot-autopilot</code> to batch plan+implement.</p>
+            <code>/larapilot-autopilot</code> to batch plan+implement ·
+            <code>/larapilot-settings</code> for project modes.</p>
         </div>
 
-        <p>Git: Larapilot follows <strong>Gitflow</strong> — one <code>feature/US-XXX-*</code> branch per story, atomic
-          commits per plan task, and internal PRs toward <code>develop</code>. <a href="#deep-dive-gitflow">Branch
-            conventions</a>.</p>
+        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>git mode</strong>,
+          <strong>testing</strong>, <strong>auto-approve</strong> — persisted in <code>.larapilot/config.yaml</code>.
+          Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
+          <code>BEST</code>. <a href="#deep-dive-settings">Settings reference</a> · <a
+            href="#deep-dive-gitflow">Branch conventions</a>.</p>
 
         <div class="table-card">
           <table>
@@ -3648,8 +3664,8 @@ body: |
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
           <h2>Technical reference</h2>
-          <p>Skills, personas, workflow, artifacts, design systems, CLI, dashboard, and API — how every layer fits
-            together.</p>
+          <p>Skills, <a href="#deep-dive-settings">settings</a>, personas, workflow, artifacts, design systems, CLI,
+            dashboard, and API — how every layer fits together.</p>
         </div>
 
         <!-- How it works -->
@@ -3765,10 +3781,10 @@ body: |
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead">Ten editor-native skills cover the full product lifecycle. Each is a <code>SKILL.md</code>
-            file with a name, description, persona roster, execution steps, and allowed CLI calls. Laravel Boost
-            publishes them on <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside
-            (not a skill).</p>
+          <p class="lead"><strong>Eleven</strong> editor-native skills cover the full product lifecycle (including
+            <code>/larapilot-settings</code>). Each is a <code>SKILL.md</code> file with a name, description, persona
+            roster, execution steps, and allowed CLI calls. Laravel Boost publishes them on
+            <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).</p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
           <ol>
@@ -3789,6 +3805,8 @@ body: |
                   <li>AskQuestion rounds (max 3 questions each, skippable)</li>
                   <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present</li>
                 </ul>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:prd-write</code> ·
+                  <code>larapilot:validate-prd</code> — persist and validate the PRD.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3797,6 +3815,8 @@ body: |
                 <h3><code>/larapilot-feature "…"</code></h3>
                 <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
                   FR).</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
+                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3804,6 +3824,8 @@ body: |
               <div class="skill-body">
                 <h3><code>/larapilot-bug "…"</code></h3>
                 <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
+                  <code>larapilot:spec-request-changes</code> — depending on new fix vs rework.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3812,6 +3834,8 @@ body: |
                 <h3><code>/larapilot-spec</code></h3>
                 <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code>
                   + <code>specs/US-XXX.yaml</code>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
+                  <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code>.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3822,6 +3846,8 @@ body: |
                   Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
                   (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
                 </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
+                  <code>paths.mockups</code> and <code>paths.design_systems</code>.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3830,6 +3856,8 @@ body: |
                 <h3><code>/larapilot-plan US-XXX</code></h3>
                 <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>.
                   Status → <span class="status status-planned">PLANNED</span>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:validate-plan</code> ·
+                  <code>larapilot:spec-plan</code> — validate then persist the plan.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3838,6 +3866,8 @@ body: |
                 <h3><code>/larapilot-implement US-XXX</code></h3>
                 <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span
                     class="status status-review">REVIEW</span> when all tasks complete.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-start</code> ·
+                  <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3846,6 +3876,8 @@ body: |
                 <h3><code>/larapilot-review US-XXX</code></h3>
                 <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback →
                   <span class="status status-todo">TODO</span>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-approve</code> or
+                  <code>larapilot:spec-request-changes</code>.</p>
               </div>
             </div>
             <div class="skill-item">
@@ -3854,16 +3886,169 @@ body: |
                 <h3><code>/larapilot-ship</code></h3>
                 <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
                     class="status status-done">DONE</span>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
+                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.</p>
               </div>
             </div>
             <div class="skill-item">
               <span class="skill-badge">batch</span>
               <div class="skill-body">
                 <h3><code>/larapilot-autopilot US-XXX …</code></h3>
-                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. You still run
-                  <code>/larapilot-review</code> per story.</p>
+                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. By default you still run
+                  <code>/larapilot-review</code> per story; with <code>auto_approve: YES</code> it may
+                  <code>spec-approve</code> after implement.</p>
+                <p class="skill-cli"><strong>CLI:</strong> same as plan/implement; plus
+                  <code>larapilot:spec-approve</code> when auto-approve is on.</p>
               </div>
             </div>
+            <div class="skill-item">
+              <span class="skill-badge">config</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-settings</code></h3>
+                <p>AskQuestion for persistent project settings — effort, git mode, testing, auto-approve. Written to
+                  <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
+                  <code>larapilot:config-show</code> — read <code>data.settings</code>.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Project settings -->
+        <article class="deep-dive-sub" id="deep-dive-settings">
+          <h3>Project settings</h3>
+          <p class="lead">Persistent modes for how hard Larapilot works, how Git is handled, how deep tests go, and
+            whether DONE can skip the human gate. Configure with <code>/larapilot-settings</code> (AskQuestion). Values
+            live under <code>settings:</code> in <code>.larapilot/config.yaml</code>. Every skill reads and honors them
+            via <code>config-show</code>.</p>
+
+          <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
+            <code>php artisan larapilot:settings-set --effort=… --git-mode=… --testing=… --auto-approve=…</code>
+            persists one or more keys. <code>php artisan larapilot:config-show</code> returns
+            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for auto-approve; YAML stores a boolean).</p>
+
+          <p>Defaults when unset: <code>effort: STANDARD</code> · <code>git_mode: GITFLOW</code> ·
+            <code>testing: NORMAL</code> · <code>auto_approve: NO</code>.</p>
+
+          <h4 id="deep-dive-effort">Effort</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ECO</code></td>
+                  <td>Token economy — <strong>never spawn sub-agents</strong>; defer docs theater (README/PDF/diagrams)
+                    but <strong>still update OpenAPI</strong> when APIs change; skip deep reviews and E2E planning</td>
+                </tr>
+                <tr>
+                  <td><code>STANDARD</code></td>
+                  <td>Normal Larapilot behavior (<strong>default</strong>)</td>
+                </tr>
+                <tr>
+                  <td><code>MAX</code></td>
+                  <td><strong>Deep</strong> mode on every flow — fuller persona rounds, always run explore/review
+                    sub-agents when available, richer plans and residual-risk notes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 id="deep-dive-git-mode">Git mode</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>NO_GITFLOW</code></td>
+                  <td>No Gitflow ceremony — work on the current branch; no mandatory feature branch / internal PR</td>
+                </tr>
+                <tr>
+                  <td><code>GITFLOW</code></td>
+                  <td>Feature branches + atomic commits + PR prepared locally — <strong>no automatic push</strong>
+                    (<strong>default</strong></td>
+                </tr>
+                <tr>
+                  <td><code>GITFLOW_PUSH</code></td>
+                  <td>Full Gitflow <strong>with</strong> push and open/update of the internal PR toward
+                    <code>develop</code> after each task</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Push is never implied by <code>GITFLOW</code> alone. See also <a href="#deep-dive-gitflow">Git
+              workflow</a>.</p>
+
+          <h4 id="deep-dive-testing-mode">Testing</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MINIMAL</code></td>
+                  <td>Critical-path Pest/PHPUnit only — no Playwright, Dusk, browser E2E, or viewport matrix</td>
+                </tr>
+                <tr>
+                  <td><code>NORMAL</code></td>
+                  <td>Standard feature/unit/policy/API tests (<strong>default</strong>) — still <strong>no</strong>
+                    Playwright/Dusk/E2E</td>
+                </tr>
+                <tr>
+                  <td><code>BEST</code></td>
+                  <td>Full bar — integrations, primary-journey E2E, Playwright or Dusk / Pest browser, viewport matrix
+                    (375 / 768 / 1280), axe, Lighthouse when applicable</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 id="deep-dive-auto-approve">Auto-approve</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>NO</code></td>
+                  <td>Human gate required (<strong>default</strong>) — specs stop at <span
+                      class="status status-review">REVIEW</span>; only you Approve via
+                    <code>/larapilot-review</code></td>
+                </tr>
+                <tr>
+                  <td><code>YES</code></td>
+                  <td>After implement reaches <span class="status status-review">REVIEW</span>,
+                    <code>/larapilot-autopilot</code> may present a short checklist and call
+                    <code>spec-approve</code> without waiting — opt-out of the usual human-in-the-loop DONE gate</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">CLI — persist settings</div>
+            <pre><code>php artisan larapilot:settings-set \
+  --effort=STANDARD \
+  --git-mode=GITFLOW \
+  --testing=NORMAL \
+  --auto-approve=NO</code></pre>
           </div>
         </article>
 
@@ -4084,14 +4269,16 @@ body: |
             </div>
             <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
               <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
-              <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-feature</code> or
-              <code>/larapilot-bug</code> on existing products.</p>
+              <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-settings</code> ·
+              <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.</p>
           </div>
 
           <h4 id="deep-dive-gitflow">Git workflow — Gitflow</h4>
-          <p>Larapilot is built around <strong>Gitflow</strong>. Branch names, per-task commits, and internal PRs are
-            part of the implement/review contract — <strong>Jack</strong> proposes the workflow at inception;
-            <strong>Robert</strong> blocks review when Git discipline is violated.</p>
+          <p>Git behavior is gated by <code>settings.git_mode</code> (set via <a
+              href="#deep-dive-settings"><code>/larapilot-settings</code></a>). Default is <strong>GITFLOW</strong>
+            without automatic push. Choose <strong>GITFLOW_PUSH</strong> for push-after-each-task, or
+            <strong>NO_GITFLOW</strong> to skip branch/PR ceremony. <strong>Jack</strong> proposes the workflow at
+            inception; <strong>Robert</strong> enforces the active mode.</p>
 
           <div class="table-card">
             <table>
@@ -4128,10 +4315,11 @@ body: |
             </table>
           </div>
 
-          <p>No direct commits to <code>main</code> or <code>develop</code>. Each plan task gets one atomic Conventional
-            Commit, a push, and an open or updated internal PR toward <code>develop</code>. Critical production defects
-            route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Solo MVP teams may use GitHub Flow with
-            the same per-task commit rules — full details in <code>.larapilot/shared-runtime.md</code>.</p>
+          <p>In Gitflow modes: no direct commits to <code>main</code> or <code>develop</code>; one atomic Conventional
+            Commit per plan task. <strong>Push and remote PR updates run only when
+              <code>git_mode</code> is <code>GITFLOW_PUSH</code></strong> (or the user asks). Critical production defects
+            route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Mode table:
+            <a href="#deep-dive-git-mode">Git mode settings</a>.</p>
 
           <h4>Status machine</h4>
           <div class="table-card">
@@ -4161,12 +4349,13 @@ body: |
                 </tr>
                 <tr>
                   <td><span class="status status-review">REVIEW</span></td>
-                  <td>Code delivered, awaiting human acceptance</td>
-                  <td><code>/larapilot-review US-XXX</code></td>
+                  <td>Code delivered, awaiting acceptance</td>
+                  <td><code>/larapilot-review US-XXX</code> — or autopilot <code>spec-approve</code> when
+                    <code>auto_approve: YES</code></td>
                 </tr>
                 <tr>
                   <td><span class="status status-done">DONE</span></td>
-                  <td>Human-approved — spec is shipped</td>
+                  <td>Approved — spec is shipped</td>
                   <td>Next <code>US-XXX</code> or <code>/larapilot-ship</code></td>
                 </tr>
               </tbody>
@@ -4180,8 +4369,10 @@ body: |
             reimplement.</p>
 
           <h4>Human-in-the-loop</h4>
-          <p>Discovery interviews use AskQuestion wizards. Review is always yours — the agent proposes, you approve or
-            send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance.</p>
+          <p>Discovery interviews use AskQuestion wizards. By default, review is yours — the agent proposes, you approve
+            or send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance
+            <strong>unless</strong> you set <code>auto_approve: YES</code> in <a
+              href="#deep-dive-settings">project settings</a> (opt-in for <code>/larapilot-autopilot</code>).</p>
         </article>
 
         <!-- Artifacts -->
@@ -4192,7 +4383,7 @@ body: |
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># project config (created on install)</span>
+            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / testing / auto_approve)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
@@ -4223,6 +4414,12 @@ body: |
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><code>config.yaml</code> → <code>settings</code></td>
+                  <td><code>/larapilot-settings</code></td>
+                  <td><code>effort</code>, <code>git_mode</code>, <code>testing</code>,
+                    <code>auto_approve</code> — see <a href="#deep-dive-settings">Settings</a></td>
+                </tr>
                 <tr>
                   <td><code>PRD.md</code></td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
@@ -4377,8 +4574,8 @@ body: |
                 <tr>
                   <td>Setup</td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
-                    <code>larapilot:config-show</code></td>
-                  <td>Install, upgrades, diagnostics</td>
+                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code></td>
+                  <td>Install, upgrades, diagnostics, <a href="#deep-dive-settings">project settings</a></td>
                 </tr>
                 <tr>
                   <td>PRD</td>
@@ -4643,7 +4840,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.8.2</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.9.0</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

@@ -9,6 +9,13 @@ return [
 
     'connector' => env('LARAPILOT_CONNECTOR', 'file'),
 
+    'settings' => [
+        'effort' => 'STANDARD',
+        'git_mode' => 'GITFLOW',
+        'testing' => 'NORMAL',
+        'auto_approve' => false,
+    ],
+
     'paths' => [
         'prd' => '.larapilot/docs/PRD.md',
         'mockups' => '.larapilot/mockups/',
