@@ -22,7 +22,7 @@ When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + v
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
-| 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence; **involves Sabrine** on refactoring/porting specs |
+| 🛡️ **Robert** | Code Reviewer — presents the delivered increment, residual risks, and review evidence; **SOLID/N+1** quality gate; **involves Sabrine** on refactoring/porting specs |
 | 🔄 **Sabrine** | Legacy Porting Specialist — parity check against agreed porting plan; **co-signs review** with Robert on refactoring/porting *(legacy and porting specs)* |
 | ✍️ **Marika** | Copywriter — typos, tone, clarity, and consistency on user-facing text *(when in scope)* |
 | 🌍 **Emily** | Translator — translation accuracy and cross-locale consistency with Marika *(when multi-locale or user-facing copy in scope)* |
@@ -48,6 +48,7 @@ Robert speaks in character. For the selected spec, he presents:
 - What was demonstrated (from spec `Demonstrates`)
 - Git evidence per `settings.git_mode` — `NO_GITFLOW`: commits on current branch; `GITFLOW`: feature branch + per-task commits (remote PR optional); `GITFLOW_PUSH`: feature branch + push + internal PR toward `develop`. Do **not** reject for missing push/PR when mode is `GITFLOW` or `NO_GITFLOW`
 - Factory/seeder evidence — factories exist/updated for touched models; `migrate:fresh --seed` produces coherent demo data (or note if spec is non-data)
+- **Quality gate** — **N+1**/eager-load hygiene on list/detail/API paths; **SOLID**/layering (thin controllers, Actions/Services, Policies); Form Request + auth on mutating endpoints; transactions on multi-write paths (reject or request-changes if violated without ADR note)
 - Test evidence (Pest/PHPUnit) — meets **`settings.testing`** bar (`MINIMAL` / `NORMAL` / `BEST`). Demand Playwright/Dusk/viewport E2E **only** when `testing` is `BEST`
 - Mockup/responsive evidence — smoke usability on phone/desktop; automated multi-viewport only when `BEST`
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
   <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. v1.9.0 adds /larapilot-settings — effort, git mode, testing depth, and auto-approve. Install, run /larapilot-* skills, ship reviewed code.">
+    content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, build, review, and ship code according to spec requirements with AI.">
   <meta name="theme-color" content="#ff4436">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2592,7 +2592,7 @@
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-dot"></span>
           Spec-driven for Laravel projects
-          <span class="hero-version">v1.9.0</span>
+          <span class="hero-version">v1.9.1</span>
         </div>
         <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
         <p class="hero-desc">
@@ -2847,7 +2847,8 @@
           <span class="section-label">Quickstart</span>
           <h2>Install in 3 commands</h2>
           <p>Add Larapilot to your Laravel app, scaffold the <code>.larapilot/</code> workspace, and publish the
-            <code>/larapilot-*</code> skills via Laravel Boost.</p>
+            <code>/larapilot-*</code> skills via Laravel Boost.
+          </p>
         </div>
 
         <div class="install-commands">
@@ -2900,7 +2901,8 @@
           </ol>
         </div>
         <p>Verify with <code>php artisan larapilot:doctor</code>. Runtime-only refresh (skip Boost republish):
-          <code>php artisan larapilot:update --skip-boost</code>.</p>
+          <code>php artisan larapilot:update --skip-boost</code>.
+        </p>
 
         <h3>First run</h3>
         <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product
@@ -2932,14 +2934,16 @@
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
             <code>/larapilot-autopilot</code> to batch plan+implement ·
-            <code>/larapilot-settings</code> for project modes.</p>
+            <code>/larapilot-settings</code> for project modes.
+          </p>
         </div>
 
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>git mode</strong>,
           <strong>testing</strong>, <strong>auto-approve</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
-          <code>BEST</code>. <a href="#deep-dive-settings">Settings reference</a> · <a
-            href="#deep-dive-gitflow">Branch conventions</a>.</p>
+          <code>BEST</code>. <a href="#deep-dive-settings">Settings reference</a> · <a href="#deep-dive-gitflow">Branch
+            conventions</a>.
+        </p>
 
         <div class="table-card">
           <table>
@@ -3030,7 +3034,8 @@
               </ol>
             </div>
             <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>,
-              <strong>Trello/Asana</strong>.</p>
+              <strong>Trello/Asana</strong>.
+            </p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (MVP scope)</strong>
               <ol>
@@ -3105,7 +3110,8 @@
           <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>,
             <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>).
             Preview at <code>/mockups/US-001</code> — and in the <a href="#deep-dive-dashboard">dashboard</a> on the US
-            detail page (embedded preview + screen links).</p>
+            detail page (embedded preview + screen links).
+          </p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor — US-001</div>
@@ -3276,7 +3282,8 @@ tests/Feature/RegistrationTest.php</code></pre>
           </div>
 
           <p>PRD records <strong>Project Origin: Legacy rewrite</strong> + parity matrix. Migration specs come first on
-            <code>/larapilot-spec</code>.</p>
+            <code>/larapilot-spec</code>.
+          </p>
 
           <div class="code-block">
             <div class="code-block-header">PRD.md (excerpt)</div>
@@ -3542,7 +3549,8 @@ body: |
 
           <h4>New fix spec instead?</h4>
           <p>No matching story → new <code>US-XXX</code> with <strong>Type: Fix</strong>. Critical production → Jack's
-            <code>hotfix/*</code> note.</p>
+            <code>hotfix/*</code> note.
+          </p>
 
           <dl class="walkthrough-grid">
             <div>
@@ -3690,7 +3698,8 @@ body: |
               <p>Skills call <code>php artisan larapilot:*</code> to persist files and enforce status transitions. You
                 rarely run these directly — see <a href="#deep-dive-cli">Artisan CLI</a>. After a package upgrade, run
                 <a href="#deep-dive-update">Composer + <code>larapilot:update</code></a> to refresh shared runtime and
-                Boost skills.</p>
+                Boost skills.
+              </p>
             </div>
           </div>
         </article>
@@ -3700,7 +3709,8 @@ body: |
           <h3>Upgrade</h3>
           <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new version, then
             refresh the files Larapilot publishes into your project — without touching your workflow data in
-            <code>.larapilot/config.yaml</code>, specs, plans, or PRD.</p>
+            <code>.larapilot/config.yaml</code>, specs, plans, or PRD.
+          </p>
 
           <div class="install-commands">
             <div class="install-commands-header">Terminal — after each release</div>
@@ -3741,7 +3751,8 @@ body: |
                   <td><code>php artisan larapilot:update</code></td>
                   <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged
                     <code>.larapilot/design-systems/</code> references; re-runs <code>boost:update</code> to republish
-                    guidelines and <code>/larapilot-*</code> skills</td>
+                    guidelines and <code>/larapilot-*</code> skills
+                  </td>
                   <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned
                     files</td>
                 </tr>
@@ -3784,7 +3795,8 @@ body: |
           <p class="lead"><strong>Eleven</strong> editor-native skills cover the full product lifecycle (including
             <code>/larapilot-settings</code>). Each is a <code>SKILL.md</code> file with a name, description, persona
             roster, execution steps, and allowed CLI calls. Laravel Boost publishes them on
-            <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).</p>
+            <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).
+          </p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
           <ol>
@@ -3806,7 +3818,8 @@ body: |
                   <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present</li>
                 </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:prd-write</code> ·
-                  <code>larapilot:validate-prd</code> — persist and validate the PRD.</p>
+                  <code>larapilot:validate-prd</code> — persist and validate the PRD.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3816,7 +3829,8 @@ body: |
                 <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
                   FR).</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
-                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.</p>
+                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3825,7 +3839,8 @@ body: |
                 <h3><code>/larapilot-bug "…"</code></h3>
                 <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
-                  <code>larapilot:spec-request-changes</code> — depending on new fix vs rework.</p>
+                  <code>larapilot:spec-request-changes</code> — depending on new fix vs rework.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3835,7 +3850,8 @@ body: |
                 <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code>
                   + <code>specs/US-XXX.yaml</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
-                  <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code>.</p>
+                  <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code>.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3847,7 +3863,8 @@ body: |
                   (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
-                  <code>paths.mockups</code> and <code>paths.design_systems</code>.</p>
+                  <code>paths.mockups</code> and <code>paths.design_systems</code>.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3857,7 +3874,8 @@ body: |
                 <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>.
                   Status → <span class="status status-planned">PLANNED</span>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:validate-plan</code> ·
-                  <code>larapilot:spec-plan</code> — validate then persist the plan.</p>
+                  <code>larapilot:spec-plan</code> — validate then persist the plan.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3867,7 +3885,8 @@ body: |
                 <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span
                     class="status status-review">REVIEW</span> when all tasks complete.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-start</code> ·
-                  <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>.</p>
+                  <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3875,9 +3894,11 @@ body: |
               <div class="skill-body">
                 <h3><code>/larapilot-review US-XXX</code></h3>
                 <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback →
-                  <span class="status status-todo">TODO</span>.</p>
+                  <span class="status status-todo">TODO</span>.
+                </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-approve</code> or
-                  <code>larapilot:spec-request-changes</code>.</p>
+                  <code>larapilot:spec-request-changes</code>.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3887,7 +3908,8 @@ body: |
                 <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
                     class="status status-done">DONE</span>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
-                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.</p>
+                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3896,9 +3918,11 @@ body: |
                 <h3><code>/larapilot-autopilot US-XXX …</code></h3>
                 <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. By default you still run
                   <code>/larapilot-review</code> per story; with <code>auto_approve: YES</code> it may
-                  <code>spec-approve</code> after implement.</p>
+                  <code>spec-approve</code> after implement.
+                </p>
                 <p class="skill-cli"><strong>CLI:</strong> same as plan/implement; plus
-                  <code>larapilot:spec-approve</code> when auto-approve is on.</p>
+                  <code>larapilot:spec-approve</code> when auto-approve is on.
+                </p>
               </div>
             </div>
             <div class="skill-item">
@@ -3906,9 +3930,11 @@ body: |
               <div class="skill-body">
                 <h3><code>/larapilot-settings</code></h3>
                 <p>AskQuestion for persistent project settings — effort, git mode, testing, auto-approve. Written to
-                  <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.</p>
+                  <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.
+                </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
-                  <code>larapilot:config-show</code> — read <code>data.settings</code>.</p>
+                  <code>larapilot:config-show</code> — read <code>data.settings</code>.
+                </p>
               </div>
             </div>
           </div>
@@ -3925,10 +3951,12 @@ body: |
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
             <code>php artisan larapilot:settings-set --effort=… --git-mode=… --testing=… --auto-approve=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
-            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for auto-approve; YAML stores a boolean).</p>
+            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for auto-approve; YAML stores a boolean).
+          </p>
 
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>git_mode: GITFLOW</code> ·
-            <code>testing: NORMAL</code> · <code>auto_approve: NO</code>.</p>
+            <code>testing: NORMAL</code> · <code>auto_approve: NO</code>.
+          </p>
 
           <h4 id="deep-dive-effort">Effort</h4>
           <div class="table-card">
@@ -3980,7 +4008,8 @@ body: |
                 <tr>
                   <td><code>GITFLOW_PUSH</code></td>
                   <td>Full Gitflow <strong>with</strong> push and open/update of the internal PR toward
-                    <code>develop</code> after each task</td>
+                    <code>develop</code> after each task
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -4030,13 +4059,15 @@ body: |
                   <td><code>NO</code></td>
                   <td>Human gate required (<strong>default</strong>) — specs stop at <span
                       class="status status-review">REVIEW</span>; only you Approve via
-                    <code>/larapilot-review</code></td>
+                    <code>/larapilot-review</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>YES</code></td>
                   <td>After implement reaches <span class="status status-review">REVIEW</span>,
                     <code>/larapilot-autopilot</code> may present a short checklist and call
-                    <code>spec-approve</code> without waiting — opt-out of the usual human-in-the-loop DONE gate</td>
+                    <code>spec-approve</code> without waiting — opt-out of the usual human-in-the-loop DONE gate
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -4066,42 +4097,51 @@ body: |
               <h4>Discovery</h4>
               <p><strong>Zoey</strong> sharpens user intent and flags session-budget risks. <strong>Mark</strong> drives
                 scope and MoSCoW. <strong>Jennifer</strong> and <strong>Benjamin</strong> frame market context.
-                <strong>John</strong> and <strong>Aurora</strong> co-own architecture — Aurora brings SaaS economics,
+                <strong>John</strong> and <strong>Aurora</strong> co-own architecture — John designs with
+                <strong>SOLID</strong> and <strong>N+1-aware</strong> query shape; Aurora brings SaaS economics,
                 storage/compute sizing, and proactive cost optimization. <strong>Sabrine</strong> leads legacy parity
                 when <code>legacy/</code> has content. <strong>Elise</strong> and <strong>Joe</strong> co-own the design
                 system. <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces; <strong>Ricky</strong>
-                for mobile apps; <strong>Albert</strong> scopes baseline + optional extended documentation.</p>
+                for mobile apps; <strong>Albert</strong> scopes baseline + optional extended documentation.
+              </p>
             </div>
             <div class="persona-phase">
               <h4>Planning</h4>
               <p><strong>Zoey</strong> recommends sub-agent vs inline passes. <strong>Tom</strong> sharpens acceptance
-                criteria. <strong>John</strong> designs the technical approach. <strong>Anne</strong> defines test
-                strategy including manual handoff when needed. <strong>Andrew</strong> enforces Laravel conventions.
+                criteria. <strong>John</strong> designs the technical approach with a <strong>SOLID</strong> structure
+                and <strong>N+1-aware</strong> query plans. <strong>Anne</strong> defines test strategy including
+                manual handoff when needed. <strong>Andrew</strong> enforces Laravel conventions.
                 <strong>Albert</strong> plans baseline docs on every spec and extended deliverables when approved.
                 <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. Optional sub-agents explore
-                the codebase in readonly mode.</p>
+                the codebase in readonly mode.
+              </p>
             </div>
             <div class="persona-phase">
               <h4>Implementation</h4>
-              <p><strong>Alex</strong> writes code and optimizes FE/BE integration. <strong>Anne</strong> ships
-                multi-viewport/device Pest tests and documents manual tests for the human. <strong>Robert</strong>
-                checks plan adherence and Gitflow — involves <strong>Sabrine</strong> on refactoring/porting.
-                <strong>Joe</strong> enforces design-system consistency. <strong>Lars</strong> runs OWASP-aligned
-                security review. <strong>Ricky</strong>, <strong>Marika</strong>, <strong>Matt</strong>, and
-                <strong>Albert</strong> join when mobile, copy, integrations, or docs are in scope.</p>
+              <p><strong>Alex</strong> writes <strong>SOLID</strong>, <strong>N+1-free</strong> code and optimizes
+                FE/BE integration. <strong>Anne</strong> ships multi-viewport/device Pest tests and documents manual
+                tests for the human. <strong>Robert</strong> checks plan adherence, Gitflow, and the quality bar —
+                involves <strong>Sabrine</strong> on refactoring/porting. <strong>Joe</strong> enforces design-system
+                consistency. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Ricky</strong>,
+                <strong>Marika</strong>, <strong>Matt</strong>, and <strong>Albert</strong> join when mobile, copy,
+                integrations, or docs are in scope.
+              </p>
             </div>
             <div class="persona-phase">
               <h4>Review</h4>
-              <p><strong>Robert</strong> presents the human gate with <strong>Sabrine</strong> on refactoring/porting
-                specs. <strong>Joe</strong> checks design-system compliance. <strong>Marika</strong> and
+              <p><strong>Robert</strong> presents the human gate — including <strong>SOLID</strong> and
+                <strong>N+1</strong> checks — with <strong>Sabrine</strong> on refactoring/porting specs.
+                <strong>Joe</strong> checks design-system compliance. <strong>Marika</strong> and
                 <strong>Emily</strong> verify typos and translation consistency. <strong>Anne</strong> attaches
-                automated evidence and manual test recommendations.</p>
+                automated evidence and manual test recommendations.
+              </p>
             </div>
             <div class="persona-phase">
               <h4>Ship &amp; support</h4>
               <p><strong>Jack</strong> owns CI/CD and deploy. <strong>Oliver</strong> red-teams before launch.
                 <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs.
-                <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.</p>
+                <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.
+              </p>
             </div>
           </div>
 
@@ -4270,7 +4310,8 @@ body: |
             <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
               <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
               <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-settings</code> ·
-              <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.</p>
+              <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.
+            </p>
           </div>
 
           <h4 id="deep-dive-gitflow">Git workflow — Gitflow</h4>
@@ -4278,7 +4319,8 @@ body: |
               href="#deep-dive-settings"><code>/larapilot-settings</code></a>). Default is <strong>GITFLOW</strong>
             without automatic push. Choose <strong>GITFLOW_PUSH</strong> for push-after-each-task, or
             <strong>NO_GITFLOW</strong> to skip branch/PR ceremony. <strong>Jack</strong> proposes the workflow at
-            inception; <strong>Robert</strong> enforces the active mode.</p>
+            inception; <strong>Robert</strong> enforces the active mode.
+          </p>
 
           <div class="table-card">
             <table>
@@ -4304,12 +4346,14 @@ body: |
                 <tr>
                   <td><code>release/x.y.z</code></td>
                   <td>Release prep — version bump, changelog, final QA; merge → <code>main</code> + back-merge →
-                    <code>develop</code></td>
+                    <code>develop</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>hotfix/x.y.z</code></td>
                   <td>Urgent production fix; branch from <code>main</code>; merge → <code>main</code> +
-                    <code>develop</code></td>
+                    <code>develop</code>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -4317,9 +4361,11 @@ body: |
 
           <p>In Gitflow modes: no direct commits to <code>main</code> or <code>develop</code>; one atomic Conventional
             Commit per plan task. <strong>Push and remote PR updates run only when
-              <code>git_mode</code> is <code>GITFLOW_PUSH</code></strong> (or the user asks). Critical production defects
+              <code>git_mode</code> is <code>GITFLOW_PUSH</code></strong> (or the user asks). Critical production
+            defects
             route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Mode table:
-            <a href="#deep-dive-git-mode">Git mode settings</a>.</p>
+            <a href="#deep-dive-git-mode">Git mode settings</a>.
+          </p>
 
           <h4>Status machine</h4>
           <div class="table-card">
@@ -4351,7 +4397,8 @@ body: |
                   <td><span class="status status-review">REVIEW</span></td>
                   <td>Code delivered, awaiting acceptance</td>
                   <td><code>/larapilot-review US-XXX</code> — or autopilot <code>spec-approve</code> when
-                    <code>auto_approve: YES</code></td>
+                    <code>auto_approve: YES</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><span class="status status-done">DONE</span></td>
@@ -4371,8 +4418,9 @@ body: |
           <h4>Human-in-the-loop</h4>
           <p>Discovery interviews use AskQuestion wizards. By default, review is yours — the agent proposes, you approve
             or send back. No spec reaches <span class="status status-done">DONE</span> without explicit acceptance
-            <strong>unless</strong> you set <code>auto_approve: YES</code> in <a
-              href="#deep-dive-settings">project settings</a> (opt-in for <code>/larapilot-autopilot</code>).</p>
+            <strong>unless</strong> you set <code>auto_approve: YES</code> in <a href="#deep-dive-settings">project
+              settings</a> (opt-in for <code>/larapilot-autopilot</code>).
+          </p>
         </article>
 
         <!-- Artifacts -->
@@ -4383,7 +4431,8 @@ body: |
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / testing / auto_approve)</span>
+            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / testing /
+              auto_approve)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
@@ -4418,7 +4467,8 @@ body: |
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>git_mode</code>, <code>testing</code>,
-                    <code>auto_approve</code> — see <a href="#deep-dive-settings">Settings</a></td>
+                    <code>auto_approve</code> — see <a href="#deep-dive-settings">Settings</a>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>PRD.md</code></td>
@@ -4479,7 +4529,8 @@ body: |
           <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on
             <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
             picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency
-            through implement and review.</p>
+            through implement and review.
+          </p>
 
           <div class="table-card">
             <table>
@@ -4497,13 +4548,15 @@ body: |
                   <td><code>design-systems/filament/</code></td>
                   <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
                   <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)</td>
+                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)
+                  </td>
                 </tr>
                 <tr>
                   <td><strong>Laravel Starter Kits</strong></td>
                   <td><code>design-systems/starter-kit/</code></td>
                   <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>,
-                    <code>react</code>, <code>vue</code>, <code>svelte</code>)</td>
+                    <code>react</code>, <code>vue</code>, <code>svelte</code>)
+                  </td>
                   <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML
                     screens</td>
                 </tr>
@@ -4534,17 +4587,21 @@ body: |
             </table>
           </div>
           <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
-            <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.</p>
+            <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
+          </p>
 
           <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
           <p>You can add <strong>your own</strong> design system or UI template under
             <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
-            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.</p>
+            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.
+          </p>
           <ul>
             <li>Drop tokens, component notes, HTML starters, and brand assets in that folder (same shape as the packaged
               ones helps: <code>README.md</code>, <code>tokens.css</code>, <code>components.md</code>, optional
-              <code>html/</code>).</li>
-            <li>Record the choice in the PRD (or tell the agent during inception/design) so Elise, Joe, and Alex treat it
+              <code>html/</code>).
+            </li>
+            <li>Record the choice in the PRD (or tell the agent during inception/design) so Elise, Joe, and Alex treat
+              it
               as the source of truth for mockups and shipped UI.</li>
             <li><code>larapilot:update</code> refreshes only the packaged systems — your custom folder is never
               overwritten.</li>
@@ -4560,7 +4617,8 @@ body: |
 
           <div class="cli-note"><strong>You interact via skills.</strong> The CLI is the persistence layer agents use
             internally. Run commands manually only for debugging, scripting, or CI — e.g.
-            <code>php artisan larapilot:doctor</code> to verify install health.</div>
+            <code>php artisan larapilot:doctor</code> to verify install health.
+          </div>
 
           <h4>JSON envelope</h4>
           <div class="code-block">
@@ -4572,7 +4630,8 @@ body: |
 }</code></pre>
           </div>
           <p>Errors return <code>"kind": "error"</code> with <code>code</code>, <code>message</code>, and optional
-            <code>hint</code>. Skills never invent persistence — they always go through these commands.</p>
+            <code>hint</code>. Skills never invent persistence — they always go through these commands.
+          </p>
 
           <h4>Command reference</h4>
           <div class="table-card">
@@ -4588,7 +4647,8 @@ body: |
                 <tr>
                   <td>Setup</td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
-                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code></td>
+                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code>
+                  </td>
                   <td>Install, upgrades, diagnostics, <a href="#deep-dive-settings">project settings</a></td>
                 </tr>
                 <tr>
@@ -4601,7 +4661,8 @@ body: |
                   <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> ·
                     <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> ·
                     <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> ·
-                    <code>larapilot:spec-comment</code></td>
+                    <code>larapilot:spec-comment</code>
+                  </td>
                   <td><code>/larapilot-spec</code>, shortcuts, dashboard comments</td>
                 </tr>
                 <tr>
@@ -4612,7 +4673,8 @@ body: |
                 <tr>
                   <td>Execution</td>
                   <td><code>larapilot:spec-start</code> · <code>larapilot:task-done</code> ·
-                    <code>larapilot:spec-review</code></td>
+                    <code>larapilot:spec-review</code>
+                  </td>
                   <td><code>/larapilot-implement</code></td>
                 </tr>
                 <tr>
@@ -4631,7 +4693,8 @@ body: |
           </div>
 
           <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside
-            <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.</p>
+            <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.
+          </p>
         </article>
 
         <!-- Dashboard -->
@@ -4650,7 +4713,8 @@ body: |
             <li><code>LARAPILOT_DASHBOARD_ROUTE=true</code> (default) — dashboard route toggle</li>
             <li>App environment is <strong>not</strong> <code>production</code></li>
             <li>Environment is in the allowlist: <code>local</code>, <code>development</code>, <code>testing</code>, or
-              <code>staging</code></li>
+              <code>staging</code>
+            </li>
           </ul>
           <p>Start your Laravel app (<code>php artisan serve</code>, Sail, Herd, etc.) and open <code>/larapilot</code>.
             If routes 404, check <code>APP_ENV</code> and the flags above.</p>
@@ -4680,7 +4744,8 @@ body: |
                   <td><strong>Board</strong></td>
                   <td><code>/larapilot</code></td>
                   <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> →
-                    <span class="status status-done">DONE</span>)</td>
+                    <span class="status status-done">DONE</span>)
+                  </td>
                 </tr>
                 <tr>
                   <td><strong>PRD</strong></td>
@@ -4714,7 +4779,8 @@ body: |
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
               <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
-              <code>/mockups/{code}</code> in dev/staging)</li>
+              <code>/mockups/{code}</code> in dev/staging)
+            </li>
             <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
               blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
               compact footer (blocking checkbox, log path) until the story is <span
@@ -4738,7 +4804,8 @@ body: |
           <h4>Activation</h4>
           <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a>
             conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns
-            <code>404</code> in production or when disabled.</p>
+            <code>404</code> in production or when disabled.
+          </p>
 
           <h4>Endpoints</h4>
           <div class="table-card">
@@ -4755,7 +4822,8 @@ body: |
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
                   <td>Metrics, status order, and specs grouped by workflow column — each spec includes
-                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
+                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -4767,13 +4835,15 @@ body: |
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs/{code}</code></td>
                   <td>Single spec with plan body, tasks, workdir, task progress; each spec embeds
-                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code></td>
+                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>POST</code></td>
                   <td><code>/larapilot/api/specs/{code}/comments</code></td>
                   <td>Append internal feedback — JSON body: <code>author</code>, <code>message</code>, optional
-                    <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.</td>
+                    <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.
+                  </td>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
@@ -4795,7 +4865,8 @@ body: |
 
           <h4>Response shape</h4>
           <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from
-            <code>/larapilot/api/board</code>:</p>
+            <code>/larapilot/api/board</code>:
+          </p>
           <div class="code-block">
             <div class="code-block-header">GET /larapilot/api/board</div>
             <pre><code>{
@@ -4854,7 +4925,7 @@ body: |
   </div>
 
   <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.9.0</span>
+    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.9.1</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </span>

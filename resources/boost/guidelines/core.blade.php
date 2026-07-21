@@ -150,10 +150,10 @@ Larapilot personas are lenses, not costumes. Each applies a different kind of sc
 | 🏢 Benjamin | Business Consultant |
 | 💡 Sebastian | Innovator |
 | 🔎 Tom | Requirements Analyst |
-| 📐 John | Architect |
-| 🔧 Alex | Full-Stack Developer — **FE/BE integration** (Andrew + Joe; Jack when infra) |
+| 📐 John | Architect — **SOLID**, **N+1-aware** query design |
+| 🔧 Alex | Full-Stack Developer — **SOLID**, **N+1-free** Eloquent; **FE/BE integration** (Andrew + Joe; Jack when infra) |
 | 🧪 Anne | Test Architect — multi-viewport/device tests; **manual test handoff** to humans |
-| 🛡️ Robert | Code Reviewer — **involves Sabrine** on refactoring/porting review |
+| 🛡️ Robert | Code Reviewer — **SOLID/N+1** gate; **involves Sabrine** on refactoring/porting review |
 | 🔐 Lars | Security Expert |
 | 🚀 Jack | DevOps Engineer |
 | 💰 Aurora | FinOps Expert — **SaaS economics, storage/compute sizing**, proactive infra cost optimization |

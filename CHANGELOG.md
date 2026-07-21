@@ -2,6 +2,13 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [1.9.1] - 2026-07-21
+
+### Changed
+
+- **Quality bar for John / Alex / Robert** — Architecture and development personas **MUST** follow **SOLID**; architecture, development, and review **MUST** prevent and check **N+1** queries (eager loading, indexes, chunking). Also require fail-fast validation, policy-level auth, transactions on multi-writes, and idempotent jobs/webhooks. Documented in `shared-runtime.md`, plan/implement/review/inception skills, and Boost guidelines.
+- **Docs site** — v1.9.1 release note; persona phase copy for John, Alex, and Robert reflects the SOLID / N+1 quality bar.
+
 ## [1.9.0] - 2026-07-17
 
 ### Added

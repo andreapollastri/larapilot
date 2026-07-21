@@ -24,8 +24,8 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 | Agent          | Role                                                                             |
 | -------------- | -------------------------------------------------------------------------------- |
 | 🤖 **Zoey**    | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
-| 🔧 **Alex**    | Full-Stack Developer — **FE/BE integration** per Andrew + Joe; involves Jack when infra |
-| 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, ecosystem packages, convention adherence     |
+| 🔧 **Alex**    | Full-Stack Developer — **SOLID** + **N+1-free** queries; **FE/BE integration** per Andrew + Joe; involves Jack when infra |
+| 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, eager loading, ecosystem packages, convention adherence     |
 | ✨ **Joe**     | Frontend Expert — **design system** compliance, JS/CSS polish, animations, client performance, visual fidelity |
 | 📱 **Ricky**   | App Developer — mobile/hybrid code, device permissions, Flutter/native features  |
 | 📝 **Albert**  | Tech Writer — baseline + scoped docs: OpenAPI, README, diagrams, PDF manual chapters |
@@ -34,7 +34,7 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 | 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
 | 🌍 **Emily**   | Translator — locales, currency, timezones when in scope                          |
 | 🧪 **Anne**    | Test Architect — multi-viewport/device tests, Pest/PHPUnit; **manual test handoff** when automation is insufficient |
-| 🛡️ **Robert**  | Code Reviewer — plan adherence, Laravel conventions, **Gitflow**; involves **Sabrine** on refactoring/porting |
+| 🛡️ **Robert**  | Code Reviewer — plan adherence, **SOLID/N+1** quality gate, Laravel conventions, **Gitflow**; involves **Sabrine** on refactoring/porting |
 | 🔐 **Lars**    | Security Expert — OWASP-aligned security assessment                              |
 
 ## Config & CLI
@@ -63,7 +63,7 @@ Use **Laravel Boost** throughout:
 - `Application Info` for package versions
 - `Last Error` / `Read Log Entries` when debugging
 
-Follow Laravel best practices from Boost guidelines: thin controllers, Form Requests, policies, eager loading, Pest tests.
+Follow Laravel best practices from Boost guidelines: thin controllers, Form Requests, policies, eager loading, Pest tests. Honor **SOLID** and keep every relation-touching path **N+1-free**.
 
 Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from shared-runtime on greenfield work unless the PRD or existing codebase opts out:
 
@@ -77,7 +77,9 @@ Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from share
 - **SSO:** use Laravel Socialite + [Socialite Providers](https://socialiteproviders.com/) for OAuth; link accounts on User model.
 - **Queues:** implement `ShouldQueue` jobs for async work; never block HTTP on slow I/O.
 - **Logging:** structured log context on auth, payments, and integration failures.
-- **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial.
+- **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial; **SOLID** Actions/Services — no god controllers.
+- **Queries:** eager-load relations used in views/resources/loops (`with` / `loadMissing`); add indexes with migrations for new filter/FK columns; chunk/cursor bulk work — **no N+1** before `task-done`.
+- **Reliability:** `DB::transaction` around multi-model writes; authorize via Policies/Gates; validate with Form Requests (or equivalent).
 - **Docs:** update OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs — **including under `ECO`**. README and other prose docs: only when `effort` is not `ECO`.
 - **Local dev:** honor the local dev method recorded in the PRD — use `sail up` / `sail artisan …` only when the PRD chose Sail; document Herd setup when Herd was chosen; when **not defined yet**, stick to generic `php artisan` in README/tasks until the user decides; use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains
 - **Git:** honor `settings.git_mode`. `NO_GITFLOW` → current branch, commits only. `GITFLOW` → `feature/US-XXX-*` + atomic commits + prepare PR **without push**. `GITFLOW_PUSH` → same **plus** push and open/update internal PR toward `develop` after each task. Never commit directly to `main`/`develop` in Gitflow modes. See **Git discipline** in shared-runtime.

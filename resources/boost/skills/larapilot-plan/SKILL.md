@@ -23,7 +23,7 @@ Read `.larapilot/task-templates.md` — copy task body structures gated by `data
 | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
 | 🤖 **Zoey**      | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)*         |
 | 🔎 **Tom**       | Requirements Analyst — acceptance criteria and spec fidelity                                                         |
-| 📐 **John**      | Architect — Architecture Standards: APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target         |
+| 📐 **John**      | Architect — Architecture Standards: **SOLID**, **N+1-aware** queries, APIs, queues, DTOs, logging, tech debt, OpenAPI/docs per delivery target |
 | 💡 **Sebastian** | Innovator — integration options, competitor data-porting paths, vendor evaluation when spec touches external systems |
 | 🔗 **Matt**      | Integration Manager — API/service wiring tasks with Alex, John, Elise                                                |
 | 🌍 **Emily**     | Translator — locale files, currency, timezone, country-target UX _(with Violet)_                                     |
@@ -36,9 +36,9 @@ Read `.larapilot/task-templates.md` — copy task body structures gated by `data
 | 📱 **Ricky**     | App Developer — mobile shells, device permissions, Flutter/native platform tasks                                     |
 | 📝 **Albert**    | Tech Writer — **baseline docs always**; extended OpenAPI, diagrams, PDF manual when spec approved                  |
 | ✍️ **Marika**    | Copywriter — copy tasks for views, notifications, `lang/` strings                                                    |
-| 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, package recommendations, anti-pattern review                            |
+| 👾 **Andrew**    | Laravel Expert — idiomatic Laravel patterns, eager loading / **N+1** flags, package recommendations, anti-pattern review |
 | 🔄 **Sabrine**   | Legacy Porting Specialist — parity/migration tasks, DB/assets porting, content scraping mapped to `legacy-parity.md` |
-| 🔧 **Alex**      | Full-Stack Developer — **FE/BE integration** per Andrew + Joe; Jack when infra                                       |
+| 🔧 **Alex**      | Full-Stack Developer — **SOLID** + **N+1-free** Eloquent; **FE/BE integration** per Andrew + Joe; Jack when infra   |
 | 🧪 **Anne**      | Test Architect — **multi-viewport/device responsive UI tests**, manual test handoff, Pest strategy |
 
 ## Config & CLI
@@ -142,7 +142,7 @@ Every **Impl** and **Fix** task body MUST include:
 
 ## Laravel Planning Rules
 
-- John MUST apply **Architecture Standards** and **Multi-tenancy** comparison from shared-runtime when spec touches SaaS/workspaces; plan Gitflow branch name `feature/US-XXX-*`, semver/CHANGELOG tasks, `security.txt` + `SECURITY.md`, CI pipeline gates, queues, DTOs, OpenAPI
+- John MUST apply **Architecture Standards** (**SOLID**, **N+1**/eager-load design, quality bar) and **Multi-tenancy** comparison from shared-runtime when spec touches SaaS/workspaces; plan Gitflow branch name `feature/US-XXX-*`, semver/CHANGELOG tasks, `security.txt` + `SECURITY.md`, CI pipeline gates, queues, DTOs, OpenAPI; task bodies that load relations must name eager-load / index deliverables
 - **Alex** plans **factory + seeder tasks** for every new/changed Eloquent model (domain-meaningful Faker data, states, relationships, coherent `DatabaseSeeder`); factory/seeder updates ship in the same task as migrations — never deferred
 - **Alex + Jack** plan **per-task Git discipline**: each task body ends with commit message template (`type(US-XXX): TASK-NN …`), push, and internal PR update toward `develop`; no batched multi-task commits
 - Plans must satisfy the full spec — do not trim scope to MVP unless the PRD delivery target is MVP
