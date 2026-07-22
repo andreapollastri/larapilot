@@ -7,8 +7,3 @@ composer.lock
 .DS_Store
 coverage/
 build/
-benchmarks/laravel-models/.venv/
-benchmarks/laravel-models/.work/
-benchmarks/laravel-models/results/
-benchmarks/laravel-models/fixtures/laravel-app/
-benchmarks/laravel-models/config.yaml
