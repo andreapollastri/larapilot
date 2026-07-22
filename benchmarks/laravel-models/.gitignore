@@ -1,0 +1,7 @@
+fixtures/laravel-app/
+.work/
+results/
+.venv/
+__pycache__/
+*.pyc
+config.yaml
