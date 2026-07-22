@@ -1,572 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
   <title>404 — Larapilot</title>
-  <meta name="description" content="Page not found. Larapilot v1.9.1 — return to the docs.">
-  <meta name="theme-color" content="#ff4436">
-  <meta name="robots" content="noindex">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Geist+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <meta name="description" content="Page not found. Larapilot — return to the docs." />
+  <meta name="theme-color" content="#e03a2d" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    @font-face {
-      font-family: "Geist Mono";
-      src: local("JetBrains Mono"), local("ui-monospace");
-    }
-
     :root {
-      --bg: #fafafa;
-      --bg-alt: #f4f4f5;
-      --surface: #ffffff;
-      --border: #e4e4e7;
-      --border-strong: #d4d4d8;
-      --text: #09090b;
-      --text-secondary: #52525b;
-      --text-tertiary: #a1a1aa;
-      --accent: #ff4436;
-      --accent-dark: #e03328;
-      --accent-soft: rgba(255, 68, 54, 0.08);
-      --accent-glow: rgba(255, 68, 54, 0.18);
-      --indigo: #6366f1;
-      --green: #16a34a;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --radius-xs: 6px;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .04), 0 1px 3px rgba(0, 0, 0, .06);
-      --shadow-lg: 0 20px 50px rgba(0, 0, 0, .08);
-      --font: "Plus Jakarta Sans", system-ui, sans-serif;
-      --mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
-      --header-h: 64px;
+      --ink: #1c1412;
+      --ink-soft: #3a2c28;
+      --muted: #6b5a54;
+      --line: #d4c6c0;
+      --paper: #f1eae6;
+      --surface: #f8f3f0;
+      --white: #ffffff;
+      --signal: #e03a2d;
+      --signal-deep: #b82d22;
+      --phosphor: #ff8f7a;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --sans: "Source Sans 3", Georgia, sans-serif;
+      --display: "Space Grotesk", var(--sans);
       --max: 1120px;
-      --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      font-size: 15px;
-      -webkit-font-smoothing: antialiased;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      font-size: 1.0625rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
-    ::selection {
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-    }
+    a { color: inherit; }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    code {
-      font-family: var(--mono);
-      font-size: .84em;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      padding: .12em .4em;
-      border-radius: var(--radius-xs);
-    }
-
-    .site-header {
+    .atmosphere {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-h);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 1.5rem;
-      background: rgba(250, 250, 250, .82);
-      backdrop-filter: blur(16px) saturate(1.4);
-      border-bottom: 1px solid var(--border);
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 45% at 8% -8%, rgba(224, 58, 45, 0.12), transparent 55%),
+        radial-gradient(ellipse 55% 40% at 95% 25%, rgba(28, 20, 18, 0.06), transparent 50%),
+        linear-gradient(180deg, var(--surface) 0%, var(--paper) 42%, var(--paper) 100%);
     }
 
-    .header-inner {
-      width: 100%;
-      max-width: var(--max);
+    .atmosphere::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(28, 20, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(28, 20, 18, 0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 65%);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: rgba(248, 243, 240, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
 
-    .brand {
+    .nav-brand {
+      font-family: var(--display);
       font-weight: 700;
-      font-size: .95rem;
-      letter-spacing: -.02em;
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--ink);
     }
 
-    .header-nav {
+    .nav-brand svg { width: 1.55rem; height: 1.55rem; }
+
+    .nav-links {
       display: flex;
       align-items: center;
-      gap: .25rem;
-    }
-
-    .header-nav a {
-      font-size: .84rem;
+      gap: 1.35rem;
+      font-size: 0.95rem;
       font-weight: 500;
-      color: var(--text-secondary);
-      padding: .45rem .75rem;
-      border-radius: var(--radius-xs);
-      transition: color .15s, background .15s;
     }
 
-    .header-nav a:hover {
-      color: var(--text);
-      background: var(--bg-alt);
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-soft);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--signal); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--white) !important;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .nav-cta:hover {
+      background: var(--signal);
+      border-color: var(--signal);
+    }
+
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3.5rem 0 0;
+    }
+
+    .hero-copy {
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 1.5rem 2.5rem;
+    }
+
+    .hero-code {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--signal);
+      margin-bottom: 0.85rem;
+      animation: rise 0.7s ease both;
+    }
+
+    .hero-brand {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(4.5rem, 16vw, 8rem);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      color: var(--ink);
+      animation: rise 0.7s ease both;
+    }
+
+    .hero-brand span { color: var(--signal); }
+
+    .hero-copy h1 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.45rem, 3.2vw, 2rem);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+      margin: 1.1rem 0 0.7rem;
+      animation: rise 0.7s 0.08s ease both;
+    }
+
+    .hero-copy > p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.5;
+      max-width: 36rem;
+      animation: rise 0.7s 0.14s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      animation: rise 0.7s 0.2s ease both;
+    }
+
+    .hero-path {
+      margin-top: 1.15rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+      animation: rise 0.7s 0.22s ease both;
+    }
+
+    .hero-path strong {
+      color: var(--ink-soft);
+      font-weight: 500;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
-      padding: .55rem 1rem;
-      border-radius: var(--radius-xs);
-      font-weight: 600;
-      font-size: .84rem;
-      border: none;
-      cursor: pointer;
-      transition: transform .15s var(--ease), box-shadow .15s, background .15s;
-      white-space: nowrap;
-    }
-
-    .btn:active {
-      transform: scale(.98);
-    }
-
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 4px 16px var(--accent-glow);
-    }
-
-    .btn-accent:hover {
-      background: var(--accent-dark);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover {
-      background: var(--surface);
-      border-color: var(--border-strong);
-      color: var(--text);
-    }
-
-    .page {
-      flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      padding: calc(var(--header-h) + 3rem) 1.5rem 4rem;
+      padding: 0.8rem 1.25rem;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: transform 0.15s, background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--signal);
+      color: var(--white);
+      border-color: var(--signal);
+    }
+
+    .btn-primary:hover {
+      background: var(--signal-deep);
+      border-color: var(--signal-deep);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .btn-secondary:hover {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .hero-visual {
+      position: relative;
+      width: 100%;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+      background: var(--ink);
+      color: #f1eae6;
       overflow: hidden;
+      animation: rise 0.8s 0.28s ease both;
     }
 
-    .page-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .page-bg::before {
+    .hero-visual::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(circle at 25% 35%, rgba(255, 68, 54, .12) 0%, transparent 50%),
-        radial-gradient(circle at 75% 25%, rgba(99, 102, 241, .10) 0%, transparent 45%);
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(224, 58, 45, 0.05) 3px,
+        rgba(224, 58, 45, 0.05) 6px
+      );
+      animation: scan 10s linear infinite;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .page-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0, 0, 0, .03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, .03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black 20%, transparent 100%);
-    }
-
-    .page-inner {
+    .hero-visual-inner {
       position: relative;
-      width: 100%;
-      max-width: var(--max);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: .35rem .85rem .35rem .45rem;
-      font-size: .78rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .eyebrow-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .error-code {
-      font-size: clamp(4rem, 12vw, 6.5rem);
-      font-weight: 800;
-      letter-spacing: -.06em;
-      line-height: 1;
-      margin-bottom: .75rem;
-      background: linear-gradient(135deg, var(--accent) 0%, #ff8a7a 45%, var(--indigo) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .page h1 {
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.15;
-      margin-bottom: 1rem;
-    }
-
-    .page-desc {
-      font-size: 1.02rem;
-      color: var(--text-secondary);
-      line-height: 1.75;
-      margin-bottom: 2rem;
-      max-width: 34rem;
-    }
-
-    .page-desc strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .page-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .65rem;
-    }
-
-    .hints {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 2.5rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .hint {
-      flex: 1 1 140px;
-    }
-
-    .hint strong {
-      display: block;
-      font-size: .88rem;
-      font-weight: 700;
-      margin-bottom: .2rem;
-    }
-
-    .hint span {
-      font-size: .78rem;
-      color: var(--text-tertiary);
-    }
-
-    .hint a {
-      color: var(--accent-dark);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-color: rgba(255, 68, 54, .35);
-    }
-
-    .hint a:hover {
-      text-decoration-color: var(--accent);
-    }
-
-    .terminal {
-      background: var(--text);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      transform: perspective(1200px) rotateY(-3deg) rotateX(2deg);
-      transition: transform .5s var(--ease);
-    }
-
-    .terminal:hover {
-      transform: perspective(1200px) rotateY(0) rotateX(0);
-    }
-
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-      padding: .85rem 1rem;
-      background: #27272a;
-      border-bottom: 1px solid #3f3f46;
-    }
-
-    .terminal-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .terminal-dot.r {
-      background: #ef4444;
-    }
-
-    .terminal-dot.y {
-      background: #eab308;
-    }
-
-    .terminal-dot.g {
-      background: #22c55e;
-    }
-
-    .terminal-title {
-      flex: 1;
-      text-align: center;
-      font-size: .72rem;
-      color: #71717a;
-      font-family: var(--mono);
-    }
-
-    .terminal-body {
-      padding: 1.15rem 1.25rem 1.25rem;
-      font-family: var(--mono);
-      font-size: .72rem;
-      line-height: 1.65;
-      color: #d4d4d8;
-    }
-
-    .terminal-line {
-      display: flex;
-      align-items: flex-start;
-      gap: .5rem;
-      margin-bottom: .85rem;
-    }
-
-    .terminal-line .prompt {
-      color: #22c55e;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .terminal-line .cmd {
-      color: #fafafa;
-    }
-
-    .terminal-output {
-      margin: 0;
-      padding: .85rem 1rem;
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: var(--radius-xs);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .terminal-output .key {
-      color: #93c5fd;
-    }
-
-    .terminal-output .str {
-      color: #86efac;
-    }
-
-    .terminal-output .num {
-      color: #fcd34d;
-    }
-
-    .terminal-output .bool {
-      color: #c4b5fd;
-    }
-
-    .terminal-output .err {
-      color: #f87171;
-    }
-
-    .site-footer {
+      z-index: 1;
       max-width: var(--max);
       margin: 0 auto;
-      width: 100%;
-      padding: 2rem 1.5rem 3rem;
-      border-top: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+
+    .hero-visual-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: #8b7f7a;
+    }
+
+    .hero-visual-bar i {
+      flex: 0 0 8px;
+      width: 8px;
+      height: 8px;
+      display: block;
+      background: var(--signal);
+    }
+
+    .hero-visual pre {
+      margin: 0;
+      padding: 1.25rem 0 1.75rem;
+      font-family: var(--mono);
+      font-size: clamp(0.72rem, 1.6vw, 0.85rem);
+      line-height: 1.75;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .t-pass { color: #5ddea0; }
+    .t-fail { color: #ff8f7a; }
+    .t-warn { color: #f0b429; }
+    .t-dim { color: #8b7f7a; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.75rem 1.5rem;
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
       gap: 1rem;
-      font-size: .84rem;
-      color: var(--text-tertiary);
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
-    .site-footer a {
-      color: var(--text-secondary);
+    footer a {
+      color: var(--ink-soft);
+      text-decoration: none;
+      margin-left: 1rem;
     }
 
-    .site-footer a:hover {
-      color: var(--accent);
+    footer a:hover { color: var(--signal); }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
     }
 
-    @media (max-width: 900px) {
-      .page-inner {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .page-desc {
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .page-cta,
-      .eyebrow {
-        justify-content: center;
-      }
-
-      .hints {
-        justify-content: center;
-        text-align: left;
-      }
-
-      .terminal {
-        max-width: 420px;
-        margin: 0 auto;
-      }
+    @keyframes scan {
+      from { transform: translateY(0); }
+      to { transform: translateY(40px); }
     }
 
-    @media (max-width: 640px) {
-      .header-nav {
-        display: none;
-      }
-
-      .hints {
-        flex-direction: column;
-      }
+    @media (max-width: 600px) {
+      .nav-links a:not(.nav-cta) { display: none; }
     }
   </style>
 </head>
-
 <body>
+  <div class="atmosphere" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="index.html">Larapilot</a>
-      <nav class="header-nav">
-        <a href="index.html#quickstart">Quickstart</a>
-        <a href="index.html#how-it-works">How to use</a>
-        <a href="index.html#examples">Examples</a>
-        <a href="index.html#deep-dive">Deep Dive</a>
-      </nav>
+  <nav class="nav">
+    <a class="nav-brand" href="/">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#1C1412"/>
+        <circle cx="16" cy="5.5" r="1.6" fill="#FF8F7A"/>
+        <path d="M16 7.2v2.3" stroke="#FF8F7A" stroke-width="1.6" stroke-linecap="round"/>
+        <rect x="5" y="14.2" width="2.8" height="5.2" rx="1.2" fill="#FF8F7A"/>
+        <rect x="24.2" y="14.2" width="2.8" height="5.2" rx="1.2" fill="#FF8F7A"/>
+        <rect x="7.5" y="9.5" width="17" height="15.5" rx="3.5" fill="#FF8F7A"/>
+        <circle cx="12.6" cy="15.4" r="2" fill="#1C1412"/>
+        <circle cx="19.4" cy="15.4" r="2" fill="#1C1412"/>
+        <circle cx="13.2" cy="14.9" r="0.55" fill="#FF8F7A"/>
+        <circle cx="20" cy="14.9" r="0.55" fill="#FF8F7A"/>
+        <rect x="12.2" y="20.2" width="7.6" height="1.7" rx="0.85" fill="#1C1412"/>
+        <path d="M11 25h10" stroke="#1C1412" stroke-width="1.4" stroke-linecap="round" opacity=".35"/>
+      </svg>
+      larapilot
+    </a>
+    <div class="nav-links">
+      <a href="/#quickstart">Quickstart</a>
+      <a href="/#examples">Examples</a>
+      <a href="/#deep-dive">Deep Dive</a>
+      <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
     </div>
-  </header>
+  </nav>
 
-  <main class="page">
-    <div class="page-bg">
-      <div class="page-grid"></div>
-    </div>
-    <div class="page-inner">
-      <div>
-        <div class="eyebrow">
-          <span class="eyebrow-dot"></span>
-          Workflow transition blocked
-        </div>
-        <div class="error-code" aria-hidden="true">404</div>
-        <h1>This page is not in the backlog</h1>
-        <p class="page-desc">
-          The URL you requested does not exist — or it was moved without updating the plan.
-          Head back to the docs and continue from a valid step in the Larapilot workflow.
-        </p>
-        <div class="page-cta">
-          <a class="btn btn-accent" href="index.html">Back to docs</a>
-          <a class="btn btn-ghost" href="index.html#quickstart">Quickstart</a>
-        </div>
-        <div class="hints">
-          <div class="hint">
-            <strong>Install</strong>
-            <span><a href="index.html#quickstart">Get started</a> with Larapilot in your Laravel app</span>
-          </div>
-          <div class="hint">
-            <strong>CLI</strong>
-            <span>Run <code>php artisan larapilot:doctor</code> to diagnose your setup</span>
-          </div>
-          <div class="hint">
-            <strong>Source</strong>
-            <span>Report issues on <a href="https://github.com/andreapollastri/larapilot/issues" target="_blank"
-                rel="noopener">GitHub</a></span>
-          </div>
-        </div>
+  <main class="hero">
+    <div class="hero-copy">
+      <div class="hero-code">Route miss · HTTP 404</div>
+      <div class="hero-brand">404<span>.</span></div>
+      <h1>This path is not in the backlog.</h1>
+      <p>The URL you requested is not part of the Larapilot docs. Head home, jump to install, or open a section below.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/">Back to home</a>
+        <a class="btn btn-secondary" href="/#quickstart">Install commands</a>
       </div>
+      <p class="hero-path">Requested: <strong id="requested-path">/</strong></p>
+    </div>
 
-      <aside class="terminal" aria-label="Example CLI error envelope">
-        <div class="terminal-bar">
-          <span class="terminal-dot r"></span>
-          <span class="terminal-dot y"></span>
-          <span class="terminal-dot g"></span>
-          <span class="terminal-title">larapilot — zsh</span>
-        </div>
-        <div class="terminal-body">
-          <div class="terminal-line">
-            <span class="prompt">❯</span>
-            <span class="cmd">php artisan larapilot:spec-show PAGE-404</span>
-          </div>
-          <pre class="terminal-output" aria-label="JSON error response">{
-  <span class="key">"ok"</span>: <span class="bool">false</span>,
-  <span class="key">"kind"</span>: <span class="str">"error"</span>,
-  <span class="key">"code"</span>: <span class="str">"E_NOT_FOUND"</span>,
-  <span class="key">"message"</span>: <span class="str">"Spec PAGE-404 not found."</span>,
-  <span class="key">"hint"</span>: <span class="str">"Valid transitions: index.html → quickstart → deep-dive"</span>,
-  <span class="key">"exit"</span>: <span class="num">1</span>
-}</pre>
-        </div>
-      </aside>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-visual-inner">
+        <div class="hero-visual-bar"><i></i> larapilot — route lookup</div>
+        <pre><span class="t-dim">$</span> curl -I https://larapilot.web.ap.it<span id="path-echo"></span>
+<span class="t-pass">PASS</span>  Docs Index
+      Home, quickstart, and deep dive are reachable.
+
+<span class="t-fail">FAIL</span>  Route Lookup
+      ✗ Requested path does not exist <span class="t-dim">[404larapilot]</span>
+
+<span class="t-warn">WARN</span>  Navigation
+      ⚑ Prefer links from the site nav or docs TOC.
+
+─────────────────────────────────
+Summary  1 passed  1 warn  1 failed
+Result: <span class="t-fail">FAIL</span> — return to /</pre>
+      </div>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.9.1</span>
+  <footer>
+    <span>© 2026 Andrea Pollastri — MIT License</span>
     <span>
       <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
+      <a href="/">Home</a>
     </span>
   </footer>
 
+  <script>
+    (function () {
+      var path = window.location.pathname + window.location.search;
+      var el = document.getElementById("requested-path");
+      var echo = document.getElementById("path-echo");
+      if (el) el.textContent = path;
+      if (echo) echo.textContent = path === "/" ? "" : path;
+    })();
+  </script>
 </body>
-
 </html>

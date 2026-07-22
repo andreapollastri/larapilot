@@ -1,2847 +1,1271 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description"
-    content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, build, review, and ship code according to spec requirements with AI.">
-  <meta name="theme-color" content="#ff4436">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Geist+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, build, review, and ship code according to spec requirements with AI." />
+  <meta name="theme-color" content="#e03a2d" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    @font-face {
-      font-family: "Geist Mono";
-      src: local("JetBrains Mono"), local("ui-monospace");
-    }
-
     :root {
-      --bg: #fafafa;
-      --bg-alt: #f4f4f5;
-      --surface: #ffffff;
-      --surface-hover: #fafafa;
-      --border: #e4e4e7;
-      --border-strong: #d4d4d8;
-      --text: #09090b;
-      --text-secondary: #52525b;
-      --text-tertiary: #a1a1aa;
-      --accent: #ff4436;
-      --accent-dark: #e03328;
-      --accent-soft: rgba(255, 68, 54, 0.08);
-      --accent-glow: rgba(255, 68, 54, 0.18);
-      --indigo: #6366f1;
-      --indigo-soft: rgba(99, 102, 241, 0.08);
-      --green: #16a34a;
-      --green-soft: #dcfce7;
-      --blue: #2563eb;
-      --blue-soft: #dbeafe;
-      --amber: #d97706;
-      --amber-soft: #fef3c7;
-      --violet: #7c3aed;
-      --violet-soft: #ede9fe;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --radius-xs: 6px;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .04), 0 1px 3px rgba(0, 0, 0, .06);
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, .06), 0 2px 6px rgba(0, 0, 0, .04);
-      --shadow-lg: 0 20px 50px rgba(0, 0, 0, .08);
-      --font: "Plus Jakarta Sans", system-ui, sans-serif;
-      --mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
-      --nav-w: 248px;
-      --header-h: 64px;
+      --ink: #1c1412;
+      --ink-soft: #3a2c28;
+      --muted: #6b5a54;
+      --line: #d4c6c0;
+      --paper: #f1eae6;
+      --surface: #f8f3f0;
+      --white: #ffffff;
+      --signal: #e03a2d;
+      --signal-deep: #b82d22;
+      --phosphor: #ff8f7a;
+      --terminal: #1c1412;
+      --pass: #1a7f4b;
+      --warn: #b45309;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --sans: "Source Sans 3", Georgia, sans-serif;
+      --display: "Space Grotesk", var(--sans);
       --max: 1120px;
-      --ease: cubic-bezier(.4, 0, .2, 1);
+      --docs-sidebar: 210px;
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: calc(var(--header-h) + 24px);
+      scroll-padding-top: 5rem;
     }
 
     body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      font-size: 15px;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      font-size: 1.0625rem;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
 
-    ::selection {
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-    }
+    a { color: inherit; }
+    code, pre { font-family: var(--mono); }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .prose a {
-      color: var(--accent-dark);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-color: rgba(255, 68, 54, .35);
-    }
-
-    .prose a:hover {
-      text-decoration-color: var(--accent);
-    }
-
-    code {
-      font-family: var(--mono);
-      font-size: .84em;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      padding: .12em .4em;
-      border-radius: var(--radius-xs);
-      color: var(--text);
-    }
-
-    pre {
-      font-family: var(--mono);
-    }
-
-    pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: inherit;
-    }
-
-    /* ── Header ── */
-    .site-header {
+    .atmosphere {
       position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 45% at 8% -8%, rgba(224, 58, 45, 0.12), transparent 55%),
+        radial-gradient(ellipse 55% 40% at 95% 15%, rgba(28, 20, 18, 0.06), transparent 50%),
+        linear-gradient(180deg, var(--surface) 0%, var(--paper) 42%, var(--paper) 100%);
+    }
+
+    .atmosphere::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(28, 20, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(28, 20, 18, 0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 65%);
+    }
+
+    /* Nav */
+    .nav {
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-h);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 1.5rem;
-      transition: background .3s var(--ease), border-color .3s var(--ease), backdrop-filter .3s;
-    }
-
-    .site-header.scrolled {
-      background: rgba(250, 250, 250, .82);
-      backdrop-filter: blur(16px) saturate(1.4);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      width: 100%;
-      max-width: var(--max);
+      z-index: 50;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: rgba(248, 243, 240, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
 
-    .brand {
+    .nav-brand {
+      font-family: var(--display);
       font-weight: 700;
-      font-size: .95rem;
-      letter-spacing: -.02em;
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: var(--ink);
     }
 
-    .header-right {
+    .nav-brand svg { width: 1.55rem; height: 1.55rem; flex-shrink: 0; }
+
+    .nav-links {
       display: flex;
       align-items: center;
-      gap: .5rem;
-      margin-left: auto;
-    }
-
-    .header-nav {
-      display: flex;
-      align-items: center;
-      gap: .25rem;
-    }
-
-    .header-nav a {
-      font-size: .84rem;
+      gap: 1.35rem;
+      font-size: 0.95rem;
       font-weight: 500;
-      color: var(--text-secondary);
-      padding: .45rem .75rem;
-      border-radius: var(--radius-xs);
-      transition: color .15s, background .15s;
     }
 
-    .header-nav a:hover {
-      color: var(--text);
-      background: var(--bg-alt);
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-soft);
+      transition: color 0.2s;
     }
+
+    .nav-links a:hover { color: var(--signal); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--white) !important;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--signal);
+      border-color: var(--signal);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: 0;
+      cursor: pointer;
+      padding: 0.35rem;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 3.6rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .hero-plane {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 70% 40%, rgba(255, 143, 122, 0.14), transparent 55%),
+        linear-gradient(165deg, #120e0d 0%, #1c1412 45%, #3a1a16 100%);
+    }
+
+    .hero-plane::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 143, 122, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 143, 122, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+      animation: grid-drift 28s linear infinite;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      width: 100%;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 2.25rem;
+    }
+
+    .hero-brand {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(3.4rem, 12vw, 7.5rem);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      color: var(--white);
+      animation: rise 0.75s ease both;
+    }
+
+    .hero-brand span { color: var(--phosphor); }
+
+    .hero-version {
+      display: inline-block;
+      margin-left: 0.55rem;
+      vertical-align: middle;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(255, 143, 122, 0.85);
+      border: 1px solid rgba(255, 143, 122, 0.35);
+      padding: 0.2rem 0.45rem;
+      transform: translateY(-0.55em);
+    }
+
+    .hero-content h1 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+      color: rgba(255, 255, 255, 0.92);
+      margin: 1.15rem 0 0.65rem;
+      max-width: 32rem;
+      animation: rise 0.75s 0.08s ease both;
+    }
+
+    .hero-content > p {
+      color: rgba(241, 234, 230, 0.72);
+      max-width: 36rem;
+      font-size: 1.05rem;
+      animation: rise 0.75s 0.14s ease both;
+    }
+
+    .hero-content > p a {
+      color: var(--phosphor);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 143, 122, 0.35);
+    }
+
+    .hero-content > p a:hover { border-bottom-color: var(--phosphor); }
+
+    .hero-content > p code {
+      font-size: 0.88em;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.12em 0.35em;
+      border-radius: 3px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      animation: rise 0.75s 0.2s ease both;
+    }
+
+    .hero-tagline {
+      margin-top: 1.25rem;
+      color: rgba(241, 234, 230, 0.55);
+      font-size: 0.98rem;
+      animation: rise 0.75s 0.24s ease both;
+    }
+
+    .hero-tagline strong { color: rgba(255, 255, 255, 0.88); font-weight: 600; }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
-      padding: .55rem 1rem;
-      border-radius: var(--radius-xs);
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.1rem;
+      font-family: var(--sans);
+      font-size: 0.95rem;
       font-weight: 600;
-      font-size: .84rem;
-      border: none;
-      cursor: pointer;
-      transition: transform .15s var(--ease), box-shadow .15s, background .15s;
-      white-space: nowrap;
       text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
     }
 
-    .btn:active {
-      transform: scale(.98);
-    }
+    .btn:active { transform: translateY(1px); }
 
     .btn-primary {
-      background: var(--text);
-      color: #fff;
-      box-shadow: var(--shadow-sm);
+      background: var(--phosphor);
+      color: var(--ink);
+      border-color: var(--phosphor);
     }
 
     .btn-primary:hover {
-      background: #27272a;
-      box-shadow: var(--shadow-md);
+      background: #ffb0a2;
+      border-color: #ffb0a2;
     }
 
     .btn-ghost {
       background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
+      color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.28);
     }
 
     .btn-ghost:hover {
-      background: var(--surface);
-      border-color: var(--border-strong);
-      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.06);
     }
 
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 4px 16px var(--accent-glow);
+    .btn-ink {
+      background: var(--ink);
+      color: var(--white);
+      border-color: var(--ink);
     }
 
-    .btn-accent:hover {
-      background: var(--accent-dark);
+    .btn-ink:hover {
+      background: var(--signal);
+      border-color: var(--signal);
     }
 
-    .menu-toggle {
-      display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      width: 36px;
-      height: 36px;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text);
-    }
-
-    /* ── Hero ── */
-    .hero {
+    .hero-terminal {
       position: relative;
-      padding: calc(var(--header-h) + 4rem) 1.5rem 5rem;
-      overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .hero-bg::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255, 68, 54, .12) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(99, 102, 241, .10) 0%, transparent 45%),
-        radial-gradient(circle at 60% 80%, rgba(255, 68, 54, .06) 0%, transparent 40%);
-    }
-
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0, 0, 0, .03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, .03) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 100%);
-    }
-
-    .hero-inner {
-      position: relative;
-      max-width: var(--max);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .hero-copy {
-      max-width: 540px;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: .35rem .85rem .35rem .45rem;
-      font-size: .78rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hero-eyebrow-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-      animation: pulse 2s ease infinite;
-    }
-
-    .hero-version {
-      margin-left: .15rem;
-      padding: .1rem .45rem;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      border-radius: 999px;
-      font-size: .68rem;
-      font-weight: 700;
-      letter-spacing: .02em;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: .5;
-      }
-    }
-
-    .hero h1 {
-      font-size: clamp(2.4rem, 5vw, 3.5rem);
-      font-weight: 800;
-      letter-spacing: -.04em;
-      line-height: 1.08;
-      margin-bottom: 1.25rem;
-    }
-
-    .hero h1 .gradient {
-      background: linear-gradient(135deg, var(--accent) 0%, #ff8a7a 50%, var(--indigo) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-desc {
-      font-size: 1.05rem;
-      color: var(--text-secondary);
-      line-height: 1.75;
-      margin-bottom: 1rem;
-    }
-
-    .hero-desc strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .hero-flow {
-      margin-top: 1.1rem;
-      margin-bottom: 1.75rem;
-      font-size: .88rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    .hero-flow code {
-      font-size: .82rem;
-    }
-
-    .hero-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .65rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero-tagline {
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      letter-spacing: -.02em;
-      line-height: 1.5;
-      max-width: 30rem;
-    }
-
-    .hero-tagline strong {
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    /* Terminal mock */
-    .hero-visual {
-      position: relative;
-    }
-
-    .terminal {
-      background: var(--text);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
-      transition: transform .5s var(--ease);
-    }
-
-    .terminal:hover {
-      transform: perspective(1200px) rotateY(0) rotateX(0);
-    }
-
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-      padding: .85rem 1rem;
-      background: #27272a;
-      border-bottom: 1px solid #3f3f46;
-    }
-
-    .terminal-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .terminal-dot.r {
-      background: #ef4444;
-    }
-
-    .terminal-dot.y {
-      background: #eab308;
-    }
-
-    .terminal-dot.g {
-      background: #22c55e;
-    }
-
-    .terminal-title {
-      flex: 1;
-      text-align: center;
-      font-size: .72rem;
-      color: #71717a;
-      font-family: var(--mono);
-    }
-
-    .terminal-body {
-      padding: 0;
-      font-family: var(--mono);
-      font-size: .72rem;
-      line-height: 1.65;
-      color: #d4d4d8;
-      height: 430px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .terminal-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .35rem;
-      padding: .65rem 1rem;
-      background: #1f1f23;
-      border-bottom: 1px solid #3f3f46;
-    }
-
-    .terminal-tab {
-      font-family: var(--mono);
-      font-size: .68rem;
-      font-weight: 500;
-      color: #71717a;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: var(--radius-xs);
-      padding: .35rem .65rem;
-      cursor: pointer;
-      transition: all .2s var(--ease);
-    }
-
-    .terminal-tab:hover {
-      color: #d4d4d8;
-      background: #27272a;
-    }
-
-    .terminal-tab.active {
-      color: #fafafa;
-      background: #3f3f46;
-      border-color: #52525b;
-    }
-
-    .terminal-tab.done {
-      color: #22c55e;
-    }
-
-    .terminal-tab.done.active {
-      background: rgba(34, 197, 94, .12);
-      border-color: rgba(34, 197, 94, .3);
-    }
-
-    .terminal-viewport {
-      flex: 1;
-      padding: 1.15rem 1.25rem 1rem;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    .terminal-step {
-      display: none;
-      animation: termFadeIn .35s var(--ease);
-    }
-
-    .terminal-step.active {
-      display: block;
-    }
-
-    @keyframes termFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .terminal-line {
-      display: flex;
-      align-items: flex-start;
-      gap: .5rem;
-      margin-bottom: .85rem;
-    }
-
-    .terminal-line .prompt {
-      color: #22c55e;
-      font-weight: 600;
-      flex-shrink: 0;
-      user-select: none;
-    }
-
-    .terminal-line .cmd {
-      color: #fafafa;
-      flex: 1;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .terminal-line .cmd .typing-cursor {
-      display: inline-block;
-      width: 7px;
-      height: 1.1em;
-      background: #22c55e;
-      margin-left: 1px;
-      vertical-align: text-bottom;
-      animation: blink .9s step-end infinite;
-    }
-
-    @keyframes blink {
-      50% {
-        opacity: 0;
-      }
-    }
-
-    .copy-btn {
-      flex-shrink: 0;
-      background: #27272a;
-      border: 1px solid #3f3f46;
-      border-radius: 4px;
-      color: #71717a;
-      padding: .2rem .45rem;
-      font-size: .62rem;
-      font-family: var(--font);
-      cursor: pointer;
-      transition: all .15s;
-      opacity: .55;
-    }
-
-    @media (hover: hover) {
-      .copy-btn {
-        opacity: 0;
-      }
-
-      .terminal-line:hover .copy-btn,
-      .copy-btn:focus {
-        opacity: 1;
-      }
-    }
-
-    .copy-btn:hover {
-      color: #fafafa;
-      border-color: #52525b;
-    }
-
-    .copy-btn.copied {
-      color: #22c55e;
-      border-color: rgba(34, 197, 94, .4);
-    }
-
-    .terminal-output {
-      margin: 0 0 .85rem;
-      padding: .85rem 1rem;
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 8px;
-      overflow-x: auto;
-      white-space: pre;
-      font-size: .7rem;
-      line-height: 1.75;
-    }
-
-    .terminal-output .key {
-      color: #93c5fd;
-    }
-
-    .terminal-output .str {
-      color: #fca5a5;
-    }
-
-    .terminal-output .bool {
-      color: #fde68a;
-    }
-
-    .terminal-output .num {
-      color: #fde68a;
-    }
-
-    .terminal-output .punct {
-      color: #52525b;
-    }
-
-    .terminal-output .ok {
-      color: #22c55e;
-    }
-
-    .terminal-output .comment {
-      color: #52525b;
-      font-style: italic;
-    }
-
-    .terminal-result {
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-      font-size: .68rem;
-      font-weight: 500;
-      padding: .3rem .65rem;
-      border-radius: 999px;
-      margin-bottom: .5rem;
-      max-width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .terminal-result.success {
-      color: #22c55e;
-      background: rgba(34, 197, 94, .1);
-      border: 1px solid rgba(34, 197, 94, .25);
-    }
-
-    .terminal-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: .65rem 1rem;
-      background: #1f1f23;
-      border-top: 1px solid #3f3f46;
-      gap: .75rem;
-    }
-
-    .terminal-progress {
-      display: flex;
-      align-items: center;
-      gap: .35rem;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .terminal-progress-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #3f3f46;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      transition: background .3s, transform .3s;
-    }
-
-    .terminal-progress-dot:hover {
-      background: #71717a;
-    }
-
-    .terminal-progress-dot.active {
-      background: #22c55e;
-      transform: scale(1.25);
-    }
-
-    .terminal-progress-dot.done {
-      background: #22c55e;
-      opacity: .5;
-    }
-
-    .terminal-progress-label {
-      font-size: .65rem;
-      color: #71717a;
-      margin-left: .35rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .terminal-replay {
-      font-family: var(--font);
-      font-size: .68rem;
-      font-weight: 600;
-      color: #a1a1aa;
-      background: #27272a;
-      border: 1px solid #3f3f46;
-      border-radius: var(--radius-xs);
-      padding: .35rem .7rem;
-      cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
-    }
-
-    .terminal-replay:hover {
-      color: #fafafa;
-      border-color: #52525b;
-    }
-
-    .terminal-body .comment {
-      color: #52525b;
-      font-style: italic;
-    }
-
-    .terminal:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 4px;
-    }
-
-    .terminal-comment {
-      color: #71717a;
-      font-size: .68rem;
-      font-style: italic;
-      margin-bottom: .4rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .term-chunk {
-      margin-bottom: .5rem;
-    }
-
-    /* Elements start hidden and are revealed by the animation script */
-    .terminal.anim-ready .term-chunk {
-      display: none;
-    }
-
-    .terminal.anim-ready .term-chunk.visible {
-      display: block;
-    }
-
-    .terminal.anim-ready .terminal-output {
-      display: none;
-    }
-
-    .terminal.anim-ready .terminal-output.visible {
-      display: block;
-    }
-
-    .terminal.anim-ready .terminal-output .out-line {
-      display: none;
-    }
-
-    .terminal.anim-ready .terminal-output .out-line.visible {
-      display: inline;
-    }
-
-    .terminal.anim-ready .terminal-result {
-      display: none;
-    }
-
-    .terminal.anim-ready .terminal-result.visible {
-      display: inline-flex;
-      animation: termFadeIn .3s var(--ease);
-    }
-
-    .terminal-result.info {
-      color: #93c5fd;
-      background: rgba(147, 197, 253, .08);
-      border: 1px solid rgba(147, 197, 253, .25);
-    }
-
-    .terminal-result.planned {
-      color: #60a5fa;
-      background: rgba(96, 165, 250, .08);
-      border: 1px solid rgba(96, 165, 250, .25);
-    }
-
-    .terminal-result.progress {
-      color: #fbbf24;
-      background: rgba(251, 191, 36, .08);
-      border: 1px solid rgba(251, 191, 36, .25);
-    }
-
-    .terminal-result.review {
-      color: #c084fc;
-      background: rgba(192, 132, 252, .08);
-      border: 1px solid rgba(192, 132, 252, .25);
-    }
-
-    /* Workflow statuses pop inside the terminal */
-    .terminal-body .st {
-      font-weight: 700;
-    }
-
-    .terminal-body .st-todo {
-      color: #a1a1aa;
-    }
-
-    .terminal-body .st-planned {
-      color: #60a5fa;
-    }
-
-    .terminal-body .st-progress {
-      color: #fbbf24;
-    }
-
-    .terminal-body .st-review {
-      color: #c084fc;
-    }
-
-    .terminal-body .st-done {
-      color: #34d399;
-    }
-
-    .status-pill {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: .58rem;
-      font-weight: 700;
-      letter-spacing: .04em;
-      padding: .12rem .5rem;
-      border-radius: 999px;
-      margin-right: .45rem;
-    }
-
-    .status-pill.setup {
-      color: #818cf8;
-      background: rgba(129, 140, 248, .1);
-      border: 1px solid rgba(129, 140, 248, .35);
-    }
-
-    .status-pill.todo {
-      color: #a1a1aa;
-      background: rgba(161, 161, 170, .12);
-      border: 1px solid rgba(161, 161, 170, .35);
-    }
-
-    .status-pill.planned {
-      color: #60a5fa;
-      background: rgba(96, 165, 250, .1);
-      border: 1px solid rgba(96, 165, 250, .35);
-    }
-
-    .status-pill.progress {
-      color: #fbbf24;
-      background: rgba(251, 191, 36, .1);
-      border: 1px solid rgba(251, 191, 36, .35);
-    }
-
-    .status-pill.done {
-      color: #22c55e;
-      background: rgba(34, 197, 94, .1);
-      border: 1px solid rgba(34, 197, 94, .35);
-    }
-
-    .terminal-glow {
-      position: absolute;
-      inset: 20% -10% -20% -10%;
-      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
-      z-index: -1;
-      filter: blur(40px);
-    }
-
-    /* ── Docs shell ── */
-    .docs-shell {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 4rem 1.5rem 6rem;
-      display: grid;
-      grid-template-columns: var(--nav-w) 1fr;
-      gap: 3rem;
-      align-items: start;
-    }
-
-    .doc-nav {
-      position: sticky;
-      top: calc(var(--header-h) + 1.5rem);
-      max-height: calc(100vh - var(--header-h) - 3rem);
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-      background: rgba(255, 255, 255, .88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-    }
-
-    .doc-nav-head {
-      padding: 1.1rem 1.25rem .95rem;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .doc-nav-title {
-      display: block;
-      font-size: .72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--text-tertiary);
-      margin-bottom: .65rem;
-    }
-
-    .doc-nav-progress {
-      height: 3px;
-      background: var(--bg-alt);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-
-    .doc-nav-progress span {
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent), #ff7a6e);
-      border-radius: 99px;
-      transition: width .12s linear;
-    }
-
-    .doc-nav-scroll {
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: 1rem 1rem 1.25rem;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-strong) transparent;
-    }
-
-    .doc-nav-scroll::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .doc-nav-scroll::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: 99px;
-    }
-
-    .doc-nav-track {
-      position: relative;
-      display: flex;
-      gap: 0;
-    }
-
-    .doc-nav-rail {
-      position: relative;
-      width: 14px;
-      flex-shrink: 0;
-      margin-right: .15rem;
-    }
-
-    .doc-nav-rail::before {
-      content: "";
-      position: absolute;
-      left: 5px;
-      top: .45rem;
-      bottom: .45rem;
-      width: 1px;
-      background: linear-gradient(180deg, transparent, var(--border) 8%, var(--border) 92%, transparent);
-    }
-
-    .doc-nav-indicator {
-      position: absolute;
-      left: 2px;
-      top: 0;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft), 0 0 12px var(--accent-glow);
-      transform: translateY(0);
-      opacity: 0;
-      transition: transform .22s var(--ease), opacity .18s var(--ease);
-      pointer-events: none;
       z-index: 1;
+      width: 100%;
+      margin-top: auto;
+      background: rgba(12, 9, 8, 0.92);
+      border-top: 1px solid rgba(255, 143, 122, 0.22);
+      animation: rise 0.85s 0.22s ease both;
+      min-height: 11.5rem;
     }
 
-    .doc-nav-groups {
-      flex: 1;
-      min-width: 0;
+    .hero-terminal-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 1.5rem;
+      font-family: var(--mono);
+      font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+      line-height: 1.65;
+      color: rgba(241, 234, 230, 0.88);
+      overflow-x: auto;
+      min-height: 9rem;
+      white-space: pre-wrap;
     }
 
-    .doc-nav-group {
-      margin-bottom: 1.1rem;
+    .hero-terminal .prompt { color: var(--phosphor); }
+    .hero-terminal .dim { color: rgba(241, 234, 230, 0.45); }
+    .hero-terminal .ok { color: #5ddea0; }
+    .hero-terminal .info { color: var(--phosphor); }
+    .hero-terminal .warn { color: #f0b429; }
+
+    .caret {
+      display: inline-block;
+      width: 0.55ch;
+      height: 1.05em;
+      background: var(--phosphor);
+      vertical-align: text-bottom;
+      margin-left: 2px;
+      animation: blink 1.05s step-end infinite;
     }
 
-    .doc-nav-group:last-child {
-      margin-bottom: 0;
+    @keyframes blink { 50% { opacity: 0; } }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .doc-nav-label {
-      font-size: .65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-      color: var(--text-tertiary);
-      padding: 0 .45rem;
-      margin-bottom: .35rem;
+    @keyframes grid-drift {
+      from { background-position: 0 0; }
+      to { background-position: 40px 40px; }
     }
 
-    .doc-nav a {
-      display: block;
-      font-size: .82rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      padding: .42rem .65rem;
-      border-radius: var(--radius-xs);
-      transition: color .15s var(--ease), background .15s var(--ease);
-      line-height: 1.35;
+    /* Docs shell */
+    .docs {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: var(--docs-sidebar) minmax(0, 1fr);
+      gap: 3rem;
     }
 
-    .doc-nav a:hover {
-      color: var(--text);
-      background: var(--bg-alt);
+    .docs-nav {
+      position: sticky;
+      top: 5rem;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      padding-right: 0.25rem;
     }
 
-    .doc-nav a.active {
-      color: var(--accent-dark);
-      font-weight: 700;
-      background: var(--accent-soft);
-    }
-
-    .doc-nav a.doc-nav-sub {
-      padding-left: .85rem;
-      font-size: .76rem;
-      font-weight: 500;
-      color: var(--text-tertiary);
-    }
-
-    .doc-nav a.doc-nav-sub.active {
-      color: var(--accent-dark);
+    .docs-nav-label {
+      font-family: var(--display);
+      font-size: 0.72rem;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
     }
 
-    .doc-nav a.doc-nav-sub:hover {
-      color: var(--text-secondary);
+    .docs-nav a {
+      text-decoration: none;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.32rem 0.5rem;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-
-      .doc-nav-indicator,
-      .doc-nav-progress span {
-        transition: none;
-      }
+    .docs-nav a.sub {
+      font-size: 0.82rem;
+      font-weight: 450;
+      color: var(--muted);
+      padding-left: 1rem;
     }
 
-    .doc-main {
-      min-width: 0;
+    .docs-nav a:hover,
+    .docs-nav a.active {
+      color: var(--signal-deep);
+      border-left-color: var(--signal);
+      background: rgba(224, 58, 45, 0.08);
     }
 
-    /* ── Sections ── */
-    .doc-section {
-      margin-bottom: 4.5rem;
-      padding-top: 2rem;
-      scroll-margin-top: calc(var(--header-h) + 24px);
+    .docs-main { min-width: 0; }
+
+    .docs-main > .doc-section,
+    .docs-main > section {
+      padding-bottom: 2.75rem;
+      margin-bottom: 2.75rem;
+      border-bottom: 1px solid var(--line);
     }
 
-    .doc-section:first-child {
-      padding-top: 0;
+    .docs-main > .doc-section:last-of-type {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
     }
 
-    .section-header {
-      margin-bottom: 1.75rem;
-    }
+    .section-header { margin-bottom: 1.35rem; }
 
     .section-label {
-      display: inline-block;
-      font-size: .72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--accent);
-      margin-bottom: .5rem;
-    }
-
-    .section-header h2 {
-      font-size: 1.75rem;
-      font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.2;
-    }
-
-    .section-header p {
-      margin-top: .65rem;
-      color: var(--text-secondary);
-      max-width: 620px;
-    }
-
-    .prose h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin: 2rem 0 .65rem;
-      letter-spacing: -.01em;
-    }
-
-    .prose p {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-    }
-
-    .prose p strong {
-      color: var(--text);
-    }
-
-    .prose ul,
-    .prose ol {
-      margin: 0 0 1rem 1.1rem;
-      color: var(--text-secondary);
-    }
-
-    .prose li {
-      margin-bottom: .35rem;
-    }
-
-    .prose li strong {
-      color: var(--text);
-    }
-
-    /* ── Bento grid ── */
-    .bento {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .85rem;
-    }
-
-    .bento-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1.35rem;
-      transition: border-color .2s, box-shadow .2s, transform .2s var(--ease);
-    }
-
-    .bento-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-
-    .bento-card.span-2 {
-      grid-column: span 2;
-    }
-
-    .bento-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      margin-bottom: .85rem;
-      font-size: 1rem;
-    }
-
-    .bento-icon.red {
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .bento-icon.indigo {
-      background: var(--indigo-soft);
-      color: var(--indigo);
-    }
-
-    .bento-icon.green {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    .bento-icon.blue {
-      background: var(--blue-soft);
-      color: var(--blue);
-    }
-
-    .bento-icon.amber {
-      background: var(--amber-soft);
-      color: var(--amber);
-    }
-
-    .bento-icon.violet {
-      background: var(--violet-soft);
-      color: var(--violet);
-    }
-
-    .bento-card h3 {
-      font-size: .92rem;
-      font-weight: 700;
-      margin-bottom: .35rem;
-      letter-spacing: -.01em;
-    }
-
-    .bento-card p {
-      font-size: .84rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    /* ── Steps ── */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .5rem;
-      margin: 1.5rem 0;
-    }
-
-    .step {
-      position: relative;
-      text-align: center;
-      padding: 1rem .5rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-
-    .step-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--text);
-      color: #fff;
-      font-size: .72rem;
-      font-weight: 700;
-      display: grid;
-      place-items: center;
-      margin: 0 auto .5rem;
-    }
-
-    .step:nth-child(1) .step-num {
-      background: var(--accent);
-    }
-
-    .step:nth-child(2) .step-num {
-      background: var(--blue);
-    }
-
-    .step:nth-child(3) .step-num {
-      background: var(--amber);
-    }
-
-    .step:nth-child(4) .step-num {
-      background: var(--green);
-    }
-
-    .step:nth-child(5) .step-num {
-      background: var(--violet);
-    }
-
-    .step:nth-child(6) .step-num {
-      background: var(--accent);
-    }
-
-    .step strong {
       display: block;
-      font-size: .78rem;
-      font-weight: 700;
-      margin-bottom: .15rem;
-    }
-
-    .step span {
-      font-size: .68rem;
-      color: var(--text-tertiary);
       font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--signal);
+      margin-bottom: 0.45rem;
     }
 
-    .step-arrow {
-      display: none;
+    .docs-main h2 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.55rem, 2.8vw, 1.9rem);
+      letter-spacing: -0.035em;
+      margin-bottom: 0.55rem;
     }
 
-    /* ── Command flow (example walkthroughs) ── */
+    .docs-main h3 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      margin: 1.75rem 0 0.55rem;
+    }
+
+    .docs-main h4 {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.02rem;
+      margin: 1.35rem 0 0.45rem;
+    }
+
+    .docs-main p,
+    .docs-main li { color: var(--ink-soft); }
+
+    .docs-main p + p { margin-top: 0.85rem; }
+
+    .docs-main .lead,
+    .section-header > p {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 42rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .docs-main ul,
+    .docs-main ol {
+      margin: 0.85rem 0 0 1.2rem;
+    }
+
+    .docs-main li + li { margin-top: 0.35rem; }
+
+    .docs-main a {
+      color: var(--signal-deep);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .docs-main a:hover { border-bottom-color: var(--signal); }
+
+    .docs-main code {
+      font-size: 0.88em;
+      background: rgba(28, 20, 18, 0.06);
+      padding: 0.12em 0.35em;
+      border-radius: 3px;
+    }
+
+    .docs-main pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+    }
+
+    /* Install commands */
+    .install-commands {
+      margin: 1.15rem 0;
+      background: var(--terminal);
+      border: 1px solid #2a201c;
+      overflow: hidden;
+    }
+
+    .install-commands-header {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 143, 122, 0.7);
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid rgba(255, 143, 122, 0.18);
+    }
+
+    .install-commands-list {
+      list-style: none;
+      margin: 0 !important;
+      padding: 0.35rem 0;
+    }
+
+    .install-command {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.55rem 1rem;
+      margin: 0 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .install-command:last-child { border-bottom: 0; }
+
+    .install-command-num {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--phosphor);
+      width: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .install-command-text {
+      flex: 1;
+      background: none !important;
+      padding: 0 !important;
+      color: #f1eae6 !important;
+      font-size: 0.86rem;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .install-copy-btn,
+    .code-block .copy,
+    .copy-btn {
+      border: 1px solid rgba(255, 143, 122, 0.35);
+      background: rgba(28, 20, 18, 0.85);
+      color: var(--phosphor);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.28rem 0.5rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .install-copy-btn:hover,
+    .install-copy-btn.copied,
+    .code-block .copy:hover,
+    .code-block .copy.copied,
+    .copy-btn:hover,
+    .copy-btn.copied {
+      background: var(--phosphor);
+      color: var(--ink);
+      border-color: var(--phosphor);
+    }
+
+    .install-requirements {
+      margin-top: 0.85rem;
+      font-size: 0.95rem;
+    }
+
+    /* Code blocks */
+    .code-block {
+      position: relative;
+      margin: 1rem 0;
+      background: var(--terminal);
+      color: #f1eae6;
+      border: 1px solid #2a201c;
+      overflow: hidden;
+    }
+
+    .code-block-header {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 143, 122, 0.7);
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid rgba(255, 143, 122, 0.18);
+    }
+
+    .code-block pre {
+      margin: 0;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .copy {
+      position: absolute;
+      top: 0.55rem;
+      right: 0.55rem;
+    }
+
+    /* Tables */
+    .table-card,
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(28, 20, 18, 0.03);
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td code { white-space: nowrap; }
+
+    .note {
+      margin: 1.1rem 0;
+      padding: 0.9rem 1rem;
+      border-left: 3px solid var(--signal);
+      background: rgba(224, 58, 45, 0.08);
+      color: var(--ink-soft);
+      font-size: 0.97rem;
+    }
+
+    .note strong { color: var(--ink); }
+
+    .cli-note {
+      margin: 0.85rem 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Command flow */
     .command-flow {
-      display: grid;
-      gap: .45rem;
-      margin: 0 0 1.5rem;
-      padding: 1.15rem 1.25rem;
-      background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 55%);
-      border: 2px solid var(--accent);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      margin: 1.25rem 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 1rem 1.1rem;
     }
 
     .command-flow-label {
-      font-size: .68rem;
-      font-weight: 800;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--accent-dark);
-      margin-bottom: .15rem;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
     }
 
     .command-flow-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: .35rem .45rem;
-    }
-
-    .command-flow-row code {
+      gap: 0.45rem;
       font-family: var(--mono);
-      font-size: .72rem;
+      font-size: 0.84rem;
+    }
+
+    .command-flow-arrow { color: var(--signal); font-weight: 600; }
+
+    .cmd-primary {
+      background: rgba(224, 58, 45, 0.1) !important;
+      color: var(--signal-deep) !important;
       font-weight: 600;
-      padding: .28rem .55rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .command-flow-row code.cmd-primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .command-flow-arrow {
-      color: var(--text-tertiary);
-      font-size: .75rem;
-      user-select: none;
     }
 
     .command-flow-note {
-      font-size: .78rem;
-      color: var(--text-secondary);
-      margin: .35rem 0 0;
-      line-height: 1.5;
+      margin-top: 0.65rem;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
-    .command-flow-note strong {
-      color: var(--text);
-    }
-
-    .example-block details.personas-details {
-      margin-top: 1.5rem;
-      padding: .85rem 1rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-
-    .example-block details.personas-details summary {
-      cursor: pointer;
-      font-size: .82rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-
-    .example-block details.personas-details .table-card {
-      margin-top: .85rem;
-    }
-
-    /* ── Walkthrough ── */
-    .walkthrough {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin: 1.5rem 0 2rem;
-    }
-
-    .walkthrough-step {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-
-    .walkthrough-head {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      padding: .85rem 1.15rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-alt);
-    }
-
-    .walkthrough-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: .72rem;
-      font-weight: 700;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .walkthrough-step:nth-child(2) .walkthrough-num {
-      background: var(--blue);
-    }
-
-    .walkthrough-step:nth-child(3) .walkthrough-num {
-      background: var(--indigo);
-    }
-
-    .walkthrough-step:nth-child(4) .walkthrough-num {
-      background: var(--amber);
-    }
-
-    .walkthrough-step:nth-child(5) .walkthrough-num {
-      background: var(--green);
-    }
-
-    .walkthrough-step:nth-child(6) .walkthrough-num {
-      background: var(--violet);
-    }
-
-    .walkthrough-step:nth-child(7) .walkthrough-num {
-      background: var(--accent);
-    }
-
-    .walkthrough-step:nth-child(8) .walkthrough-num {
-      background: var(--blue);
-    }
-
-    .walkthrough-step:nth-child(9) .walkthrough-num {
-      background: var(--green);
-    }
-
-    .example-scenario {
-      margin: 2rem 0 2.5rem;
-      padding-top: .5rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .example-scenario:first-of-type {
-      border-top: none;
-      margin-top: 0;
-      padding-top: 0;
-    }
-
-    .example-scenario h3 {
-      margin: 0 0 .35rem;
-      font-size: 1.15rem;
-    }
-
-    .example-scenario .example-context {
-      font-size: .875rem;
-      color: var(--text-secondary);
-      margin: 0 0 1rem;
-    }
-
-    .chat-example {
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1rem 1.15rem;
-      font-size: .875rem;
-      line-height: 1.7;
-      margin: 1rem 0;
-    }
-
-    .chat-example p {
-      margin: 0 0 .65rem;
-    }
-
-    .chat-example p:last-child {
-      margin-bottom: 0;
-    }
-
-    .chat-example .speaker {
+    /* Status pills */
+    .status,
+    .status-pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
       font-weight: 600;
-    }
-
-    .chat-example .wizard {
-      margin: .75rem 0;
-      padding: .75rem .9rem;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.45rem;
+      border: 1px solid var(--line);
       background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-sm);
-      font-size: .8125rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
     }
 
-    .chat-example .wizard strong {
-      display: block;
-      margin-bottom: .35rem;
-      font-size: .75rem;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--text-tertiary);
-    }
+    .status-todo { border-color: #a8a29e; color: #57534e; }
+    .status-planned { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+    .status-progress { border-color: #fcd34d; color: #a16207; background: #fffbeb; }
+    .status-review { border-color: #c4b5fd; color: #6d28d9; background: #f5f3ff; }
+    .status-done { border-color: #86efac; color: #15803d; background: #f0fdf4; }
 
-    .chat-example .wizard ol {
-      margin: 0;
-      padding-left: 1.15rem;
-    }
-
-    .example-compare {
-      display: grid;
-      gap: .85rem;
-      margin: 1.25rem 0 1.75rem;
-    }
-
-    @media (min-width: 768px) {
-      .example-compare {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .example-compare div {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: .9rem 1rem;
-      font-size: .875rem;
-    }
-
-    .example-compare dt {
-      font-weight: 700;
-      margin-bottom: .35rem;
-    }
-
-    .example-compare dd {
-      margin: 0;
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    /* ── Examples hub ── */
-    #examples {
-      counter-reset: example-block;
-    }
-
+    /* Examples */
     .examples-nav {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: .85rem;
-      margin: 0 0 2rem;
-    }
-
-    @media (min-width: 640px) {
-      .examples-nav {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (min-width: 960px) {
-      .examples-nav {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0 1.75rem;
     }
 
     .example-card {
       display: flex;
       flex-direction: column;
-      gap: .35rem;
-      padding: 1.15rem 1.2rem;
+      gap: 0.35rem;
+      padding: 1rem 1.05rem;
+      border: 1px solid var(--line);
       background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: inherit;
-      transition: border-color .2s var(--ease), box-shadow .2s var(--ease), transform .2s var(--ease);
-      box-shadow: var(--shadow-sm);
+      text-decoration: none !important;
+      border-bottom: 1px solid var(--line) !important;
+      transition: border-color 0.15s, background 0.15s;
     }
 
     .example-card:hover {
-      border-color: var(--accent);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
+      border-color: var(--signal) !important;
+      background: rgba(224, 58, 45, 0.05);
     }
 
     .example-card-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.65rem;
-      height: 1.65rem;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      font-size: .72rem;
-      font-weight: 800;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--signal);
     }
 
     .example-card-title {
-      font-size: .95rem;
-      font-weight: 700;
-      letter-spacing: -.01em;
-      color: var(--text);
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--ink) !important;
+      letter-spacing: -0.02em;
     }
 
     .example-card-desc {
-      font-size: .78rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-      flex: 1;
+      font-size: 0.9rem;
+      color: var(--muted) !important;
+      font-weight: 400 !important;
+      border: 0 !important;
     }
 
     .example-card-cmd {
       font-family: var(--mono);
-      font-size: .68rem;
-      color: var(--accent-dark);
-      margin-top: .15rem;
-    }
-
-    .examples-compare {
-      display: grid;
-      gap: 1rem;
-      margin: 0 0 2.5rem;
-      padding: 1.15rem 1.25rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-
-    @media (min-width: 768px) {
-      .examples-compare {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .examples-compare strong {
-      display: block;
-      font-size: .82rem;
-      margin-bottom: .55rem;
-    }
-
-    .examples-compare dl {
-      margin: 0;
-      font-size: .84rem;
-    }
-
-    .examples-compare dt {
-      font-family: var(--mono);
-      font-size: .78rem;
-      font-weight: 600;
-      margin-top: .55rem;
-    }
-
-    .examples-compare dt:first-child {
-      margin-top: 0;
-    }
-
-    .examples-compare dd {
-      margin: .15rem 0 0;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .examples-compare p {
-      font-size: .84rem;
-      color: var(--text-secondary);
-      margin: 0 0 .45rem;
-      line-height: 1.55;
-    }
-
-    .examples-compare p:last-child {
-      margin-bottom: 0;
+      font-size: 0.78rem;
+      color: var(--signal-deep) !important;
+      font-weight: 500 !important;
+      margin-top: 0.25rem;
+      border: 0 !important;
     }
 
     .example-block {
-      counter-increment: example-block;
-      scroll-margin-top: calc(var(--header-h) + 24px);
-      margin: 4rem 0;
-      padding: 1.75rem 1.85rem;
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      margin: 2rem 0;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--line);
     }
 
-    .example-block:first-of-type {
-      margin-top: 1.5rem;
-    }
-
-    .example-block h2 {
-      display: flex;
-      align-items: center;
-      gap: .7rem;
-      margin: 0 0 .35rem;
-      font-size: 1.35rem;
-      letter-spacing: -.02em;
-    }
-
-    .example-block h2::before {
-      content: counter(example-block);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 2rem;
-      height: 2rem;
-      padding: 0 .45rem;
-      border-radius: var(--radius-xs);
-      background: var(--accent);
-      color: #fff;
-      font-size: .85rem;
-      font-weight: 800;
+    .example-block > h3 {
+      margin-top: 0;
     }
 
     .example-tag {
-      margin: 0 0 1rem;
-      font-size: .78rem;
+      display: inline-block;
       font-family: var(--mono);
-      color: var(--accent-dark);
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--signal);
+      margin-bottom: 0.35rem;
     }
 
-    .example-prompt {
-      border-left: 3px solid var(--accent);
-      margin: 0 0 1.25rem;
-      padding: .65rem 1rem;
-      color: var(--text-muted);
-      font-style: italic;
-      font-size: .92rem;
-      background: var(--bg-alt);
-      border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-    }
-
-    .example-block .example-context {
-      font-size: .875rem;
-      color: var(--text-secondary);
-      margin: 0 0 1rem;
-      line-height: 1.6;
-    }
-
-    .example-block h3 {
-      margin-top: 1.75rem;
+    .example-context {
+      color: var(--muted);
+      margin-bottom: 1rem;
     }
 
     .example-appendix {
-      scroll-margin-top: calc(var(--header-h) + 24px);
-      margin: 3rem 0 0;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+      padding: 1.15rem 1.2rem;
+      border-left: 3px solid var(--signal);
+      background: rgba(224, 58, 45, 0.06);
     }
 
-    .example-appendix h3 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      letter-spacing: -.02em;
-      margin: 0 0 .75rem;
+    /* Chat / wizard */
+    .chat-example {
+      margin: 1rem 0;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--line);
+      background: var(--white);
     }
 
-    .walkthrough-head strong {
-      font-size: .92rem;
-      font-weight: 700;
-      letter-spacing: -.01em;
+    .chat-example p { margin: 0.45rem 0; }
+    .chat-example .speaker { font-weight: 700; color: var(--ink); }
+
+    .wizard {
+      margin: 0.75rem 0;
+      padding: 0.85rem 1rem;
+      border-left: 3px solid var(--signal);
+      background: var(--surface);
+      font-size: 0.95rem;
     }
 
-    .walkthrough-head span {
-      margin-left: auto;
-      font-size: .72rem;
-      font-family: var(--mono);
-      color: var(--text-tertiary);
-    }
+    .wizard strong { color: var(--ink); }
+    .wizard ol { margin: 0.5rem 0 0 1.1rem; }
 
-    .walkthrough-body {
-      padding: 1rem 1.15rem 1.15rem;
-    }
-
-    .walkthrough-body p:last-child {
-      margin-bottom: 0;
-    }
-
+    /* Walkthrough */
     .walkthrough-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .65rem;
-      margin-top: .85rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin: 1.15rem 0;
     }
 
-    .walkthrough-grid div {
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      padding: .65rem .75rem;
+    .walkthrough-grid > * {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0.95rem 1rem;
     }
 
     .walkthrough-grid dt {
-      font-size: .68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--text-tertiary);
-      margin-bottom: .25rem;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 0.25rem;
     }
 
     .walkthrough-grid dd {
-      font-size: .8rem;
-      color: var(--text-secondary);
       margin: 0;
-      line-height: 1.5;
+      font-size: 0.92rem;
+      color: var(--ink-soft);
     }
 
-    @media (max-width: 768px) {
-      .walkthrough-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .walkthrough-personas {
-      margin-top: .85rem;
-      padding: .75rem .85rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-    }
-
-    .walkthrough-personas h4 {
-      font-size: .68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--text-tertiary);
-      margin: 0 0 .45rem;
-    }
-
-    .walkthrough-personas .persona-group {
-      margin-top: 1rem;
-      padding-top: .85rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .persona-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .35rem;
-    }
-
-    .persona-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: .3rem;
-      font-size: .74rem;
-      padding: .22rem .55rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--text-secondary);
-      line-height: 1.3;
-    }
-
-    .persona-chip.optional {
-      border-style: dashed;
-      color: var(--text-tertiary);
-    }
-
-    .persona-chips-summary .persona-chip {
-      color: var(--text);
-    }
-
-    .persona-chip strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    /* ── Code block ── */
-    .code-block {
-      margin: 1rem 0 1.5rem;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .code-block-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: .6rem 1rem;
-      background: var(--bg-alt);
-      border-bottom: 1px solid var(--border);
-      font-size: .72rem;
-      font-weight: 600;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .code-block pre {
-      background: var(--surface);
-      padding: 1.15rem 1.25rem;
-      overflow-x: auto;
-      font-size: .78rem;
-      line-height: 1.65;
-      color: var(--text-secondary);
-    }
-
-    /* ── Install commands (quickstart) ── */
-    .install-commands {
-      margin: 1rem 0 .65rem;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      background: var(--surface);
-    }
-
-    .install-commands-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: .6rem 1rem;
-      background: var(--bg-alt);
-      border-bottom: 1px solid var(--border);
-      font-size: .72rem;
-      font-weight: 600;
-      color: var(--text-tertiary);
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .install-commands-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .install-command {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      padding: .9rem 1rem;
-      border-bottom: 1px solid var(--border);
-      transition: background .15s var(--ease);
-    }
-
-    .install-command:last-child {
-      border-bottom: none;
-    }
-
-    @media (hover: hover) {
-      .install-command:hover {
-        background: var(--surface-hover);
-      }
-    }
-
-    .install-command-num {
-      flex-shrink: 0;
-      width: 1.45rem;
-      height: 1.45rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 50%;
-      font-size: .68rem;
-      font-weight: 700;
-      font-family: var(--font);
-      line-height: 1;
-    }
-
-    .install-command-text {
-      flex: 1;
-      min-width: 0;
-      overflow-x: auto;
-      font-family: var(--mono);
-      font-size: .82rem;
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-      letter-spacing: -.01em;
-    }
-
-    .install-copy-btn {
-      flex-shrink: 0;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xs);
-      color: var(--text-tertiary);
-      padding: .28rem .55rem;
-      font-size: .68rem;
-      font-weight: 600;
-      font-family: var(--font);
-      cursor: pointer;
-      transition: all .15s var(--ease);
-    }
-
-    .install-copy-btn:hover,
-    .install-copy-btn:focus-visible {
-      color: var(--text);
-      border-color: var(--border-strong);
-      background: var(--surface);
-      outline: none;
-    }
-
-    .install-copy-btn.copied {
-      color: var(--green);
-      border-color: rgba(22, 163, 74, .35);
-      background: var(--green-soft);
-    }
-
-    .install-requirements {
-      font-size: .72rem;
-      color: var(--text-tertiary);
-      margin: 0 0 1.5rem;
-      line-height: 1.55;
-      max-width: 620px;
-    }
-
-    .install-requirements strong {
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    /* ── Tables ── */
-    .table-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      margin: 1rem 0 1.5rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .84rem;
-    }
-
-    th {
-      background: var(--bg-alt);
-      font-weight: 600;
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--text-tertiary);
-      padding: .75rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: .75rem 1rem;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-secondary);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: var(--surface-hover);
-    }
-
-    td code {
-      font-size: .78rem;
-    }
-
-    /* ── Status ── */
-    .status {
-      display: inline-flex;
-      align-items: center;
-      font-size: .68rem;
-      font-weight: 600;
-      font-family: var(--mono);
-      padding: .2rem .55rem;
-      border-radius: 999px;
-    }
-
-    .status-todo {
-      background: var(--bg-alt);
-      color: var(--text-secondary);
-    }
-
-    .status-planned {
-      background: var(--blue-soft);
-      color: var(--blue);
-    }
-
-    .status-progress {
-      background: var(--amber-soft);
-      color: var(--amber);
-    }
-
-    .status-review {
-      background: var(--violet-soft);
-      color: var(--violet);
-    }
-
-    .status-done {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    /* ── Skills ── */
+    /* Skills */
     .skills-grid {
       display: grid;
-      gap: .85rem;
+      gap: 0.65rem;
+      margin: 1.15rem 0;
     }
 
     .skill-item {
       display: grid;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 11rem 1fr;
       gap: 1rem;
-      padding: 1.25rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      transition: box-shadow .2s, border-color .2s;
-    }
-
-    .skill-item:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-strong);
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
     }
 
     .skill-badge {
       font-family: var(--mono);
-      font-size: .72rem;
-      font-weight: 500;
-      color: var(--accent-dark);
-      background: var(--accent-soft);
-      border: 1px solid rgba(255, 68, 54, .15);
-      padding: .35rem .65rem;
-      border-radius: var(--radius-xs);
-      height: fit-content;
-      white-space: nowrap;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--signal-deep);
+      background: rgba(224, 58, 45, 0.08);
+      padding: 0.25rem 0.45rem;
+      display: inline-block;
+      word-break: break-all;
     }
 
-    .skill-body h3 {
-      font-size: .92rem;
-      font-weight: 700;
-      margin-bottom: .35rem;
-    }
-
-    .skill-body p {
-      font-size: .84rem;
-      color: var(--text-secondary);
-      margin-bottom: .5rem;
-    }
-
+    .skill-body { color: var(--ink-soft); font-size: 0.95rem; }
     .skill-cli {
-      font-size: .78rem;
-      color: var(--text-tertiary);
-      margin: .35rem 0 0;
-      line-height: 1.45;
+      display: block;
+      margin-top: 0.35rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
     }
 
-    .skill-cli code {
-      font-size: .74rem;
-      color: var(--text-secondary);
-    }
-
-    .skill-body ul {
-      font-size: .8rem;
-      color: var(--text-secondary);
-      margin: 0 0 0 1rem;
-    }
-
-    /* ── Deep Dive ── */
-    .deep-dive-sub {
-      margin-top: 2.75rem;
-      padding-top: 2.25rem;
-      border-top: 1px solid var(--border);
-      scroll-margin-top: calc(var(--header-h) + 24px);
-    }
-
-    .deep-dive-sub:first-of-type {
-      margin-top: 1.5rem;
-      padding-top: 0;
-      border-top: none;
-    }
-
-    .deep-dive-sub h3 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -.02em;
-      margin-bottom: .65rem;
-    }
-
-    .deep-dive-sub>p.lead {
-      color: var(--text-secondary);
-      margin-bottom: 1.25rem;
-      max-width: 68ch;
-    }
-
-    .layer-stack {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .75rem;
-      margin: 1.25rem 0 1.75rem;
-    }
+    /* Layers / deep dive */
+    .layer-stack { margin: 1.15rem 0; }
 
     .layer-card {
-      padding: 1.1rem 1.15rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
     }
 
+    .layer-card:last-child { border-bottom: 0; }
+
     .layer-card strong {
-      display: block;
-      font-size: .84rem;
-      margin-bottom: .3rem;
+      font-family: var(--display);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
     }
 
     .layer-card p {
-      font-size: .8rem;
-      color: var(--text-secondary);
-      margin: 0;
-      line-height: 1.55;
+      margin-top: 0.35rem;
+      margin-bottom: 0;
     }
 
+    .file-tree .comment,
+    .comment {
+      color: rgba(241, 234, 230, 0.45);
+    }
+
+    .deep-dive-sub {
+      margin-top: 2.5rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--line);
+      scroll-margin-top: 5rem;
+    }
+
+    .deep-dive-sub > h3 { margin-top: 0; }
+
+    /* Personas / team */
     .persona-phases {
-      display: grid;
-      gap: .85rem;
-      margin: 1.25rem 0 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin: 0.85rem 0 1.15rem;
     }
 
     .persona-phase {
-      padding: 1rem 1.15rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-
-    .persona-phase h4 {
-      font-size: .8rem;
-      font-weight: 700;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--text-tertiary);
-      margin-bottom: .45rem;
+      padding: 0.3rem 0.55rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
     }
 
-    .persona-phase p {
-      font-size: .84rem;
-      color: var(--text-secondary);
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .cli-note {
-      font-size: .84rem;
-      color: var(--text-secondary);
-      padding: .85rem 1rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      margin-bottom: 1.25rem;
-    }
-
-    .cli-note strong {
-      color: var(--text);
-    }
-
-    .deep-dive-sub h4 {
-      font-size: .92rem;
-      font-weight: 700;
-      margin: 1.5rem 0 .75rem;
-      letter-spacing: -.01em;
-    }
-
-    .deep-dive-sub h4:first-of-type {
-      margin-top: 0;
-    }
-
-    .deep-dive-sub ol {
-      margin: 0 0 1.25rem 1.25rem;
-      color: var(--text-secondary);
-      font-size: .88rem;
-    }
-
-    .deep-dive-sub ol li {
-      margin-bottom: .35rem;
-    }
-
-    .deep-dive-sub ul {
-      margin: 0 0 1.25rem 1.25rem;
-      color: var(--text-secondary);
-      font-size: .88rem;
-    }
-
-    .deep-dive-sub ul li {
-      margin-bottom: .35rem;
-    }
-
-    @media (max-width: 768px) {
-      .layer-stack {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ── Team ── */
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .75rem;
+      grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+      gap: 0.65rem;
+      margin: 1rem 0;
     }
 
     .team-card {
-      text-align: center;
-      padding: 1.25rem .75rem;
+      border: 1px solid var(--line);
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      transition: transform .2s var(--ease);
-    }
-
-    .team-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
+      padding: 0.85rem 0.75rem;
+      text-align: center;
     }
 
     .team-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--bg-alt), var(--border));
+      width: 2.4rem;
+      height: 2.4rem;
+      margin: 0 auto 0.45rem;
       display: grid;
       place-items: center;
-      font-size: 1.25rem;
-      margin: 0 auto .6rem;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: var(--ink);
+      color: var(--phosphor);
     }
 
     .team-name {
-      font-weight: 700;
-      font-size: .84rem;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
     }
 
     .team-role {
-      font-size: .72rem;
-      color: var(--text-tertiary);
-      margin-top: .15rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
     }
 
-    /* ── File tree ── */
+    /* File tree */
     .file-tree {
+      margin: 1rem 0;
+      padding: 1rem 1.1rem;
+      background: var(--terminal);
+      color: #f1eae6;
+      border: 1px solid #2a201c;
       font-family: var(--mono);
-      font-size: .78rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1.25rem;
-      line-height: 1.85;
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
-      margin: 1rem 0 1.5rem;
+      font-size: 0.82rem;
+      line-height: 1.65;
       overflow-x: auto;
       white-space: pre;
     }
 
-    .file-tree .comment {
-      color: var(--text-tertiary);
-    }
+    /* CTA */
 
-    .check {
-      color: var(--green);
+    .docs-main a.btn,
+    .docs-main a.example-card,
+    .docs-main a.btn:hover,
+    .docs-main a.example-card:hover {
+      border-bottom: none;
       font-weight: 600;
     }
 
-    .dash {
-      color: var(--text-tertiary);
+    .example-block > h2,
+    .example-block > h3 {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+      letter-spacing: -0.03em;
+      margin: 0 0 0.45rem;
     }
 
-    /* ── CTA band ── */
+    .example-block,
+    .deep-dive-sub,
+    .example-appendix {
+      scroll-margin-top: 5rem;
+    }
+
+    .walkthrough-grid h3,
+    .walkthrough-grid h4 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+    }
+
+    .walkthrough-grid p {
+      margin: 0;
+      font-size: 0.92rem;
+    }
+
     .cta-band {
-      margin-top: 2rem;
-      padding: 2.5rem;
-      background: var(--text);
-      border-radius: var(--radius);
-      color: #fff;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-band::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 50%, rgba(255, 68, 54, .25) 0%, transparent 60%);
+      margin-top: 2.75rem;
+      padding: 1.75rem 0 0;
+      border-top: 1px solid var(--line);
     }
 
     .cta-band h3 {
-      position: relative;
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: -.02em;
-      margin-bottom: .5rem;
+      margin: 0 0 0.4rem;
+      font-family: var(--display);
     }
 
-    .cta-band p {
-      position: relative;
-      color: #a1a1aa;
-      margin-bottom: 1.25rem;
-      font-size: .9rem;
+    .cta-band p { margin-bottom: 1rem; color: var(--muted); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 2rem 1.5rem 2.75rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
-    .cta-band .btn-accent {
-      position: relative;
-      color: #fff;
+    footer a {
+      color: var(--signal-deep);
       text-decoration: none;
+      font-weight: 600;
     }
 
-    .cta-band .btn-accent:hover {
-      color: #fff;
-      text-decoration: none;
-    }
+    footer a:hover { text-decoration: underline; }
+    footer p + p { margin-top: 0.35rem; }
 
-    /* ── Footer ── */
-    .site-footer {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 2rem 1.5rem 3rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 1rem;
-      font-size: .84rem;
-      color: var(--text-tertiary);
-    }
-
-    .site-footer a {
-      color: var(--text-secondary);
-    }
-
-    .site-footer a:hover {
-      color: var(--accent);
-    }
-
-    /* ── Mobile ── */
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .4);
-      z-index: 150;
-      backdrop-filter: blur(4px);
-    }
-
-    .overlay.open {
-      display: block;
-    }
-
-    @media (max-width: 1024px) {
-      .hero-inner {
+    @media (max-width: 880px) {
+      .docs {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding-top: 2.5rem;
       }
 
-      .hero-visual {
-        display: none;
-      }
-
-      .bento {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .bento-card.span-2 {
-        grid-column: span 2;
-      }
-
-      .steps {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .team-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .header-nav {
-        display: none;
-      }
-
-      .menu-toggle {
-        display: flex;
-      }
-
-      .docs-shell {
-        grid-template-columns: 1fr;
-        padding-bottom: 4rem;
-      }
-
-      .doc-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: min(300px, 85vw);
+      .docs-nav {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.35rem;
         max-height: none;
-        z-index: 160;
-        border-radius: 0;
-        transform: translateX(-100%);
-        transition: transform .3s var(--ease);
-        border-right: 1px solid var(--border);
+        overflow: visible;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--line);
       }
 
-      .doc-nav-scroll {
-        flex: 1;
+      .docs-nav-label { width: 100%; }
+
+      .docs-nav a {
+        border-left: 0;
+        border-bottom: 2px solid transparent;
+        padding: 0.3rem 0.55rem;
       }
 
-      .doc-nav.open {
-        transform: translateX(0);
+      .docs-nav a.sub { padding-left: 0.55rem; }
+
+      .docs-nav a:hover,
+      .docs-nav a.active {
+        border-left-color: transparent;
+        border-bottom-color: var(--signal);
       }
 
-      .bento {
-        grid-template-columns: 1fr;
-      }
+      .examples-nav,
+      .walkthrough-grid { grid-template-columns: 1fr; }
 
-      .bento-card.span-2 {
-        grid-column: span 1;
-      }
-
-      .steps {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .team-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .hero {
-        padding-bottom: 3rem;
-      }
-
-      .hero h1 {
-        font-size: 2.1rem;
-      }
+      .skill-item { grid-template-columns: 1fr; gap: 0.35rem; }
     }
+
+    @media (max-width: 720px) {
+      .hamburger { display: flex; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0.5rem 1rem 1rem;
+        background: rgba(248, 243, 240, 0.97);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-links.open { display: flex; }
+
+      .nav-links a {
+        padding: 0.75rem 0.25rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-cta { justify-content: center; margin-top: 0.5rem; border: 0; }
+
+      .hero { min-height: auto; }
+      .hero-content { padding-top: 3rem; }
+
+      .hero-brand { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+      .hero-version { display: none; }
+    }
+
   </style>
 </head>
-
 <body>
+  <div class="atmosphere" aria-hidden="true"></div>
 
-  <div class="overlay" id="overlay"></div>
+  <nav class="nav">
+    <a class="nav-brand" href="/">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#1C1412"/>
+        <circle cx="16" cy="5.5" r="1.6" fill="#FF8F7A"/>
+        <path d="M16 7.2v2.3" stroke="#FF8F7A" stroke-width="1.6" stroke-linecap="round"/>
+        <rect x="5" y="14.2" width="2.8" height="5.2" rx="1.2" fill="#FF8F7A"/>
+        <rect x="24.2" y="14.2" width="2.8" height="5.2" rx="1.2" fill="#FF8F7A"/>
+        <rect x="7.5" y="9.5" width="17" height="15.5" rx="3.5" fill="#FF8F7A"/>
+        <circle cx="12.6" cy="15.4" r="2" fill="#1C1412"/>
+        <circle cx="19.4" cy="15.4" r="2" fill="#1C1412"/>
+        <circle cx="13.2" cy="14.9" r="0.55" fill="#FF8F7A"/>
+        <circle cx="20" cy="14.9" r="0.55" fill="#FF8F7A"/>
+        <rect x="12.2" y="20.2" width="7.6" height="1.7" rx="0.85" fill="#1C1412"/>
+        <path d="M11 25h10" stroke="#1C1412" stroke-width="1.4" stroke-linecap="round" opacity=".35"/>
+      </svg>
+      larapilot
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#quickstart">Quickstart</a>
+      <a href="#how-it-works">How to use</a>
+      <a href="#examples">Examples</a>
+      <a href="#deep-dive">Deep Dive</a>
+      <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <button class="hamburger" id="nav-hamburger" type="button" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
-  <!-- Header -->
-  <header class="site-header" id="siteHeader">
-    <div class="header-inner">
-      <a class="brand" href="#hero">Larapilot</a>
-      <div class="header-right">
-        <nav class="header-nav">
-          <a href="#quickstart">Quickstart</a>
-          <a href="#how-it-works">How to use</a>
-          <a href="#examples">Examples</a>
-          <a href="#deep-dive">Deep Dive</a>
-        </nav>
-        <button class="menu-toggle" id="menuBtn" aria-label="Menu">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-        </button>
+  <header class="hero">
+    <div class="hero-plane" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v1.9.1</span></div>
+      <h1>From product idea to reviewed Laravel code.</h1>
+      <p>
+        Spec-driven workflow for Laravel — integrated with
+        <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a>.
+        Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#quickstart">Install Larapilot</a>
+        <a class="btn btn-ghost" href="#examples">See examples</a>
+        <a class="btn btn-ghost" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">View on GitHub</a>
       </div>
+      <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.</p>
+    </div>
+    <div class="hero-terminal" aria-hidden="true">
+      <div class="hero-terminal-inner" id="hero-terminal"></div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero" id="hero">
-    <div class="hero-bg">
-      <div class="hero-grid"></div>
-    </div>
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <div class="hero-eyebrow">
-          <span class="hero-eyebrow-dot"></span>
-          Spec-driven for Laravel projects
-          <span class="hero-version">v1.9.1</span>
-        </div>
-        <h1>From product idea to <span class="gradient">reviewed Laravel code</span></h1>
-        <p class="hero-desc">
-          Spec-driven workflow for Laravel — integrated with <a href="https://laravel.com/ai/boost" target="_blank"
-            rel="noopener">Laravel Boost</a>. Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
-        </p>
-        <p class="hero-flow">
-          <code>/larapilot-inception</code> → <code>/larapilot-spec</code> →
-          <code>/larapilot-plan US-XXX</code> → <code>/larapilot-implement US-XXX</code> →
-          <code>/larapilot-review US-XXX</code>
-        </p>
-        <div class="hero-cta">
-          <a class="btn btn-accent" href="#quickstart">Get started</a>
-          <a class="btn btn-ghost" href="#examples">See examples</a>
-          <a class="btn btn-ghost" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-            GitHub
-          </a>
-        </div>
-        <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.
-        </p>
-      </div>
-      <div class="hero-visual">
-        <div class="terminal-glow"></div>
-        <div class="terminal" id="heroTerminal" tabindex="0"
-          aria-label="Interactive workflow demo — use left and right arrow keys to move between steps">
-          <div class="terminal-bar">
-            <span class="terminal-dot r"></span>
-            <span class="terminal-dot y"></span>
-            <span class="terminal-dot g"></span>
-            <span class="terminal-title">larapilot — zsh</span>
-          </div>
-          <div class="terminal-tabs" role="tablist">
-            <button class="terminal-tab active" role="tab" data-step="0" aria-selected="true">install</button>
-            <button class="terminal-tab" role="tab" data-step="1" aria-selected="false">inception</button>
-            <button class="terminal-tab" role="tab" data-step="2" aria-selected="false">specs</button>
-            <button class="terminal-tab" role="tab" data-step="3" aria-selected="false">plan</button>
-            <button class="terminal-tab" role="tab" data-step="4" aria-selected="false">implement</button>
-            <button class="terminal-tab" role="tab" data-step="5" aria-selected="false">ship</button>
-          </div>
-          <div class="terminal-body">
-            <div class="terminal-viewport">
-
-              <div class="terminal-step active" data-step="0">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># Add Larapilot to your Laravel project</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="composer require andreapollastri/larapilot --dev"></span>
-                    <button class="copy-btn" data-copy="composer require andreapollastri/larapilot --dev"
-                      title="Copy">Copy</button>
-                  </div>
-                  <pre class="terminal-output" aria-label="Composer output"><span class="comment">./composer.json has been updated</span>
-  <span class="punct">-</span> Installing <span class="str">andreapollastri/larapilot</span></pre>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># Create the .larapilot/ workspace</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan larapilot:install"></span>
-                    <button class="copy-btn" data-copy="php artisan larapilot:install" title="Copy">Copy</button>
-                  </div>
-                  <pre class="terminal-output" aria-label="Install output"><span class="ok">Larapilot installed successfully.</span>
-  <span class="punct">-</span> .larapilot/config.yaml
-  <span class="punct">-</span> .larapilot/shared-runtime.md</pre>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># Publish guidelines &amp; the /larapilot-* skills via Laravel Boost
-                  </div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="php artisan boost:install"></span>
-                    <button class="copy-btn" data-copy="php artisan boost:install" title="Copy">Copy</button>
-                  </div>
-                  <pre class="terminal-output"
-                    aria-label="Boost install output"><span class="ok">Laravel Boost installed successfully.</span>
-  <span class="punct">-</span> guidelines + <span class="num">11</span> <span class="str">/larapilot-*</span> skills
-  <span class="punct">(</span><span class="str">inception</span><span class="punct">…</span> <span class="str">settings</span><span class="punct">)</span></pre>
-                  <div class="terminal-result success">✓ Your AI agent now has a product workflow</div>
-                </div>
-              </div>
-
-              <div class="terminal-step" data-step="1">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># In your AI editor — Mark runs guided product discovery</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd"
-                      data-full="/larapilot-inception &quot;Invoicing SaaS for freelancers&quot;"></span>
-                    <button class="copy-btn" data-copy="/larapilot-inception" title="Copy">Copy</button>
-                  </div>
-                  <div class="terminal-result info">→ Interview done: vision, personas, MoSCoW-tagged FRs drafted</div>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># Skill persists PRD.md under .larapilot/docs/</div>
-                  <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
-  <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
-  <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"write_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"path"</span><span class="punct">:</span> <span class="str">".larapilot/docs/PRD.md"</span><span class="punct">,</span> <span class="key">"bytes"</span><span class="punct">:</span> <span class="num">18240</span> <span class="punct">}</span>
-<span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ PRD.md — the single source of truth</div>
-                </div>
-              </div>
-
-              <div class="terminal-step" data-step="2">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-spec — PRD MoSCoW → user stories in backlog</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="/larapilot-spec"></span>
-                    <button class="copy-btn" data-copy="/larapilot-spec" title="Copy">Copy</button>
-                  </div>
-                  <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
-  <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
-  <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"spec_add_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span>
-    <span class="key">"added"</span><span class="punct">:</span> <span class="num">3</span><span class="punct">,</span>
-    <span class="key">"summary"</span><span class="punct">: {</span> <span class="key">"count"</span><span class="punct">:</span> <span class="num">3</span><span class="punct">,</span> <span class="key">"codes"</span><span class="punct">: [</span><span class="str">"US-001"</span><span class="punct">,</span> <span class="str">"US-002"</span><span class="punct">,</span> <span class="str">"US-003"</span><span class="punct">] }</span>
-  <span class="punct">}</span>
-<span class="punct">}</span></pre>
-                  <div class="terminal-result info">→ 3 specs in the backlog, all <span class="st st-todo">TODO</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="terminal-step" data-step="3">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-plan — technical plan for the top-priority spec</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="/larapilot-plan US-001"></span>
-                    <button class="copy-btn" data-copy="/larapilot-plan US-001" title="Copy">Copy</button>
-                  </div>
-                  <div class="terminal-result info">→ US-001 · "User can sign in with email" · HIGH</div>
-                  <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
-  <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
-  <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"plan_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"task_count"</span><span class="punct">:</span> <span class="num">4</span> <span class="punct">}</span>
-<span class="punct">}</span></pre>
-                  <div class="terminal-result planned">✓ Plan saved · 4 tasks · status → PLANNED</div>
-                </div>
-              </div>
-
-              <div class="terminal-step" data-step="4">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-implement — Alex, Anne &amp; team ship the spec</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="/larapilot-implement US-001"></span>
-                    <button class="copy-btn" data-copy="/larapilot-implement US-001" title="Copy">Copy</button>
-                  </div>
-                  <div class="terminal-result progress">✓ US-001 → IN PROGRESS</div>
-                </div>
-                <div class="term-chunk">
-                  <div class="terminal-comment"># Tasks complete → spec moves to REVIEW</div>
-                  <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
-  <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
-  <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"task_done_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"tasks_done"</span><span class="punct">:</span> <span class="num">4</span><span class="punct">,</span> <span class="key">"status"</span><span class="punct">:</span> <span class="str st st-review">"REVIEW"</span> <span class="punct">}</span>
-<span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ 4/4 tasks done · ready for review</div>
-                </div>
-              </div>
-
-              <div class="terminal-step" data-step="5">
-                <div class="term-chunk">
-                  <div class="terminal-comment"># /larapilot-review — human approves. Human-in-the-loop, always.</div>
-                  <div class="terminal-line">
-                    <span class="prompt">❯</span>
-                    <span class="cmd" data-full="/larapilot-review US-001"></span>
-                    <button class="copy-btn" data-copy="/larapilot-review US-001" title="Copy">Copy</button>
-                  </div>
-                  <pre class="terminal-output" aria-label="JSON output"><span class="punct">{</span>
-  <span class="key">"schema"</span><span class="punct">:</span> <span class="str">"larapilot/v1"</span><span class="punct">,</span>
-  <span class="key">"kind"</span><span class="punct">:</span> <span class="str">"approve_result"</span><span class="punct">,</span>
-  <span class="key">"data"</span><span class="punct">: {</span> <span class="key">"code"</span><span class="punct">:</span> <span class="str">"US-001"</span><span class="punct">,</span> <span class="key">"status"</span><span class="punct">:</span> <span class="str st st-done">"DONE"</span> <span class="punct">}</span>
-<span class="punct">}</span></pre>
-                  <div class="terminal-result success">✓ US-001 shipped — next spec is waiting 🔁</div>
-                </div>
-              </div>
-
-            </div>
-            <div class="terminal-footer">
-              <div class="terminal-progress">
-                <button class="terminal-progress-dot active" type="button" data-dot="0"
-                  aria-label="Step 1 · install"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="1"
-                  aria-label="Step 2 · inception"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="2" aria-label="Step 3 · specs"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="3" aria-label="Step 4 · plan"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="4"
-                  aria-label="Step 5 · implement"></button>
-                <button class="terminal-progress-dot" type="button" data-dot="5" aria-label="Step 6 · ship"></button>
-                <span class="terminal-progress-label" id="terminalLabel"><span
-                    class="status-pill setup">SETUP</span>installed in two commands</span>
-              </div>
-              <button class="terminal-replay" id="terminalReplay" type="button">⏸ Pause</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Docs -->
-  <div class="docs-shell">
-    <aside class="doc-nav" id="docNav">
-      <div class="doc-nav-head">
-        <span class="doc-nav-title">DOCUMENTATION</span>
-        <div class="doc-nav-progress" aria-hidden="true"><span id="navProgressBar"></span></div>
-      </div>
-      <div class="doc-nav-scroll">
-        <div class="doc-nav-track" id="docNavTrack">
-          <div class="doc-nav-rail" aria-hidden="true"><span class="doc-nav-indicator" id="navIndicator"></span></div>
-          <div class="doc-nav-groups">
-            <div class="doc-nav-group">
-              <a href="#quickstart" data-nav>Quickstart</a>
-              <a href="#how-it-works" data-nav>How to use</a>
-              <a href="#examples" data-nav>Examples</a>
-              <a class="doc-nav-sub" href="#example-new-product" data-nav>New product</a>
-              <a class="doc-nav-sub" href="#example-legacy-porting" data-nav>Legacy porting</a>
-              <a class="doc-nav-sub" href="#example-new-feature" data-nav>New feature</a>
-              <a class="doc-nav-sub" href="#example-bug-fix" data-nav>Bug resolution</a>
-            </div>
-            <div class="doc-nav-group">
-              <a href="#deep-dive" data-nav>Deep Dive</a>
-              <a class="doc-nav-sub" href="#deep-dive-how-it-works" data-nav>How it works</a>
-              <a class="doc-nav-sub" href="#deep-dive-update" data-nav>Upgrade</a>
-              <a class="doc-nav-sub" href="#deep-dive-skills" data-nav>Skills</a>
-              <a class="doc-nav-sub" href="#deep-dive-settings" data-nav>Settings</a>
-              <a class="doc-nav-sub" href="#deep-dive-personas" data-nav>Personas</a>
-              <a class="doc-nav-sub" href="#deep-dive-workflow" data-nav>Workflow</a>
-              <a class="doc-nav-sub" href="#deep-dive-artifacts" data-nav>Artifacts</a>
-              <a class="doc-nav-sub" href="#deep-dive-design-systems" data-nav>Design systems</a>
-              <a class="doc-nav-sub" href="#deep-dive-cli" data-nav>Artisan CLI</a>
-              <a class="doc-nav-sub" href="#deep-dive-dashboard" data-nav>Dashboard</a>
-              <a class="doc-nav-sub" href="#deep-dive-api" data-nav>API</a>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="docs" id="docs">
+    <aside class="docs-nav" aria-label="Documentation">
+      <div class="docs-nav-label">Documentation</div>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#how-it-works">How to use</a>
+      <a href="#examples">Examples</a>
+      <a class="sub" href="#example-new-product">New product</a>
+      <a class="sub" href="#example-legacy-porting">Legacy porting</a>
+      <a class="sub" href="#example-new-feature">New feature</a>
+      <a class="sub" href="#example-bug-fix">Bug resolution</a>
+      <a href="#deep-dive">Deep Dive</a>
+      <a class="sub" href="#deep-dive-how-it-works">How it works</a>
+      <a class="sub" href="#deep-dive-update">Upgrade</a>
+      <a class="sub" href="#deep-dive-skills">Skills</a>
+      <a class="sub" href="#deep-dive-settings">Settings</a>
+      <a class="sub" href="#deep-dive-personas">Personas</a>
+      <a class="sub" href="#deep-dive-workflow">Workflow</a>
+      <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
+      <a class="sub" href="#deep-dive-design-systems">Design systems</a>
+      <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
+      <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
+      <a class="sub" href="#deep-dive-api">API</a>
     </aside>
 
-    <main class="doc-main prose">
-
-      <!-- Quickstart -->
+    <main class="docs-main">
+<!-- Quickstart -->
       <section class="doc-section" id="quickstart">
         <div class="section-header">
           <span class="section-label">Quickstart</span>
@@ -4916,421 +3340,125 @@ body: |
         <div class="cta-band">
           <h3>Ready to ship with AI?</h3>
           <p>Install Larapilot and give your agent a real product process.</p>
-          <a class="btn btn-accent" href="#quickstart">Get started →</a>
+          <a class="btn btn-ink" href="#quickstart">Get started →</a>
         </div>
 
       </section>
-
     </main>
   </div>
 
-  <footer class="site-footer">
-    <span>MIT © <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a> · v1.9.1</span>
-    <span>
-      <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
-    </span>
+  <footer>
+    <p>Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 
   <script>
-    const header = document.getElementById('siteHeader');
-    const docNav = document.getElementById('docNav');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const navLinks = docNav.querySelectorAll('a[data-nav]');
-    const navIndicator = document.getElementById('navIndicator');
-    const navProgressBar = document.getElementById('navProgressBar');
-    const navTrack = document.getElementById('docNavTrack');
+    (function () {
+      const hamburger = document.getElementById("nav-hamburger");
+      const navLinks = document.getElementById("nav-links");
+      if (hamburger && navLinks) {
+        hamburger.addEventListener("click", () => {
+          const open = navLinks.classList.toggle("open");
+          hamburger.classList.toggle("open", open);
+          hamburger.setAttribute("aria-expanded", open);
+        });
+        navLinks.querySelectorAll("a").forEach((a) => {
+          a.addEventListener("click", () => {
+            navLinks.classList.remove("open");
+            hamburger.classList.remove("open");
+            hamburger.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
 
-    window.addEventListener('scroll', () => {
-      header.classList.toggle('scrolled', window.scrollY > 20);
-    }, { passive: true });
-
-    document.querySelectorAll('.install-copy-btn[data-copy]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      const copyFlash = async (btn, text) => {
         try {
-          await navigator.clipboard.writeText(btn.dataset.copy || '');
-          btn.textContent = 'Copied!';
-          btn.classList.add('copied');
+          await navigator.clipboard.writeText(text);
+          const prev = btn.textContent;
+          btn.textContent = "Copied";
+          btn.classList.add("copied");
           setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('copied');
-          }, 1500);
-        } catch (_) { }
-      });
-    });
-
-    function closeMenu() {
-      docNav.classList.remove('open');
-      overlay.classList.remove('open');
-    }
-
-    menuBtn?.addEventListener('click', () => {
-      docNav.classList.toggle('open');
-      overlay.classList.toggle('open');
-    });
-
-    overlay?.addEventListener('click', closeMenu);
-
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) closeMenu();
-      });
-    });
-
-    /* Sidebar — scroll spy + sliding rail indicator */
-    (function initNavSpy() {
-      const navScroll = docNav.querySelector('.doc-nav-scroll');
-
-      const readOffset = () => {
-        const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
-        return headerH + 24;
+            btn.textContent = prev || "Copy";
+            btn.classList.remove("copied");
+          }, 1600);
+        } catch (_) {
+          btn.textContent = "Failed";
+          setTimeout(() => { btn.textContent = "Copy"; }, 1600);
+        }
       };
 
-      const navItems = [...navLinks].map(link => {
-        const id = link.getAttribute('href').slice(1);
-        return { id, link, el: document.getElementById(id) };
-      }).filter(item => item.el);
-
-      let pendingNavId = null;
-
-      function scrollMarginTop(el) {
-        const value = parseFloat(getComputedStyle(el).scrollMarginTop);
-        return Number.isFinite(value) ? value : readOffset();
-      }
-
-      function positionIndicator(activeLink) {
-        if (!navIndicator || !navTrack || !activeLink) {
-          if (navIndicator) navIndicator.style.opacity = '0';
-          return;
-        }
-        const trackRect = navTrack.getBoundingClientRect();
-        const linkRect = activeLink.getBoundingClientRect();
-        const y = linkRect.top - trackRect.top + linkRect.height / 2 - 3.5;
-        navIndicator.style.transform = `translateY(${y}px)`;
-        navIndicator.style.opacity = '1';
-      }
-
-      function scrollNavLinkIntoView(activeLink) {
-        if (!navScroll || !activeLink) return;
-        const containerRect = navScroll.getBoundingClientRect();
-        const linkRect = activeLink.getBoundingClientRect();
-        if (linkRect.top < containerRect.top + 8) {
-          navScroll.scrollTop += linkRect.top - containerRect.top - 8;
-        } else if (linkRect.bottom > containerRect.bottom - 8) {
-          navScroll.scrollTop += linkRect.bottom - containerRect.bottom + 8;
-        }
-      }
-
-      function updateProgress() {
-        if (!navProgressBar) return;
-        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0;
-        navProgressBar.style.width = `${pct}%`;
-      }
-
-      function setActiveItem(activeItem) {
-        let activeLink = null;
-        navLinks.forEach(link => {
-          const on = activeItem !== null && link.getAttribute('href') === '#' + activeItem.id;
-          link.classList.toggle('active', on);
-          if (on) activeLink = link;
-        });
-        positionIndicator(activeLink);
-        scrollNavLinkIntoView(activeLink);
-      }
-
-      function activeItemFromScroll() {
-        const offset = readOffset();
-        let activeItem = null;
-
-        for (const item of navItems) {
-          if (item.el.getBoundingClientRect().top <= offset + 1) {
-            activeItem = item;
-          }
-        }
-
-        const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-        if (nearBottom && navItems.length) {
-          activeItem = navItems[navItems.length - 1];
-        }
-
-        return activeItem;
-      }
-
-      function updateActiveNav() {
-        if (!navItems.length) return;
-
-        if (pendingNavId) {
-          const pending = navItems.find(item => item.id === pendingNavId);
-          const scrollActive = activeItemFromScroll();
-
-          if (pending) {
-            const targetY = pending.el.getBoundingClientRect().top + window.scrollY - scrollMarginTop(pending.el);
-            const atTarget = Math.abs(window.scrollY - targetY) <= 2;
-
-            if (!atTarget && scrollActive?.id !== pendingNavId) {
-              pendingNavId = null;
-            } else if (!atTarget) {
-              setActiveItem(pending);
-              updateProgress();
-              return;
-            } else {
-              pendingNavId = null;
-            }
-          } else {
-            pendingNavId = null;
-          }
-        }
-
-        setActiveItem(activeItemFromScroll());
-        updateProgress();
-      }
-
-      navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          pendingNavId = link.getAttribute('href').slice(1);
-          const pending = navItems.find(item => item.id === pendingNavId);
-          if (pending) setActiveItem(pending);
-        });
+      document.querySelectorAll(".copy[data-copy], .install-copy-btn[data-copy], .copy-btn[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", () => copyFlash(btn, btn.getAttribute("data-copy") || ""));
       });
 
-      let ticking = false;
-      function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          updateActiveNav();
-          ticking = false;
+      const sections = [
+        ...document.querySelectorAll(".docs-main section[id], .docs-main article[id]")
+      ];
+      const tocLinks = [...document.querySelectorAll(".docs-nav a")];
+      const setActive = () => {
+        const y = window.scrollY + 120;
+        let current = sections[0]?.id;
+        for (const s of sections) {
+          if (s.offsetTop <= y) current = s.id;
+        }
+        tocLinks.forEach((a) => {
+          a.classList.toggle("active", a.getAttribute("href") === "#" + current);
         });
-      }
+      };
+      window.addEventListener("scroll", setActive, { passive: true });
+      setActive();
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      navScroll?.addEventListener('scroll', () => {
-        const activeLink = docNav.querySelector('a[data-nav].active');
-        positionIndicator(activeLink);
-      }, { passive: true });
-      window.addEventListener('resize', updateActiveNav, { passive: true });
-      window.addEventListener('hashchange', updateActiveNav);
-      window.addEventListener('load', updateActiveNav);
-      updateActiveNav();
-    })();
-
-    /* ── Interactive terminal ── */
-    (function initTerminal() {
-      const terminal = document.getElementById('heroTerminal');
-      if (!terminal) return;
-
-      const tabs = Array.from(terminal.querySelectorAll('.terminal-tab'));
-      const steps = Array.from(terminal.querySelectorAll('.terminal-step'));
-      const dots = Array.from(terminal.querySelectorAll('.terminal-progress-dot'));
-      const label = document.getElementById('terminalLabel');
-      const playBtn = document.getElementById('terminalReplay');
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      const labels = [
-        { status: 'SETUP', cls: 'setup', text: 'installed in three commands' },
-        { status: 'PRD', cls: 'setup', text: 'discovery → .larapilot/docs/PRD.md' },
-        { status: 'TODO', cls: 'todo', text: '3 user stories in the backlog' },
-        { status: 'PLANNED', cls: 'planned', text: 'US-001 planned · 4 tasks' },
-        { status: 'IN PROGRESS', cls: 'progress', text: 'implementing · 4/4 tasks done' },
-        { status: 'DONE', cls: 'done', text: 'reviewed, approved, shipped' },
+      const el = document.getElementById("hero-terminal");
+      if (!el) return;
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const frames = [
+        {
+          type: "composer require andreapollastri/larapilot --dev",
+          lines: [
+            `<span class="dim">./composer.json has been updated</span>`,
+            `<span class="ok">✓</span> Installing <span class="info">andreapollastri/larapilot</span>`,
+            `<span class="prompt">$</span> php artisan larapilot:install`,
+            `<span class="ok">✓</span> .larapilot/ workspace ready`,
+          ],
+        },
+        {
+          type: '/larapilot-inception "Invoicing SaaS for freelancers"',
+          lines: [
+            `<span class="dim">→ Mark runs guided discovery</span>`,
+            `<span class="ok">✓</span> PRD.md — single source of truth`,
+            `<span class="prompt">$</span> /larapilot-spec`,
+            `<span class="ok">✓</span> US-001 · US-002 · US-003 in backlog`,
+          ],
+        },
+        {
+          type: "/larapilot-plan US-001",
+          lines: [
+            `<span class="dim">→ technical plan · 4 tasks</span>`,
+            `<span class="prompt">$</span> /larapilot-implement US-001`,
+            `<span class="ok">✓</span> status → REVIEW`,
+            `<span class="prompt">$</span> /larapilot-review US-001`,
+            `<span class="ok">✓</span> US-001 shipped — you approved`,
+          ],
+        },
       ];
 
-      // Wrap each output line so it can be revealed one by one
-      terminal.querySelectorAll('.terminal-output').forEach(pre => {
-        const lines = pre.innerHTML.split('\n');
-        pre.innerHTML = lines
-          .map((l, i) => '<span class="out-line">' + l + (i < lines.length - 1 ? '\n' : '') + '</span>')
-          .join('');
-      });
-
-      let current = 0;
-      let playing = false;
-      let hovered = false;
-      let pendingAdvance = false;
-      let timers = [];
-
-      function wait(fn, ms) { timers.push(setTimeout(fn, ms)); }
-      function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-
-      function typeCommand(cmdEl, onDone) {
-        const full = cmdEl.dataset.full || '';
-        cmdEl.textContent = '';
-        const cursor = document.createElement('span');
-        cursor.className = 'typing-cursor';
-        cmdEl.appendChild(cursor);
-        let i = 0;
-
-        (function tick() {
-          if (i < full.length) {
-            cmdEl.insertBefore(document.createTextNode(full[i]), cursor);
-            i++;
-            wait(tick, 16 + Math.random() * 22);
-          } else {
-            wait(() => { cursor.remove(); onDone(); }, 180);
-          }
-        })();
-      }
-
-      function reveal(el, onDone) {
-        el.classList.add('visible');
-        if (el.classList.contains('terminal-output')) {
-          const lines = el.querySelectorAll('.out-line');
-          lines.forEach((line, i) => wait(() => line.classList.add('visible'), i * 60));
-          wait(onDone, lines.length * 60 + 180);
-        } else {
-          wait(onDone, 280);
+      async function run() {
+        const f = frames[Math.floor(Math.random() * frames.length)];
+        el.innerHTML = `<span class="prompt">$</span> <span id="typed"></span><span class="caret"></span>`;
+        const typed = document.getElementById("typed");
+        for (let i = 0; i <= f.type.length; i++) {
+          typed.textContent = f.type.slice(0, i);
+          await sleep(22);
         }
+        await sleep(420);
+        el.innerHTML = f.lines.join("\n") + `\n<span class="prompt">$</span> <span class="caret"></span>`;
+        await sleep(4800);
+        run();
       }
-
-      function resetStep(step) {
-        step.querySelectorAll('.term-chunk, .terminal-output, .terminal-result, .out-line')
-          .forEach(el => el.classList.remove('visible'));
-        step.querySelectorAll('.cmd').forEach(c => { c.textContent = ''; });
-      }
-
-      function fillStep(step) {
-        step.querySelectorAll('.term-chunk, .terminal-output, .terminal-result, .out-line')
-          .forEach(el => el.classList.add('visible'));
-        step.querySelectorAll('.cmd').forEach(c => { c.textContent = c.dataset.full || ''; });
-      }
-
-      function animateStep(step, onDone) {
-        const chunks = Array.from(step.querySelectorAll('.term-chunk'));
-        let ci = 0;
-
-        (function nextChunk() {
-          if (ci >= chunks.length) { onDone(); return; }
-          const chunk = chunks[ci];
-          ci++;
-          chunk.classList.add('visible');
-          const rest = Array.from(chunk.querySelectorAll('.terminal-output, .terminal-result'));
-
-          typeCommand(chunk.querySelector('.cmd'), () => {
-            let ri = 0;
-            (function nextReveal() {
-              if (ri >= rest.length) { wait(nextChunk, 420); return; }
-              reveal(rest[ri++], nextReveal);
-            })();
-          });
-        })();
-      }
-
-      function setLabel(index) {
-        if (!label) return;
-        const l = labels[index];
-        label.innerHTML = '<span class="status-pill ' + l.cls + '">' + l.status + '</span>' + l.text;
-      }
-
-      function showStep(index, animate) {
-        clearTimers();
-        current = index;
-
-        tabs.forEach((tab, i) => {
-          tab.classList.toggle('active', i === index);
-          tab.classList.toggle('done', i < index);
-          tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
-        });
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('active', i === index);
-          dot.classList.toggle('done', i < index);
-        });
-        setLabel(index);
-
-        steps.forEach((step, i) => {
-          step.classList.toggle('active', i === index);
-          if (i !== index) return;
-          if (animate && !reduceMotion) {
-            resetStep(step);
-            animateStep(step, scheduleNext);
-          } else {
-            fillStep(step);
-            if (animate) scheduleNext();
-          }
-        });
-      }
-
-      function advance() {
-        pendingAdvance = false;
-        showStep((current + 1) % steps.length, true);
-      }
-
-      function scheduleNext() {
-        if (!playing) return;
-        const dwell = current === steps.length - 1 ? 4600 : 2800;
-        wait(() => {
-          if (!playing) return;
-          if (hovered) { pendingAdvance = true; return; }
-          advance();
-        }, dwell);
-      }
-
-      function setPlaying(on) {
-        playing = on;
-        pendingAdvance = false;
-        if (playBtn) playBtn.textContent = on ? '⏸ Pause' : '▶ Play';
-      }
-
-      function goTo(index) {
-        setPlaying(false);
-        clearTimers();
-        showStep(index, true);
-      }
-
-      tabs.forEach(tab => tab.addEventListener('click', () => goTo(Number(tab.dataset.step))));
-      dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
-
-      terminal.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') { e.preventDefault(); goTo((current + 1) % steps.length); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo((current - 1 + steps.length) % steps.length); }
-      });
-
-      // Hovering holds the sequence on the current step so it can be read
-      terminal.addEventListener('mouseenter', () => { hovered = true; });
-      terminal.addEventListener('mouseleave', () => {
-        hovered = false;
-        if (playing && pendingAdvance) wait(advance, 500);
-      });
-
-      playBtn?.addEventListener('click', () => {
-        if (playing) {
-          setPlaying(false);
-          clearTimers();
-          fillStep(steps[current]);
-        } else {
-          setPlaying(true);
-          showStep(current, true);
-        }
-      });
-
-      terminal.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          try {
-            await navigator.clipboard.writeText(btn.dataset.copy || '');
-            btn.textContent = 'Copied!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-              btn.textContent = 'Copy';
-              btn.classList.remove('copied');
-            }, 1500);
-          } catch (_) { }
-        });
-      });
-
-      if (reduceMotion) {
-        setPlaying(false);
-        showStep(0, false);
-      } else {
-        terminal.classList.add('anim-ready');
-        setPlaying(true);
-        wait(() => showStep(0, true), 600);
-      }
+      setTimeout(run, 500);
     })();
+
   </script>
   <script async src="https://stats.web.ap.it/i/2e869bda-e245-41d3-9d90-d6fa82116ebd.js"></script>
-  <noscript><img src="https://stats.web.ap.it/collect/pixel.gif?k=2e869bda-e245-41d3-9d90-d6fa82116ebd&p=/" width="1"
-      height="1" /></noscript>
 </body>
-
 </html>
