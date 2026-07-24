@@ -170,7 +170,7 @@ Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --ski
 ## Learn more
 
 - [Why & how it works](https://larapilot.web.ap.it/#how-it-works)
-- [Four walkthrough examples](https://larapilot.web.ap.it/#examples) — new product, legacy port, feature, bug
+- [Five walkthrough examples](https://larapilot.web.ap.it/#examples) — new product, legacy port, feature, bug, frontend companion
 - [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion) — split FE repo + shared PRD sync
 - [Design systems](https://larapilot.web.ap.it/#deep-dive-design-systems)
 - [Team personas](https://larapilot.web.ap.it/#deep-dive-team)
