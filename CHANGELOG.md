@@ -6,10 +6,19 @@ All notable changes to `larapilot` will be documented in this file.
 
 ### Added
 
+- **Frontend Topology (inception)** — John + Joe ask `Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend` before the admin-panel route; recorded in the PRD.
+- **`/larapilot-frontend-companion`** — skill for an external frontend repo to pull/mirror the shared PRD (and optional product OpenAPI) from Laravel.
+- **`GET /larapilot/api/companion`** — companion artifact bundle (PRD, parsed topology, sync instructions); OpenAPI updated.
+- **`larapilot:companion-export`** — CLI export of the same bundle (optional `--file=` / `--api-base=`); allowed via MCP `RunArtisanTool`.
 - **`larapilot:diagnostics`** — read-only runtime snapshot (app status, health checks, redacted Laravel log tail) for bug triage.
 - **MCP `diagnostics` tool** — same snapshot for editors; also allowed via `RunArtisanTool` as `larapilot:diagnostics`.
-- **`GET /larapilot/api/diagnostics`** — JSON diagnostics when the dashboard is browsable (never in production); OpenAPI updated.
+- **`GET /larapilot/api/diagnostics`** — read-only app status, health checks, and redacted log tail for bug triage; documented in README and docs site (API + CLI + MCP).
 - **`/larapilot-bug` + shared-runtime** — optional diagnostics step during bug intake.
+
+### Changed
+
+- **Shared runtime, inception skill, Boost guidelines** — Frontend Topology policy, companion sync rules, and Vendor & Package Policy ordering (topology before panel route).
+- **README + docs site** — document topology choices, companion skill, companion API/CLI, and diagnostics (API + CLI + MCP).
 
 ## [1.9.1] - 2026-07-21
 

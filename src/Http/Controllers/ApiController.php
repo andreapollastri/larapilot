@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Larapilot\Services\ApiService;
+use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\InternalFeedbackService;
@@ -20,6 +21,7 @@ class ApiController
     public function __construct(
         protected ConfigService $config,
         protected ApiService $api,
+        protected CompanionService $companion,
         protected OpenApiService $openApi,
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
@@ -120,6 +122,13 @@ class ApiController
         }
 
         return response()->json($data);
+    }
+
+    public function companion(Request $request): JsonResponse
+    {
+        $this->guard();
+
+        return response()->json($this->companion->bundle($this->apiBaseUrl($request)));
     }
 
     public function diagnostics(Request $request): JsonResponse

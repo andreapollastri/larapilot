@@ -125,6 +125,27 @@ it('returns the PRD via the API', function (): void {
         ->assertJsonFragment(['title' => 'Elevator Pitch']);
 });
 
+it('returns the companion bundle via the API', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+    $config->ensureDirectories();
+
+    app(PrdService::class)->write(validPrd()."\n\n**Frontend Topology:** API + external frontend\n**External frontend repo:** https://github.com/acme/app-web\n**External frontend stack:** React\n**Companion sync:** skill + API pull\n");
+
+    $this->getJson('/larapilot/api/companion')
+        ->assertOk()
+        ->assertJsonPath('source', 'larapilot')
+        ->assertJsonPath('skill', 'larapilot-frontend-companion')
+        ->assertJsonPath('artifacts.frontend_topology.mode', 'api_external_frontend')
+        ->assertJsonPath('artifacts.frontend_topology.external_stack', 'React')
+        ->assertJsonStructure([
+            'generated_at',
+            'artifacts' => ['prd', 'frontend_topology', 'product_openapi'],
+            'endpoints' => ['prd', 'companion', 'larapilot_openapi'],
+            'instructions',
+        ]);
+});
+
 it('returns diagnostics via the API', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
@@ -179,6 +200,7 @@ it('serves the OpenAPI document', function (): void {
                 '/specs/{code}',
                 '/specs/{code}/comments',
                 '/prd',
+                '/companion',
                 '/diagnostics',
             ],
         ]);
@@ -212,6 +234,7 @@ it('hides the API in production environment', function (): void {
     $this->getJson('/larapilot/api/specs')->assertNotFound();
     $this->getJson('/larapilot/api/specs/US-001')->assertNotFound();
     $this->getJson('/larapilot/api/prd')->assertNotFound();
+    $this->getJson('/larapilot/api/companion')->assertNotFound();
     $this->getJson('/larapilot/api/diagnostics')->assertNotFound();
     $this->getJson('/larapilot/api/openapi.json')->assertNotFound();
     $this->get('/larapilot/api/docs')->assertNotFound();

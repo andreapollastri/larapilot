@@ -61,10 +61,11 @@ Published via Laravel Boost after `php artisan boost:install`:
 
 | Skill | Role |
 | --- | --- |
-| `/larapilot-inception` | Product discovery → PRD |
+| `/larapilot-inception` | Product discovery → PRD (includes **Frontend Topology**) |
 | `/larapilot-spec` | MoSCoW backlog from PRD |
 | `/larapilot-feature` | Mini-inception for one evolutiva |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
+| `/larapilot-frontend-companion` | Sync shared PRD into an **external frontend** repo |
 | `/larapilot-design` | Static HTML mockups from design system |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
@@ -72,6 +73,8 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / git mode / testing / auto-approve for the project |
+
+During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`.
 
 ---
 
@@ -81,8 +84,24 @@ When the dashboard is browsable (never in production):
 
 - **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
-- **`GET /larapilot/api/diagnostics`** — read-only app status, health checks, and redacted log tail for bug triage (also `php artisan larapilot:diagnostics` / MCP)
+- **`GET /larapilot/api/companion`** — PRD + frontend topology bundle for an external frontend repo
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
+
+### Diagnostics (bug triage)
+
+Read-only runtime snapshot for `/larapilot-bug` and local debugging — **never mutates workflow state**.
+
+| Surface | How |
+| --- | --- |
+| **API** | `GET /larapilot/api/diagnostics` — same dashboard gate (dev/staging only); `404` when `LARAPILOT_DIAGNOSTICS_ENABLED=false` |
+| **CLI** | `php artisan larapilot:diagnostics` — `--lines=` (cap log tail), `--no-logs` (status + checks only) |
+| **MCP** | Larapilot `diagnostics` tool, or `RunArtisanTool` with `larapilot:diagnostics` |
+
+**Query params (API):** `?lines=100` (default from config, capped by `max_log_lines`) · `?no_logs=1` to omit the log tail.
+
+**Payload:** `app` (name, env, Laravel/PHP versions, …), `checks` (`storage_writable`, `cache`, `database`, `queue`, `log_file`), `healthy` (critical checks), optional `logs` with **secrets redacted** (`[REDACTED]`).
+
+**Config** (`config/larapilot.php` / env): `LARAPILOT_DIAGNOSTICS_ENABLED` (default `true`), `LARAPILOT_DIAGNOSTICS_LOG_LINES` (default `100`), `LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES` (default `500`).
 
 Workflow **state** still changes only via skills or Artisan — not from the dashboard or API.
 

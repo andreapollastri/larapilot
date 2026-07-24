@@ -199,10 +199,11 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 1. **Delivery target** — all four options (`MVP` … `Enterprise`)
 2. **Budget Sensitivity** (Aurora) — same round or right after
 3. **John** — when SaaS, B2B platform, or tenant isolation is plausible, ask multi-tenancy via **AskQuestion** (see Architecture Standards)
-4. **John** — admin/control panel or authenticated dashboard: **Filament** vs **[Laravel Starter Kit](https://laravel.com/starter-kits)** (Livewire/Flux, React, Vue, or Svelte) vs **custom** when applicable — never assume one route
-5. **Sebastian** — integrations and competitor data porting when comparable products exist
-6. **Sabrine** — legacy rewrite/port analysis when `{paths.legacy}` or **Project Origin** is legacy
-7. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily**, **Andrew**, **Joe**, **Ricky**, **Albert**, **Marika** join when relevant; **Zoey** always
+4. **John + Joe** — **Frontend Topology** via AskQuestion (**before** admin-panel route when UI is in scope): `Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend` — never assume (see **Frontend Topology**)
+5. **John** — admin/control panel or authenticated dashboard: **Filament** vs **[Laravel Starter Kit](https://laravel.com/starter-kits)** (Livewire/Flux, React, Vue, or Svelte) vs **custom** when applicable — never assume one route; skip Starter Kit SPA variants when topology is `API + external frontend`
+6. **Sebastian** — integrations and competitor data porting when comparable products exist
+7. **Sabrine** — legacy rewrite/port analysis when `{paths.legacy}` or **Project Origin** is legacy
+8. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily**, **Andrew**, **Joe**, **Ricky**, **Albert**, **Marika** join when relevant; **Zoey** always
 
 ### Downstream behavior
 
@@ -211,8 +212,9 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 | Skill                  | Adjustment                                                                                                                                                                                                                                                                                          |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`larapilot-spec`**   | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
-| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope                                                                                                               |
-| **`larapilot-ship`**   | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate                                                                                                                                                                      |
+| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); FE implements against OpenAPI + companion sync |
+| **`larapilot-frontend-companion`** | Used in the **external frontend repo** (or a FE-only workspace) when topology is **`API + external frontend`** — pulls the shared PRD/OpenAPI bundle from the Laravel Larapilot API and mirrors it locally |
+| **`larapilot-ship`**   | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm companion sync / OpenAPI contract before release                                                                                                                                                                      |
 
 ## Client Materials _(all skills — mandatory input)_
 
@@ -812,9 +814,50 @@ Coverage to plan:
 
 Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
 
+## Frontend Topology _(John + Joe co-own)_
+
+During **`larapilot-inception`**, **John** and **Joe** **must** ask **Frontend Topology** via **AskQuestion** whenever the product has a user-facing UI (most **Website** and **Application** projects; skip only for pure CLI/API-worker **Personal** tools with no UI). Ask **before** the Filament / Starter Kit / custom panel question so the panel route stays coherent.
+
+### Options (never assume)
+
+| Value | Meaning | Typical stack in this Laravel repo |
+| --- | --- | --- |
+| **`Laravel-coupled`** | UI lives in the same Laravel repo | Blade, Livewire, Inertia + Vue/React/Svelte, Filament, Flux |
+| **`SPA-in-Laravel`** | SPA (or SPA islands) built with Vite **inside** this Laravel repo | React / Vue / Angular / Svelte (or Starter Kit Inertia variants) served by Laravel |
+| **`API + external frontend`** | Laravel exposes **API (+ optional admin)** only; the primary UI is another repository | Sanctum/Passport API, OpenAPI; optional Filament admin for ops |
+
+Record in PRD `## Technical Architecture`:
+
+```markdown
+**Frontend Topology:** Laravel-coupled | SPA-in-Laravel | API + external frontend
+**Frontend stack (in-repo):** {{Blade / Livewire / Inertia+… / Vite SPA … / N/A}}
+**External frontend repo:** {{URL or path — when API + external frontend}}
+**External frontend stack:** {{React / Vue / Angular / Svelte / Other — when external}}
+**Companion sync:** skill + API pull | git PR | manual — when external
+```
+
+### When topology is `API + external frontend`
+
+1. **Laravel repo** remains Larapilot source of truth for PRD, backlog, plans, and (usually) mockups + product OpenAPI.
+2. **Frontend repo** installs or copies the **`/larapilot-frontend-companion`** skill and periodically syncs the companion bundle:
+   - `GET /larapilot/api/companion` (when the Laravel dashboard API is browsable), or
+   - `php artisan larapilot:companion-export` on the Laravel side → write JSON into the FE repo, or
+   - Git PR / CI that copies `.larapilot/docs/PRD.md` (+ OpenAPI snapshot) into the FE `.larapilot/` mirror.
+3. Companion skill writes a local mirror under the FE project's `.larapilot/` (`docs/PRD.md`, optional `openapi-product.json`, `companion-sync.md`) so FE agents honor the **same PRD** without inventing product scope.
+4. **Joe** owns FE architecture in the external stack; **Alex** owns Laravel API contracts; **Matt** owns auth/CORS/webhook seams; **Albert** keeps OpenAPI accurate — FE must not invent endpoints.
+5. Admin/control panel on Laravel (Filament / custom) remains valid for ops even when the customer UI is external — still ask; prefer Filament or custom over a Starter Kit SPA when the primary product UI is not in this repo.
+
+### Downstream honor rules
+
+- **`larapilot-plan` / `larapilot-implement`**: when topology is external, Laravel tasks focus on API, auth, jobs, admin; UI tasks that belong to the FE repo are marked as **cross-repo** (companion sync + FE issue/PR) — do not invent a Blade SPA in Laravel unless the user changes topology.
+- **`larapilot-design`**: mockups stay the shared UX contract; note in mockup README that Alex (API) and the FE repo (Joe) both consume them.
+- After **`prd-write`** / PRD living-document edits on an external topology: remind the user to run companion sync on the FE repo (or export the bundle).
+
+Ownership: **John** owns topology and API boundaries; **Joe** owns in-repo or external web FE stack choice and companion skill usage; **Ricky** owns mobile shells that may also be separate repos (same companion pattern when they consume the Laravel API).
+
 ## UX & Frontend Design _(Elise owns)_
 
-Elise privileges the **Laravel frontend ecosystem** — design and mockups must map cleanly to how Laravel apps are actually built.
+Elise privileges the **Laravel frontend ecosystem** when topology is **`Laravel-coupled`** or **`SPA-in-Laravel`**. When topology is **`API + external frontend`**, Elise still owns UX/mockups as the shared contract; Joe maps them to the external stack.
 
 ### Technology preference (in order)
 
@@ -826,7 +869,7 @@ Elise privileges the **Laravel frontend ecosystem** — design and mockups must 
 6. **Flux UI** — when installed or when the PRD chose the **Livewire Starter Kit**, align mockups and implementation to Flux components
 7. **Laravel Starter Kits** — when the PRD records a Starter Kit variant, align authenticated UI (dashboard, settings, auth layouts) to the kit's component library: **Flux** (Livewire), **shadcn/ui** (React), **shadcn-vue** (Vue), or **shadcn-svelte** (Svelte) — see [starter-kits docs](https://laravel.com/docs/starter-kits)
 
-Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them **or** the PRD chose the matching **Laravel Starter Kit** (Inertia variant). Authenticated app UI: **ask Filament vs Starter Kit vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
+Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS frameworks unless the user explicitly requests them, the PRD chose **`SPA-in-Laravel`** / matching **Laravel Starter Kit** (Inertia variant), or topology is **`API + external frontend`** (external stack is free to use React/Angular/Vue/etc.). Authenticated app UI **in this Laravel repo**: **ask Filament vs Starter Kit vs custom** per the Vendor & Package Policy — the recommendation follows the specific case and, above all, fidelity to the project mockups.
 
 ### Filament admin mockups _(when PRD chose Filament)_
 
@@ -1396,12 +1439,13 @@ When a feature is not worth building in-house, evaluate packages in this order:
 
 1. **Laravel built-ins and first-party packages** — framework features first; official packages (Horizon, Sanctum, Scout, Cashier, Reverb, …) next.
 2. **Spatie packages** — [spatie.be/open-source/packages](https://spatie.be/open-source/packages) is the **preferred source for third-party functionality** (permissions, media library, backups, activity log, query builder, settings, …). Check Spatie's catalog before other vendors.
-3. **Authenticated app UI route** — when the product needs an **admin/control panel**, customer dashboard, or portal back-end, never impose a single stack: **explicitly ask the user** (via AskQuestion) among:
-    - **[Filament](https://filamentphp.com/)** — dedicated admin panel (Resources, widgets, relation managers); best for internal ops and standard back-office CRUD
-    - **[Laravel Starter Kits](https://laravel.com/starter-kits)** — first-party app scaffold with auth, dashboard, profile/settings, light/dark, configurable layouts: **Livewire** (Flux UI), **React**, **Vue**, or **Svelte** (Inertia + shadcn variants); best when authenticated UI is the main product surface or a customer portal integrated into the same stack
+3. **Frontend Topology first** — when UI is in scope, ask **Frontend Topology** (`Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend`) per **Frontend Topology** before picking panel frameworks.
+4. **Authenticated app UI route** — when the product needs an **admin/control panel**, customer dashboard, or portal back-end **in this Laravel repo**, never impose a single stack: **explicitly ask the user** (via AskQuestion) among:
+    - **[Filament](https://filamentphp.com/)** — dedicated admin panel (Resources, widgets, relation managers); best for internal ops and standard back-office CRUD (also preferred ops admin when topology is **`API + external frontend`**)
+    - **[Laravel Starter Kits](https://laravel.com/starter-kits)** — first-party app scaffold with auth, dashboard, profile/settings, light/dark, configurable layouts: **Livewire** (Flux UI), **React**, **Vue**, or **Svelte** (Inertia + shadcn variants); best when authenticated UI is the main product surface **in this repo** (`Laravel-coupled` / `SPA-in-Laravel`)
     - **Custom panel** — bespoke Blade/Livewire/Inertia without Filament or starter-kit conventions
-      Recommend the best-fit option for the specific case — above all the one **closest to the project mockups** (heavy custom design → custom; standard resource CRUD → Filament; customer app with auth + dashboard → Starter Kit variant matching the PRD stack). Record the choice in the PRD under `## Technical Architecture` (`Admin panel: Filament | Starter Kit (livewire|react|vue|svelte) | custom`) so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins). When a Starter Kit is chosen, scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) and align mockups to Flux or shadcn per variant — do not mix unrelated UI libraries on top.
-4. **Other community vendors** — only when nothing above fits, and with stricter vetting.
+      Recommend the best-fit option for the specific case — above all the one **closest to the project mockups** (heavy custom design → custom; standard resource CRUD → Filament; customer app with auth + dashboard in-repo → Starter Kit variant matching the PRD stack). Record the choice in the PRD under `## Technical Architecture` (`Admin panel: Filament | Starter Kit (livewire|react|vue|svelte) | custom`) so downstream skills honor it instead of re-asking. When Filament is chosen, prefer official plugins, then well-maintained community plugins from [filamentphp.com/plugins](https://filamentphp.com/plugins). When a Starter Kit is chosen, scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) and align mockups to Flux or shadcn per variant — do not mix unrelated UI libraries on top.
+5. **Other community vendors** — only when nothing above fits, and with stricter vetting.
 
 Every candidate — **including** Spatie packages and Filament plugins — must pass a maintenance and security check before `composer require`:
 
@@ -1610,7 +1654,7 @@ Some skills spawn **readonly sub-agents** for fresh context via the editor's sub
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
-Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `ship`, `settings`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
+Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `frontend-companion`, `ship`, `settings`, `autopilot` (parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
 
 ### Review artifact
 

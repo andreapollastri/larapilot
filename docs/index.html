@@ -1262,6 +1262,7 @@
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
       <a class="sub" href="#deep-dive-api">API</a>
+      <a class="sub" href="#deep-dive-api-diagnostics">Diagnostics</a>
     </aside>
 
     <main class="docs-main">
@@ -1471,18 +1472,18 @@
             <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no
               SSO for now), <strong>MVP</strong>.</p>
             <div class="wizard">
-              <strong>AskQuestion — Round 3 (stack &amp; panel)</strong>
+              <strong>AskQuestion — Round 3 (topology, stack &amp; panel)</strong>
               <ol>
-                <li><strong>Authenticated UI:</strong> Laravel Starter Kit · Filament · AdminLTE · Bootstrap 5 ·
-                  Tailwind CSS · Custom</li>
+                <li><strong>Frontend Topology:</strong> Laravel-coupled · SPA-in-Laravel · API + external frontend</li>
+                <li><strong>Authenticated UI (in this repo):</strong> Laravel Starter Kit · Filament · AdminLTE ·
+                  Bootstrap 5 · Tailwind CSS · Custom</li>
                 <li><strong>Budget sensitivity:</strong> Tracked · Relaxed</li>
-                <li><strong>GDPR:</strong> EU users expected · Internal only · Unsure</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Laravel Starter Kit</strong>, <strong>Tracked</strong>, <strong>EU users
-                expected</strong>.</p>
-            <p><span class="speaker">📐 John:</span> Starter Kit + session auth fits Laravel 13 out of the box. I'll
-              note Filament as a Future Phase option.</p>
+            <p><em>You pick:</em> <strong>Laravel-coupled</strong>, <strong>Laravel Starter Kit</strong>,
+              <strong>Tracked</strong>.</p>
+            <p><span class="speaker">📐 John + ✨ Joe:</span> Coupled Blade/Inertia UI in this repo — Starter Kit +
+              session auth fits Laravel 13 out of the box. Filament stays a Future Phase option for ops.</p>
             <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.
             </p>
           </div>
@@ -1491,6 +1492,7 @@
             <div class="code-block-header">PRD.md (excerpt)</div>
             <pre><code>**Project Kind:** Application
 **Delivery Target:** MVP
+**Frontend Topology:** Laravel-coupled
 **Stack:** Laravel 13 · Laravel Starter Kit · Pest
 
 ### FR-001: User registration with email and password
@@ -1896,7 +1898,9 @@ body: |
             <pre><code>/larapilot-bug "SSO login fails on Safari"</code></pre>
           </div>
 
-          <p>Sophia triages with AskQuestion, logs to <code>support/intake.md</code>.</p>
+          <p>Sophia triages with AskQuestion, logs to <code>support/intake.md</code>. For production/staging errors she
+            may pull <a href="#deep-dive-api-diagnostics">diagnostics</a> (status + redacted log tail) before routing.
+          </p>
 
           <div class="chat-example">
             <p><span class="speaker">🎧 Sophia:</span> Report received — SSO works on Chrome, fails on Safari.
@@ -2216,10 +2220,11 @@ body: |
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Eleven</strong> editor-native skills cover the full product lifecycle (including
-            <code>/larapilot-settings</code>). Each is a <code>SKILL.md</code> file with a name, description, persona
-            roster, execution steps, and allowed CLI calls. Laravel Boost publishes them on
-            <code>php artisan boost:install</code>; coding <strong>guidelines</strong> ship alongside (not a skill).
+          <p class="lead"><strong>Twelve</strong> editor-native skills cover the full product lifecycle (including
+            <code>/larapilot-settings</code> and <code>/larapilot-frontend-companion</code>). Each is a
+            <code>SKILL.md</code> file with a name, description, persona roster, execution steps, and allowed CLI
+            calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding
+            <strong>guidelines</strong> ship alongside (not a skill).
           </p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
@@ -2238,6 +2243,8 @@ body: |
                 <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.</p>
                 <ul>
                   <li>Mark opens with Project Kind (Personal · Website · Application)</li>
+                  <li>John + Joe ask <strong>Frontend Topology</strong> (Laravel-coupled · SPA-in-Laravel · API +
+                    external frontend) before the admin-panel route</li>
                   <li>AskQuestion rounds (max 3 questions each, skippable)</li>
                   <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present</li>
                 </ul>
@@ -2261,9 +2268,29 @@ body: |
               <span class="skill-badge">shortcut</span>
               <div class="skill-body">
                 <h3><code>/larapilot-bug "…"</code></h3>
-                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps.</p>
+                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. When the report
+                  mentions production/staging errors or logs, agents pull
+                  <a href="#deep-dive-api-diagnostics">diagnostics</a> (redacted).</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
-                  <code>larapilot:spec-request-changes</code> — depending on new fix vs rework.
+                  <code>larapilot:spec-request-changes</code> — plus <code>larapilot:diagnostics</code> for runtime
+                  evidence.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">companion</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-frontend-companion</code></h3>
+                <p>For <strong>API + external frontend</strong> topology: pull the shared PRD (and optional product
+                  OpenAPI) from Laravel into the FE repo's <code>.larapilot/</code> mirror so both repos share one
+                  product contract.</p>
+                <ul>
+                  <li>HTTP: <code>GET /larapilot/api/companion</code> on the Laravel app (dev/staging)</li>
+                  <li>Or import a file from <code>php artisan larapilot:companion-export --file=…</code></li>
+                  <li>Writes <code>.larapilot/docs/PRD.md</code> + <code>companion-sync.md</code> in the FE repo</li>
+                </ul>
+                <p class="skill-cli"><strong>CLI (Laravel side):</strong> <code>larapilot:companion-export</code> —
+                  also via API <code>/companion</code>.
                 </p>
               </div>
             </div>
@@ -2861,7 +2888,7 @@ body: |
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
             ├── docs/
-            │ ├── PRD.md <span class="comment"># living product contract</span>
+            │ ├── PRD.md <span class="comment"># living product contract (includes Frontend Topology)</span>
             │ ├── test-results/ <span class="comment"># per-spec test evidence</span>
             │ ├── review/ <span class="comment"># Robert/Lars findings</span>
             │ ├── security/ <span class="comment"># OWASP assessments</span>
@@ -2897,7 +2924,10 @@ body: |
                 <tr>
                   <td><code>PRD.md</code></td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
-                  <td>Vision, personas, MoSCoW FRs, architecture — updated selectively on scope changes</td>
+                  <td>Vision, personas, MoSCoW FRs, architecture including <strong>Frontend Topology</strong> —
+                    updated selectively on scope changes. Mirrored to an external FE via
+                    <code>/larapilot-frontend-companion</code> when topology is split.
+                  </td>
                 </tr>
                 <tr>
                   <td><code>backlog.yaml</code></td>
@@ -3073,12 +3103,22 @@ body: |
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
                     <code>larapilot:config-show</code> · <code>larapilot:settings-set</code>
                   </td>
-                  <td>Install, upgrades, diagnostics, <a href="#deep-dive-settings">project settings</a></td>
+                  <td>Install, upgrades, health check, <a href="#deep-dive-settings">project settings</a></td>
+                </tr>
+                <tr>
+                  <td>Runtime</td>
+                  <td><code>larapilot:diagnostics</code> (<code>--lines=</code>, <code>--no-logs</code>)</td>
+                  <td><code>/larapilot-bug</code>, local triage — see <a
+                      href="#deep-dive-api-diagnostics">Diagnostics</a></td>
                 </tr>
                 <tr>
                   <td>PRD</td>
-                  <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code></td>
-                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
+                  <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
+                    <code>larapilot:companion-export</code>
+                  </td>
+                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code>,
+                    <code>/larapilot-frontend-companion</code>
+                  </td>
                 </tr>
                 <tr>
                   <td>Backlog</td>
@@ -3116,8 +3156,9 @@ body: |
             </table>
           </div>
 
-          <p>MCP exposes backlog and spec tools too — <code>larapilot</code> server alongside
-            <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during conversation.
+          <p>MCP exposes backlog, spec, and <strong>diagnostics</strong> tools — <code>larapilot</code> server
+            alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during
+            conversation (including <code>larapilot:diagnostics</code> via <code>RunArtisanTool</code>).
           </p>
         </article>
 
@@ -3222,8 +3263,9 @@ body: |
         <article class="deep-dive-sub" id="deep-dive-api">
           <h3>API</h3>
           <p class="lead">JSON API over the same artifacts as the dashboard. Read endpoints for scripts, CI dashboards,
-            or external tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled.
-            Workflow state still changes only via skills/CLI.</p>
+            external frontend companion sync, bug-triage <a href="#deep-dive-api-diagnostics">diagnostics</a>, or
+            tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled. Workflow state
+            still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a>
@@ -3268,10 +3310,25 @@ body: |
                   <td>Append internal feedback — JSON body: <code>author</code>, <code>message</code>, optional
                     <code>blocks_merge</code>. Returns <code>201</code> with updated feedback snapshot.
                   </td>
+                </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
                   <td>PRD Markdown content and parsed heading index</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/companion</code></td>
+                  <td>Companion bundle for an external frontend — PRD, parsed
+                    <strong>Frontend Topology</strong>, optional product OpenAPI snapshot, sync instructions. Used by
+                    <code>/larapilot-frontend-companion</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/diagnostics</code></td>
+                  <td>Read-only runtime snapshot for bug triage — see <a
+                      href="#deep-dive-api-diagnostics">Diagnostics</a></td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -3285,6 +3342,72 @@ body: |
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <h4 id="deep-dive-api-diagnostics">Diagnostics</h4>
+          <p>Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
+            of the API (never in production). Disable with <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> (returns
+            <code>404</code>).
+          </p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Surface</th>
+                  <th>Usage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>API</td>
+                  <td><code>GET /larapilot/api/diagnostics</code> — optional <code>?lines=100</code>,
+                    <code>?no_logs=1</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CLI</td>
+                  <td><code>php artisan larapilot:diagnostics</code> — <code>--lines=</code>,
+                    <code>--no-logs</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>MCP</td>
+                  <td>Larapilot <code>diagnostics</code> tool, or <code>RunArtisanTool</code> →
+                    <code>larapilot:diagnostics</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p><strong>Checks:</strong> <code>storage_writable</code>, <code>cache</code>, <code>database</code>,
+            <code>queue</code>, <code>log_file</code>. <code>healthy</code> is true when critical checks
+            (storage + database) pass. Log lines redact secrets (<code>[REDACTED]</code>). Defaults:
+            <code>LARAPILOT_DIAGNOSTICS_LOG_LINES=100</code>,
+            <code>LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES=500</code>.
+          </p>
+
+          <div class="code-block">
+            <div class="code-block-header">GET /larapilot/api/diagnostics?no_logs=1</div>
+            <pre><code>{
+  "collected_at": "2026-07-24T16:00:00+00:00",
+  "app": {
+    "name": "My App",
+    "env": "local",
+    "debug": true,
+    "laravel_version": "13.x",
+    "php_version": "8.4.0"
+  },
+  "checks": {
+    "storage_writable": { "ok": true, "detail": "…" },
+    "cache": { "ok": true, "detail": "…" },
+    "database": { "ok": true, "detail": "…" },
+    "queue": { "ok": true, "detail": "…" },
+    "log_file": { "ok": true, "detail": "…" }
+  },
+  "healthy": true
+}</code></pre>
           </div>
 
           <h4>Response shape</h4>
@@ -3334,7 +3457,9 @@ body: |
           <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware.
             Do not expose it in production (routes are not registered there). Mockup preview URLs are absolute in API
             responses when the mockup route is browsable. Comment writes honor <code>LARAPILOT_COMMENTS_ENABLED</code>
-            and reject DONE specs with <code>422</code>.</p>
+            and reject DONE specs with <code>422</code>. Diagnostics honor
+            <code>LARAPILOT_DIAGNOSTICS_ENABLED</code> and redact secrets in log tails.
+          </p>
         </article>
 
         <div class="cta-band">
