@@ -2,7 +2,7 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [Unreleased]
+## [2.0.0] - 2026-07-24
 
 ### Added
 
@@ -18,7 +18,7 @@ All notable changes to `larapilot` will be documented in this file.
 ### Changed
 
 - **Shared runtime, inception skill, Boost guidelines** — Frontend Topology policy, companion sync rules, and Vendor & Package Policy ordering (topology before panel route).
-- **README + docs site** — document topology choices, companion skill, companion API/CLI, diagnostics (API + CLI + MCP), a **Frontend companion** deep dive, and a fifth walkthrough example.
+- **README + docs site** — document topology choices, companion skill, companion API/CLI, diagnostics (API + CLI + MCP), a **Frontend companion** deep dive, and a fifth walkthrough example; site version **v2.0.0**.
 
 ## [1.9.1] - 2026-07-21
 

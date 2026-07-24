@@ -15,7 +15,7 @@ class LarapilotServer extends Server
 {
     protected string $name = 'Larapilot';
 
-    protected string $version = '0.1.0';
+    protected string $version = '2.0.0';
 
     protected string $instructions = 'Spec-driven product workflow for Laravel. Manage PRD, backlog, specs, plans, and workflow status. Use diagnostics for bug triage (status + redacted logs). Use alongside Laravel Boost for implementation.';
 
