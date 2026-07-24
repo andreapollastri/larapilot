@@ -74,7 +74,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / git mode / testing / auto-approve for the project |
 
-During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`.
+During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 
@@ -171,6 +171,7 @@ Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --ski
 
 - [Why & how it works](https://larapilot.web.ap.it/#how-it-works)
 - [Four walkthrough examples](https://larapilot.web.ap.it/#examples) — new product, legacy port, feature, bug
+- [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion) — split FE repo + shared PRD sync
 - [Design systems](https://larapilot.web.ap.it/#deep-dive-design-systems)
 - [Team personas](https://larapilot.web.ap.it/#deep-dive-team)
 
