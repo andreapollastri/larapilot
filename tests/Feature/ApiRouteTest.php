@@ -125,6 +125,33 @@ it('returns the PRD via the API', function (): void {
         ->assertJsonFragment(['title' => 'Elevator Pitch']);
 });
 
+it('returns diagnostics via the API', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->getJson('/larapilot/api/diagnostics?no_logs=1')
+        ->assertOk()
+        ->assertJsonStructure([
+            'collected_at',
+            'app' => ['name', 'env', 'debug', 'laravel_version', 'php_version'],
+            'checks' => [
+                'storage_writable' => ['ok', 'detail'],
+                'cache' => ['ok', 'detail'],
+                'database' => ['ok', 'detail'],
+                'queue' => ['ok', 'detail'],
+                'log_file' => ['ok', 'detail'],
+            ],
+            'healthy',
+        ])
+        ->assertJsonMissingPath('logs');
+});
+
+it('hides diagnostics via the API when disabled', function (): void {
+    config(['larapilot.diagnostics.enabled' => false]);
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->getJson('/larapilot/api/diagnostics')->assertNotFound();
+});
+
 it('returns 404 for unknown specs via the API', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
@@ -152,6 +179,7 @@ it('serves the OpenAPI document', function (): void {
                 '/specs/{code}',
                 '/specs/{code}/comments',
                 '/prd',
+                '/diagnostics',
             ],
         ]);
 });
@@ -184,6 +212,7 @@ it('hides the API in production environment', function (): void {
     $this->getJson('/larapilot/api/specs')->assertNotFound();
     $this->getJson('/larapilot/api/specs/US-001')->assertNotFound();
     $this->getJson('/larapilot/api/prd')->assertNotFound();
+    $this->getJson('/larapilot/api/diagnostics')->assertNotFound();
     $this->getJson('/larapilot/api/openapi.json')->assertNotFound();
     $this->get('/larapilot/api/docs')->assertNotFound();
 });

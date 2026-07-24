@@ -6,6 +6,7 @@ namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\ConfigShowCommand;
+use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
@@ -35,6 +36,7 @@ use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
+use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupService;
@@ -55,6 +57,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/larapilot.php', 'larapilot');
 
         $this->app->singleton(ConfigService::class);
+        $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
@@ -79,6 +82,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 InstallCommand::class,
                 UpdateCommand::class,
                 DoctorCommand::class,
+                DiagnosticsCommand::class,
                 ConfigShowCommand::class,
                 SettingsSetCommand::class,
                 PrdWriteCommand::class,

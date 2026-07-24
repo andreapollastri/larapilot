@@ -19,7 +19,7 @@ class OpenApiService
                 'title' => 'Larapilot Workflow API',
                 'version' => '1.0.0',
                 'description' => 'JSON API for the Larapilot workflow board. '
-                    .'Exposes backlog specs (user stories), plans, tasks, mockups, internal feedback, and the PRD from `.larapilot/` artifacts. '
+                    .'Exposes backlog specs (user stories), plans, tasks, mockups, internal feedback, the PRD, and read-only diagnostics from `.larapilot/` artifacts. '
                     .'Read endpoints are available in the same environments where the `/larapilot` dashboard is browsable (never in production). '
                     .'POST `/specs/{code}/comments` appends internal feedback when comments are enabled.',
             ],
@@ -31,6 +31,7 @@ class OpenApiService
                 ['name' => 'Specs', 'description' => 'User stories (backlog specs)'],
                 ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
+                ['name' => 'Diagnostics', 'description' => 'Read-only runtime status and redacted log tail for bug triage'],
             ],
             'paths' => [
                 '/board' => [
@@ -156,6 +157,42 @@ class OpenApiService
                                 'content' => [
                                     'application/json' => [
                                         'schema' => ['$ref' => '#/components/schemas/PrdResponse'],
+                                    ],
+                                ],
+                            ],
+                            '404' => ['$ref' => '#/components/responses/NotFound'],
+                        ],
+                    ],
+                ],
+                '/diagnostics' => [
+                    'get' => [
+                        'tags' => ['Diagnostics'],
+                        'summary' => 'Runtime diagnostics snapshot',
+                        'description' => 'Returns app status, health checks (storage, cache, database, queue, log file), and an optional redacted Laravel log tail for bug triage. '
+                            .'Secrets in log lines are replaced with `[REDACTED]`. Available only where the dashboard is browsable and `larapilot.diagnostics.enabled` is true.',
+                        'operationId' => 'getDiagnostics',
+                        'parameters' => [
+                            [
+                                'name' => 'lines',
+                                'in' => 'query',
+                                'required' => false,
+                                'description' => 'Max log lines to return (capped by config)',
+                                'schema' => ['type' => 'integer', 'minimum' => 1, 'example' => 100],
+                            ],
+                            [
+                                'name' => 'no_logs',
+                                'in' => 'query',
+                                'required' => false,
+                                'description' => 'When true, skip the log tail and return status/checks only',
+                                'schema' => ['type' => 'boolean', 'default' => false],
+                            ],
+                        ],
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Diagnostics snapshot',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/DiagnosticsResponse'],
                                     ],
                                 ],
                             ],
@@ -446,6 +483,56 @@ class OpenApiService
                             ],
                         ],
                         'required' => ['content', 'headings'],
+                    ],
+                    'DiagnosticsCheck' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'ok' => ['type' => 'boolean'],
+                            'detail' => ['type' => 'string'],
+                        ],
+                        'required' => ['ok', 'detail'],
+                    ],
+                    'DiagnosticsLogs' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'available' => ['type' => 'boolean'],
+                            'path' => ['type' => 'string', 'nullable' => true],
+                            'channel' => ['type' => 'string'],
+                            'lines_requested' => ['type' => 'integer'],
+                            'lines_returned' => ['type' => 'integer'],
+                            'redacted' => ['type' => 'boolean'],
+                            'entries' => [
+                                'type' => 'array',
+                                'items' => ['type' => 'string'],
+                            ],
+                        ],
+                        'required' => ['available', 'lines_requested', 'lines_returned', 'redacted', 'entries'],
+                    ],
+                    'DiagnosticsResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'collected_at' => ['type' => 'string', 'format' => 'date-time'],
+                            'app' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string'],
+                                    'env' => ['type' => 'string'],
+                                    'debug' => ['type' => 'boolean'],
+                                    'url' => ['type' => 'string'],
+                                    'timezone' => ['type' => 'string'],
+                                    'locale' => ['type' => 'string'],
+                                    'laravel_version' => ['type' => 'string'],
+                                    'php_version' => ['type' => 'string'],
+                                ],
+                            ],
+                            'checks' => [
+                                'type' => 'object',
+                                'additionalProperties' => ['$ref' => '#/components/schemas/DiagnosticsCheck'],
+                            ],
+                            'healthy' => ['type' => 'boolean'],
+                            'logs' => ['$ref' => '#/components/schemas/DiagnosticsLogs'],
+                        ],
+                        'required' => ['collected_at', 'app', 'checks', 'healthy'],
                     ],
                 ],
             ],

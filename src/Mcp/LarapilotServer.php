@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Mcp;
 
 use Larapilot\Mcp\Tools\BacklogListTool;
+use Larapilot\Mcp\Tools\DiagnosticsTool;
 use Larapilot\Mcp\Tools\RunArtisanTool;
 use Larapilot\Mcp\Tools\SpecShowTool;
 use Laravel\Mcp\Server;
@@ -16,7 +17,7 @@ class LarapilotServer extends Server
 
     protected string $version = '0.1.0';
 
-    protected string $instructions = 'Spec-driven product workflow for Laravel. Manage PRD, backlog, specs, plans, and workflow status. Use alongside Laravel Boost for implementation.';
+    protected string $instructions = 'Spec-driven product workflow for Laravel. Manage PRD, backlog, specs, plans, and workflow status. Use diagnostics for bug triage (status + redacted logs). Use alongside Laravel Boost for implementation.';
 
     /**
      * @var array<int, class-string<Tool>>
@@ -24,6 +25,7 @@ class LarapilotServer extends Server
     protected array $tools = [
         BacklogListTool::class,
         SpecShowTool::class,
+        DiagnosticsTool::class,
         RunArtisanTool::class,
     ];
 }

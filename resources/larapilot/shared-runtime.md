@@ -280,6 +280,7 @@ Use **`larapilot-bug`** to triage **one defect** and route it into the normal wo
 | Step | Owner | Action |
 | --- | --- | --- |
 | **Triage** | Sophia | AskQuestion: severity, environment, security, reproducibility, affected spec |
+| **Diagnostics** | Sophia + Jack | Optional `larapilot:diagnostics` (or MCP / API when browsable) for status + redacted logs when runtime evidence helps |
 | **Log** | Sophia | Append normalized entry to `{paths.support}/intake.md` |
 | **Route** | Sophia | Existing spec → `spec-request-changes`; new issue → fix spec via `spec-add` |
 | **PRD** | Mark | **Only** on requirement gap (clarify parent FR) — see **PRD Living Document**; never add “fix FRs” |

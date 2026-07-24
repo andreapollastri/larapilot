@@ -41,6 +41,9 @@ class ApiRouteRegistrar
                 Route::get('/prd', [ApiController::class, 'prd'])
                     ->name('larapilot.api.prd');
 
+                Route::get('/diagnostics', [ApiController::class, 'diagnostics'])
+                    ->name('larapilot.api.diagnostics');
+
                 Route::get('/openapi.json', [ApiController::class, 'openapi'])
                     ->name('larapilot.api.openapi');
 

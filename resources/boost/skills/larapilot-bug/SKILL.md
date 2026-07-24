@@ -31,12 +31,13 @@ Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **Bu
 ## Config & CLI
 
 1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:spec-list`
-3. `php artisan larapilot:spec-show US-XXX` — when mapping to an existing spec
-4. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec
-5. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on existing spec
-6. Read PRD when severity, scope, or **requirement gap** is unclear
-7. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”)
+2. `php artisan larapilot:diagnostics` — optional runtime snapshot (status, health checks, redacted log tail); also via MCP `diagnostics` or `GET /larapilot/api/diagnostics` when the dashboard is browsable
+3. `php artisan larapilot:spec-list`
+4. `php artisan larapilot:spec-show US-XXX` — when mapping to an existing spec
+5. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec
+6. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on existing spec
+7. Read PRD when severity, scope, or **requirement gap** is unclear
+8. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”)
 
 Append normalized intake to `{paths.support}/intake.md` (create parent dirs if needed).
 
@@ -48,7 +49,7 @@ Append normalized intake to `{paths.support}/intake.md` (create parent dirs if n
 
 ### 0. Context load
 
-Run `config-show` and `spec-list`. Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
+Run `config-show` and `spec-list`. When the report mentions production/staging errors, stack traces, or “check the logs”, run `larapilot:diagnostics` (or MCP diagnostics) and cite relevant redacted lines in intake — do not paste secrets. Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
 
 Restate the bug in one line; ask for missing reproduce info only when essential.
 

@@ -28,6 +28,7 @@ class RunArtisanTool extends Tool
         'larapilot:validate-spec',
         'larapilot:validate-plan',
         'larapilot:doctor',
+        'larapilot:diagnostics',
     ];
 
     public function handle(Request $request): Response

@@ -81,6 +81,7 @@ When the dashboard is browsable (never in production):
 
 - **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
+- **`GET /larapilot/api/diagnostics`** — read-only app status, health checks, and redacted log tail for bug triage (also `php artisan larapilot:diagnostics` / MCP)
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
 Workflow **state** still changes only via skills or Artisan — not from the dashboard or API.

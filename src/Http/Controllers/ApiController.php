@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\SpecService;
@@ -22,6 +23,7 @@ class ApiController
         protected OpenApiService $openApi,
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
+        protected DiagnosticsService $diagnostics,
     ) {}
 
     public function board(): JsonResponse
@@ -118,6 +120,23 @@ class ApiController
         }
 
         return response()->json($data);
+    }
+
+    public function diagnostics(Request $request): JsonResponse
+    {
+        $this->guard();
+
+        if (! (bool) config('larapilot.diagnostics.enabled', true)) {
+            abort(404);
+        }
+
+        $lines = $request->query('lines');
+        $includeLogs = ! $request->boolean('no_logs');
+
+        return response()->json($this->diagnostics->snapshot(
+            is_numeric($lines) ? (int) $lines : null,
+            $includeLogs,
+        ));
     }
 
     public function openapi(Request $request): JsonResponse

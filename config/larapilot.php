@@ -35,6 +35,12 @@ return [
         'enabled' => env('LARAPILOT_COMMENTS_ENABLED', true),
     ],
 
+    'diagnostics' => [
+        'enabled' => env('LARAPILOT_DIAGNOSTICS_ENABLED', true),
+        'default_log_lines' => (int) env('LARAPILOT_DIAGNOSTICS_LOG_LINES', 100),
+        'max_log_lines' => (int) env('LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES', 500),
+    ],
+
     'mockups_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockups',

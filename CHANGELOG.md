@@ -2,6 +2,15 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **`larapilot:diagnostics`** — read-only runtime snapshot (app status, health checks, redacted Laravel log tail) for bug triage.
+- **MCP `diagnostics` tool** — same snapshot for editors; also allowed via `RunArtisanTool` as `larapilot:diagnostics`.
+- **`GET /larapilot/api/diagnostics`** — JSON diagnostics when the dashboard is browsable (never in production); OpenAPI updated.
+- **`/larapilot-bug` + shared-runtime** — optional diagnostics step during bug intake.
+
 ## [1.9.1] - 2026-07-21
 
 ### Changed
