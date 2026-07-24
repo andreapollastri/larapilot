@@ -30,13 +30,15 @@
       --display: "Space Grotesk", var(--sans);
       --max: 1120px;
       --docs-sidebar: 210px;
+      /* Sticky top nav clearance for in-page anchors (hash links / TOC) */
+      --docs-anchor-offset: 7rem;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 5rem;
+      scroll-padding-top: var(--docs-anchor-offset);
     }
 
     body {
@@ -390,12 +392,12 @@
 
     .docs-nav {
       position: sticky;
-      top: 5rem;
+      top: var(--docs-anchor-offset);
       align-self: start;
       display: flex;
       flex-direction: column;
       gap: 0.1rem;
-      max-height: calc(100vh - 6rem);
+      max-height: calc(100vh - var(--docs-anchor-offset) - 1rem);
       overflow-y: auto;
       padding-right: 0.25rem;
     }
@@ -966,7 +968,7 @@
       margin-top: 2.5rem;
       padding-top: 1.75rem;
       border-top: 1px solid var(--line);
-      scroll-margin-top: 5rem;
+      scroll-margin-top: var(--docs-anchor-offset);
     }
 
     .deep-dive-sub > h3 { margin-top: 0; }
@@ -1063,10 +1065,11 @@
       margin: 0 0 0.45rem;
     }
 
+    .doc-section,
     .example-block,
     .deep-dive-sub,
     .example-appendix {
-      scroll-margin-top: 5rem;
+      scroll-margin-top: var(--docs-anchor-offset);
     }
 
     .walkthrough-grid h3,
@@ -1906,8 +1909,10 @@ body: |
             <pre><code>/larapilot-bug "SSO login fails on Safari"</code></pre>
           </div>
 
-          <p>Sophia triages with AskQuestion, logs to <code>support/intake.md</code>. For production/staging errors she
-            may pull <a href="#deep-dive-api-diagnostics">diagnostics</a> (status + redacted log tail) before routing.
+          <p>Sophia triages with AskQuestion, logs to <code>support/intake.md</code>. Because the environment is
+            <strong>Production</strong> (or staging) and the report mentions login errors, she pulls a
+            <a href="#deep-dive-api-diagnostics">diagnostics</a> snapshot before routing — status, health checks, and a
+            <strong>redacted</strong> log tail. Secrets never land in chat or intake.
           </p>
 
           <div class="chat-example">
@@ -1923,6 +1928,17 @@ body: |
             </div>
             <p><em>You pick:</em> <strong>High</strong>, <strong>Production</strong>, <strong>Unsure</strong>
               (auth boundary — Lars will review).</p>
+            <p><span class="speaker">🎧 Sophia:</span> Production auth failure — pulling diagnostics (redacted logs)
+              before we route.</p>
+            <div class="code-block">
+              <div class="code-block-header">Agent — diagnostics (any of these)</div>
+              <pre><code>php artisan larapilot:diagnostics --lines=80
+# or MCP diagnostics tool
+# or GET /larapilot/api/diagnostics?lines=80   (dev/staging only)</code></pre>
+            </div>
+            <p><span class="speaker">🎧 Sophia:</span> Checks look healthy (<code>database</code> /
+              <code>storage_writable</code> ok). Log tail shows OAuth callback noise — cookies/state look suspicious;
+              no secrets in the redacted lines. Citing that in intake.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (reproduction)</strong>
               <ol>
@@ -1946,7 +1962,34 @@ body: |
             <p><span class="speaker">🔎 Tom:</span> Steps to reproduce documented for the rework payload.</p>
           </div>
 
-          <p>Sophia appends a normalized entry to the support log:</p>
+          <div class="code-block">
+            <div class="code-block-header">GET /larapilot/api/diagnostics?lines=80 (excerpt)</div>
+            <pre><code>{
+  "collected_at": "2026-07-15T09:12:00+00:00",
+  "app": { "env": "local", "laravel_version": "13.x", "…" : "…" },
+  "checks": {
+    "storage_writable": { "ok": true, "detail": "…" },
+    "database": { "ok": true, "detail": "…" },
+    "…" : "…"
+  },
+  "healthy": true,
+  "logs": {
+    "redacted": true,
+    "entries": [
+      "[2026-07-15] local.ERROR: Socialite callback failed … cookie=… [REDACTED]",
+      "[2026-07-15] local.WARNING: OAuth state mismatch for Safari UA …"
+    ]
+  }
+}</code></pre>
+          </div>
+          <p>Same payload via <code>php artisan larapilot:diagnostics</code> (CLI envelope) or the MCP
+            <code>diagnostics</code> tool. API only where the dashboard is browsable — never in production; use CLI/MCP
+            against a staging/local app that can reproduce, or export logs carefully. Toggle with
+            <code>LARAPILOT_DIAGNOSTICS_ENABLED</code>. Full reference:
+            <a href="#deep-dive-api-diagnostics">Diagnostics</a>.
+          </p>
+
+          <p>Sophia appends a normalized entry to the support log (including a short diagnostics note):</p>
 
           <div class="code-block">
             <div class="code-block-header">.larapilot/docs/support/intake.md (excerpt)</div>
@@ -1956,13 +1999,14 @@ body: |
 - **Severity:** High
 - **Environment:** Production
 - **Summary:** SSO login fails on Safari; works on Chrome
+- **Diagnostics:** healthy=true; log tail (redacted) shows OAuth state/cookie mismatch on Safari UA
 - **Steps to reproduce:**
   1. Open app in Safari 17+
   2. Click "Sign in with Google"
   3. Complete OAuth — redirect returns to /login with error
 - **Expected / Actual:** Expected dashboard · Actual login error
 - **Affected spec:** US-003
-- **Routed to:** rework on US-003 via <code>/larapilot-bug</code>
+- **Routed to:** rework on US-003 via /larapilot-bug
 - **Security:** unsure — Lars/Oliver tagged</code></pre>
           </div>
 
@@ -1975,6 +2019,7 @@ body: |
 **Severity:** High
 **Steps to reproduce:** Safari 17+ → Sign in with Google → redirect error
 **Expected / Actual:** Dashboard vs login error
+**Diagnostics note:** redacted log tail pointed at OAuth state / SameSite cookie on Safari
 
 **Additional acceptance criteria:**
 - [ ] SSO login succeeds on Safari 17+ (macOS and iOS)
@@ -1991,11 +2036,12 @@ body: |
           <dl class="walkthrough-grid">
             <div>
               <dt>You do</dt>
-              <dd>Describe the defect in one line; answer triage wizard; add reproduce steps if asked in chat</dd>
+              <dd>Describe the defect; answer triage wizard; allow diagnostics on staging/local when asked</dd>
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd>Writes <code>support/intake.md</code>; routes rework or creates a fix spec</dd>
+              <dd>Runs diagnostics (CLI / MCP / API); cites redacted evidence in
+                <code>support/intake.md</code>; routes rework or fix spec</dd>
             </div>
             <div>
               <dt>Next step</dt>
@@ -2297,7 +2343,8 @@ companion-sync.md        ← when/how you last synced</code></pre>
                 <tr>
                   <td>2. Interview</td>
                   <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
-                  <td>Sophia + Tom — severity, env, security, routing (3 rounds)</td>
+                  <td>Sophia + Tom — severity, env, security, routing (3 rounds); diagnostics when
+                    prod/staging/logs</td>
                 </tr>
                 <tr>
                   <td>3. Persist</td>
@@ -3951,17 +3998,80 @@ companion-sync.md        ← when/how you last synced</code></pre>
         ...document.querySelectorAll(".docs-main section[id], .docs-main article[id]")
       ];
       const tocLinks = [...document.querySelectorAll(".docs-nav a")];
+
+      const anchorOffsetPx = () => {
+        const raw = getComputedStyle(document.documentElement)
+          .getPropertyValue("--docs-anchor-offset")
+          .trim();
+        const probe = document.createElement("div");
+        probe.style.cssText = "position:absolute;visibility:hidden;height:" + raw;
+        document.body.appendChild(probe);
+        const px = probe.getBoundingClientRect().height || 112;
+        probe.remove();
+        return px;
+      };
+
+      const sectionTop = (el) => el.getBoundingClientRect().top + window.scrollY;
+
       const setActive = () => {
-        const y = window.scrollY + 120;
+        const y = window.scrollY + anchorOffsetPx() + 12;
         let current = sections[0]?.id;
         for (const s of sections) {
-          if (s.offsetTop <= y) current = s.id;
+          if (sectionTop(s) <= y) current = s.id;
         }
         tocLinks.forEach((a) => {
           a.classList.toggle("active", a.getAttribute("href") === "#" + current);
         });
       };
+
+      const scrollToHash = (behavior) => {
+        const id = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        const top = Math.max(0, sectionTop(el) - anchorOffsetPx());
+        window.scrollTo({ top, behavior: behavior || "auto" });
+        setActive();
+      };
+
       window.addEventListener("scroll", setActive, { passive: true });
+      window.addEventListener("hashchange", () => scrollToHash("smooth"));
+
+      tocLinks.forEach((a) => {
+        a.addEventListener("click", (event) => {
+          const href = a.getAttribute("href") || "";
+          if (!href.startsWith("#") || href.length < 2) return;
+          const id = decodeURIComponent(href.slice(1));
+          if (!document.getElementById(id)) return;
+          event.preventDefault();
+          if (location.hash !== href) {
+            history.pushState(null, "", href);
+          }
+          scrollToHash("smooth");
+        });
+      });
+
+      // Example cards + in-content hash links (same offset as TOC)
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        if (tocLinks.includes(a)) return;
+        a.addEventListener("click", (event) => {
+          const href = a.getAttribute("href") || "";
+          if (!href.startsWith("#") || href.length < 2 || href === "#") return;
+          const id = decodeURIComponent(href.slice(1));
+          if (!document.getElementById(id)) return;
+          event.preventDefault();
+          if (location.hash !== href) {
+            history.pushState(null, "", href);
+          }
+          scrollToHash("smooth");
+        });
+      });
+
+      // Re-apply after layout/fonts so deep links clear the sticky nav
+      if (location.hash) {
+        requestAnimationFrame(() => scrollToHash("auto"));
+        window.addEventListener("load", () => scrollToHash("auto"), { once: true });
+      }
       setActive();
 
       const el = document.getElementById("hero-terminal");
