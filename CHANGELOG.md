@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.1.1] - 2026-07-26
+
+### Changed
+
+- **`larapilot-settings` AskQuestion copy** — prompts and option labels spell out trade-offs instead of cryptic one-liners (especially backlog: same FR coverage, different slicing — journey vs capability vs per-FR). Effort, git mode, testing, and auto-approve labels clarified the same way.
+
 ## [2.1.0] - 2026-07-26
 
 ### Added

@@ -46,49 +46,65 @@ If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` 
 ### 1. AskQuestion (Zoey — max 3 per round)
 
 Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the **current** value in each prompt when known.
+Copy the **AskQuestion prompt** and **option labels** below as closely as possible — do **not** invent shorter cryptic labels.
 
 **Round 1 — Effort, Backlog, Git**
 
 **1. Effort** — how hard Larapilot works (tokens & depth)
 
-| Option | Meaning |
-| --- | --- |
-| `ECO` | Few tokens, reduced functionality — **no sub-agents**, **defer docs** (no README/PDF/diagrams; **OpenAPI still updated** when APIs change), skip deep checks, heavy reviews, E2E, optional research |
-| `STANDARD` | Normal current behavior (**default**) |
-| `MAX` | Treat every process/flow as **deep** — fuller persona rounds, deeper review, richer plans |
+- **AskQuestion prompt:** `Effort (current: {VALUE}) — how deep should Larapilot work?`
+- **Chat framing (one line):** Zoey — tokens vs thoroughness.
 
-**2. Backlog** — Mark's granularity bar for specs & epics (`larapilot-spec` / `feature` / `bug`)
-
-| Option | Meaning |
+| Option id | AskQuestion label |
 | --- | --- |
-| `LEAN` | Fewest specs: one per end-to-end journey, related FRs merged and cited; seams/i18n/admin entities always plan tasks; ≤ 5 epics |
-| `STANDARD` | One spec per demonstrable capability; related FRs may share a spec; Laravel seams become plan tasks; reuse epics (**default**) |
-| `GRANULAR` | Fine-grained: one spec per FR allowed; seam / per-entity / per-locale splits allowed; multi-epic backlog expected |
+| `ECO` | `ECO — save tokens: no sub-agents, lighter docs (OpenAPI still when APIs change), skip deep/E2E` |
+| `STANDARD` | `STANDARD — normal depth (default)` |
+| `MAX` | `MAX — deep on every flow: fuller personas, sub-agents, richer plans/reviews` |
+
+**2. Backlog** — how finely Mark slices the product into specs & epics (`larapilot-spec` / `feature` / `bug`)
+
+- **AskQuestion prompt:** `Backlog granularity (current: {VALUE}) — how many specs for the same product scope? (coverage stays the same; only slicing changes)`
+- **Chat framing (one line):** 💎 Mark — same FRs either way; this only controls how many US-XXX files and epics you get.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `LEAN` | `LEAN — fewest specs: one per end-to-end journey; merge related FRs; seams/admin/i18n stay plan tasks; ≤ 5 epics` |
+| `STANDARD` | `STANDARD — one spec per user capability (default); related FRs may share a spec; models/UI/API are plan tasks, not separate specs` |
+| `GRANULAR` | `GRANULAR — fine-grained: one spec per FR OK; split by seam / admin entity / locale; more epics — for large teams or one-PR-per-spec` |
 
 **3. Git mode** — branching & remote discipline
 
-| Option | Meaning |
+- **AskQuestion prompt:** `Git mode (current: {VALUE}) — branching and push behavior`
+- **Chat framing (one line):** 🚀 Jack — push/PR remote updates only with `GITFLOW_PUSH`.
+
+| Option id | AskQuestion label |
 | --- | --- |
-| `NO_GITFLOW` | No Gitflow — work on the current branch; no feature-branch/PR ceremony |
-| `GITFLOW` | Gitflow locally: `feature/US-XXX-*`, atomic commits, PR prepared — **no automatic push** (**default**) |
-| `GITFLOW_PUSH` | Full Gitflow **including** push + open/update internal PR toward `develop` after each task |
+| `NO_GITFLOW` | `NO_GITFLOW — stay on current branch; commits only, no feature-branch/PR ceremony` |
+| `GITFLOW` | `GITFLOW — feature/US-XXX-* + atomic commits + PR prepared locally; no auto-push (default)` |
+| `GITFLOW_PUSH` | `GITFLOW_PUSH — same as GITFLOW, plus push and open/update PR toward develop after each task` |
 
 **Round 2 — Testing, Auto-approve**
 
 **4. Testing** — Anne's bar for plan/implement/review
 
-| Option | Meaning |
+- **AskQuestion prompt:** `Testing (current: {VALUE}) — how deep should automated tests go?`
+- **Chat framing (one line):** 🧪 Anne — browser/E2E only in `BEST`.
+
+| Option id | AskQuestion label |
 | --- | --- |
-| `MINIMAL` | Minimal Pest/PHPUnit for critical paths only — no Playwright, Dusk, browser E2E, viewport matrix |
-| `NORMAL` | Standard feature/unit/policy/API tests + review evidence — **no** Playwright/Dusk/E2E (**default**) |
-| `BEST` | All imaginable automated coverage — browser/E2E, Playwright or Dusk, viewport matrix, axe, Lighthouse when applicable |
+| `MINIMAL` | `MINIMAL — critical-path Pest/PHPUnit only; no browser/E2E` |
+| `NORMAL` | `NORMAL — feature/unit/policy/API tests + review evidence; no Playwright/Dusk/E2E (default)` |
+| `BEST` | `BEST — full automation: E2E (Playwright/Dusk), viewport matrix, axe, Lighthouse when applicable` |
 
 **5. Auto-approve** — skip the human DONE gate after implement (mainly `/larapilot-autopilot`)
 
-| Option | Meaning |
+- **AskQuestion prompt:** `Auto-approve (current: {VALUE}) — may autopilot mark specs DONE without your Approve?`
+- **Chat framing (one line):** 🛡️ Robert — `YES` bypasses the usual human DONE gate.
+
+| Option id | AskQuestion label |
 | --- | --- |
-| `NO` | Human gate required — stop at `REVIEW`; `/larapilot-review` waits for Approve / Request changes (**default**) |
-| `YES` | After implement reaches `REVIEW`, autopilot may present a short checklist and call `spec-approve` without waiting for a human verdict |
+| `NO` | `NO — always wait for human Approve / Request changes (default)` |
+| `YES` | `YES — after implement reaches REVIEW, autopilot may spec-approve from a short checklist` |
 
 Warn once when the user picks `YES`: this bypasses the usual human-in-the-loop DONE gate.
 
