@@ -11,6 +11,7 @@ class SettingsSetCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:settings-set
                             {--effort= : Effort mode: ECO, STANDARD, or MAX}
+                            {--backlog= : Backlog granularity: LEAN, STANDARD, or GRANULAR}
                             {--git-mode= : Git mode: NO_GITFLOW, GITFLOW, or GITFLOW_PUSH}
                             {--testing= : Testing mode: MINIMAL, NORMAL, or BEST}
                             {--auto-approve= : Auto-approve after implement: YES or NO}';
@@ -32,6 +33,19 @@ class SettingsSetCommand extends LarapilotCommand
                 );
             }
             $partial['effort'] = $effort;
+        }
+
+        $backlog = $this->normalizeOption('backlog');
+        if ($backlog !== null) {
+            if (! in_array($backlog, $config->allowedBacklogModes(), true)) {
+                return $this->failure(
+                    'E_INVALID_INPUT',
+                    "Invalid --backlog value: {$backlog}.",
+                    $this->exitForCode('E_INVALID_INPUT'),
+                    'Allowed: '.implode(', ', $config->allowedBacklogModes()).'.'
+                );
+            }
+            $partial['backlog'] = $backlog;
         }
 
         $gitMode = $this->normalizeOption('git-mode');
@@ -76,7 +90,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --git-mode, --testing, or --auto-approve.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, or --auto-approve.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

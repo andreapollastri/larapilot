@@ -11,6 +11,7 @@ return [
 
     'settings' => [
         'effort' => 'STANDARD',
+        'backlog' => 'STANDARD',
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
         'auto_approve' => false,

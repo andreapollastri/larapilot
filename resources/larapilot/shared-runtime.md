@@ -39,11 +39,11 @@ Common rules:
     - `4`: missing precondition
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `php artisan larapilot:config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `git_mode`, `testing`, `auto_approve`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: **`STANDARD` / `GITFLOW` / `NORMAL` / `NO`**.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: NO`.
 
 ### Effort (`settings.effort`)
 
@@ -56,6 +56,18 @@ Controls token economy and process depth across all skills.
 | **`MAX`** | **Deep** mode on every process and flow. Prefer thorough persona rounds, always run optional explore/review sub-agents when the editor supports them, expand plan/test strategy, and surface residual risks. Treat "optional" research and verification as in-scope unless the user waives them. |
 
 Zoey may remind the team once per skill when `effort` is `ECO` or `MAX`. Do not narrate the setting on every message.
+
+### Backlog granularity (`settings.backlog`)
+
+Controls how many specs and epics `larapilot-spec` / `larapilot-feature` / `larapilot-bug` create for the same PRD scope. It changes **spec cardinality only** — never coverage: deferred/merged scope must stay traceable via `FR-XXX` citations in spec bodies and plan tasks. MoSCoW × delivery target still decides *what* enters the backlog; `backlog` decides *how finely* it is sliced.
+
+| Value | Behavior |
+| --- | --- |
+| **`LEAN`** | Fewest possible specs: one spec per **end-to-end user journey**, merging all related FRs into it (each cited as `Traces to: FR-XXX, FR-YYY`). Technical seams, per-entity admin resources, and per-locale i18n work are **always plan tasks**, never separate specs. Single epic per product area; target ≤ 5 epics total. |
+| **`STANDARD`** | One spec per **demonstrable user capability** (**default**). Closely related FRs may share a spec when they are demonstrated together. Laravel seams (models, controllers, policies, UI, API resources) become **plan tasks** inside the spec — split into separate specs only when a seam is independently demonstrable to a user *and* likely to ship separately. Reuse existing epics; new epic only for a genuinely new product area (guideline: 5–8 epics per product). |
+| **`GRANULAR`** | Fine-grained backlog: one spec per FR is acceptable; splitting along Laravel seams, Filament resource-per-entity, and i18n per-locale is allowed when it aids parallelization or review. Multi-epic backlog expected. Use for large teams or when specs map to individual PR assignments. |
+
+**Epic consolidation (all values):** before proposing a new `EP-XXX`, read existing epics from `spec-list` and reuse the closest match. Create a new epic only when no existing epic reasonably covers the product area — never one epic per spec, and never duplicate an existing epic under a new title. Maintenance/fix specs reuse the existing Maintenance epic when present.
 
 ### Git mode (`settings.git_mode`)
 
@@ -416,7 +428,7 @@ During **`larapilot-inception`**, Mark asks the user to choose a **delivery targ
 | ---------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **MVP**          | Smallest demonstrable slice to validate the core hypothesis                  | `larapilot-spec` creates a lean backlog; defer non-essential FRs explicitly  |
 | **V1 Complete**  | Polished first release: core journey + essential secondary features          | Broader backlog than MVP; still bounded to a shippable V1                    |
-| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts         | `larapilot-spec` covers all FRs; multi-epic backlog is expected              |
+| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts         | `larapilot-spec` covers all FRs; spec/epic count follows `settings.backlog` (journey-level specs citing multiple FRs under `LEAN`/`STANDARD`) |
 | **Enterprise**   | Full product plus compliance, integrations, scale, and operational readiness | Same breadth as Full Product, with enterprise-grade NFRs and launch criteria |
 
 Rules for all skills:

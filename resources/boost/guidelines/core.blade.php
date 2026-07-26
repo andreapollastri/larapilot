@@ -9,6 +9,7 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 | Key | Default | Values |
 | --- | --- | --- |
 | `effort` | `STANDARD` | `ECO` (token economy — **never spawn sub-agents**; **defer docs except OpenAPI**; skip deep reviews/E2E) · `STANDARD` · `MAX` (deep every flow) |
+| `backlog` | `STANDARD` | `LEAN` (fewest specs — one per journey, FRs merged, seams as plan tasks, ≤ 5 epics) · `STANDARD` (one spec per demonstrable capability; seams as plan tasks; reuse epics) · `GRANULAR` (one spec per FR / seam splits allowed; multi-epic expected) |
 | `git_mode` | `GITFLOW` | `NO_GITFLOW` · `GITFLOW` (no auto-push) · `GITFLOW_PUSH` (push + internal PR after each task) |
 | `testing` | `NORMAL` | `MINIMAL` · `NORMAL` (no Playwright/E2E) · `BEST` (full browser/E2E/viewport bar) |
 | `auto_approve` | `NO` | `NO` (human DONE gate) · `YES` (autopilot may `spec-approve` after implement) |
@@ -52,7 +53,7 @@ Use Larapilot skills when the user wants to:
 | Implementation | `larapilot-implement` | Code, tests, review notes |
 | Acceptance | `larapilot-review` | DONE or rework feedback |
 | Ship (optional) | `larapilot-ship` | Security assessment + multi-platform deploy + web launch checks |
-| Settings | `larapilot-settings` | Persist `effort` / `git_mode` / `testing` in `.larapilot/config.yaml` |
+| Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` in `.larapilot/config.yaml` |
 
 ### Installation
 

@@ -2,6 +2,19 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.1.0] - 2026-07-26
+
+### Added
+
+- **`settings.backlog`** — `LEAN` | `STANDARD` | `GRANULAR` (default `STANDARD`): explicit control over spec/epic granularity in `larapilot-spec`, `larapilot-feature`, and `larapilot-bug`. Exposed on `config-show` as `data.settings.backlog`; persisted via `/larapilot-settings` or `larapilot:settings-set --backlog=…`.
+- **Epic consolidation rule (shared runtime)** — reuse existing epics from `spec-list` before proposing a new `EP-XXX`; new epic only for a genuinely new product area (guideline: 5–8 epics per product); fix specs reuse the existing Maintenance epic.
+
+### Changed
+
+- **Backlog granularity defaults** — specs are now **journey-level by default**: one spec per demonstrable user capability, with related FRs merged (each cited as `Traces to: FR-XXX`) and Laravel seams (models, controllers, policies, UI, API resources) planned as `TASK-NN` in `/larapilot-plan` instead of separate specs. The previous fine-grained behavior (one spec per FR, seam / Filament per-entity / i18n per-locale splits) remains available via `settings.backlog: GRANULAR`.
+- **Full Product / Enterprise bootstrap** — still covers every FR, but spec count follows `settings.backlog` instead of the fixed "one spec per FR; multi-epic backlog expected" rule.
+- **`larapilot-settings`** — new Backlog question (Mark) in Round 1; Testing and Auto-approve move to Round 2.
+
 ## [2.0.0] - 2026-07-24
 
 ### Added

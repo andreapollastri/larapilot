@@ -310,6 +310,7 @@ it('installs default project settings into config.yaml', function (): void {
     $yaml = file_get_contents(base_path('.larapilot/config.yaml'));
 
     expect($yaml)->toContain('effort: STANDARD')
+        ->and($yaml)->toContain('backlog: STANDARD')
         ->and($yaml)->toContain('git_mode: GITFLOW')
         ->and($yaml)->toContain('testing: NORMAL')
         ->and($yaml)->toContain('auto_approve: false');
@@ -320,6 +321,7 @@ it('persists project settings via settings-set', function (): void {
 
     $this->artisan('larapilot:settings-set', [
         '--effort' => 'ECO',
+        '--backlog' => 'LEAN',
         '--git-mode' => 'GITFLOW_PUSH',
         '--testing' => 'BEST',
         '--auto-approve' => 'YES',
@@ -329,6 +331,7 @@ it('persists project settings via settings-set', function (): void {
 
     expect($settings)->toBe([
         'effort' => 'ECO',
+        'backlog' => 'LEAN',
         'git_mode' => 'GITFLOW_PUSH',
         'testing' => 'BEST',
         'auto_approve' => 'YES',
@@ -357,6 +360,10 @@ it('rejects invalid settings-set values', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
     $this->artisan('larapilot:settings-set', ['--effort' => 'TURBO'])
+        ->assertExitCode(2)
+        ->expectsOutputToContain('E_INVALID_INPUT');
+
+    $this->artisan('larapilot:settings-set', ['--backlog' => 'HUGE'])
         ->assertExitCode(2)
         ->expectsOutputToContain('E_INVALID_INPUT');
 

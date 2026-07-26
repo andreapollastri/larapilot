@@ -75,6 +75,7 @@ it('exposes default project settings and updates them', function (): void {
 
     expect($config->settings())->toBe([
         'effort' => 'STANDARD',
+        'backlog' => 'STANDARD',
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
         'auto_approve' => 'NO',
@@ -82,11 +83,13 @@ it('exposes default project settings and updates them', function (): void {
 
     $updated = $config->updateSettings([
         'effort' => 'MAX',
+        'backlog' => 'GRANULAR',
         'git_mode' => 'NO_GITFLOW',
         'auto_approve' => 'YES',
     ]);
 
     expect($updated['effort'])->toBe('MAX')
+        ->and($updated['backlog'])->toBe('GRANULAR')
         ->and($updated['git_mode'])->toBe('NO_GITFLOW')
         ->and($updated['testing'])->toBe('NORMAL')
         ->and($updated['auto_approve'])->toBe('YES')

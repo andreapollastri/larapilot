@@ -94,7 +94,7 @@ class ConfigService
      * Agent-facing settings. `auto_approve` is always the string YES|NO
      * (YAML stores a boolean — YES/NO are YAML 1.1 bool tokens).
      *
-     * @return array{effort: string, git_mode: string, testing: string, auto_approve: string}
+     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: string}
      */
     public function settings(): array
     {
@@ -104,6 +104,7 @@ class ConfigService
 
         return [
             'effort' => (string) $merged['effort'],
+            'backlog' => (string) $merged['backlog'],
             'git_mode' => (string) $merged['git_mode'],
             'testing' => (string) $merged['testing'],
             'auto_approve' => $this->normalizeAutoApprove($merged['auto_approve'] ?? false),
@@ -111,7 +112,7 @@ class ConfigService
     }
 
     /**
-     * @return array{effort: string, git_mode: string, testing: string, auto_approve: bool}
+     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: bool}
      */
     public function defaultSettings(): array
     {
@@ -119,6 +120,7 @@ class ConfigService
 
         return [
             'effort' => (string) ($defaults['effort'] ?? 'STANDARD'),
+            'backlog' => (string) ($defaults['backlog'] ?? 'STANDARD'),
             'git_mode' => (string) ($defaults['git_mode'] ?? 'GITFLOW'),
             'testing' => (string) ($defaults['testing'] ?? 'NORMAL'),
             'auto_approve' => $this->autoApproveToBool($defaults['auto_approve'] ?? false),
@@ -130,7 +132,7 @@ class ConfigService
      * wiping unrelated top-level keys the user may have added.
      *
      * @param  array<string, string|bool>  $partial
-     * @return array{effort: string, git_mode: string, testing: string, auto_approve: string}
+     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: string}
      */
     public function updateSettings(array $partial): array
     {
@@ -196,6 +198,14 @@ class ConfigService
     public function allowedEfforts(): array
     {
         return ['ECO', 'STANDARD', 'MAX'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedBacklogModes(): array
+    {
+        return ['LEAN', 'STANDARD', 'GRANULAR'];
     }
 
     /**

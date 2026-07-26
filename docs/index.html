@@ -1224,7 +1224,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.0.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.1.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1368,7 +1368,8 @@
           </p>
         </div>
 
-        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>git mode</strong>,
+        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog
+            granularity</strong>, <strong>git mode</strong>,
           <strong>testing</strong>, <strong>auto-approve</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
           <code>BEST</code>. <a href="#deep-dive-settings">Settings reference</a> · <a href="#deep-dive-gitflow">Branch
@@ -2650,7 +2651,8 @@ companion-sync.md        ← when/how you last synced</code></pre>
               <span class="skill-badge">config</span>
               <div class="skill-body">
                 <h3><code>/larapilot-settings</code></h3>
-                <p>AskQuestion for persistent project settings — effort, git mode, testing, auto-approve. Written to
+                <p>AskQuestion for persistent project settings — effort, backlog granularity, git mode, testing,
+                  auto-approve. Written to
                   <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
@@ -2664,18 +2666,20 @@ companion-sync.md        ← when/how you last synced</code></pre>
         <!-- Project settings -->
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
-          <p class="lead">Persistent modes for how hard Larapilot works, how Git is handled, how deep tests go, and
+          <p class="lead">Persistent modes for how hard Larapilot works, how finely the backlog is sliced into specs
+            and epics, how Git is handled, how deep tests go, and
             whether DONE can skip the human gate. Configure with <code>/larapilot-settings</code> (AskQuestion). Values
             live under <code>settings:</code> in <code>.larapilot/config.yaml</code>. Every skill reads and honors them
             via <code>config-show</code>.</p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --git-mode=… --testing=… --auto-approve=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for auto-approve; YAML stores a boolean).
           </p>
 
-          <p>Defaults when unset: <code>effort: STANDARD</code> · <code>git_mode: GITFLOW</code> ·
+          <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
+            <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code>.
           </p>
 
@@ -2706,6 +2710,40 @@ companion-sync.md        ← when/how you last synced</code></pre>
               </tbody>
             </table>
           </div>
+
+          <h4 id="deep-dive-backlog">Backlog granularity</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>LEAN</code></td>
+                  <td>Fewest specs — one per end-to-end user journey, related FRs merged (each cited as
+                    <code>Traces to: FR-XXX</code>); technical seams, admin entities, and i18n locales are always plan
+                    tasks; ≤ 5 epics per product</td>
+                </tr>
+                <tr>
+                  <td><code>STANDARD</code></td>
+                  <td>One spec per demonstrable user capability (<strong>default</strong>) — closely related FRs may
+                    share a spec; Laravel seams (models, controllers, policies, UI, API resources) become plan tasks;
+                    reuse existing epics</td>
+                </tr>
+                <tr>
+                  <td><code>GRANULAR</code></td>
+                  <td>Fine-grained — one spec per FR allowed; seam / Filament per-entity / i18n per-locale splits
+                    allowed; multi-epic backlog expected. For large teams or spec-per-PR workflows</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Granularity changes spec cardinality only — never coverage: merged scope stays traceable via
+            <code>FR-XXX</code> citations in spec bodies and plan tasks. Epics are always consolidated: reuse existing
+            <code>EP-XXX</code> before proposing a new one.</p>
 
           <h4 id="deep-dive-git-mode">Git mode</h4>
           <div class="table-card">
@@ -2798,6 +2836,7 @@ companion-sync.md        ← when/how you last synced</code></pre>
             <div class="code-block-header">CLI — persist settings</div>
             <pre><code>php artisan larapilot:settings-set \
   --effort=STANDARD \
+  --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
   --auto-approve=NO</code></pre>
@@ -3152,7 +3191,7 @@ companion-sync.md        ← when/how you last synced</code></pre>
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / testing /
+            ├── config.yaml <span class="comment"># connector, paths, settings (effort / backlog / git / testing /
               auto_approve)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
@@ -3187,7 +3226,7 @@ companion-sync.md        ← when/how you last synced</code></pre>
                 <tr>
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
-                  <td><code>effort</code>, <code>git_mode</code>, <code>testing</code>,
+                  <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
                     <code>auto_approve</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
                 </tr>

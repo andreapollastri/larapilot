@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, git mode, testing, auto-approve) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, Gitflow/push behavior, test depth, or auto-approve. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "gitflow push", "autoapprove".
+description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, or auto-approve. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove".
 ---
 
 # Larapilot — Project Settings
@@ -9,7 +9,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, git mode, testing, auto_approve).
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog granularity, git mode, testing, auto_approve).
 
 ## Output Economy
 
@@ -20,6 +20,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, git mode, 
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — frames trade-offs (tokens vs depth, human gate vs auto-approve) and confirms persistence |
+| 💎 **Mark** | Product Manager — owns backlog granularity implications (spec/epic count vs traceability) |
 | 🚀 **Jack** | DevOps — owns git_mode implications |
 | 🧪 **Anne** | Test Architect — owns testing mode implications |
 | 🛡️ **Robert** | Code Reviewer — owns auto_approve risk framing |
@@ -27,7 +28,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, git mode, 
 ## Config & CLI
 
 1. `php artisan larapilot:config-show` — read current `data.settings`
-2. After answers: `php artisan larapilot:settings-set --effort=… --git-mode=… --testing=… --auto-approve=…`
+2. After answers: `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=…`
 3. Re-run `config-show` and confirm the saved values
 
 Never edit `.larapilot/config.yaml` by hand from the skill — always use `larapilot:settings-set`.
@@ -38,7 +39,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · git_mode={…} · testing={…} · auto_approve={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -46,7 +47,7 @@ If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` 
 
 Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the **current** value in each prompt when known.
 
-**Round 1 — Effort, Git, Testing**
+**Round 1 — Effort, Backlog, Git**
 
 **1. Effort** — how hard Larapilot works (tokens & depth)
 
@@ -56,7 +57,15 @@ Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the *
 | `STANDARD` | Normal current behavior (**default**) |
 | `MAX` | Treat every process/flow as **deep** — fuller persona rounds, deeper review, richer plans |
 
-**2. Git mode** — branching & remote discipline
+**2. Backlog** — Mark's granularity bar for specs & epics (`larapilot-spec` / `feature` / `bug`)
+
+| Option | Meaning |
+| --- | --- |
+| `LEAN` | Fewest specs: one per end-to-end journey, related FRs merged and cited; seams/i18n/admin entities always plan tasks; ≤ 5 epics |
+| `STANDARD` | One spec per demonstrable capability; related FRs may share a spec; Laravel seams become plan tasks; reuse epics (**default**) |
+| `GRANULAR` | Fine-grained: one spec per FR allowed; seam / per-entity / per-locale splits allowed; multi-epic backlog expected |
+
+**3. Git mode** — branching & remote discipline
 
 | Option | Meaning |
 | --- | --- |
@@ -64,7 +73,9 @@ Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the *
 | `GITFLOW` | Gitflow locally: `feature/US-XXX-*`, atomic commits, PR prepared — **no automatic push** (**default**) |
 | `GITFLOW_PUSH` | Full Gitflow **including** push + open/update internal PR toward `develop` after each task |
 
-**3. Testing** — Anne's bar for plan/implement/review
+**Round 2 — Testing, Auto-approve**
+
+**4. Testing** — Anne's bar for plan/implement/review
 
 | Option | Meaning |
 | --- | --- |
@@ -72,9 +83,7 @@ Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the *
 | `NORMAL` | Standard feature/unit/policy/API tests + review evidence — **no** Playwright/Dusk/E2E (**default**) |
 | `BEST` | All imaginable automated coverage — browser/E2E, Playwright or Dusk, viewport matrix, axe, Lighthouse when applicable |
 
-**Round 2 — Auto-approve**
-
-**4. Auto-approve** — skip the human DONE gate after implement (mainly `/larapilot-autopilot`)
+**5. Auto-approve** — skip the human DONE gate after implement (mainly `/larapilot-autopilot`)
 
 | Option | Meaning |
 | --- | --- |
@@ -83,7 +92,7 @@ Use **AskQuestion**; persona intro in chat; options only in the tool. Mark the *
 
 Warn once when the user picks `YES`: this bypasses the usual human-in-the-loop DONE gate.
 
-Defaults when unset: `STANDARD` / `GITFLOW` / `NORMAL` / `NO`.  
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO`.  
 (`config.yaml` stores `auto_approve` as a boolean; `config-show` / CLI envelopes expose `YES` | `NO`.)
 
 ### 2. Persist
@@ -93,6 +102,7 @@ Map AskQuestion answers to CLI flags (normalize spaces/hyphens; `SI` → `YES`):
 ```bash
 php artisan larapilot:settings-set \
   --effort=STANDARD \
+  --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
   --auto-approve=NO
@@ -100,7 +110,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · git_mode=… · testing=… · auto_approve=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 ### 3. Next steps

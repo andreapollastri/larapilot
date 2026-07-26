@@ -67,14 +67,14 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 
 **Round 2 — Delivery shape** (Tom + Mark)
 
-- **Complexity signal:** small (1 spec) | medium (may split) | large (suggest epic breakdown)
+- **Complexity signal:** small (1 spec) | medium (may split) | large (suggest epic breakdown) — honor `settings.backlog` (see **Backlog granularity** in shared-runtime): under `LEAN`/`STANDARD` prefer one spec with richer plan tasks over splitting; split/epic breakdown mainly under `GRANULAR`
 - **Mockup first?** `Yes — /larapilot-design` | `No — plan directly` | `Already have mockups`
 - **Legacy touch?** `No` | `Maps to legacy parity row` | `Needs new legacy scraping/porting` _(Sabrine joins)_
 
 **Round 3 — Backlog placement** (Mark)
 
 - **Priority:** `CRITICAL` | `HIGH` | `MEDIUM` | `LOW` (default from MoSCoW: Must→HIGH, Should→MEDIUM, Could→LOW; compliance/security→CRITICAL)
-- **Epic:** existing epic code | new epic (propose title)
+- **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (see **Epic consolidation** in shared-runtime)
 - **Blocked by:** none | existing `US-XXX` (dependency)
 
 When **Sabrine** joins: confirm which legacy modules, DB tables, assets, or scraped content the feature depends on; update or cite parity rows — never drop legacy scope silently.

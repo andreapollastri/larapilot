@@ -125,6 +125,8 @@ When the user chose **Product requirement gap**:
 
 ### 4. Fix spec body (new bug)
 
+Reuse the existing **Maintenance** epic from `spec-list` when one exists — create it once, never a new epic per fix (see **Epic consolidation** in shared-runtime).
+
 ```yaml
 specs:
   - code: US-XXX
