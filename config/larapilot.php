@@ -36,6 +36,13 @@ return [
         'enabled' => env('LARAPILOT_COMMENTS_ENABLED', true),
     ],
 
+    'api' => [
+        // Optional shared token for the JSON API. When set, every request to
+        // /larapilot/api/* must send it as a bearer token or X-Larapilot-Token
+        // header. Strongly recommended on shared staging hosts.
+        'token' => env('LARAPILOT_API_TOKEN'),
+    ],
+
     'diagnostics' => [
         'enabled' => env('LARAPILOT_DIAGNOSTICS_ENABLED', true),
         'default_log_lines' => (int) env('LARAPILOT_DIAGNOSTICS_LOG_LINES', 100),

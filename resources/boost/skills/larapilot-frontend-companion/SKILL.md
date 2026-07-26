@@ -15,7 +15,7 @@ You keep an **external frontend repository** aligned with the **Laravel Larapilo
 
 ## Shared Runtime
 
-If this repo has `.larapilot/shared-runtime.md`, read **Frontend Topology**. Otherwise follow this skill and the mirrored PRD after sync.
+If this repo has `.larapilot/shared-runtime.md`, read the core; for **Frontend Topology** details also read `.larapilot/runtime-discovery.md` when present. Otherwise follow this skill and the mirrored PRD after sync.
 
 ## The Team (this phase)
 

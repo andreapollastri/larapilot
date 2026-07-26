@@ -11,7 +11,8 @@ use Larapilot\Support\SharedRuntime;
 class UpdateCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:update
-                            {--skip-boost : Refresh the shared runtime only, without republishing Boost guidelines and skills}';
+                            {--skip-boost : Refresh the shared runtime only, without republishing Boost guidelines and skills}
+                            {--preserve-design-systems : Keep the project design-systems folder untouched (customizations survive)}';
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + Boost guidelines and skills)';
 
@@ -26,8 +27,24 @@ class UpdateCommand extends LarapilotCommand
             );
         }
 
-        SharedRuntime::refresh();
+        $preserveDesignSystems = (bool) $this->option('preserve-design-systems');
+
+        SharedRuntime::refresh(! $preserveDesignSystems);
         $this->components->info('Larapilot docs refreshed (.larapilot/shared-runtime.md, .larapilot/task-templates.md).');
+
+        $preserveDesignSystems
+            ? $this->line('Design systems preserved (.larapilot/design-systems/ untouched).')
+            : $this->line('Design systems refreshed — local customizations in .larapilot/design-systems/ are overwritten. Use --preserve-design-systems to keep them.');
+
+        $missingSettings = $config->missingSettingKeys();
+
+        if ($missingSettings !== []) {
+            $this->components->warn(
+                'config.yaml is missing setting keys introduced by this version (defaults apply): '
+                .implode(', ', $missingSettings)
+                .'. Persist them with larapilot:settings-set.'
+            );
+        }
 
         if ($this->option('skip-boost')) {
             $this->line('Boost publishing skipped. Run php artisan boost:update to refresh guidelines and skills.');

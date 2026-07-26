@@ -7,6 +7,7 @@ use Larapilot\Services\SpecService;
 use Larapilot\Services\ValidationService;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\SpecCode;
+use Symfony\Component\Yaml\Yaml;
 
 it('rejects spec codes that could escape the data directory', function (): void {
     expect(SpecCode::isValid('US-001'))->toBeTrue()
@@ -223,4 +224,22 @@ it('writes files atomically, creating parent directories', function (): void {
 
     expect(file_get_contents($path))->toBe('replaced')
         ->and(glob(dirname($path).'/.*.tmp'))->toBe([]);
+});
+
+it('keeps summary titles aligned when a spec has no code', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $service = app(SpecService::class);
+    AtomicFile::write($service->backlogPath(), Yaml::dump([
+        'specs' => [
+            ['title' => 'Orphan without code', 'status' => 'TODO'],
+            ['code' => 'US-001', 'title' => 'Login', 'status' => 'TODO'],
+            ['code' => 'US-002', 'title' => 'Logout', 'status' => 'TODO'],
+        ],
+    ]));
+
+    $summary = $service->list()['summary'];
+
+    expect($summary['codes'])->toBe(['US-001', 'US-002'])
+        ->and($summary['titles'])->toBe(['US-001' => 'Login', 'US-002' => 'Logout']);
 });

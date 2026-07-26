@@ -3790,6 +3790,14 @@ companion-sync.md        ← when/how you last synced</code></pre>
             <code>404</code> in production or when disabled.
           </p>
 
+          <h4>Authentication</h4>
+          <p>Set <code>LARAPILOT_API_TOKEN</code> to require a shared token on every API request — send it as
+            <code>Authorization: Bearer &lt;token&gt;</code> or an <code>X-Larapilot-Token</code> header. Strongly
+            recommended on shared staging hosts. Without a token configured, read endpoints stay open in the allowed
+            environments, but write endpoints (<code>POST /comments</code>) are refused outside
+            local/development/testing.
+          </p>
+
           <h4>Endpoints</h4>
           <div class="table-card">
             <table>
@@ -3805,14 +3813,15 @@ companion-sync.md        ← when/how you last synced</code></pre>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/board</code></td>
                   <td>Metrics, status order, and specs grouped by workflow column — each spec includes
-                    <code>mockups.screens</code> (absolute preview URLs) and <code>feedback.entries</code>
+                    <code>mockups.screens</code> (absolute preview URLs) and a counts-only <code>feedback</code>
+                    summary
                   </td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress, mockup screens, feedback entries; optional <code>?status=TODO</code>
-                    filter</td>
+                  <td>All specs with task progress, mockup screens, and counts-only feedback summaries; optional
+                    <code>?status=TODO</code> filter</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Larapilot\Services\PlanService;
 use Larapilot\Tests\DisabledTestCase;
 use Larapilot\Tests\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -127,6 +128,22 @@ function planSpec(string $code = 'US-001'): void
 {
     test()->artisan('larapilot:spec-plan', ['code' => $code, '--file' => payloadFile(planPayload(), 'tmp-plan.yaml')])
         ->assertSuccessful();
+}
+
+/**
+ * Mark every plan task done so the spec can move to REVIEW (spec-review
+ * blocks on incomplete tasks).
+ */
+function completeTasks(string $code = 'US-001'): void
+{
+    $plan = app(PlanService::class)->read($code) ?? [];
+
+    foreach (($plan['tasks'] ?? []) as $task) {
+        if (is_array($task) && isset($task['id'])) {
+            test()->artisan('larapilot:task-done', ['code' => $code, 'taskId' => (string) $task['id']])
+                ->assertSuccessful();
+        }
+    }
 }
 
 function initTestGitRepository(string $commitMessage): string

@@ -176,6 +176,43 @@ class ConfigService
         return $this->settings()['auto_approve'] === 'YES';
     }
 
+    /**
+     * Settings keys that exist in the package defaults but are missing from
+     * the on-disk `.larapilot/config.yaml` — typically after a package
+     * upgrade introduced a new setting. Runtime falls back to defaults, but
+     * doctor/update surface the drift so the file can be refreshed.
+     *
+     * @return list<string>
+     */
+    public function missingSettingKeys(): array
+    {
+        if (! $this->hasProjectConfig()) {
+            return [];
+        }
+
+        $parsed = Yaml::parseFile($this->configPath());
+        $settings = is_array($parsed) && is_array($parsed['settings'] ?? null) ? $parsed['settings'] : [];
+
+        return array_values(array_diff(
+            array_keys($this->defaultSettings()),
+            array_keys($settings)
+        ));
+    }
+
+    /**
+     * Whether every persisted setting value is within its allowed list.
+     */
+    public function settingsValid(): bool
+    {
+        $settings = $this->settings();
+
+        return in_array($settings['effort'], $this->allowedEfforts(), true)
+            && in_array($settings['backlog'], $this->allowedBacklogModes(), true)
+            && in_array($settings['git_mode'], $this->allowedGitModes(), true)
+            && in_array($settings['testing'], $this->allowedTestingModes(), true)
+            && in_array($settings['auto_approve'], $this->allowedAutoApproveModes(), true);
+    }
+
     protected function normalizeAutoApprove(mixed $value): string
     {
         return $this->autoApproveToBool($value) ? 'YES' : 'NO';
@@ -384,6 +421,16 @@ class ConfigService
     public function dashboardBrowsable(): bool
     {
         return $this->devRouteBrowsable('dashboard_route');
+    }
+
+    /**
+     * Whether mockup design-system assets may be served. Requires the
+     * mockups route to be browsable and honors the dedicated
+     * `mockup_assets_route` toggle/environments.
+     */
+    public function mockupAssetsBrowsable(): bool
+    {
+        return $this->mockupsBrowsable() && $this->devRouteBrowsable('mockup_assets_route');
     }
 
     protected function devRouteBrowsable(string $routeKey): bool

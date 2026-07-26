@@ -6,11 +6,17 @@ namespace Larapilot\Services;
 
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Checklist;
+use Larapilot\Support\FileLock;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
 class SpecService
 {
+    /**
+     * @var array<int, array<string, mixed>>|null
+     */
+    protected ?array $specsCache = null;
+
     public function __construct(
         protected ConfigService $config,
         protected GitService $git,
@@ -60,6 +66,14 @@ class SpecService
      */
     public function allSpecs(): array
     {
+        return $this->specsCache ??= $this->readSpecsFromDisk();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function readSpecsFromDisk(): array
+    {
         if (! is_file($this->backlogPath())) {
             return [];
         }
@@ -73,6 +87,25 @@ class SpecService
         $specs = $parsed['specs'] ?? [];
 
         return is_array($specs) ? array_values($specs) : [];
+    }
+
+    /**
+     * Run a backlog mutation under an exclusive lock, re-reading the
+     * backlog from disk once the lock is held so parallel writers cannot
+     * drop each other's updates.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $callback
+     * @return T
+     */
+    protected function mutateBacklog(callable $callback): mixed
+    {
+        return FileLock::withLock($this->backlogPath(), function () use ($callback): mixed {
+            $this->specsCache = null;
+
+            return $callback();
+        });
     }
 
     /**
@@ -92,15 +125,20 @@ class SpecService
             }
         }
 
+        $titles = [];
+        foreach ($items as $spec) {
+            $code = (string) ($spec['code'] ?? '');
+            if ($code !== '') {
+                $titles[$code] = (string) ($spec['title'] ?? '');
+            }
+        }
+
         return [
             'count' => count($items),
             'codes' => $codes,
             'last_code' => $codes === [] ? null : end($codes),
             'epics' => $epics,
-            'titles' => array_combine(
-                $codes,
-                array_map(fn (array $spec): string => (string) ($spec['title'] ?? ''), $items)
-            ) ?: [],
+            'titles' => $titles,
         ];
     }
 
@@ -180,31 +218,33 @@ class SpecService
      */
     public function add(array $specs): void
     {
-        $existing = $this->allSpecs();
-        $indexed = [];
+        $this->mutateBacklog(function () use ($specs): void {
+            $existing = $this->allSpecs();
+            $indexed = [];
 
-        foreach ($existing as $spec) {
-            if (isset($spec['code'])) {
-                $indexed[(string) $spec['code']] = $spec;
-            }
-        }
-
-        foreach ($specs as $spec) {
-            $code = (string) ($spec['code'] ?? '');
-            if (! SpecCode::isValid($code)) {
-                continue;
+            foreach ($existing as $spec) {
+                if (isset($spec['code'])) {
+                    $indexed[(string) $spec['code']] = $spec;
+                }
             }
 
-            $indexed[$code] = array_merge($indexed[$code] ?? [], $spec);
+            foreach ($specs as $spec) {
+                $code = (string) ($spec['code'] ?? '');
+                if (! SpecCode::isValid($code)) {
+                    continue;
+                }
 
-            if (trim((string) ($indexed[$code]['status'] ?? '')) === '') {
-                $indexed[$code]['status'] = $this->config->status('todo');
+                $indexed[$code] = array_merge($indexed[$code] ?? [], $spec);
+
+                if (trim((string) ($indexed[$code]['status'] ?? '')) === '') {
+                    $indexed[$code]['status'] = $this->config->status('todo');
+                }
+
+                $this->writeSpecFile($code, $indexed[$code]);
             }
 
-            $this->writeSpecFile($code, $indexed[$code]);
-        }
-
-        $this->writeBacklog(array_values($indexed));
+            $this->writeBacklog(array_values($indexed));
+        });
     }
 
     /**
@@ -212,14 +252,16 @@ class SpecService
      */
     public function update(string $code, array $spec): void
     {
-        $existing = $this->find($code);
+        $this->mutateBacklog(function () use ($code, $spec): void {
+            $existing = $this->find($code);
 
-        if ($existing === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($existing === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $merged = array_replace_recursive($existing, $spec, ['code' => $code]);
-        $this->persistSpec($merged);
+            $merged = array_replace_recursive($existing, $spec, ['code' => $code]);
+            $this->persistSpec($merged);
+        });
     }
 
     /**
@@ -233,88 +275,96 @@ class SpecService
             throw new \RuntimeException('Spec code is required.');
         }
 
-        $specs = $this->allSpecs();
-        $found = false;
+        $this->mutateBacklog(function () use ($code, $spec): void {
+            $specs = $this->allSpecs();
+            $found = false;
 
-        foreach ($specs as $index => $item) {
-            if (($item['code'] ?? null) === $code) {
-                $specs[$index] = $spec;
-                $found = true;
-                break;
+            foreach ($specs as $index => $item) {
+                if (($item['code'] ?? null) === $code) {
+                    $specs[$index] = $spec;
+                    $found = true;
+                    break;
+                }
             }
-        }
 
-        if (! $found) {
-            $specs[] = $spec;
-        }
+            if (! $found) {
+                $specs[] = $spec;
+            }
 
-        $this->writeBacklog($specs);
-        $this->writeSpecFile($code, $spec);
+            $this->writeBacklog($specs);
+            $this->writeSpecFile($code, $spec);
+        });
     }
 
     public function tickBodyChecklist(string $code): void
     {
-        $spec = $this->find($code);
+        $this->mutateBacklog(function () use ($code): void {
+            $spec = $this->find($code);
 
-        if ($spec === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $body = (string) ($spec['body'] ?? '');
-        $ticked = Checklist::tick($body);
+            $body = (string) ($spec['body'] ?? '');
+            $ticked = Checklist::tick($body);
 
-        if ($ticked !== $body) {
-            $spec['body'] = $ticked;
-            $this->persistSpec($spec);
-        }
+            if ($ticked !== $body) {
+                $spec['body'] = $ticked;
+                $this->persistSpec($spec);
+            }
+        });
     }
 
     public function setStatus(string $code, string $status): void
     {
-        $spec = $this->find($code);
+        $this->mutateBacklog(function () use ($code, $status): void {
+            $spec = $this->find($code);
 
-        if ($spec === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $spec['status'] = $status;
-        $spec['status_history'] = array_merge(
-            is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
-            [['status' => $status, 'at' => now()->toIso8601String()]]
-        );
+            $spec['status'] = $status;
+            $spec['status_history'] = array_merge(
+                is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
+                [['status' => $status, 'at' => now()->toIso8601String()]]
+            );
 
-        if ($status !== $this->config->status('review')) {
-            $spec['rework'] = false;
-        }
+            if ($status !== $this->config->status('review')) {
+                $spec['rework'] = false;
+            }
 
-        $this->persistSpec($spec);
+            $this->persistSpec($spec);
+        });
     }
 
     public function requestChanges(string $code, string $feedbackMarkdown): void
     {
-        $spec = $this->find($code);
+        $this->mutateBacklog(function () use ($code, $feedbackMarkdown): void {
+            $spec = $this->find($code);
 
-        if ($spec === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $body = (string) ($spec['body'] ?? '');
+            $body = (string) ($spec['body'] ?? '');
 
-        if (trim($feedbackMarkdown) !== '') {
-            $body .= "\n\n## Rework Feedback\n\n".trim($feedbackMarkdown);
-        }
+            if (trim($feedbackMarkdown) !== '') {
+                $body .= "\n\n## Rework Feedback\n\n".trim($feedbackMarkdown);
+            }
 
-        $todoStatus = $this->config->status('todo');
+            $todoStatus = $this->config->status('todo');
 
-        $spec['body'] = $body;
-        $spec['status'] = $todoStatus;
-        $spec['rework'] = true;
-        $spec['status_history'] = array_merge(
-            is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
-            [['status' => $todoStatus, 'at' => now()->toIso8601String()]]
-        );
+            $spec['body'] = $body;
+            $spec['status'] = $todoStatus;
+            $spec['rework'] = true;
+            $spec['status_history'] = array_merge(
+                is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
+                [['status' => $todoStatus, 'at' => now()->toIso8601String()]]
+            );
 
-        $this->persistSpec($spec);
+            $this->persistSpec($spec);
+        });
     }
 
     /**
@@ -322,59 +372,73 @@ class SpecService
      */
     public function approve(string $code, ?string $commitSha = null): ?array
     {
-        $spec = $this->find($code);
+        return $this->mutateBacklog(function () use ($code, $commitSha): ?array {
+            $spec = $this->find($code);
 
-        if ($spec === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $this->tickBodyChecklist($code);
+            $this->tickBodyChecklist($code);
 
-        $spec = $this->find($code);
+            $spec = $this->find($code);
 
-        if ($spec === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
 
-        $commit = $this->git->resolveMergeCommit($code, $commitSha);
-        $doneStatus = $this->config->status('done');
+            $commit = $this->git->resolveMergeCommit($code, $commitSha);
+            $doneStatus = $this->config->status('done');
 
-        $spec['status'] = $doneStatus;
-        $spec['status_history'] = array_merge(
-            is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
-            [['status' => $doneStatus, 'at' => now()->toIso8601String()]]
-        );
-        $spec['rework'] = false;
+            $spec['status'] = $doneStatus;
+            $spec['status_history'] = array_merge(
+                is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
+                [['status' => $doneStatus, 'at' => now()->toIso8601String()]]
+            );
+            $spec['rework'] = false;
 
-        if ($commit !== null) {
-            $spec['merge_commit'] = $commit;
-        } else {
-            unset($spec['merge_commit']);
-        }
+            if ($commit !== null) {
+                $spec['merge_commit'] = $commit;
+            } else {
+                unset($spec['merge_commit']);
+            }
 
-        $this->persistSpec($spec);
+            $this->persistSpec($spec);
 
-        return $commit;
+            return $commit;
+        });
     }
 
     public function delete(string $code): void
     {
-        if ($this->find($code) === null) {
-            throw new \RuntimeException("Spec {$code} not found.");
-        }
-
-        $remaining = array_values(array_filter(
-            $this->allSpecs(),
-            fn (array $spec): bool => ($spec['code'] ?? null) !== $code
-        ));
-
-        $this->writeBacklog($remaining);
-
-        foreach ([$this->specPath($code), $this->planPath($code)] as $path) {
-            if (is_file($path)) {
-                unlink($path);
+        $this->mutateBacklog(function () use ($code): void {
+            if ($this->find($code) === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
             }
-        }
+
+            $remaining = array_values(array_filter(
+                $this->allSpecs(),
+                fn (array $spec): bool => ($spec['code'] ?? null) !== $code
+            ));
+
+            $this->writeBacklog($remaining);
+
+            foreach ([$this->specPath($code), $this->planPath($code), $this->feedbackPath($code)] as $path) {
+                if (is_file($path)) {
+                    unlink($path);
+                }
+            }
+        });
+    }
+
+    protected function feedbackPath(string $code): string
+    {
+        $config = $this->config->resolve();
+        $directory = rtrim($this->config->absolutePath(
+            $config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'
+        ), '/');
+
+        return $directory.'/'.SpecCode::ensure($code).'.md';
     }
 
     /**
@@ -386,6 +450,8 @@ class SpecService
             $this->backlogPath(),
             Yaml::dump(['specs' => array_values($specs)], 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
+
+        $this->specsCache = array_values($specs);
     }
 
     /**

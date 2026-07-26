@@ -109,3 +109,22 @@ it('caps log lines from artisan option', function (): void {
         ->and($envelope['data']['logs']['lines_returned'])->toBe(5)
         ->and($envelope['data']['logs']['entries'])->toHaveCount(5);
 });
+
+it('redacts JWTs, cookies and base64 secrets', function (): void {
+    $service = app(DiagnosticsService::class);
+
+    expect($service->redact('token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dQw4w9WgXcQ'))
+        ->not->toContain('eyJhbGciOiJIUzI1NiJ9')
+        ->and($service->redact('Set-Cookie: laravel_session=abc123; Path=/'))
+        ->not->toContain('abc123')
+        ->and($service->redact('key base64:'.base64_encode(str_repeat('x', 32))))
+        ->toContain('[REDACTED]')
+        ->and($service->redact('-----BEGIN RSA PRIVATE KEY-----'))
+        ->toBe('[REDACTED_PEM]');
+});
+
+it('fails the diagnostics command when diagnostics are disabled', function (): void {
+    config()->set('larapilot.diagnostics.enabled', false);
+
+    $this->artisan('larapilot:diagnostics', ['--no-logs' => true])->assertExitCode(4);
+});

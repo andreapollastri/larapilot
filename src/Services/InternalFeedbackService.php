@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\FileLock;
 use Larapilot\Support\Markdown;
 use Larapilot\Support\SpecCode;
 
@@ -102,6 +103,9 @@ class InternalFeedbackService
     }
 
     /**
+     * Lightweight counts-only summary for board cards and list items.
+     * Skips Markdown rendering entirely — use forSpec() for full entries.
+     *
      * @param  array<string, mixed>|null  $spec
      * @return array{
      *     enabled: bool,
@@ -109,23 +113,41 @@ class InternalFeedbackService
      *     entry_count: int,
      *     blocking_count: int,
      *     writable: bool,
-     *     path: string,
-     *     entries: list<array{at: string, author: string, status: string, body: string, body_html: string, preview: string, blocks_merge: bool}>
+     *     path: string
      * }
      */
     public function summary(string $code, ?array $spec = null): array
     {
-        $detail = $this->forSpec($code, $spec);
+        $spec ??= $this->specs->find($code);
+        $content = $this->read($code);
+        $entries = $content !== null ? $this->parseEntries($content) : [];
+        $blocking = array_filter($entries, fn (array $entry): bool => $entry['blocks_merge']);
 
         return [
-            'enabled' => $detail['enabled'],
-            'available' => $detail['entry_count'] > 0,
-            'entry_count' => $detail['entry_count'],
-            'blocking_count' => $detail['blocking_count'],
-            'writable' => $detail['writable'],
-            'path' => $detail['path'],
-            'entries' => $detail['entries'],
+            'enabled' => $this->enabled(),
+            'available' => $entries !== [],
+            'entry_count' => count($entries),
+            'blocking_count' => count($blocking),
+            'writable' => $this->canComment($spec),
+            'path' => $this->config->relativePath($this->filePath($code)),
         ];
+    }
+
+    /**
+     * Number of unresolved `[blocks-merge]` comments for a spec.
+     */
+    public function blockingCount(string $code): int
+    {
+        $content = $this->read($code);
+
+        if ($content === null) {
+            return 0;
+        }
+
+        return count(array_filter(
+            $this->parseEntries($content),
+            fn (array $entry): bool => $entry['blocks_merge']
+        ));
     }
 
     public function append(
@@ -177,11 +199,13 @@ MD;
             mkdir($directory, 0755, true);
         }
 
-        if (! is_file($path)) {
-            AtomicFile::write($path, "# {$code} — Internal feedback{$block}");
-        } else {
-            AtomicFile::write($path, rtrim((string) file_get_contents($path)).$block);
-        }
+        FileLock::withLock($path, function () use ($path, $code, $block): void {
+            if (! is_file($path)) {
+                AtomicFile::write($path, "# {$code} — Internal feedback{$block}");
+            } else {
+                AtomicFile::write($path, rtrim((string) file_get_contents($path)).$block);
+            }
+        });
     }
 
     public function blockingMarkdown(string $code): string

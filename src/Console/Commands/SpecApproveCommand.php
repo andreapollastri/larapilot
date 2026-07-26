@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
 
@@ -12,12 +14,17 @@ class SpecApproveCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-approve
                             {code : Spec code}
-                            {--commit= : Optional merge commit SHA to link (auto-detected from recent history when omitted)}';
+                            {--commit= : Optional merge commit SHA to link (auto-detected from recent history when omitted)}
+                            {--force : Approve even with blocking feedback or incomplete plan tasks}';
 
     protected $description = 'Mark a reviewed spec as DONE after human approval';
 
-    public function handle(SpecService $specs, ConfigService $config): int
-    {
+    public function handle(
+        SpecService $specs,
+        ConfigService $config,
+        PlanService $plans,
+        InternalFeedbackService $feedback,
+    ): int {
         $code = (string) $this->argument('code');
         $spec = $specs->find($code);
 
@@ -27,6 +34,30 @@ class SpecApproveCommand extends LarapilotCommand
 
         if (($guard = $this->guardStatus($spec, [$config->status('review')], 'approve')) !== null) {
             return $guard;
+        }
+
+        if (! (bool) $this->option('force')) {
+            $blocking = $feedback->blockingCount($code);
+
+            if ($blocking > 0) {
+                return $this->failure(
+                    'E_PRECONDITION',
+                    "Spec {$code} has {$blocking} blocking feedback comment(s).",
+                    $this->exitForCode('E_PRECONDITION'),
+                    'Resolve the [blocks-merge] comments (or rework via spec-request-changes), or pass --force to override.'
+                );
+            }
+
+            $progress = $plans->taskProgress($code);
+
+            if ($progress['total'] > 0 && $progress['done'] < $progress['total']) {
+                return $this->failure(
+                    'E_PRECONDITION',
+                    "Spec {$code} has incomplete plan tasks ({$progress['done']}/{$progress['total']} done).",
+                    $this->exitForCode('E_PRECONDITION'),
+                    'Finish the remaining tasks via larapilot:task-done, or pass --force to override.'
+                );
+            }
         }
 
         $commitOption = $this->option('commit');

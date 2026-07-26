@@ -6,13 +6,21 @@ namespace Larapilot\Services;
 
 class GitService
 {
+    protected ?bool $isRepository = null;
+
     public function __construct(
         protected ConfigService $config,
     ) {}
 
     public function isRepository(): bool
     {
-        return $this->git('rev-parse', '--is-inside-work-tree') === 'true';
+        // Cache only the positive answer: a repository can appear mid-process
+        // (e.g. right after project bootstrap) but never stops being one.
+        if ($this->isRepository === true) {
+            return true;
+        }
+
+        return $this->isRepository = $this->git('rev-parse', '--is-inside-work-tree') === 'true';
     }
 
     /**
@@ -60,10 +68,29 @@ class GitService
                 return $this->commitDetails($sha);
             }
 
-            $fallbackSha ??= $sha;
+            // Only fall back to a code-less subject: a subject that names a
+            // different spec code belongs to another story's task.
+            if (! $this->referencesAnotherSpec($haystack, $codeNeedle)) {
+                $fallbackSha ??= $sha;
+            }
         }
 
         return $fallbackSha !== null ? $this->commitDetails($fallbackSha) : null;
+    }
+
+    protected function referencesAnotherSpec(string $upperSubject, string $codeNeedle): bool
+    {
+        if (preg_match_all('/\b(?!TASK-)[A-Z]{2,10}-\d+\b/', $upperSubject, $matches) === false) {
+            return false;
+        }
+
+        foreach ($matches[0] as $candidate) {
+            if ($candidate !== $codeNeedle) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

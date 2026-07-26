@@ -17,6 +17,15 @@ class DiagnosticsCommand extends LarapilotCommand
 
     public function handle(DiagnosticsService $diagnostics): int
     {
+        if (! (bool) config('larapilot.diagnostics.enabled', true)) {
+            return $this->failure(
+                'E_PRECONDITION',
+                'Diagnostics are disabled.',
+                $this->exitForCode('E_PRECONDITION'),
+                'Set LARAPILOT_DIAGNOSTICS_ENABLED=true to enable them.'
+            );
+        }
+
         $linesOption = $this->option('lines');
         $lines = is_numeric($linesOption) ? (int) $linesOption : null;
         $includeLogs = ! (bool) $this->option('no-logs');

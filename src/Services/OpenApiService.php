@@ -302,6 +302,7 @@ class OpenApiService
                     ],
                     'FeedbackSummary' => [
                         'type' => 'object',
+                        'description' => 'Counts-only feedback summary for board cards and list items. Full entries are returned by the spec detail endpoint.',
                         'properties' => [
                             'enabled' => ['type' => 'boolean'],
                             'available' => ['type' => 'boolean'],
@@ -309,12 +310,8 @@ class OpenApiService
                             'blocking_count' => ['type' => 'integer', 'minimum' => 0],
                             'writable' => ['type' => 'boolean'],
                             'path' => ['type' => 'string', 'example' => '.larapilot/internal-feedback/US-001.md'],
-                            'entries' => [
-                                'type' => 'array',
-                                'items' => ['$ref' => '#/components/schemas/FeedbackEntryDetail'],
-                            ],
                         ],
-                        'required' => ['enabled', 'entry_count', 'blocking_count', 'writable', 'path', 'entries'],
+                        'required' => ['enabled', 'entry_count', 'blocking_count', 'writable', 'path'],
                     ],
                     'FeedbackEntry' => [
                         'type' => 'object',

@@ -12,7 +12,7 @@ class MockupAssetsRouteRegistrar
 {
     public static function register(): void
     {
-        if (! app(ConfigService::class)->mockupsBrowsable()) {
+        if (! app(ConfigService::class)->mockupAssetsBrowsable()) {
             return;
         }
 

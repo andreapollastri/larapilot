@@ -6,11 +6,17 @@ namespace Larapilot\Services;
 
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Checklist;
+use Larapilot\Support\FileLock;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
 class PlanService
 {
+    /**
+     * @var array<string, array<string, mixed>|null>
+     */
+    protected array $planCache = [];
+
     public function __construct(
         protected ConfigService $config,
         protected SpecService $specs,
@@ -42,6 +48,8 @@ class PlanService
             Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
         );
 
+        $this->planCache[$code] = $plan;
+
         $this->specs->setStatus($code, $this->config->status('planned'));
     }
 
@@ -49,6 +57,18 @@ class PlanService
      * @return array<string, mixed>|null
      */
     public function read(string $code): ?array
+    {
+        if (array_key_exists($code, $this->planCache)) {
+            return $this->planCache[$code];
+        }
+
+        return $this->planCache[$code] = $this->readFromDisk($code);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    protected function readFromDisk(string $code): ?array
     {
         $path = $this->path($code);
 
@@ -130,46 +150,51 @@ class PlanService
      */
     public function markTaskDone(string $code, string $taskId, ?string $commitSha = null): ?array
     {
-        $plan = $this->read($code);
+        return FileLock::withLock($this->path($code), function () use ($code, $taskId, $commitSha): ?array {
+            unset($this->planCache[$code]);
+            $plan = $this->read($code);
 
-        if ($plan === null) {
-            throw new \RuntimeException("Plan for {$code} not found.");
-        }
-
-        $tasks = $plan['tasks'] ?? [];
-        $found = false;
-        $commit = $this->git->resolveTaskCommit($code, $taskId, $commitSha);
-
-        foreach ($tasks as $index => $task) {
-            if (($task['id'] ?? null) === $taskId) {
-                $tasks[$index]['status'] = 'DONE';
-                if (is_string($task['body'] ?? null)) {
-                    $tasks[$index]['body'] = Checklist::tick($task['body']);
-                }
-
-                if ($commit !== null) {
-                    $tasks[$index]['commit'] = $commit;
-                } else {
-                    unset($tasks[$index]['commit']);
-                }
-
-                $found = true;
-                break;
+            if ($plan === null) {
+                throw new \RuntimeException("Plan for {$code} not found.");
             }
-        }
 
-        if (! $found) {
-            throw new \RuntimeException("Task {$taskId} not found in plan for {$code}.");
-        }
+            $tasks = $plan['tasks'] ?? [];
+            $found = false;
+            $commit = $this->git->resolveTaskCommit($code, $taskId, $commitSha);
 
-        $plan['tasks'] = $tasks;
-        $plan['updated_at'] = now()->toIso8601String();
+            foreach ($tasks as $index => $task) {
+                if (($task['id'] ?? null) === $taskId) {
+                    $tasks[$index]['status'] = 'DONE';
+                    if (is_string($task['body'] ?? null)) {
+                        $tasks[$index]['body'] = Checklist::tick($task['body']);
+                    }
 
-        AtomicFile::write(
-            $this->path($code),
-            Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
-        );
+                    if ($commit !== null) {
+                        $tasks[$index]['commit'] = $commit;
+                    } else {
+                        unset($tasks[$index]['commit']);
+                    }
 
-        return $commit;
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (! $found) {
+                throw new \RuntimeException("Task {$taskId} not found in plan for {$code}.");
+            }
+
+            $plan['tasks'] = $tasks;
+            $plan['updated_at'] = now()->toIso8601String();
+
+            AtomicFile::write(
+                $this->path($code),
+                Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            );
+
+            $this->planCache[$code] = $plan;
+
+            return $commit;
+        });
     }
 }

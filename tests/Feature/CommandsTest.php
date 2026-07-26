@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Artisan;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
@@ -12,6 +13,11 @@ it('installs the project scaffolding', function (): void {
     expect(base_path('.larapilot/config.yaml'))->toBeFile()
         ->and(base_path('.larapilot/shared-runtime.md'))->toBeFile()
         ->and(base_path('.larapilot/task-templates.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-discovery.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-delivery.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-ux.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-ship.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-ops.md'))->toBeFile()
         ->and(base_path('.larapilot/design-systems/filament/tokens.css'))->toBeFile()
         ->and(base_path('.larapilot/design-systems/filament/html/index.html'))->toBeFile()
         ->and(base_path('.larapilot/design-systems/filament/figma-sources.md'))->toBeFile()
@@ -62,6 +68,8 @@ it('refreshes the shared runtime via update', function (): void {
         ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/shared-runtime.md'))
         ->and(file_get_contents(base_path('.larapilot/task-templates.md')))
         ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/task-templates.md'))
+        ->and(file_get_contents(base_path('.larapilot/runtime-ops.md')))
+        ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/runtime-ops.md'))
         ->and(file_get_contents(base_path('.larapilot/design-systems/filament/tokens.css')))
         ->toBe(file_get_contents(dirname(__DIR__, 2).'/resources/larapilot/design-systems/filament/tokens.css'));
 });
@@ -264,6 +272,7 @@ it('links the merge commit when approving a spec', function (): void {
     planSpec();
 
     $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    completeTasks();
     $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
 
     initTestGitRepository('Merge pull request #99 from user/feature/US-001-login');
@@ -383,4 +392,32 @@ it('preserves unrelated config keys when updating settings', function (): void {
 
     expect($yaml)->toContain('custom: kept')
         ->and($yaml)->toContain('testing: MINIMAL');
+});
+
+it('includes plan metrics in the metrics envelope', function (): void {
+    addSpec();
+    planSpec();
+
+    expect(Artisan::call('larapilot:metrics'))->toBe(0);
+
+    $envelope = json_decode(Artisan::output(), true);
+
+    expect($envelope['data'])->toHaveKeys(['total', 'done', 'total_tasks', 'done_tasks', 'specs_with_plans'])
+        ->and($envelope['data']['total_tasks'])->toBe(2);
+});
+
+it('preserves custom design systems on update when requested', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $custom = base_path('.larapilot/design-systems/filament/README.md');
+    file_put_contents($custom, 'CUSTOMIZED');
+
+    $this->artisan('larapilot:update', ['--skip-boost' => true, '--preserve-design-systems' => true])
+        ->assertSuccessful();
+
+    expect(file_get_contents($custom))->toBe('CUSTOMIZED');
+
+    $this->artisan('larapilot:update', ['--skip-boost' => true])->assertSuccessful();
+
+    expect(file_get_contents($custom))->not->toBe('CUSTOMIZED');
 });

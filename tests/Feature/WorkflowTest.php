@@ -113,6 +113,7 @@ it('sends a spec back to todo with rework feedback', function (): void {
     planSpec();
 
     $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    completeTasks();
     $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
 
     $feedback = payloadFile(['markdown' => 'Please handle the empty-password case.'], 'tmp-feedback.yaml');
@@ -126,4 +127,30 @@ it('sends a spec back to todo with rework feedback', function (): void {
         ->and($spec['rework'])->toBeTrue()
         ->and($spec['body'])->toContain('## Rework Feedback')
         ->and($spec['body'])->toContain('empty-password');
+});
+
+it('blocks review and approval until tasks and blocking feedback are resolved', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    addSpec();
+    planSpec();
+
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+
+    // Incomplete tasks block REVIEW unless forced.
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertExitCode(4);
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001', '--force' => true])->assertSuccessful();
+
+    $this->artisan('larapilot:spec-comment', [
+        'code' => 'US-001',
+        '--author' => 'PM',
+        '--message' => 'Blocking regression.',
+        '--blocks-merge' => true,
+    ])->assertSuccessful();
+
+    // Blocking feedback and incomplete tasks block approval unless forced.
+    $this->artisan('larapilot:spec-approve', ['code' => 'US-001'])->assertExitCode(4);
+    $this->artisan('larapilot:spec-approve', ['code' => 'US-001', '--force' => true])->assertSuccessful();
+
+    expect(app(SpecService::class)->find('US-001')['status'])->toBe('DONE');
 });

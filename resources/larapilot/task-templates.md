@@ -2,24 +2,9 @@
 
 Copy these structures into `larapilot-plan` task bodies. Every **Impl** and **Fix** task MUST include **## Git Deliverables** when `settings.git_mode` is `GITFLOW` or `GITFLOW_PUSH`; every task that touches Eloquent models MUST include **## Test Data** (factory + seeder). Anne's test tasks omit Git/Test Data unless they add seed-only fixtures.
 
-**Read `data.settings` from `config-show` before planning.** Honor **Project Settings** in `.larapilot/shared-runtime.md`.
+**Read `data.settings` from `config-show` before planning and honor it** — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**; canonical Git/TASK-00 prose in `.larapilot/runtime-delivery.md` → **Git Workflow**. Template selection follows the settings: `NO_GITFLOW` omits TASK-00 and all Push/PR lines; `GITFLOW` includes TASK-00 without Push (PR prepared locally); `GITFLOW_PUSH` includes TASK-00 with push + remote PR; `testing` picks the matching Anne template depth; `effort: ECO` means fewer/shorter tasks and deferred docs except OpenAPI; `effort: MAX` adds verification/docs tasks and a deeper Test Strategy.
 
 Replace `{US-XXX}`, `{TASK-NN}`, `{Model}`, and placeholders with real values.
-
----
-
-## Settings gates (read first)
-
-| Setting | Effect on templates |
-| --- | --- |
-| `git_mode: NO_GITFLOW` | **Omit TASK-00.** In Git Deliverables: local commit only — no Push/PR lines. |
-| `git_mode: GITFLOW` | Include TASK-00 and Git Deliverables **without** Push. PR line = "prepare locally / open when user asks". |
-| `git_mode: GITFLOW_PUSH` | Include TASK-00 with push + remote PR (legacy full Gitflow). |
-| `testing: MINIMAL` | Thin Anne tasks — critical paths only; no viewport/browser/E2E steps. |
-| `testing: NORMAL` | Standard Pest feature/unit/policy — **no** Playwright/Dusk/viewport browser steps (**default**). |
-| `testing: BEST` | Full Anne bar including viewport matrix and browser/E2E tooling. |
-| `effort: ECO` | Fewer/shorter tasks; **no sub-agents**; defer Albert docs (README/PDF/diagrams) but **keep OpenAPI updates** when APIs change; skip optional research/E2E-shaped work. |
-| `effort: MAX` | Extra verification/docs tasks; deeper Test Strategy in `plan_body`. |
 
 ---
 

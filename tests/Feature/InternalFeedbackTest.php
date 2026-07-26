@@ -53,6 +53,7 @@ it('includes blocking internal feedback in request changes', function (): void {
     planSpec();
 
     $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    completeTasks();
     $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
 
     $this->artisan('larapilot:spec-comment', [
@@ -151,15 +152,18 @@ it('exposes feedback metadata via the API', function (): void {
         ->assertJsonPath('feedback.entries.0.author', 'PM')
         ->assertJsonPath('feedback.entries.0.blocks_merge', true);
 
+    // Board and list summaries are counts-only; full entries live on the
+    // spec detail endpoint.
     $this->getJson('/larapilot/api/board')
         ->assertOk()
         ->assertJsonPath('columns.REVIEW.0.feedback.entry_count', 1)
-        ->assertJsonPath('columns.REVIEW.0.feedback.entries.0.body', 'Blocking issue.');
+        ->assertJsonPath('columns.REVIEW.0.feedback.blocking_count', 1)
+        ->assertJsonMissingPath('columns.REVIEW.0.feedback.entries');
 
     $this->getJson('/larapilot/api/specs')
         ->assertOk()
         ->assertJsonPath('items.0.feedback.entry_count', 1)
-        ->assertJsonCount(1, 'items.0.feedback.entries');
+        ->assertJsonMissingPath('items.0.feedback.entries');
 });
 
 it('deletes internal feedback when a spec is removed', function (): void {

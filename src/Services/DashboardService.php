@@ -33,9 +33,12 @@ class DashboardService
     }
 
     /**
-     * @return array<string, mixed>
+     * Board data with raw (un-enriched) specs, shared by the dashboard and
+     * the API so each surface enriches specs exactly once.
+     *
+     * @return array{metrics: array<string, mixed>, columns: array<string, array<int, array<string, mixed>>>, statusOrder: list<string>}
      */
-    public function board(): array
+    public function rawBoard(): array
     {
         $workflow = $this->config->resolve()['workflow']['statuses'] ?? config('larapilot.workflow.statuses', []);
 
@@ -52,7 +55,7 @@ class DashboardService
                 $columns[$status] = [];
             }
 
-            $columns[$status][] = $this->enrichSpec($spec);
+            $columns[$status][] = $spec;
         }
 
         return [
@@ -62,6 +65,23 @@ class DashboardService
             // workflow, so those specs still show on the board
             'statusOrder' => array_map('strval', array_keys($columns)),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function board(): array
+    {
+        $board = $this->rawBoard();
+
+        foreach ($board['columns'] as $status => $specs) {
+            $board['columns'][$status] = array_map(
+                fn (array $spec): array => $this->enrichSpec($spec),
+                $specs
+            );
+        }
+
+        return $board;
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Larapilot\Http;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\ApiController;
+use Larapilot\Http\Middleware\EnsureApiAuthorized;
 use Larapilot\Services\ConfigService;
 
 class ApiRouteRegistrar
@@ -20,8 +21,8 @@ class ApiRouteRegistrar
         $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
         $middleware = config('larapilot.dashboard_route.middleware', ['web']);
 
-        Route::middleware($middleware)
-            ->withoutMiddleware([ValidateCsrfToken::class])
+        Route::middleware([...(array) $middleware, EnsureApiAuthorized::class])
+            ->withoutMiddleware(self::csrfMiddleware())
             ->prefix($prefix.'/api')
             ->group(function (): void {
                 Route::get('/board', [ApiController::class, 'board'])
@@ -53,5 +54,21 @@ class ApiRouteRegistrar
                 Route::get('/docs', [ApiController::class, 'docs'])
                     ->name('larapilot.api.docs');
             });
+    }
+
+    /**
+     * CSRF middleware classes to exempt (token/env auth replaces CSRF here).
+     * Newer framework versions register PreventRequestForgery in the web
+     * group; ValidateCsrfToken covers older setups. Route exclusion matches
+     * exact classes (and their subclasses), so both must be listed.
+     *
+     * @return list<class-string>
+     */
+    protected static function csrfMiddleware(): array
+    {
+        return array_values(array_filter([
+            ValidateCsrfToken::class,
+            'Illuminate\Foundation\Http\Middleware\PreventRequestForgery',
+        ], 'class_exists'));
     }
 }

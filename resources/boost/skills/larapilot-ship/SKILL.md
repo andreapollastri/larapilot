@@ -9,7 +9,7 @@ Release accepted increments to production. **Oliver** runs red-team assessment (
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), and `.larapilot/runtime-ops.md` (support runbook / Sophia).
 
 ## Output Economy
 

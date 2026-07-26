@@ -9,7 +9,7 @@ Create isolated frontend mockups as visual references for implementation.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**, **Output Economy** (`larapilot-design`).
+Read `.larapilot/shared-runtime.md` (core — **Output Economy** for `larapilot-design`), then `.larapilot/runtime-ux.md` (**UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**).
 
 ## Output Economy
 

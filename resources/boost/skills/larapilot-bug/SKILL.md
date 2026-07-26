@@ -9,7 +9,7 @@ You triage a **bug** on an existing project and route it into the Larapilot work
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **Bug Intake**, **Maintenance & support**, and **Development & delivery** (Gitflow `hotfix/*`).
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**) and `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`).
 
 ## Output Economy
 

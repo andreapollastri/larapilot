@@ -6,7 +6,7 @@ Larapilot is a spec-driven workflow for Laravel projects, integrated with [Larav
 
 **The agent proposes. You approve what ships.** Human-in-the-loop, always.
 
-📖 **Documentation:** [larapilot.web.ap.it](https://larapilot.web.ap.it) · [Walkthrough](https://larapilot.web.ap.it/#walkthrough) · [API](https://larapilot.web.ap.it/#deep-dive-api)
+📖 **Documentation:** [larapilot.web.ap.it](https://larapilot.web.ap.it) · [Walkthrough](https://larapilot.web.ap.it/#examples) · [API](https://larapilot.web.ap.it/#deep-dive-api)
 
 ---
 
@@ -51,7 +51,16 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 | `internal-feedback/{code}.md` | PM/dev comments until **DONE** |
 | `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) |
 
-Skills write artifacts; the workflow engine blocks invalid state transitions (e.g. implement before plan, approve before review).
+Skills write artifacts; the workflow engine blocks invalid state transitions (e.g. implement before plan, approve before review, approve with open `[blocks-merge]` feedback or unfinished tasks — override with `--force`).
+
+### Two configuration layers
+
+| Layer | File | Owns | Changed via |
+| --- | --- | --- | --- |
+| **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, environments, diagnostics, `LARAPILOT_API_TOKEN`, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git mode, testing, auto-approve), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+
+The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
 ---
 
@@ -86,6 +95,8 @@ When the dashboard is browsable (never in production):
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/companion`** — PRD + frontend topology bundle for an external frontend repo
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
+
+**API auth:** set `LARAPILOT_API_TOKEN` to require a bearer token (or `X-Larapilot-Token` header) on every `/larapilot/api/*` request — strongly recommended on shared staging hosts. Without a token, reads stay open in the allowed environments, but **writes are refused outside local/development/testing**.
 
 ### Diagnostics (bug triage)
 
@@ -164,6 +175,8 @@ php artisan larapilot:doctor
 ```
 
 Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --skip-boost`.
+
+`larapilot:update` overwrites `.larapilot/design-systems/` with the packaged references; pass `--preserve-design-systems` to keep local customizations.
 
 ---
 

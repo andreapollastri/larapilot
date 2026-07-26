@@ -9,7 +9,7 @@ You run a **mini-inception** for one new feature on an **existing** project, the
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — especially **PRD Living Document**, **Incremental Features**, **MoSCoW Prioritization**, **Assumptions and Questions**, and **Legacy Rewrite & Porting** when the feature touches legacy scope.
+Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Legacy Rewrite & Porting** when the feature touches legacy scope).
 
 ## Output Economy
 

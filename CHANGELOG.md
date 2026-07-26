@@ -8,12 +8,30 @@ All notable changes to `larapilot` will be documented in this file.
 
 - **`settings.backlog`** — `LEAN` | `STANDARD` | `GRANULAR` (default `STANDARD`): explicit control over spec/epic granularity in `larapilot-spec`, `larapilot-feature`, and `larapilot-bug`. Exposed on `config-show` as `data.settings.backlog`; persisted via `/larapilot-settings` or `larapilot:settings-set --backlog=…`.
 - **Epic consolidation rule (shared runtime)** — reuse existing epics from `spec-list` before proposing a new `EP-XXX`; new epic only for a genuinely new product area (guideline: 5–8 epics per product); fix specs reuse the existing Maintenance epic.
+- **`LARAPILOT_API_TOKEN`** — optional shared token for `/larapilot/api/*` (bearer or `X-Larapilot-Token`); when unset, API **writes** are refused outside local/development/testing environments. Strongly recommended on staging.
+- **Workflow guards** — `larapilot:spec-review` blocks with incomplete plan tasks; `larapilot:spec-approve` blocks with open `[blocks-merge]` feedback or incomplete tasks. Both accept `--force`.
+- **`larapilot:update --preserve-design-systems`** — keep local `.larapilot/design-systems/` customizations; the command now states when design systems are overwritten and warns about settings keys missing from `config.yaml` after an upgrade.
+- **`larapilot:doctor`** — new checks (`task_templates`, `design_systems`, `settings_valid`), `settings_missing_keys` drift report, and `--human` table output (also on `larapilot:metrics`).
+- **Runtime packs** — `shared-runtime.md` is now a slim always-on core; phase content moved to `runtime-discovery.md`, `runtime-delivery.md`, `runtime-ux.md`, `runtime-ship.md`, `runtime-ops.md` (copied on install/update; each skill loads only its packs, cutting per-skill prompt tokens sharply).
 
 ### Changed
 
 - **Backlog granularity defaults** — specs are now **journey-level by default**: one spec per demonstrable user capability, with related FRs merged (each cited as `Traces to: FR-XXX`) and Laravel seams (models, controllers, policies, UI, API resources) planned as `TASK-NN` in `/larapilot-plan` instead of separate specs. The previous fine-grained behavior (one spec per FR, seam / Filament per-entity / i18n per-locale splits) remains available via `settings.backlog: GRANULAR`.
 - **Full Product / Enterprise bootstrap** — still covers every FR, but spec count follows `settings.backlog` instead of the fixed "one spec per FR; multi-epic backlog expected" rule.
 - **`larapilot-settings`** — new Backlog question (Mark) in Round 1; Testing and Auto-approve move to Round 2.
+- **`larapilot:metrics`** now merges plan/task metrics (`total_tasks`, `done_tasks`, `task_completion_rate`, `specs_with_plans`) into the envelope.
+- **API feedback summaries** (board and spec list) are counts-only; full entries stay on the spec detail endpoint. OpenAPI schema updated.
+- **Diagnostics** honor `LARAPILOT_DIAGNOSTICS_ENABLED=false` on CLI and MCP too (previously HTTP only), and redaction also covers JWTs, cookie headers, `base64:` secrets, and PEM key material.
+- **Config stub** now lists every configurable path (`review`, `security`, `launch`, `support`, `internal_feedback`).
+
+### Fixed
+
+- **CSRF exemption on the JSON API** did not match the `PreventRequestForgery` middleware registered by newer Laravel versions; scripted `POST /comments` requests failed with 419.
+- **`spec-list` summary `titles`** collapsed to an empty map when any backlog entry lacked a `code`.
+- **`spec-delete`** (service layer) now removes the spec's internal-feedback file as well.
+- **Task commit auto-link** no longer falls back to a commit whose subject references a *different* spec code.
+- **Mockup assets route** now honors its own `mockup_assets_route` config instead of the `mockups_route` one.
+- **Concurrency** — backlog, plan, and internal-feedback read-modify-write cycles now run under an advisory file lock, so parallel agents can't drop each other's updates.
 
 ## [2.0.0] - 2026-07-24
 

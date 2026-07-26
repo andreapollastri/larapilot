@@ -9,16 +9,24 @@ use Illuminate\Support\Facades\File;
 final class SharedRuntime
 {
     /**
-     * Packaged docs copied into `.larapilot/` on install/update.
+     * Packaged docs copied into `.larapilot/` on install/update. Phase
+     * runtime packs (`runtime-*.md`) are discovered automatically so new
+     * packs ship without touching this list.
      *
      * @return array<string, string> package filename => project filename
      */
     public static function packagedDocs(): array
     {
-        return [
+        $docs = [
             'shared-runtime.md' => 'shared-runtime.md',
             'task-templates.md' => 'task-templates.md',
         ];
+
+        foreach (glob(dirname(__DIR__, 2).'/resources/larapilot/runtime-*.md') ?: [] as $path) {
+            $docs[basename($path)] = basename($path);
+        }
+
+        return $docs;
     }
 
     public static function packagePath(): string
@@ -46,7 +54,7 @@ final class SharedRuntime
      * carry no project-specific customization, so a package upgrade can
      * always overwrite them — unlike config.yaml.
      */
-    public static function refresh(): void
+    public static function refresh(bool $includeDesignSystems = true): void
     {
         foreach (self::packagedDocs() as $packageFile => $projectFile) {
             AtomicFile::write(
@@ -55,7 +63,9 @@ final class SharedRuntime
             );
         }
 
-        self::refreshDesignSystems();
+        if ($includeDesignSystems) {
+            self::refreshDesignSystems();
+        }
     }
 
     public static function designSystemsPackagePath(): string

@@ -23,15 +23,13 @@ class ApiService
      */
     public function board(): array
     {
-        $board = $this->dashboard->board();
+        $board = $this->dashboard->rawBoard();
 
         $columns = [];
 
         foreach ($board['columns'] as $status => $specs) {
             $columns[$status] = array_map(
-                fn (array $item): array => $this->enrichSpecSummary(
-                    $this->specPayloadFromBoardItem($item)
-                ),
+                fn (array $item): array => $this->enrichSpecSummary($item),
                 $specs
             );
         }
@@ -167,17 +165,6 @@ class ApiService
     }
 
     /**
-     * @param  array<string, mixed>  $item
-     * @return array<string, mixed>
-     */
-    protected function specPayloadFromBoardItem(array $item): array
-    {
-        unset($item['tasks'], $item['mockups'], $item['feedback']);
-
-        return $item;
-    }
-
-    /**
      * @return array<string, mixed>
      */
     protected function mockupsForApi(string $code): array
@@ -235,7 +222,6 @@ class ApiService
             'blocking_count' => 0,
             'writable' => false,
             'path' => '',
-            'entries' => [],
         ];
     }
 }

@@ -9,33 +9,19 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Project Settings**, **Sub-agents**, and Git/testing gates.
+Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture standards, Git discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs).
 
 Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections per `data.settings`.
 
 ## Output Economy
 
-**High** — see `larapilot-implement` in shared-runtime. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
+**High** — see `larapilot-implement` in the shared-runtime table. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
 
-When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** (no README/diagrams/PDF/runbooks) but **still update OpenAPI/Swagger** when public/partner API routes change; short inline Robert/Lars checklist only; one-line status; no deep security narration unless blocked. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
+When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** except OpenAPI when public/partner API routes change; short inline Robert/Lars checklist only; one-line status. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
 
 ## The Team
 
-| Agent          | Role                                                                             |
-| -------------- | -------------------------------------------------------------------------------- |
-| 🤖 **Zoey**    | AI Guru — sharpens user intent, output economy, sub-agent orchestration, session/credit risk *(every skill)* |
-| 🔧 **Alex**    | Full-Stack Developer — **SOLID** + **N+1-free** queries; **FE/BE integration** per Andrew + Joe; involves Jack when infra |
-| 👾 **Andrew**  | Laravel Expert — idiomatic Laravel, eager loading, ecosystem packages, convention adherence     |
-| ✨ **Joe**     | Frontend Expert — **design system** compliance, JS/CSS polish, animations, client performance, visual fidelity |
-| 📱 **Ricky**   | App Developer — mobile/hybrid code, device permissions, Flutter/native features  |
-| 📝 **Albert**  | Tech Writer — baseline + scoped docs: OpenAPI, README, diagrams, PDF manual chapters |
-| ✍️ **Marika**  | Copywriter — user-facing strings, tone consistency                               |
-| 🔄 **Sabrine** | Legacy Porting Specialist — parity verification, DB/assets migration checks against `legacy-parity.md` |
-| 🔗 **Matt**    | Integration Manager — third-party APIs & services with Alex/John/Elise           |
-| 🌍 **Emily**   | Translator — locales, currency, timezones when in scope                          |
-| 🧪 **Anne**    | Test Architect — multi-viewport/device tests, Pest/PHPUnit; **manual test handoff** when automation is insufficient |
-| 🛡️ **Robert**  | Code Reviewer — plan adherence, **SOLID/N+1** quality gate, Laravel conventions, **Gitflow**; involves **Sabrine** on refactoring/porting |
-| 🔐 **Lars**    | Security Expert — OWASP-aligned security assessment                              |
+🤖 Zoey · 🔧 Alex · 👾 Andrew · ✨ Joe · 📱 Ricky · 📝 Albert · ✍️ Marika · 🔄 Sabrine · 🔗 Matt · 🌍 Emily · 🧪 Anne · 🛡️ Robert · 🔐 Lars — roles in the shared-runtime roster.
 
 ## Config & CLI
 
@@ -48,58 +34,33 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 ## Execution Contract
 
 1. **Autonomous by default** — stop only for explicit blockers (scope change, missing prerequisite spec, semantic test breakage).
-2. Implement the **full planned spec** — never silently drop acceptance criteria to fit an MVP unless the PRD delivery target is MVP and the spec was scoped accordingly. If in doubt, read `paths.prd` (from `config-show`) for the delivery target — do not assume MVP.
-3. Work under `data.workdir` for all file operations.
-4. Run connector commands from `data.project_root`.
-5. After `spec-start`, re-run `spec-show` if worktree may have been created.
+2. Implement the **full planned spec** — never silently drop acceptance criteria to fit an MVP unless the PRD delivery target is MVP and the spec was scoped accordingly. If in doubt, read `paths.prd` for the delivery target — do not assume MVP.
+3. Work under `data.workdir` for all file operations; run connector commands from `data.project_root`.
+4. After `spec-start`, re-run `spec-show` if a worktree may have been created.
 
 ## Laravel Implementation
 
-Use **Laravel Boost** throughout:
+Use **Laravel Boost** throughout: `Search Docs` before unfamiliar APIs, `Database Schema` / `Database Query` for data work, `Tinker` for quick verification, `Application Info` for versions, `Last Error` / `Read Log Entries` when debugging.
 
-- `Search Docs` before unfamiliar APIs
-- `Database Schema` / `Database Query` for data work
-- `Tinker` for quick verification
-- `Application Info` for package versions
-- `Last Error` / `Read Log Entries` when debugging
+Apply the canonical delivery rules from `runtime-delivery.md` — do not re-derive them:
 
-Follow Laravel best practices from Boost guidelines: thin controllers, Form Requests, policies, eager loading, Pest tests. Honor **SOLID** and keep every relation-touching path **N+1-free**.
+- **Architecture Standards** — SOLID Actions/Services, thin controllers, Form Requests + Policies at the edge, `DB::transaction` on multi-write paths, queues for slow I/O, eager loading + indexes on every relation-touching path (**no N+1** before `task-done`).
+- **Laravel Scaffolding Defaults** — Fortify 2FA on auth specs, `Password::defaults()`, UUID PKs (`HasUuids`), Argon2id hashing, Socialite for SSO; local dev per the PRD choice (Sail commands only when the PRD chose Sail; generic `php artisan` when undefined).
+- **Git Workflow / Git discipline** — honor `settings.git_mode`: `NO_GITFLOW` → current branch, commits only; `GITFLOW` → `feature/US-XXX-*` + atomic commits + PR prepared **without push**; `GITFLOW_PUSH` → same **plus** push and open/update the internal PR toward `develop` after each task. Never commit directly to `main`/`develop` in Gitflow modes.
+- **Test Data — Factories & Seeders** — factory + seeder updated in the **same task** as model/migration changes; `migrate:fresh --seed` verified before `task-done`.
+- **Vendor & Package Policy** — Laravel first-party → Spatie → Filament plugins (only when the PRD chose Filament — never introduce it on your own) → other vetted vendors; Starter Kit specs scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) — never mix a mismatched UI stack. Verify compatibility via `Application Info`; `composer audit` after `composer require`.
+- **Technical Documentation** — update OpenAPI/Swagger in the same spec that changes APIs (**including under `ECO`**); README/CHANGELOG/`security.txt`/`SECURITY.md` when in scope and effort is not `ECO`.
 
-Apply **Laravel Scaffolding Defaults** and **Architecture Standards** from shared-runtime on greenfield work unless the PRD or existing codebase opts out:
+Skill-specific execution notes:
 
-- **Client materials & research:** before implementing, read cited files under `{paths.client_materials}` and `{paths.research}/`; verify acceptance criteria against them
-- **Legacy rewrite/port:** when spec touches legacy parity, read `{paths.legacy}` and `{paths.research}/legacy-parity.md`; preserve behavior and data — Anne verifies migration evidence before `task-done`
-
-- **2FA:** enable Fortify TOTP when implementing auth; expose setup/confirm/recovery flows.
-- **Passwords:** register `Password::defaults()` in `AppServiceProvider` and use `Password::defaults()` in validation rules.
-- **UUIDs:** new models use `HasUuids` (or `HasVersion4Uuids`) and UUID columns in migrations.
-- **Hashing:** ensure `HASH_DRIVER=argon2id` (or `config/hashing.php` → `argon2id`).
-- **SSO:** use Laravel Socialite + [Socialite Providers](https://socialiteproviders.com/) for OAuth; link accounts on User model.
-- **Queues:** implement `ShouldQueue` jobs for async work; never block HTTP on slow I/O.
-- **Logging:** structured log context on auth, payments, and integration failures.
-- **DTOs / services:** service classes for integrations; DTOs at API boundaries when payloads are non-trivial; **SOLID** Actions/Services — no god controllers.
-- **Queries:** eager-load relations used in views/resources/loops (`with` / `loadMissing`); add indexes with migrations for new filter/FK columns; chunk/cursor bulk work — **no N+1** before `task-done`.
-- **Reliability:** `DB::transaction` around multi-model writes; authorize via Policies/Gates; validate with Form Requests (or equivalent).
-- **Docs:** update OpenAPI/Swagger (`public/openapi.yaml` or Scramble/L5-Swagger) in the same spec that changes APIs — **including under `ECO`**. README and other prose docs: only when `effort` is not `ECO`.
-- **Local dev:** honor the local dev method recorded in the PRD — use `sail up` / `sail artisan …` only when the PRD chose Sail; document Herd setup when Herd was chosen; when **not defined yet**, stick to generic `php artisan` in README/tasks until the user decides; use `*.127001.it` in `.env.example` when the PRD calls for shareable local domains
-- **Git:** honor `settings.git_mode`. `NO_GITFLOW` → current branch, commits only. `GITFLOW` → `feature/US-XXX-*` + atomic commits + prepare PR **without push**. `GITFLOW_PUSH` → same **plus** push and open/update internal PR toward `develop` after each task. Never commit directly to `main`/`develop` in Gitflow modes. See **Git discipline** in shared-runtime.
-- **Factories & seeders (Alex):** for every new/changed Eloquent model, create or update `database/factories/{Model}Factory.php` with domain-meaningful Faker data, relationship helpers, and states; keep `DatabaseSeeder` (and dedicated seeders) producing a **coherent demo dataset**; update factory + seeder in the **same task** as migrations/models; verify `migrate:fresh --seed` before `task-done`.
-- **Docs & security files:** add/update `CHANGELOG.md` (Unreleased), `SECURITY.md`, `public/.well-known/security.txt` when in scope.
-- **Alex:** optimizes **FE/BE integration** following **Andrew** (Laravel seams) and **Joe** (design system/UI); involves **Jack** when choices touch deploy, CDN, queues, storage, or CI runners
-- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel and leave primary UI to the FE repo (remind companion sync); otherwise Blade/Livewire/Tailwind (or SPA-in-Laravel stack); **design system aligned with Elise** from mockups through code; **mobile-first responsive** (320 px up, progressive desktop enhancement); extremely navigable on any device/resolution; dark+light; WCAG 2.2 AA; commit **`public/favicon.svg`**, logo, OG image when client did not provide assets; Joe — design-system tokens/components, animations, client bundle/performance, visual fidelity to mockups
-- **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, platform store constraints
-- **Docs (Albert):** when not `ECO`, maintain **baseline** README/architecture docs on every spec; diagrams/PDF only when scoped in plan. Under **`ECO`**: skip README/diagrams/PDF — **still update OpenAPI** when API routes change
-- **Laravel (Andrew):** idiomatic Eloquent, Form Requests, policies, queues, service classes; Spatie/first-party packages per Vendor & Package Policy; cite Laravel docs when introducing non-obvious patterns
-- **Copy (Marika):** no placeholder lorem on shipped surfaces; wire realistic copy in views, notifications, and `lang/` files
-- **Legacy parity (Sabrine):** when Project Origin is legacy, verify each in-scope parity row before `task-done` on migration/feature tasks; flag gaps in handoff
-- **SEO (Emma):** robots/sitemap/llms, breadcrumbs, semantic headings, descriptive links.
-- **Accessibility legal (Violet):** accessibility statement page and regulatory notes when EU/public sector.
-- **Integrations (Matt):** wire third-party APIs/services per plan — OAuth, webhooks, SDK/HTTP clients, queued sync, signature verification; coordinate with Alex; `Http::fake()` tests; document in README; also wire PRD-chosen stack (S3/R2, newsletter, analytics, edge proxies per PRD edge choice, observability)
-- **i18n (Emily):** `lang/` translations, locale middleware/detection, currency/timezone display, market-specific copy — with Violet on legal/cultural strings
-- **Multi-tenancy:** implement chosen pattern per PRD; add isolation tests when Anne requires
-- **High-risk integrations:** note in handoff if **Oliver** red-team pass is recommended before ship (payments, OAuth, webhooks, imports)
-
-When a task requires a new dependency, follow the **Vendor & Package Policy** in shared-runtime: Laravel first-party → **Spatie** → **Filament plugins** (only when the PRD/plan chose Filament for the admin panel — never introduce Filament on your own) → other vetted vendors. When the PRD chose a **Laravel Starter Kit** variant, scaffold and extend per [starter-kits docs](https://laravel.com/docs/starter-kits) — never introduce a mismatched UI stack on your own. Verify version compatibility via `Application Info`, confirm the package is actively maintained, and run `composer audit` after `composer require`.
+- **Client materials & research:** before implementing, read cited files under `{paths.client_materials}` and `{paths.research}/`; verify acceptance criteria against them.
+- **Legacy parity (Sabrine):** when the spec touches legacy parity, read `{paths.legacy}` and `{paths.research}/legacy-parity.md`; preserve behavior and data — verify each in-scope parity row before `task-done`; Anne verifies migration evidence; flag gaps in handoff.
+- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel and leave primary UI to the FE repo (remind companion sync). Otherwise implement per `runtime-ux.md`: design system aligned with Elise from mockups through code, mobile-first responsive (320 px up), dark+light, WCAG 2.2 AA; commit `public/favicon.svg`, logo, OG image when the client provided none. Joe guards tokens/components, animations, bundle/performance, visual fidelity.
+- **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, store constraints.
+- **Copy (Marika):** no placeholder lorem on shipped surfaces; realistic copy in views, notifications, `lang/` files. **i18n (Emily):** `lang/` translations, locale detection, currency/timezone display when in scope.
+- **Integrations (Matt):** wire third-party APIs per plan — OAuth, webhooks + signature verification, SDK/HTTP clients, queued sync, `Http::fake()` tests, README notes; also wire the PRD-chosen stack (storage, newsletter, analytics, edge proxies, observability). **Jack** is involved when choices touch deploy, CDN, queues, storage, or CI runners.
+- **Multi-tenancy:** implement the chosen pattern per PRD; add isolation tests when Anne requires.
+- **High-risk integrations:** note in handoff if an **Oliver** red-team pass is recommended before ship (payments, OAuth, webhooks, imports).
 
 ## Workflow
 
@@ -111,20 +72,20 @@ From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
 
 Group tasks by dependencies. For each task:
 
-1. Alex implements per task body contract — including factory/seeder updates when the task touches entities
+1. Alex implements per the task body contract — including factory/seeder updates when the task touches entities
 2. Anne writes/runs tests per `settings.testing` (`php artisan test` or `./vendor/bin/pest`). **BEST** only: UI viewport matrix 375 / 768 / 1280, browser/E2E tooling, axe at mobile. **NORMAL**/**MINIMAL**: no Playwright/Dusk/E2E
 3. Alex commits (one atomic commit per task). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks)
 4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
 
 ### Phase 2 — Review (sub-agents or inline)
 
-After all tasks are verified, run review per `settings.effort`: **`ECO`** → **no sub-agents**; short inline Robert/Lars checklist only. **`STANDARD`** → two **readonly** passes (Robert + Lars). **`MAX`** → always spawn sub-agents when available, deeper findings. Only the **parent** edits code, re-runs tests, writes review artifact, and calls CLI.
+After all tasks are verified, run review per `settings.effort`: **`ECO`** → **no sub-agents**; short inline Robert/Lars checklist only. **`STANDARD`** → two **readonly** passes (Robert + Lars). **`MAX`** → always spawn sub-agents when available, deeper findings. Only the **parent** edits code, re-runs tests, writes the review artifact, and calls the CLI.
 
 #### Launch
 
 **`ECO`:** do not use the sub-agent tool — stay in the parent and run the inline checklist below.
 
-With a sub-agent tool (Cursor Task tool, Claude Code Agent tool, or equivalent) and `effort` is **`STANDARD`** or **`MAX`**: spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
+With a sub-agent tool and `effort` **`STANDARD`** or **`MAX`**: spawn both passes as **readonly sub-agents in parallel** (one message, two calls, synchronous — not background). Pick the closest available type per pass (see **Type mapping** in shared-runtime):
 
 | Persona   | Pass            | Example types                                             |
 | --------- | --------------- | --------------------------------------------------------- |
@@ -155,14 +116,14 @@ Lars (security review): OWASP Top 10 on branch diff; auth/access-control; compos
 
 1. Deduplicate Robert + Lars bullets; fix all **Critical** and **High** autonomously.
 2. Re-run tests after fixes (`php artisan test` or `./vendor/bin/pest`).
-3. Re-run **Lars only** if auth, policies, or security files changed materially; skip Robert re-run unless code changed widely.
-4. Write `{paths.review}/{code}.md` (from `config-show`; default `.larapilot/docs/review/`) per **Sub-agents** in shared-runtime (Robert, Lars, Parent actions sections).
+3. Re-run **Lars only** if auth, policies, or security files changed materially; skip a Robert re-run unless code changed widely.
+4. Write `{paths.review}/{code}.md` (from `config-show`; default `.larapilot/docs/review/`) per **Sub-agents → Review artifact** in shared-runtime.
 5. Document **Medium** findings in Parent actions if not fixed.
 
 Robert and Lars still speak in character when the **parent** summarizes merged findings in chat (Output Economy bullets).
 
 ### Phase 3 — Handoff
 
-`php artisan larapilot:spec-review {code}` with summary note.
+`php artisan larapilot:spec-review {code}` with a summary note.
 
-Report (concise): spec code, tasks completed, tests run, review outcome — per Output Economy handoff limit.
+Report (concise): spec code, tasks completed, tests run, review outcome — per the Output Economy handoff limit.

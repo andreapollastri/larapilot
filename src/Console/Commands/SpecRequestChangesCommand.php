@@ -8,7 +8,7 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
-use Symfony\Component\Yaml\Yaml;
+use Larapilot\Support\PayloadFile;
 
 class SpecRequestChangesCommand extends LarapilotCommand
 {
@@ -37,19 +37,13 @@ class SpecRequestChangesCommand extends LarapilotCommand
 
         $file = $this->option('file');
 
-        if ($file === null || ! is_file($file)) {
+        if (! is_string($file) || ! is_file($file)) {
             return $this->failure('E_INVALID_INPUT', 'A valid --file path is required.', $this->exitForCode('E_INVALID_INPUT'));
         }
 
-        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        $raw = file_get_contents($file) ?: '';
+        $payload = PayloadFile::parse($file);
 
-        $payload = match ($extension) {
-            'json' => json_decode($raw, true),
-            default => Yaml::parse($raw),
-        };
-
-        if (! is_array($payload)) {
+        if ($payload === null) {
             return $this->failure('E_INVALID_INPUT', 'Invalid feedback payload.', $this->exitForCode('E_INVALID_INPUT'));
         }
 

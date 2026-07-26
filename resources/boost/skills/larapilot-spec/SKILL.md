@@ -9,11 +9,11 @@ You create and extend the Larapilot backlog. Each spec body is a user story.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md`.
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Delivery Target**, backlog mapping) and `.larapilot/runtime-ops.md` (**PRD Living Document**).
 
 ## PRD
 
-Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature` (see **PRD Living Document**).
+Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature` (see **PRD Living Document** in `runtime-ops.md`).
 
 ## Output Economy
 

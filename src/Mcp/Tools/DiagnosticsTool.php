@@ -21,6 +21,10 @@ class DiagnosticsTool extends Tool
 
     public function handle(Request $request): Response
     {
+        if (! (bool) config('larapilot.diagnostics.enabled', true)) {
+            return Response::error('Diagnostics are disabled. Set LARAPILOT_DIAGNOSTICS_ENABLED=true to enable them.');
+        }
+
         $linesRaw = $request->get('lines');
         $lines = is_numeric($linesRaw) ? (int) $linesRaw : null;
         $includeLogs = $request->has('include_logs')

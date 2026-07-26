@@ -310,3 +310,40 @@ it('hides API comment endpoint when comments are disabled', function (): void {
         'message' => 'Should not work.',
     ])->assertNotFound();
 });
+
+it('requires the API token on every request when configured', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+
+    config()->set('larapilot.api.token', 'secret-token');
+
+    $this->getJson('/larapilot/api/board')->assertUnauthorized();
+
+    $this->getJson('/larapilot/api/board', ['Authorization' => 'Bearer wrong'])
+        ->assertUnauthorized();
+
+    $this->getJson('/larapilot/api/board', ['Authorization' => 'Bearer secret-token'])
+        ->assertOk();
+
+    $this->getJson('/larapilot/api/board', ['X-Larapilot-Token' => 'secret-token'])
+        ->assertOk();
+});
+
+it('blocks API writes outside local environments when no token is configured', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'REVIEW']);
+
+    $this->app['env'] = 'staging';
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Unauthenticated write.',
+    ])->assertForbidden();
+
+    config()->set('larapilot.api.token', 'secret-token');
+
+    $this->postJson('/larapilot/api/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Authenticated write.',
+    ], ['Authorization' => 'Bearer secret-token'])->assertCreated();
+});

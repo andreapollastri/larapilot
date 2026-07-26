@@ -335,6 +335,15 @@ class DiagnosticsService
             '/\b(AKIA[0-9A-Z]{16})\b/' => '[REDACTED_AWS_KEY]',
             '/(?i)(\/\/[^:\s\/]+:)[^@\s]+(@)/' => '$1[REDACTED]$2',
             '/(?i)(Bearer\s+)[A-Za-z0-9\-._~+\/]+=*/' => '$1[REDACTED]',
+            // JWTs (header.payload.signature).
+            '/\beyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/' => '[REDACTED_JWT]',
+            // Cookie headers carry session identifiers.
+            '/(?i)\b(cookie|set-cookie)(\s*[:=]\s*).+/' => '$1$2[REDACTED]',
+            // Laravel-style base64 secrets outside APP_KEY assignments.
+            '/\bbase64:[A-Za-z0-9+\/=]{16,}/' => '[REDACTED]',
+            // PEM boundary lines and their base64 body lines.
+            '/-----(BEGIN|END)[A-Z ]*(PRIVATE|PUBLIC)? ?KEY[A-Z ]*-----.*/' => '[REDACTED_PEM]',
+            '/^[A-Za-z0-9+\/=]{40,}$/' => '[REDACTED]',
         ];
 
         $redacted = $line;

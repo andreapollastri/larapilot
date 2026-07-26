@@ -11,10 +11,15 @@ paths:
   prd: .larapilot/docs/PRD.md
   mockups: .larapilot/mockups/
   test_results: .larapilot/docs/test-results/
+  review: .larapilot/docs/review/
+  security: .larapilot/docs/security/
+  launch: .larapilot/docs/launch/
+  support: .larapilot/docs/support/
   client_materials: .larapilot/client-materials/
   legacy: .larapilot/legacy/
   research: .larapilot/research/
   design_systems: .larapilot/design-systems/
+  internal_feedback: .larapilot/internal-feedback/
 
 workflow:
   statuses:
