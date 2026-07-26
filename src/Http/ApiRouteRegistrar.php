@@ -48,6 +48,12 @@ class ApiRouteRegistrar
                 Route::get('/diagnostics', [ApiController::class, 'diagnostics'])
                     ->name('larapilot.api.diagnostics');
 
+                Route::get('/backstage', [ApiController::class, 'backstage'])
+                    ->name('larapilot.api.backstage');
+
+                Route::get('/backstage/catalog-info.yaml', [ApiController::class, 'backstageCatalog'])
+                    ->name('larapilot.api.backstage.catalog');
+
                 Route::get('/openapi.json', [ApiController::class, 'openapi'])
                     ->name('larapilot.api.openapi');
 

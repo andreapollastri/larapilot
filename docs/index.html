@@ -1224,7 +1224,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.1.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.2.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1264,6 +1264,7 @@
       <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
       <a class="sub" href="#deep-dive-design-systems">Design systems</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
+      <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
       <a class="sub" href="#deep-dive-api">API</a>
@@ -1364,7 +1365,8 @@
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
             <code>/larapilot-autopilot</code> to batch plan+implement ·
-            <code>/larapilot-settings</code> for project modes.
+            <code>/larapilot-settings</code> for project modes ·
+            <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a>.
           </p>
         </div>
 
@@ -2371,7 +2373,8 @@ companion-sync.md        ← when/how you last synced</code></pre>
           <span class="section-label">Deep Dive</span>
           <h2>Technical reference</h2>
           <p>Skills, <a href="#deep-dive-settings">settings</a>, personas, workflow, artifacts, design systems,
-            <a href="#deep-dive-frontend-companion">frontend companion</a>, CLI, dashboard, and API — how every layer
+            <a href="#deep-dive-frontend-companion">frontend companion</a>,
+            <a href="#deep-dive-backstage">Backstage portal</a>, CLI, dashboard, and API — how every layer
             fits together.</p>
         </div>
 
@@ -2657,6 +2660,20 @@ companion-sync.md        ← when/how you last synced</code></pre>
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
                   <code>larapilot:config-show</code> — read <code>data.settings</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">portal</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-backstage</code></h3>
+                <p>Publishes the repo into a <strong>Backstage</strong> developer portal — catalog entity
+                  (<code>catalog-info.yaml</code>) plus TechDocs generated from PRD and backlog. Asks for owner,
+                  system, and lifecycle, then generates. Full reference:
+                  <a href="#deep-dive-backstage">Backstage portal</a>.
+                </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:backstage-export</code> (preview) ·
+                  <code>--write</code> to generate.
                 </p>
               </div>
             </div>
@@ -3579,6 +3596,307 @@ companion-sync.md        ← when/how you last synced</code></pre>
           </div>
         </article>
 
+        <!-- Backstage portal -->
+        <article class="deep-dive-sub" id="deep-dive-backstage">
+          <h3>Backstage portal</h3>
+          <p class="lead">Larapilot is <strong>repo-level</strong>; <a href="https://backstage.io" target="_blank"
+              rel="noopener">Backstage</a> is <strong>org-level</strong>. The integration publishes
+            <code>.larapilot/</code> into the developer portal — a catalog entity, a TechDocs site built from the PRD
+            and backlog, and a live delivery snapshot. The direction is one-way: the workspace stays the source of
+            truth, and workflow state never changes from the portal.
+          </p>
+
+          <h4>When it is worth it</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>No Backstage in the organization</td>
+                  <td>Skip it — the <a href="#deep-dive-dashboard">dashboard</a> already covers a single repo</td>
+                </tr>
+                <tr>
+                  <td>Backstage exists, one Laravel repo</td>
+                  <td>Catalog entity + TechDocs — the PRD and backlog become discoverable next to every other service
+                  </td>
+                </tr>
+                <tr>
+                  <td>Backstage with several Larapilot repos</td>
+                  <td>The real payoff — an entity provider polling <code>/backstage</code> gives one org-wide view of
+                    delivery state</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Generate</h4>
+          <div class="code-block">
+            <div class="code-block-header">Editor</div>
+            <pre><code>/larapilot-backstage</code></pre>
+          </div>
+          <p>The skill asks for <strong>owner</strong>, <strong>system</strong>, and <strong>lifecycle</strong>,
+            persists them to <code>.env</code>, then generates. Equivalent CLI:</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:backstage-export           # preview the bundle — writes nothing
+php artisan larapilot:backstage-export --write   # generate catalog + TechDocs
+php artisan larapilot:backstage-export --write --force        # overwrite existing files
+php artisan larapilot:backstage-export --write --no-techdocs  # catalog entity only</code></pre>
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Generated</th>
+                  <th>Contents</th>
+                  <th>Overwritten?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>catalog-info.yaml</code> (repo root)</td>
+                  <td><code>Component</code> entity, plus one <code>API</code> entity per OpenAPI contract found
+                    (<code>storage/api-docs/api-docs.json</code>, <code>openapi.json</code>,
+                    <code>docs/openapi.json</code>, <code>.larapilot/openapi-product.json</code>)</td>
+                  <td>Only with <code>--force</code></td>
+                </tr>
+                <tr>
+                  <td><code>mkdocs.yml</code> (repo root)</td>
+                  <td>TechDocs config — <code>docs_dir: .larapilot/techdocs</code>, plugin
+                    <code>techdocs-core</code>, nav over PRD and backlog</td>
+                  <td>Only with <code>--force</code></td>
+                </tr>
+                <tr>
+                  <td><code>.larapilot/techdocs/</code></td>
+                  <td><code>index.md</code> (delivery snapshot), <code>prd.md</code>,
+                    <code>backlog/index.md</code>, <code>backlog/US-XXX.md</code> (spec body, plan, task checklist)
+                  </td>
+                  <td>Always — pages for deleted specs are pruned</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The two root files may already belong to the project (an existing catalog entry, an existing MkDocs site),
+            so Larapilot keeps them unless you pass <code>--force</code>; the envelope's <code>data.hint</code> names
+            what was kept. Everything under <code>.larapilot/techdocs/</code> is generated output — fix the PRD or the
+            spec and regenerate rather than editing a page.</p>
+
+          <h4>Catalog entity</h4>
+          <div class="code-block">
+            <div class="code-block-header">catalog-info.yaml</div>
+            <pre><code>apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: acme-shop
+  namespace: default
+  title: 'Acme Shop'
+  description: 'A thing.'          # PRD elevator pitch, when present
+  annotations:
+    backstage.io/techdocs-ref: 'dir:.'
+    larapilot.io/version: 2.2.0
+    larapilot.io/workspace: .larapilot
+    larapilot.io/prd: .larapilot/docs/PRD.md
+    larapilot.io/board-url: 'https://staging.acme.test/larapilot'
+    larapilot.io/api-url: 'https://staging.acme.test/larapilot/api'
+  tags: [laravel, larapilot]
+spec:
+  type: service
+  lifecycle: production
+  owner: 'group:default/platform'
+  system: commerce
+  providesApis:
+    - acme-shop-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: acme-shop-api
+  title: 'Acme Shop API'
+spec:
+  type: openapi
+  lifecycle: production
+  owner: 'group:default/platform'
+  definition:
+    $text: ./openapi.json          # resolved by Backstage relative to this file</code></pre>
+          </div>
+          <p>The name defaults to a slug of <code>app.name</code>, the description to the PRD
+            <strong>Elevator Pitch</strong> (falling back to the composer description), and the
+            <code>larapilot.io/*</code> annotations let a plugin locate the board and API for this entity.</p>
+
+          <h4>Catalog identity</h4>
+          <p>Identity describes the <em>org catalog</em>, not the delivery workflow — so it lives in Laravel config and
+            <code>.env</code>, not in <code>.larapilot/config.yaml</code>. Never set it with
+            <code>larapilot:settings-set</code>.
+          </p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Env var</th>
+                  <th>Default</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_ENABLED</code></td>
+                  <td><code>true</code></td>
+                  <td>Master switch — <code>false</code> also hides the API endpoints</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_OWNER</code></td>
+                  <td><code>guests</code></td>
+                  <td><strong>Set this.</strong> Backstage Group/User that owns the entity (<code>platform</code> or
+                    <code>group:default/payments</code>); unresolvable owners show as dangling refs</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_SYSTEM</code></td>
+                  <td>—</td>
+                  <td>Parent System entity, when your org models them</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_LIFECYCLE</code></td>
+                  <td><code>experimental</code></td>
+                  <td><code>experimental</code> · <code>production</code> · <code>deprecated</code></td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_COMPONENT_TYPE</code></td>
+                  <td><code>service</code></td>
+                  <td><code>service</code> · <code>website</code> · <code>library</code></td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_NAME</code></td>
+                  <td>slug of <code>app.name</code></td>
+                  <td>Entity name override (also <code>_TITLE</code>, <code>_DESCRIPTION</code>,
+                    <code>_NAMESPACE</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_BASE_URL</code></td>
+                  <td><code>app.url</code></td>
+                  <td>Base URL for catalog links and annotations — <strong>non-production only</strong></td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_TECHDOCS</code></td>
+                  <td><code>true</code></td>
+                  <td>Generate the TechDocs site alongside the catalog entity</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_BACKSTAGE_WORKFLOW_API</code></td>
+                  <td><code>false</code></td>
+                  <td>Also register the dev-only Larapilot API as its own <code>API</code> entity — tooling, not a
+                    product contract</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>php artisan larapilot:config-show</code> reports the resolved mapping under
+            <code>data.backstage</code> (entity ref, owner, system, lifecycle, TechDocs paths, whether the catalog file
+            exists).</p>
+
+          <h4>TechDocs</h4>
+          <p>MkDocs config and sources are generated together, so Backstage builds the docs site straight from the
+            repository:</p>
+          <div class="code-block">
+            <div class="code-block-header">mkdocs.yml</div>
+            <pre><code>site_name: 'Acme Shop'
+site_description: 'A thing.'
+docs_dir: .larapilot/techdocs
+plugins:
+  - techdocs-core
+nav:
+  - Overview: index.md
+  - 'Product Requirements': prd.md
+  - Backlog:
+      - Overview: backlog/index.md
+      - 'US-001 — Login': backlog/US-001.md</code></pre>
+          </div>
+          <p>Specs and plans are YAML on disk, so each story page is rendered to Markdown: status/priority/points/epic
+            table, task progress, internal-feedback counts, then the spec body, the technical plan, and the task
+            checklist. Internal feedback bodies stay in the repo — only counts are published.</p>
+
+          <h4>Live delivery data</h4>
+          <p>For a Backstage frontend plugin or entity provider, two endpoints share the
+            <a href="#deep-dive-api">API</a> gate (dev/staging only):</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Endpoint</th>
+                  <th>Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GET /larapilot/api/backstage</code></td>
+                  <td>Entities, rendered YAML, TechDocs metadata, and <code>snapshot</code> — metrics, per-status
+                    counts, blocking feedback, and a story list <em>without</em> spec bodies or plan text, so a portal
+                    can poll many repos cheaply</td>
+                </tr>
+                <tr>
+                  <td><code>GET /larapilot/api/backstage/catalog-info.yaml</code></td>
+                  <td>The same entities as a YAML descriptor, consumable as a Backstage <code>url</code> location</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">GET /larapilot/api/backstage → data.snapshot (excerpt)</div>
+            <pre><code>{
+  "entity_ref": "component:default/acme-shop",
+  "metrics": { "total": 12, "done": 5, "completion_rate": 41.7, "total_tasks": 61, "done_tasks": 40 },
+  "counts_by_status": { "TODO": 5, "PLANNED": 2, "IN PROGRESS": 1, "REVIEW": 1, "DONE": 3 },
+  "blocking_feedback": { "count": 1, "specs": ["US-003"] },
+  "stories": [
+    {
+      "code": "US-001", "title": "Login", "status": "PLANNED", "priority": "HIGH", "points": 3,
+      "tasks": { "total": 2, "done": 0 }, "blocking_feedback": 0,
+      "techdocs_path": "backlog/US-001.md"
+    }
+  ],
+  "links": { "board": "https://staging.acme.test/larapilot", "api": "https://staging.acme.test/larapilot/api" }
+}</code></pre>
+          </div>
+
+          <div class="cli-note"><strong>Proxy the API, never expose it.</strong> Call these endpoints through the
+            Backstage <strong>backend proxy</strong> so <code>LARAPILOT_API_TOKEN</code> stays server-side — never from
+            browser code, and never against a production host (the API returns <code>404</code> there by design). If
+            the portal cannot reach a dev/staging environment, ship the committed <code>catalog-info.yaml</code> and
+            TechDocs instead of the live endpoints.
+          </div>
+
+          <h4>Register &amp; keep fresh</h4>
+          <ul>
+            <li>Commit <code>catalog-info.yaml</code>, <code>mkdocs.yml</code>, and
+              <code>.larapilot/techdocs/</code> on the default branch.</li>
+            <li>In Backstage: <strong>Create → Register existing component</strong> → paste the repo URL of
+              <code>catalog-info.yaml</code>. Orgs with catalog discovery configured skip this step.</li>
+            <li>TechDocs builds from <code>mkdocs.yml</code>; the <code>backstage.io/techdocs-ref: dir:.</code>
+              annotation is already set.</li>
+            <li>Regenerate after PRD, backlog, or plan changes — a CI job on the default branch running
+              <code>--write --force</code> and committing the diff keeps the portal from drifting.</li>
+          </ul>
+
+          <h4>Personas &amp; boundaries</h4>
+          <ul>
+            <li><strong>Matt</strong> — owns the catalog mapping: owner, system, lifecycle, which APIs get registered
+            </li>
+            <li><strong>Jack</strong> — CI regeneration and environment reachability</li>
+            <li><strong>Albert</strong> — TechDocs nav and readability</li>
+            <li><strong>Lars</strong> — token/proxy boundary; the portal is never pointed at production</li>
+          </ul>
+          <div class="cli-note"><strong>The portal renders; it does not drive.</strong> Backstage is a read surface
+            over <code>.larapilot/</code>. Scope changes still go through
+            <code>/larapilot-inception</code>, <code>/larapilot-feature</code>, or the PRD living document, and status
+            still moves only through skills and Artisan.
+          </div>
+        </article>
+
         <!-- Artisan CLI -->
         <article class="deep-dive-sub" id="deep-dive-cli">
           <h3>Artisan CLI</h3>
@@ -3669,13 +3987,22 @@ companion-sync.md        ← when/how you last synced</code></pre>
                   <td><code>larapilot:metrics</code></td>
                   <td>Dashboard, progress reporting</td>
                 </tr>
+                <tr>
+                  <td>Developer portal</td>
+                  <td><code>larapilot:backstage-export</code> (<code>--write</code>, <code>--force</code>,
+                    <code>--no-techdocs</code>, <code>--file=</code>, <code>--api-base=</code>)
+                  </td>
+                  <td><code>/larapilot-backstage</code>, CI catalog refresh — see <a
+                      href="#deep-dive-backstage">Backstage portal</a></td>
+                </tr>
               </tbody>
             </table>
           </div>
 
           <p>MCP exposes backlog, spec, and <strong>diagnostics</strong> tools — <code>larapilot</code> server
             alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during
-            conversation (including <code>larapilot:diagnostics</code> via <code>RunArtisanTool</code>).
+            conversation (including <code>larapilot:diagnostics</code> and <code>larapilot:backstage-export</code> via
+            <code>RunArtisanTool</code>).
           </p>
         </article>
 
@@ -3848,6 +4175,21 @@ companion-sync.md        ← when/how you last synced</code></pre>
                   <td>Companion bundle for an external frontend — PRD, parsed
                     <strong>Frontend Topology</strong>, optional product OpenAPI snapshot, sync instructions. Full
                     guide: <a href="#deep-dive-frontend-companion">Frontend companion</a>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/backstage</code></td>
+                  <td>Backstage catalog entities, rendered <code>catalog-info.yaml</code>, TechDocs metadata, and a
+                    lean delivery <code>snapshot</code> for a portal plugin. Full guide:
+                    <a href="#deep-dive-backstage">Backstage portal</a>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/backstage/catalog-info.yaml</code></td>
+                  <td>The same entities as a multi-document YAML descriptor — consumable as a Backstage
+                    <code>url</code> location
                   </td>
                 </tr>
                 <tr>

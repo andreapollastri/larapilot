@@ -14,4 +14,6 @@ it('does not register dev routes when larapilot is disabled', function (): void 
 
     $this->get('/mockups/US-001')->assertNotFound();
     $this->get('/larapilot')->assertNotFound();
+    $this->get('/larapilot/api/backstage')->assertNotFound();
+    $this->get('/larapilot/api/backstage/catalog-info.yaml')->assertNotFound();
 });

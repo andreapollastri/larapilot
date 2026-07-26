@@ -17,6 +17,7 @@ Use Larapilot skills when the user wants to:
 - Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
 - Report or triage a **bug** (`larapilot-bug`)
 - Sync a shared PRD into an **external frontend repo** (`larapilot-frontend-companion`)
+- Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -38,6 +39,7 @@ Use Larapilot skills when the user wants to:
 | Acceptance | `larapilot-review` | DONE or rework feedback |
 | Ship (optional) | `larapilot-ship` | Security assessment + deploy + web launch checks |
 | Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` in `.larapilot/config.yaml` |
+| Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
 
 ### Installation
 
@@ -65,6 +67,7 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:companion-export` _(optional `--file=` / `--api-base=` — bundle for external FE)_
+- `php artisan larapilot:backstage-export` _(read-only; `--write [--force] [--no-techdocs]` generates the Backstage catalog + TechDocs)_
 - `php artisan larapilot:spec-list`
 - `php artisan larapilot:spec-add --file=...`
 - `php artisan larapilot:spec-show US-001`

@@ -33,7 +33,7 @@ Greenfield — repeat steps 3–5 per user story:
 | One new capability on an existing product | `/larapilot-feature "…"` |
 | Defect or regression | `/larapilot-bug "…"` |
 
-Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement · `/larapilot-settings` for project effort / backlog granularity / git / testing modes.
+Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement · `/larapilot-settings` for project effort / backlog granularity / git / testing modes · `/larapilot-backstage` to publish the repo into a Backstage developer portal.
 
 Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
 
@@ -50,6 +50,7 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 | `mockups/{spec}/` | Static HTML previews (optional) |
 | `internal-feedback/{code}.md` | PM/dev comments until **DONE** |
 | `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) |
+| `techdocs/` | Generated Backstage TechDocs sources (only after `larapilot:backstage-export --write`) |
 
 Skills write artifacts; the workflow engine blocks invalid state transitions (e.g. implement before plan, approve before review, approve with open `[blocks-merge]` feedback or unfinished tasks — override with `--force`).
 
@@ -82,6 +83,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / backlog granularity / git mode / testing / auto-approve for the project |
+| `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 
 During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
@@ -94,6 +96,7 @@ When the dashboard is browsable (never in production):
 - **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/companion`** — PRD + frontend topology bundle for an external frontend repo
+- **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
 **API auth:** set `LARAPILOT_API_TOKEN` to require a bearer token (or `X-Larapilot-Token` header) on every `/larapilot/api/*` request — strongly recommended on shared staging hosts. Without a token, reads stay open in the allowed environments, but **writes are refused outside local/development/testing**.
@@ -115,6 +118,52 @@ Read-only runtime snapshot for `/larapilot-bug` and local debugging — **never 
 **Config** (`config/larapilot.php` / env): `LARAPILOT_DIAGNOSTICS_ENABLED` (default `true`), `LARAPILOT_DIAGNOSTICS_LOG_LINES` (default `100`), `LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES` (default `500`).
 
 Workflow **state** still changes only via skills or Artisan — not from the dashboard or API.
+
+---
+
+## Developer portal — Backstage
+
+Larapilot is repo-level; [Backstage](https://backstage.io) is org-level. The integration publishes `.larapilot/` into the portal — **one way**. The workspace stays the source of truth and workflow state never changes from Backstage.
+
+```bash
+php artisan larapilot:backstage-export           # preview the bundle (writes nothing)
+php artisan larapilot:backstage-export --write   # generate catalog + TechDocs
+```
+
+Or run `/larapilot-backstage`, which asks for owner/system/lifecycle first and persists them to `.env`.
+
+| Generated | Contents |
+| --- | --- |
+| `catalog-info.yaml` (repo root) | `Component` entity + one `API` entity per OpenAPI contract found (`storage/api-docs/api-docs.json`, `openapi.json`, …) |
+| `mkdocs.yml` (repo root) | TechDocs config — `docs_dir: .larapilot/techdocs`, plugin `techdocs-core` |
+| `.larapilot/techdocs/` | `index.md` (delivery snapshot), `prd.md`, `backlog/index.md`, `backlog/US-XXX.md` (spec + plan + tasks) |
+
+`catalog-info.yaml` and `mkdocs.yml` are **never overwritten** without `--force` — a project may already own them. Everything under `.larapilot/techdocs/` is regenerated, and pages for deleted specs are pruned. `--no-techdocs` generates the catalog entity only.
+
+**Catalog identity** lives in Laravel config / `.env` (not `.larapilot/config.yaml` — it describes the org catalog, not the delivery workflow):
+
+| Env var | Default | Purpose |
+| --- | --- | --- |
+| `LARAPILOT_BACKSTAGE_ENABLED` | `true` | Master switch for the integration and its endpoints |
+| `LARAPILOT_BACKSTAGE_OWNER` | `guests` | Backstage Group/User that owns the entity — **set this**, Backstage flags unresolvable owners |
+| `LARAPILOT_BACKSTAGE_SYSTEM` | — | Parent System entity, when your org uses them |
+| `LARAPILOT_BACKSTAGE_LIFECYCLE` | `experimental` | `experimental` · `production` · `deprecated` |
+| `LARAPILOT_BACKSTAGE_COMPONENT_TYPE` | `service` | Backstage component type |
+| `LARAPILOT_BACKSTAGE_NAME` | slug of `app.name` | Entity name override |
+| `LARAPILOT_BACKSTAGE_BASE_URL` | `app.url` | Base URL for catalog links/annotations — **non-production only** |
+| `LARAPILOT_BACKSTAGE_TECHDOCS` | `true` | Generate the TechDocs site |
+| `LARAPILOT_BACKSTAGE_WORKFLOW_API` | `false` | Also register the dev-only Larapilot API as an `API` entity |
+
+### Live delivery data
+
+For a Backstage plugin or entity provider, two endpoints share the dashboard gate (dev/staging only):
+
+- **`GET /larapilot/api/backstage`** — catalog entities, rendered YAML, TechDocs metadata, and a lean `snapshot` (metrics, per-status counts, blocking feedback, story list without bodies) built for polling many repos
+- **`GET /larapilot/api/backstage/catalog-info.yaml`** — the same entities as a Backstage `url` location
+
+Call them through the **Backstage backend proxy** so `LARAPILOT_API_TOKEN` stays server-side. The API returns `404` in production by design — if the portal cannot reach a dev/staging host, ship the committed `catalog-info.yaml` and TechDocs instead.
+
+Keep the catalog fresh with a CI step on the default branch (`--write --force`) or by re-running `/larapilot-backstage` after PRD and backlog milestones. `php artisan larapilot:config-show` reports the current mapping under `data.backstage`.
 
 ---
 
@@ -185,6 +234,7 @@ Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --ski
 - [Why & how it works](https://larapilot.web.ap.it/#how-it-works)
 - [Five walkthrough examples](https://larapilot.web.ap.it/#examples) — new product, legacy port, feature, bug, frontend companion
 - [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion) — split FE repo + shared PRD sync
+- [Backstage portal](https://larapilot.web.ap.it/#deep-dive-backstage) — catalog entity, TechDocs, delivery snapshot
 - [Design systems](https://larapilot.web.ap.it/#deep-dive-design-systems)
 - [Team personas](https://larapilot.web.ap.it/#deep-dive-team)
 

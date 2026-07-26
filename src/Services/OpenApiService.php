@@ -20,7 +20,8 @@ class OpenApiService
                 'version' => '1.0.0',
                 'description' => 'JSON API for the Larapilot workflow board. '
                     .'Exposes backlog specs (user stories), plans, tasks, mockups, internal feedback, the PRD, '
-                    .'a companion artifact bundle for external frontend repos, and read-only diagnostics from `.larapilot/` artifacts. '
+                    .'a companion artifact bundle for external frontend repos, a Backstage catalog/TechDocs bundle, '
+                    .'and read-only diagnostics from `.larapilot/` artifacts. '
                     .'Read endpoints are available in the same environments where the `/larapilot` dashboard is browsable (never in production). '
                     .'POST `/specs/{code}/comments` appends internal feedback when comments are enabled.',
             ],
@@ -33,6 +34,7 @@ class OpenApiService
                 ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
                 ['name' => 'Companion', 'description' => 'Shared PRD/topology bundle for an external frontend repository'],
+                ['name' => 'Backstage', 'description' => 'Software-catalog entities, TechDocs metadata, and a delivery snapshot for backstage.io'],
                 ['name' => 'Diagnostics', 'description' => 'Read-only runtime status and redacted log tail for bug triage'],
             ],
             'paths' => [
@@ -179,6 +181,47 @@ class OpenApiService
                                 'content' => [
                                     'application/json' => [
                                         'schema' => ['$ref' => '#/components/schemas/CompanionResponse'],
+                                    ],
+                                ],
+                            ],
+                            '404' => ['$ref' => '#/components/responses/NotFound'],
+                        ],
+                    ],
+                ],
+                '/backstage' => [
+                    'get' => [
+                        'tags' => ['Backstage'],
+                        'summary' => 'Backstage integration bundle',
+                        'description' => 'Returns the Backstage software-catalog entities generated from this repository (Component plus an API entity per registered OpenAPI contract), '
+                            .'the rendered `catalog-info.yaml`, TechDocs metadata, and a lean delivery snapshot (metrics, per-status counts, blocking feedback, story list). '
+                            .'Intended for a Backstage entity provider or frontend plugin, proxied through the Backstage backend so the API token stays server-side.',
+                        'operationId' => 'getBackstageBundle',
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Backstage bundle',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/BackstageResponse'],
+                                    ],
+                                ],
+                            ],
+                            '404' => ['$ref' => '#/components/responses/NotFound'],
+                        ],
+                    ],
+                ],
+                '/backstage/catalog-info.yaml' => [
+                    'get' => [
+                        'tags' => ['Backstage'],
+                        'summary' => 'Backstage catalog descriptor',
+                        'description' => 'Returns the same entities as a multi-document YAML catalog descriptor, ready to consume as a Backstage `url` location. '
+                            .'Prefer committing the generated `catalog-info.yaml` to the repository: this endpoint is only browsable outside production.',
+                        'operationId' => 'getBackstageCatalogInfo',
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Catalog descriptor',
+                                'content' => [
+                                    'application/yaml' => [
+                                        'schema' => ['type' => 'string'],
                                     ],
                                 ],
                             ],
@@ -564,6 +607,113 @@ class OpenApiService
                             ],
                         ],
                         'required' => ['generated_at', 'source', 'skill', 'artifacts', 'endpoints', 'instructions'],
+                    ],
+                    'BackstageEntity' => [
+                        'type' => 'object',
+                        'description' => 'A Backstage catalog entity (kind Component or API) in backstage.io/v1alpha1 form.',
+                        'properties' => [
+                            'apiVersion' => ['type' => 'string', 'example' => 'backstage.io/v1alpha1'],
+                            'kind' => ['type' => 'string', 'enum' => ['Component', 'API']],
+                            'metadata' => ['type' => 'object', 'additionalProperties' => true],
+                            'spec' => ['type' => 'object', 'additionalProperties' => true],
+                        ],
+                        'required' => ['apiVersion', 'kind', 'metadata', 'spec'],
+                    ],
+                    'BackstageStory' => [
+                        'type' => 'object',
+                        'description' => 'Backlog entry reduced to what a Backstage card renders — no spec body or plan text.',
+                        'properties' => [
+                            'code' => ['type' => 'string', 'example' => 'US-001'],
+                            'title' => ['type' => 'string'],
+                            'status' => ['type' => 'string', 'example' => 'IN PROGRESS'],
+                            'priority' => ['type' => 'string'],
+                            'points' => ['type' => 'integer', 'minimum' => 0],
+                            'epic' => ['$ref' => '#/components/schemas/Epic', 'nullable' => true],
+                            'tasks' => ['$ref' => '#/components/schemas/TaskProgress'],
+                            'blocking_feedback' => ['type' => 'integer', 'minimum' => 0],
+                            'techdocs_path' => ['type' => 'string', 'nullable' => true, 'example' => 'backlog/US-001.md'],
+                        ],
+                        'required' => ['code', 'title', 'status', 'tasks', 'blocking_feedback'],
+                    ],
+                    'BackstageSnapshot' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'generated_at' => ['type' => 'string', 'format' => 'date-time'],
+                            'entity_ref' => ['type' => 'string', 'example' => 'component:default/checkout'],
+                            'component' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => ['type' => 'string'],
+                                    'namespace' => ['type' => 'string'],
+                                    'title' => ['type' => 'string'],
+                                    'lifecycle' => ['type' => 'string'],
+                                    'owner' => ['type' => 'string'],
+                                    'system' => ['type' => 'string', 'nullable' => true],
+                                ],
+                            ],
+                            'metrics' => ['type' => 'object', 'additionalProperties' => true],
+                            'status_order' => ['type' => 'array', 'items' => ['type' => 'string']],
+                            'counts_by_status' => ['type' => 'object', 'additionalProperties' => ['type' => 'integer']],
+                            'blocking_feedback' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'count' => ['type' => 'integer', 'minimum' => 0],
+                                    'specs' => ['type' => 'array', 'items' => ['type' => 'string']],
+                                ],
+                            ],
+                            'prd' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'available' => ['type' => 'boolean'],
+                                    'path' => ['type' => 'string'],
+                                ],
+                            ],
+                            'stories' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/BackstageStory'],
+                            ],
+                            'links' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'board' => ['type' => 'string', 'nullable' => true],
+                                    'api' => ['type' => 'string', 'nullable' => true],
+                                ],
+                            ],
+                        ],
+                        'required' => ['generated_at', 'entity_ref', 'component', 'metrics', 'counts_by_status', 'stories'],
+                    ],
+                    'BackstageResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'generated_at' => ['type' => 'string', 'format' => 'date-time'],
+                            'source' => ['type' => 'string', 'example' => 'larapilot'],
+                            'version' => ['type' => 'string', 'example' => '2.2.0'],
+                            'skill' => ['type' => 'string', 'example' => 'larapilot-backstage'],
+                            'catalog' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'path' => ['type' => 'string', 'example' => 'catalog-info.yaml'],
+                                    'entity_refs' => ['type' => 'array', 'items' => ['type' => 'string']],
+                                    'entities' => [
+                                        'type' => 'array',
+                                        'items' => ['$ref' => '#/components/schemas/BackstageEntity'],
+                                    ],
+                                    'yaml' => ['type' => 'string', 'description' => 'Rendered multi-document catalog-info.yaml'],
+                                ],
+                            ],
+                            'techdocs' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'enabled' => ['type' => 'boolean'],
+                                    'docs_dir' => ['type' => 'string', 'example' => '.larapilot/techdocs'],
+                                    'mkdocs_path' => ['type' => 'string', 'example' => 'mkdocs.yml'],
+                                    'pages' => ['type' => 'array', 'items' => ['type' => 'string']],
+                                ],
+                            ],
+                            'snapshot' => ['$ref' => '#/components/schemas/BackstageSnapshot'],
+                            'instructions' => ['type' => 'array', 'items' => ['type' => 'string']],
+                        ],
+                        'required' => ['generated_at', 'source', 'version', 'catalog', 'techdocs', 'snapshot', 'instructions'],
                     ],
                     'DiagnosticsCheck' => [
                         'type' => 'object',

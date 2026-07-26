@@ -157,9 +157,11 @@ class CompanionService
     }
 
     /**
-     * @return array{path: string, content: string}|null
+     * Absolute path of the product's own OpenAPI contract, when the project
+     * publishes one in a conventional location. Shared with the Backstage
+     * integration, which registers it as an API entity definition.
      */
-    protected function productOpenApiSnapshot(): ?array
+    public function productOpenApiPath(): ?string
     {
         $candidates = [
             base_path('storage/api-docs/api-docs.json'),
@@ -179,12 +181,32 @@ class CompanionService
                 continue;
             }
 
-            return [
-                'path' => $path,
-                'content' => $content,
-            ];
+            return $path;
         }
 
         return null;
+    }
+
+    /**
+     * @return array{path: string, content: string}|null
+     */
+    protected function productOpenApiSnapshot(): ?array
+    {
+        $path = $this->productOpenApiPath();
+
+        if ($path === null) {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        if ($content === false) {
+            return null;
+        }
+
+        return [
+            'path' => $path,
+            'content' => $content,
+        ];
     }
 }

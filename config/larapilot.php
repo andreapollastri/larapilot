@@ -49,6 +49,49 @@ return [
         'max_log_lines' => (int) env('LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES', 500),
     ],
 
+    // Backstage (backstage.io) software catalog integration. Turns the
+    // .larapilot/ workspace into a catalog-info.yaml descriptor, a TechDocs
+    // site, and a live delivery snapshot for a Backstage plugin or entity
+    // provider. Nothing is written until larapilot:backstage-export --write.
+    'backstage' => [
+        'enabled' => env('LARAPILOT_BACKSTAGE_ENABLED', true),
+
+        // Entity identity. `name` defaults to a slug of app.name; `title` and
+        // `description` fall back to app.name and the PRD elevator pitch.
+        'name' => env('LARAPILOT_BACKSTAGE_NAME'),
+        'namespace' => env('LARAPILOT_BACKSTAGE_NAMESPACE', 'default'),
+        'title' => env('LARAPILOT_BACKSTAGE_TITLE'),
+        'description' => env('LARAPILOT_BACKSTAGE_DESCRIPTION'),
+
+        // Backstage requires an owner on Component/API entities. Accepts a
+        // bare group name ("platform") or a full ref ("group:default/platform").
+        'owner' => env('LARAPILOT_BACKSTAGE_OWNER', 'guests'),
+
+        // Optional parent System entity ref ("checkout" or "system:default/checkout").
+        'system' => env('LARAPILOT_BACKSTAGE_SYSTEM'),
+
+        'component_type' => env('LARAPILOT_BACKSTAGE_COMPONENT_TYPE', 'service'),
+        'lifecycle' => env('LARAPILOT_BACKSTAGE_LIFECYCLE', 'experimental'),
+        'tags' => ['laravel', 'larapilot'],
+
+        // Absolute base URL used for catalog links/annotations (board + API).
+        // Falls back to app.url; the HTTP endpoints use the request host.
+        'base_url' => env('LARAPILOT_BACKSTAGE_BASE_URL'),
+
+        // Files written into the project by larapilot:backstage-export --write.
+        'catalog_file' => 'catalog-info.yaml',
+        'mkdocs_file' => 'mkdocs.yml',
+
+        'techdocs' => [
+            'enabled' => env('LARAPILOT_BACKSTAGE_TECHDOCS', true),
+            'docs_dir' => '.larapilot/techdocs',
+        ],
+
+        // Register the dev-only Larapilot workflow API as its own Backstage
+        // API entity. Off by default: it is tooling, not a product contract.
+        'workflow_api' => env('LARAPILOT_BACKSTAGE_WORKFLOW_API', false),
+    ],
+
     'mockups_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockups',

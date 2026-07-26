@@ -1,6 +1,6 @@
 # Larapilot Runtime — Ops & Lifecycle
 
-Phase pack for **`larapilot-feature`**, **`larapilot-bug`**, and **`larapilot-ship`**. Read `.larapilot/shared-runtime.md` (core) first.
+Phase pack for **`larapilot-feature`**, **`larapilot-bug`**, **`larapilot-ship`**, and **`larapilot-backstage`**. Read `.larapilot/shared-runtime.md` (core) first.
 
 Skill workflows are not repeated here: incremental feature intake lives in the **`larapilot-feature`** skill; bug triage and routing live in the **`larapilot-bug`** skill. This pack holds the shared lifecycle policies both depend on.
 
@@ -107,3 +107,39 @@ Ownership: **Sophia** owns intake, triage, and maintenance backlog hygiene; **La
 Oliver does **not** fix code — he documents attack paths, PoC steps, severity, and affected endpoints in `{paths.security}/red-team-{release-or-spec}.md` (path from `config-show`). Lars merges Oliver's report with the blue-team OWASP review; Critical/High findings block ship until fixed or explicitly waived.
 
 Ownership: **Oliver** owns offensive testing and red-team reports; **Lars** owns remediation priority, security gates, and GO/NO-GO; **Alex** fixes; **Anne** adds regression tests for confirmed vulnerabilities.
+
+## Developer Portal — Backstage _(Matt owns — integration surface)_
+
+**Backstage** (backstage.io) is an **org-level portal**: a catalog of every service, its owner, docs, and APIs. Larapilot is a **repo-level** workflow. The integration publishes the repo's `.larapilot/` truth into the portal — it never moves the workflow into Backstage.
+
+**Direction is one-way.** `.larapilot/` is the source of truth; Backstage renders it. Workflow state changes only through skills and `larapilot:*` commands — never from the portal.
+
+### What gets generated
+
+| Artifact | Path | Purpose |
+| --- | --- | --- |
+| Catalog descriptor | `catalog-info.yaml` (repo root) | `Component` entity for the app, plus an `API` entity per registered OpenAPI contract |
+| TechDocs config | `mkdocs.yml` (repo root) | Points Backstage TechDocs at the generated docs directory |
+| TechDocs sources | `.larapilot/techdocs/` | `index.md` (delivery snapshot), `prd.md`, `backlog/index.md`, `backlog/US-XXX.md` |
+| Live snapshot | `GET {api}/backstage` | Metrics, per-status counts, blocking feedback, lean story list for a portal plugin |
+
+All of it comes from `php artisan larapilot:backstage-export` — never hand-write these files from a skill.
+
+### Ownership rules
+
+| Rule | Why |
+| --- | --- |
+| `catalog-info.yaml` and `mkdocs.yml` are **never overwritten** without `--force` | A project may already own them (existing catalog entry, existing MkDocs site) |
+| Everything under `.larapilot/techdocs/` **is** overwritten, and stale story pages pruned | Generated output; editing it by hand is a mistake, not a customization |
+| Identity (`owner`, `system`, `lifecycle`, `component_type`) lives in **Laravel config / `.env`**, not `.larapilot/config.yaml` | It describes the org's catalog, not the delivery workflow — `settings-set` must not be used for it |
+| Backstage needs a resolvable **owner** | Entities whose owner is not an existing Group/User show as dangling in the portal |
+
+### Regeneration cadence
+
+Regenerate after PRD edits, backlog changes, or plan/task completion — otherwise the portal drifts from the repo. A CI step on the default branch is the reliable option (**Jack**); manual re-runs of `/larapilot-backstage` work for low-frequency projects.
+
+### Security boundary _(Lars + Matt)_
+
+The Larapilot API is a **dev/staging surface** and returns `404` in production. A Backstage plugin must call it through the **Backstage backend proxy** so `LARAPILOT_API_TOKEN` stays server-side — never from browser code, and never pointed at a production host. When no environment is reachable from the portal, ship the committed `catalog-info.yaml` and TechDocs instead of the live endpoints.
+
+Ownership: **Matt** owns the catalog mapping and portal integration; **Jack** owns the CI regeneration step; **Albert** owns TechDocs readability; **Lars** owns the token/proxy boundary.

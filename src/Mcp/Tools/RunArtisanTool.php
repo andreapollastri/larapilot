@@ -30,6 +30,7 @@ class RunArtisanTool extends Tool
         'larapilot:doctor',
         'larapilot:diagnostics',
         'larapilot:companion-export',
+        'larapilot:backstage-export',
     ];
 
     public function handle(Request $request): Response

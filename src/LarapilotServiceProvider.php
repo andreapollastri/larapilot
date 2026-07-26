@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
+use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\CompanionExportCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
@@ -35,6 +36,7 @@ use Larapilot\Http\MockupAssetsRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
+use Larapilot\Services\BackstageService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
@@ -54,12 +56,15 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
+    public const VERSION = '2.2.0';
+
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/larapilot.php', 'larapilot');
 
         $this->app->singleton(ConfigService::class);
         $this->app->singleton(CompanionService::class);
+        $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
         $this->app->singleton(PrdService::class);
@@ -87,6 +92,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 DoctorCommand::class,
                 DiagnosticsCommand::class,
                 CompanionExportCommand::class,
+                BackstageExportCommand::class,
                 ConfigShowCommand::class,
                 SettingsSetCommand::class,
                 PrdWriteCommand::class,

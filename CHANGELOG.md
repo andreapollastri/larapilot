@@ -2,6 +2,23 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.2.0] - 2026-07-27
+
+### Added
+
+- **Backstage integration** — publish the `.larapilot/` workspace into a [backstage.io](https://backstage.io) developer portal. One-way by design: the workspace stays the source of truth and workflow state never changes from the portal.
+  - **`/larapilot-backstage`** — skill that asks for catalog identity (owner, system, lifecycle, component type, TechDocs), persists it to `.env`, generates the artifacts, and explains registration. Personas: **Matt** (catalog mapping), **Jack** (CI refresh), **Albert** (TechDocs), **Lars** (token/proxy boundary).
+  - **`larapilot:backstage-export`** — read-only bundle preview by default; `--write` generates `catalog-info.yaml` (a `Component` entity plus one `API` entity per OpenAPI contract found), `mkdocs.yml`, and TechDocs sources under `.larapilot/techdocs/` (`index.md`, `prd.md`, `backlog/index.md`, `backlog/US-XXX.md` rendered from the YAML specs and plans). Also `--force`, `--no-techdocs`, `--file=`, `--api-base=`. Allowed via MCP `RunArtisanTool`.
+  - **`GET /larapilot/api/backstage`** — catalog entities, rendered YAML, TechDocs metadata, and a lean delivery `snapshot` (metrics, per-status counts, blocking feedback, story list without bodies) for a Backstage plugin or entity provider; **`GET /larapilot/api/backstage/catalog-info.yaml`** serves the descriptor as a Backstage `url` location. Both share the dashboard gate (never in production) and belong behind the Backstage backend proxy so `LARAPILOT_API_TOKEN` stays server-side. OpenAPI updated.
+  - **`larapilot.backstage` config** (`LARAPILOT_BACKSTAGE_*`) — `enabled`, `name`/`title`/`description`/`namespace`, `owner`, `system`, `lifecycle`, `component_type`, `tags`, `base_url`, `techdocs`, `workflow_api` (off by default). Catalog identity lives in Laravel config/`.env`, not `.larapilot/config.yaml`, because it describes the org catalog rather than the delivery workflow.
+  - **Runtime pack** — canonical rules in `runtime-ops.md` → **Developer Portal — Backstage** (ownership of generated files, regeneration cadence, security boundary).
+- **`larapilot:config-show`** now reports `data.backstage` — resolved entity ref, owner, system, lifecycle, TechDocs paths, and whether the catalog descriptor already exists.
+
+### Changed
+
+- **Generated-file safety** — `catalog-info.yaml` and `mkdocs.yml` are never overwritten without `--force` (a project may already own them); everything under `.larapilot/techdocs/` is regenerated and pages for deleted specs are pruned.
+- **README + docs site** — new **Developer portal** / **Backstage portal** sections (catalog entity sample, identity env table, TechDocs, live snapshot, security boundary), skill and CLI tables updated; site version **v2.2.0**.
+
 ## [2.1.2] - 2026-07-26
 
 ### Added

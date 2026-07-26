@@ -7,7 +7,9 @@ namespace Larapilot\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Larapilot\Services\ApiService;
+use Larapilot\Services\BackstageService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DiagnosticsService;
@@ -22,6 +24,7 @@ class ApiController
         protected ConfigService $config,
         protected ApiService $api,
         protected CompanionService $companion,
+        protected BackstageService $backstage,
         protected OpenApiService $openApi,
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
@@ -131,6 +134,24 @@ class ApiController
         return response()->json($this->companion->bundle($this->apiBaseUrl($request)));
     }
 
+    public function backstage(Request $request): JsonResponse
+    {
+        $this->guard();
+        $this->guardBackstage();
+
+        return response()->json($this->backstage->bundle($this->apiBaseUrl($request)));
+    }
+
+    public function backstageCatalog(Request $request): Response
+    {
+        $this->guard();
+        $this->guardBackstage();
+
+        return response($this->backstage->catalogYaml($this->apiBaseUrl($request)), 200, [
+            'Content-Type' => 'application/yaml; charset=UTF-8',
+        ]);
+    }
+
     public function diagnostics(Request $request): JsonResponse
     {
         $this->guard();
@@ -172,6 +193,13 @@ class ApiController
     protected function guard(): void
     {
         if (! $this->config->dashboardBrowsable()) {
+            abort(404);
+        }
+    }
+
+    protected function guardBackstage(): void
+    {
+        if (! $this->backstage->enabled()) {
             abort(404);
         }
     }

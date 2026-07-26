@@ -59,6 +59,31 @@ class Markdown
     }
 
     /**
+     * Push `# H1` headings down to `## H2` so a document can be embedded
+     * under an existing title without competing for the page's single H1.
+     * Fenced code blocks are left untouched.
+     */
+    public static function demoteTopLevel(string $markdown): string
+    {
+        $lines = preg_split('/\r?\n/', $markdown) ?: [];
+        $inFence = false;
+
+        foreach ($lines as $index => $line) {
+            if (preg_match('/^\s*(?:```|~~~)/', $line) === 1) {
+                $inFence = ! $inFence;
+
+                continue;
+            }
+
+            if (! $inFence && preg_match('/^#\s+\S/', $line) === 1) {
+                $lines[$index] = '#'.$line;
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
      * CommonMark emits headings without ids; inject slug ids (matching
      * headings()) so table-of-contents anchors resolve.
      */
