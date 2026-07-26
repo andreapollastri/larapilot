@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.1.2] - 2026-07-26
+
+### Added
+
+- **Context estimate (Zoey)** — every skill posts one-line rough loaded-context estimate at start and end (`chars/4`, nearest 0.5k); canonical rule in `shared-runtime` → **Output Economy → Context estimate**; pointed from Boost guidelines.
+
 ## [2.1.1] - 2026-07-26
 
 ### Changed

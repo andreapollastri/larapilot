@@ -13,7 +13,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog gr
 
 ## Output Economy
 
-**High** — short confirmations only. AskQuestion carries the options; chat stays terse.
+**High** — short confirmations only. AskQuestion carries the options; chat stays terse. Still honor Zoey's start/end **Context estimate** lines from shared-runtime.
 
 ## The Team
 
