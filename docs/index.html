@@ -1224,7 +1224,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.2.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.3.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1254,6 +1254,7 @@
       <a class="sub" href="#example-new-feature">New feature</a>
       <a class="sub" href="#example-bug-fix">Bug resolution</a>
       <a class="sub" href="#example-frontend-companion">Frontend companion</a>
+      <a class="sub" href="#example-tracker-sync">Tracker sync</a>
       <a href="#deep-dive">Deep Dive</a>
       <a class="sub" href="#deep-dive-how-it-works">How it works</a>
       <a class="sub" href="#deep-dive-update">Upgrade</a>
@@ -1265,6 +1266,7 @@
       <a class="sub" href="#deep-dive-design-systems">Design systems</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
+      <a class="sub" href="#deep-dive-tracker">Project trackers</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
       <a class="sub" href="#deep-dive-api">API</a>
@@ -1366,7 +1368,9 @@
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
             <code>/larapilot-autopilot</code> to batch plan+implement ·
             <code>/larapilot-settings</code> for project modes ·
-            <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a>.
+            <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
+            <code>/larapilot-tracker</code> to mirror the backlog into a
+            <a href="#deep-dive-tracker">project tracker</a>.
           </p>
         </div>
 
@@ -1444,6 +1448,12 @@
             <span class="example-card-title">Frontend companion</span>
             <span class="example-card-desc">Laravel API + React repo — shared PRD sync across repos</span>
             <span class="example-card-cmd">/larapilot-frontend-companion</span>
+          </a>
+          <a class="example-card" href="#example-tracker-sync">
+            <span class="example-card-num">6</span>
+            <span class="example-card-title">Tracker sync</span>
+            <span class="example-card-desc">Client PM lives in Linear — mirror the backlog, read drift back</span>
+            <span class="example-card-cmd">/larapilot-tracker</span>
           </a>
         </nav>
 
@@ -2365,6 +2375,301 @@ companion-sync.md        ← when/how you last synced</code></pre>
           </div>
         </article>
 
+        <!-- Tracker sync -->
+        <article class="example-block" id="example-tracker-sync">
+          <h2>Tracker sync</h2>
+          <p class="example-tag"><code>/larapilot-tracker</code></p>
+          <p class="example-context">Invoicing SaaS, already in delivery: 12 specs in the backlog, four of them
+            planned. The client's PM runs everything from <strong>Linear</strong> and will never open
+            <code>backlog.yaml</code>. You mirror the backlog into their team so they can follow progress, and read
+            status back before standup. Full reference:
+            <a href="#deep-dive-tracker">Project trackers</a>.
+          </p>
+
+          <h3>1 · Point Larapilot at the tracker</h3>
+          <div class="code-block">
+            <div class="code-block-header">Editor</div>
+            <pre><code>/larapilot-tracker</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">🔗 Matt:</span> No provider configured yet — 12 specs, 0 linked. Let's pick the
+              destination first.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Project tracker</strong>
+              <ol>
+                <li><strong>Where should the backlog be mirrored:</strong> Linear · Jira · Asana · ClickUp · Trello ·
+                  Monday</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Linear</strong> — issues on a team, plan tasks as sub-issues.</p>
+            <p><span class="speaker">🔐 Lars:</span> I need a <strong>personal API key</strong> (Linear → Settings →
+              API) and the <strong>team key</strong> — the short prefix on your issues, e.g. <code>ENG</code>. The key
+              goes in <code>.env</code>, never in <code>.larapilot/</code>: that directory is committed.</p>
+            <p><em>You paste:</em> the key and <code>ENG</code>.</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">.env</div>
+            <pre><code>LARAPILOT_TRACKER_ENABLED=true
+LARAPILOT_TRACKER_PROVIDER=linear
+LARAPILOT_LINEAR_API_KEY=lin_api_xxxxxxxxxxxxxxxxxxxx
+LARAPILOT_LINEAR_TEAM=ENG</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">Terminal — verify before touching anything</div>
+            <pre><code>php artisan larapilot:tracker-status --ping</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>{
+  "kind": "tracker-status",
+  "data": {
+    "provider": "linear",
+    "ready": true,
+    "missing_config": [],
+    "sync_tasks": true,
+    "status_map": { "TODO": "Todo", "PLANNED": "Todo", "IN PROGRESS": "In Progress",
+                    "REVIEW": "In Review", "DONE": "Done" },
+    "specs": { "total": 12, "linked": 0, "unlinked": ["US-001", "US-002", "…"] },
+    "connection": { "ok": true, "detail": "Connected to Linear team ENG.", "target": "Engineering" }
+  }
+}</code></pre>
+          </div>
+
+          <h3>2 · Dry-run first — and hit the status map</h3>
+          <p>On a backlog that has never been synced, always dry-run. It reports what would change without calling the
+            provider at all.</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:tracker-push --dry-run</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>"dry_run": true,
+"stories": [ { "code": "US-001", "action": "created", "ref": null,
+               "tasks": { "created": 4, "updated": 0, "removed": 0, "unchanged": 0 } }, … ],
+"summary": { "created": 12, "updated": 0, "unchanged": 0, "tasks_created": 17, … }</code></pre>
+          </div>
+
+          <p>The real push then fails — and this is the common first-run outcome, not an edge case:</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:tracker-push   # exit code 3</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>{
+  "kind": "error",
+  "error": {
+    "code": "E_CONNECTOR",
+    "message": "12 of 12 stories failed to sync.",
+    "details": {
+      "errors": [{
+        "code": "US-001",
+        "message": "Linear team ENG has no workflow state named \"Todo\". Existing states: Backlog, In Progress, In Review, Done. Rename the state or adjust larapilot.tracker.providers.linear.status_map."
+      }, … ]
+    }
+  }
+}</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">🔗 Matt:</span> The client's team calls its first column <strong>Backlog</strong>,
+              not <em>Todo</em>. Larapilot will not create a column in someone else's tracker — two ways out: rename
+              the state in Linear, or point the map at what already exists. I'd take the second: it's their board.</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">config/larapilot.php</div>
+            <pre><code>'linear' =&gt; [
+    'api_key' =&gt; env('LARAPILOT_LINEAR_API_KEY'),
+    'team' =&gt; env('LARAPILOT_LINEAR_TEAM'),
+    'status_map' =&gt; [
+        'TODO' =&gt; 'Backlog',        // was 'Todo'
+        'PLANNED' =&gt; 'Backlog',     // same column — not drift
+        'IN PROGRESS' =&gt; 'In Progress',
+        'REVIEW' =&gt; 'In Review',
+        'DONE' =&gt; 'Done',
+    ],
+],</code></pre>
+          </div>
+
+          <h3>3 · Push</h3>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:tracker-push</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>"stories": [
+  { "code": "US-001", "action": "created", "ref": "ENG-42",
+    "url": "https://linear.app/acme/issue/ENG-42",
+    "tasks": { "created": 4, "updated": 0, "removed": 0, "unchanged": 0 } }, … ],
+"summary": { "created": 12, "updated": 0, "unchanged": 0, "tasks_created": 17, … },
+"errors": [],
+"link_file": ".larapilot/tracker.yaml"</code></pre>
+          </div>
+
+          <p>In Linear the client now sees <code>ENG-42 — US-001 — Staff can issue an invoice</code>, sitting in
+            <strong>Backlog</strong>, carrying the spec body, priority, points as the estimate, and the epic — with
+            four <strong>sub-issues</strong>, one per plan task. Larapilot writes the mapping to disk:</p>
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/tracker.yaml — commit this</div>
+            <pre><code>providers:
+  linear:
+    US-001:
+      id: 9f2c1a4e-7b30-4d1e-9c55-2a6f81b0c3d7
+      key: ENG-42
+      url: https://linear.app/acme/issue/ENG-42
+      fingerprint: 6b1f0c2d…
+      pushed_at: '2026-07-27T11:04:12+00:00'
+      tasks:
+        TASK-01:
+          id: 3ad5b9c1-…
+          url: https://linear.app/acme/issue/ENG-43
+          fingerprint: 8c02e5a7…
+provider: linear
+updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
+          </div>
+          <div class="cli-note"><strong>Commit <code>tracker.yaml</code>.</strong> It is how the team shares one
+            mapping — without it, your colleague's first push creates a second <code>ENG-…</code> for every story. It
+            holds identifiers only, never the API key.
+          </div>
+
+          <h3>4 · Normal delivery — the push is cheap</h3>
+          <p>You keep working as usual: <code>/larapilot-plan</code>, <code>/larapilot-implement</code>,
+            <code>/larapilot-review</code>. Re-push whenever you like — unchanged stories are fingerprinted and
+            skipped without an API call.</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal — after planning US-005 and finishing two tasks on US-003</div>
+            <pre><code>php artisan larapilot:tracker-push</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>"summary": { "created": 0, "updated": 2, "unchanged": 10,
+             "tasks_created": 5, "tasks_updated": 2, "tasks_removed": 1 }</code></pre>
+          </div>
+          <p>The removed subtask is a plan task that disappeared when you re-planned <code>US-005</code> — the matching
+            sub-issue is deleted rather than left orphaned in the client's board.</p>
+
+          <h3>5 · Before standup — read the drift</h3>
+          <p>Overnight the PM dragged two cards. <code>tracker-pull</code> with no flags changes <strong>nothing</strong>
+            — it reports.</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:tracker-pull</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>"apply": false,
+"stories": [
+  { "code": "US-003", "ref": "ENG-44", "local_status": "IN PROGRESS",
+    "remote_status": "In Review", "suggested_status": "REVIEW",
+    "drift": true, "applied": false, "blocked": null },
+  { "code": "US-007", "ref": "ENG-48", "local_status": "REVIEW",
+    "remote_status": "Done", "suggested_status": "DONE",
+    "drift": true, "applied": false,
+    "blocked": "Remote status maps to DONE. Approve through /larapilot-review or larapilot:spec-approve so the merge commit is recorded." },
+  { "code": "US-002", "ref": "ENG-43", "local_status": "PLANNED",
+    "remote_status": "Backlog", "drift": false, "applied": false } ],
+"summary": { "checked": 12, "in_sync": 10, "drifted": 2, "applied": 0, "missing": 0 },
+"hint": "2 stories drifted. Re-run with --apply to write the mapped statuses into the backlog."</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">🔗 Matt:</span> Two drifts. <code>US-003</code> genuinely moved to review — safe
+              to apply. <code>US-007</code> the PM marked <strong>Done</strong>, which Larapilot will not accept from a
+              tracker.</p>
+            <p><span class="speaker">💎 Mark:</span> Note <code>US-002</code>: local <code>PLANNED</code>, remote
+              <code>Backlog</code>. Both <code>TODO</code> and <code>PLANNED</code> map to that column, so it is
+              <strong>in sync</strong>, not drift — you won't get a false alarm every morning.</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:tracker-pull --apply</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Envelope (excerpt)</div>
+            <pre><code>"summary": { "checked": 12, "in_sync": 10, "drifted": 2, "applied": 1, … },
+"hint": "Statuses that map to DONE were left alone — approve them through /larapilot-review."</code></pre>
+          </div>
+          <p><code>US-003</code> is now <code>REVIEW</code> in <code>backlog.yaml</code>. <code>US-007</code> is
+            untouched — you finish it the normal way:</p>
+          <div class="code-block">
+            <div class="code-block-header">Editor</div>
+            <pre><code>/larapilot-review US-007</code></pre>
+          </div>
+
+          <h3>What pull will never do</h3>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Change made in Linear</th>
+                  <th>Effect on <code>.larapilot/</code></th>
+                  <th>Why</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Card moved to <em>In Review</em></td>
+                  <td><strong>Applied</strong> with <code>--apply</code></td>
+                  <td>Status is the one thing the tracker legitimately observes</td>
+                </tr>
+                <tr>
+                  <td>Card moved to <em>Done</em></td>
+                  <td><strong>Reported, never applied</strong></td>
+                  <td>DONE is a human gate that records the merge commit —
+                    <code>spec-approve</code> owns it</td>
+                </tr>
+                <tr>
+                  <td>Issue title or description edited</td>
+                  <td><strong>Ignored</strong>, overwritten on the next push</td>
+                  <td>Spec text is owned by <code>.larapilot/</code>; the card footer says so</td>
+                </tr>
+                <tr>
+                  <td>Card moved to a state outside the map</td>
+                  <td><strong>Drift with no suggestion</strong></td>
+                  <td>Better a visible unknown than a guessed status</td>
+                </tr>
+                <tr>
+                  <td>Issue deleted</td>
+                  <td>Flagged <code>missing</code>; next push recreates it</td>
+                  <td>The link is stale, not the spec</td>
+                </tr>
+                <tr>
+                  <td>Comment added</td>
+                  <td>Imported once as <strong>non-blocking</strong> internal feedback</td>
+                  <td>Opt-in via <code>LARAPILOT_TRACKER_PULL_COMMENTS=true</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>6 · Keep it fresh (optional)</h3>
+          <div class="code-block">
+            <div class="code-block-header">.github/workflows/tracker.yml (excerpt)</div>
+            <pre><code>- name: Sync backlog to Linear
+  run: php artisan larapilot:tracker-push
+  env:
+    LARAPILOT_TRACKER_ENABLED: true
+    LARAPILOT_TRACKER_PROVIDER: linear
+    LARAPILOT_LINEAR_API_KEY: ${{ secrets.LARAPILOT_LINEAR_API_KEY }}
+    LARAPILOT_LINEAR_TEAM: ENG</code></pre>
+          </div>
+          <p>Run it on the default branch after merges. Because unchanged stories cost no API call, a push on every
+            merge is cheap.</p>
+
+          <div class="cli-note"><strong>The tracker is a window, not a second workflow.</strong> Scope still changes
+            through <code>/larapilot-feature</code> and the PRD, plans through <code>/larapilot-plan</code>, and
+            acceptance through <code>/larapilot-review</code>. What the client gets is visibility in the tool they
+            already use — not a second place to run delivery from.
+          </div>
+        </article>
+
       </section>
 
       <!-- Deep Dive -->
@@ -2674,6 +2979,20 @@ companion-sync.md        ← when/how you last synced</code></pre>
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:backstage-export</code> (preview) ·
                   <code>--write</code> to generate.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">tracker</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-tracker</code></h3>
+                <p>Mirrors the backlog into <strong>Linear</strong>, <strong>Asana</strong>, <strong>Jira</strong>,
+                  <strong>Trello</strong>, <strong>ClickUp</strong>, or <strong>Monday</strong> over an API key.
+                  Stories become issues, plan tasks become native subtasks, and remote status comes back as a drift
+                  report. Full reference: <a href="#deep-dive-tracker">Project trackers</a>.
+                </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:tracker-status</code> ·
+                  <code>larapilot:tracker-push</code> · <code>larapilot:tracker-pull</code>.
                 </p>
               </div>
             </div>
@@ -3699,7 +4018,7 @@ metadata:
   description: 'A thing.'          # PRD elevator pitch, when present
   annotations:
     backstage.io/techdocs-ref: 'dir:.'
-    larapilot.io/version: 2.2.0
+    larapilot.io/version: 2.3.0
     larapilot.io/workspace: .larapilot
     larapilot.io/prd: .larapilot/docs/PRD.md
     larapilot.io/board-url: 'https://staging.acme.test/larapilot'
@@ -3897,6 +4216,208 @@ nav:
           </div>
         </article>
 
+        <!-- Project trackers -->
+        <article class="deep-dive-sub" id="deep-dive-tracker">
+          <h3>Project trackers</h3>
+          <p class="lead">Optional, API-key based sync between the backlog and the tool the rest of the organisation
+            already lives in — <a href="https://linear.app" target="_blank" rel="noopener">Linear</a>,
+            <a href="https://asana.com" target="_blank" rel="noopener">Asana</a>,
+            <a href="https://www.atlassian.com" target="_blank" rel="noopener">Jira</a>,
+            <a href="https://trello.com" target="_blank" rel="noopener">Trello</a>,
+            <a href="https://clickup.com" target="_blank" rel="noopener">ClickUp</a>, or
+            <a href="https://monday.com" target="_blank" rel="noopener">Monday</a>. A PM or a client follows delivery
+            without ever opening <code>backlog.yaml</code>. The workspace stays the source of truth; the tracker is a
+            window, not a second workflow.
+          </p>
+
+          <h4>When it is worth it</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Solo dev, no external stakeholders</td>
+                  <td>Skip it — the dashboard at <code>/larapilot</code> already shows the board</td>
+                </tr>
+                <tr>
+                  <td>Client or PM tracks work in their own tool</td>
+                  <td>Push the backlog so they see progress where they already look</td>
+                </tr>
+                <tr>
+                  <td>Team runs sprints in Jira/Linear alongside the code</td>
+                  <td>Push after planning, pull before standup to catch drift</td>
+                </tr>
+                <tr>
+                  <td>You want the tracker to drive the workflow</td>
+                  <td>Not supported by design — status moves through skills and Artisan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Setup</h4>
+          <pre><code>/larapilot-tracker</code></pre>
+          <p>The skill picks the provider, tells you where to generate the API key, writes it to <code>.env</code>,
+            validates the status map against the real board, dry-runs, then pushes. By hand:</p>
+          <pre><code>php artisan larapilot:tracker-status --ping   # credentials + target board
+php artisan larapilot:tracker-push --dry-run  # what would change, no API calls
+php artisan larapilot:tracker-push            # backlog → tracker
+php artisan larapilot:tracker-pull            # tracker → drift report (read-only)
+php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code></pre>
+
+          <h4>What gets mirrored</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Auth</th>
+                  <th>Destination</th>
+                  <th>Plan tasks become</th>
+                  <th>Status maps to</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Linear</strong></td>
+                  <td>personal API key</td>
+                  <td>team key (<code>ENG</code>)</td>
+                  <td>sub-issues</td>
+                  <td>workflow state</td>
+                </tr>
+                <tr>
+                  <td><strong>Jira</strong> (Cloud, REST v2)</td>
+                  <td>email + API token</td>
+                  <td>project key</td>
+                  <td>subtasks</td>
+                  <td>status, via a workflow <strong>transition</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Asana</strong></td>
+                  <td>personal access token</td>
+                  <td>project gid</td>
+                  <td>subtasks</td>
+                  <td>section (DONE also marks complete)</td>
+                </tr>
+                <tr>
+                  <td><strong>Trello</strong></td>
+                  <td>key + token</td>
+                  <td>board id</td>
+                  <td>checklist items</td>
+                  <td>list (board column)</td>
+                </tr>
+                <tr>
+                  <td><strong>ClickUp</strong></td>
+                  <td>personal token <code>pk_…</code></td>
+                  <td>list id</td>
+                  <td>subtasks</td>
+                  <td>list status</td>
+                </tr>
+                <tr>
+                  <td><strong>Monday</strong></td>
+                  <td>API token</td>
+                  <td>board id</td>
+                  <td>subitems</td>
+                  <td>status-column label</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>A user story becomes an issue titled <code>US-XXX — Title</code> carrying the spec body, priority, points,
+            and epic. Plan tasks are mirrored as <strong>native</strong> subtasks, not a checklist buried in the
+            description. One provider is active at a time, but links are stored per provider — switching tools, or
+            switching back, never loses the mapping.</p>
+
+          <h4>Push writes, pull reports</h4>
+          <p>The direction is deliberately asymmetric. Push is authoritative: <code>.larapilot/</code> decides what a
+            story says and which column it sits in, and unchanged stories are skipped without an API call. Pull is a
+            <strong>report</strong> — it lists drift and changes nothing until you pass <code>--apply</code>.</p>
+          <ul>
+            <li><strong>DONE is never applied from a tracker.</strong> DONE is a human review gate that records the
+              merge commit — it stays with <code>/larapilot-review</code> and <code>larapilot:spec-approve</code>.</li>
+            <li><strong>Spec text is never read back.</strong> Titles, bodies, and acceptance criteria are owned by
+              <code>.larapilot/</code>; the card description says so, and edits made in the tracker are overwritten on
+              the next push.</li>
+            <li><code>TODO</code> and <code>PLANNED</code> sharing one column is normal and is <strong>not</strong>
+              drift — a story is in sync when its forward mapping matches the remote label.</li>
+            <li>A remote status outside the map is reported as drift with no suggestion, never guessed at.</li>
+          </ul>
+          <p>Set <code>LARAPILOT_TRACKER_PULL_COMMENTS=true</code> to import tracker comments as internal feedback —
+            non-blocking, and imported once each.</p>
+
+          <h4>Configuration</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Env var</th>
+                  <th>Default</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>LARAPILOT_TRACKER_ENABLED</code></td>
+                  <td><code>false</code></td>
+                  <td>Master switch for the integration</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_TRACKER_PROVIDER</code></td>
+                  <td>—</td>
+                  <td><code>linear</code> · <code>asana</code> · <code>jira</code> · <code>trello</code> ·
+                    <code>clickup</code> · <code>monday</code></td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_TRACKER_SYNC_TASKS</code></td>
+                  <td><code>true</code></td>
+                  <td>Mirror plan tasks as native subtasks</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_TRACKER_PULL_COMMENTS</code></td>
+                  <td><code>false</code></td>
+                  <td>Import remote comments as internal feedback</td>
+                </tr>
+                <tr>
+                  <td><code>LARAPILOT_MONDAY_DESCRIPTION_COLUMN</code></td>
+                  <td>—</td>
+                  <td>Monday items have no description field — point this at a long-text column</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Per-provider credentials follow the same shape:
+            <code>LARAPILOT_LINEAR_API_KEY</code> / <code>_TEAM</code>,
+            <code>LARAPILOT_JIRA_BASE_URL</code> / <code>_EMAIL</code> / <code>_API_TOKEN</code> / <code>_PROJECT</code>,
+            <code>LARAPILOT_ASANA_TOKEN</code> / <code>_PROJECT</code>,
+            <code>LARAPILOT_TRELLO_KEY</code> / <code>_TOKEN</code> / <code>_BOARD</code>,
+            <code>LARAPILOT_CLICKUP_TOKEN</code> / <code>_LIST</code>,
+            <code>LARAPILOT_MONDAY_TOKEN</code> / <code>_BOARD</code>. Status maps live in
+            <code>config/larapilot.php</code> → <code>tracker.providers.{provider}.status_map</code>. If a mapped
+            column does not exist, the push fails and names the columns that do — Larapilot never creates columns in
+            your tracker.</p>
+
+          <h4>Personas &amp; boundaries</h4>
+          <ul>
+            <li><strong>Matt</strong> — provider choice, status mapping, link hygiene</li>
+            <li><strong>Mark</strong> — what non-developers should see on the board</li>
+            <li><strong>Jack</strong> — the CI push step on the default branch</li>
+            <li><strong>Lars</strong> — the credential boundary: API keys live in <code>.env</code>, never in
+              <code>.larapilot/</code></li>
+          </ul>
+          <div class="cli-note"><strong>Credentials never enter the repo.</strong> The tracker key is
+            <em>write-capable</em> on a third-party workspace — a tighter boundary than the read-only Larapilot API. It
+            belongs in <code>.env</code> and CI secrets. <code>config-show</code> and <code>tracker-status</code>
+            report <em>whether</em> a credential is present, never its value. <code>.larapilot/tracker.yaml</code> is
+            committed on purpose — it holds the spec → remote-id map so the team shares one mapping instead of each
+            machine creating duplicate cards, and it contains identifiers only.
+          </div>
+        </article>
+
         <!-- Artisan CLI -->
         <article class="deep-dive-sub" id="deep-dive-cli">
           <h3>Artisan CLI</h3>
@@ -3994,6 +4515,15 @@ nav:
                   </td>
                   <td><code>/larapilot-backstage</code>, CI catalog refresh — see <a
                       href="#deep-dive-backstage">Backstage portal</a></td>
+                </tr>
+                <tr>
+                  <td>Project tracker</td>
+                  <td><code>larapilot:tracker-status</code> (<code>--ping</code>) ·
+                    <code>larapilot:tracker-push</code> (<code>--dry-run</code>, <code>--spec=</code>,
+                    <code>--force</code>) · <code>larapilot:tracker-pull</code> (<code>--apply</code>)
+                  </td>
+                  <td><code>/larapilot-tracker</code>, CI backlog sync — see <a
+                      href="#deep-dive-tracker">Project trackers</a></td>
                 </tr>
               </tbody>
             </table>

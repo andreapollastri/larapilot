@@ -84,6 +84,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / backlog granularity / git mode / testing / auto-approve for the project |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
+| `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
 During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
@@ -164,6 +165,73 @@ For a Backstage plugin or entity provider, two endpoints share the dashboard gat
 Call them through the **Backstage backend proxy** so `LARAPILOT_API_TOKEN` stays server-side. The API returns `404` in production by design — if the portal cannot reach a dev/staging host, ship the committed `catalog-info.yaml` and TechDocs instead.
 
 Keep the catalog fresh with a CI step on the default branch (`--write --force`) or by re-running `/larapilot-backstage` after PRD and backlog milestones. `php artisan larapilot:config-show` reports the current mapping under `data.backstage`.
+
+---
+
+## Project trackers — Linear, Asana, Jira, Trello, ClickUp, Monday
+
+Optional, API-key based. Mirrors the backlog into the tool the rest of the organisation already uses, so a PM or a client can follow delivery without opening `backlog.yaml`. **`.larapilot/` stays the source of truth** — the tracker is a window, not a second workflow.
+
+```bash
+php artisan larapilot:tracker-status --ping   # provider, status map, credentials check
+php artisan larapilot:tracker-push --dry-run  # what would change, no API calls
+php artisan larapilot:tracker-push            # backlog → tracker
+php artisan larapilot:tracker-pull            # tracker → drift report (read-only)
+php artisan larapilot:tracker-pull --apply    # write mapped statuses back
+```
+
+Or run `/larapilot-tracker`, which picks the provider, collects the credentials into `.env`, and checks the status map before the first push.
+
+### What gets mirrored
+
+| Larapilot | Tracker |
+| --- | --- |
+| User story `US-XXX` | Issue / task / card / item titled `US-XXX — Title`, with the spec body, priority, points, and epic |
+| Plan task `TASK-XX` | A **native** sub-issue, subtask, subitem, or checklist item — not a checklist buried in the description |
+| Workflow status | The provider's own column: workflow state, status, section, list, or status-column label |
+
+| Provider | Auth | Destination | Subtasks | Status maps to |
+| --- | --- | --- | --- | --- |
+| **Linear** | personal API key | team key | sub-issues (`parentId`) | workflow state |
+| **Jira** (Cloud, REST v2) | email + API token | project key | subtasks (`parent`) | status, via a workflow **transition** |
+| **Asana** | personal access token | project gid | subtasks | section (a DONE story is also marked complete) |
+| **Trello** | key + token | board id | checklist items | list (board column) |
+| **ClickUp** | personal token `pk_…` | list id | subtasks (`parent`) | list status |
+| **Monday** | API token | board id | subitems | status-column label |
+
+Only one provider is active at a time (`LARAPILOT_TRACKER_PROVIDER`), but links are stored per provider, so switching tools — or switching back — never loses the mapping.
+
+### Direction: push writes, pull reports
+
+Push is authoritative. Pull is a **report**: it reads remote state and lists drift, and changes the backlog only with `--apply`. Two things it will never do:
+
+- **Set a spec to DONE.** DONE is a human review gate that records the merge commit — that stays with `/larapilot-review` and `larapilot:spec-approve`.
+- **Change spec text.** Titles, bodies, and acceptance criteria are owned by `.larapilot/`; the card description says so, and edits made in the tracker are overwritten on the next push.
+
+`TODO` and `PLANNED` mapping to the same column is normal and is not reported as drift. A remote status outside the map is reported as drift with no suggestion rather than guessed at.
+
+Set `LARAPILOT_TRACKER_PULL_COMMENTS=true` to import tracker comments as internal feedback (non-blocking, imported once).
+
+### Configuration
+
+Credentials live in `.env` only — **never** in `.larapilot/`, which is committed:
+
+| Env var | Purpose |
+| --- | --- |
+| `LARAPILOT_TRACKER_ENABLED` | Master switch (default `false`) |
+| `LARAPILOT_TRACKER_PROVIDER` | `linear` · `asana` · `jira` · `trello` · `clickup` · `monday` |
+| `LARAPILOT_TRACKER_SYNC_TASKS` | Mirror plan tasks as native subtasks (default `true`) |
+| `LARAPILOT_TRACKER_PULL_COMMENTS` | Import remote comments as internal feedback (default `false`) |
+| `LARAPILOT_LINEAR_API_KEY` / `_TEAM` | Linear key and team key (e.g. `ENG`) |
+| `LARAPILOT_JIRA_BASE_URL` / `_EMAIL` / `_API_TOKEN` / `_PROJECT` | Jira site, account, token, project key |
+| `LARAPILOT_ASANA_TOKEN` / `_PROJECT` | Asana PAT and project gid |
+| `LARAPILOT_TRELLO_KEY` / `_TOKEN` / `_BOARD` | Trello credentials and board id |
+| `LARAPILOT_CLICKUP_TOKEN` / `_LIST` | ClickUp token and list id |
+| `LARAPILOT_MONDAY_TOKEN` / `_BOARD` / `_DESCRIPTION_COLUMN` | Monday token, board, and the long-text column that carries the spec body |
+
+Status maps live in `config/larapilot.php` → `tracker.providers.{provider}.status_map`. If a mapped column does not exist, the push fails and names the columns that do — Larapilot never creates columns in your tracker.
+
+`.larapilot/tracker.yaml` holds the spec → remote-id mapping. **Commit it**: without a shared map, every machine creates duplicate cards. It contains identifiers only, never credentials. `php artisan larapilot:config-show` reports the wiring under `data.tracker`, including whether credentials are present — never their values.
 
 ---
 

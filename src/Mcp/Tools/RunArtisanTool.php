@@ -31,6 +31,7 @@ class RunArtisanTool extends Tool
         'larapilot:diagnostics',
         'larapilot:companion-export',
         'larapilot:backstage-export',
+        'larapilot:tracker-status',
     ];
 
     public function handle(Request $request): Response

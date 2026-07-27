@@ -92,6 +92,136 @@ return [
         'workflow_api' => env('LARAPILOT_BACKSTAGE_WORKFLOW_API', false),
     ],
 
+    // Project-tracker integration. Pushes the backlog into Linear, Asana,
+    // Jira, Trello, ClickUp, or Monday so non-developers can follow delivery
+    // in the tool they already use. Off until a provider is configured.
+    //
+    // Direction: .larapilot/ is the source of truth. Push writes stories and
+    // plan tasks out; pull reads remote state back as a drift report and only
+    // touches the backlog with an explicit --apply.
+    //
+    // Credentials come from env and are never written into .larapilot/.
+    'tracker' => [
+        'enabled' => env('LARAPILOT_TRACKER_ENABLED', false),
+
+        // linear | asana | jira | trello | clickup | monday
+        'provider' => env('LARAPILOT_TRACKER_PROVIDER'),
+
+        // Seconds before an API call to the provider is abandoned.
+        'timeout' => (int) env('LARAPILOT_TRACKER_TIMEOUT', 15),
+
+        // Mirror plan tasks as native sub-issues/subtasks under each story.
+        'sync_tasks' => env('LARAPILOT_TRACKER_SYNC_TASKS', true),
+
+        'pull' => [
+            // Map remote status back to a Larapilot status in the drift report.
+            'statuses' => env('LARAPILOT_TRACKER_PULL_STATUSES', true),
+            // Import remote comments as internal feedback (never blocking).
+            'comments' => env('LARAPILOT_TRACKER_PULL_COMMENTS', false),
+        ],
+
+        'providers' => [
+            // https://linear.app — Settings → API → Personal API keys.
+            // status_map values are Linear workflow state names on the team.
+            'linear' => [
+                'api_key' => env('LARAPILOT_LINEAR_API_KEY'),
+                'team' => env('LARAPILOT_LINEAR_TEAM'),          // team key, e.g. ENG
+                'project' => env('LARAPILOT_LINEAR_PROJECT'),    // optional project id
+                'status_map' => [
+                    'TODO' => 'Todo',
+                    'PLANNED' => 'Todo',
+                    'IN PROGRESS' => 'In Progress',
+                    'REVIEW' => 'In Review',
+                    'DONE' => 'Done',
+                ],
+            ],
+
+            // https://asana.com — personal access token.
+            // status_map values are section names inside the project.
+            'asana' => [
+                'api_key' => env('LARAPILOT_ASANA_TOKEN'),
+                'project' => env('LARAPILOT_ASANA_PROJECT'),     // project gid
+                'status_map' => [
+                    'TODO' => 'To Do',
+                    'PLANNED' => 'To Do',
+                    'IN PROGRESS' => 'In Progress',
+                    'REVIEW' => 'In Review',
+                    'DONE' => 'Done',
+                ],
+            ],
+
+            // https://atlassian.com — Jira Cloud, REST v2, Basic auth with an
+            // account email plus an API token. status_map values are workflow
+            // status names; the driver resolves the matching transition.
+            'jira' => [
+                'base_url' => env('LARAPILOT_JIRA_BASE_URL'),    // https://acme.atlassian.net
+                'email' => env('LARAPILOT_JIRA_EMAIL'),
+                'api_key' => env('LARAPILOT_JIRA_API_TOKEN'),
+                'project' => env('LARAPILOT_JIRA_PROJECT'),      // project key, e.g. LP
+                'issue_type' => env('LARAPILOT_JIRA_ISSUE_TYPE', 'Task'),
+                'subtask_type' => env('LARAPILOT_JIRA_SUBTASK_TYPE', 'Sub-task'),
+                'status_map' => [
+                    'TODO' => 'To Do',
+                    'PLANNED' => 'To Do',
+                    'IN PROGRESS' => 'In Progress',
+                    'REVIEW' => 'In Review',
+                    'DONE' => 'Done',
+                ],
+            ],
+
+            // https://trello.com — API key plus token. Statuses are lists
+            // (board columns); plan tasks become checklist items.
+            'trello' => [
+                'api_key' => env('LARAPILOT_TRELLO_KEY'),
+                'token' => env('LARAPILOT_TRELLO_TOKEN'),
+                'board' => env('LARAPILOT_TRELLO_BOARD'),        // board id
+                'checklist' => env('LARAPILOT_TRELLO_CHECKLIST', 'Plan tasks'),
+                'status_map' => [
+                    'TODO' => 'To Do',
+                    'PLANNED' => 'To Do',
+                    'IN PROGRESS' => 'In Progress',
+                    'REVIEW' => 'In Review',
+                    'DONE' => 'Done',
+                ],
+            ],
+
+            // https://clickup.com — personal token (pk_…). status_map values
+            // are list statuses.
+            'clickup' => [
+                'api_key' => env('LARAPILOT_CLICKUP_TOKEN'),
+                'list' => env('LARAPILOT_CLICKUP_LIST'),         // list id
+                'status_map' => [
+                    'TODO' => 'to do',
+                    'PLANNED' => 'to do',
+                    'IN PROGRESS' => 'in progress',
+                    'REVIEW' => 'review',
+                    'DONE' => 'complete',
+                ],
+            ],
+
+            // https://monday.com — API token. status_map values are labels on
+            // the board's status column.
+            'monday' => [
+                'api_key' => env('LARAPILOT_MONDAY_TOKEN'),
+                'board' => env('LARAPILOT_MONDAY_BOARD'),        // board id
+                'group' => env('LARAPILOT_MONDAY_GROUP'),        // optional group id
+                'status_column' => env('LARAPILOT_MONDAY_STATUS_COLUMN', 'status'),
+                // Monday items have no description field. Point this at a
+                // long-text column id to carry the spec body; without it only
+                // the title, status, and subitems are pushed.
+                'description_column' => env('LARAPILOT_MONDAY_DESCRIPTION_COLUMN'),
+                'api_version' => env('LARAPILOT_MONDAY_API_VERSION', '2025-04'),
+                'status_map' => [
+                    'TODO' => 'Not Started',
+                    'PLANNED' => 'Not Started',
+                    'IN PROGRESS' => 'Working on it',
+                    'REVIEW' => 'Working on it',
+                    'DONE' => 'Done',
+                ],
+            ],
+        ],
+    ],
+
     'mockups_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockups',

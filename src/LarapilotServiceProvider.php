@@ -26,6 +26,9 @@ use Larapilot\Console\Commands\SpecReviewCommand;
 use Larapilot\Console\Commands\SpecShowCommand;
 use Larapilot\Console\Commands\SpecStartCommand;
 use Larapilot\Console\Commands\TaskDoneCommand;
+use Larapilot\Console\Commands\TrackerPullCommand;
+use Larapilot\Console\Commands\TrackerPushCommand;
+use Larapilot\Console\Commands\TrackerStatusCommand;
 use Larapilot\Console\Commands\UpdateCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
@@ -48,6 +51,9 @@ use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
+use Larapilot\Services\Tracker\TrackerLinkStore;
+use Larapilot\Services\Tracker\TrackerManager;
+use Larapilot\Services\TrackerService;
 use Larapilot\Services\ValidationService;
 use Larapilot\Support\MockupAssetResolver;
 use Larapilot\Support\MockupCssProcessor;
@@ -56,7 +62,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.2.0';
+    public const VERSION = '2.3.0';
 
     public function register(): void
     {
@@ -79,6 +85,9 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(ApiService::class);
         $this->app->singleton(OpenApiService::class);
         $this->app->singleton(ValidationService::class);
+        $this->app->singleton(TrackerManager::class);
+        $this->app->singleton(TrackerLinkStore::class);
+        $this->app->singleton(TrackerService::class);
     }
 
     public function boot(): void
@@ -112,6 +121,9 @@ class LarapilotServiceProvider extends ServiceProvider
                 ValidatePlanCommand::class,
                 SpecApproveCommand::class,
                 SpecDeleteCommand::class,
+                TrackerStatusCommand::class,
+                TrackerPushCommand::class,
+                TrackerPullCommand::class,
             ]);
 
             $this->publishes([

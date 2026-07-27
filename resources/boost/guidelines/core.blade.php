@@ -18,6 +18,7 @@ Use Larapilot skills when the user wants to:
 - Report or triage a **bug** (`larapilot-bug`)
 - Sync a shared PRD into an **external frontend repo** (`larapilot-frontend-companion`)
 - Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
+- Mirror the backlog into a **project tracker** — Linear, Asana, Jira, Trello, ClickUp, Monday (`larapilot-tracker`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -40,6 +41,7 @@ Use Larapilot skills when the user wants to:
 | Ship (optional) | `larapilot-ship` | Security assessment + deploy + web launch checks |
 | Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` in `.larapilot/config.yaml` |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
+| Project tracker (optional) | `larapilot-tracker` | Stories + plan subtasks in Linear/Asana/Jira/Trello/ClickUp/Monday; links in `.larapilot/tracker.yaml` |
 
 ### Installation
 
@@ -68,6 +70,9 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:companion-export` _(optional `--file=` / `--api-base=` — bundle for external FE)_
 - `php artisan larapilot:backstage-export` _(read-only; `--write [--force] [--no-techdocs]` generates the Backstage catalog + TechDocs)_
+- `php artisan larapilot:tracker-status` _(read-only; `--ping` verifies the provider credential)_
+- `php artisan larapilot:tracker-push` _(backlog → tracker; `--dry-run`, `--spec=`, `--force`)_
+- `php artisan larapilot:tracker-pull` _(tracker → drift report; `--apply` writes statuses back, never DONE)_
 - `php artisan larapilot:spec-list`
 - `php artisan larapilot:spec-add --file=...`
 - `php artisan larapilot:spec-show US-001`
@@ -93,7 +98,7 @@ Parse stdout/stderr as JSON envelopes with schema `larapilot/v1`.
 
 ### Artifacts live in the repo
 
-PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/`. Dashboard: `/larapilot` (read-only board — dev/staging only).
+PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · tracker links `.larapilot/tracker.yaml` (commit it; ids only, never credentials). Dashboard: `/larapilot` (read-only board — dev/staging only).
 
 ### Personas
 
