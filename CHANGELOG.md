@@ -2,27 +2,6 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [2.3.0] - 2026-07-27
-
-### Added
-
-- **Project tracker integration** — optional, API-key based sync between the backlog and **Linear**, **Asana**, **Jira**, **Trello**, **ClickUp**, or **Monday**. `.larapilot/` stays the source of truth; the tracker is a window on delivery for people who never open `backlog.yaml`.
-  - **`/larapilot-tracker`** — skill that picks the provider, collects credentials into `.env`, validates the status map against the real board, dry-runs, then pushes. Personas: **Matt** (provider choice, status mapping, link hygiene), **Mark** (what non-developers should see), **Lars** (credential boundary).
-  - **`larapilot:tracker-push`** — user stories become issues/tasks/cards/items titled `US-XXX — Title` carrying the spec body, priority, points, and epic; plan tasks become **native** sub-issues (Linear), subtasks (Jira, Asana, ClickUp), subitems (Monday), or checklist items (Trello). Unchanged stories are skipped without an API call; `--dry-run`, `--spec=`, `--force`. A subtask whose plan task disappears is deleted; a story whose remote record was deleted is recreated.
-  - **`larapilot:tracker-pull`** — read-only drift report by default (local vs remote status per story); `--apply` writes the mapped status back into the backlog. **DONE is never applied** — it is a human review gate that records the merge commit, so it stays with `larapilot:spec-approve`. `LARAPILOT_TRACKER_PULL_COMMENTS=true` imports tracker comments as non-blocking internal feedback, once each.
-  - **`larapilot:tracker-status`** — provider, readiness, missing env vars, status map, linked spec count; `--ping` verifies the credential and the target board/project. Allowed via MCP `RunArtisanTool` (read-only; push/pull are not).
-  - **`larapilot.tracker` config** (`LARAPILOT_TRACKER_*`, `LARAPILOT_{LINEAR,JIRA,ASANA,TRELLO,CLICKUP,MONDAY}_*`) — one active provider, per-provider credentials and `status_map`. Jira uses REST v2 so descriptions stay plain text instead of ADF; Monday needs a long-text column for the spec body.
-  - **`.larapilot/tracker.yaml`** — committed spec → remote-id map (identifiers only, never credentials), keyed by provider so switching tools does not lose the mapping.
-  - **Runtime pack** — canonical rules in `runtime-ops.md` → **Project Trackers** (asymmetric direction, credential boundary, status mapping, sync cadence).
-- **`larapilot:config-show`** now reports `data.tracker` — provider, readiness, missing env vars, status map, and linked spec count, without ever echoing a credential.
-
-### Changed
-
-- **Status mapping is forward-first** — a story is in sync when its Larapilot status maps *onto* the remote label, so `TODO` and `PLANNED` sharing one column is not drift. Reverse mapping runs only once drift is real and resolves an ambiguous label to the earliest workflow slot; an unmapped remote status is reported, never guessed.
-- **A status map pointing at a column that does not exist fails loudly on every provider**, naming the columns that do exist. Larapilot never creates columns in someone else's tracker — Linear previously would have accepted the issue and filed it in the team's default state.
-- **README + docs site** — new **Project trackers** deep-dive (provider matrix, direction, configuration, credential boundary) and a **Tracker sync** use-case walkthrough covering first-run status-map mismatch, push, drift report, and the DONE gate; skill and CLI tables updated; site version **v2.3.0**.
-- **`illuminate/http`** added to `require` — the tracker drivers use Laravel's HTTP client.
-
 ## [2.2.0] - 2026-07-27
 
 ### Added
@@ -33,12 +12,23 @@ All notable changes to `larapilot` will be documented in this file.
   - **`GET /larapilot/api/backstage`** — catalog entities, rendered YAML, TechDocs metadata, and a lean delivery `snapshot` (metrics, per-status counts, blocking feedback, story list without bodies) for a Backstage plugin or entity provider; **`GET /larapilot/api/backstage/catalog-info.yaml`** serves the descriptor as a Backstage `url` location. Both share the dashboard gate (never in production) and belong behind the Backstage backend proxy so `LARAPILOT_API_TOKEN` stays server-side. OpenAPI updated.
   - **`larapilot.backstage` config** (`LARAPILOT_BACKSTAGE_*`) — `enabled`, `name`/`title`/`description`/`namespace`, `owner`, `system`, `lifecycle`, `component_type`, `tags`, `base_url`, `techdocs`, `workflow_api` (off by default). Catalog identity lives in Laravel config/`.env`, not `.larapilot/config.yaml`, because it describes the org catalog rather than the delivery workflow.
   - **Runtime pack** — canonical rules in `runtime-ops.md` → **Developer Portal — Backstage** (ownership of generated files, regeneration cadence, security boundary).
-- **`larapilot:config-show`** now reports `data.backstage` — resolved entity ref, owner, system, lifecycle, TechDocs paths, and whether the catalog descriptor already exists.
+- **Project tracker integration** — optional, API-key based sync between the backlog and **Linear**, **Asana**, **Jira**, **Trello**, **ClickUp**, or **Monday**. `.larapilot/` stays the source of truth; the tracker is a window on delivery for people who never open `backlog.yaml`.
+  - **`/larapilot-tracker`** — skill that picks the provider, collects credentials into `.env`, validates the status map against the real board, dry-runs, then pushes. Personas: **Matt** (provider choice, status mapping, link hygiene), **Mark** (what non-developers should see), **Lars** (credential boundary).
+  - **`larapilot:tracker-push`** — user stories become issues/tasks/cards/items titled `US-XXX — Title` carrying the spec body, priority, points, and epic; plan tasks become **native** sub-issues (Linear), subtasks (Jira, Asana, ClickUp), subitems (Monday), or checklist items (Trello). Unchanged stories are skipped without an API call; `--dry-run`, `--spec=`, `--force`. A subtask whose plan task disappears is deleted; a story whose remote record was deleted is recreated.
+  - **`larapilot:tracker-pull`** — read-only drift report by default (local vs remote status per story); `--apply` writes the mapped status back into the backlog. **DONE is never applied** — it is a human review gate that records the merge commit, so it stays with `larapilot:spec-approve`. `LARAPILOT_TRACKER_PULL_COMMENTS=true` imports tracker comments as non-blocking internal feedback, once each.
+  - **`larapilot:tracker-status`** — provider, readiness, missing env vars, status map, linked spec count; `--ping` verifies the credential and the target board/project. Allowed via MCP `RunArtisanTool` (read-only; push/pull are not).
+  - **`larapilot.tracker` config** (`LARAPILOT_TRACKER_*`, `LARAPILOT_{LINEAR,JIRA,ASANA,TRELLO,CLICKUP,MONDAY}_*`) — one active provider, per-provider credentials and `status_map`. Jira uses REST v2 so descriptions stay plain text instead of ADF; Monday needs a long-text column for the spec body.
+  - **`.larapilot/tracker.yaml`** — committed spec → remote-id map (identifiers only, never credentials), keyed by provider so switching tools does not lose the mapping.
+  - **Runtime pack** — canonical rules in `runtime-ops.md` → **Project Trackers** (asymmetric direction, credential boundary, status mapping, sync cadence).
+- **`larapilot:config-show`** now reports `data.backstage` — resolved entity ref, owner, system, lifecycle, TechDocs paths, and whether the catalog descriptor already exists — and `data.tracker` — provider, readiness, missing env vars, status map, and linked spec count, without ever echoing a credential.
 
 ### Changed
 
 - **Generated-file safety** — `catalog-info.yaml` and `mkdocs.yml` are never overwritten without `--force` (a project may already own them); everything under `.larapilot/techdocs/` is regenerated and pages for deleted specs are pruned.
-- **README + docs site** — new **Developer portal** / **Backstage portal** sections (catalog entity sample, identity env table, TechDocs, live snapshot, security boundary), skill and CLI tables updated; site version **v2.2.0**.
+- **Status mapping is forward-first** — a story is in sync when its Larapilot status maps *onto* the remote label, so `TODO` and `PLANNED` sharing one column is not drift. Reverse mapping runs only once drift is real and resolves an ambiguous label to the earliest workflow slot; an unmapped remote status is reported, never guessed.
+- **A status map pointing at a column that does not exist fails loudly on every provider**, naming the columns that do exist. Larapilot never creates columns in someone else's tracker — Linear previously would have accepted the issue and filed it in the team's default state.
+- **README + docs site** — new **Developer portal** / **Backstage portal** sections (catalog entity sample, identity env table, TechDocs, live snapshot, security boundary), a **Project trackers** deep-dive (provider matrix, direction, configuration, credential boundary), and a **Tracker sync** use-case walkthrough covering first-run status-map mismatch, push, drift report, and the DONE gate; skill and CLI tables updated; site version **v2.2.0**.
+- **`illuminate/http`** added to `require` — the tracker drivers use Laravel's HTTP client.
 
 ## [2.1.2] - 2026-07-26
 
