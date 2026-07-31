@@ -6,7 +6,6 @@ namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\BackstageExportCommand;
-use Larapilot\Console\Commands\CompanionSyncCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
@@ -15,6 +14,7 @@ use Larapilot\Console\Commands\FrontendSetCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
+use Larapilot\Console\Commands\QualityCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
@@ -42,6 +42,7 @@ use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\BackstageService;
+use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
@@ -65,13 +66,14 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.3.0';
+    public const VERSION = '2.3.1';
 
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/larapilot.php', 'larapilot');
 
         $this->app->singleton(ConfigService::class);
+        $this->app->singleton(CodeQualityService::class);
         $this->app->singleton(CompanionService::class);
         $this->app->singleton(FrontendService::class);
         $this->app->singleton(BackstageService::class);
@@ -104,7 +106,6 @@ class LarapilotServiceProvider extends ServiceProvider
                 UpdateCommand::class,
                 DoctorCommand::class,
                 DiagnosticsCommand::class,
-                CompanionSyncCommand::class,
                 FrontendSetCommand::class,
                 FrontendScanCommand::class,
                 BackstageExportCommand::class,
@@ -123,6 +124,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecRequestChangesCommand::class,
                 TaskDoneCommand::class,
                 MetricsCommand::class,
+                QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,
                 SpecApproveCommand::class,

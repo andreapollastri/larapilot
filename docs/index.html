@@ -1224,7 +1224,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.3.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.3.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1265,6 +1265,7 @@
       <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
       <a class="sub" href="#deep-dive-design-systems">Design systems</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
+      <a class="sub" href="#deep-dive-code-quality">Code quality</a>
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
@@ -1307,9 +1308,25 @@
             </li>
           </ol>
         </div>
+        <div class="install-commands" style="margin-top:1rem">
+          <div class="install-commands-header">After install — code quality gate (v2.3.1+)</div>
+          <ol class="install-commands-list">
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">✓</span>
+              <code class="install-command-text">php artisan larapilot:quality</code>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:quality"
+                title="Copy command">Copy</button>
+            </li>
+          </ol>
+        </div>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a
             href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
+        <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
+            rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
+            target="_blank" rel="noopener">Laravel Pint</a> — <code>phpstan.neon.dist</code>, <code>pint.json</code>,
+          Composer scripts, and dev dependencies. Run <code>php artisan larapilot:quality</code> before merge; see
+          <a href="#deep-dive-code-quality">Code quality</a>.</p>
         <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick
           up new skills.</p>
 
@@ -1446,7 +1463,7 @@
           <a class="example-card" href="#example-frontend-companion">
             <span class="example-card-num">5</span>
             <span class="example-card-title">Frontend companion</span>
-            <span class="example-card-desc">Laravel API + React repo — shared PRD sync across repos</span>
+            <span class="example-card-desc">Laravel API + React repo — one cockpit, linked FE write target</span>
             <span class="example-card-cmd">/larapilot-frontend-companion</span>
           </a>
           <a class="example-card" href="#example-tracker-sync">
@@ -2065,143 +2082,54 @@ body: |
 
         <!-- Frontend companion -->
         <article class="example-block" id="example-frontend-companion">
-          <h2>Frontend companion</h2>
-          <p class="example-tag"><code>/larapilot-inception</code> → <code>/larapilot-frontend-companion</code></p>
-          <p class="example-context">Booking SaaS: Laravel exposes a versioned API; the customer UI lives in a separate
-            React repo. One PRD, two repositories — companion sync keeps them aligned. Full reference:
-            <a href="#deep-dive-frontend-companion">Frontend companion</a>.
+          <h2>External frontend repo</h2>
+          <p class="example-tag"><code>/larapilot-inception</code> → <code>/larapilot-spec</code> → <code>/larapilot-implement</code></p>
+          <p class="example-context">Booking SaaS: Laravel API + React SPA in another folder. <strong>Laravel is the only
+              Larapilot cockpit</strong> — the React repo is a linked write target. Reference:
+            <a href="#deep-dive-frontend-companion">External frontend repo</a>.
           </p>
 
-          <h3>1 · Inception on Laravel (API repo)</h3>
+          <h3>1 · Inception (Laravel)</h3>
           <div class="code-block">
             <div class="code-block-header">Laravel editor</div>
-            <pre><code>/larapilot-inception "Booking SaaS for clinics: API for appointments, patients, and staff — React SPA in another repo"</code></pre>
+            <pre><code>/larapilot-inception "Clinic booking API — React SPA in /Users/dev/clinic-web"</code></pre>
           </div>
+          <p>John + Joe ask <strong>Frontend Topology</strong> → you pick <code>API + external frontend</code>,
+            <strong>React</strong>, absolute path <code>/Users/dev/clinic-web</code>. Filament for ops admin on
+            Laravel. PRD records API + OpenAPI as Must.</p>
 
-          <div class="chat-example">
-            <p><span class="speaker">💎 Mark:</span> Application with a clear API boundary — let's lock topology before
-              the panel route.</p>
-            <div class="wizard">
-              <strong>AskQuestion — Frontend Topology (John + Joe)</strong>
-              <ol>
-                <li><strong>Frontend Topology:</strong> Laravel-coupled · SPA-in-Laravel · API + external frontend</li>
-                <li><strong>External FE stack:</strong> React · Vue · Angular · Svelte · Other</li>
-                <li><strong>Companion sync:</strong> BE-orchestrated push · git PR · manual</li>
-              </ol>
-            </div>
-            <p><em>You pick:</em> <strong>API + external frontend</strong>, <strong>React</strong>,
-              <strong>BE-orchestrated push</strong>.</p>
-            <div class="wizard">
-              <strong>AskQuestion — External frontend repo path (John + Joe)</strong>
-              <ol>
-                <li><strong>Absolute path</strong> to the React repo on disk (e.g. <code>/Users/dev/clinic-web</code>)
-                </li>
-              </ol>
-            </div>
-            <div class="wizard">
-              <strong>AskQuestion — Ops admin on Laravel</strong>
-              <ol>
-                <li><strong>Admin panel:</strong> Filament · Custom · None for now</li>
-              </ol>
-            </div>
-            <p><em>You pick:</em> <strong>Filament</strong> for clinic ops (not the customer SPA).</p>
-            <p><span class="speaker">📐 John:</span> Sanctum API tokens + OpenAPI are Must. Customer UI stays out of
-              this repo — Filament covers back-office only.</p>
-            <p><span class="speaker">✨ Joe:</span> We'll scan the existing React repo and implement from what's already
-              there — all workflow commands stay in this Laravel workspace.</p>
-          </div>
-
+          <h3>2 · Link + scan (Laravel)</h3>
           <div class="code-block">
-            <div class="code-block-header">PRD.md (excerpt)</div>
-            <pre><code>**Project Kind:** Application
-**Delivery Target:** V1 Complete
-**Frontend Topology:** API + external frontend
-**External frontend repo:** /Users/dev/clinic-web
-**External frontend stack:** React
-**Companion sync:** BE-orchestrated push
-**Admin panel:** Filament
-**API & docs:** REST + OpenAPI (Sanctum)
-
-### FR-001: Staff authentication via API tokens
-**MoSCoW:** Must
-
-### FR-002: Appointment CRUD for authenticated staff
-**MoSCoW:** Must
-
-### FR-003: Patient list and detail for clinic staff
-**MoSCoW:** Must</code></pre>
-          </div>
-
-          <p>Backlog and implement run <strong>from Laravel only</strong>. API stories (<code>US-001</code> auth,
-            <code>US-002</code> appointments, …) touch this repo; UI stories use plan tasks with
-            <code>repo: frontend</code> and write under the configured path. Mockups still land in
-            <code>.larapilot/mockups/</code> as the shared UX contract.</p>
-
-          <h3>2 · Configure, scan, and sync (Laravel)</h3>
-          <div class="code-block">
-            <div class="code-block-header">Laravel terminal — single cockpit</div>
+            <div class="code-block-header">Laravel terminal</div>
             <pre><code>php artisan larapilot:frontend-set --path=/Users/dev/clinic-web --stack=React
-php artisan larapilot:frontend-scan
-php artisan larapilot:companion-sync</code></pre>
+php artisan larapilot:frontend-scan</code></pre>
           </div>
-          <p><code>frontend-set</code> persists the absolute FE path in <code>.larapilot/config.yaml</code>.
-            <code>frontend-scan</code> detects stack, Vite/Next tooling, and entrypoints so inception/plan start from
-            existing code. <code>companion-sync</code> writes the PRD mirror into the FE repo's
-            <code>.larapilot/</code> — no need to open a second editor workspace for workflow.</p>
+          <p><code>frontend-set</code> saves the path in <code>.larapilot/config.yaml</code>.
+            <code>frontend-scan</code> detects Vite, <code>src/</code>, entrypoints — specs start from existing code.</p>
 
-          <h3>3 · Plan and implement cross-repo (still Laravel)</h3>
+          <h3>3 · Deliver (Laravel only)</h3>
           <div class="code-block">
             <div class="code-block-header">Laravel editor</div>
             <pre><code>/larapilot-spec
 /larapilot-plan US-003
 /larapilot-implement US-003</code></pre>
           </div>
-          <p>Plan tasks for React screens carry <code>repo: frontend</code>. Implement writes
-            <code>src/…</code> under <code>data.frontend.repo_path</code>, runs <code>npm test</code> from the FE root,
-            and commits with <code>git -C /Users/dev/clinic-web …</code>. Laravel API tasks stay on
-            <code>data.workdir</code>.</p>
-
-          <h3>4 · FE mirror (read-only contract in the SPA repo)</h3>
-          <div class="code-block">
-            <div class="code-block-header">clinic-web/.larapilot/</div>
-            <pre><code>docs/PRD.md              ← product contract (source of truth for scope)
-openapi-product.json     ← generate clients/types from this when present
-companion-sync.md        ← when/how you last synced</code></pre>
-          </div>
-
-          <div class="code-block">
-            <div class="code-block-header">companion-sync.md (excerpt)</div>
-            <pre><code># Companion sync
-
-- **Synced at:** 2026-07-24T17:00:00+00:00
-- **Source:** Laravel Larapilot (BE-orchestrated push via larapilot:companion-sync)
-- **Frontend Topology:** api_external_frontend
-- **External stack:** React
-
-## Notes
-
-- PRD mirrored from Laravel — treat as source of truth for product scope.
-- All workflow commands run from the Laravel backend workspace only.</code></pre>
-          </div>
-
-          <h3>5 · Keep syncing</h3>
-          <p>After PRD edits on Laravel, run <code>php artisan larapilot:companion-sync</code> or
-            <code>/larapilot-frontend-companion</code> in the Laravel workspace.</p>
+          <p>API stories touch Laravel. UI stories use plan tasks with <code>repo: frontend</code> — implement writes
+            <code>src/…</code> under <code>data.frontend.repo_path</code>, runs <code>npm test</code>, commits with
+            <code>git -C /Users/dev/clinic-web …</code>. Mockups stay in Laravel <code>.larapilot/mockups/</code>.</p>
 
           <dl class="walkthrough-grid">
             <div>
-              <dt>You do (Laravel)</dt>
-              <dd><code>frontend-set</code> path · <code>frontend-scan</code> · spec/plan/implement ·
-                <code>companion-sync</code> after PRD changes</dd>
+              <dt>You do</dt>
+              <dd>Work only in the Laravel workspace — set path, spec, plan, implement</dd>
             </div>
             <div>
-              <dt>Agent does (Laravel)</dt>
-              <dd>Scans FE code · writes API + UI tasks · implements BE and FE files · pushes PRD mirror to FE
-                <code>.larapilot/</code></dd>
+              <dt>Agent does</dt>
+              <dd>Scans FE · plans BE + FE tasks · writes both repos from Laravel</dd>
             </div>
             <div>
               <dt>Next step</dt>
-              <dd><code>/larapilot-spec</code> → plan/implement Must stories · re-sync after each PRD edit</dd>
+              <dd><code>/larapilot-spec</code> → implement Must stories</dd>
             </div>
           </dl>
         </article>
@@ -2609,6 +2537,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <h2>Technical reference</h2>
           <p>Skills, <a href="#deep-dive-settings">settings</a>, personas, workflow, artifacts, design systems,
             <a href="#deep-dive-frontend-companion">frontend companion</a>,
+            <a href="#deep-dive-code-quality">code quality</a>,
             <a href="#deep-dive-backstage">Backstage portal</a>, CLI, dashboard, and API — how every layer
             fits together.</p>
         </div>
@@ -2687,7 +2616,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 <tr>
                   <td><code>php artisan larapilot:update</code></td>
                   <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged
-                    <code>.larapilot/design-systems/</code> references; re-runs <code>boost:update</code> to republish
+                    <code>.larapilot/design-systems/</code> references; missing <code>phpstan.neon.dist</code> /
+                    <code>pint.json</code> and Composer quality entries; re-runs <code>boost:update</code> to republish
                     guidelines and <code>/larapilot-*</code> skills
                   </td>
                   <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned
@@ -2701,7 +2631,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <ul>
             <li><code>php artisan larapilot:update --skip-boost</code> — refresh shared runtime and design-system copies
               only; run <code>php artisan boost:update</code> yourself when you want new skills/guidelines</li>
-            <li><code>php artisan larapilot:doctor</code> — verify install health after an upgrade</li>
+            <li><code>php artisan larapilot:doctor</code> — verify install health after an upgrade (includes Larastan/Pint gate)</li>
             <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and
               skills are missing</li>
           </ul>
@@ -2790,16 +2720,14 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <span class="skill-badge">companion</span>
               <div class="skill-body">
                 <h3><code>/larapilot-frontend-companion</code></h3>
-                <p>For <strong>API + external frontend</strong> topology: the <strong>Laravel workspace is the only
-                  cockpit</strong> — configure the FE absolute path, scan existing code, push PRD/OpenAPI mirror, and
-                  orchestrate cross-repo plan/implement. Full reference: <a href="#deep-dive-frontend-companion">Frontend companion</a>.</p>
+                <p>For <strong>API + external frontend</strong>: link the FE absolute path, scan existing code.
+                  All delivery stays on Laravel via <code>repo: frontend</code> tasks.
+                  <a href="#deep-dive-frontend-companion">External frontend repo</a>.</p>
                 <ul>
-                  <li><code>larapilot:frontend-set --path=/abs/fe/repo [--stack=React]</code></li>
-                  <li><code>larapilot:frontend-scan</code> — detect stack, tooling, structure</li>
-                  <li><code>larapilot:companion-sync</code> — write <code>.larapilot/docs/PRD.md</code> in the FE repo</li>
+                  <li><code>larapilot:frontend-set --path=/abs/fe/repo</code></li>
+                  <li><code>larapilot:frontend-scan</code></li>
                 </ul>
-                <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code> ·
-                  <code>companion-sync</code>.
+                <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code>.
                 </p>
               </div>
             </div>
@@ -2842,10 +2770,12 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <span class="skill-badge">implement</span>
               <div class="skill-body">
                 <h3><code>/larapilot-implement US-XXX</code></h3>
-                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Status → <span
+                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Runs <code>larapilot:quality</code>
+                  (Pint + Larastan level 5+) on backend tasks before <code>task-done</code>. Status → <span
                     class="status status-review">REVIEW</span> when all tasks complete.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-start</code> ·
-                  <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>.
+                  <code>larapilot:quality</code> (<code>--fix</code>) · <code>larapilot:task-done</code> ·
+                  <code>larapilot:spec-review</code>.
                 </p>
               </div>
             </div>
@@ -3637,176 +3567,173 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           </ul>
         </article>
 
-        <!-- Frontend companion -->
+        <!-- External frontend repo -->
         <article class="deep-dive-sub" id="deep-dive-frontend-companion">
-          <h3>Frontend companion</h3>
-          <p class="lead">When the UI lives in a <strong>separate repository</strong> from Laravel, the
-            <strong>Laravel workspace is the only Larapilot entry point</strong>: PRD, backlog, plans, and all
-            <code>/larapilot-*</code> commands run there. The FE repo is a configured write target plus an optional
-            read-only PRD mirror under <code>.larapilot/</code>.</p>
+          <h3>External frontend repo</h3>
+          <p class="lead"><strong>Laravel is the only Larapilot cockpit.</strong> When topology is
+            <code>API + external frontend</code>, the SPA lives in another folder on disk. Larapilot links that path
+            and implements UI there via <code>repo: frontend</code> tasks. The FE repo holds application code only — no
+            mirrored PRD.</p>
 
-          <h4>When it applies</h4>
-          <p>During <code>/larapilot-inception</code>, <strong>John + Joe</strong> ask <strong>Frontend
-              Topology</strong> before the admin-panel route:</p>
+          <h4>Topology choices</h4>
           <div class="table-card">
             <table>
               <thead>
                 <tr>
                   <th>Topology</th>
                   <th>UI location</th>
-                  <th>Companion?</th>
+                  <th>Split repo?</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><code>Laravel-coupled</code></td>
-                  <td>Blade / Livewire / Inertia in the Laravel repo</td>
-                  <td>No — single repo</td>
+                  <td>Blade / Livewire / Inertia in Laravel</td>
+                  <td>No</td>
                 </tr>
                 <tr>
                   <td><code>SPA-in-Laravel</code></td>
-                  <td>Vite SPA (React / Vue / Angular / Svelte) inside Laravel</td>
-                  <td>No — single repo</td>
+                  <td>Vite SPA inside Laravel</td>
+                  <td>No</td>
                 </tr>
                 <tr>
                   <td><code>API + external frontend</code></td>
-                  <td>Separate FE repo; Laravel is API (+ optional admin)</td>
-                  <td><strong>Yes</strong> — use companion sync</td>
+                  <td>Separate folder; Laravel is API (+ optional admin)</td>
+                  <td><strong>Yes</strong></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <p>Recorded in the PRD under <code>## Technical Architecture</code>:</p>
+          <h4>PRD fields</h4>
           <div class="code-block">
-            <div class="code-block-header">PRD.md — topology fields</div>
+            <div class="code-block-header">Technical Architecture</div>
             <pre><code>**Frontend Topology:** API + external frontend
 **Frontend stack (in-repo):** N/A
-**External frontend repo:** https://github.com/acme/app-web
-**External frontend stack:** React
-**Companion sync:** BE-orchestrated push</code></pre>
+**External frontend repo:** /Users/dev/acme-web
+**External frontend stack:** React</code></pre>
           </div>
 
-          <h4>Configuration</h4>
-          <p>Persist the absolute FE path in <code>.larapilot/config.yaml</code> (also exposed as
-            <code>data.frontend</code> on <code>config-show</code>):</p>
-          <div class="code-block">
-            <div class="code-block-header">Laravel terminal</div>
-            <pre><code>php artisan larapilot:frontend-set --path=/Users/dev/acme-web --stack=React
-php artisan larapilot:frontend-scan
-php artisan larapilot:companion-sync</code></pre>
+          <h4>Three CLI commands (all from Laravel)</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>When</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:frontend-set --path=…</code></td>
+                  <td>Once — persist absolute FE path in <code>config.yaml</code> (<code>data.frontend</code> on
+                    <code>config-show</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:frontend-scan</code></td>
+                  <td>Before plan on an existing FE codebase — stack, tooling, entrypoints</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <h4>Source of truth</h4>
+          <h4>Delivery</h4>
           <ul>
-            <li><strong>Laravel repo</strong> — Larapilot owns PRD, backlog, plans, mockups, and (usually) product
-              OpenAPI. Scope changes still go through <code>/larapilot-inception</code>,
-              <code>/larapilot-feature</code>, or the PRD living document.</li>
-            <li><strong>Frontend repo</strong> — receives mirrored PRD/OpenAPI and application code from cross-repo
-              implement tasks (<code>repo: frontend</code>). Does <strong>not</strong> run workflow commands or invent
-              product scope.</li>
-            <li>Optional Laravel admin (Filament / custom) remains valid for ops even when the customer UI is external.
-            </li>
+            <li><strong>Laravel</strong> — PRD, backlog, plans, mockups, workflow. All <code>/larapilot-*</code>
+              skills.</li>
+            <li><strong>Frontend folder</strong> — application code from <code>larapilot-implement</code> tasks with
+              <code>repo: frontend</code>. No Larapilot workflow here.</li>
+            <li><strong>Mockups</strong> — always in Laravel <code>.larapilot/mockups/</code>; Joe implements in the FE
+              folder.</li>
           </ul>
 
-          <h4>Sync surfaces</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Surface</th>
-                  <th>Where</th>
-                  <th>Usage</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Skill</td>
-                  <td>Laravel editor</td>
-                  <td><code>/larapilot-frontend-companion</code> — configure path, scan FE, push mirror, orient
-                    cross-repo work</td>
-                </tr>
-                <tr>
-                  <td>CLI</td>
-                  <td>Laravel</td>
-                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code> ·
-                    <code>larapilot:companion-sync</code></td>
-                </tr>
-                <tr>
-                  <td>MCP</td>
-                  <td>Laravel editor</td>
-                  <td><code>RunArtisanTool</code> → <code>larapilot:companion-sync</code>,
-                    <code>larapilot:frontend-scan</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h4>What gets synced</h4>
-          <p><code>larapilot:companion-sync</code> reads the Laravel PRD (and optional product OpenAPI from
-            <code>storage/api-docs/api-docs.json</code>, <code>openapi.json</code>, <code>docs/openapi.json</code>, or
-            <code>.larapilot/openapi-product.json</code>) and writes files directly into the configured FE repo.
-            Topology fields are parsed from labeled PRD lines when building sync metadata.
-          </p>
-
-          <h4>What the FE repo receives</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Path</th>
-                  <th>Content</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>.larapilot/docs/PRD.md</code></td>
-                  <td>Verbatim PRD from the Laravel bundle</td>
-                </tr>
-                <tr>
-                  <td><code>.larapilot/openapi-product.json</code></td>
-                  <td>Product OpenAPI when present in the bundle</td>
-                </tr>
-                <tr>
-                  <td><code>.larapilot/companion-sync.md</code></td>
-                  <td>Sync log (timestamp, topology, BE-orchestrated push notes)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>The companion workflow does <strong>not</strong> overwrite FE app source or README. All
-            <code>larapilot:*</code> commands run from the Laravel workspace only.</p>
-
-          <h4>End-to-end flow</h4>
-          <p>Walkthrough: <a href="#example-frontend-companion">Frontend companion example</a>.</p>
+          <h4>End-to-end</h4>
+          <p>Walkthrough: <a href="#example-frontend-companion">External frontend repo example</a>.</p>
           <ol>
-            <li>Inception on Laravel → <code>API + external frontend</code> → ask absolute FE path →
-              <code>frontend-set</code> + <code>frontend-scan</code></li>
-            <li>Backlog/plan/implement from Laravel — API tasks in-repo; UI tasks with <code>repo: frontend</code></li>
-            <li>Mockups under Laravel <code>.larapilot/mockups/</code>; Joe implements in the FE repo</li>
-            <li><code>companion-sync</code> after PRD living-document edits</li>
+            <li>Inception → <code>API + external frontend</code> + absolute path → <code>frontend-set</code></li>
+            <li><code>frontend-scan</code> when the FE already has code</li>
+            <li><code>/larapilot-spec</code> → plan → implement (BE + FE tasks from Laravel)</li>
           </ol>
 
-          <div class="code-block">
-            <div class="code-block-header">Laravel — orchestrate from one workspace</div>
-            <pre><code>/larapilot-frontend-companion
-# or explicitly:
-php artisan larapilot:frontend-set --path=/abs/clinic-web --stack=React
-php artisan larapilot:frontend-scan
-php artisan larapilot:companion-sync</code></pre>
+          <div class="cli-note"><strong>PRD edits happen on Laravel only.</strong> The FE repo never holds a mirrored PRD.</div>
+        </article>
+
+        <!-- Code quality -->
+        <article class="deep-dive-sub" id="deep-dive-code-quality">
+          <h3>Code quality</h3>
+          <p class="lead">Every Larapilot project stays compatible with <a href="https://github.com/larastan/larastan"
+              target="_blank" rel="noopener">Larastan</a> (<strong>PHPStan level 5+</strong>) and <a
+              href="https://laravel.com/docs/pint" target="_blank" rel="noopener">Laravel Pint</a>. Introduced in
+            <strong>v2.3.1</strong> — not optional after install.</p>
+
+          <h4>What install scaffolds</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Artifact</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>phpstan.neon.dist</code></td>
+                  <td>Larastan extension, <code>level: 5</code>, paths <code>app/</code> · <code>bootstrap/</code> ·
+                    <code>config/</code> · <code>database/</code> · <code>routes/</code> · <code>tests/</code></td>
+                </tr>
+                <tr>
+                  <td><code>pint.json</code></td>
+                  <td>Laravel preset — code style linter/formatter</td>
+                </tr>
+                <tr>
+                  <td><code>composer.json</code></td>
+                  <td><code>require-dev</code>: <code>larastan/larastan</code>, <code>laravel/pint</code>; scripts
+                    <code>lint</code>, <code>lint:check</code>, <code>analyse</code></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <h4>Personas &amp; boundaries</h4>
-          <ul>
-            <li><strong>Joe</strong> — maps PRD UX to the external stack; design-system fidelity</li>
-            <li><strong>John / Matt</strong> — API boundaries, auth/CORS; reject undocumented client calls</li>
-            <li><strong>Elise</strong> — mockups on Laravel remain the UX contract for both repos</li>
-            <li><strong>Albert</strong> — keep product OpenAPI accurate on Laravel; FE mirrors it</li>
-          </ul>
-          <div class="cli-note"><strong>PRD edits belong on Laravel.</strong> The FE mirror under
-            <code>.larapilot/</code> is read-mostly for humans/IDEs. Change scope with inception/feature/living-document
-            on the backend, then re-run <code>larapilot:companion-sync</code>.
+          <h4>Run the gate</h4>
+          <div class="code-block">
+            <div class="code-block-header">Check-only (CI / before merge)</div>
+            <pre><code>php artisan larapilot:quality</code></pre>
           </div>
+          <div class="code-block">
+            <div class="code-block-header">Apply Pint formatting, then Larastan</div>
+            <pre><code>php artisan larapilot:quality --fix</code></pre>
+          </div>
+          <p>Equivalent Composer shortcuts after <code>composer install</code>:</p>
+          <div class="code-block">
+            <div class="code-block-header">composer.json scripts</div>
+            <pre><code>composer lint:check   # pint --test
+composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
+          </div>
+
+          <h4>When to run</h4>
+          <ul>
+            <li><strong>Implement</strong> — <code>/larapilot-implement</code> runs <code>larapilot:quality</code> on
+              Laravel tasks before each <code>task-done</code></li>
+            <li><strong>CI</strong> — add <code>php artisan larapilot:quality</code> (or <code>composer lint:check &amp;&amp; composer analyse</code>) on every PR; failing Pint or Larastan blocks merge</li>
+            <li><strong>Health check</strong> — <code>larapilot:doctor</code> reports <code>quality_pint</code>,
+              <code>quality_larastan</code>, and <code>quality_packages</code>; install is not <code>healthy</code> when
+              the gate is missing</li>
+          </ul>
+
+          <h4>Rules</h4>
+          <ul>
+            <li><strong>Minimum level 5</strong> — never lower <code>level</code> in <code>phpstan.neon(.dist)</code>
+              without an explicit human waiver</li>
+            <li><strong>Legacy codebases</strong> — generate a baseline with
+              <code>vendor/bin/phpstan analyse --generate-baseline</code> (see <a
+                href="https://github.com/larastan/larastan" target="_blank" rel="noopener">Larastan docs</a>); do not
+              drop below level 5 for new code</li>
+            <li><code>larapilot:install --skip-composer</code> — write config files only; run
+              <code>composer require --dev larastan/larastan laravel/pint</code> yourself</li>
+          </ul>
+
+          <div class="cli-note"><strong>Andrew + Jack</strong> own the gate — Pint for style, Larastan for static analysis.
+            Robert flags regressions at review when quality was skipped.</div>
         </article>
 
         <!-- Backstage portal -->
@@ -4351,9 +4278,11 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 <tr>
                   <td>Setup</td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
-                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code>
+                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code> ·
+                    <code>larapilot:quality</code> (<code>--fix</code>)
                   </td>
-                  <td>Install, upgrades, health check, <a href="#deep-dive-settings">project settings</a></td>
+                  <td>Install, upgrades, health check, <a href="#deep-dive-code-quality">code quality</a>, <a
+                      href="#deep-dive-settings">project settings</a></td>
                 </tr>
                 <tr>
                   <td>Runtime</td>
@@ -4363,8 +4292,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 </tr>
                 <tr>
                   <td>PRD</td>
-                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code> ·
-                    <code>larapilot:companion-sync</code>
+                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code>
                   </td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code>,
                     <code>/larapilot-frontend-companion</code>
@@ -4386,10 +4314,10 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 </tr>
                 <tr>
                   <td>Execution</td>
-                  <td><code>larapilot:spec-start</code> · <code>larapilot:task-done</code> ·
-                    <code>larapilot:spec-review</code>
+                  <td><code>larapilot:spec-start</code> · <code>larapilot:quality</code> (<code>--fix</code>) ·
+                    <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>
                   </td>
-                  <td><code>/larapilot-implement</code></td>
+                  <td><code>/larapilot-implement</code> — see <a href="#deep-dive-code-quality">Code quality</a></td>
                 </tr>
                 <tr>
                   <td>Review</td>
@@ -4425,8 +4353,8 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
 
           <p>MCP exposes backlog, spec, and <strong>diagnostics</strong> tools — <code>larapilot</code> server
             alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during
-            conversation (including <code>larapilot:diagnostics</code> and <code>larapilot:backstage-export</code> via
-            <code>RunArtisanTool</code>).
+            conversation (including <code>larapilot:diagnostics</code>, <code>larapilot:quality</code>, and
+            <code>larapilot:backstage-export</code> via <code>RunArtisanTool</code>).
           </p>
         </article>
 
@@ -4531,7 +4459,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
         <article class="deep-dive-sub" id="deep-dive-api">
           <h3>API</h3>
           <p class="lead">JSON API over the same artifacts as the dashboard. Read endpoints for scripts, CI dashboards,
-            external frontend companion sync, bug-triage <a href="#deep-dive-api-diagnostics">diagnostics</a>, or
+            external frontend repo setup, bug-triage <a href="#deep-dive-api-diagnostics">diagnostics</a>, or
             tooling; <code>POST /specs/{code}/comments</code> appends internal feedback when enabled. Workflow state
             still changes only via skills/CLI.</p>
 

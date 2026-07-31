@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Console\Commands;
 
+use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
@@ -18,9 +19,10 @@ class DoctorCommand extends LarapilotCommand
 
     protected $description = 'Diagnose Larapilot installation and project setup';
 
-    public function handle(ConfigService $config, PrdService $prd, SpecService $specs): int
+    public function handle(ConfigService $config, CodeQualityService $quality, PrdService $prd, SpecService $specs): int
     {
         $designSystems = SharedRuntime::designSystemsProjectPath();
+        $qualityStatus = $quality->status();
 
         $runtimePacks = collect(SharedRuntime::packagedDocs())
             ->filter(fn (string $file): bool => str_starts_with($file, 'runtime-'));
@@ -37,10 +39,20 @@ class DoctorCommand extends LarapilotCommand
             'prd' => $prd->exists(),
             'boost' => class_exists(BoostServiceProvider::class),
             'settings_valid' => $config->settingsValid(),
+            'quality_pint' => $qualityStatus['pint_config'],
+            'quality_larastan' => $qualityStatus['larastan_config'] && $qualityStatus['larastan_level_ok'],
+            'quality_packages' => $qualityStatus['composer_require_dev'][CodeQualityService::PINT_PACKAGE]
+                && $qualityStatus['composer_require_dev'][CodeQualityService::LARASTAN_PACKAGE],
         ];
 
         $missingSettings = $config->missingSettingKeys();
-        $healthy = $checks['config'] && $checks['shared_runtime'] && $checks['boost'] && $checks['settings_valid'];
+        $healthy = $checks['config']
+            && $checks['shared_runtime']
+            && $checks['boost']
+            && $checks['settings_valid']
+            && $checks['quality_pint']
+            && $checks['quality_larastan']
+            && $checks['quality_packages'];
 
         if ((bool) $this->option('human')) {
             $this->table(['Check', 'Status'], collect($checks)
@@ -65,6 +77,7 @@ class DoctorCommand extends LarapilotCommand
         return $this->success('doctor', [
             'healthy' => $healthy,
             'checks' => $checks,
+            'quality' => $qualityStatus,
             'settings_missing_keys' => $missingSettings,
             'project_root' => $config->projectRoot(),
         ]);

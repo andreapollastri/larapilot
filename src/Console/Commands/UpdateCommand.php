@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Console\Commands;
 
+use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Support\LarapilotCommand;
 use Larapilot\Support\SharedRuntime;
@@ -16,7 +17,7 @@ class UpdateCommand extends LarapilotCommand
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + Boost guidelines and skills)';
 
-    public function handle(ConfigService $config): int
+    public function handle(ConfigService $config, CodeQualityService $quality): int
     {
         if (! $config->hasProjectConfig()) {
             return $this->failure(
@@ -30,6 +31,7 @@ class UpdateCommand extends LarapilotCommand
         $preserveDesignSystems = (bool) $this->option('preserve-design-systems');
 
         SharedRuntime::refresh(! $preserveDesignSystems);
+        $quality->install(false, false);
         $this->components->info('Larapilot docs refreshed (.larapilot/shared-runtime.md, .larapilot/task-templates.md).');
 
         $preserveDesignSystems

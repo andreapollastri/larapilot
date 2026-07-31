@@ -4,39 +4,12 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
-use Larapilot\Support\Markdown;
-
 class CompanionService
 {
     public function __construct(
         protected ConfigService $config,
         protected PrdService $prd,
     ) {}
-
-    /**
-     * PRD, topology, and product OpenAPI artifacts for companion sync into an external FE repo.
-     *
-     * @return array<string, mixed>
-     */
-    public function bundle(): array
-    {
-        $content = $this->prd->read();
-        $topology = $this->extractFrontendTopology($content);
-        $productOpenApi = $this->productOpenApiSnapshot();
-
-        return [
-            'generated_at' => now()->toIso8601String(),
-            'artifacts' => [
-                'prd' => $content === null ? null : [
-                    'content' => $content,
-                    'headings' => Markdown::headings($content),
-                    'path' => $this->prd->path(),
-                ],
-                'frontend_topology' => $topology,
-                'product_openapi' => $productOpenApi,
-            ],
-        ];
-    }
 
     /**
      * @return array{
@@ -160,28 +133,5 @@ class CompanionService
         }
 
         return null;
-    }
-
-    /**
-     * @return array{path: string, content: string}|null
-     */
-    protected function productOpenApiSnapshot(): ?array
-    {
-        $path = $this->productOpenApiPath();
-
-        if ($path === null) {
-            return null;
-        }
-
-        $content = file_get_contents($path);
-
-        if ($content === false) {
-            return null;
-        }
-
-        return [
-            'path' => $path,
-            'content' => $content,
-        ];
     }
 }

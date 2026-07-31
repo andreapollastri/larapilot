@@ -75,7 +75,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-spec` | MoSCoW backlog from PRD |
 | `/larapilot-feature` | Mini-inception for one evolutiva |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
-| `/larapilot-frontend-companion` | Configure external FE repo, scan code, sync PRD — **from Laravel** (split-repo cockpit) |
+| `/larapilot-frontend-companion` | Link external FE repo path, scan code — **from Laravel only** |
 | `/larapilot-design` | Static HTML mockups from design system |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
@@ -86,7 +86,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
-During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, configure the FE absolute path with `php artisan larapilot:frontend-set --path=…`, scan with `larapilot:frontend-scan`, and sync with `larapilot:companion-sync` or `/larapilot-frontend-companion` — **all from this Laravel workspace**. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
+During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `SPA-in-Laravel`, or `API + external frontend`. For split-repo: `larapilot:frontend-set --path=…`, then `frontend-scan` — **all from Laravel**. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 
@@ -123,23 +123,38 @@ Workflow **state** still changes only via skills or Artisan — not from the das
 
 ## Frontend companion — split repo
 
-When **Frontend Topology** is `API + external frontend`, the **Laravel workspace is the only Larapilot entry point**. The FE repo is a configured write target; PRD/backlog/plans stay in Laravel.
+When **Frontend Topology** is `API + external frontend`, **Laravel is the only Larapilot cockpit**. PRD, backlog, plans, and all `/larapilot-*` commands run in the backend workspace. The FE repo is a **linked write target** configured with an absolute path.
+
+### How it works
+
+```
+Laravel (cockpit)                         Frontend repo (write target)
+─────────────────                         ────────────────────────────
+.larapilot/docs/PRD.md                    src/…                   ◄── implement (repo: frontend)
+.larapilot/backlog.yaml                   tests/…
+.larapilot/plans/                         (application code only)
+.larapilot/mockups/
+```
+
+1. **Inception** records topology and asks for the FE absolute path → `larapilot:frontend-set`.
+2. **Scan** (`larapilot:frontend-scan`) reads existing FE structure before planning evolutive work.
+3. **Spec → plan → implement** run on Laravel. UI tasks use `repo: frontend` and write under `data.frontend.repo_path`.
+
+### Setup commands
 
 ```bash
 php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React
 php artisan larapilot:frontend-scan
-php artisan larapilot:companion-sync
 ```
 
-Or run `/larapilot-frontend-companion` in the Laravel editor (configure path, scan, sync, orient cross-repo work).
+Or `/larapilot-frontend-companion` in the Laravel editor.
 
 | Command | Purpose |
 | --- | --- |
-| `larapilot:frontend-set` | Persist absolute `frontend.repo_path` (+ optional `stack`) in `.larapilot/config.yaml` |
-| `larapilot:frontend-scan` | Detect stack, Vite/Next/Nuxt tooling, directories, entrypoints |
-| `larapilot:companion-sync` | Push PRD + product OpenAPI mirror into the FE repo's `.larapilot/` |
+| `larapilot:frontend-set` | Persist `frontend.repo_path` (+ optional `stack`) |
+| `larapilot:frontend-scan` | Detect stack, tooling, structure, entrypoints |
 
-Plan/implement use `repo: frontend` on UI tasks — files write under `data.frontend.repo_path` from `config-show`. Re-run `companion-sync` after PRD living-document edits. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
+Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 
@@ -272,6 +287,8 @@ composer require andreapollastri/larapilot --dev
 php artisan larapilot:install
 php artisan boost:install
 ```
+
+`larapilot:install` also scaffolds **[Larastan](https://github.com/larastan/larastan) level 5+** and **[Laravel Pint](https://laravel.com/docs/pint)** (`phpstan.neon.dist`, `pint.json`, Composer scripts, dev dependencies). Run `php artisan larapilot:quality` before merge; `larapilot:doctor` fails when the gate is missing.
 
 Already on Boost? Refresh skills once:
 

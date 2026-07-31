@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
-use Larapilot\Support\AtomicFile;
-
 class FrontendService
 {
     public function __construct(
         protected ConfigService $config,
-        protected CompanionService $companion,
     ) {}
 
     /**
@@ -113,77 +110,13 @@ class FrontendService
                 'app' => is_dir($root.'/app'),
                 'pages' => is_dir($root.'/pages') || is_dir($root.'/src/pages'),
                 'components' => is_dir($root.'/components') || is_dir($root.'/src/components'),
-                'larapilot_mirror' => is_dir($root.'/.larapilot'),
+                'larapilot_docs' => is_dir($root.'/.larapilot/docs'),
             ],
             'entrypoints' => $this->detectEntrypoints($root, $packageJson),
             'dependencies' => array_values(array_intersect(
                 array_keys($dependencies),
                 ['react', 'react-dom', 'vue', '@angular/core', 'svelte', '@sveltejs/kit', 'next', 'nuxt', '@inertiajs/react', '@inertiajs/vue3']
             )),
-        ];
-    }
-
-    /**
-     * Push the companion bundle into the external frontend repo.
-     *
-     * @return array<string, mixed>
-     */
-    public function syncCompanion(): array
-    {
-        if (! $this->configured()) {
-            return [
-                'ok' => false,
-                'error' => 'Frontend repo path is not configured or does not exist. Run larapilot:frontend-set --path=/absolute/path.',
-            ];
-        }
-
-        $repoPath = (string) $this->config->frontendRepoPath();
-        $bundle = $this->companion->bundle();
-        $prdContent = $bundle['artifacts']['prd']['content'] ?? null;
-
-        if (! is_string($prdContent) || trim($prdContent) === '') {
-            return [
-                'ok' => false,
-                'error' => 'No PRD content to sync. Run larapilot-inception first.',
-            ];
-        }
-
-        $written = [];
-        $base = rtrim($repoPath, '/\\');
-
-        $docsDir = $base.'/.larapilot/docs';
-        if (! is_dir($docsDir)) {
-            mkdir($docsDir, 0755, true);
-        }
-
-        $prdPath = $docsDir.'/PRD.md';
-        AtomicFile::write($prdPath, $prdContent);
-        $written[] = $prdPath;
-
-        $productOpenApi = $bundle['artifacts']['product_openapi'] ?? null;
-
-        if (is_array($productOpenApi) && is_string($productOpenApi['content'] ?? null) && trim($productOpenApi['content']) !== '') {
-            $openApiDir = $base.'/.larapilot';
-            if (! is_dir($openApiDir)) {
-                mkdir($openApiDir, 0755, true);
-            }
-
-            $openApiPath = $openApiDir.'/openapi-product.json';
-            AtomicFile::write($openApiPath, $productOpenApi['content']);
-            $written[] = $openApiPath;
-        }
-
-        $topology = $bundle['artifacts']['frontend_topology'] ?? null;
-        $syncPath = $base.'/.larapilot/companion-sync.md';
-        AtomicFile::write($syncPath, $this->companionSyncMarkdown($bundle, $repoPath));
-        $written[] = $syncPath;
-
-        return [
-            'ok' => true,
-            'repo_path' => $repoPath,
-            'written' => $written,
-            'topology' => $topology,
-            'generated_at' => $bundle['generated_at'] ?? now()->toIso8601String(),
         ];
     }
 
@@ -304,37 +237,5 @@ class FrontendService
         $decoded = json_decode($content, true);
 
         return is_array($decoded) ? $decoded : null;
-    }
-
-    /**
-     * @param  array<string, mixed>  $bundle
-     */
-    protected function companionSyncMarkdown(array $bundle, string $repoPath): string
-    {
-        $topology = is_array($bundle['artifacts']['frontend_topology'] ?? null)
-            ? $bundle['artifacts']['frontend_topology']
-            : [];
-
-        $mode = $topology['mode'] ?? 'unknown';
-        $stack = $topology['external_stack'] ?? ($topology['in_repo_stack'] ?? 'N/A');
-        $generatedAt = $bundle['generated_at'] ?? now()->toIso8601String();
-
-        return <<<MD
-# Companion sync
-
-- **Synced at:** {$generatedAt}
-- **Source:** Laravel Larapilot (BE-orchestrated push via `larapilot:companion-sync`)
-- **Frontend repo:** {$repoPath}
-- **Frontend Topology:** {$mode}
-- **External stack:** {$stack}
-
-## Notes
-
-- PRD mirrored from Laravel Larapilot — treat as source of truth for product scope.
-- All workflow commands (`/larapilot-*`) run from the **Laravel backend** workspace only.
-- Implement UI against product OpenAPI / documented API; do not invent endpoints.
-- Re-run `php artisan larapilot:companion-sync` on Laravel after PRD living-document edits.
-
-MD;
     }
 }

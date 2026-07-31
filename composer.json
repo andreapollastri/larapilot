@@ -52,6 +52,15 @@
             "providers": [
                 "Larapilot\\LarapilotServiceProvider"
             ]
+        },
+        "larapilot": {
+            "quality": {
+                "larastan_level_min": 5,
+                "tools": [
+                    "larastan/larastan",
+                    "laravel/pint"
+                ]
+            }
         }
     },
     "minimum-stability": "stable",

@@ -2,6 +2,29 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.3.1] - 2026-07-31
+
+### Added
+
+- **Mandatory code quality gate** — every Larapilot project stays on [Larastan](https://github.com/larastan/larastan) **level 5+** and [Laravel Pint](https://laravel.com/docs/pint).
+  - **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries; runs `composer require --dev larastan/larastan laravel/pint` when Composer is available (`--skip-composer` to skip).
+  - **`larapilot:quality`** — run Pint (check-only; `--fix` applies formatting) then Larastan analysis.
+  - **`CodeQualityService`** — scaffold configs, merge `composer.json`, enforce minimum level.
+  - **`larapilot:doctor`** — `healthy` requires Pint/Larastan config, level ≥ 5, and dev dependencies declared.
+
+### Changed
+
+- **Split-repo frontend model simplified** — the FE repo is an application write target only; no mirrored PRD, OpenAPI, or Larapilot metadata under `FE/.larapilot/`.
+- **`/larapilot-frontend-companion`**, **inception / plan / implement skills**, **`runtime-discovery.md`**, **Boost guidelines**, **README**, **docs site**, **`runtime-delivery.md`** — removed sync/mirror/publish wording; implement runs `larapilot:quality` before backend `task-done`; CI minimum adds Larastan analyse. Site version **v2.3.1**.
+- **`larapilot:update`** — adds missing quality stubs and Composer entries on upgrade.
+- **MCP `RunArtisanTool`** — allows `larapilot:quality`.
+
+### Removed
+
+- **`larapilot:companion-sync`** — introduced in 2.3.0; dropped before release. Product truth stays in Laravel only.
+- **`FrontendService::syncCompanion()`**, **`CompanionService::bundle()`**, and **`companion-sync.md`** metadata — only used for the FE mirror path.
+- **PRD field `Companion sync:`** — no longer part of the topology template.
+
 ## [2.3.0] - 2026-07-31
 
 ### Added

@@ -16,7 +16,7 @@ Use Larapilot skills when the user wants to:
 - Create or extend a backlog of user stories / specs
 - Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
 - Report or triage a **bug** (`larapilot-bug`)
-- Sync PRD/OpenAPI into an **external frontend repo** from Laravel (`larapilot-frontend-companion` — BE-orchestrated)
+- Link an **external frontend repo** from Laravel (`larapilot-frontend-companion`)
 - Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
 - Mirror the backlog into a **project tracker** — Linear, Asana, Jira, Trello, ClickUp, Monday (`larapilot-tracker`)
 - Plan a spec with technical tasks and test strategy
@@ -32,7 +32,7 @@ Use Larapilot skills when the user wants to:
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
 | Feature / evolutiva | `larapilot-feature` | New `US-XXX` spec (+ optional PRD `FR-XXX`) |
 | Bug report | `larapilot-bug` | Fix spec or rework + `.larapilot/docs/support/intake.md` |
-| FE companion (split repo) | `larapilot-frontend-companion` | Configure FE path, scan code, push PRD mirror, cross-repo implement from Laravel |
+| FE companion (split repo) | `larapilot-frontend-companion` | Link FE path, scan code; implement via `repo: frontend` from Laravel |
 | Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`); design system per PRD from `.larapilot/design-systems/` |
 | Backlog | `larapilot-spec` | `.larapilot/backlog.yaml`, `.larapilot/specs/` |
 | Planning | `larapilot-plan` | `.larapilot/plans/US-XXX-plan.yaml` |
@@ -68,9 +68,8 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=…`
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
-- `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]` _(persist external FE repo)_
-- `php artisan larapilot:frontend-scan` _(scan FE structure/stack; optional `--path=`)_
-- `php artisan larapilot:companion-sync` _(push PRD/OpenAPI mirror into configured FE repo)_
+- `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]`
+- `php artisan larapilot:frontend-scan`
 - `php artisan larapilot:backstage-export` _(read-only; `--write [--force] [--no-techdocs]` generates the Backstage catalog + TechDocs)_
 - `php artisan larapilot:tracker-status` _(read-only; `--ping` verifies the provider credential)_
 - `php artisan larapilot:tracker-push` _(backlog → tracker; `--dry-run`, `--spec=`, `--force`)_
@@ -84,6 +83,7 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:spec-plan US-001 --file=...`
 - `php artisan larapilot:spec-start US-001`
 - `php artisan larapilot:task-done US-001 TASK-01`
+- `php artisan larapilot:quality` _(Pint + Larastan level 5+; `--fix` applies Pint formatting)_
 - `php artisan larapilot:spec-review US-001`
 - `php artisan larapilot:spec-request-changes US-001 --file=...`
 - `php artisan larapilot:spec-approve US-001`

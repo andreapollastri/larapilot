@@ -29,7 +29,8 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
-5. `php artisan larapilot:spec-review {code}`
+5. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; use `--fix` for formatting when needed
+6. `php artisan larapilot:spec-review {code}`
 
 ## Execution Contract
 
@@ -50,12 +51,13 @@ Apply the canonical delivery rules from `runtime-delivery.md` — do not re-deri
 - **Test Data — Factories & Seeders** — factory + seeder updated in the **same task** as model/migration changes; `migrate:fresh --seed` verified before `task-done`.
 - **Vendor & Package Policy** — Laravel first-party → Spatie → Filament plugins (only when the PRD chose Filament — never introduce it on your own) → other vetted vendors; Starter Kit specs scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) — never mix a mismatched UI stack. Verify compatibility via `Application Info`; `composer audit` after `composer require`.
 - **Technical Documentation** — update OpenAPI/Swagger in the same spec that changes APIs (**including under `ECO`**); README/CHANGELOG/`security.txt`/`SECURITY.md` when in scope and effort is not `ECO`.
+- **Code quality gate** — run `larapilot:quality` on Laravel tasks before `task-done`; project stays on [Larastan](https://github.com/larastan/larastan) level 5+ and Laravel Pint (never lower level without human waiver).
 
 Skill-specific execution notes:
 
 - **Client materials & research:** before implementing, read cited files under `{paths.client_materials}` and `{paths.research}/`; verify acceptance criteria against them.
 - **Legacy parity (Sabrine):** when the spec touches legacy parity, read `{paths.legacy}` and `{paths.research}/legacy-parity.md`; preserve behavior and data — verify each in-scope parity row before `task-done`; Anne verifies migration evidence; flag gaps in handoff.
-- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel (`repo: backend`) and primary UI in the configured FE repo (`repo: frontend` → write under `data.frontend.repo_path`; `git -C {repo_path}` for commits; `npm`/`pnpm`/`vitest` for FE tests). Run `larapilot:companion-sync` when the PRD/OpenAPI contract changed. Otherwise implement per `runtime-ux.md`: design system aligned with Elise from mockups through code, mobile-first responsive (320 px up), dark+light, WCAG 2.2 AA; commit `public/favicon.svg`, logo, OG image when the client provided none. Joe guards tokens/components, animations, bundle/performance, visual fidelity.
+- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel (`repo: backend`) and primary UI in the configured FE repo (`repo: frontend` → write under `data.frontend.repo_path`; `git -C {repo_path}` for commits; `npm`/`pnpm`/`vitest` for FE tests). Implement per `runtime-ux.md`: design system aligned with Elise from mockups through code, mobile-first responsive (320 px up), dark+light, WCAG 2.2 AA; commit `public/favicon.svg`, logo, OG image when the client provided none. Joe guards tokens/components, animations, bundle/performance, visual fidelity.
 - **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, store constraints.
 - **Copy (Marika):** no placeholder lorem on shipped surfaces; realistic copy in views, notifications, `lang/` files. **i18n (Emily):** `lang/` translations, locale detection, currency/timezone display when in scope.
 - **Integrations (Matt):** wire third-party APIs per plan — OAuth, webhooks + signature verification, SDK/HTTP clients, queued sync, `Http::fake()` tests, README notes; also wire the PRD-chosen stack (storage, newsletter, analytics, edge proxies, observability). **Jack** is involved when choices touch deploy, CDN, queues, storage, or CI runners.

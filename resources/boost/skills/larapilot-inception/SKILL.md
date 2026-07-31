@@ -18,7 +18,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 ## Config & CLI
 
 1. Run `php artisan larapilot:config-show` and parse the stdout JSON envelope.
-2. This skill uses only: `config-show`, `prd-write`, `validate-prd`, `frontend-set`, `frontend-scan`, `companion-sync`.
+2. This skill uses only: `config-show`, `prd-write`, `validate-prd`, `frontend-set`, `frontend-scan`.
 
 ## Workflow
 
@@ -33,9 +33,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 6. **John** and **Aurora** co-own `## Technical Architecture`:
     - John ensures scalable design per delivery target; when multi-tenant/SaaS, compares **tenancy patterns** with pros/cons per **Multi-tenancy** in `runtime-delivery.md`.
     - **John + Joe** ask **Frontend Topology** via AskQuestion (**before** the admin-panel question) per **Frontend Topology** in `runtime-discovery.md`; when external:
-      - Ask for the **absolute path** to the external frontend repo and persist it with `php artisan larapilot:frontend-set --path=… [--stack=…]`.
-      - Run `php artisan larapilot:frontend-scan` and incorporate existing FE structure/stack into the PRD (Joe) — inception must **start from code already present**, not assume greenfield.
-      - Record FE stack + repo path/URL in the PRD; tell the user all workflow commands (`/larapilot-*`) run **only from this Laravel workspace**; use `/larapilot-frontend-companion` to sync PRD into the FE repo (`larapilot:companion-sync`).
+      - Record FE stack + absolute repo path in the PRD; persist with `larapilot:frontend-set`; run `larapilot:frontend-scan` when the FE repo already has code.
     - When an **admin/control panel** or authenticated dashboard is needed, John asks **Filament vs Laravel Starter Kit variant vs custom** via AskQuestion — never assume; recommend the option closest to the project mockups per **Vendor & Package Policy** in `runtime-delivery.md`; record the choice.
     - **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, observability, and **asks via AskQuestion — never assume defaults**: **local dev environment** (Sail, Herd, not defined yet, other — see **Local development environment** in `runtime-delivery.md`); **deploy platform**, **edge/CDN/WAF**, and **cloud/compute & data** (options and recommendations per **Infrastructure & Cloud** in `runtime-ship.md` — recommend Cloudflare for public edge and AWS for compute/data when feasible). Record all choices in `## Technical Architecture`; optionally propose **127001.it** URLs when multi-tenant/OAuth/cookie domains matter.
     - **Aurora** asks **Budget Sensitivity** and sizes infra per `runtime-discovery.md`; **Lars** imposes the security baseline, `security.txt`/`SECURITY.md`, and pipeline gates; **Oliver** notes red-team scope for ship.
@@ -98,7 +96,7 @@ One-line hints reference the canonical runtime sections — expand each with rea
 ## Technical Architecture
 
 **Budget Sensitivity:** Tracked | Relaxed
-**Frontend Topology:** Laravel-coupled | SPA-in-Laravel | API + external frontend  <!-- + FE stack / external repo / companion sync lines when external -->
+**Frontend Topology:** Laravel-coupled | SPA-in-Laravel | API + external frontend  <!-- + FE stack + external repo path when external -->
 
 ### Stack
 

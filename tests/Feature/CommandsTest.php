@@ -38,7 +38,9 @@ it('installs the project scaffolding', function (): void {
         ->and(base_path('.larapilot/plans/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/mockups/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/docs/test-results/.gitkeep'))->toBeFile()
-        ->and(base_path('.larapilot/research/reference-products/.gitkeep'))->toBeFile();
+        ->and(base_path('.larapilot/research/reference-products/.gitkeep'))->toBeFile()
+        ->and(base_path('phpstan.neon.dist'))->toBeFile()
+        ->and(base_path('pint.json'))->toBeFile();
 });
 
 it('refuses to reinstall without force', function (): void {

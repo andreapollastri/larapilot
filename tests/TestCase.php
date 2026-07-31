@@ -31,6 +31,33 @@ abstract class TestCase extends OrchestraTestCase
         if (is_dir(base_path('.larapilot'))) {
             $this->deleteDirectory(base_path('.larapilot'));
         }
+
+        foreach (['phpstan.neon', 'phpstan.neon.dist', 'pint.json'] as $file) {
+            $path = base_path($file);
+
+            if (is_file($path)) {
+                unlink($path);
+            }
+        }
+
+        $this->ensureProjectComposerJson();
+    }
+
+    protected function ensureProjectComposerJson(): void
+    {
+        $path = base_path('composer.json');
+
+        if (is_file($path)) {
+            return;
+        }
+
+        file_put_contents($path, json_encode([
+            'name' => 'larapilot/testbench-app',
+            'require-dev' => [
+                'laravel/pint' => '^1.27',
+                'larastan/larastan' => '^3.0',
+            ],
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
     }
 
     protected function deleteDirectory(string $dir): void

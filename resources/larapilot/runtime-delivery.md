@@ -176,6 +176,7 @@ Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match th
 ```yaml
 # Conceptual minimum — adapt to host
 - lint: vendor/bin/pint --test  (or ./vendor/bin/pint --dirty)
+- analyse: vendor/bin/phpstan analyse --no-progress --memory-limit=1G  # Larastan level 5+ — never lower without human waiver
 - test: php artisan test --parallel
 - audit: composer audit
 - security: php artisan checkpoint:scan # when checkpoint installed
@@ -183,7 +184,16 @@ Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match th
 - deploy: only from main/tags; Lars GO + Jack orchestration
 ```
 
-Rules: pipeline runs on every PR to `develop`/`main`; failing tests or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver).
+Rules: pipeline runs on every PR to `develop`/`main`; failing **Pint**, **Larastan (level 5+)**, tests, or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver).
+
+## Code quality gate _(Andrew + Jack — mandatory)_
+
+Every Larapilot project stays compatible with [Larastan](https://github.com/larastan/larastan) **level 5 or higher** and [Laravel Pint](https://laravel.com/docs/pint) formatting.
+
+- **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries for `larastan/larastan` + `laravel/pint`.
+- **`larapilot:quality`** runs Pint (check-only by default; `--fix` applies formatting) then Larastan analysis — use before review/merge and during implement.
+- **`larapilot:doctor`** fails healthy when Pint/Larastan config, level, or dev dependencies are missing.
+- **Never lower** `level` below 5 without an explicit human waiver recorded in the PRD or plan.
 
 ## Vendor & Package Policy
 

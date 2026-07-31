@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Artisan;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\FrontendService;
-use Larapilot\Services\PrdService;
 
 it('persists the frontend repo path via frontend-set', function (): void {
     $config = app(ConfigService::class);
@@ -63,29 +62,6 @@ it('scans a frontend repository and detects react', function (): void {
         ->and($envelope['data']['stack']['detected'] ?? null)->toBe('React')
         ->and($envelope['data']['tooling']['vite'] ?? null)->toBeTrue()
         ->and($envelope['data']['structure']['src'] ?? null)->toBeTrue();
-});
-
-it('syncs the companion bundle into the configured frontend repo', function (): void {
-    $config = app(ConfigService::class);
-    $config->writeProjectConfig();
-    $config->ensureDirectories();
-
-    app(PrdService::class)->write(validPrd()."\n\n**Frontend Topology:** API + external frontend\n");
-
-    $feRoot = sys_get_temp_dir().'/larapilot-fe-sync-'.uniqid();
-    mkdir($feRoot, 0755, true);
-
-    $config->updateFrontend(['repo_path' => $feRoot, 'stack' => 'React']);
-
-    expect(Artisan::call('larapilot:companion-sync'))->toBe(0);
-
-    $envelope = json_decode(Artisan::output(), true);
-
-    expect($envelope['kind'] ?? null)->toBe('companion-sync')
-        ->and($envelope['data']['ok'] ?? null)->toBeTrue()
-        ->and(is_file($feRoot.'/.larapilot/docs/PRD.md'))->toBeTrue()
-        ->and(is_file($feRoot.'/.larapilot/companion-sync.md'))->toBeTrue()
-        ->and(file_get_contents($feRoot.'/.larapilot/docs/PRD.md'))->toContain('Elevator Pitch');
 });
 
 it('exposes frontend config on config-show', function (): void {
