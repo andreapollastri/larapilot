@@ -18,4 +18,3 @@ MD);
         ->and($topology['in_repo_stack'])->toBe('Vite + Vue')
         ->and($topology['sync_mode'])->toBe('N/A');
 });
-

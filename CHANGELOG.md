@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.3.2] - 2026-07-31
+
+### Fixed
+
+- **CI lint job** — Pint EOF in `CompanionTest.php` and PHPStan `@param list<string>` on `CodeQualityService::runBinary()`.
+
 ## [2.3.1] - 2026-07-31
 
 ### Added

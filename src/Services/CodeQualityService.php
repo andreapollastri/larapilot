@@ -234,6 +234,7 @@ class CodeQualityService
     }
 
     /**
+     * @param  list<string>  $arguments
      * @return array{ok: bool, exit_code: int, output: string}
      */
     protected function runBinary(string $tool, array $arguments = []): array
