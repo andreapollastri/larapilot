@@ -2,6 +2,30 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.3.0] - 2026-07-31
+
+### Added
+
+- **BE-orchestrated frontend companion** — when topology is `API + external frontend`, the **Laravel workspace is the only entry point** for specs, PRD, and workflow commands. The external FE repo is a configured write target.
+  - **`larapilot:frontend-set`** — persist absolute `frontend.repo_path` and optional `stack` in `.larapilot/config.yaml`.
+  - **`larapilot:frontend-scan`** — detect stack, tooling (Vite/Next/Nuxt/…), structure, and entrypoints in the FE repo (optional `--path=`).
+  - **`larapilot:companion-sync`** — push PRD + product OpenAPI mirror into the configured FE repo (`.larapilot/docs/PRD.md`, `openapi-product.json`, `companion-sync.md`).
+  - **`FrontendService`** — validate path, scan codebase, sync companion artifacts.
+  - **`config-show`** now exposes `data.frontend` (`repo_path`, `stack`, `configured`).
+- **Cross-repo plan/implement** — plan tasks may set `repo: frontend`; implement writes under `data.frontend.repo_path` with FE git/test commands. Task template in `task-templates.md`.
+
+### Changed
+
+- **`/larapilot-frontend-companion`** — redesigned to run from the **Laravel backend** (configure path, scan FE, sync mirror, orchestrate cross-repo work).
+- **Inception, plan, implement skills** — external topology asks for FE absolute path, runs scan, uses `companion-sync`.
+- **`runtime-discovery.md`**, **Boost guidelines**, **README**, **docs site** — updated frontend companion deep dive and walkthrough.
+- **MCP `RunArtisanTool`** — allows `larapilot:companion-sync` and `larapilot:frontend-scan`.
+
+### Removed
+
+- **`larapilot:companion-export`** — replaced by `larapilot:companion-sync` (direct push into the configured FE repo).
+- **`GET /larapilot/api/companion`** — companion sync is CLI/skill-only from the Laravel workspace.
+
 ## [2.2.0] - 2026-07-27
 
 ### Added

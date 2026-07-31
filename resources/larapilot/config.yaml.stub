@@ -7,6 +7,11 @@ settings:
   testing: NORMAL
   auto_approve: false
 
+# External frontend repo — set via larapilot:frontend-set when topology is API + external frontend.
+frontend:
+  repo_path: null
+  stack: null
+
 paths:
   prd: .larapilot/docs/PRD.md
   mockups: .larapilot/mockups/

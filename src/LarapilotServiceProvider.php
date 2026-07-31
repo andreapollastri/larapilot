@@ -6,10 +6,12 @@ namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\BackstageExportCommand;
-use Larapilot\Console\Commands\CompanionExportCommand;
+use Larapilot\Console\Commands\CompanionSyncCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
+use Larapilot\Console\Commands\FrontendScanCommand;
+use Larapilot\Console\Commands\FrontendSetCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
@@ -44,6 +46,7 @@ use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\FrontendService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupService;
@@ -62,7 +65,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.2.0';
+    public const VERSION = '2.3.0';
 
     public function register(): void
     {
@@ -70,6 +73,7 @@ class LarapilotServiceProvider extends ServiceProvider
 
         $this->app->singleton(ConfigService::class);
         $this->app->singleton(CompanionService::class);
+        $this->app->singleton(FrontendService::class);
         $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
@@ -100,7 +104,9 @@ class LarapilotServiceProvider extends ServiceProvider
                 UpdateCommand::class,
                 DoctorCommand::class,
                 DiagnosticsCommand::class,
-                CompanionExportCommand::class,
+                CompanionSyncCommand::class,
+                FrontendSetCommand::class,
+                FrontendScanCommand::class,
                 BackstageExportCommand::class,
                 ConfigShowCommand::class,
                 SettingsSetCommand::class,

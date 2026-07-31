@@ -17,6 +17,13 @@ return [
         'auto_approve' => false,
     ],
 
+    // External frontend repository (when PRD topology is API + external frontend).
+    // Persisted in .larapilot/config.yaml via larapilot:frontend-set.
+    'frontend' => [
+        'repo_path' => null,
+        'stack' => null,
+    ],
+
     'paths' => [
         'prd' => '.larapilot/docs/PRD.md',
         'mockups' => '.larapilot/mockups/',

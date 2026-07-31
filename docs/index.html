@@ -1224,7 +1224,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.2.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.3.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -2086,11 +2086,18 @@ body: |
               <ol>
                 <li><strong>Frontend Topology:</strong> Laravel-coupled · SPA-in-Laravel · API + external frontend</li>
                 <li><strong>External FE stack:</strong> React · Vue · Angular · Svelte · Other</li>
-                <li><strong>Companion sync:</strong> skill + API pull · git PR · manual</li>
+                <li><strong>Companion sync:</strong> BE-orchestrated push · git PR · manual</li>
               </ol>
             </div>
             <p><em>You pick:</em> <strong>API + external frontend</strong>, <strong>React</strong>,
-              <strong>skill + API pull</strong>.</p>
+              <strong>BE-orchestrated push</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — External frontend repo path (John + Joe)</strong>
+              <ol>
+                <li><strong>Absolute path</strong> to the React repo on disk (e.g. <code>/Users/dev/clinic-web</code>)
+                </li>
+              </ol>
+            </div>
             <div class="wizard">
               <strong>AskQuestion — Ops admin on Laravel</strong>
               <ol>
@@ -2100,8 +2107,8 @@ body: |
             <p><em>You pick:</em> <strong>Filament</strong> for clinic ops (not the customer SPA).</p>
             <p><span class="speaker">📐 John:</span> Sanctum API tokens + OpenAPI are Must. Customer UI stays out of
               this repo — Filament covers back-office only.</p>
-            <p><span class="speaker">✨ Joe:</span> On the React side we'll consume the companion PRD and product
-              OpenAPI — no invented endpoints.</p>
+            <p><span class="speaker">✨ Joe:</span> We'll scan the existing React repo and implement from what's already
+              there — all workflow commands stay in this Laravel workspace.</p>
           </div>
 
           <div class="code-block">
@@ -2109,9 +2116,9 @@ body: |
             <pre><code>**Project Kind:** Application
 **Delivery Target:** V1 Complete
 **Frontend Topology:** API + external frontend
-**External frontend repo:** https://github.com/acme/clinic-web
+**External frontend repo:** /Users/dev/clinic-web
 **External frontend stack:** React
-**Companion sync:** skill + API pull
+**Companion sync:** BE-orchestrated push
 **Admin panel:** Filament
 **API & docs:** REST + OpenAPI (Sanctum)
 
@@ -2125,70 +2132,36 @@ body: |
 **MoSCoW:** Must</code></pre>
           </div>
 
-          <p>Backlog and implement on Laravel stay API-focused (<code>US-001</code> auth,
-            <code>US-002</code> appointments, …). Mockups still land in <code>.larapilot/mockups/</code> as the shared
-            UX contract. UI tasks that belong to React are marked <strong>cross-repo</strong>.
-          </p>
+          <p>Backlog and implement run <strong>from Laravel only</strong>. API stories (<code>US-001</code> auth,
+            <code>US-002</code> appointments, …) touch this repo; UI stories use plan tasks with
+            <code>repo: frontend</code> and write under the configured path. Mockups still land in
+            <code>.larapilot/mockups/</code> as the shared UX contract.</p>
 
-          <h3>2 · Export the companion bundle (Laravel)</h3>
+          <h3>2 · Configure, scan, and sync (Laravel)</h3>
           <div class="code-block">
-            <div class="code-block-header">Laravel terminal (or leave the API browsable in Herd/Sail)</div>
-            <pre><code>php artisan larapilot:companion-export --file=companion.json \
-  --api-base=https://clinic.test/larapilot/api
-
-# Or leave Herd/Sail running so the FE can pull live:
-# GET https://clinic.test/larapilot/api/companion</code></pre>
+            <div class="code-block-header">Laravel terminal — single cockpit</div>
+            <pre><code>php artisan larapilot:frontend-set --path=/Users/dev/clinic-web --stack=React
+php artisan larapilot:frontend-scan
+php artisan larapilot:companion-sync</code></pre>
           </div>
+          <p><code>frontend-set</code> persists the absolute FE path in <code>.larapilot/config.yaml</code>.
+            <code>frontend-scan</code> detects stack, Vite/Next tooling, and entrypoints so inception/plan start from
+            existing code. <code>companion-sync</code> writes the PRD mirror into the FE repo's
+            <code>.larapilot/</code> — no need to open a second editor workspace for workflow.</p>
 
-          <h3>3 · What you do in the frontend repo</h3>
-          <p>Open <strong><code>clinic-web</code></strong> (the React repo) as its own editor workspace — not the Laravel
-            project. Larapilot PHP is <em>not</em> required here; you only need the companion skill + a way to reach
-            the Laravel companion bundle.</p>
-
-          <h4>3a · One-time setup</h4>
-          <ol>
-            <li>Create the React app if it does not exist yet (<code>vite</code> / Next / CRA — whatever the PRD stack
-              says).</li>
-            <li>Install the companion skill in this repo so the editor can run it:
-              <ul>
-                <li>Copy
-                  <code>vendor/andreapollastri/larapilot/resources/boost/skills/larapilot-frontend-companion/</code>
-                  from the Laravel project into your FE skills folder (e.g. Cursor
-                  <code>.cursor/skills/larapilot-frontend-companion/</code>), <strong>or</strong></li>
-                <li>Paste/import the skill from the Larapilot package docs / Boost publish if this workspace also has
-                  Boost skills installed.</li>
-              </ul>
-            </li>
-            <li>Add FE env for the API base (not Larapilot): e.g. <code>VITE_API_URL=https://clinic.test/api</code> in
-              <code>.env.local</code> — the product HTTP API, separate from <code>/larapilot/api</code>.
-            </li>
-          </ol>
-
-          <h4>3b · Pull the shared PRD</h4>
+          <h3>3 · Plan and implement cross-repo (still Laravel)</h3>
           <div class="code-block">
-            <div class="code-block-header">In the React repo editor</div>
-            <pre><code>/larapilot-frontend-companion</code></pre>
+            <div class="code-block-header">Laravel editor</div>
+            <pre><code>/larapilot-spec
+/larapilot-plan US-003
+/larapilot-implement US-003</code></pre>
           </div>
+          <p>Plan tasks for React screens carry <code>repo: frontend</code>. Implement writes
+            <code>src/…</code> under <code>data.frontend.repo_path</code>, runs <code>npm test</code> from the FE root,
+            and commits with <code>git -C /Users/dev/clinic-web …</code>. Laravel API tasks stay on
+            <code>data.workdir</code>.</p>
 
-          <div class="chat-example">
-            <p><span class="speaker">✨ Joe:</span> This workspace is the frontend — we'll mirror Laravel's PRD, not
-              invent scope.</p>
-            <div class="wizard">
-              <strong>AskQuestion — Sync source</strong>
-              <ol>
-                <li><strong>How to obtain the bundle:</strong> HTTP pull · File import · Already pasted</li>
-              </ol>
-            </div>
-            <p><em>You pick:</em> <strong>HTTP pull</strong> — Laravel origin <code>https://clinic.test</code>
-              (agent calls <code>/larapilot/api/companion</code>), <strong>or</strong> <strong>File import</strong> if
-              you copied <code>companion.json</code> into this repo.</p>
-            <p><span class="speaker">🔗 Matt:</span> Bundle loaded. Topology
-              <code>api_external_frontend</code> · React · skill + API.</p>
-            <p><span class="speaker">📝 Albert:</span> Mirroring files under <code>.larapilot/</code> — PRD verbatim;
-              OpenAPI when present.</p>
-          </div>
-
-          <p>After a successful sync the FE repo should contain:</p>
+          <h3>4 · FE mirror (read-only contract in the SPA repo)</h3>
           <div class="code-block">
             <div class="code-block-header">clinic-web/.larapilot/</div>
             <pre><code>docs/PRD.md              ← product contract (source of truth for scope)
@@ -2201,77 +2174,34 @@ companion-sync.md        ← when/how you last synced</code></pre>
             <pre><code># Companion sync
 
 - **Synced at:** 2026-07-24T17:00:00+00:00
-- **Source:** https://clinic.test/larapilot/api/companion
+- **Source:** Laravel Larapilot (BE-orchestrated push via larapilot:companion-sync)
 - **Frontend Topology:** api_external_frontend
 - **External stack:** React
 
 ## Notes
 
 - PRD mirrored from Laravel — treat as source of truth for product scope.
-- Implement UI against product OpenAPI; do not invent endpoints.</code></pre>
+- All workflow commands run from the Laravel backend workspace only.</code></pre>
           </div>
 
-          <h4>3c · Implement the SPA (still in the FE repo)</h4>
-          <p>With the mirror in place, work like a normal frontend project — guided by the mirrored artifacts:</p>
-          <ol>
-            <li><strong>Read</strong> <code>.larapilot/docs/PRD.md</code> — personas, FRs, MoSCoW, auth model
-              (Sanctum tokens), external stack.</li>
-            <li><strong>Generate API types/client</strong> from <code>.larapilot/openapi-product.json</code> when it
-              exists (or from the Laravel product OpenAPI URL). Wire <code>VITE_API_URL</code> to the real API, not
-              <code>/larapilot</code>.</li>
-            <li><strong>Scaffold routes/screens</strong> for Must FRs first — e.g. login/token storage, appointments
-              list + create, patient list + detail. Map each screen to an FR (and to Laravel
-              <code>US-XXX</code> when the PRD/backlog names them).</li>
-            <li><strong>Match mockups</strong> if Laravel published
-              <code>.larapilot/mockups/</code> — open those URLs from the Laravel app (or copy HTML references) so Joe
-              keeps visual fidelity; tokens/components stay consistent with Elise's contract.</li>
-            <li><strong>Auth + CORS</strong> — implement the client against documented Sanctum/cookie flows; if CORS or
-              an endpoint is missing, stop and ask Laravel to extend OpenAPI — do not invent routes in the SPA.</li>
-            <li><strong>Commit in the FE repo</strong> — app code + the <code>.larapilot/</code> mirror (so the team
-              shares the same PRD revision). Do <strong>not</strong> edit PRD scope here; scope changes happen on
-              Laravel, then you re-sync.</li>
-          </ol>
-
-          <div class="code-block">
-            <div class="code-block-header">Example FE checklist after first sync</div>
-            <pre><code>[ ] .larapilot/docs/PRD.md present and matches Laravel
-[ ] openapi-product.json → typed API client
-[ ] .env.local → VITE_API_URL=https://clinic.test/api
-[ ] Auth screen + token/session storage per PRD
-[ ] Appointments + patients screens for FR-002 / FR-003
-[ ] No fetch() to undocumented paths
-[ ] companion-sync.md committed with last sync source</code></pre>
-          </div>
-
-          <div class="cli-note"><strong>Do not in the FE repo:</strong> run <code>php artisan larapilot:*</code>
-            (unless Larapilot is installed here), rewrite FRs in the mirrored PRD, or add “temporary” API paths that
-            Laravel never published. Missing capability → Laravel
-            <code>/larapilot-feature</code> / OpenAPI update → re-run
-            <code>/larapilot-frontend-companion</code> → then implement the screen.
-          </div>
-
-          <h3>4 · Keep syncing</h3>
-          <p>Whenever Laravel changes the PRD (inception edit, <code>/larapilot-feature</code>, living-document FR),
-            switch back to the React workspace and run <code>/larapilot-frontend-companion</code> again before building
-            new UI. Optional: CI that curls <code>/larapilot/api/companion</code> (or consumes
-            <code>companion.json</code>) and opens a PR updating <code>.larapilot/docs/PRD.md</code> on
-            <code>clinic-web</code>.</p>
+          <h3>5 · Keep syncing</h3>
+          <p>After PRD edits on Laravel, run <code>php artisan larapilot:companion-sync</code> or
+            <code>/larapilot-frontend-companion</code> in the Laravel workspace.</p>
 
           <dl class="walkthrough-grid">
             <div>
-              <dt>You do (FE repo)</dt>
-              <dd>Install/copy the companion skill; sync PRD/OpenAPI; set API env; implement screens from FRs; re-sync
-                after Laravel PRD changes</dd>
+              <dt>You do (Laravel)</dt>
+              <dd><code>frontend-set</code> path · <code>frontend-scan</code> · spec/plan/implement ·
+                <code>companion-sync</code> after PRD changes</dd>
             </div>
             <div>
-              <dt>Agent does (FE repo)</dt>
-              <dd>Pulls companion bundle; writes <code>.larapilot/</code> mirror; scaffolds UI against OpenAPI; blocks
-                invented endpoints</dd>
+              <dt>Agent does (Laravel)</dt>
+              <dd>Scans FE code · writes API + UI tasks · implements BE and FE files · pushes PRD mirror to FE
+                <code>.larapilot/</code></dd>
             </div>
             <div>
               <dt>Next step</dt>
-              <dd>FE: ship auth + Must screens · Laravel: keep OpenAPI current · after each PRD edit: companion sync
-                again</dd>
+              <dd><code>/larapilot-spec</code> → plan/implement Must stories · re-sync after each PRD edit</dd>
             </div>
           </dl>
         </article>
@@ -2860,16 +2790,16 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <span class="skill-badge">companion</span>
               <div class="skill-body">
                 <h3><code>/larapilot-frontend-companion</code></h3>
-                <p>For <strong>API + external frontend</strong> topology: pull the shared PRD (and optional product
-                  OpenAPI) from Laravel into the FE repo's <code>.larapilot/</code> mirror so both repos share one
-                  product contract. Full reference: <a href="#deep-dive-frontend-companion">Frontend companion</a>.</p>
+                <p>For <strong>API + external frontend</strong> topology: the <strong>Laravel workspace is the only
+                  cockpit</strong> — configure the FE absolute path, scan existing code, push PRD/OpenAPI mirror, and
+                  orchestrate cross-repo plan/implement. Full reference: <a href="#deep-dive-frontend-companion">Frontend companion</a>.</p>
                 <ul>
-                  <li>HTTP: <code>GET /larapilot/api/companion</code> on the Laravel app (dev/staging)</li>
-                  <li>Or import a file from <code>php artisan larapilot:companion-export --file=…</code></li>
-                  <li>Writes <code>.larapilot/docs/PRD.md</code> + <code>companion-sync.md</code> in the FE repo</li>
+                  <li><code>larapilot:frontend-set --path=/abs/fe/repo [--stack=React]</code></li>
+                  <li><code>larapilot:frontend-scan</code> — detect stack, tooling, structure</li>
+                  <li><code>larapilot:companion-sync</code> — write <code>.larapilot/docs/PRD.md</code> in the FE repo</li>
                 </ul>
-                <p class="skill-cli"><strong>CLI (Laravel side):</strong> <code>larapilot:companion-export</code> —
-                  also via API <code>/companion</code>.
+                <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code> ·
+                  <code>companion-sync</code>.
                 </p>
               </div>
             </div>
@@ -3710,9 +3640,10 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         <!-- Frontend companion -->
         <article class="deep-dive-sub" id="deep-dive-frontend-companion">
           <h3>Frontend companion</h3>
-          <p class="lead">When the UI lives in a <strong>separate repository</strong> from Laravel, Larapilot keeps one
-            product contract: the PRD (and optional product OpenAPI) stays authoritative on the backend, and the
-            frontend repo mirrors it via skill + API/CLI export.</p>
+          <p class="lead">When the UI lives in a <strong>separate repository</strong> from Laravel, the
+            <strong>Laravel workspace is the only Larapilot entry point</strong>: PRD, backlog, plans, and all
+            <code>/larapilot-*</code> commands run there. The FE repo is a configured write target plus an optional
+            read-only PRD mirror under <code>.larapilot/</code>.</p>
 
           <h4>When it applies</h4>
           <p>During <code>/larapilot-inception</code>, <strong>John + Joe</strong> ask <strong>Frontend
@@ -3753,7 +3684,17 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
 **Frontend stack (in-repo):** N/A
 **External frontend repo:** https://github.com/acme/app-web
 **External frontend stack:** React
-**Companion sync:** skill + API pull</code></pre>
+**Companion sync:** BE-orchestrated push</code></pre>
+          </div>
+
+          <h4>Configuration</h4>
+          <p>Persist the absolute FE path in <code>.larapilot/config.yaml</code> (also exposed as
+            <code>data.frontend</code> on <code>config-show</code>):</p>
+          <div class="code-block">
+            <div class="code-block-header">Laravel terminal</div>
+            <pre><code>php artisan larapilot:frontend-set --path=/Users/dev/acme-web --stack=React
+php artisan larapilot:frontend-scan
+php artisan larapilot:companion-sync</code></pre>
           </div>
 
           <h4>Source of truth</h4>
@@ -3761,8 +3702,9 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <li><strong>Laravel repo</strong> — Larapilot owns PRD, backlog, plans, mockups, and (usually) product
               OpenAPI. Scope changes still go through <code>/larapilot-inception</code>,
               <code>/larapilot-feature</code>, or the PRD living document.</li>
-            <li><strong>Frontend repo</strong> — consumes the mirrored PRD; implements UI against the API contract.
-              Does <strong>not</strong> invent product scope or undocumented endpoints.</li>
+            <li><strong>Frontend repo</strong> — receives mirrored PRD/OpenAPI and application code from cross-repo
+              implement tasks (<code>repo: frontend</code>). Does <strong>not</strong> run workflow commands or invent
+              product scope.</li>
             <li>Optional Laravel admin (Filament / custom) remains valid for ops even when the customer UI is external.
             </li>
           </ul>
@@ -3780,74 +3722,34 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <tbody>
                 <tr>
                   <td>Skill</td>
-                  <td>FE editor</td>
-                  <td><code>/larapilot-frontend-companion</code> — AskQuestion for HTTP / file / pasted JSON, then
-                    mirror files</td>
-                </tr>
-                <tr>
-                  <td>API</td>
-                  <td>Laravel (dev/staging)</td>
-                  <td><code>GET /larapilot/api/companion</code> — same dashboard gate as the rest of the API (never in
-                    production)</td>
+                  <td>Laravel editor</td>
+                  <td><code>/larapilot-frontend-companion</code> — configure path, scan FE, push mirror, orient
+                    cross-repo work</td>
                 </tr>
                 <tr>
                   <td>CLI</td>
                   <td>Laravel</td>
-                  <td><code>php artisan larapilot:companion-export</code> — stdout envelope, or
-                    <code>--file=companion.json</code>; optional <code>--api-base=</code> to embed endpoint URLs</td>
+                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code> ·
+                    <code>larapilot:companion-sync</code></td>
                 </tr>
                 <tr>
                   <td>MCP</td>
                   <td>Laravel editor</td>
-                  <td><code>RunArtisanTool</code> → <code>larapilot:companion-export</code></td>
+                  <td><code>RunArtisanTool</code> → <code>larapilot:companion-sync</code>,
+                    <code>larapilot:frontend-scan</code></td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h4>Companion bundle shape</h4>
-          <div class="code-block">
-            <div class="code-block-header">GET /larapilot/api/companion</div>
-            <pre><code>{
-  "generated_at": "2026-07-24T16:00:00+00:00",
-  "source": "larapilot",
-  "skill": "larapilot-frontend-companion",
-  "artifacts": {
-    "prd": {
-      "content": "# Product Requirements Document\n…",
-      "headings": [{ "level": 2, "title": "Elevator Pitch", "id": "elevator-pitch" }],
-      "path": "/…/.larapilot/docs/PRD.md"
-    },
-    "frontend_topology": {
-      "mode": "api_external_frontend",
-      "in_repo_stack": "N/A",
-      "external_repo": "https://github.com/acme/app-web",
-      "external_stack": "React",
-      "sync_mode": "skill + API pull",
-      "raw": { "Frontend Topology": "API + external frontend", "…" : "…" }
-    },
-    "product_openapi": {
-      "path": "/…/openapi.json",
-      "content": "{ \"openapi\": \"3.1.0\", … }"
-    }
-  },
-  "endpoints": {
-    "prd": "https://app.test/larapilot/api/prd",
-    "companion": "https://app.test/larapilot/api/companion",
-    "larapilot_openapi": "https://app.test/larapilot/api/openapi.json"
-  },
-  "instructions": [
-    "Mirror artifacts.prd.content to .larapilot/docs/PRD.md in the frontend repo.",
-    "…"
-  ]
-}</code></pre>
-          </div>
-          <p><code>product_openapi</code> is filled when Laravel has a product OpenAPI file at a known path
-            (<code>storage/api-docs/api-docs.json</code>, <code>openapi.json</code>, <code>docs/openapi.json</code>, or
-            <code>.larapilot/openapi-product.json</code>). Topology fields are parsed from labeled PRD lines.
+          <h4>What gets synced</h4>
+          <p><code>larapilot:companion-sync</code> reads the Laravel PRD (and optional product OpenAPI from
+            <code>storage/api-docs/api-docs.json</code>, <code>openapi.json</code>, <code>docs/openapi.json</code>, or
+            <code>.larapilot/openapi-product.json</code>) and writes files directly into the configured FE repo.
+            Topology fields are parsed from labeled PRD lines when building sync metadata.
           </p>
 
-          <h4>What the FE repo writes</h4>
+          <h4>What the FE repo receives</h4>
           <div class="table-card">
             <table>
               <thead>
@@ -3867,39 +3769,32 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 </tr>
                 <tr>
                   <td><code>.larapilot/companion-sync.md</code></td>
-                  <td>Sync log (timestamp, source URL/file, topology, notes)</td>
+                  <td>Sync log (timestamp, topology, BE-orchestrated push notes)</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p>The companion skill does <strong>not</strong> overwrite FE app source or README, and does not run Laravel
-            <code>larapilot:*</code> Artisan commands in the FE repo unless Larapilot is installed there.
-          </p>
+          <p>The companion workflow does <strong>not</strong> overwrite FE app source or README. All
+            <code>larapilot:*</code> commands run from the Laravel workspace only.</p>
 
           <h4>End-to-end flow</h4>
           <p>Walkthrough: <a href="#example-frontend-companion">Frontend companion example</a>.</p>
           <ol>
-            <li>Inception on Laravel → choose <code>API + external frontend</code>, record FE stack/repo/sync mode</li>
-            <li>Laravel backlog/plan/implement focus on API, auth, jobs, optional admin; mark UI work as cross-repo</li>
-            <li>Mockups still live under Laravel <code>.larapilot/mockups/</code> as the shared UX contract</li>
-            <li>In the FE repo: publish/copy <code>/larapilot-frontend-companion</code> (via Boost when Larapilot skills
-              are available, or copy the skill file), then run it to pull the bundle</li>
-            <li>After every PRD living-document edit on Laravel → re-sync the FE mirror</li>
+            <li>Inception on Laravel → <code>API + external frontend</code> → ask absolute FE path →
+              <code>frontend-set</code> + <code>frontend-scan</code></li>
+            <li>Backlog/plan/implement from Laravel — API tasks in-repo; UI tasks with <code>repo: frontend</code></li>
+            <li>Mockups under Laravel <code>.larapilot/mockups/</code>; Joe implements in the FE repo</li>
+            <li><code>companion-sync</code> after PRD living-document edits</li>
           </ol>
 
           <div class="code-block">
-            <div class="code-block-header">Laravel — export for handoff</div>
-            <pre><code>php artisan larapilot:companion-export --file=companion.json \
-  --api-base=https://app.test/larapilot/api</code></pre>
+            <div class="code-block-header">Laravel — orchestrate from one workspace</div>
+            <pre><code>/larapilot-frontend-companion
+# or explicitly:
+php artisan larapilot:frontend-set --path=/abs/clinic-web --stack=React
+php artisan larapilot:frontend-scan
+php artisan larapilot:companion-sync</code></pre>
           </div>
-          <div class="code-block">
-            <div class="code-block-header">Frontend editor</div>
-            <pre><code>/larapilot-frontend-companion</code></pre>
-          </div>
-          <p>Pick <strong>HTTP pull</strong> (<code>https://app.test</code> →
-            <code>/larapilot/api/companion</code>), <strong>file import</strong> (<code>companion.json</code>), or paste
-            JSON. On failure, the skill stops — it never invents a PRD.
-          </p>
 
           <h4>Personas &amp; boundaries</h4>
           <ul>
@@ -3908,10 +3803,9 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <li><strong>Elise</strong> — mockups on Laravel remain the UX contract for both repos</li>
             <li><strong>Albert</strong> — keep product OpenAPI accurate on Laravel; FE mirrors it</li>
           </ul>
-          <div class="cli-note"><strong>PRD edits belong on Laravel.</strong> The FE mirror is read-mostly. Change scope
-            with inception/feature/living-document on the backend, then re-run companion sync. Optional CI: curl the
-            companion endpoint (or consume an export artifact) and open a PR updating
-            <code>.larapilot/docs/PRD.md</code> on the FE repo.
+          <div class="cli-note"><strong>PRD edits belong on Laravel.</strong> The FE mirror under
+            <code>.larapilot/</code> is read-mostly for humans/IDEs. Change scope with inception/feature/living-document
+            on the backend, then re-run <code>larapilot:companion-sync</code>.
           </div>
         </article>
 
@@ -4469,8 +4363,8 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 </tr>
                 <tr>
                   <td>PRD</td>
-                  <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
-                    <code>larapilot:companion-export</code>
+                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code> ·
+                    <code>larapilot:companion-sync</code>
                   </td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code>,
                     <code>/larapilot-frontend-companion</code>
@@ -4698,14 +4592,6 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
                   <td>PRD Markdown content and parsed heading index</td>
-                </tr>
-                <tr>
-                  <td><code>GET</code></td>
-                  <td><code>/larapilot/api/companion</code></td>
-                  <td>Companion bundle for an external frontend — PRD, parsed
-                    <strong>Frontend Topology</strong>, optional product OpenAPI snapshot, sync instructions. Full
-                    guide: <a href="#deep-dive-frontend-companion">Frontend companion</a>.
-                  </td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>

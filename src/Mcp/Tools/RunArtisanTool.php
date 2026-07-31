@@ -29,7 +29,8 @@ class RunArtisanTool extends Tool
         'larapilot:validate-plan',
         'larapilot:doctor',
         'larapilot:diagnostics',
-        'larapilot:companion-export',
+        'larapilot:companion-sync',
+        'larapilot:frontend-scan',
         'larapilot:backstage-export',
         'larapilot:tracker-status',
     ];

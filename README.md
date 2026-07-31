@@ -75,7 +75,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-spec` | MoSCoW backlog from PRD |
 | `/larapilot-feature` | Mini-inception for one evolutiva |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
-| `/larapilot-frontend-companion` | Sync shared PRD into an **external frontend** repo |
+| `/larapilot-frontend-companion` | Configure external FE repo, scan code, sync PRD — **from Laravel** (split-repo cockpit) |
 | `/larapilot-design` | Static HTML mockups from design system |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
@@ -86,7 +86,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
-During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, install/copy `/larapilot-frontend-companion` in the FE project and sync via `GET /larapilot/api/companion` or `php artisan larapilot:companion-export`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
+During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled` (Blade/Livewire/Inertia in this repo), `SPA-in-Laravel` (Vite SPA in this repo), or `API + external frontend` (Laravel API-only + separate FE repo). For the split-repo case, configure the FE absolute path with `php artisan larapilot:frontend-set --path=…`, scan with `larapilot:frontend-scan`, and sync with `larapilot:companion-sync` or `/larapilot-frontend-companion` — **all from this Laravel workspace**. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 
@@ -96,7 +96,6 @@ When the dashboard is browsable (never in production):
 
 - **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
-- **`GET /larapilot/api/companion`** — PRD + frontend topology bundle for an external frontend repo
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
@@ -119,6 +118,28 @@ Read-only runtime snapshot for `/larapilot-bug` and local debugging — **never 
 **Config** (`config/larapilot.php` / env): `LARAPILOT_DIAGNOSTICS_ENABLED` (default `true`), `LARAPILOT_DIAGNOSTICS_LOG_LINES` (default `100`), `LARAPILOT_DIAGNOSTICS_MAX_LOG_LINES` (default `500`).
 
 Workflow **state** still changes only via skills or Artisan — not from the dashboard or API.
+
+---
+
+## Frontend companion — split repo
+
+When **Frontend Topology** is `API + external frontend`, the **Laravel workspace is the only Larapilot entry point**. The FE repo is a configured write target; PRD/backlog/plans stay in Laravel.
+
+```bash
+php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React
+php artisan larapilot:frontend-scan
+php artisan larapilot:companion-sync
+```
+
+Or run `/larapilot-frontend-companion` in the Laravel editor (configure path, scan, sync, orient cross-repo work).
+
+| Command | Purpose |
+| --- | --- |
+| `larapilot:frontend-set` | Persist absolute `frontend.repo_path` (+ optional `stack`) in `.larapilot/config.yaml` |
+| `larapilot:frontend-scan` | Detect stack, Vite/Next/Nuxt tooling, directories, entrypoints |
+| `larapilot:companion-sync` | Push PRD + product OpenAPI mirror into the FE repo's `.larapilot/` |
+
+Plan/implement use `repo: frontend` on UI tasks — files write under `data.frontend.repo_path` from `config-show`. Re-run `companion-sync` after PRD living-document edits. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 

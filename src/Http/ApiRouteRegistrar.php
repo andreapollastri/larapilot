@@ -42,9 +42,6 @@ class ApiRouteRegistrar
                 Route::get('/prd', [ApiController::class, 'prd'])
                     ->name('larapilot.api.prd');
 
-                Route::get('/companion', [ApiController::class, 'companion'])
-                    ->name('larapilot.api.companion');
-
                 Route::get('/diagnostics', [ApiController::class, 'diagnostics'])
                     ->name('larapilot.api.diagnostics');
 

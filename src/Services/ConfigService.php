@@ -86,8 +86,111 @@ class ConfigService
             ],
             'workflow' => $config['workflow'] ?? config('larapilot.workflow'),
             'settings' => $this->settings(),
+            'frontend' => $this->frontend(),
             'personas' => config('larapilot.personas'),
         ];
+    }
+
+    /**
+     * External frontend repository wiring for split-repo topology.
+     *
+     * @return array{repo_path: string|null, stack: string|null, configured: bool}
+     */
+    public function frontend(): array
+    {
+        $config = $this->resolve();
+        $raw = is_array($config['frontend'] ?? null) ? $config['frontend'] : [];
+        $defaults = $this->defaultFrontend();
+        $merged = array_replace($defaults, array_intersect_key($raw, $defaults));
+
+        $repoPath = is_string($merged['repo_path'] ?? null) && trim($merged['repo_path']) !== ''
+            ? rtrim(trim($merged['repo_path']), '/\\')
+            : null;
+
+        $stack = is_string($merged['stack'] ?? null) && trim($merged['stack']) !== ''
+            ? trim($merged['stack'])
+            : null;
+
+        return [
+            'repo_path' => $repoPath,
+            'stack' => $stack,
+            'configured' => is_string($repoPath) && is_dir($repoPath),
+        ];
+    }
+
+    public function frontendRepoPath(): ?string
+    {
+        return $this->frontend()['repo_path'];
+    }
+
+    public function hasFrontendRepo(): bool
+    {
+        return $this->frontend()['configured'];
+    }
+
+    /**
+     * @return array{repo_path: string|null, stack: string|null}
+     */
+    public function defaultFrontend(): array
+    {
+        $defaults = config('larapilot.frontend', []);
+
+        return [
+            'repo_path' => is_string($defaults['repo_path'] ?? null) && $defaults['repo_path'] !== ''
+                ? $defaults['repo_path']
+                : null,
+            'stack' => is_string($defaults['stack'] ?? null) && $defaults['stack'] !== ''
+                ? $defaults['stack']
+                : null,
+        ];
+    }
+
+    /**
+     * Persist external frontend repo settings into `.larapilot/config.yaml`.
+     *
+     * @param  array<string, string|null>  $partial
+     * @return array{repo_path: string|null, stack: string|null, configured: bool}
+     */
+    public function updateFrontend(array $partial): array
+    {
+        $path = $this->configPath();
+
+        if (! is_file($path)) {
+            $this->writeProjectConfig();
+        }
+
+        $parsed = Yaml::parseFile($path);
+        $existing = is_array($parsed) ? $parsed : [];
+
+        $current = is_array($existing['frontend'] ?? null) ? $existing['frontend'] : [];
+        $frontend = array_replace($this->defaultFrontend(), array_intersect_key($current, $this->defaultFrontend()));
+
+        foreach ($partial as $key => $value) {
+            if (! array_key_exists($key, $this->defaultFrontend())) {
+                continue;
+            }
+
+            if ($value === null || $value === '') {
+                $frontend[$key] = null;
+
+                continue;
+            }
+
+            $frontend[$key] = $key === 'repo_path'
+                ? rtrim(trim((string) $value), '/\\')
+                : trim((string) $value);
+        }
+
+        $existing['frontend'] = $frontend;
+
+        AtomicFile::write(
+            $path,
+            Yaml::dump($existing, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+        );
+
+        $this->resolved = null;
+
+        return $this->frontend();
     }
 
     /**
@@ -295,6 +398,7 @@ class ConfigService
         return [
             'connector' => config('larapilot.connector', 'file'),
             'settings' => $this->defaultSettings(),
+            'frontend' => $this->defaultFrontend(),
             'paths' => config('larapilot.paths'),
             'workflow' => config('larapilot.workflow'),
             'file' => config('larapilot.file'),

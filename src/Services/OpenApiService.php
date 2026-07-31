@@ -20,7 +20,7 @@ class OpenApiService
                 'version' => '1.0.0',
                 'description' => 'JSON API for the Larapilot workflow board. '
                     .'Exposes backlog specs (user stories), plans, tasks, mockups, internal feedback, the PRD, '
-                    .'a companion artifact bundle for external frontend repos, a Backstage catalog/TechDocs bundle, '
+                    .'a Backstage catalog/TechDocs bundle, '
                     .'and read-only diagnostics from `.larapilot/` artifacts. '
                     .'Read endpoints are available in the same environments where the `/larapilot` dashboard is browsable (never in production). '
                     .'POST `/specs/{code}/comments` appends internal feedback when comments are enabled.',
@@ -33,7 +33,6 @@ class OpenApiService
                 ['name' => 'Specs', 'description' => 'User stories (backlog specs)'],
                 ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
-                ['name' => 'Companion', 'description' => 'Shared PRD/topology bundle for an external frontend repository'],
                 ['name' => 'Backstage', 'description' => 'Software-catalog entities, TechDocs metadata, and a delivery snapshot for backstage.io'],
                 ['name' => 'Diagnostics', 'description' => 'Read-only runtime status and redacted log tail for bug triage'],
             ],
@@ -161,26 +160,6 @@ class OpenApiService
                                 'content' => [
                                     'application/json' => [
                                         'schema' => ['$ref' => '#/components/schemas/PrdResponse'],
-                                    ],
-                                ],
-                            ],
-                            '404' => ['$ref' => '#/components/responses/NotFound'],
-                        ],
-                    ],
-                ],
-                '/companion' => [
-                    'get' => [
-                        'tags' => ['Companion'],
-                        'summary' => 'Companion artifact bundle for an external frontend',
-                        'description' => 'Returns the shared PRD (when present), parsed frontend topology fields, optional product OpenAPI snapshot, '
-                            .'and sync instructions for `/larapilot-frontend-companion`. Available where the dashboard is browsable (never in production).',
-                        'operationId' => 'getCompanionBundle',
-                        'responses' => [
-                            '200' => [
-                                'description' => 'Companion bundle',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => ['$ref' => '#/components/schemas/CompanionResponse'],
                                     ],
                                 ],
                             ],
@@ -545,68 +524,6 @@ class OpenApiService
                             ],
                         ],
                         'required' => ['content', 'headings'],
-                    ],
-                    'CompanionFrontendTopology' => [
-                        'type' => 'object',
-                        'nullable' => true,
-                        'properties' => [
-                            'mode' => ['type' => 'string', 'nullable' => true, 'example' => 'api_external_frontend'],
-                            'in_repo_stack' => ['type' => 'string', 'nullable' => true],
-                            'external_repo' => ['type' => 'string', 'nullable' => true],
-                            'external_stack' => ['type' => 'string', 'nullable' => true],
-                            'sync_mode' => ['type' => 'string', 'nullable' => true],
-                            'raw' => [
-                                'type' => 'object',
-                                'additionalProperties' => ['type' => 'string'],
-                            ],
-                        ],
-                    ],
-                    'CompanionResponse' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'generated_at' => ['type' => 'string', 'format' => 'date-time'],
-                            'source' => ['type' => 'string', 'example' => 'larapilot'],
-                            'skill' => ['type' => 'string', 'example' => 'larapilot-frontend-companion'],
-                            'artifacts' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'prd' => [
-                                        'type' => 'object',
-                                        'nullable' => true,
-                                        'properties' => [
-                                            'content' => ['type' => 'string'],
-                                            'headings' => [
-                                                'type' => 'array',
-                                                'items' => ['$ref' => '#/components/schemas/PrdHeading'],
-                                            ],
-                                            'path' => ['type' => 'string'],
-                                        ],
-                                    ],
-                                    'frontend_topology' => ['$ref' => '#/components/schemas/CompanionFrontendTopology'],
-                                    'product_openapi' => [
-                                        'type' => 'object',
-                                        'nullable' => true,
-                                        'properties' => [
-                                            'path' => ['type' => 'string'],
-                                            'content' => ['type' => 'string'],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                            'endpoints' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'prd' => ['type' => 'string', 'nullable' => true],
-                                    'companion' => ['type' => 'string', 'nullable' => true],
-                                    'larapilot_openapi' => ['type' => 'string', 'nullable' => true],
-                                ],
-                            ],
-                            'instructions' => [
-                                'type' => 'array',
-                                'items' => ['type' => 'string'],
-                            ],
-                        ],
-                        'required' => ['generated_at', 'source', 'skill', 'artifacts', 'endpoints', 'instructions'],
                     ],
                     'BackstageEntity' => [
                         'type' => 'object',

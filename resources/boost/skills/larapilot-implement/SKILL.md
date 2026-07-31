@@ -25,7 +25,7 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`) and honor them for the whole run
+1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`) and **`data.frontend`** when topology is external; honor them for the whole run
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
@@ -35,7 +35,7 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 
 1. **Autonomous by default** — stop only for explicit blockers (scope change, missing prerequisite spec, semantic test breakage).
 2. Implement the **full planned spec** — never silently drop acceptance criteria to fit an MVP unless the PRD delivery target is MVP and the spec was scoped accordingly. If in doubt, read `paths.prd` for the delivery target — do not assume MVP.
-3. Work under `data.workdir` for all file operations; run connector commands from `data.project_root`.
+3. Work under the task's target repo: default **`data.workdir`** (Laravel) for backend tasks; **`data.frontend.repo_path`** for tasks marked `repo: frontend`. Connector commands always run from `data.project_root`.
 4. After `spec-start`, re-run `spec-show` if a worktree may have been created.
 
 ## Laravel Implementation
@@ -55,7 +55,7 @@ Skill-specific execution notes:
 
 - **Client materials & research:** before implementing, read cited files under `{paths.client_materials}` and `{paths.research}/`; verify acceptance criteria against them.
 - **Legacy parity (Sabrine):** when the spec touches legacy parity, read `{paths.legacy}` and `{paths.research}/legacy-parity.md`; preserve behavior and data — verify each in-scope parity row before `task-done`; Anne verifies migration evidence; flag gaps in handoff.
-- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel and leave primary UI to the FE repo (remind companion sync). Otherwise implement per `runtime-ux.md`: design system aligned with Elise from mockups through code, mobile-first responsive (320 px up), dark+light, WCAG 2.2 AA; commit `public/favicon.svg`, logo, OG image when the client provided none. Joe guards tokens/components, animations, bundle/performance, visual fidelity.
+- **Frontend (Elise + Joe):** honor **Frontend Topology** from the PRD — when `API + external frontend`, implement API/admin in Laravel (`repo: backend`) and primary UI in the configured FE repo (`repo: frontend` → write under `data.frontend.repo_path`; `git -C {repo_path}` for commits; `npm`/`pnpm`/`vitest` for FE tests). Run `larapilot:companion-sync` when the PRD/OpenAPI contract changed. Otherwise implement per `runtime-ux.md`: design system aligned with Elise from mockups through code, mobile-first responsive (320 px up), dark+light, WCAG 2.2 AA; commit `public/favicon.svg`, logo, OG image when the client provided none. Joe guards tokens/components, animations, bundle/performance, visual fidelity.
 - **Mobile (Ricky):** hybrid/native/PWA device features per PRD — permissions, graceful degradation, store constraints.
 - **Copy (Marika):** no placeholder lorem on shipped surfaces; realistic copy in views, notifications, `lang/` files. **i18n (Emily):** `lang/` translations, locale detection, currency/timezone display when in scope.
 - **Integrations (Matt):** wire third-party APIs per plan — OAuth, webhooks + signature verification, SDK/HTTP clients, queued sync, `Http::fake()` tests, README notes; also wire the PRD-chosen stack (storage, newsletter, analytics, edge proxies, observability). **Jack** is involved when choices touch deploy, CDN, queues, storage, or CI runners.
@@ -72,8 +72,8 @@ From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
 
 Group tasks by dependencies. For each task:
 
-1. Alex implements per the task body contract — including factory/seeder updates when the task touches entities
-2. Anne writes/runs tests per `settings.testing` (`php artisan test` or `./vendor/bin/pest`). **BEST** only: UI viewport matrix 375 / 768 / 1280, browser/E2E tooling, axe at mobile. **NORMAL**/**MINIMAL**: no Playwright/Dusk/E2E
+1. Alex / Joe implement per the task body contract — backend under `data.workdir`, frontend under `data.frontend.repo_path` when `repo: frontend`
+2. Anne writes/runs tests per `settings.testing` — `php artisan test` / Pest for Laravel; `npm test` / vitest / playwright from the FE root for `repo: frontend` tasks
 3. Alex commits (one atomic commit per task). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks)
 4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria; never edit the plan YAML manually
 

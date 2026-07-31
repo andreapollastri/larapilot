@@ -14,35 +14,18 @@ class CompanionService
     ) {}
 
     /**
-     * Bundle shared Larapilot artifacts for an external frontend repository.
+     * PRD, topology, and product OpenAPI artifacts for companion sync into an external FE repo.
      *
      * @return array<string, mixed>
      */
-    public function bundle(?string $apiBaseUrl = null): array
+    public function bundle(): array
     {
         $content = $this->prd->read();
         $topology = $this->extractFrontendTopology($content);
         $productOpenApi = $this->productOpenApiSnapshot();
 
-        $endpoints = [
-            'prd' => null,
-            'companion' => null,
-            'larapilot_openapi' => null,
-        ];
-
-        if (is_string($apiBaseUrl) && $apiBaseUrl !== '') {
-            $base = rtrim($apiBaseUrl, '/');
-            $endpoints = [
-                'prd' => $base.'/prd',
-                'companion' => $base.'/companion',
-                'larapilot_openapi' => $base.'/openapi.json',
-            ];
-        }
-
         return [
             'generated_at' => now()->toIso8601String(),
-            'source' => 'larapilot',
-            'skill' => 'larapilot-frontend-companion',
             'artifacts' => [
                 'prd' => $content === null ? null : [
                     'content' => $content,
@@ -51,14 +34,6 @@ class CompanionService
                 ],
                 'frontend_topology' => $topology,
                 'product_openapi' => $productOpenApi,
-            ],
-            'endpoints' => $endpoints,
-            'instructions' => [
-                'Mirror `artifacts.prd.content` to `.larapilot/docs/PRD.md` in the frontend repo.',
-                'When present, write `artifacts.product_openapi.content` to `.larapilot/openapi-product.json`.',
-                'Record sync metadata in `.larapilot/companion-sync.md`.',
-                'Do not invent API endpoints — extend the Laravel OpenAPI contract first.',
-                'Re-run `/larapilot-frontend-companion` after PRD living-document edits on Laravel.',
             ],
         ];
     }

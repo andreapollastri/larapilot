@@ -229,6 +229,37 @@ Fix: {one-line from rework feedback}
 
 ---
 
+## Frontend task — external repo (`repo: frontend`)
+
+Use when **Frontend Topology** is `API + external frontend` and the task implements UI in the configured FE repo. Set `repo: frontend` on the task in the plan JSON. Paths are relative to `data.frontend.repo_path` from `config-show`.
+
+```markdown
+## Description
+{UI work — map to mockups/OpenAPI; honor existing FE conventions from frontend-scan}
+
+## Files Involved
+- src/...  _(paths under the external FE repo)_
+
+## Steps
+1. Read mockups at `{paths.mockups}/{code}/` and product OpenAPI
+2. Implement components/pages/routes in the FE repo
+3. Wire API client (auth, error/loading states) — no undocumented endpoints
+4. Run FE tests: `npm test` / `pnpm test` / `vitest run` from the FE root
+
+## Completion Criteria
+- [ ] UI matches mockups / acceptance criteria
+- [ ] API calls match documented contract
+- [ ] FE test suite passes
+
+## Git Deliverables
+- Repo: frontend (`git -C {data.frontend.repo_path} …`)
+- Commit: `feat(US-XXX): TASK-NN {short summary}`
+- Push: {only if `GITFLOW_PUSH`; else **skip**}
+- PR: {remote update only if `GITFLOW_PUSH`}
+```
+
+---
+
 ## Plan body snippet — Git & test data
 
 Add to every `plan_body` (adjust Git lines to `git_mode`):

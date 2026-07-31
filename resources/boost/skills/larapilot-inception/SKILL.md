@@ -18,7 +18,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 ## Config & CLI
 
 1. Run `php artisan larapilot:config-show` and parse the stdout JSON envelope.
-2. This skill uses only: `config-show`, `prd-write`, `validate-prd`.
+2. This skill uses only: `config-show`, `prd-write`, `validate-prd`, `frontend-set`, `frontend-scan`, `companion-sync`.
 
 ## Workflow
 
@@ -32,7 +32,10 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 5. **Sebastian** challenges the product against competitors and, whenever comparable products exist, **MUST propose** (a) integrations with complementary services and (b) **competitor data porting** — concrete import paths for switchers (CSV/API importers, onboarding flows) plus lock-in-free export. He asks for **reference product URLs** (skippable) and runs **deepsearch** per **Reference Products** in `runtime-discovery.md`, persisting reports to `{paths.research}/reference-products/{slug}.md`. **Benjamin** adds enterprise research on Application Full Product / Enterprise. **Matt** notes how proposed integrations will be wired. Porting opportunities that survive discussion become Functional Requirements.
 6. **John** and **Aurora** co-own `## Technical Architecture`:
     - John ensures scalable design per delivery target; when multi-tenant/SaaS, compares **tenancy patterns** with pros/cons per **Multi-tenancy** in `runtime-delivery.md`.
-    - **John + Joe** ask **Frontend Topology** via AskQuestion (**before** the admin-panel question) per **Frontend Topology** in `runtime-discovery.md`; when external, record FE stack + repo URL + companion sync mode and tell the user to use **`/larapilot-frontend-companion`** in the FE repo (`GET /larapilot/api/companion` or `larapilot:companion-export`).
+    - **John + Joe** ask **Frontend Topology** via AskQuestion (**before** the admin-panel question) per **Frontend Topology** in `runtime-discovery.md`; when external:
+      - Ask for the **absolute path** to the external frontend repo and persist it with `php artisan larapilot:frontend-set --path=… [--stack=…]`.
+      - Run `php artisan larapilot:frontend-scan` and incorporate existing FE structure/stack into the PRD (Joe) — inception must **start from code already present**, not assume greenfield.
+      - Record FE stack + repo path/URL in the PRD; tell the user all workflow commands (`/larapilot-*`) run **only from this Laravel workspace**; use `/larapilot-frontend-companion` to sync PRD into the FE repo (`larapilot:companion-sync`).
     - When an **admin/control panel** or authenticated dashboard is needed, John asks **Filament vs Laravel Starter Kit variant vs custom** via AskQuestion — never assume; recommend the option closest to the project mockups per **Vendor & Package Policy** in `runtime-delivery.md`; record the choice.
     - **Jack** proposes Gitflow, CI/CD, semver/CHANGELOG, observability, and **asks via AskQuestion — never assume defaults**: **local dev environment** (Sail, Herd, not defined yet, other — see **Local development environment** in `runtime-delivery.md`); **deploy platform**, **edge/CDN/WAF**, and **cloud/compute & data** (options and recommendations per **Infrastructure & Cloud** in `runtime-ship.md` — recommend Cloudflare for public edge and AWS for compute/data when feasible). Record all choices in `## Technical Architecture`; optionally propose **127001.it** URLs when multi-tenant/OAuth/cookie domains matter.
     - **Aurora** asks **Budget Sensitivity** and sizes infra per `runtime-discovery.md`; **Lars** imposes the security baseline, `security.txt`/`SECURITY.md`, and pipeline gates; **Oliver** notes red-team scope for ship.

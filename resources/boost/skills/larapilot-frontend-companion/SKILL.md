@@ -1,113 +1,118 @@
 ---
 name: larapilot-frontend-companion
-description: Syncs the shared Larapilot PRD (and companion artifact bundle) from a Laravel API-only backend into an external frontend repository so both repos share one product contract. Use when the PRD Frontend Topology is "API + external frontend", when the user asks to refresh PRD/OpenAPI in the FE repo, or Italian triggers like "sincronizza PRD", "companion frontend", "aggiorna repo frontend", "pull PRD dal backend".
+description: Configures and orchestrates an external frontend repository from the Laravel Larapilot workspace — the BE is the only entry point for specs, PRD, and workflow commands. Scans existing FE code, syncs PRD/OpenAPI into the FE repo, and prepares cross-repo implementation. Use when PRD Frontend Topology is "API + external frontend", when setting up split-repo delivery, or Italian triggers like "companion frontend", "repo frontend", "sincronizza PRD", "path frontend assoluto".
 ---
 
-# Larapilot — Frontend Companion
+# Larapilot — Frontend Companion (BE-orchestrated)
 
-You keep an **external frontend repository** aligned with the **Laravel Larapilot** source of truth (PRD + API contract). You do **not** invent product scope — you pull it.
+You orchestrate an **external frontend repository** from the **Laravel Larapilot workspace**. The backend is the **only** entry point for product specs, backlog, plans, and workflow commands. The FE repo is a **write target** and optional read-only PRD mirror — not a second Larapilot cockpit.
 
 ## When to use
 
 - PRD records **`Frontend Topology: API + external frontend`**
-- User wants to refresh the shared PRD / companion bundle in this FE repo
-- After inception or a PRD living-document edit on the Laravel side
+- User is setting up or refreshing split-repo delivery from the **Laravel** workspace
+- After inception or a PRD living-document edit (re-sync the FE mirror)
+- Before planning/implementing UI work that belongs in the external FE repo
 
 ## Shared Runtime
 
-If this repo has `.larapilot/shared-runtime.md`, read the core; for **Frontend Topology** details also read `.larapilot/runtime-discovery.md` when present. Otherwise follow this skill and the mirrored PRD after sync.
+Read `.larapilot/shared-runtime.md` (core). For **Frontend Topology** and cross-repo rules also read `.larapilot/runtime-discovery.md` → **Frontend Topology**.
 
 ## The Team (this phase)
 
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — intent + output economy |
-| ✨ **Joe** | Frontend Expert — maps PRD UX to this FE stack; design-system fidelity |
+| ✨ **Joe** | Frontend Expert — maps PRD UX to the external stack; reads scan output |
 | 📐 **John** | Architect — API boundaries; no invented endpoints |
 | 🔗 **Matt** | Integration Manager — base URL, auth/CORS, OpenAPI consumption |
-| 🎨 **Elise** | UX Designer — honor Laravel-side mockups as contract when linked |
-| 📝 **Albert** | Tech Writer — keep local OpenAPI/PRD mirror accurate |
+| 🎨 **Elise** | UX Designer — mockups in Laravel `.larapilot/mockups/` remain the contract |
+| 📝 **Albert** | Tech Writer — keep FE PRD mirror accurate |
 
 ## Preconditions
 
-- This workspace is the **frontend** repo (or a FE-only worktree), not the Laravel backend — unless the user is exporting from Laravel for handoff.
-- Laravel Larapilot is installed on the backend and a PRD exists.
-- Companion access: either browsable `GET {laravel}/larapilot/api/companion` (dev/staging dashboard gate) **or** a JSON file produced by `php artisan larapilot:companion-export` on the Laravel side.
+- This workspace is the **Laravel backend** with Larapilot installed and a PRD (or inception in progress).
+- Topology is **`API + external frontend`** (or the user is configuring it now).
 
 ## Workflow
 
-### 1. Resolve sync source (AskQuestion — skippable)
+### 1. Configure the frontend repo path (required once)
 
-Ask how to obtain the bundle:
+If `config-show` → `data.frontend.configured` is **false**, ask the user for the **absolute path** to the external frontend repository (e.g. `/Users/dev/acme-web`). Optionally confirm stack (React, Vue, …).
 
-1. **HTTP pull** — Laravel base URL (e.g. `https://app.test`) → `GET {base}/larapilot/api/companion`
-2. **File import** — path to a `companion.json` (or similar) exported via `larapilot:companion-export --file=…`
-3. **Already pasted** — user provides JSON in chat
+Persist via CLI — never edit YAML by hand:
 
-Never invent a PRD when the pull fails — report the error and stop.
+```bash
+php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React
+```
 
-### 2. Fetch / load the companion bundle
+Re-run `config-show` and confirm `data.frontend.repo_path` and `data.frontend.configured`.
 
-Expected shape (fields may be null when missing):
+Also record the path in the PRD under `## Technical Architecture` → **External frontend repo** when writing/updating the PRD.
 
-- `generated_at`
-- `artifacts.prd.content` (+ `headings`)
-- `artifacts.frontend_topology` (`mode`, `external_repo`, `external_stack`, `sync_mode`, `raw`)
-- `artifacts.product_openapi` (string|null — when Laravel ships a product OpenAPI snapshot path/content)
-- `endpoints` (prd, companion, larapilot_openapi)
-- `instructions` (human sync hints)
+### 2. Scan existing frontend code
 
-### 3. Mirror into this FE repo
+Before inception follow-ups or first plan, run:
 
-Create dirs as needed and write:
+```bash
+php artisan larapilot:frontend-scan
+```
+
+Use the envelope (`kind: frontend-scan`) to summarize for the user:
+
+- Detected stack + tooling (Vite, Next, …)
+- Key directories (`src/`, `app/`, `components/`, …)
+- Entrypoints and major dependencies
+- Whether `.larapilot/` mirror already exists in the FE repo
+
+When the FE repo already has product UI, **Joe** uses this scan so inception and evolutive specs **start from what exists** — do not propose a greenfield SPA unless the PRD says so.
+
+Optional: `--path=` to scan a path before persisting it (then `frontend-set`).
+
+### 3. Sync PRD + OpenAPI mirror into the FE repo
+
+Push the companion bundle from Laravel (do **not** ask the user to switch to the FE workspace):
+
+```bash
+php artisan larapilot:companion-sync
+```
+
+Writes under the configured FE repo:
 
 | Path | Content |
 | --- | --- |
-| `.larapilot/docs/PRD.md` | `artifacts.prd.content` (verbatim) |
+| `.larapilot/docs/PRD.md` | Laravel PRD (verbatim) |
 | `.larapilot/openapi-product.json` | product OpenAPI when present |
-| `.larapilot/companion-sync.md` | sync log (see template below) |
+| `.larapilot/companion-sync.md` | sync metadata |
 
-Do **not** overwrite an existing FE-only README or app source. Do **not** run Laravel `larapilot:*` Artisan commands in this repo unless Larapilot is actually installed here.
+Never overwrite FE application source except under `.larapilot/`. Never run Laravel `larapilot:*` Artisan commands inside the FE repo.
 
-```markdown
-# Companion sync
+### 4. Orient cross-repo work
 
-- **Synced at:** {{ISO8601}}
-- **Source:** {{HTTP URL | file path}}
-- **Frontend Topology:** {{mode}}
-- **External stack:** {{stack}}
-- **Laravel companion endpoint:** {{url or N/A}}
+Summarize (concise):
 
-## Notes
+- Topology + stack from PRD + scan
+- Key FRs / personas affecting UI
+- API auth expectations if stated in PRD
+- Next steps: `/larapilot-spec` → `/larapilot-plan` → `/larapilot-implement` **from this Laravel workspace**
 
-- PRD mirrored from Laravel Larapilot — treat as source of truth for product scope.
-- Implement UI against product OpenAPI / documented API; do not invent endpoints.
-```
+When **`larapilot-plan`** / **`larapilot-implement`** run with external topology:
 
-### 4. Orient the FE work
+- Laravel tasks → API, auth, jobs, admin in this repo (`repo: backend` or default)
+- UI tasks → mark `repo: frontend`; **workdir** = `data.frontend.repo_path` from `config-show`
+- FE commits: `git -C {frontend.repo_path} …` per task Git Deliverables
+- FE tests: `npm test` / `vitest` / `pnpm test` from the FE root — not Artisan
 
-Summarize for the user (concise):
+### 5. After PRD changes
 
-- Topology + external stack from the PRD
-- Key FRs / personas that affect UI
-- API auth expectations (Sanctum, cookies, tokens) if stated
-- Next suggested FE actions (scaffold routes, align design system, open stories that map to `US-XXX` when the Laravel backlog is referenced)
-
-When implementing features here, **Joe** leads stack conventions; **John/Matt** reject client calls to undocumented APIs — ask the Laravel side to extend OpenAPI first.
-
-### 5. Optional continuous sync
-
-If the user wants automation, suggest (do not silently configure secrets):
-
-- CI job that curls `/larapilot/api/companion` (or consumes an exported artifact) and opens a PR updating `.larapilot/docs/PRD.md`
-- Or re-run `/larapilot-frontend-companion` after each Laravel PRD change
+Re-run `larapilot:companion-sync` after `/larapilot-inception`, `/larapilot-feature`, or PRD living-document edits on Laravel.
 
 ## Output Boundaries
 
-- No Laravel backlog mutations from the FE repo
-- No rewriting PRD scope in the FE mirror — edits belong on the Laravel side via `/larapilot-inception` / `/larapilot-feature` / PRD living document, then re-sync
-- Chat stays brief; mirrored files stay complete and verbatim
+- **No** backlog/plan/spec mutations from the FE repo — all workflow state stays in Laravel `.larapilot/`
+- **No** rewriting PRD scope in the FE mirror — product edits belong here via inception/feature/PRD living document, then re-sync
+- Chat stays brief; synced files stay complete and verbatim
 
 ## Output Economy
 
-**Moderate** — short sync report; full PRD file on disk.
+**Moderate** — short setup/sync report; full PRD file written to disk on sync.

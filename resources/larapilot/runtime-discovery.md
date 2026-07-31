@@ -68,7 +68,7 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`larapilot-spec`**               | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping        |
 | **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); FE implements against OpenAPI + companion sync |
-| **`larapilot-frontend-companion`** | Used in the **external frontend repo** (or a FE-only workspace) when topology is **`API + external frontend`** — pulls the shared PRD/OpenAPI bundle from the Laravel Larapilot API and mirrors it locally                                                                                                 |
+| **`larapilot-frontend-companion`** | Used in the **Laravel backend workspace** when topology is **`API + external frontend`** — configures `frontend.repo_path`, scans existing FE code, pushes PRD/OpenAPI mirror into the FE repo, and orchestrates cross-repo plan/implement (BE is the **only** workflow entry point)                                                                 |
 | **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm companion sync / OpenAPI contract before release                                                                                                    |
 
 ## Client Materials _(all skills — mandatory input)_
@@ -242,24 +242,22 @@ Record in PRD `## Technical Architecture`:
 **Frontend stack (in-repo):** {{Blade / Livewire / Inertia+… / Vite SPA … / N/A}}
 **External frontend repo:** {{URL or path — when API + external frontend}}
 **External frontend stack:** {{React / Vue / Angular / Svelte / Other — when external}}
-**Companion sync:** skill + API pull | git PR | manual — when external
+**Companion sync:** BE-orchestrated push | git PR | manual — when external
 ```
 
 ### When topology is `API + external frontend`
 
-1. **Laravel repo** remains Larapilot source of truth for PRD, backlog, plans, and (usually) mockups + product OpenAPI.
-2. **Frontend repo** installs or copies the **`/larapilot-frontend-companion`** skill and periodically syncs the companion bundle:
-   - `GET /larapilot/api/companion` (when the Laravel dashboard API is browsable), or
-   - `php artisan larapilot:companion-export` on the Laravel side → write JSON into the FE repo, or
-   - Git PR / CI that copies `.larapilot/docs/PRD.md` (+ OpenAPI snapshot) into the FE `.larapilot/` mirror.
-3. The companion skill writes a local mirror under the FE project's `.larapilot/` (`docs/PRD.md`, optional `openapi-product.json`, `companion-sync.md`) so FE agents honor the **same PRD** without inventing product scope.
-4. **Joe** owns FE architecture in the external stack; **Alex** owns Laravel API contracts; **Matt** owns auth/CORS/webhook seams; **Albert** keeps OpenAPI accurate — FE must not invent endpoints.
-5. Admin/control panel on Laravel (Filament / custom) remains valid for ops even when the customer UI is external — still ask; prefer Filament or custom over a Starter Kit SPA when the primary product UI is not in this repo.
+1. **Laravel repo** remains the **only** Larapilot entry point — PRD, backlog, plans, mockups, product OpenAPI, and all `/larapilot-*` commands run here.
+2. **Configure the FE repo** — John + Joe ask for the **absolute path** during inception; persist with `php artisan larapilot:frontend-set --path=… [--stack=…]`. Also record path/URL in the PRD.
+3. **Scan before planning** — `php artisan larapilot:frontend-scan` inspects existing FE structure/stack so inception and evolutive specs start from code already present.
+4. **Sync mirror into FE** — `php artisan larapilot:companion-sync` (or `/larapilot-frontend-companion` in Laravel) writes `.larapilot/docs/PRD.md`, optional `openapi-product.json`, and `companion-sync.md` under the FE repo.
+5. **Joe** owns FE architecture in the external stack; **Alex** owns Laravel API contracts; **Matt** owns auth/CORS/webhook seams; **Albert** keeps OpenAPI accurate — FE must not invent endpoints.
+6. Admin/control panel on Laravel (Filament / custom) remains valid for ops even when the customer UI is external — still ask; prefer Filament or custom over a Starter Kit SPA when the primary product UI is not in this repo.
 
 ### Downstream honor rules
 
-- **`larapilot-plan` / `larapilot-implement`**: when topology is external, Laravel tasks focus on API, auth, jobs, admin; UI tasks that belong to the FE repo are marked as **cross-repo** (companion sync + FE issue/PR) — do not invent a Blade SPA in Laravel unless the user changes topology.
-- **`larapilot-design`**: mockups stay the shared UX contract; note in the mockup README that Alex (API) and the FE repo (Joe) both consume them.
-- After **`prd-write`** / PRD living-document edits on an external topology: remind the user to run companion sync on the FE repo (or export the bundle).
+- **`larapilot-plan` / `larapilot-implement`**: when topology is external, Laravel tasks focus on API, auth, jobs, admin (`repo: backend` or default); UI tasks use `repo: frontend` and write under `data.frontend.repo_path` from `config-show` — do not invent a Blade SPA in Laravel unless the user changes topology.
+- **`larapilot-design`**: mockups stay the shared UX contract in Laravel `.larapilot/mockups/`; Joe implements them in the FE repo.
+- After **`prd-write`** / PRD living-document edits on an external topology: run `larapilot:companion-sync` on Laravel.
 
 Ownership: **John** owns topology and API boundaries; **Joe** owns in-repo or external web FE stack choice and companion skill usage; **Ricky** owns mobile shells that may also be separate repos (same companion pattern when they consume the Laravel API).
