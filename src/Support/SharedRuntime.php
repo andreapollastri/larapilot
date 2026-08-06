@@ -20,6 +20,7 @@ final class SharedRuntime
         $docs = [
             'shared-runtime.md' => 'shared-runtime.md',
             'task-templates.md' => 'task-templates.md',
+            'integrations.md' => 'integrations.md',
         ];
 
         foreach (glob(dirname(__DIR__, 2).'/resources/larapilot/runtime-*.md') ?: [] as $path) {

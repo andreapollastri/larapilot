@@ -7,18 +7,21 @@ Phase pack for **`larapilot-inception`**, **`larapilot-feature`**, and **`larapi
 The **first interview layer** in **`larapilot-inception`**. **Mark** asks before delivery target, budget, or deep architecture (via **AskQuestion**, right after the team intro). The choice switches the rest of discovery and is persisted in the PRD under `## MVP Scope` as:
 
 ```markdown
-**Project Kind:** Personal | Website | Application
+**Project Kind:** Personal | Website | Application | Package
 **Website Type:** Showcase | Portal | Blog | E-commerce | Landing | Documentation | Other
+**Package Origin:** New | Existing local | Existing git
 **Project Origin:** Greenfield | Legacy rewrite | Legacy port
 ```
 
 `Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
+`Package Origin` (and related package fields under `## Technical Architecture`) are recorded **only** when Project Kind is **Package**.
 
 | Kind            | Meaning                                                                          | Discovery depth                                                                                 |
 | --------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | **Personal**    | Solo side project, portfolio, learning experiment, or internal tool for oneself  | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
 | **Website**     | Public-facing site: showcase, portal, blog, store, landing, docs                 | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2               |
 | **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows              | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance          |
+| **Package**     | PHP / Laravel Composer package (new or existing) for reuse across apps           | Package workflow — origin, standards, distribution, versioning, docs/minisite; lean product UI  |
 
 ### Branching rules _(inception)_
 
@@ -56,9 +59,36 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 3. **John** — when SaaS, B2B platform, or tenant isolation is plausible, ask multi-tenancy via **AskQuestion** (see **Multi-tenancy** in `runtime-delivery.md`)
 4. **John + Joe** — **Frontend Topology** via AskQuestion (**before** admin-panel route when UI is in scope): `Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend` — never assume (see **Frontend Topology** below)
 5. **John** — admin/control panel or authenticated dashboard: **Filament** vs **[Laravel Starter Kit](https://laravel.com/starter-kits)** (Livewire/Flux, React, Vue, or Svelte) vs **custom** when applicable — never assume one route; skip Starter Kit SPA variants when topology is `API + external frontend`
-6. **Sebastian** — integrations and competitor data porting when comparable products exist
-7. **Sabrine** — legacy rewrite/port analysis when `{paths.legacy}` or **Project Origin** is legacy
-8. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily**, **Andrew**, **Joe**, **Ricky**, **Albert**, **Marika** join when relevant; **Zoey** always
+6. **Mike** — data architecture (SQL/NoSQL, tree patterns, search) when persistence is non-trivial — see **Data Architecture** in `runtime-delivery.md`
+7. **Sarah** — custom CLI (Shell/Bash or Go), Git/forge automation, CI pipeline scripts, and Linux/terminal/server scripting whenever those surfaces are in scope — see **CLI, Git Pipelines & Linux** in `runtime-delivery.md`
+8. **Sebastian** — integrations and competitor data porting when comparable products exist
+9. **Sabrine** — legacy rewrite/port analysis when `{paths.legacy}` or **Project Origin** is legacy
+10. **Jennifer**, **Benjamin**, **Violet**, **Oliver**, **Sophia**, **Emily**, **Andrew**, **Joe**, **Ricky**, **Albert**, **Marika** join when relevant; **Zoey** and **Lucille** always
+
+**Package** — Composer package workflow (PHP / Laravel). Round 2 via **AskQuestion**:
+
+1. **Package Origin:** `New` | `Existing local` | `Existing git`
+2. When **Existing local** — ask for absolute path on disk; when **Existing git** — ask for clone URL (+ optional branch/tag). Record in PRD `## Technical Architecture` as `**Package path:**` / `**Package git:**`.
+3. **Delivery target:** `MVP` | `V1 Complete` | `Full Product` — `Enterprise` when the package targets regulated or high-SLA consumers
+4. **Budget Sensitivity** (Aurora) — usually `Relaxed` for open-source; ask when commercial/private
+
+Then drive the **Package professional workflow** (persist answers under `## Technical Architecture` → `### Package`):
+
+| Topic | Owner | Ask / decide |
+| ----- | ----- | ------------ |
+| Namespace, package name (`vendor/name`), Laravel version constraints | **Andrew** + **John** | Never assume Packagist name is free — verify |
+| Public API surface, Service Provider, facades, config publish | **Andrew** + **John** | Idiomatic Laravel package layout |
+| Data / migrations shipped by the package | **Mike** + **Andrew** | Optional migrations, schema ownership, upgrade path |
+| Tests (Pest/PHPUnit), static analysis, Pint, CI matrix | **Anne** + **Jack** + **Sarah** + **Lars** | Minimum: unit + feature; CI on PHP/Laravel matrix (Sarah authors pipeline YAML/scripts) |
+| Security (secrets, SSRF, mass assignment in published code) | **Lars** (+ **Oliver** when auth/crypto) | Security policy + advisory process |
+| Semver, CHANGELOG, tags, release automation | **Jack** + **Albert** | Conventional commits or Keep a Changelog |
+| Distribution: Packagist / private Satis / VCS | **Jack** + **Andrew** | Auth for private registries |
+| Docs: README, usage guide, OpenAPI if HTTP | **Albert** | Baseline always; deeper under `STANDARD`/`MAX` |
+| Minisite: GitHub Pages / dedicated hosting / none | **Albert** + **Emma** + **Jack** | Only when discoverability matters |
+| Consumer integration modes (require, path repo, satis) | **Andrew** + **Matt** | Document install + upgrade for host apps |
+| Dev CLI for the package itself | **Sarah** | Scaffold / publish / doctor commands when useful |
+
+Skip or minimize for Package: **Elise/Joe/Ricky** UI mockups (unless the package ships Blade/Livewire/Filament UI), **Lauren** SEM, **multi-tenancy** (unless the package *implements* tenancy), **Emma** public SEO except for the package minisite. Keep active: **Mark**, **Andrew**, **John**, **Mike**, **Anne**, **Lars**, **Jack**, **Albert**, **Sarah**, **Aurora**, **Zoey**, **Lucille**; **Tom** for API/AC quality; **Sabrine** when porting an existing non-package codebase into a package.
 
 ### Downstream behavior
 
@@ -66,10 +96,10 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 
 | Skill                              | Adjustment                                                                                                                                                                                                                                                                                                |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`larapilot-spec`**               | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping        |
-| **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
+| **`larapilot-spec`**               | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Package** → package-surface specs first (API, provider, tests, CI, docs, release). **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
+| **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. **Package** → skip UI mockups unless the package ships UI components; then design the package demo/minisite only. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
 | **`larapilot-frontend-companion`** | Used in the **Laravel workspace** when topology is **`API + external frontend`** — link `frontend.repo_path`, scan existing FE code, orchestrate `repo: frontend` implement |
-| **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release                                                                                                    |
+| **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release. **Package** → Packagist/private publish checklist, semver tag, docs site, consumer upgrade notes |
 
 ## Client Materials _(all skills — mandatory input)_
 
@@ -127,6 +157,8 @@ During **`larapilot-inception`**, Mark asks the user to choose a **delivery targ
 ```markdown
 **Delivery Target:** MVP | V1 Complete | Full Product | Enterprise
 ```
+
+**Lucille** asks in the same early rounds (skippable) whether there are **delivery deadlines** or fixed milestones (go-live, demo, compliance date). Persist via `php artisan larapilot:schedule-set` into `{paths.schedule}` and mirror a one-line summary in the PRD (`**Deadlines:** …` under `## MVP Scope` when known). See **Usage Ledger & Schedule** in `runtime-ops.md`.
 
 | Target           | Meaning                                                                       | Backlog & delivery behavior                                                                                                                    |
 | ---------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -63,6 +63,7 @@ Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) a
 | **Personal** | Leanest: one spec per core journey; defer polish and secondary FRs |
 | **Website** | Early specs for SEO/discoverability (`robots.txt`, sitemap, llms), content routes, and brand assets; type-specific specs (e.g. catalog/checkout for **E-commerce**) |
 | **Application** | Full FR coverage per delivery target |
+| **Package** | Package-surface first: public API, service provider/config, tests+CI matrix, security, semver/release, docs/minisite, consumer install/upgrade |
 
 ## Bootstrap backlog (from PRD)
 

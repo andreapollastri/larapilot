@@ -7,6 +7,7 @@ namespace Larapilot\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\InternalFeedbackService;
@@ -37,6 +38,32 @@ class DashboardController
 
         return view('larapilot::dashboard.prd', [
             'prd' => $prd,
+        ]);
+    }
+
+    public function settings(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.settings', $this->dashboard->settings());
+    }
+
+    public function usage(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.usage', $this->dashboard->usage());
+    }
+
+    public function usageReport(): Response
+    {
+        $this->guard();
+
+        $data = $this->dashboard->usage();
+
+        return response((string) ($data['report_markdown'] ?? ''), 200, [
+            'Content-Type' => 'text/markdown; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="larapilot-usage-report.md"',
         ]);
     }
 

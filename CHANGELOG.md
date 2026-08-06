@@ -2,6 +2,37 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.4.0] - 2026-08-06
+
+### Added
+
+- **Optional remote forges + chat notifications** — all OFF by default; orthogonal to `git_mode`.
+  - Settings: `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` via `/larapilot-settings` / `larapilot:settings-set`.
+  - Secrets in `.env` only: Slack/Discord/Telegram webhooks; Bitbucket `BITBUCKET_ACCESS_TOKEN` or `BITBUCKET_USERNAME` + `BITBUCKET_APP_PASSWORD` (also `LARAPILOT_BITBUCKET_*`).
+  - `larapilot:notify` fan-out; hard hooks on `task-done` / `spec-approve`; skill events for PR/MR/review/ship/schedule.
+  - Status probes: `larapilot:github-status` (`gh`), `larapilot:gitlab-status` (`glab`), `larapilot:bitbucket-status` (API tokens); implement prints PR/MR URLs when the matching forge is ON.
+  - Setup guide: `.larapilot/integrations.md` (installed/updated with the package).
+- **Personas — Mike, Lucille, Sarah** — roster grows to 30 agents.
+  - **🗄️ Mike** (Database Expert) — owns schema, SQL/NoSQL, hierarchy algorithms (Adjacency List, Nested Sets, Path Enumeration, Closure Table, …), search engines, and migrations; collaborates with John, Jack, Aurora, Alex, Lars, Sabrine, Tom, Mark. Canonical rules in `runtime-delivery.md` → **Data Architecture**.
+  - **📒 Lucille** (Account) — cross-cutting silent ledger of tokens + wall-clock time by category (`analysis`, `planning`, `implementation`, `support`, `feature`, `review`, `ship`, `other`); asks for deadlines at inception and reports schedule drift. Canonical rules in `runtime-ops.md` → **Usage Ledger & Schedule**.
+  - **⌨️ Sarah** (CLI, Git & Linux Expert) — Shell/Bash or Go CLIs, **Git in general** (conflict resolution, rebase/merge, history hygiene, bisect), forge automation, CI pipeline YAML/scripts, and Linux/terminal/server scripting. Steps in wherever those surfaces appear; partners with Jack on Gitflow policy/gates/deploy. Canonical rules in `runtime-delivery.md` → **CLI, Git Pipelines & Linux**.
+- **Project Kind: Package** — inception AskQuestion adds `Package` beside Personal / Website / Application. Workflow covers new vs existing local path vs existing git, Laravel package standards (tests, security, CI, semver), distribution (Packagist / Satis / VCS), docs, optional GitHub Pages / dedicated minisite, and consumer integration modes.
+- **Usage persistence (Lucille)** — committed under `.larapilot/usage/` (`ledger.jsonl`, `schedule.yaml`).
+  - `larapilot:usage-log` — append ledger entries (git user by default).
+  - `larapilot:usage-report` — JSON/MD/human summary + filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`, `--limit=`) + `--insights` (top categories, hot specs, deadline drift) + optional `--output=` Markdown resoconto.
+  - `larapilot:schedule-set` — deadlines and drift notes.
+  - `larapilot:choices-set` — inception/settings snapshot (`--from-prd` or flags) into `.larapilot/choices.yaml`.
+- **`/larapilot-usage`** — Lucille skill to analyze and query time/token tracking, schedule status, and export consolidated reports.
+- **Dashboard — Settings & Usage** — parallel to PRD: current settings + allowed options, visual inception choices summary, Lucille charts, living Gantt (specs + milestones), and `GET /larapilot/usage/report.md` download.
+- MCP `RunArtisanTool` allows `larapilot:usage-report`.
+
+### Changed
+
+- **Inception / discovery / guidelines** — Project Kind options, Package branch, Mike/Sarah/Lucille participation, usage + choices CLI in Boost guidelines and `larapilot-inception` / `larapilot-spec` / `larapilot-usage`.
+- **`settings.lucille`** — Lucille is **ON by default** at every skill level (`true` / `YES`). Explicit exclusion via `/larapilot-settings` or `larapilot:settings-set --lucille=NO` (aliases: `OFF`, `EXCLUDE`, `DISABLED`). Missing key never means excluded. `usage-log` refuses writes while excluded.
+- **ECO disables Lucille** — switching `effort` to `ECO` via `settings-set` sets `lucille: false` automatically (envelope flag `lucille_disabled_by_eco`). Re-enable anytime with `--lucille=YES` without leaving ECO; pass `--lucille=YES` together with `--effort=ECO` to keep her on.
+- Site / package version **v2.4.0**.
+
 ## [2.3.2] - 2026-07-31
 
 ### Fixed

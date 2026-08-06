@@ -12,6 +12,7 @@ it('installs the project scaffolding', function (): void {
 
     expect(base_path('.larapilot/config.yaml'))->toBeFile()
         ->and(base_path('.larapilot/shared-runtime.md'))->toBeFile()
+        ->and(base_path('.larapilot/integrations.md'))->toBeFile()
         ->and(base_path('.larapilot/task-templates.md'))->toBeFile()
         ->and(base_path('.larapilot/runtime-discovery.md'))->toBeFile()
         ->and(base_path('.larapilot/runtime-delivery.md'))->toBeFile()
@@ -324,7 +325,15 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('backlog: STANDARD')
         ->and($yaml)->toContain('git_mode: GITFLOW')
         ->and($yaml)->toContain('testing: NORMAL')
-        ->and($yaml)->toContain('auto_approve: false');
+        ->and($yaml)->toContain('auto_approve: false')
+        ->and($yaml)->toContain('lucille: true')
+        ->and($yaml)->toContain('github: false')
+        ->and($yaml)->toContain('gitlab: false')
+        ->and($yaml)->toContain('bitbucket: false')
+        ->and($yaml)->toContain('notifications: false')
+        ->and($yaml)->toContain('notify_slack: false')
+        ->and($yaml)->toContain('notify_discord: false')
+        ->and($yaml)->toContain('notify_telegram: false');
 });
 
 it('persists project settings via settings-set', function (): void {
@@ -336,6 +345,14 @@ it('persists project settings via settings-set', function (): void {
         '--git-mode' => 'GITFLOW_PUSH',
         '--testing' => 'BEST',
         '--auto-approve' => 'YES',
+        '--lucille' => 'NO',
+        '--github' => 'YES',
+        '--gitlab' => 'YES',
+        '--bitbucket' => 'NO',
+        '--notifications' => 'YES',
+        '--notify-slack' => 'YES',
+        '--notify-discord' => 'NO',
+        '--notify-telegram' => 'YES',
     ])->assertSuccessful();
 
     $settings = app(ConfigService::class)->settings();
@@ -346,9 +363,76 @@ it('persists project settings via settings-set', function (): void {
         'git_mode' => 'GITFLOW_PUSH',
         'testing' => 'BEST',
         'auto_approve' => 'YES',
+        'lucille' => 'NO',
+        'github' => 'YES',
+        'gitlab' => 'YES',
+        'bitbucket' => 'NO',
+        'notifications' => 'YES',
+        'notify_slack' => 'YES',
+        'notify_discord' => 'NO',
+        'notify_telegram' => 'YES',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
-        ->and(app(ConfigService::class)->autoApproveEnabled())->toBeTrue();
+        ->and(app(ConfigService::class)->autoApproveEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->lucilleEnabled())->toBeFalse()
+        ->and(app(ConfigService::class)->githubEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->gitlabEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->bitbucketEnabled())->toBeFalse()
+        ->and(app(ConfigService::class)->notifySlackEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->notifyTelegramEnabled())->toBeTrue();
+});
+
+it('treats missing lucille setting as enabled and accepts exclude aliases', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    expect(app(ConfigService::class)->lucilleEnabled())->toBeTrue();
+
+    $this->artisan('larapilot:settings-set', ['--lucille' => 'EXCLUDE'])
+        ->assertSuccessful()
+        ->expectsOutputToContain('"lucille":"NO"');
+
+    expect(app(ConfigService::class)->lucilleEnabled())->toBeFalse();
+
+    $this->artisan('larapilot:usage-log', [
+        '--category' => 'analysis',
+        '--tokens' => 10,
+        '--minutes' => 1,
+    ])->assertExitCode(4)
+        ->expectsOutputToContain('E_PRECONDITION');
+});
+
+it('disables lucille automatically when switching to ECO', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    expect(app(ConfigService::class)->lucilleEnabled())->toBeTrue();
+
+    $this->artisan('larapilot:settings-set', ['--effort' => 'ECO'])
+        ->assertSuccessful()
+        ->expectsOutputToContain('"lucille_disabled_by_eco":true');
+
+    expect(app(ConfigService::class)->settings()['effort'])->toBe('ECO')
+        ->and(app(ConfigService::class)->settings()['lucille'])->toBe('NO')
+        ->and(app(ConfigService::class)->lucilleEnabled())->toBeFalse();
+
+    $this->artisan('larapilot:settings-set', ['--lucille' => 'YES'])
+        ->assertSuccessful();
+
+    expect(app(ConfigService::class)->settings()['effort'])->toBe('ECO')
+        ->and(app(ConfigService::class)->lucilleEnabled())->toBeTrue();
+});
+
+it('keeps lucille on when ECO is set together with lucille YES', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', [
+        '--effort' => 'ECO',
+        '--lucille' => 'YES',
+    ])->assertSuccessful()
+        ->expectsOutputToContain('"lucille_disabled_by_eco":false');
+
+    expect(app(ConfigService::class)->settings()['effort'])->toBe('ECO')
+        ->and(app(ConfigService::class)->settings()['lucille'])->toBe('YES')
+        ->and(app(ConfigService::class)->lucilleEnabled())->toBeTrue();
 });
 
 it('accepts SI alias for auto-approve yes', function (): void {

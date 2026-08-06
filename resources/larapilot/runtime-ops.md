@@ -185,3 +185,61 @@ Push after backlog changes, planning, and review milestones; a CI step on the de
 The tracker credential is a **write-capable** key for a third-party workspace — a tighter boundary than the read-only Larapilot API. It belongs in `.env` (and in CI secrets), never in the repo, never in chat, never in a skill's output. `config-show` and `tracker-status` report *whether* a credential is present, never its value. Scope the key to the one board/project being synced where the provider allows it.
 
 Ownership: **Matt** owns provider choice, status mapping, and link hygiene; **Mark** owns what non-developers should see on the board; **Jack** owns the CI push step; **Lars** owns the credential boundary.
+
+## Usage Ledger & Schedule _(Lucille owns)_
+
+**Lucille** enters every skill **quietly** by default (`settings.lucille: true` / `YES`): she records AI/session **tokens** and wall-clock **time**, categorized so the project always has committed metrics for the Larapilot dashboard (charts, Gantt, consolidated Markdown reports). **Exclusion is opt-out only** — when `settings.lucille` is explicitly `false` / `NO`, skills skip Lucille rounds and `usage-log` (historical ledger stays readable). Missing key → treat as ON.
+
+### Paths
+
+| Artifact | Default path | Purpose |
+| -------- | ------------ | ------- |
+| Ledger (append-only) | `{paths.usage}/ledger.jsonl` | One JSON object per line — date/time, user, category, tokens, minutes, skill, optional spec |
+| Schedule | `{paths.schedule}` (`.larapilot/usage/schedule.yaml`) | Deadlines, milestones, delay notes |
+| Choices snapshot | `{paths.choices}` (`.larapilot/choices.yaml`) | Structured inception/settings decisions for the dashboard |
+
+All three are **git-committed** project truth (no secrets — never log API keys or prompt bodies).
+
+### Categories
+
+Use exactly these labels for `--category=`:
+
+`analysis` · `planning` · `implementation` · `support` · `feature` · `review` · `ship` · `other`
+
+Map skills roughly: inception/discovery → `analysis`; plan → `planning`; implement → `implementation`; feature evolutiva → `feature`; bug/Sophia → `support`; review → `review`; ship → `ship`.
+
+### When to log
+
+1. **End of every meaningful skill session** (or major phase inside a long session) — Lucille (via the agent) runs:
+
+   ```bash
+   php artisan larapilot:usage-log --category=analysis --tokens=12000 --minutes=45 --skill=larapilot-inception --note="PRD draft"
+   ```
+
+2. Prefer estimates from the session when exact token counts are unavailable — note `estimated: true` via `--estimated` rather than inventing precision.
+3. `--user=` defaults to `git config user.name` / `user.email` when available (`git:Name <email>`).
+4. Optional `--spec=US-XXX` ties time to a story for Gantt realism.
+
+### Deadlines & drift
+
+1. At **inception**, Lucille asks for delivery dates / milestones (skippable). Persist:
+
+   ```bash
+   php artisan larapilot:schedule-set --deadline=2026-09-01 --label="Go-live" --note="Client demo"
+   ```
+
+2. During later skills, if the team is behind or blocked, Lucille updates schedule notes (`--status=at_risk|delayed|on_track`) and mentions drift briefly in chat — never blocks Mark/John decisions.
+3. Dashboard **Usage** page renders ledger aggregates + a **Gantt** from schedule milestones and backlog progress; `larapilot:usage-report` exports a consolidated Markdown resoconto.
+4. **Interrogation skill** — `/larapilot-usage` (Lucille) answers questions about tempistiche and token burn. Prefer `php artisan larapilot:usage-report --format=json --insights` with filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`) over hand-reading `ledger.jsonl`.
+
+### Choices snapshot
+
+After inception (and when settings change), persist a structured snapshot for the dashboard **Settings** page:
+
+```bash
+php artisan larapilot:choices-set --file=...   # or key flags
+```
+
+Agents may also let `choices-set` scrape the PRD via `--from-prd`. Fields include Project Kind, Website Type, Package Origin, Delivery Target, Budget Sensitivity, Frontend Topology, data-store choices (Mike), CLI tools (Sarah), and current `settings.*`.
+
+Ownership: **Lucille** ledger + schedule + reporting; **Zoey** may suggest logging when a long session ends without an entry; **Mark** owns deadline negotiation with the user.

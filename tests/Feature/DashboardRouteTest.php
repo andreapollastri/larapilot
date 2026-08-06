@@ -24,6 +24,8 @@ it('hides the dashboard in production environment', function (): void {
 
     $this->get('/larapilot')->assertNotFound();
     $this->get('/larapilot/prd')->assertNotFound();
+    $this->get('/larapilot/settings')->assertNotFound();
+    $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();
 });
 

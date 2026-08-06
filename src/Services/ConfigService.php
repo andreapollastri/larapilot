@@ -81,6 +81,9 @@ class ConfigService
                 'research' => $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
                 'design_systems' => $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/'),
                 'internal_feedback' => $this->absolutePath($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'),
+                'usage' => $this->absolutePath($config['paths']['usage'] ?? '.larapilot/usage/'),
+                'choices' => $this->absolutePath($config['paths']['choices'] ?? '.larapilot/choices.yaml'),
+                'schedule' => $this->absolutePath($config['paths']['schedule'] ?? '.larapilot/usage/schedule.yaml'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -194,39 +197,99 @@ class ConfigService
     }
 
     /**
-     * Agent-facing settings. `auto_approve` is always the string YES|NO
-     * (YAML stores a boolean — YES/NO are YAML 1.1 bool tokens).
+     * Agent-facing settings. Boolean settings are always the string YES|NO
+     * (YAML stores booleans — YES/NO are YAML 1.1 bool tokens).
      *
-     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: string}
+     * @return array{
+     *     effort: string,
+     *     backlog: string,
+     *     git_mode: string,
+     *     testing: string,
+     *     auto_approve: string,
+     *     lucille: string,
+     *     github: string,
+     *     gitlab: string,
+     *     bitbucket: string,
+     *     notifications: string,
+     *     notify_slack: string,
+     *     notify_discord: string,
+     *     notify_telegram: string
+     * }
      */
     public function settings(): array
     {
         $config = $this->resolve();
         $raw = is_array($config['settings'] ?? null) ? $config['settings'] : [];
         $merged = array_replace($this->defaultSettings(), array_intersect_key($raw, $this->defaultSettings()));
+        $boolDefaults = $this->booleanSettingDefaults();
 
-        return [
+        $settings = [
             'effort' => (string) $merged['effort'],
             'backlog' => (string) $merged['backlog'],
             'git_mode' => (string) $merged['git_mode'],
             'testing' => (string) $merged['testing'],
-            'auto_approve' => $this->normalizeAutoApprove($merged['auto_approve'] ?? false),
         ];
+
+        foreach ($boolDefaults as $key => $default) {
+            $settings[$key] = $this->normalizeYesNo($merged[$key] ?? $default, $default);
+        }
+
+        return $settings;
     }
 
     /**
-     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: bool}
+     * @return array{
+     *     effort: string,
+     *     backlog: string,
+     *     git_mode: string,
+     *     testing: string,
+     *     auto_approve: bool,
+     *     lucille: bool,
+     *     github: bool,
+     *     gitlab: bool,
+     *     bitbucket: bool,
+     *     notifications: bool,
+     *     notify_slack: bool,
+     *     notify_discord: bool,
+     *     notify_telegram: bool
+     * }
      */
     public function defaultSettings(): array
     {
         $defaults = config('larapilot.settings', []);
+        $boolDefaults = $this->booleanSettingDefaults();
 
-        return [
+        $settings = [
             'effort' => (string) ($defaults['effort'] ?? 'STANDARD'),
             'backlog' => (string) ($defaults['backlog'] ?? 'STANDARD'),
             'git_mode' => (string) ($defaults['git_mode'] ?? 'GITFLOW'),
             'testing' => (string) ($defaults['testing'] ?? 'NORMAL'),
-            'auto_approve' => $this->autoApproveToBool($defaults['auto_approve'] ?? false),
+        ];
+
+        foreach ($boolDefaults as $key => $default) {
+            $settings[$key] = $this->yesNoToBool($defaults[$key] ?? $default, $default);
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Boolean settings and their default when unset / empty.
+     *
+     * @return array<string, bool>
+     */
+    public function booleanSettingDefaults(): array
+    {
+        return [
+            'auto_approve' => false,
+            'lucille' => true,
+            'github' => false,
+            'gitlab' => false,
+            'bitbucket' => false,
+            'notifications' => false,
+            'notify_slack' => false,
+            'notify_discord' => false,
+            'notify_telegram' => false,
         ];
     }
 
@@ -235,7 +298,21 @@ class ConfigService
      * wiping unrelated top-level keys the user may have added.
      *
      * @param  array<string, string|bool>  $partial
-     * @return array{effort: string, backlog: string, git_mode: string, testing: string, auto_approve: string}
+     * @return array{
+     *     effort: string,
+     *     backlog: string,
+     *     git_mode: string,
+     *     testing: string,
+     *     auto_approve: string,
+     *     lucille: string,
+     *     github: string,
+     *     gitlab: string,
+     *     bitbucket: string,
+     *     notifications: string,
+     *     notify_slack: string,
+     *     notify_discord: string,
+     *     notify_telegram: string
+     * }
      */
     public function updateSettings(array $partial): array
     {
@@ -250,16 +327,30 @@ class ConfigService
 
         $current = is_array($existing['settings'] ?? null) ? $existing['settings'] : [];
         $settings = array_replace($this->defaultSettings(), array_intersect_key($current, $this->defaultSettings()));
-        $settings['auto_approve'] = $this->autoApproveToBool($settings['auto_approve'] ?? false);
+        $boolDefaults = $this->booleanSettingDefaults();
+
+        foreach ($boolDefaults as $key => $default) {
+            $settings[$key] = $this->yesNoToBool($settings[$key] ?? $default, $default);
+        }
+
+        // Selecting ECO turns Lucille off unless the caller also sets lucille
+        // explicitly (re-enable with settings-set --lucille=YES while staying on ECO).
+        if (($partial['effort'] ?? null) === 'ECO' && ! array_key_exists('lucille', $partial)) {
+            $partial['lucille'] = false;
+        }
 
         foreach ($partial as $key => $value) {
             if (! array_key_exists($key, $this->defaultSettings())) {
                 continue;
             }
 
-            $settings[$key] = $key === 'auto_approve'
-                ? $this->autoApproveToBool($value)
-                : $value;
+            if (array_key_exists($key, $boolDefaults)) {
+                $settings[$key] = $this->yesNoToBool($value, $boolDefaults[$key]);
+
+                continue;
+            }
+
+            $settings[$key] = $value;
         }
 
         $existing['settings'] = $settings;
@@ -277,6 +368,62 @@ class ConfigService
     public function autoApproveEnabled(): bool
     {
         return $this->settings()['auto_approve'] === 'YES';
+    }
+
+    /**
+     * Lucille is ON by default at every skill level. Only an explicit
+     * `settings.lucille: false` / `NO` excludes her.
+     */
+    public function lucilleEnabled(): bool
+    {
+        return $this->settings()['lucille'] === 'YES';
+    }
+
+    /**
+     * Optional GitHub remote integration via `gh` — OFF by default.
+     */
+    public function githubEnabled(): bool
+    {
+        return $this->settings()['github'] === 'YES';
+    }
+
+    /**
+     * Optional GitLab remote integration via `glab` — OFF by default.
+     */
+    public function gitlabEnabled(): bool
+    {
+        return $this->settings()['gitlab'] === 'YES';
+    }
+
+    /**
+     * Optional Bitbucket remote integration — OFF by default.
+     */
+    public function bitbucketEnabled(): bool
+    {
+        return $this->settings()['bitbucket'] === 'YES';
+    }
+
+    /**
+     * Master switch for chat notifications — OFF by default.
+     */
+    public function notificationsEnabled(): bool
+    {
+        return $this->settings()['notifications'] === 'YES';
+    }
+
+    public function notifySlackEnabled(): bool
+    {
+        return $this->notificationsEnabled() && $this->settings()['notify_slack'] === 'YES';
+    }
+
+    public function notifyDiscordEnabled(): bool
+    {
+        return $this->notificationsEnabled() && $this->settings()['notify_discord'] === 'YES';
+    }
+
+    public function notifyTelegramEnabled(): bool
+    {
+        return $this->notificationsEnabled() && $this->settings()['notify_telegram'] === 'YES';
     }
 
     /**
@@ -309,19 +456,32 @@ class ConfigService
     {
         $settings = $this->settings();
 
-        return in_array($settings['effort'], $this->allowedEfforts(), true)
+        $ok = in_array($settings['effort'], $this->allowedEfforts(), true)
             && in_array($settings['backlog'], $this->allowedBacklogModes(), true)
             && in_array($settings['git_mode'], $this->allowedGitModes(), true)
-            && in_array($settings['testing'], $this->allowedTestingModes(), true)
-            && in_array($settings['auto_approve'], $this->allowedAutoApproveModes(), true);
+            && in_array($settings['testing'], $this->allowedTestingModes(), true);
+
+        foreach (array_keys($this->booleanSettingDefaults()) as $key) {
+            if (! in_array($settings[$key] ?? null, $this->allowedYesNoModes(), true)) {
+                return false;
+            }
+        }
+
+        return $ok;
     }
 
-    protected function normalizeAutoApprove(mixed $value): string
+    /**
+     * @param  bool  $defaultWhenEmpty  Fallback when the value is empty/unknown
+     */
+    protected function normalizeYesNo(mixed $value, bool $defaultWhenEmpty): string
     {
-        return $this->autoApproveToBool($value) ? 'YES' : 'NO';
+        return $this->yesNoToBool($value, $defaultWhenEmpty) ? 'YES' : 'NO';
     }
 
-    protected function autoApproveToBool(mixed $value): bool
+    /**
+     * @param  bool  $defaultWhenEmpty  Fallback when the value is empty/unknown
+     */
+    protected function yesNoToBool(mixed $value, bool $defaultWhenEmpty): bool
     {
         if (is_bool($value)) {
             return $value;
@@ -329,7 +489,25 @@ class ConfigService
 
         $normalized = strtoupper(trim((string) $value));
 
-        return in_array($normalized, ['YES', 'SI', 'TRUE', 'ON', '1'], true);
+        if ($normalized === '') {
+            return $defaultWhenEmpty;
+        }
+
+        if (in_array($normalized, ['YES', 'SI', 'TRUE', 'ON', '1', 'ACTIVE', 'ENABLED'], true)) {
+            return true;
+        }
+
+        if (in_array($normalized, ['NO', 'FALSE', 'OFF', '0', 'EXCLUDED', 'EXCLUDE', 'DISABLED'], true)) {
+            return false;
+        }
+
+        return $defaultWhenEmpty;
+    }
+
+    /** @deprecated Use yesNoToBool() */
+    protected function autoApproveToBool(mixed $value): bool
+    {
+        return $this->yesNoToBool($value, false);
     }
 
     /**
@@ -367,9 +545,65 @@ class ConfigService
     /**
      * @return list<string>
      */
-    public function allowedAutoApproveModes(): array
+    public function allowedYesNoModes(): array
     {
         return ['YES', 'NO'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedAutoApproveModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedLucilleModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedGithubModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedGitlabModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedBitbucketModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedNotificationsModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedNotifyChannelModes(): array
+    {
+        return $this->allowedYesNoModes();
     }
 
     public function absolutePath(string $relative): string
@@ -439,6 +673,7 @@ class ConfigService
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte/html',
             $this->absolutePath($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'),
+            $this->absolutePath($config['paths']['usage'] ?? '.larapilot/usage/'),
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
             $this->absolutePath('.larapilot/brand/'),
         ]));
@@ -474,6 +709,7 @@ class ConfigService
             '.larapilot/legacy/README.md' => 'legacy/README.md',
             '.larapilot/research/README.md' => 'research/README.md',
             '.larapilot/internal-feedback/README.md' => 'internal-feedback/README.md',
+            '.larapilot/usage/README.md' => 'usage/README.md',
         ];
 
         foreach ($intakeReadmes as $projectRelative => $packageRelative) {

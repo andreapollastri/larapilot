@@ -15,6 +15,28 @@ return [
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
         'auto_approve' => false,
+        // Lucille (usage ledger + schedule) is ON by default; set false to exclude explicitly.
+        'lucille' => true,
+        // Optional remote forges + chat notifications — all OFF by default.
+        'github' => false,
+        'gitlab' => false,
+        'bitbucket' => false,
+        'notifications' => false,
+        'notify_slack' => false,
+        'notify_discord' => false,
+        'notify_telegram' => false,
+    ],
+
+    // Secrets for optional integrations (never commit these).
+    'integrations' => [
+        'slack_webhook_url' => env('LARAPILOT_SLACK_WEBHOOK_URL'),
+        'discord_webhook_url' => env('LARAPILOT_DISCORD_WEBHOOK_URL'),
+        'telegram_bot_token' => env('LARAPILOT_TELEGRAM_BOT_TOKEN'),
+        'telegram_chat_id' => env('LARAPILOT_TELEGRAM_CHAT_ID'),
+        // Bitbucket Cloud (optional; also accepted as BITBUCKET_* without prefix).
+        'bitbucket_username' => env('LARAPILOT_BITBUCKET_USERNAME', env('BITBUCKET_USERNAME')),
+        'bitbucket_app_password' => env('LARAPILOT_BITBUCKET_APP_PASSWORD', env('BITBUCKET_APP_PASSWORD')),
+        'bitbucket_access_token' => env('LARAPILOT_BITBUCKET_ACCESS_TOKEN', env('BITBUCKET_ACCESS_TOKEN')),
     ],
 
     // External frontend repository (when PRD topology is API + external frontend).
@@ -37,6 +59,9 @@ return [
         'research' => '.larapilot/research/',
         'design_systems' => '.larapilot/design-systems/',
         'internal_feedback' => '.larapilot/internal-feedback/',
+        'usage' => '.larapilot/usage/',
+        'choices' => '.larapilot/choices.yaml',
+        'schedule' => '.larapilot/usage/schedule.yaml',
     ],
 
     'comments' => [
@@ -294,5 +319,8 @@ return [
         'ethical_hacker' => ['name' => 'Oliver', 'icon' => '🎯', 'role' => 'Ethical Hacker'],
         'support_manager' => ['name' => 'Sophia', 'icon' => '🎧', 'role' => 'Support Manager'],
         'translator' => ['name' => 'Emily', 'icon' => '🌍', 'role' => 'Translator'],
+        'database_expert' => ['name' => 'Mike', 'icon' => '🗄️', 'role' => 'Database Expert'],
+        'account' => ['name' => 'Lucille', 'icon' => '📒', 'role' => 'Account'],
+        'cli_expert' => ['name' => 'Sarah', 'icon' => '⌨️', 'role' => 'CLI, Git & Linux Expert'],
     ],
 ];

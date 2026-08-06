@@ -245,6 +245,8 @@
             <nav class="nav" aria-label="Dashboard">
                 <a href="{{ route('larapilot.dashboard.index') }}" @class(['active' => request()->routeIs('larapilot.dashboard.index')])>Board</a>
                 <a href="{{ route('larapilot.dashboard.prd') }}" @class(['active' => request()->routeIs('larapilot.dashboard.prd')])>PRD</a>
+                <a href="{{ route('larapilot.dashboard.settings') }}" @class(['active' => request()->routeIs('larapilot.dashboard.settings')])>Settings</a>
+                <a href="{{ route('larapilot.dashboard.usage') }}" @class(['active' => request()->routeIs('larapilot.dashboard.usage')])>Usage</a>
                 @if (Route::has('larapilot.api.docs'))
                     <a href="{{ route('larapilot.api.docs') }}" @class(['active' => request()->routeIs('larapilot.api.*')])>API</a>
                 @endif

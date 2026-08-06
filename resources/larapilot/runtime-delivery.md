@@ -49,7 +49,57 @@ When the product serves **multiple customers, workspaces, or isolated environmen
 
 Ownership: **John** selects and documents the pattern; **Andrew** validates Laravel-native tenancy packages; **Lars** reviews isolation and IDOR; **Violet** reviews data residency per tenant; **Jack** automates N-deploy or connection routing.
 
-## Git Workflow — Gitflow _(Jack owns — gated by `settings.git_mode`)_
+## Data Architecture _(Mike owns)_
+
+**Mike** is the authority on **schema shape, database engine choice, relationships, migrations, and search/indexing**. John designs application architecture; Mike decides how data is stored and queried when the choice is material. They collaborate with **Jack** (ops/backups), **Aurora** (cost), **Lars** (injection, tenancy isolation, PII at rest), **Alex** (Eloquent usage), **Andrew** (Laravel idioms), **Sabrine** (legacy schema port), **Tom** (data ACs), and **Mark** (scope vs delivery target).
+
+### Decision lens
+
+Evaluate every non-trivial persistence choice against: **performance**, **usability** (query/API ergonomics), **maintainability**, **scalability**, **dev experience**, **cost**, and **security** — scaled to **Delivery Target** (MVP may accept a simpler model with a documented upgrade path; Enterprise must justify isolation, indexes, and operational load).
+
+### Tree / hierarchy patterns _(choose explicitly — never invent ad-hoc)_
+
+| Pattern | Pros | Cons | Prefer when |
+| ------- | ---- | ---- | ----------- |
+| **Adjacency List** (`parent_id`) | Simple writes, intuitive | Expensive deep reads without recursion/CTE | Shallow trees, frequent moves |
+| **Nested Sets** | Fast subtree reads | Expensive writes/rebuilds | Read-heavy catalogs, rare moves |
+| **Path Enumeration** / materialized path | Fast ancestors/descendants with `LIKE`/`ltree` | Path renames on move | Medium depth, PostgreSQL `ltree` available |
+| **Closure Table** | Flexible queries both ways | Extra table + write amplification | Complex graph-like hierarchies |
+| **Other** (graph DB, JSON document) | Domain-fit | Ops/skill cost | Only when relational fit is poor |
+
+### Engine & search
+
+1. **SQL first** for relational Laravel apps (MySQL/MariaDB/PostgreSQL per Jack/infra). Document engine-specific features (`jsonb`, `ltree`, full-text).
+2. **NoSQL / document / key-value** only with a clear access pattern (session/cache ≠ primary domain store unless justified).
+3. **Search engines** (Elasticsearch, OpenSearch, Meilisearch, Typesense, Scout drivers) when full-text/facet needs exceed SQL FTS — size cost with Aurora; never duplicate source of truth without sync strategy.
+4. **Migrations** — Mike owns migration design with Alex: one concern per migration, indexes with schema change, reversible when safe, data backfills as explicit tasks. No silent schema drift.
+5. Record choices in PRD `## Technical Architecture` (e.g. `**Data store:** PostgreSQL`, `**Hierarchy:** Closure Table`, `**Search:** Meilisearch via Scout`).
+
+Ownership: **Mike** decides; **John** integrates with app boundaries; **Alex** implements; **Anne** tests migration + query correctness; **Sabrine** ports legacy schemas; **Lars** reviews sensitive data paths.
+
+## CLI, Git Pipelines & Linux _(Sarah owns — steps in wherever these surfaces appear)_
+
+**Sarah** is the squad expert for **custom CLIs**, **Git in general**, **Git/forge automation**, **CI pipeline scripts**, and **Linux / terminal / server shell** work. She **must participate** whenever a plan or implement task touches any of those — not only when a dedicated "CLI tooling" FR exists. On merge/rebase conflicts, dirty history, or tricky Git recovery, **Sarah leads** the resolution (Alex owns the code content; Sarah owns the Git mechanics).
+
+| Surface | Sarah does | Partners with |
+| --- | --- | --- |
+| **Custom CLIs** | Decide Bash vs Go vs Artisan; write/maintain the tool | **Andrew** (Artisan vs external), **Albert** (usage docs) |
+| **Git (general)** | Conflict resolution, rebase vs merge, interactive rebase, cherry-pick, bisect, reflog recovery, history hygiene, submodule/worktree pitfalls | **Alex** (file content during conflicts), **Jack** (branch policy), **Robert** (rejects messy multi-task commits) |
+| **Git / forge automation** | Hooks, `gh`/`glab`/API scripts, branch helpers, release tagging scripts | **Jack** (Gitflow policy), **Alex** (per-task discipline) |
+| **CI pipelines** | Workflow YAML, job scripts, matrix runners, cache, artifacts | **Jack** (required gates / merge blockers), **Anne** (test commands), **Lars** (audit/security steps) |
+| **Linux / terminal / server** | Shell scripts, systemd units, cron, deploy hooks, SSH/rsync glue, VPS bootstrap | **Jack** (deploy platform & orchestration), **Lars** (secrets / hardening) |
+
+Stack defaults: **Shell/Bash** for thin wrappers and host automation; **Go** when the binary must be portable, fast, single-file, or used outside PHP runtime. Prefer Laravel Artisan for in-app commands; escalate to a standalone CLI when the tool must run without bootstrapping the full app, ship to many machines, or serve non-PHP consumers.
+
+Rules:
+
+1. Propose a CLI only when there is a recurring workflow (scaffold, doctor, migrate-helper, release, env bootstrap) — not for one-off chat instructions.
+2. Choose **Bash** for short, readable glue that calls `composer`/`php`/`git`/`docker`. Choose **Go** for cross-platform binaries, concurrent I/O, or tools distributed via GitHub Releases.
+3. On CI/pipeline or server-script tasks: Sarah drafts the scripts; Jack confirms gates, environments, and deploy orchestration; Lars reviews secret handling (no secrets in argv/logs/committed files).
+4. Coordinate with **Lucille** (time spent on tooling is logged under `feature` or `support`).
+5. Record in PRD/plan: tool/pipeline/script name, language, install path, and who runs it (dev / CI / ops).
+
+## Git Workflow — Gitflow _(Jack owns policy — gated by `settings.git_mode`; Sarah owns Git mechanics & automation)_
 
 Honor **`data.settings.git_mode`** from `config-show` (see **Project Settings** in the core). When `NO_GITFLOW`, skip this section's branch/PR ceremony entirely.
 
@@ -63,9 +113,9 @@ When `GITFLOW` or `GITFLOW_PUSH`, propose a **clean Gitflow** (or GitHub Flow fo
 | `release/x.y.z`             | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop`   |
 | `hotfix/x.y.z`              | Urgent production fix; branch from `main`; merge → `main` + `develop`                      |
 
-Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required before merge; delete feature branches after merge; spec codes map to `feature/US-XXX-*` branch names when possible. Jack scaffolds branch protection and required PR checks in CI when Gitflow is active.
+Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required before merge; delete feature branches after merge; spec codes map to `feature/US-XXX-*` branch names when possible. Jack scaffolds branch protection and required PR checks in CI when Gitflow is active; **Sarah** handles Git mechanics (conflicts, rebase onto `develop`, history hygiene) and any supporting Git/forge automation (hooks, `gh`/`glab` helpers, release scripts).
 
-### Git discipline — per task _(Alex implements; Robert + Jack enforce)_
+### Git discipline — per task _(Alex implements; Robert + Jack enforce; Sarah on Git mechanics & automation)_
 
 | `git_mode`         | Discipline                                                                                                                                                          |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -81,7 +131,9 @@ Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required 
 | **Commit message**     | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched         |
 | **Internal PR**        | Prepare PR toward `develop` (title `US-XXX` + `TASK-NN`). **Push + open/update remote PR only when `git_mode` is `GITFLOW_PUSH`** (or the user explicitly requests push)                     |
 | **PR lifecycle**       | Keep one PR per spec; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                                                   |
-| **Hygiene**            | Rebase or merge `develop` when drifted; run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes                                                    |
+| **Hygiene**            | Rebase or merge `develop` when drifted (**Sarah** leads conflict resolution); run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes              |
+
+**Optional remote forges (`settings.github` / `gitlab` / `bitbucket`, default OFF):** orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: use `gh` (GitHub), `glab` (GitLab MR), or Bitbucket Cloud API; always print the PR/MR URL; run `larapilot:{github,gitlab,bitbucket}-status` if unsure; notify `pr_opened` / `pr_updated` when notifications are enabled. When OFF, leave remote PR handling as today. Setup: `.larapilot/integrations.md`.
 
 Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward `develop`. Under **`GITFLOW`**, a missing remote push/PR is **not** a reject reason.
 
@@ -169,9 +221,11 @@ Under **`BEST`**, Anne plans explicit **responsive test tasks** interleaved with
 
 Ship gate: both files present and reachable on public apps (`https://domain/.well-known/security.txt`). Lars plans them when missing.
 
-## CI/CD Pipeline _(Jack imposes minimum gates)_
+## CI/CD Pipeline _(Jack imposes minimum gates; Sarah authors pipeline scripts)_
 
-Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match the host). **Minimum stages:**
+Every project gets a pipeline scaffold (GitHub Actions, GitLab CI, Bitbucket Pipelines — match the host). **Jack** defines required stages and merge blockers; **Sarah** authors and maintains the YAML/jobs/shell steps and any helper scripts the pipeline calls.
+
+**Minimum stages:**
 
 ```yaml
 # Conceptual minimum — adapt to host
@@ -181,12 +235,12 @@ Every project gets a pipeline scaffold (GitHub Actions or GitLab CI — match th
 - audit: composer audit
 - security: php artisan checkpoint:scan # when checkpoint installed
 - build: npm ci && npm run build # when Vite frontend exists
-- deploy: only from main/tags; Lars GO + Jack orchestration
+- deploy: only from main/tags; Lars GO + Jack orchestration (Sarah writes deploy hook scripts when needed)
 ```
 
-Rules: pipeline runs on every PR to `develop`/`main`; failing **Pint**, **Larastan (level 5+)**, tests, or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver).
+Rules: pipeline runs on every PR to `develop`/`main`; failing **Pint**, **Larastan (level 5+)**, tests, or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver). Involve **Sarah** on every plan/implement task that adds or changes workflow files, job scripts, or server-side shell.
 
-## Code quality gate _(Andrew + Jack — mandatory)_
+## Code quality gate _(Andrew + Jack — mandatory; Sarah when CI scripts change)_
 
 Every Larapilot project stays compatible with [Larastan](https://github.com/larastan/larastan) **level 5 or higher** and [Laravel Pint](https://laravel.com/docs/pint) formatting.
 

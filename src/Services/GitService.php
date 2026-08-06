@@ -239,33 +239,102 @@ class GitService
         ];
     }
 
-    public function commitUrl(string $sha): ?string
+    public function originUrl(): ?string
     {
-        $remote = $this->git('remote', 'get-url', 'origin');
-
-        if ($remote === null || $remote === '') {
+        if (! $this->isRepository()) {
             return null;
         }
 
-        if (preg_match('#^https?://([^/]+)/([^/]+)/([^/.]+)(?:\.git)?#i', $remote, $matches) === 1) {
-            return $this->hostCommitUrl(strtolower($matches[1]), $matches[1], $matches[2], $matches[3], $sha);
+        $remote = $this->git('remote', 'get-url', 'origin');
+
+        return $remote !== null && $remote !== '' ? $remote : null;
+    }
+
+    /**
+     * @return 'github'|'gitlab'|'bitbucket'|null
+     */
+    public function originProvider(): ?string
+    {
+        $remote = $this->originUrl();
+
+        if ($remote === null) {
+            return null;
         }
 
-        if (preg_match('#^git@([^:]+):([^/]+)/([^/.]+)(?:\.git)?$#', $remote, $matches) === 1) {
-            return $this->hostCommitUrl(strtolower($matches[1]), $matches[1], $matches[2], $matches[3], $sha);
+        if (preg_match('#(?:^|@|://)(?:[^/]*\.)?github\.com[:/]#i', $remote) === 1) {
+            return 'github';
+        }
+
+        if (preg_match('#(?:^|@|://)(?:[^/]*\.)?bitbucket\.org[:/]#i', $remote) === 1) {
+            return 'bitbucket';
+        }
+
+        if (preg_match('#(?:^|@|://)(?:[^/]*\.)?gitlab\.com[:/]#i', $remote) === 1
+            || preg_match('#://[^/]*gitlab[^/]*[:/]#i', $remote) === 1
+            || preg_match('#@[^:]*gitlab[^:]*:#i', $remote) === 1) {
+            return 'gitlab';
         }
 
         return null;
     }
 
-    protected function hostCommitUrl(string $host, string $displayHost, string $owner, string $repo, string $sha): ?string
+    public function originRepoSlug(): ?string
     {
-        if (str_contains($host, 'github.com')) {
-            return "https://{$displayHost}/{$owner}/{$repo}/commit/{$sha}";
+        $remote = $this->originUrl();
+
+        if ($remote === null || $remote === '') {
+            return null;
         }
 
-        if (str_contains($host, 'gitlab.com')) {
-            return "https://{$displayHost}/{$owner}/{$repo}/-/commit/{$sha}";
+        if (preg_match('#(?:github\.com|gitlab\.com|bitbucket\.org)[:/]([^/]+)/([^/.]+)(?:\.git)?#i', $remote, $matches) === 1) {
+            return $matches[1].'/'.$matches[2];
+        }
+
+        // Self-hosted GitLab-style paths: host:group/subgroup/repo.git → last two segments.
+        if (preg_match('#[:/]([^/]+)/([^/.]+)(?:\.git)?$#', $remote, $matches) === 1) {
+            return $matches[1].'/'.$matches[2];
+        }
+
+        return null;
+    }
+
+    public function commitUrl(string $sha): ?string
+    {
+        $remote = $this->originUrl();
+
+        if ($remote === null || $remote === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://([^/]+)/(.+?)(?:\.git)?$#i', $remote, $matches) === 1) {
+            $host = strtolower($matches[1]);
+            $path = trim($matches[2], '/');
+
+            return $this->hostCommitUrl($host, $matches[1], $path, $sha);
+        }
+
+        if (preg_match('#^git@([^:]+):(.+?)(?:\.git)?$#', $remote, $matches) === 1) {
+            $host = strtolower($matches[1]);
+            $path = trim($matches[2], '/');
+
+            return $this->hostCommitUrl($host, $matches[1], $path, $sha);
+        }
+
+        return null;
+    }
+
+    protected function hostCommitUrl(string $host, string $displayHost, string $path, string $sha): ?string
+    {
+        if (str_contains($host, 'github.com')) {
+            return "https://{$displayHost}/{$path}/commit/{$sha}";
+        }
+
+        if (str_contains($host, 'gitlab')) {
+            return "https://{$displayHost}/{$path}/-/commit/{$sha}";
+        }
+
+        if (str_contains($host, 'bitbucket.org')) {
+            return "https://{$displayHost}/{$path}/commits/{$sha}";
         }
 
         return null;

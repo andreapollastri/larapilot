@@ -6,6 +6,14 @@ settings:
   git_mode: GITFLOW
   testing: NORMAL
   auto_approve: false
+  lucille: true
+  github: false
+  gitlab: false
+  bitbucket: false
+  notifications: false
+  notify_slack: false
+  notify_discord: false
+  notify_telegram: false
 
 # External frontend repo — set via larapilot:frontend-set when topology is API + external frontend.
 frontend:

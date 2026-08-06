@@ -6,19 +6,21 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Runtime loading:** at skill activation read `.larapilot/shared-runtime.md` (core rules: settings, personas, language, output economy, sub-agents); each skill names the additional runtime packs it needs (`.larapilot/runtime-discovery.md`, `runtime-delivery.md`, `runtime-ux.md`, `runtime-ship.md`, `runtime-ops.md`). Task body templates: `.larapilot/task-templates.md`.
 
-**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents; `auto_approve` is stored as boolean `true`/`false`.
+**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents and **disables Lucille automatically** (re-enable with `larapilot:settings-set --lucille=YES`); boolean settings are `true`/`false` in YAML and `YES`/`NO` in envelopes; **Lucille is ON by default** otherwise; **GitHub/GitLab/Bitbucket + notifications are OFF by default** (setup in `.larapilot/integrations.md`).
 
 ### When to use Larapilot
 
 Use Larapilot skills when the user wants to:
 
-- Define a product vision or write a PRD (guided discovery interview — Project Kind, delivery target, MoSCoW; drop client docs in `.larapilot/client-materials/` and legacy snapshots in `.larapilot/legacy/` first)
+- Define a product vision or write a PRD (guided discovery interview — Project Kind Personal/Website/Application/Package, delivery target, MoSCoW; drop client docs in `.larapilot/client-materials/` and legacy snapshots in `.larapilot/legacy/` first)
+- Build or evolve a **PHP/Laravel Composer package** (new or existing path/git) with professional standards, distribution, and docs
 - Create or extend a backlog of user stories / specs
 - Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
 - Report or triage a **bug** (`larapilot-bug`)
 - Link an **external frontend repo** from Laravel (`larapilot-frontend-companion`)
 - Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
 - Mirror the backlog into a **project tracker** — Linear, Asana, Jira, Trello, ClickUp, Monday (`larapilot-tracker`)
+- Interrogate **time/token tracking** and deadlines with Lucille (`larapilot-usage`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -39,7 +41,8 @@ Use Larapilot skills when the user wants to:
 | Implementation | `larapilot-implement` | Code, tests, review notes |
 | Acceptance | `larapilot-review` | DONE or rework feedback |
 | Ship (optional) | `larapilot-ship` | Security assessment + deploy + web launch checks |
-| Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` in `.larapilot/config.yaml` |
+| Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` / `lucille` in `.larapilot/config.yaml` |
+| Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown resoconto |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
 | Project tracker (optional) | `larapilot-tracker` | Stories + plan subtasks in Linear/Asana/Jira/Trello/ClickUp/Monday; links in `.larapilot/tracker.yaml` |
 
@@ -65,7 +68,7 @@ Register the Larapilot MCP server in your editor (in addition to `laravel-boost`
 Skills call Artisan commands — never invent persistence logic:
 
 - `php artisan larapilot:config-show`
-- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=…`
+- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=…`
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]`
@@ -88,6 +91,10 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:spec-request-changes US-001 --file=...`
 - `php artisan larapilot:spec-approve US-001`
 - `php artisan larapilot:metrics`
+- `php artisan larapilot:usage-log --category=… --tokens=… --minutes=…` _(Lucille ledger)_
+- `php artisan larapilot:usage-report [--insights] [--category=] [--user=] [--skill=] [--spec=] [--from=] [--to=]` _(Lucille query + Markdown resoconto)_
+- `php artisan larapilot:schedule-set --deadline=YYYY-MM-DD` _(deadlines / drift notes)_
+- `php artisan larapilot:choices-set --from-prd` _(dashboard inception snapshot)_
 
 Parse stdout/stderr as JSON envelopes with schema `larapilot/v1`.
 
@@ -100,8 +107,8 @@ Parse stdout/stderr as JSON envelopes with schema `larapilot/v1`.
 
 ### Artifacts live in the repo
 
-PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · tracker links `.larapilot/tracker.yaml` (commit it; ids only, never credentials). Dashboard: `/larapilot` (read-only board — dev/staging only).
+PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · usage ledger `.larapilot/usage/` (Lucille) · choices `.larapilot/choices.yaml` · tracker links `.larapilot/tracker.yaml` (commit it; ids only, never credentials). Dashboard: `/larapilot` (Board · PRD · Settings · Usage — dev/staging only).
 
 ### Personas
 
-Larapilot personas are lenses, not costumes — 27 named agents (💎 Mark PM, 📐 John Architect, 🔧 Alex Developer, 🧪 Anne Tests, 🛡️ Robert Review, 🔐 Lars Security, 🚀 Jack DevOps, 🎨 Elise UX, …). The canonical roster with roles lives in `.larapilot/shared-runtime.md` → **Agent Persona**. Chat output renders speakers as `icon + name`; brevity per **Output Economy** (artifacts, code, and CLI output stay complete and verbatim) — Zoey also posts one **Context estimate** line at skill start and end (see shared-runtime → **Output Economy → Context estimate**); optional readonly sub-agents per **Sub-agents** (never under `effort: ECO`).
+Larapilot personas are lenses, not costumes — 30 named agents (💎 Mark PM, 📐 John Architect, 🗄️ Mike Database, 📒 Lucille Account, ⌨️ Sarah CLI/Git/Linux, 🔧 Alex Developer, 🧪 Anne Tests, 🛡️ Robert Review, 🔐 Lars Security, 🚀 Jack DevOps, 🎨 Elise UX, …). **Sarah** steps in wherever CLIs, **Git in general** (conflicts, rebase/merge, history hygiene), forge automation, CI pipeline scripts, or Linux/terminal/server shell are needed (Jack keeps Gitflow policy + deploy orchestration). The canonical roster with roles lives in `.larapilot/shared-runtime.md` → **Agent Persona**. Chat output renders speakers as `icon + name`; brevity per **Output Economy** (artifacts, code, and CLI output stay complete and verbatim) — Zoey also posts one **Context estimate** line at skill start and end (see shared-runtime → **Output Economy → Context estimate**); Lucille logs tokens/time every session; optional readonly sub-agents per **Sub-agents** (never under `effort: ECO`).

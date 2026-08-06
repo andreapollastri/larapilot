@@ -28,6 +28,15 @@ class DashboardRouteRegistrar
                 Route::get('/prd', [DashboardController::class, 'prd'])
                     ->name('larapilot.dashboard.prd');
 
+                Route::get('/settings', [DashboardController::class, 'settings'])
+                    ->name('larapilot.dashboard.settings');
+
+                Route::get('/usage', [DashboardController::class, 'usage'])
+                    ->name('larapilot.dashboard.usage');
+
+                Route::get('/usage/report.md', [DashboardController::class, 'usageReport'])
+                    ->name('larapilot.dashboard.usage.report');
+
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec');

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. Install, run /larapilot-* skills, build, review, and ship code according to spec requirements with AI." />
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, /larapilot-* skills, Package project kind, Lucille usage ledger, optional GitHub/GitLab/Bitbucket and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -409,8 +409,49 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 0.55rem;
+      margin: 0.85rem 0 0.4rem;
     }
+
+    .docs-nav-label:first-child { margin-top: 0; margin-bottom: 0.55rem; }
+
+    .chip {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--signal-deep);
+      background: rgba(224, 58, 45, 0.1);
+      padding: 0.12rem 0.4rem;
+      vertical-align: 0.12em;
+      margin-left: 0.25rem;
+    }
+
+    .whats-new {
+      margin: 0 0 1.75rem;
+      padding: 1.1rem 1.15rem 1.15rem;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--signal);
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .whats-new h3 {
+      font-family: var(--display);
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.45rem;
+    }
+
+    .whats-new ul {
+      margin: 0.55rem 0 0 1.1rem;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+
+    .whats-new li + li { margin-top: 0.3rem; }
+
+    .whats-new a { color: var(--signal-deep); text-decoration: underline; text-underline-offset: 2px; }
 
     .docs-nav a {
       text-decoration: none;
@@ -1212,6 +1253,7 @@
     <div class="nav-links" id="nav-links">
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
+      <a href="#whats-new">What's new</a>
       <a href="#examples">Examples</a>
       <a href="#deep-dive">Deep Dive</a>
       <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
@@ -1224,12 +1266,13 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.3.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.4.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
         <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a>.
-        Install, enable MCP, run <code>/larapilot-*</code> skills in your editor.
+        Thirty personas, fifteen skills, apps and packages — install, enable MCP, run
+        <code>/larapilot-*</code> in your editor.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#quickstart">Install Larapilot</a>
@@ -1245,16 +1288,22 @@
 
   <div class="docs" id="docs">
     <aside class="docs-nav" aria-label="Documentation">
-      <div class="docs-nav-label">Documentation</div>
+      <div class="docs-nav-label">Start</div>
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
-      <a href="#examples">Examples</a>
+      <a href="#whats-new">What's new</a>
+
+      <div class="docs-nav-label">Examples</div>
+      <a href="#examples">All use cases</a>
       <a class="sub" href="#example-new-product">New product</a>
+      <a class="sub" href="#example-package">Laravel package</a>
       <a class="sub" href="#example-legacy-porting">Legacy porting</a>
       <a class="sub" href="#example-new-feature">New feature</a>
       <a class="sub" href="#example-bug-fix">Bug resolution</a>
       <a class="sub" href="#example-frontend-companion">Frontend companion</a>
       <a class="sub" href="#example-tracker-sync">Tracker sync</a>
+
+      <div class="docs-nav-label">Core</div>
       <a href="#deep-dive">Deep Dive</a>
       <a class="sub" href="#deep-dive-how-it-works">How it works</a>
       <a class="sub" href="#deep-dive-update">Upgrade</a>
@@ -1263,11 +1312,17 @@
       <a class="sub" href="#deep-dive-personas">Personas</a>
       <a class="sub" href="#deep-dive-workflow">Workflow</a>
       <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
-      <a class="sub" href="#deep-dive-design-systems">Design systems</a>
-      <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
-      <a class="sub" href="#deep-dive-code-quality">Code quality</a>
+      <a class="sub" href="#deep-dive-usage">Usage &amp; Lucille</a>
+
+      <div class="docs-nav-label">Integrations</div>
+      <a class="sub" href="#deep-dive-integrations">Forges &amp; notify</a>
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
+      <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
+
+      <div class="docs-nav-label">Surfaces</div>
+      <a class="sub" href="#deep-dive-design-systems">Design systems</a>
+      <a class="sub" href="#deep-dive-code-quality">Code quality</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
       <a class="sub" href="#deep-dive-api">API</a>
@@ -1385,18 +1440,23 @@
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
             <code>/larapilot-autopilot</code> to batch plan+implement ·
             <code>/larapilot-settings</code> for project modes ·
+            <code>/larapilot-usage</code> for Lucille time/token reports ·
             <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
             <code>/larapilot-tracker</code> to mirror the backlog into a
             <a href="#deep-dive-tracker">project tracker</a>.
           </p>
         </div>
 
-        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog
-            granularity</strong>, <strong>git mode</strong>,
-          <strong>testing</strong>, <strong>auto-approve</strong> — persisted in <code>.larapilot/config.yaml</code>.
+        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
+          <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
+          <strong>lucille</strong>, optional <strong>github / gitlab / bitbucket</strong> and
+          <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
-          <code>BEST</code>. <a href="#deep-dive-settings">Settings reference</a> · <a href="#deep-dive-gitflow">Branch
-            conventions</a>.
+          <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
+          <code>ECO</code>). <a href="#deep-dive-settings">Settings</a> ·
+          <a href="#deep-dive-usage">Usage</a> ·
+          <a href="#deep-dive-integrations">Integrations</a> ·
+          <a href="#deep-dive-gitflow">Branch conventions</a>.
         </p>
 
         <div class="table-card">
@@ -1409,7 +1469,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>New product, pivot, or legacy rewrite</td>
+                <td>New product, site, app, PHP/Laravel package, pivot, or legacy rewrite</td>
                 <td><code>/larapilot-inception</code></td>
               </tr>
               <tr>
@@ -1420,12 +1480,16 @@
                 <td>Defect or regression</td>
                 <td><code>/larapilot-bug "…"</code></td>
               </tr>
+              <tr>
+                <td>Time/token spend, deadlines, Gantt</td>
+                <td><code>/larapilot-usage</code></td>
+              </tr>
             </tbody>
           </table>
         </div>
 
         <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow).
-          Walkthroughs: <a href="#examples">five examples</a>.</p>
+          Walkthroughs: <a href="#examples">seven examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
       </section>
 
       <!-- Examples -->
@@ -1442,32 +1506,38 @@
             <span class="example-card-desc">Greenfield MVP on Laravel 13 — one-line idea to shipped code</span>
             <span class="example-card-cmd">/larapilot-inception</span>
           </a>
-          <a class="example-card" href="#example-legacy-porting">
+          <a class="example-card" href="#example-package">
             <span class="example-card-num">2</span>
+            <span class="example-card-title">Laravel package</span>
+            <span class="example-card-desc">Composer package — API, tests, CI, Packagist-ready release</span>
+            <span class="example-card-cmd">/larapilot-inception</span>
+          </a>
+          <a class="example-card" href="#example-legacy-porting">
+            <span class="example-card-num">3</span>
             <span class="example-card-title">Legacy porting</span>
             <span class="example-card-desc">Rewrite a legacy ERP with zero feature and data loss</span>
             <span class="example-card-cmd">/larapilot-inception</span>
           </a>
           <a class="example-card" href="#example-new-feature">
-            <span class="example-card-num">3</span>
+            <span class="example-card-num">4</span>
             <span class="example-card-title">New feature</span>
             <span class="example-card-desc">Add one capability to an existing shipped product</span>
             <span class="example-card-cmd">/larapilot-feature</span>
           </a>
           <a class="example-card" href="#example-bug-fix">
-            <span class="example-card-num">4</span>
+            <span class="example-card-num">5</span>
             <span class="example-card-title">Bug resolution</span>
             <span class="example-card-desc">Triage a production defect and route to fix or rework</span>
             <span class="example-card-cmd">/larapilot-bug</span>
           </a>
           <a class="example-card" href="#example-frontend-companion">
-            <span class="example-card-num">5</span>
+            <span class="example-card-num">6</span>
             <span class="example-card-title">Frontend companion</span>
             <span class="example-card-desc">Laravel API + React repo — one cockpit, linked FE write target</span>
             <span class="example-card-cmd">/larapilot-frontend-companion</span>
           </a>
           <a class="example-card" href="#example-tracker-sync">
-            <span class="example-card-num">6</span>
+            <span class="example-card-num">7</span>
             <span class="example-card-title">Tracker sync</span>
             <span class="example-card-desc">Client PM lives in Linear — mirror the backlog, read drift back</span>
             <span class="example-card-cmd">/larapilot-tracker</span>
@@ -1494,7 +1564,7 @@
             <div class="wizard">
               <strong>AskQuestion — Round 1 (product kind)</strong>
               <ol>
-                <li><strong>Project Kind:</strong> Application · Website · Personal</li>
+                <li><strong>Project Kind:</strong> Application · Website · Personal · Package</li>
                 <li><strong>Audience:</strong> Small dev teams · Agencies · Solo founders</li>
                 <li><strong>Competitors in mind:</strong> Trello/Asana · Linear · None — greenfield</li>
               </ol>
@@ -1681,6 +1751,79 @@ tests/Feature/RegistrationTest.php</code></pre>
           </dl>
         </article>
 
+        <!-- Laravel package -->
+        <article class="example-block" id="example-package">
+          <h2>Laravel package</h2>
+          <p class="example-tag"><code>/larapilot-inception</code> · Project Kind <strong>Package</strong></p>
+          <p class="example-context">First-class Composer package workflow — provider, public API, Pest matrix, CI,
+            semver, Packagist/Satis. UI mockups stay off unless the package ships Blade/Livewire/Filament.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-inception "Laravel package that adds signed webhook delivery with retries and a publishable config."</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">💎 Mark:</span> Package kind — greenfield or wrapping existing code?</p>
+            <div class="wizard">
+              <strong>AskQuestion — Package origin &amp; delivery</strong>
+              <ol>
+                <li><strong>Project Kind:</strong> Application · Website · Personal · <strong>Package</strong></li>
+                <li><strong>Package Origin:</strong> New · Existing local · Existing git</li>
+                <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Package</strong>, <strong>New</strong>, <strong>MVP</strong>.</p>
+            <p><span class="speaker">👾 Andrew + 📐 John:</span> Namespace, Service Provider, config publish, and public
+              API surface before backlog.</p>
+            <p><span class="speaker">🗄️ Mike:</span> Optional migrations only if the package owns schema; otherwise
+              document host-app tables.</p>
+            <p><span class="speaker">⌨️ Sarah:</span> CI matrix (PHP/Laravel) + release scripts; Artisan doctor/publish
+              commands when useful.</p>
+            <p><span class="speaker">📒 Lucille:</span> Any Packagist / demo deadline? (skippable)</p>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">PRD.md (excerpt)</div>
+            <pre><code>**Project Kind:** Package
+**Package Origin:** New
+**Delivery Target:** MVP
+
+### Package
+**Name:** acme/webhooks
+**Distribution:** Packagist
+**Consumer install:** composer require acme/webhooks
+
+### FR-001: Publishable config + Service Provider
+**MoSCoW:** Must
+
+### FR-002: Signed outbound webhook client with retries
+**MoSCoW:** Must
+
+### FR-003: Pest feature tests + GitHub Actions matrix
+**MoSCoW:** Must</code></pre>
+          </div>
+
+          <p>Then the same loop: <code>/larapilot-spec</code> (package-surface stories first) → plan → implement →
+            review → <code>/larapilot-ship</code> with Packagist/semver checklist. Skip
+            <code>/larapilot-design</code> unless the package ships UI.</p>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Confirm origin, name, distribution, and consumer install mode</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Package layout, tests, CI YAML (Sarah), docs (Albert), optional migrations (Mike)</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-ship</code> — tag, CHANGELOG, publish notes</dd>
+            </div>
+          </dl>
+        </article>
+
         <!-- Legacy porting -->
         <article class="example-block" id="example-legacy-porting">
           <h2>Legacy porting</h2>
@@ -1725,7 +1868,7 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (scope &amp; delivery)</strong>
               <ol>
-                <li><strong>Project Kind:</strong> Application · Website · Personal</li>
+                <li><strong>Project Kind:</strong> Application · Website · Personal · Package</li>
                 <li><strong>Phase 1 modules:</strong> Customers + orders · + Warehouse · + E-invoicing · All five</li>
                 <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product · Enterprise</li>
               </ol>
@@ -2534,13 +2677,29 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
       <section class="doc-section" id="deep-dive">
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
-          <h2>Technical reference</h2>
-          <p>Skills, <a href="#deep-dive-settings">settings</a>, personas, workflow, artifacts, design systems,
-            <a href="#deep-dive-frontend-companion">frontend companion</a>,
-            <a href="#deep-dive-code-quality">code quality</a>,
-            <a href="#deep-dive-backstage">Backstage portal</a>, CLI, dashboard, and API — how every layer
-            fits together.</p>
+          <h2>Reference</h2>
+          <p>Skills, settings, personas, workflow, artifacts, usage, integrations, surfaces, CLI, dashboard, and API —
+            how every layer fits together.</p>
         </div>
+
+        <article class="deep-dive-sub whats-new" id="whats-new">
+          <h3>What's new in v2.4.0</h3>
+          <p>Unreleased work in this cycle — already reflected across skills, runtime, dashboard, and CLI.</p>
+          <ul>
+            <li><strong>30 personas</strong> — <a href="#deep-dive-personas">Mike</a> (data),
+              <a href="#deep-dive-personas">Lucille</a> (usage ledger),
+              <a href="#deep-dive-personas">Sarah</a> (CLI / Git / Linux)</li>
+            <li><strong>Project Kind: Package</strong> — Composer packages beside Personal / Website / Application ·
+              <a href="#example-package">walkthrough</a></li>
+            <li><strong><code>/larapilot-usage</code></strong> — Lucille interrogates tokens, minutes, deadlines, Gantt ·
+              <a href="#deep-dive-usage">Usage</a></li>
+            <li><strong>Optional forges + chat</strong> — GitHub / GitLab / Bitbucket + Slack / Discord / Telegram
+              (all OFF by default) · <a href="#deep-dive-integrations">Integrations</a></li>
+            <li><strong>Dashboard</strong> — Settings + Usage tabs (choices, charts, living Gantt, Markdown download)</li>
+            <li><strong>Lucille ON by default</strong> — ECO auto-disables her; re-enable with
+              <code>--lucille=YES</code> without leaving ECO</li>
+          </ul>
+        </article>
 
         <!-- How it works -->
         <article class="deep-dive-sub" id="deep-dive-how-it-works">
@@ -2659,8 +2818,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Twelve</strong> editor-native skills cover the full product lifecycle (including
-            <code>/larapilot-settings</code> and <code>/larapilot-frontend-companion</code>). Each is a
+          <p class="lead"><strong>Fifteen</strong> editor-native skills cover the full product lifecycle — discovery,
+            delivery, ship, settings, usage (Lucille), Backstage, trackers, and frontend companion. Each is a
             <code>SKILL.md</code> file with a name, description, persona roster, execution steps, and allowed CLI
             calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding
             <strong>guidelines</strong> ship alongside (not a skill).
@@ -2681,14 +2840,17 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 <h3><code>/larapilot-inception</code></h3>
                 <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.</p>
                 <ul>
-                  <li>Mark opens with Project Kind (Personal · Website · Application)</li>
-                  <li>John + Joe ask <strong>Frontend Topology</strong> (Laravel-coupled · SPA-in-Laravel · API +
-                    external frontend) before the admin-panel route</li>
+                  <li>Mark opens with Project Kind (Personal · Website · Application · Package)</li>
+                  <li>Package branch: origin (new / local / git), distribution, consumer install, CI/docs</li>
+                  <li>John + Joe ask <strong>Frontend Topology</strong> when there is a UI; Mike on data stores;
+                    Lucille on deadlines (skippable)</li>
                   <li>AskQuestion rounds (max 3 questions each, skippable)</li>
-                  <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present</li>
+                  <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present; snapshots choices via
+                    <code>choices-set</code></li>
                 </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:prd-write</code> ·
-                  <code>larapilot:validate-prd</code> — persist and validate the PRD.
+                  <code>larapilot:validate-prd</code> · <code>larapilot:choices-set</code> ·
+                  <code>larapilot:schedule-set</code>.
                 </p>
               </div>
             </div>
@@ -2819,12 +2981,25 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <span class="skill-badge">config</span>
               <div class="skill-body">
                 <h3><code>/larapilot-settings</code></h3>
-                <p>AskQuestion for persistent project settings — effort, backlog granularity, git mode, testing,
-                  auto-approve. Written to
+                <p>AskQuestion for persistent project settings — effort, backlog, git mode, testing, auto-approve,
+                  lucille, GitHub / GitLab / Bitbucket, and notification channels. Written to
                   <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
                   <code>larapilot:config-show</code> — read <code>data.settings</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">ops</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-usage</code></h3>
+                <p><strong>Lucille</strong> interrogates the committed time/token ledger and schedule — overview,
+                  filters by category/user/skill/spec/date, deadline drift, and Markdown resoconto export.
+                  Read-only while <code>settings.lucille</code> is <code>NO</code>. Full reference:
+                  <a href="#deep-dive-usage">Usage &amp; Lucille</a>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:usage-report</code> ·
+                  <code>larapilot:usage-log</code> · <code>larapilot:schedule-set</code>.
                 </p>
               </div>
             </div>
@@ -2862,21 +3037,22 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         <!-- Project settings -->
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
-          <p class="lead">Persistent modes for how hard Larapilot works, how finely the backlog is sliced into specs
-            and epics, how Git is handled, how deep tests go, and
-            whether DONE can skip the human gate. Configure with <code>/larapilot-settings</code> (AskQuestion). Values
-            live under <code>settings:</code> in <code>.larapilot/config.yaml</code>. Every skill reads and honors them
-            via <code>config-show</code>.</p>
+          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, auto-approve, Lucille, and
+            optional GitHub / GitLab / Bitbucket + Slack / Discord / Telegram (forges and chat OFF by default).
+            Configure with <code>/larapilot-settings</code> (AskQuestion). Values live under <code>settings:</code> in
+            <code>.larapilot/config.yaml</code>. Every skill reads and honors them via <code>config-show</code>.
+          </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --github=… --gitlab=… --bitbucket=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
-            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for auto-approve; YAML stores a boolean).
+            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
 
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
-            <code>testing: NORMAL</code> · <code>auto_approve: NO</code>.
+            <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
+            <code>github|gitlab|bitbucket: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
 
           <h4 id="deep-dive-effort">Effort</h4>
@@ -2891,8 +3067,10 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <tbody>
                 <tr>
                   <td><code>ECO</code></td>
-                  <td>Token economy — <strong>never spawn sub-agents</strong>; defer docs theater (README/PDF/diagrams)
-                    but <strong>still update OpenAPI</strong> when APIs change; skip deep reviews and E2E planning</td>
+                  <td>Token economy — <strong>never spawn sub-agents</strong>; <strong>disables Lucille
+                      automatically</strong> (re-enable via <code>settings-set --lucille=YES</code> without leaving ECO);
+                    defer docs theater (README/PDF/diagrams) but <strong>still update OpenAPI</strong> when APIs change;
+                    skip deep reviews and E2E planning</td>
                 </tr>
                 <tr>
                   <td><code>STANDARD</code></td>
@@ -2972,6 +3150,31 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <p>Push is never implied by <code>GITFLOW</code> alone. See also <a href="#deep-dive-gitflow">Git
               workflow</a>.</p>
 
+          <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
+          <p><code>settings.github</code>, <code>gitlab</code>, and <code>bitbucket</code> (all default
+            <code>NO</code>) are <strong>orthogonal</strong> to <code>git_mode</code>. Enable the forge matching
+            <code>origin</code>:
+          </p>
+          <ul>
+            <li><strong>GitHub</strong> — <code>gh</code> CLI; probe <code>larapilot:github-status</code></li>
+            <li><strong>GitLab</strong> — <code>glab</code> CLI (MR); probe <code>larapilot:gitlab-status</code></li>
+            <li><strong>Bitbucket Cloud</strong> — REST API with access token or app password; probe
+              <code>larapilot:bitbucket-status</code></li>
+          </ul>
+          <p>When ON, skills open/update the PR/MR, always print the URL, and can notify
+            <code>pr_opened</code> / <code>pr_updated</code>. Full setup:
+            <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
+            <code>.larapilot/integrations.md</code>.
+          </p>
+
+          <h4 id="deep-dive-notifications">Notifications <span class="chip">opt-in</span></h4>
+          <p>Master switch <code>settings.notifications</code> plus <code>notify_slack</code> /
+            <code>notify_discord</code> / <code>notify_telegram</code> (all default <code>NO</code>). Secrets stay in
+            <code>.env</code>. Fan-out via <code>php artisan larapilot:notify</code>. Hard hooks:
+            <code>task-done</code> → <code>task_done</code>, <code>spec-approve</code> → <code>spec_done</code>.
+            Full event list: <a href="#deep-dive-integrations">Forges &amp; notifications</a>.
+          </p>
+
           <h4 id="deep-dive-testing-mode">Testing</h4>
           <div class="table-card">
             <table>
@@ -3028,6 +3231,37 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             </table>
           </div>
 
+          <h4 id="deep-dive-lucille">Lucille</h4>
+          <p><code>settings.lucille</code> controls the silent usage ledger and schedule interviews. Missing key =
+            <strong>ON</strong>. Exclusion is opt-out only.
+          </p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>YES</code></td>
+                  <td><strong>Default</strong> — log tokens/time at skill end, ask deadlines at inception, surface
+                    schedule drift, honor <code>/larapilot-usage</code></td>
+                </tr>
+                <tr>
+                  <td><code>NO</code></td>
+                  <td><strong>Excluded</strong> — no <code>usage-log</code>, no Lucille interview rounds;
+                    <code>/larapilot-usage</code> may still read historical ledger. Set automatically when switching
+                    <code>effort</code> to <code>ECO</code> (unless you pass <code>--lucille=YES</code> in the same
+                    call)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Re-enable anytime with <code>php artisan larapilot:settings-set --lucille=YES</code> without leaving ECO.
+            Details: <a href="#deep-dive-usage">Usage &amp; Lucille</a>.</p>
+
           <div class="code-block">
             <div class="code-block-header">CLI — persist settings</div>
             <pre><code>php artisan larapilot:settings-set \
@@ -3035,52 +3269,67 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
   --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
-  --auto-approve=NO</code></pre>
+  --auto-approve=NO \
+  --lucille=YES \
+  --github=NO \
+  --gitlab=NO \
+  --bitbucket=NO \
+  --notifications=NO \
+  --notify-slack=NO \
+  --notify-discord=NO \
+  --notify-telegram=NO</code></pre>
           </div>
         </article>
 
         <!-- Personas -->
         <article class="deep-dive-sub" id="deep-dive-personas">
           <h3>Personas</h3>
-          <p class="lead"><strong>27 personas</strong> are lenses, not costumes. Each skill activates a subset of the
+          <p class="lead"><strong>30 personas</strong> are lenses, not costumes. Each skill activates a subset of the
             squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind
             of scrutiny to the work at hand. <strong>Zoey</strong> (AI Guru) is active in every skill;
-            <strong>Albert</strong>, <strong>Ricky</strong>, and refined <strong>Joe</strong> roles landed in v1.7.1.
+            <strong>Lucille</strong> is active quietly by default (usage ledger); <strong>Mike</strong>,
+            <strong>Sarah</strong>, and Lucille joined in v2.4.0.
           </p>
 
           <div class="persona-phases">
             <div class="persona-phase">
               <h4>Discovery</h4>
-              <p><strong>Zoey</strong> sharpens user intent and flags session-budget risks. <strong>Mark</strong> drives
+              <p><strong>Zoey</strong> sharpens user intent and flags session-budget risks. <strong>Lucille</strong>
+                asks for delivery deadlines (skippable) and starts the ledger. <strong>Mark</strong> drives
                 scope and MoSCoW. <strong>Jennifer</strong> and <strong>Benjamin</strong> frame market context.
                 <strong>John</strong> and <strong>Aurora</strong> co-own architecture — John designs with
-                <strong>SOLID</strong> and <strong>N+1-aware</strong> query shape; Aurora brings SaaS economics,
-                storage/compute sizing, and proactive cost optimization. <strong>Sabrine</strong> leads legacy parity
-                when <code>legacy/</code> has content. <strong>Elise</strong> and <strong>Joe</strong> co-own the design
-                system. <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces; <strong>Ricky</strong>
-                for mobile apps; <strong>Albert</strong> scopes baseline + optional extended documentation.
+                <strong>SOLID</strong> and <strong>N+1-aware</strong> query shape; Aurora brings SaaS economics.
+                <strong>Mike</strong> owns data architecture (SQL/NoSQL, tree patterns, search, migrations) when
+                persistence is non-trivial. <strong>Sabrine</strong> leads legacy parity when <code>legacy/</code> has
+                content. <strong>Elise</strong> and <strong>Joe</strong> co-own the design system.
+                <strong>Emma</strong>, <strong>Lauren</strong> join for public surfaces; <strong>Ricky</strong>
+                for mobile apps; <strong>Albert</strong> scopes documentation; <strong>Sarah</strong> joins when
+                CLI/Git/CI/Linux surfaces appear.
               </p>
             </div>
             <div class="persona-phase">
               <h4>Planning</h4>
               <p><strong>Zoey</strong> recommends sub-agent vs inline passes. <strong>Tom</strong> sharpens acceptance
-                criteria. <strong>John</strong> designs the technical approach with a <strong>SOLID</strong> structure
-                and <strong>N+1-aware</strong> query plans. <strong>Anne</strong> defines test strategy including
-                manual handoff when needed. <strong>Andrew</strong> enforces Laravel conventions.
+                criteria. <strong>John</strong> designs the technical approach; <strong>Mike</strong> designs schema
+                and query plans. <strong>Anne</strong> defines test strategy.
+                <strong>Andrew</strong> enforces Laravel conventions.
                 <strong>Albert</strong> plans baseline docs on every spec and extended deliverables when approved.
-                <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. Optional sub-agents explore
-                the codebase in readonly mode.
+                <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. <strong>Sarah</strong> plans
+                CLI, Git mechanics (conflicts/rebase), forge automation, CI pipeline scripts, and Linux/server shell
+                tasks when those surfaces appear. Optional sub-agents explore the codebase in readonly mode.
               </p>
             </div>
             <div class="persona-phase">
               <h4>Implementation</h4>
-              <p><strong>Alex</strong> writes <strong>SOLID</strong>, <strong>N+1-free</strong> code and optimizes
-                FE/BE integration. <strong>Anne</strong> ships multi-viewport/device Pest tests and documents manual
-                tests for the human. <strong>Robert</strong> checks plan adherence, Gitflow, and the quality bar —
+              <p><strong>Alex</strong> writes <strong>SOLID</strong>, <strong>N+1-free</strong> code;
+                <strong>Mike</strong> guides migrations and data access. <strong>Anne</strong> ships Pest tests and
+                documents manual tests. <strong>Robert</strong> checks plan adherence, Gitflow, and the quality bar —
                 involves <strong>Sabrine</strong> on refactoring/porting. <strong>Joe</strong> enforces design-system
-                consistency. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Ricky</strong>,
-                <strong>Marika</strong>, <strong>Matt</strong>, and <strong>Albert</strong> join when mobile, copy,
-                integrations, or docs are in scope.
+                consistency. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Sarah</strong> leads Git
+                conflict/rebase resolution and implements pipeline YAML, forge automation, and server shell scripts.
+                <strong>Ricky</strong>, <strong>Marika</strong>, <strong>Matt</strong>, and <strong>Albert</strong> join
+                when mobile, copy, integrations, or docs are in scope. <strong>Lucille</strong> logs the session
+                quietly at the end.
               </p>
             </div>
             <div class="persona-phase">
@@ -3089,14 +3338,17 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 <strong>N+1</strong> checks — with <strong>Sabrine</strong> on refactoring/porting specs.
                 <strong>Joe</strong> checks design-system compliance. <strong>Marika</strong> and
                 <strong>Emily</strong> verify typos and translation consistency. <strong>Anne</strong> attaches
-                automated evidence and manual test recommendations.
+                automated evidence and manual test recommendations. <strong>Mike</strong> reviews schema/migration
+                risk when data tasks shipped.
               </p>
             </div>
             <div class="persona-phase">
               <h4>Ship &amp; support</h4>
-              <p><strong>Jack</strong> owns CI/CD and deploy. <strong>Oliver</strong> red-teams before launch.
+              <p><strong>Jack</strong> owns CI/CD gates and deploy orchestration; <strong>Sarah</strong> owns pipeline
+                scripts and server-side shell those runbooks invoke. <strong>Oliver</strong> red-teams before launch.
                 <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs.
                 <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.
+                <strong>Lucille</strong> reports schedule drift vs deadlines via <code>/larapilot-usage</code>.
               </p>
             </div>
           </div>
@@ -3136,6 +3388,11 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <div class="team-role">Architect</div>
             </div>
             <div class="team-card">
+              <div class="team-avatar">🗄️</div>
+              <div class="team-name">Mike</div>
+              <div class="team-role">Database Expert</div>
+            </div>
+            <div class="team-card">
               <div class="team-avatar">🔧</div>
               <div class="team-name">Alex</div>
               <div class="team-role">Full-Stack Developer</div>
@@ -3159,6 +3416,16 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <div class="team-avatar">🚀</div>
               <div class="team-name">Jack</div>
               <div class="team-role">DevOps Engineer</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">⌨️</div>
+              <div class="team-name">Sarah</div>
+              <div class="team-role">CLI, Git &amp; Linux</div>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">📒</div>
+              <div class="team-name">Lucille</div>
+              <div class="team-role">Account</div>
             </div>
             <div class="team-card">
               <div class="team-avatar">💰</div>
@@ -3266,7 +3533,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
               <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
               <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-settings</code> ·
-              <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on existing products.
+              <code>/larapilot-usage</code> · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on
+              existing products · Package kind skips UI mockups unless the package ships UI.
             </p>
           </div>
 
@@ -3275,7 +3543,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               href="#deep-dive-settings"><code>/larapilot-settings</code></a>). Default is <strong>GITFLOW</strong>
             without automatic push. Choose <strong>GITFLOW_PUSH</strong> for push-after-each-task, or
             <strong>NO_GITFLOW</strong> to skip branch/PR ceremony. <strong>Jack</strong> proposes the workflow at
-            inception; <strong>Robert</strong> enforces the active mode.
+            inception; <strong>Sarah</strong> owns Git mechanics (conflicts, rebase), forge automation, and CI pipeline
+            scripts; <strong>Robert</strong> enforces the active mode.
           </p>
 
           <div class="table-card">
@@ -3387,11 +3656,15 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># connector, paths, settings (effort / backlog / git / testing /
-              auto_approve)</span>
+            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / lucille / forges…)</span>
+            ├── integrations.md <span class="comment"># optional GitHub/GitLab/Bitbucket + Slack/Discord/Telegram</span>
+            ├── choices.yaml <span class="comment"># inception/settings snapshot (choices-set)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
+            ├── usage/ <span class="comment"># Lucille ledger + schedule (committed)</span>
+            │ ├── ledger.jsonl
+            │ └── schedule.yaml
             ├── docs/
             │ ├── PRD.md <span class="comment"># living product contract (includes Frontend Topology)</span>
             │ ├── test-results/ <span class="comment"># per-spec test evidence</span>
@@ -3423,7 +3696,9 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
-                    <code>auto_approve</code> — see <a href="#deep-dive-settings">Settings</a>
+                    <code>auto_approve</code>, <code>lucille</code>, <code>github</code>,
+                    <code>gitlab</code>, <code>bitbucket</code>,
+                    <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
                 </tr>
                 <tr>
@@ -3468,6 +3743,22 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                       href="#deep-dive-design-systems">design systems</a></td>
                 </tr>
                 <tr>
+                  <td><code>usage/</code></td>
+                  <td>skills (Lucille) · <code>/larapilot-usage</code></td>
+                  <td><code>ledger.jsonl</code> + <code>schedule.yaml</code> — tokens, minutes, deadlines; see
+                    <a href="#deep-dive-usage">Usage</a></td>
+                </tr>
+                <tr>
+                  <td><code>choices.yaml</code></td>
+                  <td>inception · <code>larapilot:choices-set</code></td>
+                  <td>Snapshot of Project Kind, topology, data-store/CLI choices, and current settings</td>
+                </tr>
+                <tr>
+                  <td><code>integrations.md</code></td>
+                  <td><code>larapilot:install</code> · <code>larapilot:update</code></td>
+                  <td>Setup guide for optional forges + chat notifications</td>
+                </tr>
+                <tr>
                   <td>Laravel app code</td>
                   <td><code>/larapilot-implement</code></td>
                   <td>Models, controllers, views, migrations, Pest tests — outside <code>.larapilot/</code></td>
@@ -3480,6 +3771,102 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             confirm writes and status changes. Inspect artifacts visually via the <a
               href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.
           </p>
+        </article>
+
+        <!-- Usage & Lucille -->
+        <article class="deep-dive-sub" id="deep-dive-usage">
+          <h3>Usage &amp; Lucille</h3>
+          <p class="lead"><strong>Lucille</strong> keeps a committed ledger of AI tokens and wall-clock time, plus
+            delivery deadlines. Every skill may append an entry at session end; <code>/larapilot-usage</code>
+            interrogates the data. Dashboard <strong>Usage</strong> mirrors charts, Gantt, and a Markdown download.
+          </p>
+
+          <h4>Categories</h4>
+          <p><code>analysis</code> · <code>planning</code> · <code>implementation</code> · <code>support</code> ·
+            <code>feature</code> · <code>review</code> · <code>ship</code> · <code>other</code>.
+          </p>
+
+          <h4>Commands</h4>
+          <div class="code-block">
+            <div class="code-block-header">Log · report · schedule</div>
+            <pre><code>php artisan larapilot:usage-log --category=implementation --tokens=12000 --minutes=45 --skill=implement --spec=US-001
+php artisan larapilot:usage-report --format=json --insights
+php artisan larapilot:usage-report --format=md --output=.larapilot/usage/report.md --insights --from=2026-08-01 --to=2026-08-31
+php artisan larapilot:schedule-set --deadline=2026-09-15 --label="MVP go-live" --status=on_track</code></pre>
+          </div>
+          <p>Report filters: <code>--category=</code> · <code>--user=</code> · <code>--skill=</code> ·
+            <code>--spec=</code> · <code>--from=</code> · <code>--to=</code> · <code>--limit=</code> ·
+            <code>--insights</code>. Formats: <code>json</code> · <code>md</code> · <code>human</code>.
+          </p>
+
+          <h4>When Lucille is OFF</h4>
+          <p><code>usage-log</code> refuses writes. <code>/larapilot-usage</code> states she is excluded and may still
+            run a read-only report on historical data. Re-enable:
+            <code>php artisan larapilot:settings-set --lucille=YES</code>.
+            ECO switches set <code>lucille: NO</code> automatically unless you pass <code>--lucille=YES</code> together
+            with <code>--effort=ECO</code>.
+          </p>
+
+          <p>Dashboard: <code>/larapilot/usage</code> · download <code>/larapilot/usage/report.md</code> (dev/staging
+            only). MCP <code>RunArtisanTool</code> allows <code>larapilot:usage-report</code>.</p>
+        </article>
+
+        <!-- Integrations -->
+        <article class="deep-dive-sub" id="deep-dive-integrations">
+          <h3>Forges &amp; notifications</h3>
+          <p class="lead">Optional remote forges and chat fan-out — all <strong>OFF by default</strong>, orthogonal to
+            <code>git_mode</code>. Full install steps live in <code>.larapilot/integrations.md</code> (published on
+            install/update). Toggle via <code>/larapilot-settings</code> or <code>larapilot:settings-set</code>.
+          </p>
+
+          <h4>Remote forges</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Tooling</th>
+                  <th>Probe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>github</code></td>
+                  <td><code>gh</code> CLI</td>
+                  <td><code>larapilot:github-status</code></td>
+                </tr>
+                <tr>
+                  <td><code>gitlab</code></td>
+                  <td><code>glab</code> CLI (MR)</td>
+                  <td><code>larapilot:gitlab-status</code></td>
+                </tr>
+                <tr>
+                  <td><code>bitbucket</code></td>
+                  <td>Bitbucket Cloud REST (access token or app password)</td>
+                  <td><code>larapilot:bitbucket-status</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>When ON, skills open/update the PR/MR (still respecting <code>git_mode</code>), always print the URL, and
+            may emit <code>pr_opened</code> / <code>pr_updated</code> notifications. Secrets stay in <code>.env</code>
+            — never in <code>config.yaml</code>.</p>
+
+          <h4>Chat notifications</h4>
+          <p>Master switch <code>settings.notifications</code> plus <code>notify_slack</code> /
+            <code>notify_discord</code> / <code>notify_telegram</code>. Fan-out:
+            <code>php artisan larapilot:notify</code>.
+          </p>
+          <ul>
+            <li>Hard hooks: <code>task-done</code> → <code>task_done</code>, <code>spec-approve</code> →
+              <code>spec_done</code></li>
+            <li>Skill events: PR/MR opened/updated, review, ship, schedule drift</li>
+            <li>Env: <code>LARAPILOT_SLACK_WEBHOOK_URL</code>, <code>LARAPILOT_DISCORD_WEBHOOK_URL</code>,
+              <code>LARAPILOT_TELEGRAM_BOT_TOKEN</code>, <code>LARAPILOT_TELEGRAM_CHAT_ID</code>; Bitbucket
+              <code>BITBUCKET_ACCESS_TOKEN</code> or username + app password</li>
+          </ul>
+          <p>Settings tables: <a href="#deep-dive-github">Remote forges</a> ·
+            <a href="#deep-dive-notifications">Notifications</a>.</p>
         </article>
 
         <!-- Design systems -->
@@ -4279,10 +4666,12 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   <td>Setup</td>
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
                     <code>larapilot:config-show</code> · <code>larapilot:settings-set</code> ·
+                    <code>larapilot:github-status</code> · <code>larapilot:gitlab-status</code> ·
+                    <code>larapilot:bitbucket-status</code> · <code>larapilot:notify</code> ·
                     <code>larapilot:quality</code> (<code>--fix</code>)
                   </td>
                   <td>Install, upgrades, health check, <a href="#deep-dive-code-quality">code quality</a>, <a
-                      href="#deep-dive-settings">project settings</a></td>
+                      href="#deep-dive-settings">project settings</a>, optional forges/notifications</td>
                 </tr>
                 <tr>
                   <td>Runtime</td>
@@ -4331,6 +4720,14 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   <td>Dashboard, progress reporting</td>
                 </tr>
                 <tr>
+                  <td>Usage (Lucille)</td>
+                  <td><code>larapilot:usage-log</code> · <code>larapilot:usage-report</code>
+                    (<code>--insights</code> · <code>larapilot:schedule-set</code> ·
+                    <code>larapilot:choices-set</code></td>
+                  <td><code>/larapilot-usage</code>, inception deadlines — see
+                    <a href="#deep-dive-usage">Usage</a></td>
+                </tr>
+                <tr>
                   <td>Developer portal</td>
                   <td><code>larapilot:backstage-export</code> (<code>--write</code>, <code>--force</code>,
                     <code>--no-techdocs</code>, <code>--file=</code>, <code>--api-base=</code>)
@@ -4353,8 +4750,9 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
 
           <p>MCP exposes backlog, spec, and <strong>diagnostics</strong> tools — <code>larapilot</code> server
             alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during
-            conversation (including <code>larapilot:diagnostics</code>, <code>larapilot:quality</code>, and
-            <code>larapilot:backstage-export</code> via <code>RunArtisanTool</code>).
+            conversation (including <code>larapilot:diagnostics</code>, <code>larapilot:quality</code>,
+            <code>larapilot:usage-report</code>, and <code>larapilot:backstage-export</code> via
+            <code>RunArtisanTool</code>).
           </p>
         </article>
 
@@ -4362,9 +4760,9 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
         <article class="deep-dive-sub" id="deep-dive-dashboard">
           <h3>Dashboard</h3>
           <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
-            the PRD, and drill into spec detail between skill sessions. You can also post <strong>internal
-              feedback</strong> comments from the spec page (dev/staging only) — workflow state still changes only via
-            skills/CLI.</p>
+            the PRD, inspect settings/choices, and Lucille usage — then drill into spec detail between skill sessions.
+            You can also post <strong>internal feedback</strong> comments from the spec page (dev/staging only) —
+            workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes
@@ -4414,6 +4812,18 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   <td>Rendered <code>PRD.md</code> with a section table of contents</td>
                 </tr>
                 <tr>
+                  <td><strong>Settings</strong></td>
+                  <td><code>/larapilot/settings</code></td>
+                  <td>Current <code>settings.*</code> + allowed options; visual summary of inception
+                    <code>choices.yaml</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Usage</strong></td>
+                  <td><code>/larapilot/usage</code></td>
+                  <td>Lucille charts (tokens/time by category), living Gantt (specs + milestones), download
+                    <code>/larapilot/usage/report.md</code></td>
+                </tr>
+                <tr>
                   <td><strong>API docs</strong></td>
                   <td><code>/larapilot/api/docs</code></td>
                   <td>Interactive OpenAPI browser for the workflow JSON API</td>
@@ -4433,6 +4843,12 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
             <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
           </p>
+
+          <h4>Settings &amp; Usage</h4>
+          <p><strong>Settings</strong> shows the live project modes (effort, backlog, git, testing, auto-approve,
+            lucille, forges, notifications) and the inception choices snapshot. <strong>Usage</strong> is Lucille's
+            surface — category breakdowns, schedule Gantt, and a one-click Markdown resoconto. Same data as
+            <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
 
           <h4>Spec detail</h4>
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
@@ -4685,7 +5101,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
   </div>
 
   <footer>
-    <p>Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.4.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 
@@ -4824,8 +5240,8 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
         {
           type: '/larapilot-inception "Invoicing SaaS for freelancers"',
           lines: [
-            `<span class="dim">→ Mark runs guided discovery</span>`,
-            `<span class="ok">✓</span> PRD.md — single source of truth`,
+            `<span class="dim">→ Mark · Mike · Lucille · Sarah on discovery</span>`,
+            `<span class="ok">✓</span> PRD.md — Application · Website · Package`,
             `<span class="prompt">$</span> /larapilot-spec`,
             `<span class="ok">✓</span> US-001 · US-002 · US-003 in backlog`,
           ],
@@ -4838,6 +5254,15 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
             `<span class="ok">✓</span> status → REVIEW`,
             `<span class="prompt">$</span> /larapilot-review US-001`,
             `<span class="ok">✓</span> US-001 shipped — you approved`,
+          ],
+        },
+        {
+          type: "/larapilot-usage",
+          lines: [
+            `<span class="dim">→ Lucille reads ledger + schedule</span>`,
+            `<span class="ok">✓</span> implementation 12.4k tokens · 45m`,
+            `<span class="ok">✓</span> MVP go-live on track`,
+            `<span class="prompt">$</span> larapilot:usage-report --insights`,
           ],
         },
       ];

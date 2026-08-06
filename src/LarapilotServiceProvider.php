@@ -6,15 +6,21 @@ namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\BackstageExportCommand;
+use Larapilot\Console\Commands\BitbucketStatusCommand;
+use Larapilot\Console\Commands\ChoicesSetCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
 use Larapilot\Console\Commands\FrontendSetCommand;
+use Larapilot\Console\Commands\GithubStatusCommand;
+use Larapilot\Console\Commands\GitlabStatusCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
+use Larapilot\Console\Commands\NotifyCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
+use Larapilot\Console\Commands\ScheduleSetCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
@@ -32,6 +38,8 @@ use Larapilot\Console\Commands\TrackerPullCommand;
 use Larapilot\Console\Commands\TrackerPushCommand;
 use Larapilot\Console\Commands\TrackerStatusCommand;
 use Larapilot\Console\Commands\UpdateCommand;
+use Larapilot\Console\Commands\UsageLogCommand;
+use Larapilot\Console\Commands\UsageReportCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
@@ -42,15 +50,19 @@ use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\BackstageService;
+use Larapilot\Services\BitbucketService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\FrontendService;
+use Larapilot\Services\GithubService;
+use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupService;
+use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
@@ -66,7 +78,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.3.2';
+    public const VERSION = '2.4.0';
 
     public function register(): void
     {
@@ -79,6 +91,10 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
+        $this->app->singleton(GithubService::class);
+        $this->app->singleton(GitlabService::class);
+        $this->app->singleton(BitbucketService::class);
+        $this->app->singleton(NotifyService::class);
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
         $this->app->singleton(PlanService::class);
@@ -111,6 +127,10 @@ class LarapilotServiceProvider extends ServiceProvider
                 BackstageExportCommand::class,
                 ConfigShowCommand::class,
                 SettingsSetCommand::class,
+                NotifyCommand::class,
+                GithubStatusCommand::class,
+                GitlabStatusCommand::class,
+                BitbucketStatusCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
                 SpecListCommand::class,
@@ -124,6 +144,10 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecRequestChangesCommand::class,
                 TaskDoneCommand::class,
                 MetricsCommand::class,
+                UsageLogCommand::class,
+                UsageReportCommand::class,
+                ScheduleSetCommand::class,
+                ChoicesSetCommand::class,
                 QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,

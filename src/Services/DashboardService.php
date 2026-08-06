@@ -15,6 +15,8 @@ class DashboardService
         protected PrdService $prd,
         protected MockupService $mockups,
         protected InternalFeedbackService $feedback,
+        protected ChoicesService $choices,
+        protected UsageService $usageService,
     ) {}
 
     /**
@@ -137,5 +139,21 @@ class DashboardService
                 : null,
             'feedback' => $this->feedback->forSpec($code, $data['spec']),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function settings(): array
+    {
+        return $this->choices->dashboard();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function usage(): array
+    {
+        return $this->usageService->dashboard();
     }
 }

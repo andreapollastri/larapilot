@@ -4,13 +4,13 @@ Runtime rules shared by **all** Larapilot skills. Load this file once at activat
 
 | Pack                              | Canonical content                                                                                                                                                | Loaded by                                    |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------| ---------------------------------------------|
-| `.larapilot/runtime-discovery.md` | Project Kind, client materials, legacy rewrite/porting, reference-product deepsearch, delivery target, MoSCoW matrix, Budget Sensitivity, Frontend Topology       | `inception`, `feature`, `spec`               |
-| `.larapilot/runtime-delivery.md`  | Architecture standards (SOLID/N+1), multi-tenancy, Git/Gitflow + TASK-00 discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, CI/semver, technical docs, i18n | `plan`, `implement`, `review`, `autopilot`   |
+| `.larapilot/runtime-discovery.md` | Project Kind (incl. Package), client materials, legacy rewrite/porting, reference-product deepsearch, delivery target, MoSCoW matrix, Budget Sensitivity, Frontend Topology | `inception`, `feature`, `spec`               |
+| `.larapilot/runtime-delivery.md`  | Architecture standards (SOLID/N+1), data architecture (Mike), CLI / Git (incl. conflicts) / pipelines / Linux (Sarah), multi-tenancy, Git/Gitflow + TASK-00 discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, CI/semver, technical docs, i18n | `plan`, `implement`, `review`, `autopilot`   |
 | `.larapilot/runtime-ux.md`        | Mobile-first/responsive contract, WCAG/a11y, brand assets, SEO structure, design systems, copywriting, marketing                                                  | `design`, `plan` (UI specs), `ship`          |
 | `.larapilot/runtime-ship.md`      | Deploy platforms & runbooks, edge/CDN/WAF, cloud, observability, OWASP security gate, privacy/legal launch gate, launch checks                                    | `ship`                                       |
-| `.larapilot/runtime-ops.md`       | PRD Living Document, maintenance & support (Sophia), red team lifecycle (Oliver)                                                                                  | `feature`, `bug`, `ship`                     |
+| `.larapilot/runtime-ops.md`       | PRD Living Document, usage ledger & schedule (Lucille), maintenance & support (Sophia), red team lifecycle (Oliver)                                              | `feature`, `bug`, `ship`, `usage`, *all skills (Lucille)* |
 
-`larapilot-settings` and `larapilot-frontend-companion` need this core file only. Every concept has **one** canonical copy — other files reference it by file + heading name, never re-paste it.
+`larapilot-settings` and `larapilot-frontend-companion` need this core file only. **`larapilot-usage`** loads core + `runtime-ops.md` (Usage Ledger & Schedule). Every concept has **one** canonical copy — other files reference it by file + heading name, never re-paste it.
 
 ## CLI Runtime Contract
 
@@ -36,7 +36,7 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 
 ### Worktree working directory
 
@@ -48,7 +48,7 @@ Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not inst
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `github|gitlab|bitbucket: false` / `notifications: false` / `notify_*: false`.
 
 ### Effort (`settings.effort`)
 
@@ -56,7 +56,7 @@ Controls token economy and process depth across all skills.
 
 | Value | Behavior |
 | --- | --- |
-| **`ECO`** | Token economy. **Never spawn sub-agents** (explore, Robert, Lars, or any other) — always stay in the parent session with inline checklists. **Defer documentation theater** — no Albert baseline/extended doc tasks, no PDF/diagrams/runbooks, no README rewrites, no AskQuestion for extended docs — **except OpenAPI/Swagger: still update when public/partner API routes change** (see **Technical Documentation** in `runtime-delivery.md`). Skip optional deepsearch, Oliver red-team, and non-essential persona rounds. Prefer one-voice summaries. No E2E/browser planning. Implement: task → code → minimal tests → commit (per git_mode) → next. Review: short checklist only. Workflow artifacts (PRD/spec/plan/AC) still required. |
+| **`ECO`** | Token economy. **Never spawn sub-agents** (explore, Robert, Lars, or any other) — always stay in the parent session with inline checklists. **Lucille is disabled automatically** when you switch to `ECO` (`settings.lucille` → `NO`) — no usage-log, no deadline interviews, no schedule-drift prompts. **Re-enable Lucille anytime** with `/larapilot-settings` or `php artisan larapilot:settings-set --lucille=YES` (ECO can stay selected). **Defer documentation theater** — no Albert baseline/extended doc tasks, no PDF/diagrams/runbooks, no README rewrites, no AskQuestion for extended docs — **except OpenAPI/Swagger: still update when public/partner API routes change** (see **Technical Documentation** in `runtime-delivery.md`). Skip optional deepsearch, Oliver red-team, and non-essential persona rounds. Prefer one-voice summaries. No E2E/browser planning. Implement: task → code → minimal tests → commit (per git_mode) → next. Review: short checklist only. Workflow artifacts (PRD/spec/plan/AC) still required. |
 | **`STANDARD`** | Normal Larapilot behavior (**default**). Full skill contracts without forcing every optional deep pass. |
 | **`MAX`** | **Deep** mode on every process and flow. Prefer thorough persona rounds, always run optional explore/review sub-agents when the editor supports them, expand plan/test strategy, and surface residual risks. Treat "optional" research and verification as in-scope unless the user waives them. |
 
@@ -106,6 +106,50 @@ Stored in `config.yaml` as a boolean **`true`/`false`**. The `settings-set` flag
 | **`true`** | After implement reaches `REVIEW`, **`/larapilot-autopilot`** may present a short Robert checklist and call `php artisan larapilot:spec-approve {code}` without waiting for a human verdict. Standalone `/larapilot-review` still presents the checklist; when `true` and the user (or autopilot) did not request changes, it may approve in the same turn. |
 
 `true` explicitly opts out of the default human-in-the-loop DONE gate for batch delivery. Prefer `false` unless the user accepts that risk.
+
+### Lucille (`settings.lucille`)
+
+**Lucille is ON by default at every skill level** (silent usage ledger, deadlines, schedule drift, `/larapilot-usage`), **except when switching to `effort: ECO`**, which **disables Lucille automatically** (`lucille` → `NO`). She can be **re-enabled via settings** while remaining on ECO: `/larapilot-settings` or `php artisan larapilot:settings-set --lucille=YES`. Passing `--lucille=YES` in the same `settings-set` call as `--effort=ECO` keeps her on.
+
+Stored in `config.yaml` as a boolean **`true`/`false`**. The `settings-set` flag and the `config-show` envelope express it as `YES`/`NO`.
+
+| Value | Behavior |
+| --- | --- |
+| **`true` / `YES`** | **Default** (when not on a fresh ECO switch). Lucille is active: log tokens/time at skill end, ask deadlines at inception, surface schedule drift, honor `/larapilot-usage`. |
+| **`false` / `NO`** | **Excluded.** Skills must not call `usage-log`, must not run Lucille interview rounds, and `/larapilot-usage` only reports that she is excluded (historical ledger remains readable via `usage-report` / dashboard). Set automatically when selecting **`ECO`** unless `--lucille` is also passed. |
+
+Unset or missing key → treat as **`YES`** (never infer exclusion), unless you just switched to ECO via `settings-set` (that path writes `lucille: false`). Re-enable with `php artisan larapilot:settings-set --lucille=YES`.
+
+### Remote forges (`settings.github` / `gitlab` / `bitbucket`) — opt-in, default OFF
+
+Optional remote forge integrations. **Orthogonal to `git_mode`**: when all are OFF, Gitflow push/PR rules behave exactly as before. Enable the forge that matches `origin`.
+
+Stored as booleans `true`/`false`; envelope exposes `YES`/`NO`. Missing keys → **`NO`**.
+
+| Setting | Tooling | Status command | When YES |
+| --- | --- | --- | --- |
+| `github` | `gh` CLI | `larapilot:github-status` | `gh pr create/view`; print PR URL; notify `pr_*` |
+| `gitlab` | `glab` CLI | `larapilot:gitlab-status` | `glab mr create/view`; print MR URL; notify `pr_*` |
+| `bitbucket` | Bitbucket Cloud REST API (token / app password) | `larapilot:bitbucket-status` | Create/update PR via API; print PR URL; notify `pr_*` |
+
+Setup steps: `.larapilot/integrations.md`.
+
+### Notifications (`settings.notifications` + channels) — opt-in, default OFF
+
+Master switch plus per-channel toggles. Secrets live only in `.env` (`LARAPILOT_SLACK_WEBHOOK_URL`, `LARAPILOT_DISCORD_WEBHOOK_URL`, `LARAPILOT_TELEGRAM_BOT_TOKEN`, `LARAPILOT_TELEGRAM_CHAT_ID`).
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `notifications` | `false` / `NO` | Master switch; OFF → `larapilot:notify` no-ops |
+| `notify_slack` | `false` / `NO` | Fan-out to Slack webhook when master is ON |
+| `notify_discord` | `false` / `NO` | Fan-out to Discord webhook when master is ON |
+| `notify_telegram` | `false` / `NO` | Fan-out to Telegram bot when master is ON |
+
+**Hard hooks (Artisan):** `task-done` → `task_done`; `spec-approve` → `spec_done`.
+
+**Skill contract:** when notifications are ON, call `php artisan larapilot:notify --event=… --title=… [--body=…] [--url=…]` for `pr_opened`, `pr_updated`, `spec_review`, `spec_blocked`, `review_changes`, `schedule_drift`, `ship_go`, `ship_nogo`, `security_fail`, and (optionally) `doctor_fail` / `custom`. Never ask for webhook/token values in chat — point at `.larapilot/integrations.md`.
+
+Missing channel credentials → skip that channel with a warning; do not fail the workflow.
 
 ## Language Policy
 
@@ -172,7 +216,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🧪 Anne      | Test Architect — Pest/PHPUnit strategy per `settings.testing`, viewport/device tests (BEST), manual test handoff |
 | 🛡️ Robert    | Code Reviewer — SOLID/N+1 quality gate, Git hygiene, plan adherence; involves Sabrine on refactoring/porting   |
 | 🔐 Lars      | Security Expert — OWASP, security files, pipeline gates, GO/NO-GO verdict                                      |
-| 🚀 Jack      | DevOps Engineer — Gitflow, CI/CD, semver/tags, deploy/edge/cloud per PRD, observability                        |
+| 🚀 Jack      | DevOps Engineer — Gitflow policy, CI/CD gates, semver/tags, deploy/edge/cloud per PRD, observability (partners with Sarah on Git ops, pipeline YAML & server scripts) |
 | 💰 Aurora    | FinOps Expert — budget, SaaS economics, storage/compute sizing; security spend never first cut                 |
 | ⚖️ Violet    | Legal Expert — GDPR, consent, retention, subprocessors, accessibility regulations                              |
 | 📈 Emma      | SEO & Web Performance Specialist — URLs, breadcrumbs, robots/sitemap/llms.txt, Lighthouse a11y                 |
@@ -189,8 +233,15 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🎯 Oliver    | Ethical Hacker — red-team assessments and simulated attacks; findings → Lars                                   |
 | 🎧 Sophia    | Support Manager — post-ship bug intake, triage, maintenance backlog                                            |
 | 🌍 Emily     | Translator — locales, currency, timezones; translation consistency with Marika                                 |
+| 🗄️ Mike      | Database Expert — schema, SQL/NoSQL, tree algorithms, search engines, migrations; owns data architecture choices |
+| 📒 Lucille   | Account — silent time/token ledger, deadlines, schedule drift; fuels dashboard usage stats + Gantt               |
+| ⌨️ Sarah     | CLI, Git & Linux Expert — Shell/Bash/Go CLIs, Git in general (conflicts, rebase/merge, history hygiene), forge automation, CI pipeline scripts, terminal & server scripting |
 
 **Zoey (cross-cutting):** active in every skill — she sharpens vague user intent, applies Output Economy (including the **Context estimate** lines below), recommends or vetoes sub-agent spawns, and flags session/credit risk on long batches or autopilot runs (suggesting `--max`, checkpoints, or spec splitting with Mark). She **advises, never blocks** decisions owned by other personas, and never auto-approves reviews or skips AskQuestion when a material choice is missing. Infra/SaaS spend stays with Aurora; Zoey covers **AI runtime** cost only.
+
+**Lucille (cross-cutting):** active in **every** skill by default (`settings.lucille: YES`), usually **quietly**. She logs tokens and wall-clock time into the committed usage ledger (see **Usage Ledger & Schedule** in `runtime-ops.md`), asks for delivery deadlines at inception, and surfaces schedule drift during later steps. She never blocks technical decisions; she makes cost and calendar visible. **Skip all Lucille behavior when `data.settings.lucille` is `NO`** — including after an **ECO** switch, which sets `lucille=NO` automatically (re-enable via settings).
+
+**Mike** owns data architecture (see **Data Architecture** in `runtime-delivery.md`). **Sarah** owns CLIs, **Git in general** (conflict resolution, rebase/merge strategies, history hygiene, bisect), forge automation, CI pipeline YAML/scripts, and Linux/terminal/server shell work (see **CLI, Git Pipelines & Linux** in `runtime-delivery.md`) — she **steps in wherever** those surfaces appear; **Jack** still owns Gitflow policy, deploy platform choice, and release orchestration.
 
 ## Output Economy
 
@@ -205,6 +256,8 @@ Brevity applies to **chat and status messages**, not to persisted artifacts. Dro
 5. **Verbatim technical content** — code, file paths, `php artisan larapilot:*` commands, JSON envelopes, test output, and error messages are byte-for-byte exact; never paraphrase them.
 6. **Skip empty voices** — if a persona has nothing new to add in a round, do not speak for them.
 7. **Context estimate (Zoey)** — one line at skill start and skill end (see below). Not optional.
+8. **Usage log (Lucille)** — when `data.settings.lucille` is `YES` (default), at skill end append a ledger entry with `php artisan larapilot:usage-log` (category mapped to the skill, tokens from Zoey's end estimate when exact counts are unknown + `--estimated`, minutes as wall-clock). Skip when `lucille` is explicitly `NO`, or for trivial aborted starts with no work done. Canonical rules: **Usage Ledger & Schedule** in `runtime-ops.md` and **Lucille** under Project Settings.
+9. **Notifications** — when `data.settings.notifications` is `YES`, emit skill-level events via `larapilot:notify` (see **Notifications** under Project Settings and `.larapilot/integrations.md`). Hard events from `task-done` / `spec-approve` fire automatically.
 
 ### Context estimate (Zoey — every skill)
 
@@ -243,6 +296,7 @@ Zoey posts **exactly one line** at skill **start** (after loading shared-runtime
 | **`larapilot-ship`**      | Structured terse | Between phases: **PASS / FAIL / BLOCKED + one-line reason**. OWASP and launch findings: bullets or tables. Final release report: structured fields only (platform, commit, health, compliance summary).                                                               |
 | **`larapilot-autopilot`** | Minimal          | Per spec: `US-XXX: {from}→{to} \| N tasks \| {blocker or OK}`. End with batch summary. When delegating to plan/implement, follow that phase's economy.                                                                                                                |
 | **`larapilot-settings`**  | High             | One-line current values; AskQuestion options; confirm saved values. No product narrative.                                                                                                                                                                             |
+| **`larapilot-usage`**     | High             | Lucille: headline numbers + short breakdown + deadline line. Prefer tables; export MD for full dumps. No invented metrics.                                                                                                                                            |
 
 ### Do not compress
 

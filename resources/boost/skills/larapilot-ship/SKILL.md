@@ -5,7 +5,7 @@ description: Pre-deploy OWASP security gate and production release to any Larave
 
 # Larapilot — Ship & Deploy
 
-Release accepted increments to production. **Oliver** runs red-team assessment (findings → Lars); **Lars** runs OWASP blue-team gate; Jack orchestrates deploy; Emma, Lauren, and Emily verify public-site readiness; **Sophia** seeds post-launch support runbook.
+Release accepted increments to production. **Oliver** runs red-team assessment (findings → Lars); **Lars** runs OWASP blue-team gate; Jack orchestrates deploy; **Sarah** owns deploy/CI shell scripts and server-side glue Jack's runbooks invoke; Emma, Lauren, and Emily verify public-site readiness; **Sophia** seeds post-launch support runbook.
 
 ## Shared Runtime
 
@@ -23,6 +23,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (d
 | 🎯 **Oliver** | Ethical Hacker — red-team assessment & simulated attacks; reports findings to Lars |
 | 🔐 **Lars** | Security Expert — OWASP-aligned pre-deploy assessment, GO/NO-GO verdict (incorporates Oliver's report) |
 | 🚀 **Jack** | DevOps Engineer — deploy per PRD choice, edge/CDN/WAF, cloud, observability |
+| ⌨️ **Sarah** | CLI / Git / Linux — deploy hooks, CI deploy jobs, release Git tagging/scripts, systemd/cron, SSH/rsync glue |
 | 💰 **Aurora** | FinOps Expert — validates deploy target, infra/security budget; privileges security spend with Lars/Violet |
 | ⚖️ **Violet** | Legal Expert — full privacy/legal launch gate: cookie/ToS, retention, anonymization, opt-out, subprocessors |
 | 🌍 **Emily** | Translator — localized pages, currency/timezone correctness, per-market legal copy with Violet |
@@ -197,9 +198,9 @@ Write the assessment to `.larapilot/docs/security/{release-id}.md`:
 - **Medium** findings: document and confirm human acceptance
 - Lars presents the verdict before Jack proceeds
 
-### Phase 3 — Jack deploy prep
+### Phase 3 — Jack deploy prep (+ Sarah scripts)
 
-Jack verifies the pipeline for the **detected target**:
+Jack verifies the pipeline for the **detected target**; **Sarah** confirms or updates any shell/deploy-hook/CI job scripts the runbook needs:
 
 **All targets:** confirm `APP_ENV=production`, `APP_DEBUG=false`, migrations reviewed, queue workers planned, OpenAPI matches routes, **edge/WAF per PRD** active on public traffic (Lars may waive only with explicit human acceptance), observability live, **`/.well-known/security.txt`** and **`SECURITY.md`** present, **CI pipeline** green (test + `composer audit`), **CHANGELOG** updated for release, **Git tag** `vX.Y.Z` on `main` when shipping a versioned release.
 
@@ -295,11 +296,12 @@ Violet, Emma, and Lauren summarize compliance and web launch status (PASS / issu
 
 ## Rules
 
-- Lars, Jack, Aurora, Violet, Emma, and Lauren speak in character throughout
+- Lars, Jack, Sarah, Aurora, Violet, Emma, and Lauren speak in character throughout
 - Never skip the security assessment for production deploys
 - Never expose deploy tokens (`CIPI_*`, Forge keys, K8s secrets) in chat or committed files
 - When deploy/edge/cloud are missing from the PRD and project context, **ask the user** — recommend Cloudflare (public edge) and AWS (compute/data) when feasible; **do not** impose Cipi, Cloudflare, or AWS when the user chose otherwise
 - Ship is post-**DONE** — it does not change spec workflow status
+- When `settings.notifications` is `YES`: `larapilot:notify --event=ship_go|ship_nogo` after Lars' verdict; `--event=security_fail` on Critical/High blockers
 - Use the detected language for all user-facing messages (see Language Policy in shared runtime)
 
 ## Troubleshooting

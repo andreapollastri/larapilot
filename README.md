@@ -12,7 +12,7 @@ Larapilot is a spec-driven workflow for Laravel projects, integrated with [Larav
 
 ## Why Larapilot
 
-AI agents are fast, but isolated prompts are not a product process. Larapilot gives your assistant a disciplined squad — discovery → backlog → plan → implement → review → ship — with **27 personas** (Mark, John, Alex, Anne, …) as review lenses, not costumes.
+AI agents are fast, but isolated prompts are not a product process. Larapilot gives your assistant a disciplined squad — discovery → backlog → plan → implement → review → ship — with **30 personas** (Mark, John, Mike, Lucille, Sarah for CLI/Git/Linux, Alex, Anne, …) as review lenses, not costumes. Packages (PHP/Laravel Composer) are a first-class Project Kind beside apps and sites.
 
 Each skill orchestrates the conversation. **Artisan commands** persist state; **Boost skills** drive the workflow in chat; **MCP** exposes Laravel context and workflow tools to your editor.
 
@@ -29,13 +29,13 @@ Greenfield — repeat steps 3–5 per user story:
 
 | When | Start with |
 | --- | --- |
-| New product, pivot, or legacy rewrite | `/larapilot-inception` |
+| New product, site, app, PHP/Laravel package, pivot, or legacy rewrite | `/larapilot-inception` |
 | One new capability on an existing product | `/larapilot-feature "…"` |
 | Defect or regression | `/larapilot-bug "…"` |
 
 Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement · `/larapilot-settings` for project effort / backlog granularity / git / testing modes · `/larapilot-backstage` to publish the repo into a Backstage developer portal.
 
-Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
+Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Optional forge toggles **`github` / `gitlab` / `bitbucket`** (default OFF) add PR/MR URLs via `gh`, `glab`, or Bitbucket Cloud API; optional Slack/Discord/Telegram notifications (default OFF) cover task/spec/PR/schedule/ship events — see `.larapilot/integrations.md`. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
 
 ---
 
@@ -43,7 +43,8 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 
 | Path | Purpose |
 | --- | --- |
-| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`) |
+| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, optional `github` / `gitlab` / `bitbucket` / `notifications` / `notify_*`) |
+| `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket + Slack / Discord / Telegram |
 | `docs/PRD.md` | Product Requirements Document |
 | `backlog/` | User stories (`US-XXX`) with status machine |
 | `plans/` | Technical plans and tasks per spec |
@@ -58,8 +59,8 @@ Skills write artifacts; the workflow engine blocks invalid state transitions (e.
 
 | Layer | File | Owns | Changed via |
 | --- | --- | --- | --- |
-| **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, environments, diagnostics, `LARAPILOT_API_TOKEN`, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
-| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git mode, testing, auto-approve), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+| **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, diagnostics, `LARAPILOT_API_TOKEN`, notification webhooks/tokens, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, github/gitlab/bitbucket, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
 
 The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
@@ -82,7 +83,8 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
-| `/larapilot-settings` | Persist effort / backlog granularity / git mode / testing / auto-approve for the project |
+| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / GitHub·GitLab·Bitbucket / notification channels |
+| `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
@@ -94,7 +96,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader, spec detail with mockup preview and internal feedback
+- **`/larapilot`** — Kanban board, PRD reader, Settings (options + inception choices), Usage (Lucille metrics + Gantt + report download), spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling

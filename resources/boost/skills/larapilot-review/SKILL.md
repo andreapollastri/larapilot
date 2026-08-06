@@ -68,6 +68,8 @@ Ask the human: **Approve** or **Request changes** (with feedback).
 php artisan larapilot:spec-approve US-001
 ```
 
+(`spec-approve` auto-emits `spec_done` when notifications are ON.)
+
 ## Request Changes
 
 Write feedback to `.larapilot/tmp-feedback-{code}.yaml`:
@@ -82,6 +84,12 @@ Then:
 
 ```bash
 php artisan larapilot:spec-request-changes US-001 --file=.larapilot/tmp-feedback-US-001.yaml
+```
+
+When `settings.notifications` is `YES`, also:
+
+```bash
+php artisan larapilot:notify --event=review_changes --title="US-001 changes requested"
 ```
 
 Delete temp file after CLI exits.

@@ -24,6 +24,7 @@ Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), th
 | 🔎 **Tom** | Requirements Analyst — acceptance criteria, edge cases |
 | 📐 **John** | Architect — structural impact when the feature crosses domains |
 | 👾 **Andrew** | Laravel Expert — ecosystem fit, package vs built-in |
+| ⌨️ **Sarah** | CLI / Git / Linux — when the feature needs tooling, CI scripts, Git automation, conflict-prone merges, or server shell |
 | 🔄 **Sabrine** | Legacy Porting Specialist — when the feature maps to legacy parity rows or needs scraped/porting work |
 | ✍️ **Marika** | Copywriter — when the feature adds or changes user-facing copy |
 | 🎨 **Elise** | UX Designer — when UI/flows need mockups before implementation |

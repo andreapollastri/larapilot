@@ -14,7 +14,15 @@ class SettingsSetCommand extends LarapilotCommand
                             {--backlog= : Backlog granularity: LEAN, STANDARD, or GRANULAR}
                             {--git-mode= : Git mode: NO_GITFLOW, GITFLOW, or GITFLOW_PUSH}
                             {--testing= : Testing mode: MINIMAL, NORMAL, or BEST}
-                            {--auto-approve= : Auto-approve after implement: YES or NO}';
+                            {--auto-approve= : Auto-approve after implement: YES or NO}
+                            {--lucille= : Lucille usage tracking: YES (default) or NO to exclude explicitly}
+                            {--github= : GitHub remote via gh CLI: YES or NO (default NO)}
+                            {--gitlab= : GitLab remote via glab CLI: YES or NO (default NO)}
+                            {--bitbucket= : Bitbucket Cloud remote via API tokens: YES or NO (default NO)}
+                            {--notifications= : Master chat notifications switch: YES or NO (default NO)}
+                            {--notify-slack= : Slack notifications: YES or NO (default NO)}
+                            {--notify-discord= : Discord notifications: YES or NO (default NO)}
+                            {--notify-telegram= : Telegram notifications: YES or NO (default NO)}';
 
     protected $description = 'Persist Larapilot project settings into .larapilot/config.yaml';
 
@@ -74,33 +82,60 @@ class SettingsSetCommand extends LarapilotCommand
             $partial['testing'] = $testing;
         }
 
-        $autoApprove = $this->normalizeOption('auto-approve');
-        if ($autoApprove !== null) {
-            if (! in_array($autoApprove, $config->allowedAutoApproveModes(), true)) {
+        foreach ([
+            'auto-approve' => ['auto_approve', $config->allowedAutoApproveModes()],
+            'lucille' => ['lucille', $config->allowedLucilleModes()],
+            'github' => ['github', $config->allowedGithubModes()],
+            'gitlab' => ['gitlab', $config->allowedGitlabModes()],
+            'bitbucket' => ['bitbucket', $config->allowedBitbucketModes()],
+            'notifications' => ['notifications', $config->allowedNotificationsModes()],
+            'notify-slack' => ['notify_slack', $config->allowedNotifyChannelModes()],
+            'notify-discord' => ['notify_discord', $config->allowedNotifyChannelModes()],
+            'notify-telegram' => ['notify_telegram', $config->allowedNotifyChannelModes()],
+        ] as $option => [$key, $allowed]) {
+            $value = $this->normalizeOption($option);
+            if ($value === null) {
+                continue;
+            }
+
+            if (! in_array($value, $allowed, true)) {
                 return $this->failure(
                     'E_INVALID_INPUT',
-                    "Invalid --auto-approve value: {$autoApprove}.",
+                    "Invalid --{$option} value: {$value}.",
                     $this->exitForCode('E_INVALID_INPUT'),
-                    'Allowed: '.implode(', ', $config->allowedAutoApproveModes()).'.'
+                    'Allowed: '.implode(', ', $allowed).'.'
                 );
             }
-            $partial['auto_approve'] = $autoApprove;
+
+            $partial[$key] = $value;
         }
 
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, or --auto-approve.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --github, --gitlab, --bitbucket, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }
 
+        $lucilleDisabledByEco = ($partial['effort'] ?? null) === 'ECO'
+            && ! array_key_exists('lucille', $partial);
+
         $settings = $config->updateSettings($partial);
+
+        $updated = array_keys($partial);
+        if ($lucilleDisabledByEco && ! in_array('lucille', $updated, true)) {
+            $updated[] = 'lucille';
+        }
 
         return $this->success('settings', [
             'settings' => $settings,
-            'updated' => array_keys($partial),
+            'updated' => $updated,
+            'lucille_disabled_by_eco' => $lucilleDisabledByEco,
             'config_path' => $config->configPath(),
+            'hint' => $lucilleDisabledByEco
+                ? 'ECO disables Lucille automatically. Re-enable with: php artisan larapilot:settings-set --lucille=YES'
+                : null,
         ]);
     }
 
@@ -126,9 +161,14 @@ class SettingsSetCommand extends LarapilotCommand
             'TRUE' => 'YES',
             'ON' => 'YES',
             '1' => 'YES',
+            'ACTIVE' => 'YES',
+            'ENABLED' => 'YES',
             'FALSE' => 'NO',
             'OFF' => 'NO',
             '0' => 'NO',
+            'EXCLUDE' => 'NO',
+            'EXCLUDED' => 'NO',
+            'DISABLED' => 'NO',
         ];
 
         return $aliases[$normalized] ?? $normalized;

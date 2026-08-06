@@ -65,9 +65,9 @@ Jack stays **open to other providers** when the PRD, compliance, or user prefere
 
 Coverage to plan: **application** (exceptions, slow queries, queue latency, failed jobs); **infrastructure** (CPU, memory, disk, HTTP 5xx, SSL cert expiry); **alerting** (PagerDuty, Slack, email, or CloudWatch alarms on error-rate spikes and downtime); **logs** (centralized retention aligned with Violet's policy; structured JSON where possible).
 
-Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
+Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Sarah** owns shell/deploy-hook scripts, systemd/cron, SSH/rsync glue, and CI deploy job scripts that those runbooks invoke; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
 
-## Deploy Runbooks _(Jack — run only the runbook matching the recorded choice)_
+## Deploy Runbooks _(Jack orchestrates — Sarah scripts; run only the runbook matching the recorded choice)_
 
 ### Cipi
 

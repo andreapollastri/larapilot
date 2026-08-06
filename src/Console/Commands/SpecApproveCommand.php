@@ -6,6 +6,7 @@ namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\NotifyService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
@@ -24,6 +25,7 @@ class SpecApproveCommand extends LarapilotCommand
         ConfigService $config,
         PlanService $plans,
         InternalFeedbackService $feedback,
+        NotifyService $notify,
     ): int {
         $code = (string) $this->argument('code');
         $spec = $specs->find($code);
@@ -69,10 +71,32 @@ class SpecApproveCommand extends LarapilotCommand
             return $this->failure('E_NOT_FOUND', $exception->getMessage(), $this->exitForCode('E_NOT_FOUND'));
         }
 
+        $title = trim((string) ($spec['title'] ?? $code));
+        $notification = $this->safeNotify($notify, [
+            'event' => 'spec_done',
+            'title' => "{$code} approved — {$title}",
+            'body' => 'Status: '.$config->status('done'),
+            'url' => is_array($commit) ? ($commit['url'] ?? null) : null,
+        ]);
+
         return $this->success('approve_result', [
             'code' => $code,
             'status' => $config->status('done'),
             'merge_commit' => $commit,
+            'notification' => $notification,
         ]);
+    }
+
+    /**
+     * @param  array{event: string, title: string, body?: string|null, url?: string|null}  $payload
+     * @return array<string, mixed>|null
+     */
+    protected function safeNotify(NotifyService $notify, array $payload): ?array
+    {
+        try {
+            return $notify->send($payload);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }
