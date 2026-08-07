@@ -402,6 +402,8 @@ class OpenApiService
                         'properties' => [
                             'code' => ['type' => 'string'],
                             'title' => ['type' => 'string'],
+                            'objective' => ['type' => 'string', 'nullable' => true],
+                            'deadline' => ['type' => 'string', 'format' => 'date', 'nullable' => true],
                         ],
                     ],
                     'SpecSummary' => [
@@ -445,6 +447,8 @@ class OpenApiService
                                 'type' => 'array',
                                 'items' => ['type' => 'string'],
                             ],
+                            'assignee' => ['type' => 'string', 'nullable' => true, 'description' => 'Developer or persona executing the task'],
+                            'estimate_hours' => ['type' => 'number', 'minimum' => 0, 'nullable' => true],
                             'commit' => ['type' => 'object', 'additionalProperties' => true],
                         ],
                         'required' => ['id', 'title', 'status'],

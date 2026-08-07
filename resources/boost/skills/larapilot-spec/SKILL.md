@@ -117,13 +117,19 @@ Write payload to `.larapilot/tmp-payload-specs.yaml`:
 specs:
   - code: US-001
     title: "..."
-    epic: { code: EP-001, title: "..." }
+    epic:
+      code: EP-001
+      title: "Checkout & payments"
+      objective: "Shoppers can pay and receive order confirmation"
+      deadline: "2026-09-15"   # required when the project has delivery dates
     priority: HIGH
     points: 3
     status: TODO
     body: |
       ...markdown user story...
 ```
+
+**Epics (Mark + Lucille):** group related US specs under `EP-XXX` with a clear **objective** and, when dates exist, an epic **deadline**. Reuse epics from `spec-list` before creating new ones. Lucille validates that epic deadlines align with `schedule-set` milestones and remaining story points.
 
 Validate first, then `spec-add`. Delete temp file after CLI exits.
 

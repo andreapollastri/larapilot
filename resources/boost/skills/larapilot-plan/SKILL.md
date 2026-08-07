@@ -83,6 +83,8 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
             "body": "## Description\n...\n\n## Git Deliverables\n- Commit: chore(US-XXX): TASK-00 bootstrap feature branch\n...",
             "type": "Impl",
             "status": "TODO",
+            "assignee": "Alex",
+            "estimate_hours": 1,
             "dependencies": []
         },
         {
@@ -91,11 +93,25 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
             "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
             "type": "Impl",
             "status": "TODO",
+            "assignee": "Alex",
+            "estimate_hours": 4,
+            "dependencies": ["TASK-00"]
+        },
+        {
+            "id": "TASK-02",
+            "title": "Parallel UI polish (can run beside TASK-01 when no shared files)",
+            "body": "...",
+            "type": "Impl",
+            "status": "TODO",
+            "assignee": "Joe",
+            "estimate_hours": 3,
             "dependencies": ["TASK-00"]
         }
     ]
 }
 ```
+
+**Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them and can distribute work across `assignee` values (developers / personas executing the step). Prefer realistic `estimate_hours` so schedule criticality is honest.
 
 Validate, then `spec-plan`. Delete the temp file after the CLI exits.
 

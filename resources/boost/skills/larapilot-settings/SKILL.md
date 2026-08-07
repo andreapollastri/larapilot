@@ -25,7 +25,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 | ⌨️ **Sarah** | CLI / Git / Linux — involved when forge/CI automation or Git mechanics guidance is needed |
 | 🧪 **Anne** | Test Architect — owns testing mode implications |
 | 🛡️ **Robert** | Code Reviewer — owns auto_approve risk framing |
-| 📒 **Lucille** | Account — owns the lucille on/exclude setting; default is always ON |
+| 📒 **Lucille** | Project tracking — owns the lucille on/exclude setting; default is always ON |
 | 🔗 **Matt** | Integration Manager — owns Slack/Discord/Telegram notification toggles (secrets stay in `.env`) |
 
 ## Config & CLI
@@ -116,14 +116,14 @@ Warn once when the user picks `YES`: this bypasses the usual human-in-the-loop D
 
 **Round 3 — Lucille + integrations**
 
-**6. Lucille** — usage ledger + schedule at every skill level (default ON; exclusion must be explicit)
+**6. Lucille · Project tracking** — usage ledger + schedule at every skill level (default ON; exclusion must be explicit)
 
-- **AskQuestion prompt:** `Lucille (current: {VALUE}) — keep time/token tracking on every skill?`
-- **Chat framing (one line):** 📒 Lucille — ON by default everywhere; choose NO only to exclude her explicitly.
+- **AskQuestion prompt:** `Lucille · Project tracking (current: {VALUE}) — keep time/token/deadline tracking on every skill?`
+- **Chat framing (one line):** 📒 Lucille — Project tracking ON by default everywhere; choose NO only to exclude her explicitly.
 
 | Option id | AskQuestion label |
 | --- | --- |
-| `YES` | `YES — Lucille active on every skill (default): log tokens/time, deadlines, /larapilot-usage` |
+| `YES` | `YES — Lucille Project tracking on every skill (default): log tokens/hours, deadlines, epics Gantt, /larapilot-usage` |
 | `NO` | `NO — explicit exclusion: no usage-log, no Lucille interview rounds (historical ledger stays readable)` |
 
 Warn once when the user picks `NO`: this opts out of project time/token metrics until they set `YES` again. Note: choosing **Effort = ECO** also sets Lucille to `NO` automatically — same re-enable path (`--lucille=YES`).

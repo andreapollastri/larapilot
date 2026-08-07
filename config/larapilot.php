@@ -15,7 +15,7 @@ return [
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
         'auto_approve' => false,
-        // Lucille (usage ledger + schedule) is ON by default; set false to exclude explicitly.
+        // Lucille · Project tracking (usage ledger + schedule) is ON by default; set false to exclude explicitly.
         'lucille' => true,
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
@@ -320,7 +320,7 @@ return [
         'support_manager' => ['name' => 'Sophia', 'icon' => '🎧', 'role' => 'Support Manager'],
         'translator' => ['name' => 'Emily', 'icon' => '🌍', 'role' => 'Translator'],
         'database_expert' => ['name' => 'Mike', 'icon' => '🗄️', 'role' => 'Database Expert'],
-        'account' => ['name' => 'Lucille', 'icon' => '📒', 'role' => 'Account'],
+        'account' => ['name' => 'Lucille', 'icon' => '📒', 'role' => 'Project tracking'],
         'cli_expert' => ['name' => 'Sarah', 'icon' => '⌨️', 'role' => 'CLI, Git & Linux Expert'],
     ],
 ];

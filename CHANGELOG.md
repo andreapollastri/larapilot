@@ -2,6 +2,25 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.4.1] - 2026-08-07
+
+### Added
+
+- **Epics as delivery containers** — specs carry `epic: { code, title, objective, deadline }`; Mark owns titles/objectives, Lucille validates deadlines against schedule milestones and remaining effort.
+- **Dependency-aware Gantt** — plan tasks schedule from `dependencies`, mark parallelizable work, and optionally spread across `assignee` + `estimate_hours` for multi-developer timelines.
+- **Schedule criticality** — Lucille forecasts remaining points/hours against project milestones and epic deadlines; alerts on the Usage dashboard and in `usage-report --insights`.
+- **Zoey vs Lucille panel** — dashboard and reports explain why Zoey `context ≈ Nk` (loaded context) and Lucille ledger tokens/hours will not match 1:1.
+- **Ledger history UX** — full history (not last 50), client-side pagination, filters for search / executor / category / estimated vs measured.
+- **Gantt legend** — colors and statuses (epic, TODO/PLANNED/IN PROGRESS/REVIEW/DONE, parallel, milestone) under the chart.
+
+### Changed
+
+- **Lucille · Project tracking** — settings label, persona role, and `/larapilot-settings` AskQuestion copy (was plain “Account” / `lucille`).
+- **Usage metrics** — hours only on the dashboard (minutes stay in the ledger); tokens ≥ 1000 display as `K` (e.g. `2.5K`).
+- **OpenAPI** — Epic gains `objective` / `deadline`; Task gains `assignee` / `estimate_hours`.
+- **Skills / runtime** — `larapilot-spec`, `larapilot-plan`, `larapilot-usage`, `larapilot-settings`, `shared-runtime`, `runtime-ops` updated for epics, parallelism, Zoey reconciliation, and criticality.
+- Site / package version **v2.4.1**.
+
 ## [2.4.0] - 2026-08-06
 
 ### Added

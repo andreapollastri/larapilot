@@ -371,7 +371,7 @@ class ConfigService
     }
 
     /**
-     * Lucille is ON by default at every skill level. Only an explicit
+     * Lucille · Project tracking is ON by default at every skill level. Only an explicit
      * `settings.lucille: false` / `NO` excludes her.
      */
     public function lucilleEnabled(): bool

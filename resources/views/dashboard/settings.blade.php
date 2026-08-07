@@ -106,9 +106,19 @@
             <h2>Project settings</h2>
             <p class="sub">Current values and allowed options from <code>.larapilot/config.yaml</code> (<code>/larapilot-settings</code>).</p>
 
+            @php
+                $settingLabels = [
+                    'lucille' => 'Lucille · Project tracking',
+                    'auto_approve' => 'Auto approve',
+                    'git_mode' => 'Git mode',
+                    'notify_slack' => 'Notify Slack',
+                    'notify_discord' => 'Notify Discord',
+                    'notify_telegram' => 'Notify Telegram',
+                ];
+            @endphp
             @foreach (($settings['options'] ?? []) as $key => $options)
                 <div class="setting-row">
-                    <div class="setting-key">{{ str_replace('_', ' ', $key) }}</div>
+                    <div class="setting-key">{{ $settingLabels[$key] ?? str_replace('_', ' ', $key) }}</div>
                     <div class="chips">
                         @php
                             $current = $settings['current'][$key] ?? null;

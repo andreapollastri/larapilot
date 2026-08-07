@@ -108,14 +108,23 @@ MD);
 
 it('renders the usage dashboard with gantt and report download', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
-    addSpec(['points' => 3]);
+    addSpec([
+        'points' => 3,
+        'epic' => [
+            'code' => 'EP-001',
+            'title' => 'Core',
+            'objective' => 'Ship authentication',
+            'deadline' => '2026-11-01',
+        ],
+    ]);
 
     $this->artisan('larapilot:usage-log', [
         '--category' => 'planning',
-        '--tokens' => 500,
+        '--tokens' => 2500,
         '--minutes' => 20,
         '--spec' => 'US-001',
         '--user' => 'git:Test',
+        '--estimated' => true,
     ])->assertSuccessful();
 
     $this->artisan('larapilot:schedule-set', [
@@ -126,14 +135,95 @@ it('renders the usage dashboard with gantt and report download', function (): vo
     $this->get('/larapilot/usage')
         ->assertOk()
         ->assertSee('Lucille')
+        ->assertSee('Project tracking')
         ->assertSee('Project Gantt')
         ->assertSee('US-001')
-        ->assertSee('Launch');
+        ->assertSee('Launch')
+        ->assertSee('2.5K')
+        ->assertSee('Zoey vs Lucille')
+        ->assertSee('Ledger history')
+        ->assertSee('Hours');
+
+
+    $this->get('/larapilot/settings')
+        ->assertOk()
+        ->assertSee('Lucille · Project tracking');
 
     $this->get('/larapilot/usage/report.md')
         ->assertOk()
         ->assertHeader('content-disposition', 'attachment; filename="larapilot-usage-report.md"')
-        ->assertSee('Larapilot usage report');
+        ->assertSee('Larapilot usage report')
+        ->assertSee('Zoey vs Lucille');
+});
+
+it('builds dependency-aware gantt bars and formats tokens as K', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec([
+        'points' => 5,
+        'epic' => [
+            'code' => 'EP-010',
+            'title' => 'Billing',
+            'objective' => 'Invoices paid online',
+            'deadline' => '2026-10-01',
+        ],
+    ]);
+
+    app(\Larapilot\Services\PlanService::class)->save('US-001', [
+        'plan_body' => "## Technical Solution\nTest\n\n## Git & Branching\nNO_GITFLOW\n\n## Test Data Strategy\nN/A\n\n## Test Strategy\nMINIMAL",
+        'tasks' => [
+            [
+                'id' => 'TASK-00',
+                'title' => 'Bootstrap',
+                'body' => "## Description\nx\n\n## Git Deliverables\n- Commit: chore\n\n## Test Data\nN/A\n\n## Completion Criteria\n- [ ] done",
+                'type' => 'Impl',
+                'status' => 'TODO',
+                'assignee' => 'Alex',
+                'estimate_hours' => 2,
+                'dependencies' => [],
+            ],
+            [
+                'id' => 'TASK-01',
+                'title' => 'Model',
+                'body' => "## Description\nx\n\n## Git Deliverables\n- Commit: feat\n\n## Test Data\nN/A\n\n## Completion Criteria\n- [ ] done",
+                'type' => 'Impl',
+                'status' => 'TODO',
+                'assignee' => 'Alex',
+                'estimate_hours' => 4,
+                'dependencies' => ['TASK-00'],
+            ],
+            [
+                'id' => 'TASK-02',
+                'title' => 'UI',
+                'body' => "## Description\nx\n\n## Git Deliverables\n- Commit: feat\n\n## Test Data\nN/A\n\n## Completion Criteria\n- [ ] done",
+                'type' => 'Impl',
+                'status' => 'TODO',
+                'assignee' => 'Joe',
+                'estimate_hours' => 3,
+                'dependencies' => ['TASK-00'],
+            ],
+        ],
+    ]);
+
+    $usage = app(UsageService::class);
+
+    expect($usage->formatTokens(999))->toBe('999')
+        ->and($usage->formatTokens(1000))->toBe('1K')
+        ->and($usage->formatTokens(2500))->toBe('2.5K');
+
+    $gantt = $usage->gantt();
+
+    expect($gantt['epics'])->not->toBeEmpty()
+        ->and($gantt['epics'][0]['code'])->toBe('EP-010')
+        ->and($gantt['epics'][0]['objective'])->toBe('Invoices paid online')
+        ->and(collect($gantt['bars'])->where('type', 'task')->count())->toBe(3)
+        ->and(collect($gantt['bars'])->where('parallel', true)->count())->toBeGreaterThan(0)
+        ->and($gantt['legend'])->not->toBeEmpty();
+
+    $criticality = $usage->criticality($gantt);
+    $zoey = $usage->zoeyReconciliation();
+
+    expect($criticality)->toHaveKeys(['remaining_points', 'forecast_end', 'alerts'])
+        ->and($zoey['why_they_differ'])->not->toBeEmpty();
 });
 
 it('rejects invalid usage categories', function (): void {

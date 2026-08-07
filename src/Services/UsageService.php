@@ -342,6 +342,8 @@ class UsageService
         usort($hotSpecs, static fn (array $a, array $b): int => $b['minutes'] <=> $a['minutes']);
         $hotSpecs = array_slice($hotSpecs, 0, 5);
 
+        $gantt = $this->gantt();
+
         return [
             'summary' => $summary,
             'top_categories' => $topCategories,
@@ -352,7 +354,9 @@ class UsageService
                 $deadlineViews,
                 static fn (array $row): bool => in_array($row['status'], ['at_risk', 'delayed'], true) || $row['overdue'] === true
             )),
-            'gantt' => $this->gantt(),
+            'criticality' => $this->criticality($gantt),
+            'zoey' => $this->zoeyReconciliation(),
+            'gantt' => $gantt,
         ];
     }
 
@@ -469,16 +473,26 @@ class UsageService
             '## Totals',
             '',
             '- **Entries:** '.$summary['entry_count'],
-            '- **Tokens:** '.$summary['total_tokens'],
-            '- **Time:** '.$summary['total_minutes'].' minutes ('.$summary['total_hours'].' hours)',
-            '- **Avg minutes / entry:** '.$summary['avg_minutes_per_entry'],
+            '- **Tokens:** '.$this->formatTokens((int) $summary['total_tokens']).' ('.$summary['total_tokens'].')',
+            '- **Hours:** '.$summary['total_hours'],
             '- **Estimated entries:** '.$summary['estimated_entry_count'],
             '',
-            '## By category',
+            '## Zoey vs Lucille',
             '',
-            '| Category | Entries | Tokens | Minutes |',
-            '| -------- | ------- | ------ | ------- |',
         ];
+
+        $zoey = $this->zoeyReconciliation();
+        $lines[] = '- **Ledger tokens:** '.$zoey['ledger_tokens_display'].' (estimated '.$zoey['estimated_tokens_display'].' · measured '.$zoey['measured_tokens_display'].')';
+
+        foreach ($zoey['why_they_differ'] as $reason) {
+            $lines[] = '- '.$reason;
+        }
+
+        $lines[] = '';
+        $lines[] = '## By category';
+        $lines[] = '';
+        $lines[] = '| Category | Entries | Tokens | Hours |';
+        $lines[] = '| -------- | ------- | ------ | ----- |';
 
         foreach ($summary['by_category'] as $category => $row) {
             if (($row['entries'] ?? 0) === 0) {
@@ -486,27 +500,27 @@ class UsageService
             }
 
             $lines[] = sprintf(
-                '| %s | %d | %d | %s |',
+                '| %s | %d | %s | %s |',
                 $category,
                 (int) $row['entries'],
-                (int) $row['tokens'],
-                rtrim(rtrim(number_format((float) $row['minutes'], 2, '.', ''), '0'), '.')
+                $this->formatTokens((int) $row['tokens']),
+                rtrim(rtrim(number_format(((float) $row['minutes']) / 60, 2, '.', ''), '0'), '.')
             );
         }
 
         $lines[] = '';
         $lines[] = '## By user';
         $lines[] = '';
-        $lines[] = '| User | Entries | Tokens | Minutes |';
-        $lines[] = '| ---- | ------- | ------ | ------- |';
+        $lines[] = '| User | Entries | Tokens | Hours |';
+        $lines[] = '| ---- | ------- | ------ | ----- |';
 
         foreach ($summary['by_user'] as $user => $row) {
             $lines[] = sprintf(
-                '| %s | %d | %d | %s |',
+                '| %s | %d | %s | %s |',
                 str_replace('|', '\\|', (string) $user),
                 (int) $row['entries'],
-                (int) $row['tokens'],
-                rtrim(rtrim(number_format((float) $row['minutes'], 2, '.', ''), '0'), '.')
+                $this->formatTokens((int) $row['tokens']),
+                rtrim(rtrim(number_format(((float) $row['minutes']) / 60, 2, '.', ''), '0'), '.')
             );
         }
 
@@ -550,13 +564,14 @@ class UsageService
         $lines[] = '';
 
         foreach ($this->query($filters) as $entry) {
+            $hours = rtrim(rtrim(number_format(((float) ($entry['minutes'] ?? 0)) / 60, 2, '.', ''), '0'), '.');
             $lines[] = sprintf(
-                '- `%s` · %s · %s · tokens=%d · minutes=%s%s%s',
+                '- `%s` · %s · %s · tokens=%s · hours=%s%s%s',
                 (string) ($entry['ts'] ?? ''),
                 (string) ($entry['category'] ?? ''),
                 (string) ($entry['user'] ?? ''),
-                (int) ($entry['tokens'] ?? 0),
-                rtrim(rtrim(number_format((float) ($entry['minutes'] ?? 0), 2, '.', ''), '0'), '.'),
+                $this->formatTokens((int) ($entry['tokens'] ?? 0)),
+                $hours !== '' ? $hours : '0',
                 isset($entry['skill']) && $entry['skill'] ? ' · '.$entry['skill'] : '',
                 isset($entry['spec']) && $entry['spec'] ? ' · '.$entry['spec'] : ''
             );
@@ -603,9 +618,212 @@ class UsageService
     }
 
     /**
-     * Build a realistic Gantt-oriented timeline from schedule + backlog + usage.
+     * Format token counts for display (1000+ → K).
+     */
+    public function formatTokens(int $tokens): string
+    {
+        if ($tokens < 1000) {
+            return (string) $tokens;
+        }
+
+        $k = $tokens / 1000;
+
+        if (abs($k - round($k)) < 0.05) {
+            return ((int) round($k)).'K';
+        }
+
+        return rtrim(rtrim(number_format($k, 1, '.', ''), '0'), '.').'K';
+    }
+
+    /**
+     * Explain Zoey context estimates vs Lucille ledger totals.
      *
-     * @return array{project_start: ?string, project_end: ?string, bars: list<array<string, mixed>>, milestones: list<array<string, mixed>>}
+     * @return array<string, mixed>
+     */
+    public function zoeyReconciliation(): array
+    {
+        $entries = $this->entries();
+        $ledgerTokens = 0;
+        $estimatedTokens = 0;
+        $measuredTokens = 0;
+        $estimatedEntries = 0;
+
+        foreach ($entries as $entry) {
+            $tokens = (int) ($entry['tokens'] ?? 0);
+            $ledgerTokens += $tokens;
+
+            if (($entry['estimated'] ?? false) === true) {
+                $estimatedTokens += $tokens;
+                $estimatedEntries++;
+            } else {
+                $measuredTokens += $tokens;
+            }
+        }
+
+        return [
+            'ledger_tokens' => $ledgerTokens,
+            'ledger_tokens_display' => $this->formatTokens($ledgerTokens),
+            'estimated_tokens' => $estimatedTokens,
+            'estimated_tokens_display' => $this->formatTokens($estimatedTokens),
+            'measured_tokens' => $measuredTokens,
+            'measured_tokens_display' => $this->formatTokens($measuredTokens),
+            'estimated_entry_count' => $estimatedEntries,
+            'entry_count' => count($entries),
+            'why_they_differ' => [
+                'Zoey `context ≈ Nk` measures loaded chat context (chars÷4), not provider billing tokens.',
+                'Lucille ledger stores session work tokens/time — often seeded from Zoey’s end line with `--estimated`.',
+                'They will not match 1:1: Zoey counts prompt/context size; Lucille counts committed session spend.',
+            ],
+        ];
+    }
+
+    /**
+     * Forecast remaining effort against project and epic deadlines.
+     *
+     * @param  array<string, mixed>|null  $gantt
+     * @return array<string, mixed>
+     */
+    public function criticality(?array $gantt = null): array
+    {
+        $gantt ??= $this->gantt();
+        $schedule = $this->schedule();
+        $today = (new DateTimeImmutable('today'))->format('Y-m-d');
+        $alerts = [];
+        $remainingPoints = 0;
+        $remainingHours = 0.0;
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            if (! is_array($spec)) {
+                continue;
+            }
+
+            $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
+
+            if ($status === 'DONE') {
+                continue;
+            }
+
+            $points = max(0, (int) ($spec['points'] ?? 0));
+            $remainingPoints += $points;
+            $code = (string) ($spec['code'] ?? '');
+            $plan = $code !== '' ? $this->plans->read($code) : null;
+            $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
+
+            if ($tasks === []) {
+                $remainingHours += max(2.0, $points * 4.0);
+
+                continue;
+            }
+
+            foreach ($tasks as $task) {
+                if (! is_array($task) || strtoupper((string) ($task['status'] ?? '')) === 'DONE') {
+                    continue;
+                }
+
+                $remainingHours += max(1.0, (float) ($task['estimate_hours'] ?? max(2.0, ($points * 4.0) / max(1, count($tasks)))));
+            }
+        }
+
+        $forecastDays = max(0.5, $remainingHours / 6.0);
+        $forecastEnd = $this->addDays($today, $forecastDays);
+        $projectEnd = $gantt['project_end'] ?? $forecastEnd;
+
+        foreach ($schedule['deadlines'] as $deadline) {
+            if (! is_array($deadline) || empty($deadline['date'])) {
+                continue;
+            }
+
+            $date = (string) $deadline['date'];
+            $status = (string) ($deadline['status'] ?? 'on_track');
+
+            if ($status === 'done') {
+                continue;
+            }
+
+            $slipDays = 0;
+
+            if ($projectEnd > $date) {
+                $slipDays = (new DateTimeImmutable($date))->diff(new DateTimeImmutable($projectEnd))->days;
+            }
+
+            $overdue = $date < $today;
+            $level = $overdue ? 'critical' : ($slipDays > 0 || $status === 'delayed' ? 'critical' : ($status === 'at_risk' || ($slipDays === 0 && $forecastEnd >= $date) ? 'warning' : 'ok'));
+
+            if ($level === 'ok' && ! $overdue && $slipDays === 0 && $status === 'on_track') {
+                $daysLeft = (new DateTimeImmutable($today))->diff(new DateTimeImmutable($date))->days;
+                $bufferDays = max(0, $daysLeft) - (int) ceil($forecastDays);
+
+                if ($bufferDays < 2 && $remainingPoints > 0) {
+                    $level = 'warning';
+                } else {
+                    continue;
+                }
+            }
+
+            $alerts[] = [
+                'level' => $level,
+                'scope' => 'deadline',
+                'label' => (string) ($deadline['label'] ?? 'Deadline'),
+                'date' => $date,
+                'message' => $overdue
+                    ? 'Overdue vs today — remaining ~'.round($forecastDays, 1).' work-days still open.'
+                    : ($slipDays > 0
+                        ? 'Forecast end '.$projectEnd.' slips '.$slipDays.' day(s) past this deadline.'
+                        : 'Thin buffer before '.$date.' (~'.round($forecastDays, 1).' work-days left in backlog).'),
+            ];
+        }
+
+        foreach ($gantt['epics'] ?? [] as $epic) {
+            if (! is_array($epic) || empty($epic['deadline']) || empty($epic['forecast_end'])) {
+                continue;
+            }
+
+            $deadline = (string) $epic['deadline'];
+            $end = (string) $epic['forecast_end'];
+
+            if ($end <= $deadline) {
+                continue;
+            }
+
+            $slip = (new DateTimeImmutable($deadline))->diff(new DateTimeImmutable($end))->days;
+            $alerts[] = [
+                'level' => 'critical',
+                'scope' => 'epic',
+                'label' => (string) ($epic['code'] ?? 'EP').' — '.(string) ($epic['title'] ?? ''),
+                'date' => $deadline,
+                'message' => 'Epic forecast '.$end.' exceeds objective deadline by '.$slip.' day(s).',
+            ];
+        }
+
+        usort($alerts, static function (array $a, array $b): int {
+            $rank = ['critical' => 0, 'warning' => 1, 'ok' => 2];
+
+            return ($rank[$a['level']] ?? 9) <=> ($rank[$b['level']] ?? 9);
+        });
+
+        return [
+            'remaining_points' => $remainingPoints,
+            'remaining_hours' => round($remainingHours, 1),
+            'forecast_work_days' => round($forecastDays, 1),
+            'forecast_end' => $forecastEnd,
+            'project_end' => $projectEnd,
+            'alerts' => $alerts,
+            'on_track' => $alerts === [],
+        ];
+    }
+
+    /**
+     * Build a realistic Gantt from schedule + epics + task dependencies + usage.
+     *
+     * @return array{
+     *     project_start: ?string,
+     *     project_end: ?string,
+     *     bars: list<array<string, mixed>>,
+     *     epics: list<array<string, mixed>>,
+     *     milestones: list<array<string, mixed>>,
+     *     assignees: list<string>,
+     *     legend: list<array{key: string, label: string, kind: string}>
+     * }
      */
     public function gantt(): array
     {
@@ -630,6 +848,8 @@ class UsageService
         }
 
         $bars = [];
+        $epicBuckets = [];
+        $assignees = [];
 
         foreach ($specs as $spec) {
             if (! is_array($spec)) {
@@ -637,6 +857,11 @@ class UsageService
             }
 
             $code = (string) ($spec['code'] ?? '');
+
+            if ($code === '') {
+                continue;
+            }
+
             $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
             $points = max(1, (int) ($spec['points'] ?? 1));
             $progress = $this->plans->taskProgress($code);
@@ -652,22 +877,112 @@ class UsageService
                 }
             }
 
-            $estimatedDays = max(0.5, $points * 0.5 + ($usageMinutes / (60 * 6)));
-            $start = $this->inferSpecStart($code, $entries, $dates);
-            $end = $this->addDays($start, $estimatedDays);
+            $specStart = $this->inferSpecStart($code, $entries, $dates);
+            $plan = $this->plans->read($code);
+            $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
+            $scheduled = $this->schedulePlanTasks($tasks, $specStart, $points, $code, $status);
 
-            $dates[] = $start;
-            $dates[] = $end;
+            if ($scheduled === []) {
+                $estimatedDays = max(0.5, $points * 0.5 + ($usageMinutes / (60 * 6)));
+                $end = $this->addDays($specStart, $estimatedDays);
+                $dates[] = $specStart;
+                $dates[] = $end;
 
-            $bars[] = [
-                'id' => $code,
-                'label' => $code.' — '.(string) ($spec['title'] ?? ''),
-                'type' => 'spec',
-                'status' => $status,
-                'start' => $start,
-                'end' => $end,
-                'progress' => round(min(1, max(0, $doneRatio)), 2),
-                'points' => $points,
+                $bars[] = [
+                    'id' => $code,
+                    'label' => $code.' — '.(string) ($spec['title'] ?? ''),
+                    'type' => 'spec',
+                    'status' => $status,
+                    'start' => $specStart,
+                    'end' => $end,
+                    'progress' => round(min(1, max(0, $doneRatio)), 2),
+                    'points' => $points,
+                    'assignee' => null,
+                    'parallel' => false,
+                    'depends_on' => [],
+                    'epic' => is_array($spec['epic'] ?? null) ? ($spec['epic']['code'] ?? null) : null,
+                ];
+
+                $specEnd = $end;
+            } else {
+                $specEnd = $specStart;
+
+                foreach ($scheduled as $taskBar) {
+                    $dates[] = $taskBar['start'];
+                    $dates[] = $taskBar['end'];
+                    $bars[] = $taskBar;
+                    $specEnd = max($specEnd, (string) $taskBar['end']);
+
+                    if (! empty($taskBar['assignee'])) {
+                        $assignees[] = (string) $taskBar['assignee'];
+                    }
+                }
+            }
+
+            $epic = is_array($spec['epic'] ?? null) ? $spec['epic'] : null;
+
+            if (is_array($epic) && ! empty($epic['code'])) {
+                $epicCode = (string) $epic['code'];
+
+                if (! isset($epicBuckets[$epicCode])) {
+                    $epicBuckets[$epicCode] = [
+                        'id' => $epicCode,
+                        'code' => $epicCode,
+                        'title' => (string) ($epic['title'] ?? $epicCode),
+                        'objective' => trim((string) ($epic['objective'] ?? '')) ?: null,
+                        'deadline' => ! empty($epic['deadline']) ? substr((string) $epic['deadline'], 0, 10) : null,
+                        'start' => $specStart,
+                        'forecast_end' => $specEnd,
+                        'spec_codes' => [],
+                        'points' => 0,
+                    ];
+                }
+
+                $epicBuckets[$epicCode]['start'] = min((string) $epicBuckets[$epicCode]['start'], $specStart);
+                $epicBuckets[$epicCode]['forecast_end'] = max((string) $epicBuckets[$epicCode]['forecast_end'], $specEnd);
+                $epicBuckets[$epicCode]['spec_codes'][] = $code;
+                $epicBuckets[$epicCode]['points'] += $points;
+
+                if (! empty($epic['objective'])) {
+                    $epicBuckets[$epicCode]['objective'] = (string) $epic['objective'];
+                }
+
+                if (! empty($epic['deadline'])) {
+                    $epicBuckets[$epicCode]['deadline'] = substr((string) $epic['deadline'], 0, 10);
+                    $dates[] = $epicBuckets[$epicCode]['deadline'];
+                }
+
+                if (! empty($epic['title'])) {
+                    $epicBuckets[$epicCode]['title'] = (string) $epic['title'];
+                }
+            }
+        }
+
+        $epicBars = [];
+
+        foreach ($epicBuckets as $epic) {
+            $dates[] = $epic['start'];
+            $dates[] = $epic['forecast_end'];
+
+            if (! empty($epic['deadline'])) {
+                $dates[] = $epic['deadline'];
+            }
+
+            $epicBars[] = [
+                'id' => $epic['code'],
+                'label' => $epic['code'].' — '.$epic['title'],
+                'type' => 'epic',
+                'status' => ! empty($epic['deadline']) && $epic['forecast_end'] > $epic['deadline'] ? 'AT RISK' : 'PLANNED',
+                'start' => $epic['start'],
+                'end' => $epic['forecast_end'],
+                'progress' => 0,
+                'objective' => $epic['objective'],
+                'deadline' => $epic['deadline'],
+                'points' => $epic['points'],
+                'assignee' => null,
+                'parallel' => false,
+                'depends_on' => [],
+                'epic' => $epic['code'],
             ];
         }
 
@@ -684,13 +999,32 @@ class UsageService
         }
 
         sort($dates);
-        $dates = array_values(array_filter($dates));
+        $dates = array_values(array_filter(array_unique($dates)));
+        $assignees = array_values(array_unique(array_filter($assignees)));
+        sort($assignees);
+
+        // Epics first, then task/spec bars (stable for reading).
+        $bars = array_merge($epicBars, $bars);
 
         return [
             'project_start' => $dates[0] ?? null,
             'project_end' => $dates !== [] ? $dates[array_key_last($dates)] : null,
             'bars' => $bars,
+            'epics' => array_values($epicBuckets),
             'milestones' => $milestones,
+            'assignees' => $assignees,
+            'legend' => [
+                ['key' => 'epic', 'label' => 'Epic (objective window)', 'kind' => 'type'],
+                ['key' => 'spec', 'label' => 'Spec (no plan yet)', 'kind' => 'type'],
+                ['key' => 'task', 'label' => 'Task (dependency-aware)', 'kind' => 'type'],
+                ['key' => 'parallel', 'label' => 'Parallelizable (no blocking deps between them)', 'kind' => 'flag'],
+                ['key' => 'todo', 'label' => 'TODO', 'kind' => 'status'],
+                ['key' => 'planned', 'label' => 'PLANNED', 'kind' => 'status'],
+                ['key' => 'progress', 'label' => 'IN PROGRESS', 'kind' => 'status'],
+                ['key' => 'review', 'label' => 'REVIEW', 'kind' => 'status'],
+                ['key' => 'done', 'label' => 'DONE', 'kind' => 'status'],
+                ['key' => 'milestone', 'label' => 'Deadline / milestone', 'kind' => 'type'],
+            ],
         ];
     }
 
@@ -699,13 +1033,172 @@ class UsageService
      */
     public function dashboard(): array
     {
+        $summary = $this->summary();
+        $gantt = $this->gantt();
+        $entries = array_reverse($this->entries());
+        $users = array_values(array_unique(array_filter(array_map(
+            static fn (array $e): string => (string) ($e['user'] ?? ''),
+            $entries
+        ))));
+        sort($users);
+
         return [
-            'summary' => $this->summary(),
+            'summary' => $summary,
             'schedule' => $this->schedule(),
-            'gantt' => $this->gantt(),
-            'entries' => array_slice(array_reverse($this->entries()), 0, 50),
+            'gantt' => $gantt,
+            'criticality' => $this->criticality($gantt),
+            'zoey' => $this->zoeyReconciliation(),
+            'entries' => $entries,
+            'entry_users' => $users,
+            'entry_categories' => self::CATEGORIES,
             'report_markdown' => $this->reportMarkdown(),
         ];
+    }
+
+    /**
+     * Schedule plan tasks with dependency-aware starts and parallel flags.
+     *
+     * @param  list<array<string, mixed>>  $tasks
+     * @return list<array<string, mixed>>
+     */
+    protected function schedulePlanTasks(array $tasks, string $specStart, int $points, string $specCode, string $specStatus): array
+    {
+        $normalized = [];
+
+        foreach ($tasks as $task) {
+            if (! is_array($task) || empty($task['id'])) {
+                continue;
+            }
+
+            $normalized[] = $task;
+        }
+
+        if ($normalized === []) {
+            return [];
+        }
+
+        $ordered = $this->topoSortTasks($normalized);
+        $ends = [];
+        $starts = [];
+        $bars = [];
+        $defaultHours = max(2.0, ($points * 4.0) / max(1, count($normalized)));
+
+        foreach ($ordered as $task) {
+            $id = (string) $task['id'];
+            $deps = array_values(array_filter(
+                is_array($task['dependencies'] ?? null) ? $task['dependencies'] : [],
+                static fn (mixed $dep): bool => is_string($dep) && $dep !== ''
+            ));
+
+            $start = $specStart;
+
+            foreach ($deps as $dep) {
+                if (isset($ends[$dep])) {
+                    $candidate = $this->addDays($ends[$dep], 0);
+                    if ($candidate > $start) {
+                        $start = $candidate;
+                    }
+                }
+            }
+
+            $hours = max(1.0, (float) ($task['estimate_hours'] ?? $defaultHours));
+            $days = max(0.5, $hours / 6.0);
+            $end = $this->addDays($start, $days);
+            $taskStatus = strtoupper((string) ($task['status'] ?? 'TODO'));
+
+            if ($taskStatus === 'DONE') {
+                $progress = 1.0;
+            } elseif (str_contains(strtoupper($specStatus), 'PROGRESS')) {
+                $progress = 0.45;
+            } else {
+                $progress = 0.0;
+            }
+
+            $assignee = trim((string) ($task['assignee'] ?? '')) ?: null;
+            $starts[$id] = $start;
+            $ends[$id] = $end;
+
+            $bars[] = [
+                'id' => $specCode.'·'.$id,
+                'task_id' => $id,
+                'label' => $specCode.' / '.$id.' — '.(string) ($task['title'] ?? $id),
+                'type' => 'task',
+                'status' => $taskStatus === 'DONE' ? 'DONE' : $specStatus,
+                'start' => $start,
+                'end' => $end,
+                'progress' => $progress,
+                'points' => null,
+                'assignee' => $assignee,
+                'parallel' => false,
+                'depends_on' => $deps,
+                'epic' => null,
+                'estimate_hours' => round($hours, 1),
+            ];
+        }
+
+        // Mark tasks that share a start date and do not depend on each other as parallel.
+        $byStart = [];
+
+        foreach ($bars as $index => $bar) {
+            $byStart[$bar['start']][] = $index;
+        }
+
+        foreach ($byStart as $indexes) {
+            if (count($indexes) < 2) {
+                continue;
+            }
+
+            foreach ($indexes as $index) {
+                $bars[$index]['parallel'] = true;
+            }
+        }
+
+        return $bars;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $tasks
+     * @return list<array<string, mixed>>
+     */
+    protected function topoSortTasks(array $tasks): array
+    {
+        $byId = [];
+
+        foreach ($tasks as $task) {
+            $byId[(string) $task['id']] = $task;
+        }
+
+        $visited = [];
+        $stack = [];
+
+        $visit = function (string $id) use (&$visit, &$visited, &$stack, $byId): void {
+            if (isset($visited[$id])) {
+                return;
+            }
+
+            $visited[$id] = true;
+            $task = $byId[$id] ?? null;
+
+            if ($task === null) {
+                return;
+            }
+
+            $deps = is_array($task['dependencies'] ?? null) ? $task['dependencies'] : [];
+
+            foreach ($deps as $dep) {
+                if (is_string($dep) && isset($byId[$dep])) {
+                    $visit($dep);
+                }
+            }
+
+            $stack[] = $task;
+        };
+
+        foreach (array_keys($byId) as $id) {
+            $visit($id);
+        }
+
+        return $stack;
     }
 
     public function detectUser(): string
