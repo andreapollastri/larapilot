@@ -1000,7 +1000,7 @@ class UsageService
 
         sort($dates);
         $dates = array_values(array_filter(array_unique($dates)));
-        $assignees = array_values(array_unique(array_filter($assignees)));
+        $assignees = array_values(array_unique($assignees));
         sort($assignees);
 
         // Epics first, then task/spec bars (stable for reading).
