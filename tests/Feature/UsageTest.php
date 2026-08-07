@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Artisan;
 use Larapilot\Services\ChoicesService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\UsageService;
 
@@ -144,7 +145,6 @@ it('renders the usage dashboard with gantt and report download', function (): vo
         ->assertSee('Ledger history')
         ->assertSee('Hours');
 
-
     $this->get('/larapilot/settings')
         ->assertOk()
         ->assertSee('Lucille · Project tracking');
@@ -168,7 +168,7 @@ it('builds dependency-aware gantt bars and formats tokens as K', function (): vo
         ],
     ]);
 
-    app(\Larapilot\Services\PlanService::class)->save('US-001', [
+    app(PlanService::class)->save('US-001', [
         'plan_body' => "## Technical Solution\nTest\n\n## Git & Branching\nNO_GITFLOW\n\n## Test Data Strategy\nN/A\n\n## Test Strategy\nMINIMAL",
         'tasks' => [
             [
