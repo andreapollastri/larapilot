@@ -108,7 +108,7 @@
 
             @php
                 $settingLabels = [
-                    'lucille' => 'Lucille · Project tracking',
+                    'lucille' => 'Project tracking',
                     'auto_approve' => 'Auto approve',
                     'git_mode' => 'Git mode',
                     'notify_slack' => 'Notify Slack',

@@ -2,6 +2,17 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.4.2] - 2026-08-08
+
+### Changed
+
+- **Settings dashboard** — Lucille setting key label is now **Project tracking** (was `Lucille · Project tracking`). Persona role and `/larapilot-settings` AskQuestion copy are unchanged.
+
+### Fixed
+
+- **PHPStan** — remove redundant `array_filter` on Gantt `$assignees` in `UsageService` (false positive / noise after `array_unique`).
+- **UsageTest** — import `PlanService` instead of a fully-qualified class reference; assert the shortened settings label.
+
 ## [2.4.1] - 2026-08-07
 
 ### Added
@@ -26,21 +37,21 @@ All notable changes to `larapilot` will be documented in this file.
 ### Added
 
 - **Optional remote forges + chat notifications** — all OFF by default; orthogonal to `git_mode`.
-  - Settings: `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` via `/larapilot-settings` / `larapilot:settings-set`.
-  - Secrets in `.env` only: Slack/Discord/Telegram webhooks; Bitbucket `BITBUCKET_ACCESS_TOKEN` or `BITBUCKET_USERNAME` + `BITBUCKET_APP_PASSWORD` (also `LARAPILOT_BITBUCKET_*`).
-  - `larapilot:notify` fan-out; hard hooks on `task-done` / `spec-approve`; skill events for PR/MR/review/ship/schedule.
-  - Status probes: `larapilot:github-status` (`gh`), `larapilot:gitlab-status` (`glab`), `larapilot:bitbucket-status` (API tokens); implement prints PR/MR URLs when the matching forge is ON.
-  - Setup guide: `.larapilot/integrations.md` (installed/updated with the package).
+    - Settings: `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` via `/larapilot-settings` / `larapilot:settings-set`.
+    - Secrets in `.env` only: Slack/Discord/Telegram webhooks; Bitbucket `BITBUCKET_ACCESS_TOKEN` or `BITBUCKET_USERNAME` + `BITBUCKET_APP_PASSWORD` (also `LARAPILOT_BITBUCKET_*`).
+    - `larapilot:notify` fan-out; hard hooks on `task-done` / `spec-approve`; skill events for PR/MR/review/ship/schedule.
+    - Status probes: `larapilot:github-status` (`gh`), `larapilot:gitlab-status` (`glab`), `larapilot:bitbucket-status` (API tokens); implement prints PR/MR URLs when the matching forge is ON.
+    - Setup guide: `.larapilot/integrations.md` (installed/updated with the package).
 - **Personas — Mike, Lucille, Sarah** — roster grows to 30 agents.
-  - **🗄️ Mike** (Database Expert) — owns schema, SQL/NoSQL, hierarchy algorithms (Adjacency List, Nested Sets, Path Enumeration, Closure Table, …), search engines, and migrations; collaborates with John, Jack, Aurora, Alex, Lars, Sabrine, Tom, Mark. Canonical rules in `runtime-delivery.md` → **Data Architecture**.
-  - **📒 Lucille** (Account) — cross-cutting silent ledger of tokens + wall-clock time by category (`analysis`, `planning`, `implementation`, `support`, `feature`, `review`, `ship`, `other`); asks for deadlines at inception and reports schedule drift. Canonical rules in `runtime-ops.md` → **Usage Ledger & Schedule**.
-  - **⌨️ Sarah** (CLI, Git & Linux Expert) — Shell/Bash or Go CLIs, **Git in general** (conflict resolution, rebase/merge, history hygiene, bisect), forge automation, CI pipeline YAML/scripts, and Linux/terminal/server scripting. Steps in wherever those surfaces appear; partners with Jack on Gitflow policy/gates/deploy. Canonical rules in `runtime-delivery.md` → **CLI, Git Pipelines & Linux**.
+    - **🗄️ Mike** (Database Expert) — owns schema, SQL/NoSQL, hierarchy algorithms (Adjacency List, Nested Sets, Path Enumeration, Closure Table, …), search engines, and migrations; collaborates with John, Jack, Aurora, Alex, Lars, Sabrine, Tom, Mark. Canonical rules in `runtime-delivery.md` → **Data Architecture**.
+    - **📒 Lucille** (Account) — cross-cutting silent ledger of tokens + wall-clock time by category (`analysis`, `planning`, `implementation`, `support`, `feature`, `review`, `ship`, `other`); asks for deadlines at inception and reports schedule drift. Canonical rules in `runtime-ops.md` → **Usage Ledger & Schedule**.
+    - **⌨️ Sarah** (CLI, Git & Linux Expert) — Shell/Bash or Go CLIs, **Git in general** (conflict resolution, rebase/merge, history hygiene, bisect), forge automation, CI pipeline YAML/scripts, and Linux/terminal/server scripting. Steps in wherever those surfaces appear; partners with Jack on Gitflow policy/gates/deploy. Canonical rules in `runtime-delivery.md` → **CLI, Git Pipelines & Linux**.
 - **Project Kind: Package** — inception AskQuestion adds `Package` beside Personal / Website / Application. Workflow covers new vs existing local path vs existing git, Laravel package standards (tests, security, CI, semver), distribution (Packagist / Satis / VCS), docs, optional GitHub Pages / dedicated minisite, and consumer integration modes.
 - **Usage persistence (Lucille)** — committed under `.larapilot/usage/` (`ledger.jsonl`, `schedule.yaml`).
-  - `larapilot:usage-log` — append ledger entries (git user by default).
-  - `larapilot:usage-report` — JSON/MD/human summary + filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`, `--limit=`) + `--insights` (top categories, hot specs, deadline drift) + optional `--output=` Markdown resoconto.
-  - `larapilot:schedule-set` — deadlines and drift notes.
-  - `larapilot:choices-set` — inception/settings snapshot (`--from-prd` or flags) into `.larapilot/choices.yaml`.
+    - `larapilot:usage-log` — append ledger entries (git user by default).
+    - `larapilot:usage-report` — JSON/MD/human summary + filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`, `--limit=`) + `--insights` (top categories, hot specs, deadline drift) + optional `--output=` Markdown resoconto.
+    - `larapilot:schedule-set` — deadlines and drift notes.
+    - `larapilot:choices-set` — inception/settings snapshot (`--from-prd` or flags) into `.larapilot/choices.yaml`.
 - **`/larapilot-usage`** — Lucille skill to analyze and query time/token tracking, schedule status, and export consolidated reports.
 - **Dashboard — Settings & Usage** — parallel to PRD: current settings + allowed options, visual inception choices summary, Lucille charts, living Gantt (specs + milestones), and `GET /larapilot/usage/report.md` download.
 - MCP `RunArtisanTool` allows `larapilot:usage-report`.
@@ -63,10 +74,10 @@ All notable changes to `larapilot` will be documented in this file.
 ### Added
 
 - **Mandatory code quality gate** — every Larapilot project stays on [Larastan](https://github.com/larastan/larastan) **level 5+** and [Laravel Pint](https://laravel.com/docs/pint).
-  - **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries; runs `composer require --dev larastan/larastan laravel/pint` when Composer is available (`--skip-composer` to skip).
-  - **`larapilot:quality`** — run Pint (check-only; `--fix` applies formatting) then Larastan analysis.
-  - **`CodeQualityService`** — scaffold configs, merge `composer.json`, enforce minimum level.
-  - **`larapilot:doctor`** — `healthy` requires Pint/Larastan config, level ≥ 5, and dev dependencies declared.
+    - **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries; runs `composer require --dev larastan/larastan laravel/pint` when Composer is available (`--skip-composer` to skip).
+    - **`larapilot:quality`** — run Pint (check-only; `--fix` applies formatting) then Larastan analysis.
+    - **`CodeQualityService`** — scaffold configs, merge `composer.json`, enforce minimum level.
+    - **`larapilot:doctor`** — `healthy` requires Pint/Larastan config, level ≥ 5, and dev dependencies declared.
 
 ### Changed
 
@@ -86,11 +97,11 @@ All notable changes to `larapilot` will be documented in this file.
 ### Added
 
 - **BE-orchestrated frontend companion** — when topology is `API + external frontend`, the **Laravel workspace is the only entry point** for specs, PRD, and workflow commands. The external FE repo is a configured write target.
-  - **`larapilot:frontend-set`** — persist absolute `frontend.repo_path` and optional `stack` in `.larapilot/config.yaml`.
-  - **`larapilot:frontend-scan`** — detect stack, tooling (Vite/Next/Nuxt/…), structure, and entrypoints in the FE repo (optional `--path=`).
-  - **`larapilot:companion-sync`** — push PRD + product OpenAPI mirror into the configured FE repo (`.larapilot/docs/PRD.md`, `openapi-product.json`, `companion-sync.md`).
-  - **`FrontendService`** — validate path, scan codebase, sync companion artifacts.
-  - **`config-show`** now exposes `data.frontend` (`repo_path`, `stack`, `configured`).
+    - **`larapilot:frontend-set`** — persist absolute `frontend.repo_path` and optional `stack` in `.larapilot/config.yaml`.
+    - **`larapilot:frontend-scan`** — detect stack, tooling (Vite/Next/Nuxt/…), structure, and entrypoints in the FE repo (optional `--path=`).
+    - **`larapilot:companion-sync`** — push PRD + product OpenAPI mirror into the configured FE repo (`.larapilot/docs/PRD.md`, `openapi-product.json`, `companion-sync.md`).
+    - **`FrontendService`** — validate path, scan codebase, sync companion artifacts.
+    - **`config-show`** now exposes `data.frontend` (`repo_path`, `stack`, `configured`).
 - **Cross-repo plan/implement** — plan tasks may set `repo: frontend`; implement writes under `data.frontend.repo_path` with FE git/test commands. Task template in `task-templates.md`.
 
 ### Changed
@@ -110,25 +121,25 @@ All notable changes to `larapilot` will be documented in this file.
 ### Added
 
 - **Backstage integration** — publish the `.larapilot/` workspace into a [backstage.io](https://backstage.io) developer portal. One-way by design: the workspace stays the source of truth and workflow state never changes from the portal.
-  - **`/larapilot-backstage`** — skill that asks for catalog identity (owner, system, lifecycle, component type, TechDocs), persists it to `.env`, generates the artifacts, and explains registration. Personas: **Matt** (catalog mapping), **Jack** (CI refresh), **Albert** (TechDocs), **Lars** (token/proxy boundary).
-  - **`larapilot:backstage-export`** — read-only bundle preview by default; `--write` generates `catalog-info.yaml` (a `Component` entity plus one `API` entity per OpenAPI contract found), `mkdocs.yml`, and TechDocs sources under `.larapilot/techdocs/` (`index.md`, `prd.md`, `backlog/index.md`, `backlog/US-XXX.md` rendered from the YAML specs and plans). Also `--force`, `--no-techdocs`, `--file=`, `--api-base=`. Allowed via MCP `RunArtisanTool`.
-  - **`GET /larapilot/api/backstage`** — catalog entities, rendered YAML, TechDocs metadata, and a lean delivery `snapshot` (metrics, per-status counts, blocking feedback, story list without bodies) for a Backstage plugin or entity provider; **`GET /larapilot/api/backstage/catalog-info.yaml`** serves the descriptor as a Backstage `url` location. Both share the dashboard gate (never in production) and belong behind the Backstage backend proxy so `LARAPILOT_API_TOKEN` stays server-side. OpenAPI updated.
-  - **`larapilot.backstage` config** (`LARAPILOT_BACKSTAGE_*`) — `enabled`, `name`/`title`/`description`/`namespace`, `owner`, `system`, `lifecycle`, `component_type`, `tags`, `base_url`, `techdocs`, `workflow_api` (off by default). Catalog identity lives in Laravel config/`.env`, not `.larapilot/config.yaml`, because it describes the org catalog rather than the delivery workflow.
-  - **Runtime pack** — canonical rules in `runtime-ops.md` → **Developer Portal — Backstage** (ownership of generated files, regeneration cadence, security boundary).
+    - **`/larapilot-backstage`** — skill that asks for catalog identity (owner, system, lifecycle, component type, TechDocs), persists it to `.env`, generates the artifacts, and explains registration. Personas: **Matt** (catalog mapping), **Jack** (CI refresh), **Albert** (TechDocs), **Lars** (token/proxy boundary).
+    - **`larapilot:backstage-export`** — read-only bundle preview by default; `--write` generates `catalog-info.yaml` (a `Component` entity plus one `API` entity per OpenAPI contract found), `mkdocs.yml`, and TechDocs sources under `.larapilot/techdocs/` (`index.md`, `prd.md`, `backlog/index.md`, `backlog/US-XXX.md` rendered from the YAML specs and plans). Also `--force`, `--no-techdocs`, `--file=`, `--api-base=`. Allowed via MCP `RunArtisanTool`.
+    - **`GET /larapilot/api/backstage`** — catalog entities, rendered YAML, TechDocs metadata, and a lean delivery `snapshot` (metrics, per-status counts, blocking feedback, story list without bodies) for a Backstage plugin or entity provider; **`GET /larapilot/api/backstage/catalog-info.yaml`** serves the descriptor as a Backstage `url` location. Both share the dashboard gate (never in production) and belong behind the Backstage backend proxy so `LARAPILOT_API_TOKEN` stays server-side. OpenAPI updated.
+    - **`larapilot.backstage` config** (`LARAPILOT_BACKSTAGE_*`) — `enabled`, `name`/`title`/`description`/`namespace`, `owner`, `system`, `lifecycle`, `component_type`, `tags`, `base_url`, `techdocs`, `workflow_api` (off by default). Catalog identity lives in Laravel config/`.env`, not `.larapilot/config.yaml`, because it describes the org catalog rather than the delivery workflow.
+    - **Runtime pack** — canonical rules in `runtime-ops.md` → **Developer Portal — Backstage** (ownership of generated files, regeneration cadence, security boundary).
 - **Project tracker integration** — optional, API-key based sync between the backlog and **Linear**, **Asana**, **Jira**, **Trello**, **ClickUp**, or **Monday**. `.larapilot/` stays the source of truth; the tracker is a window on delivery for people who never open `backlog.yaml`.
-  - **`/larapilot-tracker`** — skill that picks the provider, collects credentials into `.env`, validates the status map against the real board, dry-runs, then pushes. Personas: **Matt** (provider choice, status mapping, link hygiene), **Mark** (what non-developers should see), **Lars** (credential boundary).
-  - **`larapilot:tracker-push`** — user stories become issues/tasks/cards/items titled `US-XXX — Title` carrying the spec body, priority, points, and epic; plan tasks become **native** sub-issues (Linear), subtasks (Jira, Asana, ClickUp), subitems (Monday), or checklist items (Trello). Unchanged stories are skipped without an API call; `--dry-run`, `--spec=`, `--force`. A subtask whose plan task disappears is deleted; a story whose remote record was deleted is recreated.
-  - **`larapilot:tracker-pull`** — read-only drift report by default (local vs remote status per story); `--apply` writes the mapped status back into the backlog. **DONE is never applied** — it is a human review gate that records the merge commit, so it stays with `larapilot:spec-approve`. `LARAPILOT_TRACKER_PULL_COMMENTS=true` imports tracker comments as non-blocking internal feedback, once each.
-  - **`larapilot:tracker-status`** — provider, readiness, missing env vars, status map, linked spec count; `--ping` verifies the credential and the target board/project. Allowed via MCP `RunArtisanTool` (read-only; push/pull are not).
-  - **`larapilot.tracker` config** (`LARAPILOT_TRACKER_*`, `LARAPILOT_{LINEAR,JIRA,ASANA,TRELLO,CLICKUP,MONDAY}_*`) — one active provider, per-provider credentials and `status_map`. Jira uses REST v2 so descriptions stay plain text instead of ADF; Monday needs a long-text column for the spec body.
-  - **`.larapilot/tracker.yaml`** — committed spec → remote-id map (identifiers only, never credentials), keyed by provider so switching tools does not lose the mapping.
-  - **Runtime pack** — canonical rules in `runtime-ops.md` → **Project Trackers** (asymmetric direction, credential boundary, status mapping, sync cadence).
+    - **`/larapilot-tracker`** — skill that picks the provider, collects credentials into `.env`, validates the status map against the real board, dry-runs, then pushes. Personas: **Matt** (provider choice, status mapping, link hygiene), **Mark** (what non-developers should see), **Lars** (credential boundary).
+    - **`larapilot:tracker-push`** — user stories become issues/tasks/cards/items titled `US-XXX — Title` carrying the spec body, priority, points, and epic; plan tasks become **native** sub-issues (Linear), subtasks (Jira, Asana, ClickUp), subitems (Monday), or checklist items (Trello). Unchanged stories are skipped without an API call; `--dry-run`, `--spec=`, `--force`. A subtask whose plan task disappears is deleted; a story whose remote record was deleted is recreated.
+    - **`larapilot:tracker-pull`** — read-only drift report by default (local vs remote status per story); `--apply` writes the mapped status back into the backlog. **DONE is never applied** — it is a human review gate that records the merge commit, so it stays with `larapilot:spec-approve`. `LARAPILOT_TRACKER_PULL_COMMENTS=true` imports tracker comments as non-blocking internal feedback, once each.
+    - **`larapilot:tracker-status`** — provider, readiness, missing env vars, status map, linked spec count; `--ping` verifies the credential and the target board/project. Allowed via MCP `RunArtisanTool` (read-only; push/pull are not).
+    - **`larapilot.tracker` config** (`LARAPILOT_TRACKER_*`, `LARAPILOT_{LINEAR,JIRA,ASANA,TRELLO,CLICKUP,MONDAY}_*`) — one active provider, per-provider credentials and `status_map`. Jira uses REST v2 so descriptions stay plain text instead of ADF; Monday needs a long-text column for the spec body.
+    - **`.larapilot/tracker.yaml`** — committed spec → remote-id map (identifiers only, never credentials), keyed by provider so switching tools does not lose the mapping.
+    - **Runtime pack** — canonical rules in `runtime-ops.md` → **Project Trackers** (asymmetric direction, credential boundary, status mapping, sync cadence).
 - **`larapilot:config-show`** now reports `data.backstage` — resolved entity ref, owner, system, lifecycle, TechDocs paths, and whether the catalog descriptor already exists — and `data.tracker` — provider, readiness, missing env vars, status map, and linked spec count, without ever echoing a credential.
 
 ### Changed
 
 - **Generated-file safety** — `catalog-info.yaml` and `mkdocs.yml` are never overwritten without `--force` (a project may already own them); everything under `.larapilot/techdocs/` is regenerated and pages for deleted specs are pruned.
-- **Status mapping is forward-first** — a story is in sync when its Larapilot status maps *onto* the remote label, so `TODO` and `PLANNED` sharing one column is not drift. Reverse mapping runs only once drift is real and resolves an ambiguous label to the earliest workflow slot; an unmapped remote status is reported, never guessed.
+- **Status mapping is forward-first** — a story is in sync when its Larapilot status maps _onto_ the remote label, so `TODO` and `PLANNED` sharing one column is not drift. Reverse mapping runs only once drift is real and resolves an ambiguous label to the earliest workflow slot; an unmapped remote status is reported, never guessed.
 - **A status map pointing at a column that does not exist fails loudly on every provider**, naming the columns that do exist. Larapilot never creates columns in someone else's tracker — Linear previously would have accepted the issue and filed it in the team's default state.
 - **README + docs site** — new **Developer portal** / **Backstage portal** sections (catalog entity sample, identity env table, TechDocs, live snapshot, security boundary), a **Project trackers** deep-dive (provider matrix, direction, configuration, credential boundary), and a **Tracker sync** use-case walkthrough covering first-run status-map mismatch, push, drift report, and the DONE gate; skill and CLI tables updated; site version **v2.2.0**.
 - **`illuminate/http`** added to `require` — the tracker drivers use Laravel's HTTP client.
@@ -172,7 +183,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **CSRF exemption on the JSON API** did not match the `PreventRequestForgery` middleware registered by newer Laravel versions; scripted `POST /comments` requests failed with 419.
 - **`spec-list` summary `titles`** collapsed to an empty map when any backlog entry lacked a `code`.
 - **`spec-delete`** (service layer) now removes the spec's internal-feedback file as well.
-- **Task commit auto-link** no longer falls back to a commit whose subject references a *different* spec code.
+- **Task commit auto-link** no longer falls back to a commit whose subject references a _different_ spec code.
 - **Mockup assets route** now honors its own `mockup_assets_route` config instead of the `mockups_route` one.
 - **Concurrency** — backlog, plan, and internal-feedback read-modify-write cycles now run under an advisory file lock, so parallel agents can't drop each other's updates.
 

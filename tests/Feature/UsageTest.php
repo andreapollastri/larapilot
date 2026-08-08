@@ -147,7 +147,7 @@ it('renders the usage dashboard with gantt and report download', function (): vo
 
     $this->get('/larapilot/settings')
         ->assertOk()
-        ->assertSee('Lucille · Project tracking');
+        ->assertSee('Project tracking');
 
     $this->get('/larapilot/usage/report.md')
         ->assertOk()
