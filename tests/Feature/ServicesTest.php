@@ -81,18 +81,25 @@ it('exposes default project settings and updates them', function (): void {
         'testing' => 'NORMAL',
         'auto_approve' => 'NO',
         'lucille' => 'YES',
+        'decision_log' => 'YES',
+        'code_history' => 'NO',
+        'dashboard_auth' => 'NO',
         'github' => 'NO',
         'gitlab' => 'NO',
         'bitbucket' => 'NO',
+        'azure' => 'NO',
         'notifications' => 'NO',
         'notify_slack' => 'NO',
         'notify_discord' => 'NO',
         'notify_telegram' => 'NO',
     ])->and($config->autoApproveEnabled())->toBeFalse()
         ->and($config->lucilleEnabled())->toBeTrue()
+        ->and($config->decisionLogEnabled())->toBeTrue()
+        ->and($config->codeHistoryEnabled())->toBeFalse()
         ->and($config->githubEnabled())->toBeFalse()
         ->and($config->gitlabEnabled())->toBeFalse()
         ->and($config->bitbucketEnabled())->toBeFalse()
+        ->and($config->azureEnabled())->toBeFalse()
         ->and($config->notificationsEnabled())->toBeFalse();
 
     $updated = $config->updateSettings([
@@ -104,6 +111,7 @@ it('exposes default project settings and updates them', function (): void {
         'github' => 'YES',
         'gitlab' => 'YES',
         'bitbucket' => 'YES',
+        'azure' => 'YES',
         'notifications' => 'YES',
         'notify_slack' => 'YES',
     ]);
@@ -117,6 +125,7 @@ it('exposes default project settings and updates them', function (): void {
         ->and($updated['github'])->toBe('YES')
         ->and($updated['gitlab'])->toBe('YES')
         ->and($updated['bitbucket'])->toBe('YES')
+        ->and($updated['azure'])->toBe('YES')
         ->and($updated['notifications'])->toBe('YES')
         ->and($updated['notify_slack'])->toBe('YES')
         ->and($config->autoApproveEnabled())->toBeTrue()
@@ -124,6 +133,7 @@ it('exposes default project settings and updates them', function (): void {
         ->and($config->githubEnabled())->toBeTrue()
         ->and($config->gitlabEnabled())->toBeTrue()
         ->and($config->bitbucketEnabled())->toBeTrue()
+        ->and($config->azureEnabled())->toBeTrue()
         ->and($config->notificationsEnabled())->toBeTrue()
         ->and($config->notifySlackEnabled())->toBeTrue()
         ->and($config->setupInfo()['settings']['effort'])->toBe('MAX');

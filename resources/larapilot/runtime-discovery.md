@@ -1,6 +1,6 @@
 # Larapilot Runtime — Discovery
 
-Phase pack for **`larapilot-inception`**, **`larapilot-feature`**, and **`larapilot-spec`**. Read `.larapilot/shared-runtime.md` (core) first; this file holds the canonical discovery and scoping rules.
+Phase pack for **`larapilot-inception`**, **`larapilot-adopt`**, **`larapilot-feature`**, and **`larapilot-spec`**. Read `.larapilot/shared-runtime.md` (core) first; this file holds the canonical discovery and scoping rules.
 
 ## Project Kind
 
@@ -10,8 +10,10 @@ The **first interview layer** in **`larapilot-inception`**. **Mark** asks before
 **Project Kind:** Personal | Website | Application | Package
 **Website Type:** Showcase | Portal | Blog | E-commerce | Landing | Documentation | Other
 **Package Origin:** New | Existing local | Existing git
-**Project Origin:** Greenfield | Legacy rewrite | Legacy port
+**Project Origin:** Greenfield | Legacy rewrite | Legacy port | Adopted (existing codebase)
 ```
+
+`Project Origin: Adopted (existing codebase)` is written by **`larapilot-adopt`** when a running Laravel app is brought under Larapilot with a reverse-engineered PRD — there is no legacy parity contract and Sabrine stays silent; downstream skills treat it like Greenfield for scoping (the FRs simply describe already-shipped work).
 
 `Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
 `Package Origin` (and related package fields under `## Technical Architecture`) are recorded **only** when Project Kind is **Package**.
@@ -100,6 +102,14 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 | **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. **Package** → skip UI mockups unless the package ships UI components; then design the package demo/minisite only. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
 | **`larapilot-frontend-companion`** | Used in the **Laravel workspace** when topology is **`API + external frontend`** — link `frontend.repo_path`, scan existing FE code, orchestrate `repo: frontend` implement |
 | **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release. **Package** → Packagist/private publish checklist, semver tag, docs site, consumer upgrade notes |
+
+## Decision Journal _(inception — `settings.decision_log`, default ON)_
+
+When `data.settings.decision_log` is `YES`, every fixed-choice **AskQuestion** answer and every explicit free-text directive/preference the user gives during discovery is recorded to `.larapilot/decisions.yaml`:
+
+- After the user settles a choice, run `php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=larapilot-inception [--rationale="…"]`. Log the durable choices — Project Kind, Delivery Target, Frontend Topology, admin panel, data store, tenancy pattern, deadlines, brand/UX preferences (colors, tone), explicit exclusions — not every conversational aside.
+- When a later round revisits a topic already decided, first `php artisan larapilot:decision-check --topic="…" --value="<new>"`; if `data.has_regression` is `true`, replay the earlier choice(s) via **AskQuestion** and, once the user confirms the change, re-log with `--supersedes=<id>`.
+- This runs **in addition to** `larapilot:choices-set` (which keeps the current dashboard snapshot) — the journal keeps the history and the regression signal. Full contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`. Skip entirely when the setting is `NO`.
 
 ## Client Materials _(all skills — mandatory input)_
 

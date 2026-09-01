@@ -6,13 +6,14 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Runtime loading:** at skill activation read `.larapilot/shared-runtime.md` (core rules: settings, personas, language, output economy, sub-agents); each skill names the additional runtime packs it needs (`.larapilot/runtime-discovery.md`, `runtime-delivery.md`, `runtime-ux.md`, `runtime-ship.md`, `runtime-ops.md`). Task body templates: `.larapilot/task-templates.md`.
 
-**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents and **disables Lucille automatically** (re-enable with `larapilot:settings-set --lucille=YES`); boolean settings are `true`/`false` in YAML and `YES`/`NO` in envelopes; **Lucille is ON by default** otherwise; **GitHub/GitLab/Bitbucket + notifications are OFF by default** (setup in `.larapilot/integrations.md`).
+**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `dashboard_auth`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents and **disables Lucille automatically** (re-enable with `larapilot:settings-set --lucille=YES`); boolean settings are `true`/`false` in YAML and `YES`/`NO` in envelopes; **Lucille and the decision journal (`decision_log`) are ON by default**; record every explicit user choice with `larapilot:decision-log` and check `larapilot:decision-check` before overriding one; **`code_history` (per spec/task file+line log via `larapilot:code-log`), `dashboard_auth` (optional HTTP Basic Auth on the dashboard UI only — never the JSON API or MCP), GitHub/GitLab/Bitbucket/Azure DevOps + notifications are OFF by default** (setup in `.larapilot/integrations.md`).
 
 ### When to use Larapilot
 
 Use Larapilot skills when the user wants to:
 
 - Define a product vision or write a PRD (guided discovery interview — Project Kind Personal/Website/Application/Package, delivery target, MoSCoW; drop client docs in `.larapilot/client-materials/` and legacy snapshots in `.larapilot/legacy/` first)
+- **Adopt an existing production Laravel app** built without Larapilot — reverse-engineer a complete PRD (+ `.larapilot/research/codebase-analysis.md`) from the code so the normal loop can continue (`larapilot-adopt`)
 - Build or evolve a **PHP/Laravel Composer package** (new or existing path/git) with professional standards, distribution, and docs
 - Create or extend a backlog of user stories / specs
 - Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
@@ -32,6 +33,7 @@ Use Larapilot skills when the user wants to:
 | Step | Skill | Output |
 | --- | --- | --- |
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
+| Brownfield onboarding | `larapilot-adopt` | `.larapilot/docs/PRD.md` (reverse-engineered) + `.larapilot/research/codebase-analysis.md` |
 | Feature / evolutiva | `larapilot-feature` | New `US-XXX` spec (+ optional PRD `FR-XXX`) |
 | Bug report | `larapilot-bug` | Fix spec or rework + `.larapilot/docs/support/intake.md` |
 | FE companion (split repo) | `larapilot-frontend-companion` | Link FE path, scan code; implement via `repo: frontend` from Laravel |
@@ -41,7 +43,7 @@ Use Larapilot skills when the user wants to:
 | Implementation | `larapilot-implement` | Code, tests, review notes |
 | Acceptance | `larapilot-review` | DONE or rework feedback |
 | Ship (optional) | `larapilot-ship` | Security assessment + deploy + web launch checks |
-| Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` / `lucille` in `.larapilot/config.yaml` |
+| Settings | `larapilot-settings` | Persist `effort` / `backlog` / `git_mode` / `testing` / `auto_approve` / `lucille` / `decision_log` / `code_history` in `.larapilot/config.yaml` |
 | Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown resoconto |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
 | Project tracker (optional) | `larapilot-tracker` | Stories + plan subtasks in Linear/Asana/Jira/Trello/ClickUp/Monday; links in `.larapilot/tracker.yaml` |
@@ -68,7 +70,7 @@ Register the Larapilot MCP server in your editor (in addition to `laravel-boost`
 Skills call Artisan commands — never invent persistence logic:
 
 - `php artisan larapilot:config-show`
-- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=…`
+- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=…`
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]`
@@ -95,6 +97,10 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:usage-report [--insights] [--category=] [--user=] [--skill=] [--spec=] [--from=] [--to=]` _(Lucille query + Markdown resoconto)_
 - `php artisan larapilot:schedule-set --deadline=YYYY-MM-DD` _(deadlines / drift notes)_
 - `php artisan larapilot:choices-set --from-prd` _(dashboard inception snapshot)_
+- `php artisan larapilot:decision-log --topic=… --value=… [--source=chat|askquestion --skill=… --spec=… --supersedes=…]` _(decision journal; ON by default)_
+- `php artisan larapilot:decision-check --topic=… [--value=…]` _(read-only; regression check before overriding a choice)_
+- `php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN [--commit=|--range=]` _(code change history; OFF by default)_
+- `php artisan larapilot:code-history [--file=… --spec=…]` _(read-only; per-file touchpoints)_
 
 Parse stdout/stderr as JSON envelopes with schema `larapilot/v1`.
 
@@ -107,7 +113,7 @@ Parse stdout/stderr as JSON envelopes with schema `larapilot/v1`.
 
 ### Artifacts live in the repo
 
-PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · usage ledger `.larapilot/usage/` (Lucille) · choices `.larapilot/choices.yaml` · tracker links `.larapilot/tracker.yaml` (commit it; ids only, never credentials). Dashboard: `/larapilot` (Board · PRD · Settings · Usage — dev/staging only).
+PRD `.larapilot/docs/PRD.md` (living product contract — see **PRD Living Document** in `.larapilot/runtime-ops.md`) · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/US-XXX.yaml` · plans `.larapilot/plans/US-XXX-plan.yaml` · mockups `.larapilot/mockups/{spec}/` (served at `/mockups/{spec}` outside production) · docs (test-results, review, security, support, launch) under `.larapilot/docs/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · usage ledger `.larapilot/usage/` (Lucille) · choices `.larapilot/choices.yaml` · decision journal `.larapilot/decisions.yaml` (via `larapilot:decision-log`; ON by default) · code change history `.larapilot/code-history.yaml` (via `larapilot:code-log`; OFF by default) · tracker links `.larapilot/tracker.yaml` (commit it; ids only, never credentials). Dashboard: `/larapilot` (Board · PRD · Settings · Usage — dev/staging only).
 
 ### Personas
 

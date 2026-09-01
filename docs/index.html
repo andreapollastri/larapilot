@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, /larapilot-* skills, Package project kind, Lucille usage ledger, optional GitHub/GitLab/Bitbucket and chat notifications." />
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, /larapilot-* skills, Package project kind, Lucille usage ledger, optional GitHub/GitLab/Bitbucket/Azure DevOps and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1266,7 +1266,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.4.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.5.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1449,7 +1449,7 @@
 
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
           <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
-          <strong>lucille</strong>, optional <strong>github / gitlab / bitbucket</strong> and
+          <strong>lucille</strong>, optional <strong>github / gitlab / bitbucket / azure</strong> and
           <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
           <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
@@ -2683,15 +2683,35 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         </div>
 
         <article class="deep-dive-sub whats-new" id="whats-new">
-          <h3>What's new in v2.4.2</h3>
-          <p>Polish on Project tracking — shorter settings label and a couple of cleanups.</p>
+          <h3>What's new in v2.5.0</h3>
+          <p>Brownfield onboarding, a fourth remote forge, a decision journal, opt-in code-change history, and an
+            optional lock on the dashboard.</p>
           <ul>
-            <li><strong>Settings label</strong> — Lucille key reads <em>Project tracking</em> (was <em>Lucille · Project tracking</em>)</li>
-            <li><strong>PHPStan / tests</strong> — quieter Gantt assignee analysis; UsageTest imports tightened</li>
+            <li><strong><code>/larapilot-adopt</code></strong> — reverse-engineers a full PRD (+
+              <code>codebase-analysis.md</code>) from an existing production Laravel app built without Larapilot, so the
+              normal loop can continue on it</li>
+            <li><strong>Azure DevOps forge</strong> — <code>settings.azure</code> joins <code>github</code> /
+              <code>gitlab</code> / <code>bitbucket</code>; <code>az repos</code> or REST (PAT) for Azure Repos PRs;
+              probe <code>larapilot:azure-status</code>; <code>dev.azure.com</code> / <code>visualstudio.com</code>
+              remotes recognised for commit links</li>
+            <li><strong>Decision journal + regression guard</strong> — <code>settings.decision_log</code> (ON by default)
+              appends every explicit choice, timestamped, to <code>.larapilot/decisions.yaml</code> via
+              <code>larapilot:decision-log</code>; <code>larapilot:decision-check</code> surfaces an earlier
+              non-superseded decision before a phase overrides it, so reversals are confirmed and re-logged with
+              <code>--supersedes</code></li>
+            <li><strong>Code change history</strong> — opt-in <code>settings.code_history</code> logs the files and
+              new-file line ranges each spec/task touched, derived from the task's git commit;
+              <code>larapilot:code-log</code> / <code>larapilot:code-history</code></li>
+            <li><strong>Optional dashboard auth</strong> — <code>settings.dashboard_auth</code> (OFF by default) puts
+              HTTP Basic Auth in front of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only
+              (never <code>/larapilot/api/*</code> or MCP). Credentials are argon2id/bcrypt hashes in
+              <code>.larapilot/auth.yaml</code> (no database, no <code>User</code> model; git-ignored automatically),
+              managed with <code>larapilot:dashboard-user</code>; failed sign-ins are rate-limited per IP</li>
           </ul>
-          <p class="muted" style="margin-top:0.75rem;font-size:0.9em;">Also in <strong>v2.4.1</strong>: epics with objectives &amp; deadlines,
-            dependency-aware Gantt, Zoey vs Lucille panel, usage UX (hours / <code>K</code> tokens, paginated ledger).
-            In <strong>v2.4.0</strong>: 30 personas (Mike, Lucille, Sarah), Project Kind Package, optional forges + chat notifications.</p>
+          <p class="muted" style="margin-top:0.75rem;font-size:0.9em;">Also in <strong>v2.4.2</strong>: shorter Project
+            tracking settings label. In <strong>v2.4.1</strong>: epics with objectives &amp; deadlines, dependency-aware
+            Gantt, Zoey vs Lucille panel. In <strong>v2.4.0</strong>: 30 personas, Project Kind Package, optional forges
+            + chat notifications.</p>
         </article>
 
         <!-- How it works -->
@@ -2975,7 +2995,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-settings</code></h3>
                 <p>AskQuestion for persistent project settings — effort, backlog, git mode, testing, auto-approve,
-                  lucille, GitHub / GitLab / Bitbucket, and notification channels. Written to
+                  lucille, GitHub / GitLab / Bitbucket / Azure DevOps, and notification channels. Written to
                   <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
@@ -3030,14 +3050,15 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         <!-- Project settings -->
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
-          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, auto-approve, Lucille, and
-            optional GitHub / GitLab / Bitbucket + Slack / Discord / Telegram (forges and chat OFF by default).
+          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, auto-approve, Lucille,
+            optional dashboard auth, and
+            optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram (dashboard auth, forges and chat OFF by default).
             Configure with <code>/larapilot-settings</code> (AskQuestion). Values live under <code>settings:</code> in
             <code>.larapilot/config.yaml</code>. Every skill reads and honors them via <code>config-show</code>.
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --github=… --gitlab=… --bitbucket=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --dashboard-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3045,7 +3066,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
-            <code>github|gitlab|bitbucket: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
+            <code>dashboard_auth: NO</code> ·
+            <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
 
           <h4 id="deep-dive-effort">Effort</h4>
@@ -3144,7 +3166,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               workflow</a>.</p>
 
           <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
-          <p><code>settings.github</code>, <code>gitlab</code>, and <code>bitbucket</code> (all default
+          <p><code>settings.github</code>, <code>gitlab</code>, <code>bitbucket</code>, and <code>azure</code> (all default
             <code>NO</code>) are <strong>orthogonal</strong> to <code>git_mode</code>. Enable the forge matching
             <code>origin</code>:
           </p>
@@ -3153,6 +3175,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <li><strong>GitLab</strong> — <code>glab</code> CLI (MR); probe <code>larapilot:gitlab-status</code></li>
             <li><strong>Bitbucket Cloud</strong> — REST API with access token or app password; probe
               <code>larapilot:bitbucket-status</code></li>
+            <li><strong>Azure DevOps</strong> — <code>az repos</code> (<code>azure-devops</code> extension) or REST API with a
+              PAT; probe <code>larapilot:azure-status</code></li>
           </ul>
           <p>When ON, skills open/update the PR/MR, always print the URL, and can notify
             <code>pr_opened</code> / <code>pr_updated</code>. Full setup:
@@ -3167,6 +3191,27 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <code>task-done</code> → <code>task_done</code>, <code>spec-approve</code> → <code>spec_done</code>.
             Full event list: <a href="#deep-dive-integrations">Forges &amp; notifications</a>.
           </p>
+
+          <h4 id="deep-dive-dashboard-auth">Dashboard auth <span class="chip">opt-in</span></h4>
+          <p><code>settings.dashboard_auth</code> (default <code>NO</code>) puts <strong>HTTP Basic Auth</strong> in front
+            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only. It never gates
+            <code>/larapilot/api/*</code> (that stays <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the
+            dashboard is still never served in <code>production</code>.
+          </p>
+          <ul>
+            <li>Credentials are argon2id/bcrypt <strong>hashes</strong> in <code>.larapilot/auth.yaml</code> — no
+              database, no <code>User</code> model, never cleartext. The file is added to <code>.gitignore</code>
+              automatically the first time a user is written.</li>
+            <li>Manage users with <code>php artisan larapilot:dashboard-user {list|add &lt;username&gt;|remove
+              &lt;username&gt;}</code> — <code>add</code> prompts for the password (or takes <code>--password=</code>).</li>
+            <li>Failed sign-ins are rate-limited per IP
+              (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 30/min). With the setting ON and
+              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 500</code>.</li>
+            <li>Enable with <code>php artisan larapilot:settings-set --dashboard-auth=YES</code>. Serve over HTTPS on
+              shared hosts — Basic Auth sends credentials on every request. Setup:
+              <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
+              <code>.larapilot/integrations.md</code>.</li>
+          </ul>
 
           <h4 id="deep-dive-testing-mode">Testing</h4>
           <div class="table-card">
@@ -3264,9 +3309,11 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
   --testing=NORMAL \
   --auto-approve=NO \
   --lucille=YES \
+  --dashboard-auth=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
+  --azure=NO \
   --notifications=NO \
   --notify-slack=NO \
   --notify-discord=NO \
@@ -3650,7 +3697,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
 
           <div class="file-tree">.larapilot/
             ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / lucille / forges…)</span>
-            ├── integrations.md <span class="comment"># optional GitHub/GitLab/Bitbucket + Slack/Discord/Telegram</span>
+            ├── integrations.md <span class="comment"># optional GitHub/GitLab/Bitbucket/Azure DevOps + Slack/Discord/Telegram</span>
             ├── choices.yaml <span class="comment"># inception/settings snapshot (choices-set)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
@@ -3689,8 +3736,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
-                    <code>auto_approve</code>, <code>lucille</code>, <code>github</code>,
-                    <code>gitlab</code>, <code>bitbucket</code>,
+                    <code>auto_approve</code>, <code>lucille</code>, <code>dashboard_auth</code>, <code>github</code>,
+                    <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
                 </tr>
@@ -3838,6 +3885,11 @@ php artisan larapilot:schedule-set --deadline=2026-09-15 --label="MVP go-live" -
                   <td>Bitbucket Cloud REST (access token or app password)</td>
                   <td><code>larapilot:bitbucket-status</code></td>
                 </tr>
+                <tr>
+                  <td><code>azure</code></td>
+                  <td>Azure CLI (<code>az repos</code> + <code>azure-devops</code> ext) or REST (PAT)</td>
+                  <td><code>larapilot:azure-status</code></td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -3856,10 +3908,33 @@ php artisan larapilot:schedule-set --deadline=2026-09-15 --label="MVP go-live" -
             <li>Skill events: PR/MR opened/updated, review, ship, schedule drift</li>
             <li>Env: <code>LARAPILOT_SLACK_WEBHOOK_URL</code>, <code>LARAPILOT_DISCORD_WEBHOOK_URL</code>,
               <code>LARAPILOT_TELEGRAM_BOT_TOKEN</code>, <code>LARAPILOT_TELEGRAM_CHAT_ID</code>; Bitbucket
-              <code>BITBUCKET_ACCESS_TOKEN</code> or username + app password</li>
+              <code>BITBUCKET_ACCESS_TOKEN</code> or username + app password; Azure DevOps
+              <code>AZURE_DEVOPS_EXT_PAT</code> (or <code>az login</code>)</li>
           </ul>
           <p>Settings tables: <a href="#deep-dive-github">Remote forges</a> ·
             <a href="#deep-dive-notifications">Notifications</a>.</p>
+
+          <h4>Dashboard access</h4>
+          <p>Optional <strong>HTTP Basic Auth</strong> on the <a href="#deep-dive-dashboard">dashboard</a> UI, via the
+            <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> setting (default <code>NO</code>).
+            UI-only — never <code>/larapilot/api/*</code> or MCP.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header">manage dashboard users</div>
+            <pre><code>php artisan larapilot:dashboard-user add andrea        # prompts for the password (or --password=)
+php artisan larapilot:dashboard-user list
+php artisan larapilot:dashboard-user remove andrea
+php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
+          </div>
+          <ul>
+            <li>Credentials are argon2id/bcrypt hashes in <code>.larapilot/auth.yaml</code> — no database, no
+              <code>User</code> model; the file is added to <code>.gitignore</code> automatically.</li>
+            <li>Env: <code>LARAPILOT_DASHBOARD_AUTH_REALM</code>, <code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>
+              (failed sign-ins per minute per IP, default 30; <code>0</code> disables throttling).</li>
+            <li><code>dashboard_auth=YES</code> with no users → dashboard fails closed (<code>HTTP 500</code>). Serve over
+              HTTPS on shared hosts.</li>
+          </ul>
+          <p>Settings table: <a href="#deep-dive-dashboard-auth">Dashboard auth</a>.</p>
         </article>
 
         <!-- Design systems -->
@@ -4660,7 +4735,8 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
                     <code>larapilot:config-show</code> · <code>larapilot:settings-set</code> ·
                     <code>larapilot:github-status</code> · <code>larapilot:gitlab-status</code> ·
-                    <code>larapilot:bitbucket-status</code> · <code>larapilot:notify</code> ·
+                    <code>larapilot:bitbucket-status</code> · <code>larapilot:azure-status</code> ·
+                    <code>larapilot:notify</code> ·
                     <code>larapilot:quality</code> (<code>--fix</code>)
                   </td>
                   <td>Install, upgrades, health check, <a href="#deep-dive-code-quality">code quality</a>, <a
@@ -4778,8 +4854,31 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
     'prefix' => 'larapilot',           // change to customize URL prefix
     'middleware' => ['web'],
     'environments' => ['local', 'development', 'testing', 'staging'],
+
+    // Optional HTTP Basic Auth on the UI — enforced only when the
+    // `dashboard_auth` project setting is ON. Never gates the JSON API or MCP.
+    'auth' => [
+        'file' => base_path('.larapilot/auth.yaml'),   // hashed credentials, git-ignored
+        'realm' => env('LARAPILOT_DASHBOARD_AUTH_REALM', 'Larapilot'),
+        'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 30),
+    ],
 ],</code></pre>
           </div>
+
+          <h4>Authentication <span class="chip">opt-in</span></h4>
+          <p>The dashboard UI is open by default in the allowed environments. Turn on the
+            <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> project setting to require
+            <strong>HTTP Basic Auth</strong>:</p>
+          <div class="code-block">
+            <div class="code-block-header">enable the dashboard gate</div>
+            <pre><code>php artisan larapilot:dashboard-user add andrea      # prompts for a password, stores only the hash
+php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
+          </div>
+          <p>Credentials are argon2id/bcrypt hashes in <code>.larapilot/auth.yaml</code> (no database, no
+            <code>User</code> model; added to <code>.gitignore</code> automatically). Failed sign-ins are rate-limited
+            per IP. This gate is <strong>UI-only</strong> — it never applies to <code>/larapilot/api/*</code> (use
+            <code>LARAPILOT_API_TOKEN</code>) or the MCP server. Full reference:
+            <a href="#deep-dive-dashboard-auth">Project settings → Dashboard auth</a>.</p>
 
           <h4>Pages</h4>
           <div class="table-card">
@@ -4839,7 +4938,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
 
           <h4>Settings &amp; Usage</h4>
           <p><strong>Settings</strong> shows the live project modes (effort, backlog, git, testing, auto-approve,
-            lucille, forges, notifications) and the inception choices snapshot. <strong>Usage</strong> is Lucille's
+            lucille, dashboard auth, forges, notifications) and the inception choices snapshot. <strong>Usage</strong> is Lucille's
             surface — category breakdowns, schedule Gantt, and a one-click Markdown resoconto. Same data as
             <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
 
@@ -4885,6 +4984,9 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
             environments, but write endpoints (<code>POST /comments</code>) are refused outside
             local/development/testing.
           </p>
+          <p>The optional <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> setting (Basic Auth on the
+            dashboard UI) does <strong>not</strong> apply here — the JSON API is gated only by
+            <code>LARAPILOT_API_TOKEN</code> and the dashboard activation conditions.</p>
 
           <h4>Endpoints</h4>
           <div class="table-card">
@@ -5094,7 +5196,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
   </div>
 
   <footer>
-    <p>Larapilot v2.4.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.5.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -7,9 +7,15 @@ settings:
   testing: NORMAL
   auto_approve: false
   lucille: true
+  # Decision journal + regression guard (.larapilot/decisions.yaml) — ON by default.
+  decision_log: true
+  # Per spec/task file + line-range history (.larapilot/code-history.yaml) — OFF by default.
+  code_history: false
+  dashboard_auth: false
   github: false
   gitlab: false
   bitbucket: false
+  azure: false
   notifications: false
   notify_slack: false
   notify_discord: false

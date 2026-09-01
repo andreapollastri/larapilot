@@ -85,7 +85,7 @@ Ownership: **Mike** decides; **John** integrates with app boundaries; **Alex** i
 | --- | --- | --- |
 | **Custom CLIs** | Decide Bash vs Go vs Artisan; write/maintain the tool | **Andrew** (Artisan vs external), **Albert** (usage docs) |
 | **Git (general)** | Conflict resolution, rebase vs merge, interactive rebase, cherry-pick, bisect, reflog recovery, history hygiene, submodule/worktree pitfalls | **Alex** (file content during conflicts), **Jack** (branch policy), **Robert** (rejects messy multi-task commits) |
-| **Git / forge automation** | Hooks, `gh`/`glab`/API scripts, branch helpers, release tagging scripts | **Jack** (Gitflow policy), **Alex** (per-task discipline) |
+| **Git / forge automation** | Hooks, `gh`/`glab`/`az repos`/API scripts, branch helpers, release tagging scripts | **Jack** (Gitflow policy), **Alex** (per-task discipline) |
 | **CI pipelines** | Workflow YAML, job scripts, matrix runners, cache, artifacts | **Jack** (required gates / merge blockers), **Anne** (test commands), **Lars** (audit/security steps) |
 | **Linux / terminal / server** | Shell scripts, systemd units, cron, deploy hooks, SSH/rsync glue, VPS bootstrap | **Jack** (deploy platform & orchestration), **Lars** (secrets / hardening) |
 
@@ -133,7 +133,11 @@ Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required 
 | **PR lifecycle**       | Keep one PR per spec; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                                                   |
 | **Hygiene**            | Rebase or merge `develop` when drifted (**Sarah** leads conflict resolution); run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes              |
 
-**Optional remote forges (`settings.github` / `gitlab` / `bitbucket`, default OFF):** orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: use `gh` (GitHub), `glab` (GitLab MR), or Bitbucket Cloud API; always print the PR/MR URL; run `larapilot:{github,gitlab,bitbucket}-status` if unsure; notify `pr_opened` / `pr_updated` when notifications are enabled. When OFF, leave remote PR handling as today. Setup: `.larapilot/integrations.md`.
+**Optional remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`, default OFF):** orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: use `gh` (GitHub), `glab` (GitLab MR), Bitbucket Cloud API, or `az repos` / Azure DevOps REST (Azure Repos PR); always print the PR/MR URL; run `larapilot:{github,gitlab,bitbucket,azure}-status` if unsure; notify `pr_opened` / `pr_updated` when notifications are enabled. When OFF, leave remote PR handling as today. Setup: `.larapilot/integrations.md`.
+
+**Code change history (`settings.code_history`, default OFF):** when `data.settings.code_history` is `YES`, run `php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN --skill=larapilot-implement` right after each `larapilot:task-done` (and once at `spec-review`). It reads the task's commit itself and records the touched files + line ranges into `.larapilot/code-history.yaml`. When OFF, skip it. Contract: **Code change history (`settings.code_history`)** in `shared-runtime.md`.
+
+**Decision journal (`settings.decision_log`, default ON):** if the user redirects scope or changes a preference mid-implement, record it with `php artisan larapilot:decision-log --topic="…" --value="…" --source=chat --skill=larapilot-implement --spec=US-XXX`, and run `larapilot:decision-check` first when it reverses an earlier recorded choice (surface the conflict, then re-log with `--supersedes=<id>`).
 
 Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward `develop`. Under **`GITFLOW`**, a missing remote push/PR is **not** a reject reason.
 

@@ -16,9 +16,13 @@ class SettingsSetCommand extends LarapilotCommand
                             {--testing= : Testing mode: MINIMAL, NORMAL, or BEST}
                             {--auto-approve= : Auto-approve after implement: YES or NO}
                             {--lucille= : Lucille usage tracking: YES (default) or NO to exclude explicitly}
+                            {--decision-log= : Decision journal + regression guard: YES (default) or NO}
+                            {--code-history= : Per spec/task code change history: YES or NO (default NO)}
+                            {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
                             {--github= : GitHub remote via gh CLI: YES or NO (default NO)}
                             {--gitlab= : GitLab remote via glab CLI: YES or NO (default NO)}
                             {--bitbucket= : Bitbucket Cloud remote via API tokens: YES or NO (default NO)}
+                            {--azure= : Azure DevOps remote via az CLI / PAT: YES or NO (default NO)}
                             {--notifications= : Master chat notifications switch: YES or NO (default NO)}
                             {--notify-slack= : Slack notifications: YES or NO (default NO)}
                             {--notify-discord= : Discord notifications: YES or NO (default NO)}
@@ -85,9 +89,13 @@ class SettingsSetCommand extends LarapilotCommand
         foreach ([
             'auto-approve' => ['auto_approve', $config->allowedAutoApproveModes()],
             'lucille' => ['lucille', $config->allowedLucilleModes()],
+            'decision-log' => ['decision_log', $config->allowedDecisionLogModes()],
+            'code-history' => ['code_history', $config->allowedCodeHistoryModes()],
+            'dashboard-auth' => ['dashboard_auth', $config->allowedDashboardAuthModes()],
             'github' => ['github', $config->allowedGithubModes()],
             'gitlab' => ['gitlab', $config->allowedGitlabModes()],
             'bitbucket' => ['bitbucket', $config->allowedBitbucketModes()],
+            'azure' => ['azure', $config->allowedAzureModes()],
             'notifications' => ['notifications', $config->allowedNotificationsModes()],
             'notify-slack' => ['notify_slack', $config->allowedNotifyChannelModes()],
             'notify-discord' => ['notify_discord', $config->allowedNotifyChannelModes()],
@@ -113,7 +121,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --github, --gitlab, --bitbucket, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --decision-log, --code-history, --dashboard-auth, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
+use Larapilot\Services\AzureDevopsService;
 use Larapilot\Services\BitbucketService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\GithubService;
@@ -75,16 +76,18 @@ it('rejects invalid notify events', function (): void {
         ->expectsOutputToContain('E_INVALID_INPUT');
 });
 
-it('returns github gitlab and bitbucket status envelopes', function (): void {
+it('returns github gitlab bitbucket and azure status envelopes', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
     $this->artisan('larapilot:github-status')->assertSuccessful();
     $this->artisan('larapilot:gitlab-status')->assertSuccessful();
     $this->artisan('larapilot:bitbucket-status')->assertSuccessful();
+    $this->artisan('larapilot:azure-status')->assertSuccessful();
 
     expect(app(GithubService::class)->status()['enabled'])->toBeFalse()
         ->and(app(GitlabService::class)->status()['enabled'])->toBeFalse()
         ->and(app(BitbucketService::class)->status()['enabled'])->toBeFalse()
+        ->and(app(AzureDevopsService::class)->status()['enabled'])->toBeFalse()
         ->and(app(GitlabService::class)->status())->toHaveKeys([
             'glab_installed',
             'authenticated',
@@ -98,17 +101,28 @@ it('returns github gitlab and bitbucket status envelopes', function (): void {
             'is_bitbucket_remote',
             'ready',
             'hints',
+        ])
+        ->and(app(AzureDevopsService::class)->status())->toHaveKeys([
+            'az_installed',
+            'devops_extension',
+            'authenticated',
+            'auth_method',
+            'is_azure_remote',
+            'ready',
+            'hints',
         ]);
 
     $this->artisan('larapilot:settings-set', [
         '--github' => 'YES',
         '--gitlab' => 'YES',
         '--bitbucket' => 'YES',
+        '--azure' => 'YES',
     ])->assertSuccessful();
 
     expect(app(ConfigService::class)->githubEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->gitlabEnabled())->toBeTrue()
-        ->and(app(ConfigService::class)->bitbucketEnabled())->toBeTrue();
+        ->and(app(ConfigService::class)->bitbucketEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->azureEnabled())->toBeTrue();
 });
 
 it('hooks task-done notification without failing when notifications are off', function (): void {

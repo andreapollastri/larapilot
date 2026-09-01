@@ -6,6 +6,7 @@ namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\DashboardController;
+use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
 
 class DashboardRouteRegistrar
@@ -17,7 +18,7 @@ class DashboardRouteRegistrar
         }
 
         $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
-        $middleware = config('larapilot.dashboard_route.middleware', ['web']);
+        $middleware = [...(array) config('larapilot.dashboard_route.middleware', ['web']), EnsureDashboardAuthorized::class];
 
         Route::middleware($middleware)
             ->prefix($prefix)

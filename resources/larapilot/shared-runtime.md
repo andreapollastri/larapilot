@@ -4,7 +4,7 @@ Runtime rules shared by **all** Larapilot skills. Load this file once at activat
 
 | Pack                              | Canonical content                                                                                                                                                | Loaded by                                    |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------| ---------------------------------------------|
-| `.larapilot/runtime-discovery.md` | Project Kind (incl. Package), client materials, legacy rewrite/porting, reference-product deepsearch, delivery target, MoSCoW matrix, Budget Sensitivity, Frontend Topology | `inception`, `feature`, `spec`               |
+| `.larapilot/runtime-discovery.md` | Project Kind (incl. Package), client materials, legacy rewrite/porting, reference-product deepsearch, delivery target, MoSCoW matrix, Budget Sensitivity, Frontend Topology | `inception`, `adopt`, `feature`, `spec`      |
 | `.larapilot/runtime-delivery.md`  | Architecture standards (SOLID/N+1), data architecture (Mike), CLI / Git (incl. conflicts) / pipelines / Linux (Sarah), multi-tenancy, Git/Gitflow + TASK-00 discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, CI/semver, technical docs, i18n | `plan`, `implement`, `review`, `autopilot`   |
 | `.larapilot/runtime-ux.md`        | Mobile-first/responsive contract, WCAG/a11y, brand assets, SEO structure, design systems, copywriting, marketing                                                  | `design`, `plan` (UI specs), `ship`          |
 | `.larapilot/runtime-ship.md`      | Deploy platforms & runbooks, edge/CDN/WAF, cloud, observability, OWASP security gate, privacy/legal launch gate, launch checks                                    | `ship`                                       |
@@ -36,7 +36,9 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `github`, `gitlab`, `bitbucket`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `dashboard_auth`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- Decision journal (default ON): record every explicit user choice with `php artisan larapilot:decision-log`, and run `php artisan larapilot:decision-check` before overriding a topic that may already carry one — see **Decision journal (`settings.decision_log`)** below.
+- Code change history (default OFF): when `data.settings.code_history` is `YES`, call `php artisan larapilot:code-log` after each `task-done` — see **Code change history (`settings.code_history`)** below.
 
 ### Worktree working directory
 
@@ -48,7 +50,7 @@ Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not inst
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `github|gitlab|bitbucket: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `dashboard_auth: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Effort (`settings.effort`)
 
@@ -122,7 +124,44 @@ Stored in `config.yaml` as a boolean **`true`/`false`**. The `settings-set` flag
 
 Unset or missing key → treat as **`YES`** (never infer exclusion), unless you just switched to ECO via `settings-set` (that path writes `lucille: false`). Re-enable with `php artisan larapilot:settings-set --lucille=YES`.
 
-### Remote forges (`settings.github` / `gitlab` / `bitbucket`) — opt-in, default OFF
+### Decision journal (`settings.decision_log`) — opt-out, default ON
+
+An append-only, timestamped record of every **explicit user decision** across all phases — both fixed-choice **AskQuestion** answers and free-text directives/preferences ("the background must be orange", "no soft-delete", "drop German for v1"). Persisted to `.larapilot/decisions.yaml` (never rewritten in place — a reversal is a new entry pointing at the one it supersedes).
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`YES`** (never infer exclusion).
+
+| Value | Behavior |
+| --- | --- |
+| **`true` / `YES`** | **Default.** After the user commits a material choice, record it: `php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion\|chat --skill=<skill> [--spec=US-XXX] [--rationale="…"]`. **Before** recording a value on a topic that might already carry a decision, first run `php artisan larapilot:decision-check --topic="…" --value="…"`; when `data.has_regression` is `true`, surface the earlier choice(s) from `data.conflicts` via **AskQuestion** ("on {ts date} you chose **{old}** for {label}; confirm **{new}** supersedes it") and only then re-run `decision-log` with `--supersedes=<id>` of the entry being overridden. Never silently overwrite an earlier decision; never hand-edit `decisions.yaml`. |
+| **`false` / `NO`** | **Excluded.** Skills must not call `decision-log` / `decision-check`. Any existing `.larapilot/decisions.yaml` stays readable. |
+
+Topic is matched case-insensitively (normalized + substring), so keep `--topic` stable and specific ("primary background color", not "color"). `--source=askquestion` for AskQuestion answers, `--source=chat` for free-text directives.
+
+### Code change history (`settings.code_history`) — opt-in, default OFF
+
+An append-only log of **where in the codebase work happened** — per spec/task, the files and new-file line ranges touched, derived automatically from the task's git commit. Persisted to `.larapilot/code-history.yaml`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`true` / `YES`** | After each `larapilot:task-done` (and once more at `spec-review`), call `php artisan larapilot:code-log --spec=US-XXX --task=TASK-XX --skill=larapilot-implement`. The command resolves the task's commit itself (`--commit=` / `--range=` override it; it falls back to the working-tree diff when no commit resolves). `larapilot:code-history [--file= --spec=]` reports per-file touchpoints. |
+| **`false` / `NO`** | **Default.** Skip entirely — no `code-log` calls. |
+
+### Dashboard auth (`settings.dashboard_auth`) — opt-in, default OFF
+
+Optional HTTP Basic Auth on the `/larapilot` **dashboard UI only**. OFF by default: the dashboard stays open in the allowed environments exactly as before. **Never** gates `/larapilot/api/*` (that is `LARAPILOT_API_TOKEN`) or the MCP server.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** Dashboard pages require no credentials. |
+| **`true` / `YES`** | Every dashboard page requires a username + password from `.larapilot/auth.yaml`. With the setting ON and **no** users configured, the dashboard returns HTTP 500 until a user is added. |
+
+Credentials are argon2id/bcrypt hashes only — no database, no `User` model. `.larapilot/auth.yaml` is added to `.gitignore` automatically and must never be committed. Manage users with `php artisan larapilot:dashboard-user {list|add|remove}` (the `add` action prompts for the password, or takes `--password=`). Failed sign-ins are throttled per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). Enable the gate with `php artisan larapilot:settings-set --dashboard-auth=YES`. Setup notes: `.larapilot/integrations.md`.
+
+### Remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`) — opt-in, default OFF
 
 Optional remote forge integrations. **Orthogonal to `git_mode`**: when all are OFF, Gitflow push/PR rules behave exactly as before. Enable the forge that matches `origin`.
 
@@ -133,6 +172,7 @@ Stored as booleans `true`/`false`; envelope exposes `YES`/`NO`. Missing keys →
 | `github` | `gh` CLI | `larapilot:github-status` | `gh pr create/view`; print PR URL; notify `pr_*` |
 | `gitlab` | `glab` CLI | `larapilot:gitlab-status` | `glab mr create/view`; print MR URL; notify `pr_*` |
 | `bitbucket` | Bitbucket Cloud REST API (token / app password) | `larapilot:bitbucket-status` | Create/update PR via API; print PR URL; notify `pr_*` |
+| `azure` | Azure CLI (`az repos` + `azure-devops` ext) or REST API (PAT) | `larapilot:azure-status` | `az repos pr create/show` (or REST); print PR URL; notify `pr_*` |
 
 Setup steps: `.larapilot/integrations.md`.
 
@@ -290,6 +330,7 @@ Zoey posts **exactly one line** at skill **start** (after loading shared-runtime
 | Skill / phase             | Economy level    | Chat behavior                                                                                                                                                                                                                                                       |
 | ------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **`larapilot-inception`** | Clarity first    | Discovery needs rationale for trade-offs (tenancy, budget, compliance). Still: no filler, no recap of what the user already said, at most 3 questions per round. Persona blocks: **2–4 sentences** when contributing. PRD file: formal and complete.                  |
+| **`larapilot-adopt`**     | Clarity first    | Report what the code shows with file-path evidence, then ask only the gaps (max 3/round). Persona blocks: **2–4 sentences**. `codebase-analysis.md` and the reverse-engineered PRD: formal and complete.                                                              |
 | **`larapilot-feature`**   | Moderate         | Focused mini-inception — brief scope summary; AskQuestion rounds max 3/round. Spec body: full user story and AC.                                                                                                                                                      |
 | **`larapilot-bug`**       | Moderate         | Brief triage summary; full reproduce steps and fix AC in spec or rework payload.                                                                                                                                                                                      |
 | **`larapilot-spec`**      | Moderate         | Brief announce of bootstrap vs extend and epic/priority choices. Spec markdown bodies: full user story and acceptance criteria — never shortened.                                                                                                                     |
@@ -330,13 +371,14 @@ Some skills spawn **readonly sub-agents** for fresh context via the editor's sub
 
 | Skill                     | Sub-agent                     | When                                                        | Role                                              |
 | ------------------------- | ----------------------------- | ----------------------------------------------------------- | ---------------------------------------------------|
+| **`larapilot-adopt`**     | Codebase explore _(optional)_ | Step 1, large or unfamiliar repo (never under `effort: ECO`) | readonly structure/inventory mapping                |
 | **`larapilot-plan`**      | Codebase explore _(optional)_ | Stage 1, large or unfamiliar `data.workdir`                  | readonly codebase mapping                           |
 | **`larapilot-implement`** | Robert + Lars                 | Phase 2, after all tasks `task-done`                         | readonly code review + security review, parallel    |
 | **`larapilot-review`**    | —                             | Reads parent-written `{paths.review}/{code}.md` if present   | no spawn                                            |
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
-Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `frontend-companion`, `ship`, `settings`, `autopilot` (the parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself).
+Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `frontend-companion`, `ship`, `settings`, `autopilot` (the parent follows child skill rules when batching, but does not fork implement/plan sub-agents itself). `adopt` may spawn **one** optional readonly `Explore` sub-agent for repo mapping (never under `effort: ECO`).
 
 ### Review artifact
 
@@ -346,7 +388,7 @@ After merging sub-agent findings in **`larapilot-implement`**, the parent writes
 
 - Use the configured output path from `config-show` whenever present; create parent directories if they do not exist.
 - Overwrite the target generated artifact for the current run unless the active flow explicitly says otherwise.
-- Standard artifact homes (defaults): PRD `.larapilot/docs/PRD.md` · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/` · plans `.larapilot/plans/` · mockups `.larapilot/mockups/{spec}/` · review findings `.larapilot/docs/review/` · security `.larapilot/docs/security/` · support `.larapilot/docs/support/` · launch `.larapilot/docs/launch/` · test results `.larapilot/docs/test-results/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · design systems `.larapilot/design-systems/`.
+- Standard artifact homes (defaults): PRD `.larapilot/docs/PRD.md` · backlog `.larapilot/backlog.yaml` · specs `.larapilot/specs/` · plans `.larapilot/plans/` · mockups `.larapilot/mockups/{spec}/` · review findings `.larapilot/docs/review/` · security `.larapilot/docs/security/` · support `.larapilot/docs/support/` · launch `.larapilot/docs/launch/` · test results `.larapilot/docs/test-results/` · client materials `.larapilot/client-materials/` · legacy `.larapilot/legacy/` · research `.larapilot/research/` · design systems `.larapilot/design-systems/` · decision journal `.larapilot/decisions.yaml` (via `larapilot:decision-log`, never hand-edited) · code change history `.larapilot/code-history.yaml` (via `larapilot:code-log`, never hand-edited).
 
 ## Non-negotiables
 

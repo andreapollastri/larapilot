@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Larapilot;
 
 use Illuminate\Support\ServiceProvider;
+use Larapilot\Console\Commands\AzureDevopsStatusCommand;
 use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\BitbucketStatusCommand;
 use Larapilot\Console\Commands\ChoicesSetCommand;
+use Larapilot\Console\Commands\CodeHistoryLogCommand;
+use Larapilot\Console\Commands\CodeHistoryShowCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
+use Larapilot\Console\Commands\DashboardUserCommand;
+use Larapilot\Console\Commands\DecisionCheckCommand;
+use Larapilot\Console\Commands\DecisionLogCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
@@ -49,12 +55,15 @@ use Larapilot\Http\MockupAssetsRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\ApiService;
+use Larapilot\Services\AzureDevopsService;
 use Larapilot\Services\BackstageService;
 use Larapilot\Services\BitbucketService;
+use Larapilot\Services\CodeHistoryService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
+use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GithubService;
@@ -78,7 +87,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.4.1';
+    public const VERSION = '2.5.0';
 
     public function register(): void
     {
@@ -86,6 +95,8 @@ class LarapilotServiceProvider extends ServiceProvider
 
         $this->app->singleton(ConfigService::class);
         $this->app->singleton(CodeQualityService::class);
+        $this->app->singleton(DecisionService::class);
+        $this->app->singleton(CodeHistoryService::class);
         $this->app->singleton(CompanionService::class);
         $this->app->singleton(FrontendService::class);
         $this->app->singleton(BackstageService::class);
@@ -94,6 +105,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(GithubService::class);
         $this->app->singleton(GitlabService::class);
         $this->app->singleton(BitbucketService::class);
+        $this->app->singleton(AzureDevopsService::class);
         $this->app->singleton(NotifyService::class);
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
@@ -127,10 +139,12 @@ class LarapilotServiceProvider extends ServiceProvider
                 BackstageExportCommand::class,
                 ConfigShowCommand::class,
                 SettingsSetCommand::class,
+                DashboardUserCommand::class,
                 NotifyCommand::class,
                 GithubStatusCommand::class,
                 GitlabStatusCommand::class,
                 BitbucketStatusCommand::class,
+                AzureDevopsStatusCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
                 SpecListCommand::class,
@@ -148,6 +162,10 @@ class LarapilotServiceProvider extends ServiceProvider
                 UsageReportCommand::class,
                 ScheduleSetCommand::class,
                 ChoicesSetCommand::class,
+                DecisionLogCommand::class,
+                DecisionCheckCommand::class,
+                CodeHistoryLogCommand::class,
+                CodeHistoryShowCommand::class,
                 QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,

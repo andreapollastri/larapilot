@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Artisan;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DecisionService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\SpecService;
 
@@ -327,9 +328,11 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('testing: NORMAL')
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
+        ->and($yaml)->toContain('dashboard_auth: false')
         ->and($yaml)->toContain('github: false')
         ->and($yaml)->toContain('gitlab: false')
         ->and($yaml)->toContain('bitbucket: false')
+        ->and($yaml)->toContain('azure: false')
         ->and($yaml)->toContain('notifications: false')
         ->and($yaml)->toContain('notify_slack: false')
         ->and($yaml)->toContain('notify_discord: false')
@@ -346,9 +349,12 @@ it('persists project settings via settings-set', function (): void {
         '--testing' => 'BEST',
         '--auto-approve' => 'YES',
         '--lucille' => 'NO',
+        '--decision-log' => 'NO',
+        '--code-history' => 'YES',
         '--github' => 'YES',
         '--gitlab' => 'YES',
         '--bitbucket' => 'NO',
+        '--azure' => 'YES',
         '--notifications' => 'YES',
         '--notify-slack' => 'YES',
         '--notify-discord' => 'NO',
@@ -364,9 +370,13 @@ it('persists project settings via settings-set', function (): void {
         'testing' => 'BEST',
         'auto_approve' => 'YES',
         'lucille' => 'NO',
+        'decision_log' => 'NO',
+        'code_history' => 'YES',
+        'dashboard_auth' => 'NO',
         'github' => 'YES',
         'gitlab' => 'YES',
         'bitbucket' => 'NO',
+        'azure' => 'YES',
         'notifications' => 'YES',
         'notify_slack' => 'YES',
         'notify_discord' => 'NO',
@@ -378,6 +388,7 @@ it('persists project settings via settings-set', function (): void {
         ->and(app(ConfigService::class)->githubEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->gitlabEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->bitbucketEnabled())->toBeFalse()
+        ->and(app(ConfigService::class)->azureEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->notifySlackEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->notifyTelegramEnabled())->toBeTrue();
 });
@@ -399,6 +410,68 @@ it('treats missing lucille setting as enabled and accepts exclude aliases', func
         '--minutes' => 1,
     ])->assertExitCode(4)
         ->expectsOutputToContain('E_PRECONDITION');
+});
+
+it('journals decisions and flags a regression against an earlier choice', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:decision-log', [
+        '--topic' => 'background color',
+        '--value' => 'orange',
+        '--source' => 'askquestion',
+        '--skill' => 'larapilot-inception',
+    ])->assertSuccessful()
+        ->expectsOutputToContain('"has_regression":false');
+
+    $this->artisan('larapilot:decision-check', [
+        '--topic' => 'background color',
+        '--value' => 'red',
+    ])->assertSuccessful()
+        ->expectsOutputToContain('"has_regression":true');
+
+    $entries = app(DecisionService::class)->entries();
+    expect($entries[0]['value'])->toBe('orange');
+
+    // Recording the reversal with --supersedes clears the regression.
+
+    $this->artisan('larapilot:decision-log', [
+        '--topic' => 'background color',
+        '--value' => 'red',
+        '--supersedes' => $entries[0]['id'],
+    ])->assertSuccessful();
+
+    $this->artisan('larapilot:decision-check', ['--topic' => 'background color', '--value' => 'red'])
+        ->assertSuccessful()
+        ->expectsOutputToContain('"has_regression":false');
+});
+
+it('refuses decision-log when the journal is disabled', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--decision-log' => 'NO'])->assertSuccessful();
+
+    $this->artisan('larapilot:decision-log', ['--topic' => 'x', '--value' => 'y'])
+        ->assertExitCode(4)
+        ->expectsOutputToContain('E_PRECONDITION');
+});
+
+it('refuses code-log when code history is disabled and records it when enabled', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:code-log', ['--spec' => 'US-001'])
+        ->assertExitCode(4)
+        ->expectsOutputToContain('E_PRECONDITION');
+
+    initTestGitRepository('chore: bootstrap');
+    $name = 'code-log-cmd-'.bin2hex(random_bytes(6)).'.php';
+    file_put_contents(base_path($name), "<?php\n");
+    shell_exec('git -C '.escapeshellarg(base_path()).' add '.escapeshellarg($name).' 2>/dev/null');
+    shell_exec('git -C '.escapeshellarg(base_path()).' commit -m '.escapeshellarg('feat: x').' 2>/dev/null');
+
+    $this->artisan('larapilot:settings-set', ['--code-history' => 'YES'])->assertSuccessful();
+
+    $this->artisan('larapilot:code-log', ['--spec' => 'US-001', '--range' => 'HEAD~1..HEAD'])
+        ->assertSuccessful()
+        ->expectsOutputToContain($name);
 });
 
 it('disables lucille automatically when switching to ECO', function (): void {

@@ -84,6 +84,8 @@ class ConfigService
                 'usage' => $this->absolutePath($config['paths']['usage'] ?? '.larapilot/usage/'),
                 'choices' => $this->absolutePath($config['paths']['choices'] ?? '.larapilot/choices.yaml'),
                 'schedule' => $this->absolutePath($config['paths']['schedule'] ?? '.larapilot/usage/schedule.yaml'),
+                'decisions' => $this->absolutePath($config['paths']['decisions'] ?? '.larapilot/decisions.yaml'),
+                'code_history' => $this->absolutePath($config['paths']['code_history'] ?? '.larapilot/code-history.yaml'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -207,9 +209,13 @@ class ConfigService
      *     testing: string,
      *     auto_approve: string,
      *     lucille: string,
+     *     decision_log: string,
+     *     code_history: string,
+     *     dashboard_auth: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
+     *     azure: string,
      *     notifications: string,
      *     notify_slack: string,
      *     notify_discord: string,
@@ -245,9 +251,13 @@ class ConfigService
      *     testing: string,
      *     auto_approve: bool,
      *     lucille: bool,
+     *     decision_log: bool,
+     *     code_history: bool,
+     *     dashboard_auth: bool,
      *     github: bool,
      *     gitlab: bool,
      *     bitbucket: bool,
+     *     azure: bool,
      *     notifications: bool,
      *     notify_slack: bool,
      *     notify_discord: bool,
@@ -283,9 +293,13 @@ class ConfigService
         return [
             'auto_approve' => false,
             'lucille' => true,
+            'decision_log' => true,
+            'code_history' => false,
+            'dashboard_auth' => false,
             'github' => false,
             'gitlab' => false,
             'bitbucket' => false,
+            'azure' => false,
             'notifications' => false,
             'notify_slack' => false,
             'notify_discord' => false,
@@ -305,9 +319,13 @@ class ConfigService
      *     testing: string,
      *     auto_approve: string,
      *     lucille: string,
+     *     decision_log: string,
+     *     code_history: string,
+     *     dashboard_auth: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
+     *     azure: string,
      *     notifications: string,
      *     notify_slack: string,
      *     notify_discord: string,
@@ -380,6 +398,32 @@ class ConfigService
     }
 
     /**
+     * Decision journal + regression guard (`.larapilot/decisions.yaml`) — ON by default.
+     * Only an explicit `settings.decision_log: false` / `NO` disables it.
+     */
+    public function decisionLogEnabled(): bool
+    {
+        return $this->settings()['decision_log'] === 'YES';
+    }
+
+    /**
+     * Per spec/task code change history (`.larapilot/code-history.yaml`) — OFF by default.
+     */
+    public function codeHistoryEnabled(): bool
+    {
+        return $this->settings()['code_history'] === 'YES';
+    }
+
+    /**
+     * Optional HTTP Basic Auth on the dashboard UI — OFF by default. Never
+     * gates the JSON API (`larapilot.api.token`) or the MCP server.
+     */
+    public function dashboardAuthEnabled(): bool
+    {
+        return $this->settings()['dashboard_auth'] === 'YES';
+    }
+
+    /**
      * Optional GitHub remote integration via `gh` — OFF by default.
      */
     public function githubEnabled(): bool
@@ -401,6 +445,14 @@ class ConfigService
     public function bitbucketEnabled(): bool
     {
         return $this->settings()['bitbucket'] === 'YES';
+    }
+
+    /**
+     * Optional Azure DevOps (Azure Repos) remote integration — OFF by default.
+     */
+    public function azureEnabled(): bool
+    {
+        return $this->settings()['azure'] === 'YES';
     }
 
     /**
@@ -569,6 +621,30 @@ class ConfigService
     /**
      * @return list<string>
      */
+    public function allowedDecisionLogModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedCodeHistoryModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedDashboardAuthModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
     public function allowedGithubModes(): array
     {
         return $this->allowedYesNoModes();
@@ -586,6 +662,14 @@ class ConfigService
      * @return list<string>
      */
     public function allowedBitbucketModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedAzureModes(): array
     {
         return $this->allowedYesNoModes();
     }

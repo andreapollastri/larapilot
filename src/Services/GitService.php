@@ -239,6 +239,113 @@ class GitService
         ];
     }
 
+    /**
+     * Files touched by a diff, with added/removed line counts and the affected
+     * new-file line ranges ("hunks"). `$range` is a git revision range such as
+     * `HEAD~1..HEAD` or `develop..HEAD`; null diffs the working tree (staged +
+     * unstaged) against HEAD.
+     *
+     * @return list<array{path: string, added: int, removed: int, hunks: list<string>}>
+     */
+    public function changeSet(?string $range = null): array
+    {
+        if (! $this->isRepository()) {
+            return [];
+        }
+
+        $range = $range !== null && trim($range) !== '' ? trim($range) : null;
+
+        $numstatArgs = $range !== null
+            ? ['diff', '--numstat', $range]
+            : ['diff', '--numstat', 'HEAD'];
+        $hunkArgs = $range !== null
+            ? ['diff', '--unified=0', '--no-color', $range]
+            : ['diff', '--unified=0', '--no-color', 'HEAD'];
+
+        $numstat = $this->git(...$numstatArgs);
+        $hunksByPath = $this->parseHunks($this->git(...$hunkArgs) ?? '');
+
+        $files = [];
+
+        foreach (explode("\n", $numstat ?? '') as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            $parts = preg_split('/\t/', $line);
+
+            if (! is_array($parts) || count($parts) < 3) {
+                continue;
+            }
+
+            [$added, $removed, $path] = $parts;
+            $path = trim($path);
+
+            // Rename form: "old => new" or "dir/{old => new}/file".
+            if (str_contains($path, ' => ')) {
+                $path = trim((string) preg_replace(['/\{.*? => (.*?)\}/', '/^.*? => /'], ['$1', ''], $path));
+            }
+
+            $files[] = [
+                'path' => $path,
+                'added' => $added === '-' ? 0 : (int) $added,
+                'removed' => $removed === '-' ? 0 : (int) $removed,
+                'hunks' => $hunksByPath[$path] ?? [],
+            ];
+        }
+
+        return $files;
+    }
+
+    /**
+     * Parse `git diff --unified=0` output into new-file line ranges per path.
+     *
+     * @return array<string, list<string>>
+     */
+    protected function parseHunks(string $diff): array
+    {
+        $result = [];
+        $current = null;
+
+        foreach (explode("\n", $diff) as $line) {
+            if (str_starts_with($line, '+++ b/')) {
+                $current = substr($line, 6);
+
+                continue;
+            }
+
+            if (str_starts_with($line, '+++ ') && str_contains($line, '/dev/null')) {
+                $current = null;
+
+                continue;
+            }
+
+            if ($current === null || ! str_starts_with($line, '@@')) {
+                continue;
+            }
+
+            if (preg_match('/\+(\d+)(?:,(\d+))?/', $line, $m) !== 1) {
+                continue;
+            }
+
+            $start = (int) $m[1];
+            $count = isset($m[2]) ? (int) $m[2] : 1;
+
+            if ($count === 0) {
+                // Pure deletion — anchor at the surrounding line.
+                $result[$current][] = $start.'-'.$start;
+
+                continue;
+            }
+
+            $result[$current][] = $start.'-'.($start + $count - 1);
+        }
+
+        return $result;
+    }
+
     public function originUrl(): ?string
     {
         if (! $this->isRepository()) {
@@ -251,7 +358,7 @@ class GitService
     }
 
     /**
-     * @return 'github'|'gitlab'|'bitbucket'|null
+     * @return 'github'|'gitlab'|'bitbucket'|'azure'|null
      */
     public function originProvider(): ?string
     {
@@ -269,6 +376,11 @@ class GitService
             return 'bitbucket';
         }
 
+        if (preg_match('#(?:^|@|://)(?:ssh\.)?dev\.azure\.com[:/]#i', $remote) === 1
+            || preg_match('#(?:^|@|://)[^/@:]+\.visualstudio\.com[:/]#i', $remote) === 1) {
+            return 'azure';
+        }
+
         if (preg_match('#(?:^|@|://)(?:[^/]*\.)?gitlab\.com[:/]#i', $remote) === 1
             || preg_match('#://[^/]*gitlab[^/]*[:/]#i', $remote) === 1
             || preg_match('#@[^:]*gitlab[^:]*:#i', $remote) === 1) {
@@ -284,6 +396,19 @@ class GitService
 
         if ($remote === null || $remote === '') {
             return null;
+        }
+
+        // Azure DevOps carries a three-part identity: organization/project/repo.
+        if (preg_match('#dev\.azure\.com[:/]v3/([^/]+)/([^/]+)/([^/]+?)(?:\.git)?/?$#i', $remote, $matches) === 1) {
+            return $matches[1].'/'.$matches[2].'/'.$matches[3];
+        }
+
+        if (preg_match('#dev\.azure\.com/([^/]+)/([^/]+)/_git/([^/]+?)(?:\.git)?/?$#i', $remote, $matches) === 1) {
+            return $matches[1].'/'.$matches[2].'/'.$matches[3];
+        }
+
+        if (preg_match('#([^/@]+)\.visualstudio\.com/(?:DefaultCollection/)?([^/]+)/_git/([^/]+?)(?:\.git)?/?$#i', $remote, $matches) === 1) {
+            return $matches[1].'/'.$matches[2].'/'.$matches[3];
         }
 
         if (preg_match('#(?:github\.com|gitlab\.com|bitbucket\.org)[:/]([^/]+)/([^/.]+)(?:\.git)?#i', $remote, $matches) === 1) {
@@ -335,6 +460,24 @@ class GitService
 
         if (str_contains($host, 'bitbucket.org')) {
             return "https://{$displayHost}/{$path}/commits/{$sha}";
+        }
+
+        if (str_contains($host, 'dev.azure.com') || str_contains($host, 'visualstudio.com')) {
+            // SSH remotes normalise as ssh.dev.azure.com:v3/{org}/{project}/{repo}.
+            if (str_starts_with($path, 'v3/')) {
+                $segments = explode('/', substr($path, 3));
+
+                if (count($segments) >= 3) {
+                    [$org, $project, $repo] = $segments;
+
+                    return "https://dev.azure.com/{$org}/{$project}/_git/{$repo}/commit/{$sha}";
+                }
+            }
+
+            // https remotes may carry a `{org}@` userinfo prefix on the host.
+            $cleanHost = preg_replace('/^[^@]*@/', '', $displayHost) ?? $displayHost;
+
+            return "https://{$cleanHost}/{$path}/commit/{$sha}";
         }
 
         return null;

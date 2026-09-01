@@ -17,10 +17,23 @@ return [
         'auto_approve' => false,
         // Lucille · Project tracking (usage ledger + schedule) is ON by default; set false to exclude explicitly.
         'lucille' => true,
+        // Decision journal (.larapilot/decisions.yaml) — append-only log of every explicit user
+        // choice across all phases, plus a regression guard that flags a new value when the same
+        // topic already carries a recorded decision. ON by default; set false to disable.
+        'decision_log' => true,
+        // Code change history (.larapilot/code-history.yaml) — per spec/task list of files and line
+        // ranges touched, derived from the task git commit. OFF by default; set true to enable.
+        'code_history' => false,
+        // HTTP Basic Auth on the /larapilot dashboard UI — OFF by default (open in the
+        // allowed environments). When true, browsing the dashboard requires a username +
+        // password from .larapilot/auth.yaml (manage with `larapilot:dashboard-user`).
+        // Never affects the JSON API (LARAPILOT_API_TOKEN) or the MCP server.
+        'dashboard_auth' => false,
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
         'gitlab' => false,
         'bitbucket' => false,
+        'azure' => false,
         'notifications' => false,
         'notify_slack' => false,
         'notify_discord' => false,
@@ -37,6 +50,8 @@ return [
         'bitbucket_username' => env('LARAPILOT_BITBUCKET_USERNAME', env('BITBUCKET_USERNAME')),
         'bitbucket_app_password' => env('LARAPILOT_BITBUCKET_APP_PASSWORD', env('BITBUCKET_APP_PASSWORD')),
         'bitbucket_access_token' => env('LARAPILOT_BITBUCKET_ACCESS_TOKEN', env('BITBUCKET_ACCESS_TOKEN')),
+        // Azure DevOps (optional; also accepted as AZURE_DEVOPS_EXT_PAT / AZURE_DEVOPS_PAT).
+        'azure_devops_pat' => env('LARAPILOT_AZURE_DEVOPS_PAT', env('AZURE_DEVOPS_EXT_PAT', env('AZURE_DEVOPS_PAT'))),
     ],
 
     // External frontend repository (when PRD topology is API + external frontend).
@@ -62,6 +77,8 @@ return [
         'usage' => '.larapilot/usage/',
         'choices' => '.larapilot/choices.yaml',
         'schedule' => '.larapilot/usage/schedule.yaml',
+        'decisions' => '.larapilot/decisions.yaml',
+        'code_history' => '.larapilot/code-history.yaml',
     ],
 
     'comments' => [
@@ -273,6 +290,18 @@ return [
         'prefix' => 'larapilot',
         'middleware' => ['web'],
         'environments' => ['local', 'development', 'testing', 'staging'],
+
+        // Optional HTTP Basic Auth for the dashboard UI. Enforced only when the
+        // `dashboard_auth` project setting is ON (see settings above). Credentials
+        // live hashed in `file`, which is git-ignored automatically and never
+        // committed. Manage users with `php artisan larapilot:dashboard-user`.
+        // This gate never applies to /larapilot/api/* or the MCP server.
+        'auth' => [
+            'file' => base_path('.larapilot/auth.yaml'),
+            'realm' => env('LARAPILOT_DASHBOARD_AUTH_REALM', 'Larapilot'),
+            // Failed Basic Auth attempts allowed per minute per IP; 0 disables throttling.
+            'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 30),
+        ],
     ],
 
     'workflow' => [

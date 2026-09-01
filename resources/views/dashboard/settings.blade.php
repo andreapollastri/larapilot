@@ -110,6 +110,7 @@
                 $settingLabels = [
                     'lucille' => 'Project tracking',
                     'auto_approve' => 'Auto approve',
+                    'dashboard_auth' => 'Dashboard auth',
                     'git_mode' => 'Git mode',
                     'notify_slack' => 'Notify Slack',
                     'notify_discord' => 'Notify Discord',

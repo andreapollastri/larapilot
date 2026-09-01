@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, GitHub/GitLab/Bitbucket, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket".
+description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, dashboard auth, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, dashboard login/password, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
 ---
 
 # Larapilot — Project Settings
@@ -9,7 +9,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, auto_approve, lucille, github, gitlab, bitbucket, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`.
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, auto_approve, lucille, decision_log, code_history, dashboard_auth, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`.
 
 ## Output Economy
 
@@ -21,11 +21,12 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — frames trade-offs (tokens vs depth, human gate vs auto-approve) and confirms persistence |
 | 💎 **Mark** | Product Manager — owns backlog granularity implications (spec/epic count vs traceability) |
-| 🚀 **Jack** | DevOps — owns git_mode and optional GitHub / GitLab / Bitbucket integrations |
+| 🚀 **Jack** | DevOps — owns git_mode and optional GitHub / GitLab / Bitbucket / Azure DevOps integrations |
 | ⌨️ **Sarah** | CLI / Git / Linux — involved when forge/CI automation or Git mechanics guidance is needed |
 | 🧪 **Anne** | Test Architect — owns testing mode implications |
 | 🛡️ **Robert** | Code Reviewer — owns auto_approve risk framing |
 | 📒 **Lucille** | Project tracking — owns the lucille on/exclude setting; default is always ON |
+| 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle and dashboard user management (`larapilot:dashboard-user`) |
 | 🔗 **Matt** | Integration Manager — owns Slack/Discord/Telegram notification toggles (secrets stay in `.env`) |
 
 ## Config & CLI
@@ -33,9 +34,10 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 1. `php artisan larapilot:config-show` — read current `data.settings`
 2. After answers: `php artisan larapilot:settings-set` with the answered flags
 3. Re-run `config-show` and confirm the saved values
-4. Optional probes: `larapilot:github-status`, `larapilot:gitlab-status`, `larapilot:bitbucket-status`, `larapilot:notify --event=custom --title="Larapilot test"`
+4. Optional probes: `larapilot:github-status`, `larapilot:gitlab-status`, `larapilot:bitbucket-status`, `larapilot:azure-status`, `larapilot:notify --event=custom --title="Larapilot test"`
+5. Dashboard auth users: `php artisan larapilot:dashboard-user {list|add <username>|remove <username>}` — `add` prompts for the password (or takes `--password=`); credentials hash into `.larapilot/auth.yaml` (git-ignored)
 
-Never edit `.larapilot/config.yaml` by hand from the skill — always use `larapilot:settings-set`. **Never ask for webhook/token values in chat** — point at `.larapilot/integrations.md` and `.env`.
+Never edit `.larapilot/config.yaml` by hand from the skill — always use `larapilot:settings-set`. **Never ask for webhook/token/password values in chat** — point at `.larapilot/integrations.md` and `.env`, and let `larapilot:dashboard-user` prompt for the dashboard password.
 
 ## Workflow
 
@@ -43,7 +45,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · github={…} · gitlab={…} · bitbucket={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · dashboard_auth={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -128,13 +130,25 @@ Warn once when the user picks `YES`: this bypasses the usual human-in-the-loop D
 
 Warn once when the user picks `NO`: this opts out of project time/token metrics until they set `YES` again. Note: choosing **Effort = ECO** also sets Lucille to `NO` automatically — same re-enable path (`--lucille=YES`).
 
-**7. Remote forge** — optional GitHub / GitLab / Bitbucket (each default OFF; orthogonal to git_mode)
+**6b. Decision journal & Code change history**
+
+- **Decision journal prompt:** `Decision journal (current: {VALUE}) — record every explicit choice you make and warn you before a later choice contradicts an earlier one?`
+- **Code history prompt:** `Code change history (current: {VALUE}) — keep a per-spec/task log of which files and lines were changed?`
+- **Chat framing (one line):** 📒 Lucille — the journal (`.larapilot/decisions.yaml`) is ON by default and powers the regression guard; the code log (`.larapilot/code-history.yaml`) is OFF by default and needs git commits.
+
+| Setting | YES label | NO label |
+| --- | --- | --- |
+| `decision_log` | `YES — journal AskQuestion answers + explicit directives; decision-check flags contradictions (default)` | `NO — do not record decisions or run the regression guard` |
+| `code_history` | `YES — after each task-done, log touched files + line ranges from the task commit` | `NO — no code change history (default)` |
+
+**7. Remote forge** — optional GitHub / GitLab / Bitbucket / Azure DevOps (each default OFF; orthogonal to git_mode)
 
 Ask only the forge(s) that match the user's remote (skip others or leave NO).
 
 - **GitHub prompt:** `GitHub (current: {VALUE}) — use gh CLI for remote PRs?`
 - **GitLab prompt:** `GitLab (current: {VALUE}) — use glab CLI for merge requests?`
 - **Bitbucket prompt:** `Bitbucket (current: {VALUE}) — use Bitbucket Cloud API tokens for PRs?`
+- **Azure DevOps prompt:** `Azure DevOps (current: {VALUE}) — use az CLI / PAT for Azure Repos PRs?`
 - **Chat framing (one line):** 🚀 Jack — OFF by default; see `.larapilot/integrations.md`.
 
 | Setting | YES label |
@@ -142,6 +156,19 @@ Ask only the forge(s) that match the user's remote (skip others or leave NO).
 | `github` | `YES — gh pr create/view; print PR URL; notify pr_*` |
 | `gitlab` | `YES — glab mr create/view; print MR URL; notify pr_*` |
 | `bitbucket` | `YES — Bitbucket REST API with access token or app password; print PR URL; notify pr_*` |
+| `azure` | `YES — az repos pr create/show (or Azure DevOps REST with a PAT); print PR URL; notify pr_*` |
+
+**7b. Dashboard auth** — optional HTTP Basic Auth on the `/larapilot` dashboard **UI** (default OFF)
+
+- **AskQuestion prompt:** `Dashboard auth (current: {VALUE}) — require a username + password to open the /larapilot dashboard?`
+- **Chat framing (one line):** 🔐 Lars — UI-only gate; never touches `/larapilot/api/*` (that's `LARAPILOT_API_TOKEN`) or MCP. Credentials are hashed in `.larapilot/auth.yaml` (git-ignored).
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NO` | `NO — dashboard open in the allowed environments (default)` |
+| `YES` | `YES — HTTP Basic Auth; users managed via php artisan larapilot:dashboard-user` |
+
+When the user picks `YES`, remind once: they must create at least one user, or the dashboard returns HTTP 500. Never collect the password in chat — tell them to run `php artisan larapilot:dashboard-user add <username>` (it prompts securely) or pass `--password=`. Setup notes: `.larapilot/integrations.md`.
 
 **8. Notifications** — master switch (default OFF)
 
@@ -165,8 +192,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`NO` (github/gitlab/bitbucket)** / **`NO` (notifications + channels)**.  
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` → YES; missing forge/notifications → NO.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (dashboard_auth)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.  
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / forge / notifications → NO.)
 
 ### 2. Persist
 
@@ -180,9 +207,13 @@ php artisan larapilot:settings-set \
   --testing=NORMAL \
   --auto-approve=NO \
   --lucille=YES \
+  --decision-log=YES \
+  --code-history=NO \
+  --dashboard-auth=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
+  --azure=NO \
   --notifications=NO \
   --notify-slack=NO \
   --notify-discord=NO \
@@ -191,12 +222,12 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=… · lucille=… · github=… · gitlab=… · bitbucket=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · dashboard_auth=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.
 
-If a forge is YES, optionally run the matching `larapilot:{github,gitlab,bitbucket}-status` and surface `ready` / `hints`.
+If a forge is YES, optionally run the matching `larapilot:{github,gitlab,bitbucket,azure}-status` and surface `ready` / `hints`.
 
 ### 3. Next steps
 
@@ -208,4 +239,5 @@ Remind once (one line): other skills honor these on next run via `config-show` �
 - Do not re-ask unanswered skippable questions; keep previous values for skipped keys
 - If the user wants a single setting changed, AskQuestion only that dimension
 - Never invent persistence — CLI only
-- Never collect Slack/Discord/Telegram secrets in chat
+- Never collect Slack/Discord/Telegram secrets or the dashboard password in chat — `larapilot:dashboard-user add` prompts for it
+- `dashboard_auth` gates the dashboard **UI only** — never claim it affects `/larapilot/api/*` or MCP

@@ -27,15 +27,22 @@ Greenfield — repeat steps 3–5 per user story:
   →  /larapilot-implement US-XXX  →  /larapilot-review US-XXX
 ```
 
+Brownfield — adopt an app already in production that was built without Larapilot:
+
+```
+php artisan larapilot:install  →  /larapilot-adopt  →  /larapilot-spec  →  (per-story loop)
+```
+
 | When | Start with |
 | --- | --- |
 | New product, site, app, PHP/Laravel package, pivot, or legacy rewrite | `/larapilot-inception` |
+| Existing Laravel app in production, built without Larapilot, no PRD yet | `/larapilot-adopt` |
 | One new capability on an existing product | `/larapilot-feature "…"` |
 | Defect or regression | `/larapilot-bug "…"` |
 
 Optional: `/larapilot-design` before plan · `/larapilot-ship` when MVP stories are **DONE** · `/larapilot-autopilot` to batch plan + implement · `/larapilot-settings` for project effort / backlog granularity / git / testing modes · `/larapilot-backstage` to publish the repo into a Backstage developer portal.
 
-Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Optional forge toggles **`github` / `gitlab` / `bitbucket`** (default OFF) add PR/MR URLs via `gh`, `glab`, or Bitbucket Cloud API; optional Slack/Discord/Telegram notifications (default OFF) cover task/spec/PR/schedule/ship events — see `.larapilot/integrations.md`. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
+Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-push**): one `feature/US-XXX-*` branch per story, atomic commits per plan task; push + remote PR only when mode is **`GITFLOW_PUSH`**. Optional forge toggles **`github` / `gitlab` / `bitbucket` / `azure`** (default OFF) add PR/MR URLs via `gh`, `glab`, the Bitbucket Cloud API, or the Azure DevOps `az` CLI / REST API; optional Slack/Discord/Telegram notifications (default OFF) cover task/spec/PR/schedule/ship events — see `.larapilot/integrations.md`. Configure with `/larapilot-settings`. Details on the [docs site](https://larapilot.web.ap.it/#deep-dive-gitflow).
 
 ---
 
@@ -43,8 +50,8 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 
 | Path | Purpose |
 | --- | --- |
-| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, optional `github` / `gitlab` / `bitbucket` / `notifications` / `notify_*`) |
-| `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket + Slack / Discord / Telegram |
+| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, optional `github` / `gitlab` / `bitbucket` / `azure` / `notifications` / `notify_*`) |
+| `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram |
 | `docs/PRD.md` | Product Requirements Document |
 | `backlog/` | User stories (`US-XXX`) with status machine |
 | `plans/` | Technical plans and tasks per spec |
@@ -60,7 +67,7 @@ Skills write artifacts; the workflow engine blocks invalid state transitions (e.
 | Layer | File | Owns | Changed via |
 | --- | --- | --- | --- |
 | **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, diagnostics, `LARAPILOT_API_TOKEN`, notification webhooks/tokens, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
-| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, github/gitlab/bitbucket, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, dashboard-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
 
 The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
@@ -73,6 +80,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | Skill | Role |
 | --- | --- |
 | `/larapilot-inception` | Product discovery → PRD (includes **Frontend Topology**) |
+| `/larapilot-adopt` | Reverse-engineer a PRD from an existing production codebase (brownfield onboarding) |
 | `/larapilot-spec` | MoSCoW backlog from PRD |
 | `/larapilot-feature` | Mini-inception for one evolutiva |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
@@ -83,7 +91,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
-| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / GitHub·GitLab·Bitbucket / notification channels |
+| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / dashboard-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
@@ -102,6 +110,15 @@ When the dashboard is browsable (never in production):
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
 **API auth:** set `LARAPILOT_API_TOKEN` to require a bearer token (or `X-Larapilot-Token` header) on every `/larapilot/api/*` request — strongly recommended on shared staging hosts. Without a token, reads stay open in the allowed environments, but **writes are refused outside local/development/testing**.
+
+**Dashboard UI auth (optional):** the `/larapilot` HTML pages are open by default. Turn on the `dashboard_auth` project setting to require **HTTP Basic Auth**:
+
+```bash
+php artisan larapilot:dashboard-user add andrea      # prompts for a password, stores only the hash
+php artisan larapilot:settings-set --dashboard-auth=YES
+```
+
+Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.gitignore` automatically — never committed, no database, no `User` model). Manage them with `larapilot:dashboard-user {list|add|remove}`. Failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). This gate **never** touches `/larapilot/api/*` (use `LARAPILOT_API_TOKEN`) or the MCP server. Use HTTPS on shared hosts — Basic Auth sends credentials on every request.
 
 ### Diagnostics (bug triage)
 

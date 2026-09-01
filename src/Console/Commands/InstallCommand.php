@@ -68,6 +68,7 @@ class InstallCommand extends LarapilotCommand
         $this->line('Code quality gate: Larastan level '.CodeQualityService::MIN_LARASTAN_LEVEL.'+ and Laravel Pint (larapilot:quality).');
         $this->newLine();
         $this->line('Next: run php artisan boost:install (or boost:update --discover) to publish AI skills and guidelines.');
+        $this->line('Then: /larapilot-inception for a new product, or /larapilot-adopt to reverse-engineer a PRD from this existing codebase.');
 
         return self::SUCCESS;
     }
