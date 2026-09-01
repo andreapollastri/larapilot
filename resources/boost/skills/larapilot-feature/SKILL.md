@@ -11,6 +11,8 @@ You run a **mini-inception** for one new feature on an **existing** project, the
 
 Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Legacy Rewrite & Porting** when the feature touches legacy scope).
 
+When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+
 ## Output Economy
 
 **Moderate** — brief chat; full spec body in the backlog file.

@@ -29,8 +29,10 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
-5. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; use `--fix` for formatting when needed
-6. `php artisan larapilot:spec-review {code}`
+5. `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — **only when `data.settings.code_history` is `YES`** (default OFF); run right after `task-done`, and once more after `spec-review`
+6. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; use `--fix` for formatting when needed
+7. `php artisan larapilot:spec-review {code}`
+8. `php artisan larapilot:decision-log …` / `decision-check …` — when `data.settings.decision_log` is `YES` (default) and the user redirects scope or changes a preference mid-run; `decision-check` first when it reverses an earlier recorded choice
 
 ## Execution Contract
 
@@ -81,6 +83,7 @@ Group tasks by dependencies. For each task:
 2. Anne writes/runs tests per `settings.testing` — `php artisan test` / Pest for Laravel; `npm test` / vitest / playwright from the FE root for `repo: frontend` tasks
 3. Alex commits (one atomic commit per task). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks). If a forge setting is `YES`, open/update via `gh` / `glab` / Bitbucket API / `az repos` (Azure DevOps), print the PR/MR URL, and notify `pr_opened` / `pr_updated` when notifications are on
 4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria and may emit a `task_done` notification; never edit the plan YAML manually
+5. When `data.settings.code_history` is `YES` (default OFF): `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — records the touched files + line ranges from the task commit into `.larapilot/code-history.yaml`
 
 ### Phase 2 — Review (sub-agents or inline)
 

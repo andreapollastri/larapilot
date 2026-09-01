@@ -18,7 +18,9 @@ You bring an **existing, running Laravel project** under Larapilot. The codebase
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
+Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Decision Journal**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
+
+When `data.settings.decision_log` is `YES` (default), journal the choices the user makes about adopted scope with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
 
 ## The Team (this phase)
 

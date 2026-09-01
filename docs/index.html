@@ -1449,7 +1449,8 @@
 
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
           <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
-          <strong>lucille</strong>, optional <strong>github / gitlab / bitbucket / azure</strong> and
+          <strong>lucille</strong>, <strong>decision journal</strong>, <strong>code history</strong>,
+          optional <strong>dashboard auth / github / gitlab / bitbucket / azure</strong> and
           <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
           <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
@@ -3058,7 +3059,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --dashboard-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --dashboard-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3066,6 +3067,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
+            <code>decision_log: YES</code> · <code>code_history: NO</code> ·
             <code>dashboard_auth: NO</code> ·
             <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
@@ -3213,6 +3215,39 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               <code>.larapilot/integrations.md</code>.</li>
           </ul>
 
+          <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
+          <p><code>settings.decision_log</code> (default <code>YES</code>) keeps an append-only, timestamped log of every
+            explicit user choice — fixed-choice answers <strong>and</strong> free-text directives like
+            <em>“the background must be orange”</em> — in <code>.larapilot/decisions.yaml</code>.
+          </p>
+          <ul>
+            <li>After a choice is settled a skill runs
+              <code>php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=…</code>.</li>
+            <li>Before recording a value for a topic that already has a decision it runs
+              <code>php artisan larapilot:decision-check --topic="…" --value="…"</code>. When today’s value differs from an
+              earlier non-superseded one the check returns that decision (with its date) so the skill can ask you to
+              confirm — <em>“on 2026-05-01 you chose <strong>orange</strong>; confirm <strong>red</strong> supersedes
+              it”</em> — then re-logs with <code>--supersedes=&lt;id&gt;</code>.</li>
+            <li>The file is never rewritten in place; a reversal is a new entry. Read-only
+              <code>larapilot:decision-check</code> is also on the MCP allowlist.</li>
+            <li>Turn it off with <code>php artisan larapilot:settings-set --decision-log=NO</code>.</li>
+          </ul>
+
+          <h4 id="deep-dive-code-history">Code change history <span class="chip">opt-in</span></h4>
+          <p><code>settings.code_history</code> (default <code>NO</code>) records, per spec/task, which files and line
+            ranges were touched — read straight from the task’s git commit — into
+            <code>.larapilot/code-history.yaml</code>.
+          </p>
+          <ul>
+            <li>Enable with <code>php artisan larapilot:settings-set --code-history=YES</code>; then
+              <code>larapilot-implement</code> runs
+              <code>php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN --skill=larapilot-implement</code> after
+              each <code>task-done</code> (<code>--commit=</code> / <code>--range=</code> override; falls back to the
+              working-tree diff).</li>
+            <li><code>php artisan larapilot:code-history --file=app/Models/Post.php</code> (read-only, also on the MCP
+              allowlist) reports every touchpoint for a path.</li>
+          </ul>
+
           <h4 id="deep-dive-testing-mode">Testing</h4>
           <div class="table-card">
             <table>
@@ -3309,6 +3344,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
   --testing=NORMAL \
   --auto-approve=NO \
   --lucille=YES \
+  --decision-log=YES \
+  --code-history=NO \
   --dashboard-auth=NO \
   --github=NO \
   --gitlab=NO \
@@ -3736,7 +3773,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
-                    <code>auto_approve</code>, <code>lucille</code>, <code>dashboard_auth</code>, <code>github</code>,
+                    <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>, <code>code_history</code>,
+                    <code>dashboard_auth</code>, <code>github</code>,
                     <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>

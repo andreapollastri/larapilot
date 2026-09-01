@@ -11,6 +11,8 @@ You create and extend the Larapilot backlog. Each spec body is a user story.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Delivery Target**, backlog mapping) and `.larapilot/runtime-ops.md` (**PRD Living Document**).
 
+When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+
 ## PRD
 
 Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature` (see **PRD Living Document** in `runtime-ops.md`).

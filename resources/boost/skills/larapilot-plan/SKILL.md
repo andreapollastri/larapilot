@@ -11,6 +11,8 @@ Produce a detailed implementation plan for one spec and persist it via the CLI.
 
 Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture, Git/TASK-00, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs). When the spec has UI, also read `.larapilot/runtime-ux.md` (mobile-first, a11y, brand, SEO).
 
+When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+
 Read `.larapilot/task-templates.md` — copy task body structures gated by `data.settings`.
 
 ## Output Economy

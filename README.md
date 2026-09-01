@@ -50,7 +50,9 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 
 | Path | Purpose |
 | --- | --- |
-| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, optional `github` / `gitlab` / `bitbucket` / `azure` / `notifications` / `notify_*`) |
+| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, optional `dashboard_auth` / `github` / `gitlab` / `bitbucket` / `azure` / `notifications` / `notify_*`) |
+| `decisions.yaml` | Append-only journal of explicit user choices + regression guard (`decision_log`, ON by default) |
+| `code-history.yaml` | Per spec/task files + line ranges touched, from git commits (`code_history`, OFF by default) |
 | `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram |
 | `docs/PRD.md` | Product Requirements Document |
 | `backlog/` | User stories (`US-XXX`) with status machine |
@@ -67,7 +69,7 @@ Skills write artifacts; the workflow engine blocks invalid state transitions (e.
 | Layer | File | Owns | Changed via |
 | --- | --- | --- | --- |
 | **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, diagnostics, `LARAPILOT_API_TOKEN`, notification webhooks/tokens, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
-| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, dashboard-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, decision-log, code-history, dashboard-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
 
 The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
@@ -91,7 +93,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
-| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / dashboard-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
+| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / decision-log / code-history / dashboard-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
@@ -119,6 +121,29 @@ php artisan larapilot:settings-set --dashboard-auth=YES
 ```
 
 Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.gitignore` automatically — never committed, no database, no `User` model). Manage them with `larapilot:dashboard-user {list|add|remove}`. Failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). This gate **never** touches `/larapilot/api/*` (use `LARAPILOT_API_TOKEN`) or the MCP server. Use HTTPS on shared hosts — Basic Auth sends credentials on every request.
+
+### Decision journal & regression guard (`decision_log`, ON by default)
+
+Every explicit choice you make in any phase — a fixed-choice answer or a free-text directive like _"the background must be orange"_ — is appended, with a timestamp, to `.larapilot/decisions.yaml`:
+
+```bash
+php artisan larapilot:decision-log --topic="background color" --value="orange" --source=chat --skill=larapilot-inception
+```
+
+Before a later phase records a **different** value for a topic that already has a decision, it runs `php artisan larapilot:decision-check --topic="background color" --value="red"`. If today's answer contradicts an earlier one, the check returns the earlier decision (with its date) so the skill can ask you to confirm — _"on 2026-05-01 you chose **orange**; confirm **red** supersedes it"_ — and only then re-logs with `--supersedes=<id>`. The file is never rewritten; a reversal is a new entry. Turn it off with `php artisan larapilot:settings-set --decision-log=NO`.
+
+### Code change history (`code_history`, OFF by default)
+
+Opt in to keep a per spec/task record of which files and line ranges were touched, read straight from the task's git commit:
+
+```bash
+php artisan larapilot:settings-set --code-history=YES
+# after each task-done, larapilot-implement runs:
+php artisan larapilot:code-log --spec=US-014 --task=TASK-03 --skill=larapilot-implement
+php artisan larapilot:code-history --file=app/Models/Post.php   # where has this file been worked on?
+```
+
+Entries land in `.larapilot/code-history.yaml`.
 
 ### Diagnostics (bug triage)
 

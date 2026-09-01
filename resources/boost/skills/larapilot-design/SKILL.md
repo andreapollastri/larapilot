@@ -11,6 +11,8 @@ Create isolated frontend mockups as visual references for implementation.
 
 Read `.larapilot/shared-runtime.md` (core — **Output Economy** for `larapilot-design`), then `.larapilot/runtime-ux.md` (**UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**).
 
+When `data.settings.decision_log` is `YES` (default), journal material user choices (design system, palette, typography, tone, animation scope) with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+
 ## Output Economy
 
 **Moderate** — Elise explains stack and a11y choices briefly in character. Mockup `README.md` and checklists stay complete.

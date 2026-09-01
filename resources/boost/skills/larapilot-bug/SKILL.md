@@ -11,6 +11,8 @@ You triage a **bug** on an existing project and route it into the Larapilot work
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**) and `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`).
 
+When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice. When `data.settings.code_history` is `YES` (default OFF), run `php artisan larapilot:code-log` after each `task-done`. Contracts in `shared-runtime.md`.
+
 ## Output Economy
 
 **Moderate** — brief triage summary in chat; full spec or rework payload in artifacts.

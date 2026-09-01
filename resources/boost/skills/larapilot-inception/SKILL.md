@@ -18,7 +18,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 ## Config & CLI
 
 1. Run `php artisan larapilot:config-show` and parse the stdout JSON envelope.
-2. This skill uses: `config-show`, `prd-write`, `validate-prd`, `frontend-set`, `frontend-scan`, `schedule-set`, `choices-set`, `usage-log`.
+2. This skill uses: `config-show`, `prd-write`, `validate-prd`, `frontend-set`, `frontend-scan`, `schedule-set`, `choices-set`, `usage-log`, `decision-log`, `decision-check`.
 
 ## Workflow
 
@@ -47,6 +47,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.m
 11. Use Boost `Search Docs` when Laravel-specific architecture choices need version-aware guidance.
 12. Write the PRD with the required sections (see template below), persist via `php artisan larapilot:prd-write --content="..."` (or `--file=`), then run `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
 13. Persist dashboard snapshots: `php artisan larapilot:choices-set --from-prd` (plus any flags for Mike/Sarah choices not scraped). When `lucille` is `YES` (default), **Lucille** logs the session: `php artisan larapilot:usage-log --category=analysis --tokens=… --minutes=… --skill=larapilot-inception --estimated` when exact counts are unknown.
+14. **Decision journal** — when `data.settings.decision_log` is `YES` (default), record each durable user choice as it is settled: `php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=larapilot-inception [--rationale="…"]` (Project Kind, Delivery Target, Frontend Topology, admin panel, data store, tenancy, deadlines, brand/UX preferences, explicit exclusions). If a later round revisits a settled topic, run `php artisan larapilot:decision-check --topic="…" --value="<new>"` first; when `data.has_regression` is `true`, replay the earlier choice via **AskQuestion** and, on confirmation, re-log with `--supersedes=<id>`. Full contract: **Decision Journal** in `runtime-discovery.md`. Skip when the setting is `NO`.
 
 ## Output Boundaries
 
