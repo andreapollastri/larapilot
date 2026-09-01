@@ -29,6 +29,18 @@ return [
         // password from .larapilot/auth.yaml (manage with `larapilot:dashboard-user`).
         // Never affects the JSON API (LARAPILOT_API_TOKEN) or the MCP server.
         'dashboard_auth' => false,
+        // Require a shared token on every /larapilot/api/* request — OFF by default.
+        // When true, EnsureApiAuthorized enforces LARAPILOT_API_TOKEN on reads *and*
+        // writes and fails closed (HTTP 503) when the token env var is not set. When
+        // false, the API keeps the legacy behaviour (token enforced only when set;
+        // writes blocked outside local unless a token is configured).
+        'api_auth' => false,
+        // Fold a static security scan into /larapilot-review and the pre-ship gate — OFF by
+        // default. When true, the review skill runs `php artisan checkpoint:scan` (from the
+        // optional dev package andreapollastri/checkpoint) and treats FAIL findings as review
+        // blockers; when the package is absent it points the user at `composer require --dev
+        // andreapollastri/checkpoint`. Never runs the scanner automatically on its own.
+        'security_scan' => false,
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
         'gitlab' => false,
@@ -88,8 +100,19 @@ return [
     'api' => [
         // Optional shared token for the JSON API. When set, every request to
         // /larapilot/api/* must send it as a bearer token or X-Larapilot-Token
-        // header. Strongly recommended on shared staging hosts.
+        // header. Strongly recommended on shared staging hosts. Turn the
+        // `settings.api_auth` project setting ON to make this token mandatory
+        // (the API then fails closed until it is configured).
         'token' => env('LARAPILOT_API_TOKEN'),
+
+        // Per-IP rate limit for /larapilot/api/*, as a Laravel throttle spec
+        // "max,minutes". Empty or a non-positive max disables throttling.
+        'rate_limit' => env('LARAPILOT_API_RATE_LIMIT', '120,1'),
+
+        // Append one JSON line per mutating API request (method, path, IP,
+        // whether a token was sent, status) to `api_file`. No bodies stored.
+        'audit' => env('LARAPILOT_API_AUDIT', true),
+        'audit_file' => env('LARAPILOT_API_AUDIT_FILE', '.larapilot/api-audit.log'),
     ],
 
     'diagnostics' => [

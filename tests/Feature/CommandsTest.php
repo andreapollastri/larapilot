@@ -329,6 +329,8 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
         ->and($yaml)->toContain('dashboard_auth: false')
+        ->and($yaml)->toContain('api_auth: false')
+        ->and($yaml)->toContain('security_scan: false')
         ->and($yaml)->toContain('github: false')
         ->and($yaml)->toContain('gitlab: false')
         ->and($yaml)->toContain('bitbucket: false')
@@ -351,6 +353,8 @@ it('persists project settings via settings-set', function (): void {
         '--lucille' => 'NO',
         '--decision-log' => 'NO',
         '--code-history' => 'YES',
+        '--api-auth' => 'YES',
+        '--security-scan' => 'YES',
         '--github' => 'YES',
         '--gitlab' => 'YES',
         '--bitbucket' => 'NO',
@@ -373,6 +377,8 @@ it('persists project settings via settings-set', function (): void {
         'decision_log' => 'NO',
         'code_history' => 'YES',
         'dashboard_auth' => 'NO',
+        'api_auth' => 'YES',
+        'security_scan' => 'YES',
         'github' => 'YES',
         'gitlab' => 'YES',
         'bitbucket' => 'NO',

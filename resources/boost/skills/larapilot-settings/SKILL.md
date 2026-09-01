@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, dashboard auth, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, dashboard login/password, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
+description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
 ---
 
 # Larapilot — Project Settings
@@ -9,7 +9,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, auto_approve, lucille, decision_log, code_history, dashboard_auth, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`.
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, auto_approve, lucille, decision_log, code_history, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`.
 
 ## Output Economy
 
@@ -26,7 +26,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 | 🧪 **Anne** | Test Architect — owns testing mode implications |
 | 🛡️ **Robert** | Code Reviewer — owns auto_approve risk framing |
 | 📒 **Lucille** | Project tracking — owns the lucille on/exclude setting; default is always ON |
-| 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle and dashboard user management (`larapilot:dashboard-user`) |
+| 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle + dashboard users (`larapilot:dashboard-user`), the `api_auth` toggle (`LARAPILOT_API_TOKEN` on `/larapilot/api/*`) **and** the `security_scan` toggle (`andreapollastri/checkpoint` in review/ship) |
 | 🔗 **Matt** | Integration Manager — owns Slack/Discord/Telegram notification toggles (secrets stay in `.env`) |
 
 ## Config & CLI
@@ -45,7 +45,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · dashboard_auth={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -170,6 +170,30 @@ Ask only the forge(s) that match the user's remote (skip others or leave NO).
 
 When the user picks `YES`, remind once: they must create at least one user, or the dashboard returns HTTP 500. Never collect the password in chat — tell them to run `php artisan larapilot:dashboard-user add <username>` (it prompts securely) or pass `--password=`. Setup notes: `.larapilot/integrations.md`.
 
+**7c. API auth** — make `LARAPILOT_API_TOKEN` mandatory on every `/larapilot/api/*` request (default OFF)
+
+- **AskQuestion prompt:** `API auth (current: {VALUE}) — require the LARAPILOT_API_TOKEN shared token on every /larapilot/api/* request (reads + writes, diagnostics included)?`
+- **Chat framing (one line):** 🔐 Lars — JSON-API-only gate; never touches the dashboard UI or MCP. Token lives in `.env`, not `.larapilot/`.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NO` | `NO — token honoured when set; reads open in dev/staging when it is not (default)` |
+| `YES` | `YES — every /larapilot/api/* call needs the token; API fails closed (HTTP 503) when LARAPILOT_API_TOKEN is unset` |
+
+When the user picks `YES`, remind once: set `LARAPILOT_API_TOKEN` in `.env` (dev/staging) or the API returns HTTP 503. Never collect the token value in chat. Client callers send it as `Authorization: Bearer <token>` or `X-Larapilot-Token: <token>`. Setup + client examples: `.larapilot/integrations.md` → **API access**.
+
+**7d. Security scan** — run `andreapollastri/checkpoint` inside `/larapilot-review` and the pre-ship gate (default OFF)
+
+- **AskQuestion prompt:** `Security scan (current: {VALUE}) — run the checkpoint static security scan during /larapilot-review and before ship?`
+- **Chat framing (one line):** 🔐 Lars — optional dev package (`composer require --dev andreapollastri/checkpoint`); FAIL findings block review until fixed or waived via `larapilot:decision-log`.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NO` | `NO — no security scan step (default)` |
+| `YES` | `YES — /larapilot-review runs php artisan checkpoint:scan; FAIL = blocker, WARN = review note` |
+
+When the user picks `YES`, remind once: the scanner is not bundled — run `composer require --dev andreapollastri/checkpoint` in the target app (if missing, `/larapilot-review` will stop and ask for it). Setup notes: `.larapilot/integrations.md` → **Security scan**.
+
 **8. Notifications** — master switch (default OFF)
 
 - **AskQuestion prompt:** `Notifications (current: {VALUE}) — enable chat alerts (Slack/Discord/Telegram)?`
@@ -192,8 +216,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (dashboard_auth)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.  
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / forge / notifications → NO.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.  
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
 
 ### 2. Persist
 
@@ -210,6 +234,8 @@ php artisan larapilot:settings-set \
   --decision-log=YES \
   --code-history=NO \
   --dashboard-auth=NO \
+  --api-auth=NO \
+  --security-scan=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
@@ -222,7 +248,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · dashboard_auth=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · dashboard_auth=… · api_auth=… · security_scan=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.
@@ -240,4 +266,6 @@ Remind once (one line): other skills honor these on next run via `config-show` �
 - If the user wants a single setting changed, AskQuestion only that dimension
 - Never invent persistence — CLI only
 - Never collect Slack/Discord/Telegram secrets or the dashboard password in chat — `larapilot:dashboard-user add` prompts for it
-- `dashboard_auth` gates the dashboard **UI only** — never claim it affects `/larapilot/api/*` or MCP
+- `dashboard_auth` gates the dashboard **UI only**; `api_auth` gates the **JSON API only** (`/larapilot/api/*`, `LARAPILOT_API_TOKEN`) — neither affects the other surface, and neither touches MCP
+- `security_scan` only wires `andreapollastri/checkpoint` into `/larapilot-review` + pre-ship — it never installs the package and never runs `checkpoint:scan` on its own; when ON and the package is absent, `/larapilot-review` stops and asks for `composer require --dev andreapollastri/checkpoint`
+- Never collect the `LARAPILOT_API_TOKEN` value in chat — it lives in `.env`; point at `.larapilot/integrations.md` → **API access** for setup and client examples

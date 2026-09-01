@@ -22,6 +22,10 @@ abstract class TestCase extends OrchestraTestCase
     {
         $app['config']->set('larapilot.enabled', true);
         $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+        // The API route group throttles per IP via the cache; keep the suite off
+        // any store that would need a migrated table.
+        $app['config']->set('cache.default', 'array');
+        $app['config']->set('session.driver', 'array');
     }
 
     protected function setUp(): void

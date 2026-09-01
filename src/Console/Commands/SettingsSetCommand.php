@@ -19,6 +19,8 @@ class SettingsSetCommand extends LarapilotCommand
                             {--decision-log= : Decision journal + regression guard: YES (default) or NO}
                             {--code-history= : Per spec/task code change history: YES or NO (default NO)}
                             {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
+                            {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
+                            {--security-scan= : Run andreapollastri/checkpoint in /larapilot-review + pre-ship: YES or NO (default NO)}
                             {--github= : GitHub remote via gh CLI: YES or NO (default NO)}
                             {--gitlab= : GitLab remote via glab CLI: YES or NO (default NO)}
                             {--bitbucket= : Bitbucket Cloud remote via API tokens: YES or NO (default NO)}
@@ -92,6 +94,8 @@ class SettingsSetCommand extends LarapilotCommand
             'decision-log' => ['decision_log', $config->allowedDecisionLogModes()],
             'code-history' => ['code_history', $config->allowedCodeHistoryModes()],
             'dashboard-auth' => ['dashboard_auth', $config->allowedDashboardAuthModes()],
+            'api-auth' => ['api_auth', $config->allowedApiAuthModes()],
+            'security-scan' => ['security_scan', $config->allowedSecurityScanModes()],
             'github' => ['github', $config->allowedGithubModes()],
             'gitlab' => ['gitlab', $config->allowedGitlabModes()],
             'bitbucket' => ['bitbucket', $config->allowedBitbucketModes()],
@@ -121,7 +125,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --decision-log, --code-history, --dashboard-auth, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --decision-log, --code-history, --dashboard-auth, --api-auth, --security-scan, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

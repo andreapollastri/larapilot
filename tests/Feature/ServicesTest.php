@@ -84,6 +84,8 @@ it('exposes default project settings and updates them', function (): void {
         'decision_log' => 'YES',
         'code_history' => 'NO',
         'dashboard_auth' => 'NO',
+        'api_auth' => 'NO',
+        'security_scan' => 'NO',
         'github' => 'NO',
         'gitlab' => 'NO',
         'bitbucket' => 'NO',
@@ -96,6 +98,8 @@ it('exposes default project settings and updates them', function (): void {
         ->and($config->lucilleEnabled())->toBeTrue()
         ->and($config->decisionLogEnabled())->toBeTrue()
         ->and($config->codeHistoryEnabled())->toBeFalse()
+        ->and($config->apiAuthEnabled())->toBeFalse()
+        ->and($config->securityScanEnabled())->toBeFalse()
         ->and($config->githubEnabled())->toBeFalse()
         ->and($config->gitlabEnabled())->toBeFalse()
         ->and($config->bitbucketEnabled())->toBeFalse()
@@ -112,6 +116,7 @@ it('exposes default project settings and updates them', function (): void {
         'gitlab' => 'YES',
         'bitbucket' => 'YES',
         'azure' => 'YES',
+        'security_scan' => 'YES',
         'notifications' => 'YES',
         'notify_slack' => 'YES',
     ]);
@@ -134,6 +139,7 @@ it('exposes default project settings and updates them', function (): void {
         ->and($config->gitlabEnabled())->toBeTrue()
         ->and($config->bitbucketEnabled())->toBeTrue()
         ->and($config->azureEnabled())->toBeTrue()
+        ->and($config->securityScanEnabled())->toBeTrue()
         ->and($config->notificationsEnabled())->toBeTrue()
         ->and($config->notifySlackEnabled())->toBeTrue()
         ->and($config->setupInfo()['settings']['effort'])->toBe('MAX');

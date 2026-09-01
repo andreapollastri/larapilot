@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Larapilot;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
 use Larapilot\Console\Commands\BackstageExportCommand;
@@ -49,11 +52,13 @@ use Larapilot\Console\Commands\UsageReportCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
+use Larapilot\Console\Commands\VpsProvisionCommand;
 use Larapilot\Http\ApiRouteRegistrar;
 use Larapilot\Http\DashboardRouteRegistrar;
 use Larapilot\Http\MockupAssetsRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
+use Larapilot\Services\ApiAuditService;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\AzureDevopsService;
 use Larapilot\Services\BackstageService;
@@ -70,6 +75,7 @@ use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\MetricsService;
 use Larapilot\Services\MockupService;
 use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
@@ -87,7 +93,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.5.0';
+    public const VERSION = '2.5.1';
 
     public function register(): void
     {
@@ -117,6 +123,8 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(InternalFeedbackService::class);
         $this->app->singleton(DashboardService::class);
         $this->app->singleton(ApiService::class);
+        $this->app->singleton(ApiAuditService::class);
+        $this->app->singleton(MetricsService::class);
         $this->app->singleton(OpenApiService::class);
         $this->app->singleton(ValidationService::class);
         $this->app->singleton(TrackerManager::class);
@@ -174,6 +182,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 TrackerStatusCommand::class,
                 TrackerPushCommand::class,
                 TrackerPullCommand::class,
+                VpsProvisionCommand::class,
             ]);
 
             $this->publishes([
@@ -189,9 +198,37 @@ class LarapilotServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapilot');
 
+        $this->registerApiRateLimiter();
+
         MockupRouteRegistrar::register();
         MockupAssetsRouteRegistrar::register();
         DashboardRouteRegistrar::register();
         ApiRouteRegistrar::register();
+    }
+
+    /**
+     * Per-IP rate limit for `/larapilot/api/*`, resolved from
+     * `larapilot.api.rate_limit` ("max,minutes") at request time. An empty
+     * value or a non-positive max means no limit.
+     */
+    protected function registerApiRateLimiter(): void
+    {
+        RateLimiter::for('larapilot-api', function (Request $request): Limit {
+            $spec = trim((string) config('larapilot.api.rate_limit', '120,1'));
+
+            if ($spec === '') {
+                return Limit::none();
+            }
+
+            [$max, $minutes] = array_pad(explode(',', $spec, 2), 2, '1');
+            $max = (int) trim($max);
+
+            if ($max <= 0) {
+                return Limit::none();
+            }
+
+            return Limit::perMinutes(max(1, (int) trim($minutes)), $max)
+                ->by((string) $request->ip());
+        });
     }
 }

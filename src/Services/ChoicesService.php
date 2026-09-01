@@ -96,6 +96,8 @@ class ChoicesService
             'auto_approve' => $this->config->allowedAutoApproveModes(),
             'lucille' => $this->config->allowedLucilleModes(),
             'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
+            'api_auth' => $this->config->allowedApiAuthModes(),
+            'security_scan' => $this->config->allowedSecurityScanModes(),
             'github' => $this->config->allowedGithubModes(),
             'gitlab' => $this->config->allowedGitlabModes(),
             'bitbucket' => $this->config->allowedBitbucketModes(),

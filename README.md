@@ -50,7 +50,7 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 
 | Path | Purpose |
 | --- | --- |
-| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, optional `dashboard_auth` / `github` / `gitlab` / `bitbucket` / `azure` / `notifications` / `notify_*`) |
+| `config.yaml` | Project workflow config + `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, optional `dashboard_auth` / `api_auth` / `security_scan` / `github` / `gitlab` / `bitbucket` / `azure` / `notifications` / `notify_*`) |
 | `decisions.yaml` | Append-only journal of explicit user choices + regression guard (`decision_log`, ON by default) |
 | `code-history.yaml` | Per spec/task files + line ranges touched, from git commits (`code_history`, OFF by default) |
 | `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram |
@@ -111,7 +111,15 @@ When the dashboard is browsable (never in production):
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
-**API auth:** set `LARAPILOT_API_TOKEN` to require a bearer token (or `X-Larapilot-Token` header) on every `/larapilot/api/*` request — strongly recommended on shared staging hosts. Without a token, reads stay open in the allowed environments, but **writes are refused outside local/development/testing**.
+**API auth:** set `LARAPILOT_API_TOKEN` to require a bearer token (or `X-Larapilot-Token` header) on every `/larapilot/api/*` request — reads and writes alike. Without a token configured, reads stay open in the allowed environments, but **writes are refused outside local/development/testing**.
+
+Turn on the `api_auth` project setting to make the token **mandatory** for the whole API:
+
+```bash
+php artisan larapilot:settings-set --api-auth=YES   # every /larapilot/api/* call now needs LARAPILOT_API_TOKEN
+```
+
+With `api_auth=YES` and **no** `LARAPILOT_API_TOKEN` set, the API **fails closed** (HTTP 503) instead of answering unauthenticated — strongly recommended on shared staging hosts. This gate never touches the `/larapilot` dashboard UI (`dashboard_auth`) or the MCP server, and the API is still never served in `production`.
 
 **Dashboard UI auth (optional):** the `/larapilot` HTML pages are open by default. Turn on the `dashboard_auth` project setting to require **HTTP Basic Auth**:
 
@@ -145,14 +153,25 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 
 Entries land in `.larapilot/code-history.yaml`.
 
+### Security scan (`security_scan`, OFF by default)
+
+Fold a static Laravel security scan into `/larapilot-review` and the pre-ship gate. It uses the optional dev package [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) (`php artisan checkpoint:scan` — 26 static checks + `composer`/`npm` audit). Larapilot never bundles the scanner and never runs it unless this setting is on:
+
+```bash
+composer require --dev andreapollastri/checkpoint
+php artisan larapilot:settings-set --security-scan=YES
+```
+
+With `security_scan=YES`, `/larapilot-review` runs `checkpoint:scan` and treats `FAIL` findings as review blockers (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become review notes. If the package is missing, the review skill stops and asks you to install it. Owned by **Lars** alongside `dashboard_auth` and `api_auth`. Setup: `.larapilot/integrations.md` → **Security scan**.
+
 ### Diagnostics (bug triage)
 
 Read-only runtime snapshot for `/larapilot-bug` and local debugging — **never mutates workflow state**.
 
 | Surface | How |
 | --- | --- |
-| **API** | `GET /larapilot/api/diagnostics` — same dashboard gate (dev/staging only); `404` when `LARAPILOT_DIAGNOSTICS_ENABLED=false` |
-| **CLI** | `php artisan larapilot:diagnostics` — `--lines=` (cap log tail), `--no-logs` (status + checks only) |
+| **API** | `GET /larapilot/api/diagnostics` — same dashboard gate (dev/staging only); `404` when `LARAPILOT_DIAGNOSTICS_ENABLED=false`. Covered by the API token like every other `/larapilot/api/*` endpoint — with `api_auth=YES` it requires `LARAPILOT_API_TOKEN` |
+| **CLI** | `php artisan larapilot:diagnostics` — `--lines=` (cap log tail), `--no-logs` (status + checks only). Local artisan command — no token needed |
 | **MCP** | Larapilot `diagnostics` tool, or `RunArtisanTool` with `larapilot:diagnostics` |
 
 **Query params (API):** `?lines=100` (default from config, capped by `max_log_lines`) · `?no_logs=1` to omit the log tail.
@@ -245,6 +264,28 @@ For a Backstage plugin or entity provider, two endpoints share the dashboard gat
 Call them through the **Backstage backend proxy** so `LARAPILOT_API_TOKEN` stays server-side. The API returns `404` in production by design — if the portal cannot reach a dev/staging host, ship the committed `catalog-info.yaml` and TechDocs instead.
 
 Keep the catalog fresh with a CI step on the default branch (`--write --force`) or by re-running `/larapilot-backstage` after PRD and backlog milestones. `php artisan larapilot:config-show` reports the current mapping under `data.backstage`.
+
+---
+
+## Self-hosted VPS — one server for the whole team
+
+`larapilot:vps-provision` writes a **standalone `provision.sh`** for an Ubuntu 24.04/26.04 LTS server that hosts several Larapilot projects for a team working over SSH with Claude Code and their own Claude plan.
+
+```bash
+php artisan larapilot:vps-provision              # writes ./provision.sh
+php artisan larapilot:vps-provision --with-readme # + VPS-README.md (operator guide)
+scp provision.sh root@<vps>: && ssh root@<vps> 'bash provision.sh'
+```
+
+The one script installs PHP 8.3/8.4/8.5 (FPM pool per project), MySQL, Redis, Nginx + certbot, Supervisor, cron, Node LTS, Composer, Claude Code and the `gh` / `glab` / `az` CLIs, then generates three tools:
+
+| Tool | For | Does |
+| --- | --- | --- |
+| `prj-ai` | admin (root) | `config` · `list` · `add` · `del` · `php <p> [ver]` · `user-add` · `user-del` · `deploy` |
+| `prj-work` | developers | login menu → per-dev workspace (clone of the canonical) inside a persistent `tmux` session |
+| `prj-pr` | developers | open a PR/MR from the workspace — **GitHub, GitLab, Bitbucket Cloud, Azure DevOps** (via `gh` / `glab` when authenticated, REST otherwise) |
+
+Git provider is picked in `prj-ai config` and can change without re-provisioning. Each project gets its own system user, database, FPM pool and vhost; each workspace gets Claude Code `deny` guardrails scoping the agent to that project. Deploys are incremental (Composer / npm / migrations run only when the relevant paths changed) and the canonical is cached with `artisan optimize`. Full operator guide: `resources/larapilot/vps/README.md` (or `--with-readme`).
 
 ---
 

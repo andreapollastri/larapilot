@@ -13,6 +13,7 @@ use Larapilot\Services\BackstageService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\MetricsService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
@@ -27,13 +28,14 @@ class ApiController
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
         protected DiagnosticsService $diagnostics,
+        protected MetricsService $metrics,
     ) {}
 
-    public function board(): JsonResponse
+    public function board(Request $request): JsonResponse
     {
         $this->guard();
 
-        return response()->json($this->api->board());
+        return $this->cacheable($request, $this->api->board());
     }
 
     public function specs(Request $request): JsonResponse
@@ -41,11 +43,16 @@ class ApiController
         $this->guard();
 
         $status = $request->query('status');
+        [$page, $perPage] = $this->pagination($request);
 
-        return response()->json($this->api->specs(is_string($status) && $status !== '' ? $status : null));
+        return $this->cacheable($request, $this->api->specs(
+            is_string($status) && $status !== '' ? $status : null,
+            $page,
+            $perPage,
+        ));
     }
 
-    public function spec(string $code): JsonResponse
+    public function spec(Request $request, string $code): JsonResponse
     {
         $this->guard();
 
@@ -59,7 +66,14 @@ class ApiController
             abort(404);
         }
 
-        return response()->json($data);
+        return $this->cacheable($request, $data);
+    }
+
+    public function metricsSnapshot(Request $request): JsonResponse
+    {
+        $this->guard();
+
+        return $this->cacheable($request, $this->metrics->snapshot());
     }
 
     public function storeComment(Request $request, string $code): JsonResponse
@@ -112,7 +126,7 @@ class ApiController
         return response()->json($result, 201);
     }
 
-    public function prd(): JsonResponse
+    public function prd(Request $request): JsonResponse
     {
         $this->guard();
 
@@ -122,7 +136,7 @@ class ApiController
             abort(404);
         }
 
-        return response()->json($data);
+        return $this->cacheable($request, $data);
     }
 
     public function backstage(Request $request): JsonResponse
@@ -179,6 +193,38 @@ class ApiController
     protected function apiBaseUrl(Request $request): string
     {
         return $request->getSchemeAndHttpHost().'/'.trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/').'/api';
+    }
+
+    /**
+     * JSON response with a content-derived ETag so pollers (Backstage, CI
+     * dashboards) can revalidate cheaply with `If-None-Match` → `304`.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    protected function cacheable(Request $request, array $data): JsonResponse
+    {
+        $response = response()->json($data);
+
+        $response->setEtag(hash('xxh128', (string) $response->getContent()));
+        $response->headers->set('Cache-Control', 'private, must-revalidate');
+        $response->isNotModified($request);
+
+        return $response;
+    }
+
+    /**
+     * `?page` (>= 1) and `?per_page` (1-200, default 50). Out-of-range values
+     * are clamped rather than rejected.
+     *
+     * @return array{int, int}
+     */
+    protected function pagination(Request $request): array
+    {
+        $page = max(1, (int) $request->query('page', '1'));
+        $perPage = (int) $request->query('per_page', '50');
+        $perPage = max(1, min(200, $perPage === 0 ? 50 : $perPage));
+
+        return [$page, $perPage];
     }
 
     protected function guard(): void

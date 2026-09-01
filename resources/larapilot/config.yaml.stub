@@ -12,6 +12,10 @@ settings:
   # Per spec/task file + line-range history (.larapilot/code-history.yaml) — OFF by default.
   code_history: false
   dashboard_auth: false
+  # Require LARAPILOT_API_TOKEN on every /larapilot/api/* request — OFF by default.
+  api_auth: false
+  # Run andreapollastri/checkpoint (static security scan) in /larapilot-review + pre-ship — OFF by default.
+  security_scan: false
   github: false
   gitlab: false
   bitbucket: false

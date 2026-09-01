@@ -168,7 +168,7 @@ Lars speaks in character, **incorporates Oliver's red-team report**, and runs a 
 | A09 | Logging & monitoring — auth failures, deploy events logged; **observability stack** live (Nightwatch, CloudWatch, or equivalent) |
 | A10 | SSRF — outbound HTTP from user-controlled input |
 
-Also run `composer audit` when available. When **Aikido** is connected (Forge integration or standalone workspace), confirm repo scanning is active and review open Critical/High findings before deploy. Run `php artisan checkpoint:scan` when [andreapollastri/checkpoint](https://github.com/andreapollastri/checkpoint) is installed (recommended dev dependency); treat FAIL results as High unless explicitly waived. Use Boost `Database Schema` and code review for access-control and injection checks. Confirm new entities use UUID primary keys unless the PRD documents an exception.
+Also run `composer audit` when available. When **Aikido** is connected (Forge integration or standalone workspace), confirm repo scanning is active and review open Critical/High findings before deploy. Run `php artisan checkpoint:scan` ([andreapollastri/checkpoint](https://github.com/andreapollastri/checkpoint), recommended dev dependency) — **mandatory** when `settings.security_scan` is `YES` (if the package is missing, stop and have the user `composer require --dev andreapollastri/checkpoint`); otherwise run it opportunistically when installed. Treat FAIL results as High unless explicitly waived via `php artisan larapilot:decision-log`. Use Boost `Database Schema` and code review for access-control and injection checks. Confirm new entities use UUID primary keys unless the PRD documents an exception.
 
 Write the assessment to `.larapilot/docs/security/{release-id}.md`:
 

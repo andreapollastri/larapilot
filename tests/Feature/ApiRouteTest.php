@@ -172,7 +172,10 @@ it('serves the OpenAPI document', function (): void {
         ->assertOk()
         ->assertJsonPath('openapi', '3.1.0')
         ->assertJsonPath('info.title', 'Larapilot Workflow API')
+        ->assertJsonPath('components.securitySchemes.bearerToken.scheme', 'bearer')
+        ->assertJsonPath('components.securitySchemes.larapilotTokenHeader.name', 'X-Larapilot-Token')
         ->assertJsonStructure([
+            'security',
             'paths' => [
                 '/board',
                 '/specs',
@@ -304,6 +307,48 @@ it('requires the API token on every request when configured', function (): void 
 
     $this->getJson('/larapilot/api/board', ['X-Larapilot-Token' => 'secret-token'])
         ->assertOk();
+});
+
+it('locks every API read behind the token when api_auth is on', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+
+    app(ConfigService::class)->updateSettings(['api_auth' => 'YES']);
+    config()->set('larapilot.api.token', 'secret-token');
+
+    $this->getJson('/larapilot/api/board')->assertUnauthorized();
+    $this->getJson('/larapilot/api/diagnostics')->assertUnauthorized();
+
+    $this->getJson('/larapilot/api/board', ['Authorization' => 'Bearer secret-token'])->assertOk();
+    $this->getJson('/larapilot/api/diagnostics?no_logs=1', ['X-Larapilot-Token' => 'secret-token'])->assertOk();
+});
+
+it('fails closed when api_auth is on but no token is configured', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+
+    app(ConfigService::class)->updateSettings(['api_auth' => 'YES']);
+    config()->set('larapilot.api.token', null);
+
+    $this->getJson('/larapilot/api/board')->assertStatus(503);
+});
+
+it('leaves API reads open when api_auth is off and no token is set (default)', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+
+    expect(app(ConfigService::class)->settings()['api_auth'])->toBe('NO');
+
+    $this->getJson('/larapilot/api/board')->assertOk();
+});
+
+it('persists the api_auth setting via settings-set', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:settings-set', ['--api-auth' => 'YES'])->assertSuccessful();
+
+    expect(app(ConfigService::class)->settings()['api_auth'])->toBe('YES')
+        ->and(app(ConfigService::class)->apiAuthEnabled())->toBeTrue();
 });
 
 it('blocks API writes outside local environments when no token is configured', function (): void {

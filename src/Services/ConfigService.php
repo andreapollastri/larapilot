@@ -212,6 +212,8 @@ class ConfigService
      *     decision_log: string,
      *     code_history: string,
      *     dashboard_auth: string,
+     *     api_auth: string,
+     *     security_scan: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
@@ -254,6 +256,8 @@ class ConfigService
      *     decision_log: bool,
      *     code_history: bool,
      *     dashboard_auth: bool,
+     *     api_auth: bool,
+     *     security_scan: bool,
      *     github: bool,
      *     gitlab: bool,
      *     bitbucket: bool,
@@ -296,6 +300,8 @@ class ConfigService
             'decision_log' => true,
             'code_history' => false,
             'dashboard_auth' => false,
+            'api_auth' => false,
+            'security_scan' => false,
             'github' => false,
             'gitlab' => false,
             'bitbucket' => false,
@@ -322,6 +328,8 @@ class ConfigService
      *     decision_log: string,
      *     code_history: string,
      *     dashboard_auth: string,
+     *     api_auth: string,
+     *     security_scan: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
@@ -421,6 +429,28 @@ class ConfigService
     public function dashboardAuthEnabled(): bool
     {
         return $this->settings()['dashboard_auth'] === 'YES';
+    }
+
+    /**
+     * Require `LARAPILOT_API_TOKEN` on every `/larapilot/api/*` request — OFF by
+     * default. When ON the JSON API fails closed (HTTP 503) until the token env
+     * var is configured. Never affects the dashboard UI or the MCP server.
+     */
+    public function apiAuthEnabled(): bool
+    {
+        return $this->settings()['api_auth'] === 'YES';
+    }
+
+    /**
+     * Fold a static security scan (andreapollastri/checkpoint) into
+     * `/larapilot-review` and the pre-ship gate — OFF by default. When ON the
+     * review skill runs `php artisan checkpoint:scan` if the package is present
+     * and treats FAIL findings as review blockers; when the package is missing
+     * it reminds the user to `composer require --dev andreapollastri/checkpoint`.
+     */
+    public function securityScanEnabled(): bool
+    {
+        return $this->settings()['security_scan'] === 'YES';
     }
 
     /**
@@ -638,6 +668,22 @@ class ConfigService
      * @return list<string>
      */
     public function allowedDashboardAuthModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedApiAuthModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedSecurityScanModes(): array
     {
         return $this->allowedYesNoModes();
     }

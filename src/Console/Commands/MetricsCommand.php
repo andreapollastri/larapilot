@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Console\Commands;
 
-use Larapilot\Services\PlanService;
-use Larapilot\Services\SpecService;
+use Larapilot\Services\MetricsService;
 use Larapilot\Support\LarapilotCommand;
 
 class MetricsCommand extends LarapilotCommand
@@ -15,9 +14,9 @@ class MetricsCommand extends LarapilotCommand
 
     protected $description = 'Report backlog and plan progress metrics';
 
-    public function handle(SpecService $specs, PlanService $plans): int
+    public function handle(MetricsService $service): int
     {
-        $metrics = array_merge($specs->metrics(), $plans->metrics());
+        $metrics = $service->flat();
 
         if ((bool) $this->option('human')) {
             $this->table(['Metric', 'Value'], collect($metrics)

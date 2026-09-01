@@ -7,6 +7,8 @@ namespace Larapilot\Http;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\ApiController;
+use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
+use Larapilot\Http\Middleware\AuditLarapilotApiWrites;
 use Larapilot\Http\Middleware\EnsureApiAuthorized;
 use Larapilot\Services\ConfigService;
 
@@ -21,7 +23,13 @@ class ApiRouteRegistrar
         $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
         $middleware = config('larapilot.dashboard_route.middleware', ['web']);
 
-        Route::middleware([...(array) $middleware, EnsureApiAuthorized::class])
+        Route::middleware([
+            ...(array) $middleware,
+            AddLarapilotSecurityHeaders::class.':api',
+            'throttle:larapilot-api',
+            EnsureApiAuthorized::class,
+            AuditLarapilotApiWrites::class,
+        ])
             ->withoutMiddleware(self::csrfMiddleware())
             ->prefix($prefix.'/api')
             ->group(function (): void {
@@ -41,6 +49,9 @@ class ApiRouteRegistrar
 
                 Route::get('/prd', [ApiController::class, 'prd'])
                     ->name('larapilot.api.prd');
+
+                Route::get('/metrics', [ApiController::class, 'metricsSnapshot'])
+                    ->name('larapilot.api.metrics');
 
                 Route::get('/diagnostics', [ApiController::class, 'diagnostics'])
                     ->name('larapilot.api.diagnostics');

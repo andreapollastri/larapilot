@@ -37,6 +37,9 @@
         "pestphp/pest": "^3.8|^4.1",
         "phpstan/phpstan": "^2.1"
     },
+    "suggest": {
+        "andreapollastri/checkpoint": "Static Laravel security scanner. Install as --dev and set settings.security_scan=YES to fold `checkpoint:scan` findings into /larapilot-review and the pre-ship gate."
+    },
     "autoload": {
         "psr-4": {
             "Larapilot\\": "src/"

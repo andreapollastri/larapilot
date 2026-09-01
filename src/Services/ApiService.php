@@ -45,18 +45,29 @@ class ApiService
     /**
      * @return array<string, mixed>
      */
-    public function specs(?string $status = null): array
+    public function specs(?string $status = null, int $page = 1, int $perPage = 50): array
     {
         $result = $this->specs->list($status);
 
+        $all = array_values($result['items']);
+        $total = count($all);
+        $page = max(1, $page);
+        $perPage = max(1, $perPage);
+        $totalPages = $total === 0 ? 1 : (int) ceil($total / $perPage);
+        $page = min($page, $totalPages);
+
         $items = array_map(
             fn (array $spec): array => $this->enrichSpecSummary($spec),
-            $result['items']
+            array_slice($all, ($page - 1) * $perPage, $perPage)
         );
 
         return [
             'status' => $status,
             'count' => count($items),
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => $totalPages,
             'items' => $items,
             'summary' => $result['summary'],
         ];

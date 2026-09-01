@@ -176,7 +176,7 @@ Pre-deploy assessment mapped to **OWASP Top 10 (2021)** and Laravel-specific vec
 | A09 | Logging & monitoring — auth failures, deploy events logged; **observability stack** live (Nightwatch, CloudWatch, or equivalent)                                               |
 | A10 | SSRF — outbound HTTP from user-controlled input                                                                                                                                |
 
-Also: run `composer audit` when available; when **Aikido** is connected, confirm repo scanning is active and review open Critical/High findings; run `php artisan checkpoint:scan` when [checkpoint](https://github.com/andreapollastri/checkpoint) is installed (treat FAIL as High unless waived); use Boost `Database Schema` and code review for access-control and injection checks; confirm new entities use UUID primary keys unless the PRD documents an exception.
+Also: run `composer audit` when available; when **Aikido** is connected, confirm repo scanning is active and review open Critical/High findings; run `php artisan checkpoint:scan` ([checkpoint](https://github.com/andreapollastri/checkpoint)) — **mandatory when `settings.security_scan` is `YES`** (stop for `composer require --dev andreapollastri/checkpoint` if missing), otherwise opportunistically when installed; treat FAIL as High unless waived via `larapilot:decision-log`; use Boost `Database Schema` and code review for access-control and injection checks; confirm new entities use UUID primary keys unless the PRD documents an exception.
 
 Write the assessment to `{paths.security}/{release-id}.md`:
 

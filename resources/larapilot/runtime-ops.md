@@ -142,6 +142,8 @@ Regenerate after PRD edits, backlog changes, or plan/task completion — otherwi
 
 The Larapilot API is a **dev/staging surface** and returns `404` in production. A Backstage plugin must call it through the **Backstage backend proxy** so `LARAPILOT_API_TOKEN` stays server-side — never from browser code, and never pointed at a production host. When no environment is reachable from the portal, ship the committed `catalog-info.yaml` and TechDocs instead of the live endpoints.
 
+Set `LARAPILOT_API_TOKEN` on the dev/staging host and turn on the `api_auth` project setting (`php artisan larapilot:settings-set --api-auth=YES`) so every `/larapilot/api/*` call — the Backstage endpoints included — requires the token and the API fails closed (HTTP 503) if the env var is ever missing. This never affects the `/larapilot` dashboard UI (`dashboard_auth`) or the MCP server.
+
 Ownership: **Matt** owns the catalog mapping and portal integration; **Jack** owns the CI regeneration step; **Albert** owns TechDocs readability; **Lars** owns the token/proxy boundary.
 
 ## Project Trackers — Linear, Asana, Jira, Trello, ClickUp, Monday _(Matt owns — integration surface)_

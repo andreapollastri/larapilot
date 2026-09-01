@@ -36,7 +36,7 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `dashboard_auth`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 - Decision journal (default ON): record every explicit user choice with `php artisan larapilot:decision-log`, and run `php artisan larapilot:decision-check` before overriding a topic that may already carry one — see **Decision journal (`settings.decision_log`)** below.
 - Code change history (default OFF): when `data.settings.code_history` is `YES`, call `php artisan larapilot:code-log` after each `task-done` — see **Code change history (`settings.code_history`)** below.
 
@@ -50,7 +50,7 @@ Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not inst
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `dashboard_auth: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Effort (`settings.effort`)
 
@@ -160,6 +160,32 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | **`true` / `YES`** | Every dashboard page requires a username + password from `.larapilot/auth.yaml`. With the setting ON and **no** users configured, the dashboard returns HTTP 500 until a user is added. |
 
 Credentials are argon2id/bcrypt hashes only — no database, no `User` model. `.larapilot/auth.yaml` is added to `.gitignore` automatically and must never be committed. Manage users with `php artisan larapilot:dashboard-user {list|add|remove}` (the `add` action prompts for the password, or takes `--password=`). Failed sign-ins are throttled per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). Enable the gate with `php artisan larapilot:settings-set --dashboard-auth=YES`. Setup notes: `.larapilot/integrations.md`.
+
+### API auth (`settings.api_auth`) — opt-in, default OFF
+
+Makes `LARAPILOT_API_TOKEN` **mandatory** on every `/larapilot/api/*` request — the JSON API **only**. OFF by default: the token is honoured when set but the read endpoints stay open in the allowed environments when it is not. **Never** gates the `/larapilot` dashboard UI (that is `settings.dashboard_auth`) or the MCP server. The API is never served in `production` regardless.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** With `LARAPILOT_API_TOKEN` set, every request must carry it (bearer token or `X-Larapilot-Token`). With no token set, reads are open in the allowed environments and mutating requests are refused outside `local`/`development`/`testing`. |
+| **`true` / `YES`** | Every request — reads **and** writes — must carry `LARAPILOT_API_TOKEN`. With the setting ON and **no** token configured, the API returns **HTTP 503** (fail-closed) until the token env var is set. |
+
+Enable the gate with `php artisan larapilot:settings-set --api-auth=YES`. Setup notes: `.larapilot/integrations.md`.
+
+### Security scan (`settings.security_scan`) — opt-in, default OFF
+
+Folds a static Laravel security scan into **`/larapilot-review`** and the **pre-ship gate**. Uses the optional dev package [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) (`php artisan checkpoint:scan`). Larapilot never installs it and never runs the scanner unless this setting is `YES`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** No security scan step; review and ship gates behave exactly as before. |
+| **`true` / `YES`** | `/larapilot-review` runs `php artisan checkpoint:scan --json` when the package is present: `FAIL` findings become **review blockers** (resolve or log an explicit decision with `larapilot:decision-log` before `/larapilot-ship`), `WARN` findings become review notes. When the package is **absent**, the skill stops and tells the user to run `composer require --dev andreapollastri/checkpoint`. |
+
+Owned by **Lars** (Security Expert), alongside `dashboard_auth` and `api_auth`. Enable with `php artisan larapilot:settings-set --security-scan=YES`. Setup notes: `.larapilot/integrations.md`.
 
 ### Remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`) — opt-in, default OFF
 

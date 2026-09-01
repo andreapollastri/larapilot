@@ -111,6 +111,8 @@
                     'lucille' => 'Project tracking',
                     'auto_approve' => 'Auto approve',
                     'dashboard_auth' => 'Dashboard auth',
+                    'api_auth' => 'API auth',
+                    'security_scan' => 'Security scan',
                     'git_mode' => 'Git mode',
                     'notify_slack' => 'Notify Slack',
                     'notify_discord' => 'Notify Discord',

@@ -428,31 +428,6 @@
       margin-left: 0.25rem;
     }
 
-    .whats-new {
-      margin: 0 0 1.75rem;
-      padding: 1.1rem 1.15rem 1.15rem;
-      border: 1px solid var(--line);
-      border-left: 3px solid var(--signal);
-      background: rgba(255, 255, 255, 0.55);
-    }
-
-    .whats-new h3 {
-      font-family: var(--display);
-      font-size: 1.15rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.45rem;
-    }
-
-    .whats-new ul {
-      margin: 0.55rem 0 0 1.1rem;
-      color: var(--ink-soft);
-      font-size: 0.95rem;
-    }
-
-    .whats-new li + li { margin-top: 0.3rem; }
-
-    .whats-new a { color: var(--signal-deep); text-decoration: underline; text-underline-offset: 2px; }
-
     .docs-nav a {
       text-decoration: none;
       color: var(--ink-soft);
@@ -949,6 +924,26 @@
       margin: 1.15rem 0;
     }
 
+    .skills-group {
+      font-family: var(--display);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--signal-deep);
+      margin: 1.6rem 0 0.1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--signal);
+    }
+
+    .skills-group:first-of-type { margin-top: 0.25rem; }
+
+    .skills-group-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0.35rem 0 0.2rem;
+    }
+
     .skill-item {
       display: grid;
       grid-template-columns: 11rem 1fr;
@@ -966,7 +961,7 @@
       background: rgba(224, 58, 45, 0.08);
       padding: 0.25rem 0.45rem;
       display: inline-block;
-      word-break: break-all;
+      overflow-wrap: anywhere;
     }
 
     .skill-body { color: var(--ink-soft); font-size: 0.95rem; }
@@ -1253,7 +1248,6 @@
     <div class="nav-links" id="nav-links">
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
-      <a href="#whats-new">What's new</a>
       <a href="#examples">Examples</a>
       <a href="#deep-dive">Deep Dive</a>
       <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
@@ -1266,7 +1260,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.5.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.5.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1291,17 +1285,19 @@
       <div class="docs-nav-label">Start</div>
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
-      <a href="#whats-new">What's new</a>
 
       <div class="docs-nav-label">Examples</div>
       <a href="#examples">All use cases</a>
       <a class="sub" href="#example-new-product">New product</a>
+      <a class="sub" href="#example-adopt">Adopt existing app</a>
       <a class="sub" href="#example-package">Laravel package</a>
       <a class="sub" href="#example-legacy-porting">Legacy porting</a>
       <a class="sub" href="#example-new-feature">New feature</a>
       <a class="sub" href="#example-bug-fix">Bug resolution</a>
       <a class="sub" href="#example-frontend-companion">Frontend companion</a>
       <a class="sub" href="#example-tracker-sync">Tracker sync</a>
+      <a class="sub" href="#example-team-server">Team on one server</a>
+      <a class="sub" href="#example-ssh-tmux">SSH, VS Code &amp; tmux</a>
 
       <div class="docs-nav-label">Core</div>
       <a href="#deep-dive">Deep Dive</a>
@@ -1319,6 +1315,7 @@
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
+      <a class="sub" href="#deep-dive-vps">Self-hosted VPS</a>
 
       <div class="docs-nav-label">Surfaces</div>
       <a class="sub" href="#deep-dive-design-systems">Design systems</a>
@@ -1326,6 +1323,7 @@
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
       <a class="sub" href="#deep-dive-api">API</a>
+      <a class="sub" href="#deep-dive-api-hardening">API hardening</a>
       <a class="sub" href="#deep-dive-api-diagnostics">Diagnostics</a>
     </aside>
 
@@ -1436,6 +1434,18 @@
             <span class="command-flow-arrow">→</span>
             <code>/larapilot-review US-XXX</code>
           </div>
+          <div class="command-flow-label">Brownfield — an app already in production, built without Larapilot</div>
+          <div class="command-flow-row">
+            <code>php artisan larapilot:install</code>
+            <span class="command-flow-arrow">→</span>
+            <code class="cmd-primary">/larapilot-adopt</code>
+            <span class="command-flow-arrow">→</span>
+            <code>/larapilot-spec</code>
+            <span class="command-flow-arrow">→</span>
+            <span>per-story loop</span>
+          </div>
+          <p class="command-flow-note"><code>/larapilot-adopt</code> reverse-engineers the PRD from the code, then the
+            loop is identical. <a href="#example-adopt">Adoption walkthrough</a>.</p>
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
             <code>/larapilot-autopilot</code> to batch plan+implement ·
@@ -1450,7 +1460,7 @@
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
           <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
           <strong>lucille</strong>, <strong>decision journal</strong>, <strong>code history</strong>,
-          optional <strong>dashboard auth / github / gitlab / bitbucket / azure</strong> and
+          optional <strong>dashboard auth / api auth / github / gitlab / bitbucket / azure</strong> and
           <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
           <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
@@ -1474,6 +1484,10 @@
                 <td><code>/larapilot-inception</code></td>
               </tr>
               <tr>
+                <td>Existing Laravel app in production, built without Larapilot, no PRD yet</td>
+                <td><code>/larapilot-adopt</code></td>
+              </tr>
+              <tr>
                 <td>One new capability on existing product</td>
                 <td><code>/larapilot-feature "…"</code></td>
               </tr>
@@ -1490,7 +1504,7 @@
         </div>
 
         <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow).
-          Walkthroughs: <a href="#examples">seven examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
+          Walkthroughs: <a href="#examples">ten examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
       </section>
 
       <!-- Examples -->
@@ -1507,41 +1521,59 @@
             <span class="example-card-desc">Greenfield MVP on Laravel 13 — one-line idea to shipped code</span>
             <span class="example-card-cmd">/larapilot-inception</span>
           </a>
-          <a class="example-card" href="#example-package">
+          <a class="example-card" href="#example-adopt">
             <span class="example-card-num">2</span>
+            <span class="example-card-title">Adopt existing app</span>
+            <span class="example-card-desc">Reverse-engineer a PRD from a production Laravel app built without Larapilot</span>
+            <span class="example-card-cmd">/larapilot-adopt</span>
+          </a>
+          <a class="example-card" href="#example-package">
+            <span class="example-card-num">3</span>
             <span class="example-card-title">Laravel package</span>
             <span class="example-card-desc">Composer package — API, tests, CI, Packagist-ready release</span>
             <span class="example-card-cmd">/larapilot-inception</span>
           </a>
           <a class="example-card" href="#example-legacy-porting">
-            <span class="example-card-num">3</span>
+            <span class="example-card-num">4</span>
             <span class="example-card-title">Legacy porting</span>
             <span class="example-card-desc">Rewrite a legacy ERP with zero feature and data loss</span>
             <span class="example-card-cmd">/larapilot-inception</span>
           </a>
           <a class="example-card" href="#example-new-feature">
-            <span class="example-card-num">4</span>
+            <span class="example-card-num">5</span>
             <span class="example-card-title">New feature</span>
             <span class="example-card-desc">Add one capability to an existing shipped product</span>
             <span class="example-card-cmd">/larapilot-feature</span>
           </a>
           <a class="example-card" href="#example-bug-fix">
-            <span class="example-card-num">5</span>
+            <span class="example-card-num">6</span>
             <span class="example-card-title">Bug resolution</span>
             <span class="example-card-desc">Triage a production defect and route to fix or rework</span>
             <span class="example-card-cmd">/larapilot-bug</span>
           </a>
           <a class="example-card" href="#example-frontend-companion">
-            <span class="example-card-num">6</span>
+            <span class="example-card-num">7</span>
             <span class="example-card-title">Frontend companion</span>
             <span class="example-card-desc">Laravel API + React repo — one cockpit, linked FE write target</span>
             <span class="example-card-cmd">/larapilot-frontend-companion</span>
           </a>
           <a class="example-card" href="#example-tracker-sync">
-            <span class="example-card-num">7</span>
+            <span class="example-card-num">8</span>
             <span class="example-card-title">Tracker sync</span>
             <span class="example-card-desc">Client PM lives in Linear — mirror the backlog, read drift back</span>
             <span class="example-card-cmd">/larapilot-tracker</span>
+          </a>
+          <a class="example-card" href="#example-team-server">
+            <span class="example-card-num">9</span>
+            <span class="example-card-title">Team on one server</span>
+            <span class="example-card-desc">5 developers, 3 projects — SSH workbench, per-dev preview URLs, no code on laptops</span>
+            <span class="example-card-cmd">prj-ai · prj-token</span>
+          </a>
+          <a class="example-card" href="#example-ssh-tmux">
+            <span class="example-card-num">10</span>
+            <span class="example-card-title">SSH, VS Code &amp; tmux</span>
+            <span class="example-card-desc">Connect, resume a running Claude session after a laptop sleep, edit over Remote-SSH</span>
+            <span class="example-card-cmd">ssh · tmux · Remote-SSH</span>
           </a>
         </nav>
 
@@ -1748,6 +1780,97 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div>
               <dt>Next step</dt>
               <dd>Repeat for <code>US-002</code>, <code>US-003</code> — then <code>/larapilot-ship</code></dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- Adopt existing app -->
+        <article class="example-block" id="example-adopt">
+          <h2>Adopt an existing app</h2>
+          <p class="example-tag"><code>/larapilot-adopt</code></p>
+          <p class="example-context">A 2-year-old Laravel 11 SaaS in production — no PRD, no backlog, built straight
+            from tickets. You want the Larapilot loop from here on, without rewriting anything. The
+            <strong>code is the source of truth</strong>; adopt reconstructs the product spec from it.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>composer require andreapollastri/larapilot --dev
+php artisan larapilot:install
+/larapilot-adopt</code></pre>
+          </div>
+
+          <p>No idea to type — the agent reads the repository. Tom, John, Mike and Andrew map the code; Mark frames it
+            as a product; you only answer what the code can't tell them.</p>
+
+          <div class="chat-example">
+            <p><span class="speaker">🔎 Tom:</span> Scanned the repo. 14 models, 9 policies, 22 routed controllers,
+              6 queued jobs, a Cashier subscription flow, and a Filament admin panel. I've written every observed
+              behavior into <code>.larapilot/research/codebase-analysis.md</code> with file-path evidence.</p>
+            <p><span class="speaker">💎 Mark:</span> From shipped behavior I can infer the personas (Account owner,
+              Team member, Admin) and ~26 functional requirements. Three things the code doesn't settle:</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (gaps the code can't answer)</strong>
+              <ol>
+                <li><strong>Delivery target for the reconstructed PRD:</strong> MVP · V1 Complete · Full Product ·
+                  Enterprise</li>
+                <li><strong><code>app/Support/LegacyImport/</code> — still in use?</strong> Active feature ·
+                  One-off migration (mark deprecated) · Unsure</li>
+                <li><strong>Two half-built controllers behind a feature flag:</strong> In scope (document as planned) ·
+                  Out of scope (note as spike)</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>V1 Complete</strong>, <strong>One-off migration</strong>,
+              <strong>Out of scope</strong>.</p>
+            <p><span class="speaker">📐 John:</span> Architecture, data model and package inventory captured. Andrew
+              flagged 3 spots that fight Laravel idiom — noted as tech-debt candidates, not blockers.</p>
+          </div>
+
+          <p>The PRD records <strong>Project Origin: Adopted (existing codebase)</strong> — downstream skills scope it
+            like Greenfield (Sabrine stays silent, no legacy parity contract).</p>
+
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/research/codebase-analysis.md (excerpt)</div>
+            <pre><code>## Routed surface
+| Method | URI | Controller | Auth | Notes |
+| --- | --- | --- | --- | --- |
+| GET  | /dashboard        | DashboardController@index      | auth, verified | team-scoped |
+| POST | /projects         | ProjectController@store       | auth, can:create,Project | |
+| POST | /billing/checkout | BillingController@checkout    | auth, can:manage-billing | Cashier |
+
+## Inferred requirements (evidence)
+- FR-004 Team members can be invited by email — `InviteController`, `InvitationMail`, `invitations` table
+- FR-011 Billing is per-seat monthly — `Team::subscription()`, `config/cashier.php`, `PlanSeeder`
+- FR-019 Admins can suspend a team — `Admin/TeamController@suspend`, `Team::$casts['suspended_at']`</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">PRD.md (excerpt)</div>
+            <pre><code>**Project Origin:** Adopted (existing codebase)
+**Delivery Target:** V1 Complete
+**Project Kind:** Application
+
+### In Scope (reconstructed from shipped behavior)
+- FR-001…FR-026 — see analysis report for per-FR file evidence
+
+### Known gaps / not reverse-engineered
+- Two feature-flagged controllers — spike, out of scope (your call)
+- `app/Support/LegacyImport/` — deprecated one-off, do not extend</code></pre>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd><code>larapilot:install</code>, then <code>/larapilot-adopt</code>; answer only the gap questions</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Reads the whole codebase → <code>codebase-analysis.md</code> + a complete PRD via
+                <code>prd-write</code> / <code>validate-prd</code></dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-spec</code> to build the backlog, then the normal
+                plan → implement → review loop</dd>
             </div>
           </dl>
         </article>
@@ -2672,6 +2795,213 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           </div>
         </article>
 
+        <!-- Team on one server -->
+        <article class="example-block" id="example-team-server">
+          <h2>Team on one server</h2>
+          <p class="example-tag"><code>larapilot:vps-provision</code> · <code>prj-ai</code> · <code>prj-token</code></p>
+          <p class="example-context">A studio with <strong>five developers</strong> and <strong>three Laravel
+            projects</strong>. Nobody keeps client code on their laptop; agents run on the box; the PM and each
+            developer get a live URL. Full reference: <a href="#deep-dive-vps">Self-hosted VPS</a>.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">who works on what</div>
+            <pre><code>developers:  alex   sam   priya   noah   lin (external contractor)
+projects:
+  storefront     alex, priya, noah
+  payments-api   sam, priya
+  crm            noah, lin</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-block-header">Admin — once, on a fresh Ubuntu LTS VPS</div>
+            <pre><code>php artisan larapilot:vps-provision        # on your machine -> ./provision.sh
+scp provision.sh root@box: &amp;&amp; ssh root@box 'bash provision.sh'
+
+sudo prj-ai config
+#   provider, base domain  dev.studio.example,  service token (bot account),
+#   preview Basic Auth user + password,  preview idle-TTL
+
+# one wildcard DNS record covers everything:
+#   *.dev.studio.example        A     &lt;vps-ip&gt;
+
+for u in alex sam priya noah lin; do sudo prj-ai user-add; done   # paste each dev's PUBLIC ssh key
+for p in storefront payments-api crm;  do sudo prj-ai add;       done   # previews: yes</code></pre>
+          </div>
+
+          <p>Each developer connects once, saves <strong>their own</strong> git token, and opens a project:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">alex — first login</div>
+            <pre><code>ssh alex@box
+prj-token                       # paste a PAT that covers 'storefront' (and any repo alex touches)
+# menu appears -> pick "storefront"
+#   -> ~/work/storefront cloned, preview provisioned, tmux session opened
+claude                          # log in with alex's OWN Claude plan</code></pre>
+          </div>
+
+          <p>The result, after everyone has opened their projects:</p>
+          <div class="code-block">
+            <div class="code-block-header">URLs</div>
+            <pre><code>storefront.dev.studio.example            deploy branch      DB prj_storefront
+  alex-storefront.dev.studio.example     alex's worktree    DB prv_storefront_alex
+  priya-storefront.dev.studio.example    priya's worktree   DB prv_storefront_priya
+  noah-storefront.dev.studio.example     noah's worktree    DB prv_storefront_noah
+payments-api.dev.studio.example          deploy branch      DB prj_payments_api
+  sam-payments-api.dev.studio.example    …
+  priya-payments-api.dev.studio.example  …
+crm.dev.studio.example                   deploy branch      DB prj_crm
+  noah-crm.dev.studio.example            …
+  lin-crm.dev.studio.example             …</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">noah</span> opens <strong>payments-api</strong> from the menu by mistake:</p>
+            <p><em>the menu refuses:</em> <code>your git token cannot access
+              https://…/payments-api — run 'prj-token' with a token that includes this repository</code></p>
+            <p>No workspace and no preview are created. A developer cannot start work on a repo their own token
+              cannot see — the check is <code>git ls-remote</code> run as that developer.</p>
+          </div>
+
+          <p>Delivery is the normal loop, run inside each developer's <code>tmux</code> session with Claude:
+            <code>/larapilot-spec-start US-XXX</code> to claim a story, work on <code>feature/US-XXX-*</code>,
+            <code>prj-pr "US-XXX: …"</code> to open the PR. When the PR merges to the deploy branch the 60&nbsp;s timer
+            builds and flips an <a href="#deep-dive-vps">atomic release</a> — <code>storefront.dev.studio.example</code>
+            updates with no downtime.</p>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>Admin does</dt>
+              <dd>Provisions once; <code>user-add</code> per person (SSH key only), <code>add</code> per repo. The
+                service token never leaves <code>/etc/prj-ai/</code>.</dd>
+            </div>
+            <div>
+              <dt>Each developer does</dt>
+              <dd><code>prj-token</code> once, then picks a project from the SSH menu. Gets a workspace + a private
+                preview URL with its own DB. <code>lin</code> (external) only ever supplies her own scoped token.</dd>
+            </div>
+            <div>
+              <dt>Result</dt>
+              <dd>No client code on any laptop, per-developer isolation (uid + DB + preview), commits/PRs attributed
+                to the real person, zero-downtime staging per project.</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- SSH, VS Code & tmux -->
+        <article class="example-block" id="example-ssh-tmux">
+          <h2>SSH, VS Code &amp; tmux</h2>
+          <p class="example-tag"><code>ssh</code> · <code>tmux</code> · VS&nbsp;Code Remote-SSH</p>
+          <p class="example-context">How a developer actually works on the box day to day — starting a session,
+            surviving a dropped connection, and resuming a long agent run exactly where it was.</p>
+
+          <h3>Plain SSH + the menu</h3>
+          <div class="code-block">
+            <div class="code-block-header">start working</div>
+            <pre><code>ssh alex@box
+# the project menu (prj-work) appears at login
+#   pick "storefront"  ->  you land in:  tmux new-session -A -s storefront -c ~/work/storefront
+claude                       # or /larapilot-* skills, git, artisan — normal shell</code></pre>
+          </div>
+          <p>Everything you run lives <strong>inside tmux on the server</strong>. Detach on purpose with
+            <code>Ctrl</code>+<code>b</code> then <code>d</code> — the shell, Claude and any running task keep going.
+            <code>provision.sh</code> sets <code>KillUserProcesses=no</code>, so even a full logout does not kill them.</p>
+
+          <h3>Resuming after a laptop sleep or Wi-Fi drop</h3>
+          <div class="code-block">
+            <div class="code-block-header">reconnect — two ways</div>
+            <pre><code># A) through the menu (easiest)
+ssh alex@box
+#   the menu marks the project:  "storefront   &lt;&lt; active session: resume where you were"
+#   pick it -> tmux re-attaches the SAME session, output intact
+
+# B) by hand
+ssh alex@box
+tmux ls                       # storefront: 1 windows (created …)  (attached|)
+tmux attach -t storefront     # or:  tmux a -t storefront
+claude --resume               # inside the workspace: reopen an earlier conversation</code></pre>
+          </div>
+          <p>A second independent pane on the same project (e.g. run tests while Claude works):</p>
+          <div class="code-block">
+            <div class="code-block-header">a second session</div>
+            <pre><code>tmux new -s storefront-2 -c ~/work/storefront
+# switch:  tmux switch -t storefront      list all:  tmux ls</code></pre>
+          </div>
+          <p>Skip the menu for scripting or a one-off command:</p>
+          <div class="code-block">
+            <div class="code-block-header">non-interactive</div>
+            <pre><code>PRJ_NO_MENU=1 ssh alex@box                       # plain shell, no menu
+ssh alex@box 'cd ~/work/storefront &amp;&amp; git status' # run and exit
+scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
+          </div>
+
+          <h3>VS Code Remote-SSH (editor local, everything else on the box)</h3>
+          <p>Install the <strong>Remote - SSH</strong> extension locally, then
+            <em>Remote-SSH: Connect to Host…</em> → <code>alex@box</code>, and <em>Open Folder</em> →
+            <code>~/work/storefront</code>. The VS&nbsp;Code window is on your laptop; the files, the integrated
+            terminal, git, and the <strong>Claude Code extension all run on the server</strong> with alex's
+            server-side Claude login — it feels local but nothing leaves the box.</p>
+          <ul>
+            <li>Remote-SSH does a non-interactive login, so the <code>prj-work</code> menu does <strong>not</strong>
+              run. If <code>~/work/storefront</code> doesn't exist yet, open the integrated terminal once and run
+              <code>prj-work storefront</code> (creates the workspace + preview), or just
+              <code>sudo prj-ai workspace-init storefront</code>.</li>
+            <li>A task started in the plain VS&nbsp;Code terminal <strong>dies when you close the window</strong>. For
+              a long agent run, start it inside tmux from the integrated terminal:
+              <code>tmux new -A -s storefront</code> then <code>claude</code> — now closing VS&nbsp;Code (or losing
+              the link) leaves it running; reconnect and <code>tmux attach -t storefront</code>.</li>
+            <li>Your private preview is live throughout at
+              <code>https://alex-storefront.dev.studio.example</code> (shared Basic Auth) — reload it to see your
+              uncommitted changes.</li>
+          </ul>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Where you run the agent</th>
+                  <th>Survives a disconnect?</th>
+                  <th>Use it for</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SSH terminal <strong>inside tmux</strong> (the menu default)</td>
+                  <td>Yes — detach / drop / logout all safe; re-attach to resume</td>
+                  <td>Long <code>/larapilot-autopilot</code> or implement runs, anything unattended</td>
+                </tr>
+                <tr>
+                  <td>VS&nbsp;Code Remote-SSH, <strong>integrated terminal</strong></td>
+                  <td>No — closing the window kills it</td>
+                  <td>Quick edits, short commands, reviewing a diff</td>
+                </tr>
+                <tr>
+                  <td>VS&nbsp;Code Remote-SSH, terminal <strong>running <code>tmux</code></strong></td>
+                  <td>Yes — same session reachable from a plain SSH login too</td>
+                  <td>Editing in VS&nbsp;Code while a long agent task runs in the background</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd><code>ssh &lt;you&gt;@box</code>, pick the project, work in the tmux session (or Remote-SSH +
+                <code>tmux new -A</code>).</dd>
+            </div>
+            <div>
+              <dt>On a drop</dt>
+              <dd>Reconnect, re-pick the project (auto re-attach) or <code>tmux attach -t &lt;project&gt;</code>;
+                <code>claude --resume</code> for an old conversation.</dd>
+            </div>
+            <div>
+              <dt>Never lost</dt>
+              <dd>The session, the shell history and the running task stay on the server across sleeps, network
+                changes and full logouts.</dd>
+            </div>
+          </dl>
+        </article>
+
       </section>
 
       <!-- Deep Dive -->
@@ -2682,38 +3012,6 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           <p>Skills, settings, personas, workflow, artifacts, usage, integrations, surfaces, CLI, dashboard, and API —
             how every layer fits together.</p>
         </div>
-
-        <article class="deep-dive-sub whats-new" id="whats-new">
-          <h3>What's new in v2.5.0</h3>
-          <p>Brownfield onboarding, a fourth remote forge, a decision journal, opt-in code-change history, and an
-            optional lock on the dashboard.</p>
-          <ul>
-            <li><strong><code>/larapilot-adopt</code></strong> — reverse-engineers a full PRD (+
-              <code>codebase-analysis.md</code>) from an existing production Laravel app built without Larapilot, so the
-              normal loop can continue on it</li>
-            <li><strong>Azure DevOps forge</strong> — <code>settings.azure</code> joins <code>github</code> /
-              <code>gitlab</code> / <code>bitbucket</code>; <code>az repos</code> or REST (PAT) for Azure Repos PRs;
-              probe <code>larapilot:azure-status</code>; <code>dev.azure.com</code> / <code>visualstudio.com</code>
-              remotes recognised for commit links</li>
-            <li><strong>Decision journal + regression guard</strong> — <code>settings.decision_log</code> (ON by default)
-              appends every explicit choice, timestamped, to <code>.larapilot/decisions.yaml</code> via
-              <code>larapilot:decision-log</code>; <code>larapilot:decision-check</code> surfaces an earlier
-              non-superseded decision before a phase overrides it, so reversals are confirmed and re-logged with
-              <code>--supersedes</code></li>
-            <li><strong>Code change history</strong> — opt-in <code>settings.code_history</code> logs the files and
-              new-file line ranges each spec/task touched, derived from the task's git commit;
-              <code>larapilot:code-log</code> / <code>larapilot:code-history</code></li>
-            <li><strong>Optional dashboard auth</strong> — <code>settings.dashboard_auth</code> (OFF by default) puts
-              HTTP Basic Auth in front of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only
-              (never <code>/larapilot/api/*</code> or MCP). Credentials are argon2id/bcrypt hashes in
-              <code>.larapilot/auth.yaml</code> (no database, no <code>User</code> model; git-ignored automatically),
-              managed with <code>larapilot:dashboard-user</code>; failed sign-ins are rate-limited per IP</li>
-          </ul>
-          <p class="muted" style="margin-top:0.75rem;font-size:0.9em;">Also in <strong>v2.4.2</strong>: shorter Project
-            tracking settings label. In <strong>v2.4.1</strong>: epics with objectives &amp; deadlines, dependency-aware
-            Gantt, Zoey vs Lucille panel. In <strong>v2.4.0</strong>: 30 personas, Project Kind Package, optional forges
-            + chat notifications.</p>
-        </article>
 
         <!-- How it works -->
         <article class="deep-dive-sub" id="deep-dive-how-it-works">
@@ -2832,10 +3130,10 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Fifteen</strong> editor-native skills cover the full product lifecycle — discovery,
-            delivery, ship, settings, usage (Lucille), Backstage, trackers, and frontend companion. Each is a
-            <code>SKILL.md</code> file with a name, description, persona roster, execution steps, and allowed CLI
-            calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding
+          <p class="lead"><strong>Sixteen</strong> editor-native skills cover the full product lifecycle — discovery,
+            brownfield onboarding, delivery, ship, settings, usage (Lucille), Backstage, trackers, and frontend
+            companion. Each is a <code>SKILL.md</code> file with a name, description, persona roster, execution steps,
+            and allowed CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding
             <strong>guidelines</strong> ship alongside (not a skill).
           </p>
 
@@ -2847,7 +3145,14 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <li>Persists output via Artisan commands defined in the skill — never inventing its own file writes</li>
           </ol>
 
+          <p>The skills below are grouped by <strong>when you reach for them</strong>: the core loop runs on every
+            story; the other groups plug in around it.</p>
+
           <div class="skills-grid">
+
+            <h4 class="skills-group" id="skills-core">Core loop</h4>
+            <p class="skills-group-note">Runs on every story: idea → PRD → backlog → plan → code → human gate.</p>
+
             <div class="skill-item">
               <span class="skill-badge">discovery</span>
               <div class="skill-body">
@@ -2869,45 +3174,6 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">shortcut</span>
-              <div class="skill-body">
-                <h3><code>/larapilot-feature "…"</code></h3>
-                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
-                  FR).</p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
-                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.
-                </p>
-              </div>
-            </div>
-            <div class="skill-item">
-              <span class="skill-badge">shortcut</span>
-              <div class="skill-body">
-                <h3><code>/larapilot-bug "…"</code></h3>
-                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. When the report
-                  mentions production/staging errors or logs, agents pull
-                  <a href="#deep-dive-api-diagnostics">diagnostics</a> (redacted).</p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
-                  <code>larapilot:spec-request-changes</code> — plus <code>larapilot:diagnostics</code> for runtime
-                  evidence.
-                </p>
-              </div>
-            </div>
-            <div class="skill-item">
-              <span class="skill-badge">companion</span>
-              <div class="skill-body">
-                <h3><code>/larapilot-frontend-companion</code></h3>
-                <p>For <strong>API + external frontend</strong>: link the FE absolute path, scan existing code.
-                  All delivery stays on Laravel via <code>repo: frontend</code> tasks.
-                  <a href="#deep-dive-frontend-companion">External frontend repo</a>.</p>
-                <ul>
-                  <li><code>larapilot:frontend-set --path=/abs/fe/repo</code></li>
-                  <li><code>larapilot:frontend-scan</code></li>
-                </ul>
-                <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code>.
-                </p>
-              </div>
-            </div>
-            <div class="skill-item">
               <span class="skill-badge">backlog</span>
               <div class="skill-body">
                 <h3><code>/larapilot-spec</code></h3>
@@ -2915,19 +3181,6 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                   + <code>specs/US-XXX.yaml</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
                   <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code>.
-                </p>
-              </div>
-            </div>
-            <div class="skill-item">
-              <span class="skill-badge">optional</span>
-              <div class="skill-body">
-                <h3><code>/larapilot-design US-XXX</code></h3>
-                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
-                  Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
-                  (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
-                </p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
-                  <code>paths.mockups</code> and <code>paths.design_systems</code>.
                 </p>
               </div>
             </div>
@@ -2943,7 +3196,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">implement</span>
+              <span class="skill-badge">build</span>
               <div class="skill-body">
                 <h3><code>/larapilot-implement US-XXX</code></h3>
                 <p>Executes the plan: Laravel code, Pest tests, per-task commits. Runs <code>larapilot:quality</code>
@@ -2956,7 +3209,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">review</span>
+              <span class="skill-badge">human gate</span>
               <div class="skill-body">
                 <h3><code>/larapilot-review US-XXX</code></h3>
                 <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback →
@@ -2967,21 +3220,95 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 </p>
               </div>
             </div>
+
+            <h4 class="skills-group" id="skills-onboarding">Onboarding — no PRD yet</h4>
+            <p class="skills-group-note">Pick the one that matches where your project stands, then continue with the
+              core loop.</p>
+
             <div class="skill-item">
-              <span class="skill-badge">optional</span>
+              <span class="skill-badge">brownfield</span>
               <div class="skill-body">
-                <h3><code>/larapilot-ship</code></h3>
-                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
-                    class="status status-done">DONE</span>.</p>
+                <h3><code>/larapilot-adopt</code></h3>
+                <p>Brings an <strong>existing, running Laravel app</strong> — built without Larapilot — under the
+                  workflow. Reverse-engineers a <strong>complete PRD</strong> from the code itself: models &amp;
+                  migrations, routes/controllers, jobs, policies, config, packages, CLI/scheduler, CI, and frontend
+                  surfaces. Personas + functional requirements are inferred from shipped behavior with file-path
+                  evidence; the agent asks only the gaps the code can't answer.</p>
+                <ul>
+                  <li>Runs right after <code>php artisan larapilot:install</code>, when there is no PRD</li>
+                  <li>Writes <code>.larapilot/research/codebase-analysis.md</code> + the PRD; records
+                    <strong>Project Origin: Adopted (existing codebase)</strong> — scoped like Greenfield (no legacy
+                    parity contract)</li>
+                  <li>Optional read-only <code>Explore</code> sub-agent for large repos (never under
+                    <code>effort: ECO</code>)</li>
+                  <li>Not for greenfield ideas (<code>/larapilot-inception</code>) or rewrites away from a non-Laravel
+                    system (<code>/larapilot-inception</code> + <code>.larapilot/legacy/</code>)</li>
+                </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
-                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.
+                  <code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
+                  <code>larapilot:choices-set</code>. See <a href="#example-adopt">the adoption walkthrough</a>.
                 </p>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">batch</span>
+              <span class="skill-badge">greenfield</span>
               <div class="skill-body">
-                <h3><code>/larapilot-autopilot US-XXX …</code></h3>
+                <h3><code>/larapilot-inception</code> <span class="skills-group-note" style="display:inline">(idea, or legacy rewrite)</span></h3>
+                <p>Start here for a new product idea, or to rewrite / port <strong>away from</strong> a legacy
+                  non-Laravel system — drop snapshots in <code>.larapilot/legacy/</code> and Sabrine leads a parity
+                  contract. Full card above under <strong>Core loop</strong>.</p>
+              </div>
+            </div>
+
+            <h4 class="skills-group" id="skills-shortcuts">Shortcuts</h4>
+            <p class="skills-group-note">Skip the full discovery loop for small, well-scoped work on a product that
+              already has a PRD.</p>
+
+            <div class="skill-item">
+              <span class="skill-badge">one feature</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-feature "…"</code></h3>
+                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
+                  FR).</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
+                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">bug triage</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-bug "…"</code></h3>
+                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. When the report
+                  mentions production/staging errors or logs, agents pull
+                  <a href="#deep-dive-api-diagnostics">diagnostics</a> (redacted).</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
+                  <code>larapilot:spec-request-changes</code> — plus <code>larapilot:diagnostics</code> for runtime
+                  evidence.
+                </p>
+              </div>
+            </div>
+
+            <h4 class="skills-group" id="skills-optional">Optional steps</h4>
+            <p class="skills-group-note">Insert into the loop when the work calls for it — none are required to ship.</p>
+
+            <div class="skill-item">
+              <span class="skill-badge">mockups</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-design US-XXX</code> <span class="skills-group-note" style="display:inline">— before plan</span></h3>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
+                  Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
+                  (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
+                </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
+                  <code>paths.mockups</code> and <code>paths.design_systems</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">batch delivery</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-autopilot US-XXX …</code> <span class="skills-group-note" style="display:inline">— many stories at once</span></h3>
                 <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. By default you still run
                   <code>/larapilot-review</code> per story; with <code>auto_approve: YES</code> it may
                   <code>spec-approve</code> after implement.
@@ -2992,20 +3319,44 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               </div>
             </div>
             <div class="skill-item">
+              <span class="skill-badge">release</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-ship</code> <span class="skills-group-note" style="display:inline">— when the MVP is DONE</span></h3>
+                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
+                    class="status status-done">DONE</span>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
+                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.
+                </p>
+              </div>
+            </div>
+
+            <h4 class="skills-group" id="skills-ops">Project setup &amp; ops</h4>
+            <p class="skills-group-note">Configure how Larapilot works on this project, and follow effort over time.</p>
+
+            <div class="skill-item">
               <span class="skill-badge">config</span>
               <div class="skill-body">
                 <h3><code>/larapilot-settings</code></h3>
-                <p>AskQuestion for persistent project settings — effort, backlog, git mode, testing, auto-approve,
-                  lucille, GitHub / GitLab / Bitbucket / Azure DevOps, and notification channels. Written to
-                  <code>.larapilot/config.yaml</code>. Full tables in <a href="#deep-dive-settings">Settings</a>.
-                </p>
+                <p>AskQuestion for persistent project settings, written to <code>.larapilot/config.yaml</code>:</p>
+                <ul>
+                  <li><strong>Process</strong> — <code>effort</code>, <code>backlog</code> granularity,
+                    <code>git_mode</code>, <code>testing</code>, <code>auto_approve</code>, <code>lucille</code></li>
+                  <li><strong>Traceability</strong> — <code>decision_log</code> (journal + regression guard, ON by
+                    default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
+                  <li><strong>Access</strong> — <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
+                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API) — both OFF by
+                    default</li>
+                  <li><strong>Integrations</strong> — GitHub / GitLab / Bitbucket / Azure DevOps forges,
+                    Slack / Discord / Telegram channels</li>
+                </ul>
+                <p>Full tables in <a href="#deep-dive-settings">Settings</a>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
                   <code>larapilot:config-show</code> — read <code>data.settings</code>.
                 </p>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">ops</span>
+              <span class="skill-badge">time &amp; tokens</span>
               <div class="skill-body">
                 <h3><code>/larapilot-usage</code></h3>
                 <p><strong>Lucille</strong> interrogates the committed time/token ledger and schedule — overview,
@@ -3017,8 +3368,28 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                 </p>
               </div>
             </div>
+
+            <h4 class="skills-group" id="skills-integrations">Integrations</h4>
+            <p class="skills-group-note">Connect Larapilot to the tools your team already uses. All OFF until
+              configured — see <a href="#deep-dive-integrations">Forges &amp; notify</a>.</p>
+
             <div class="skill-item">
-              <span class="skill-badge">portal</span>
+              <span class="skill-badge">frontend repo</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-frontend-companion</code></h3>
+                <p>For <strong>API + external frontend</strong>: link the FE absolute path, scan existing code.
+                  All delivery stays on Laravel via <code>repo: frontend</code> tasks.
+                  <a href="#deep-dive-frontend-companion">External frontend repo</a>.</p>
+                <ul>
+                  <li><code>larapilot:frontend-set --path=/abs/fe/repo</code></li>
+                  <li><code>larapilot:frontend-scan</code></li>
+                </ul>
+                <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">dev portal</span>
               <div class="skill-body">
                 <h3><code>/larapilot-backstage</code></h3>
                 <p>Publishes the repo into a <strong>Backstage</strong> developer portal — catalog entity
@@ -3032,7 +3403,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">tracker</span>
+              <span class="skill-badge">tracker sync</span>
               <div class="skill-body">
                 <h3><code>/larapilot-tracker</code></h3>
                 <p>Mirrors the backlog into <strong>Linear</strong>, <strong>Asana</strong>, <strong>Jira</strong>,
@@ -3059,7 +3430,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --dashboard-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3068,7 +3439,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
             <code>decision_log: YES</code> · <code>code_history: NO</code> ·
-            <code>dashboard_auth: NO</code> ·
+            <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> ·
             <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
 
@@ -3213,6 +3584,29 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
               shared hosts — Basic Auth sends credentials on every request. Setup:
               <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
               <code>.larapilot/integrations.md</code>.</li>
+          </ul>
+
+          <h4 id="deep-dive-api-auth">API auth <span class="chip">opt-in</span></h4>
+          <p><code>settings.api_auth</code> (default <code>NO</code>) makes <code>LARAPILOT_API_TOKEN</code>
+            <strong>mandatory</strong> on every <code>/larapilot/api/*</code> request — the JSON API <strong>only</strong>.
+            It never gates the <a href="#deep-dive-dashboard">dashboard</a> UI (<code>dashboard_auth</code>) or the MCP
+            server, and the API is still never served in <code>production</code>.
+          </p>
+          <ul>
+            <li>With <code>api_auth=NO</code> (default): the token is enforced on every endpoint <em>when it is set</em>;
+              when it is not, read endpoints stay open in the allowed environments and writes are refused outside
+              <code>local</code>/<code>development</code>/<code>testing</code>.</li>
+            <li>With <code>api_auth=YES</code>: every request — reads <strong>and</strong> writes, including
+              <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> — must carry the token as
+              <code>Authorization: Bearer &lt;token&gt;</code> or <code>X-Larapilot-Token: &lt;token&gt;</code>. With the
+              setting ON and <strong>no</strong> <code>LARAPILOT_API_TOKEN</code> configured the API fails closed with
+              <code>HTTP 503</code>; a wrong or missing token is <code>HTTP 401</code>.</li>
+            <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Enable with
+              <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup + <code>curl</code> /
+              Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> →
+              <em>API access</em>.</li>
+            <li>The <code>php artisan larapilot:diagnostics</code> CLI and the MCP <code>diagnostics</code> tool are local
+              and need no token — only the HTTP endpoint is gated.</li>
           </ul>
 
           <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
@@ -3623,6 +4017,11 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             inception; <strong>Sarah</strong> owns Git mechanics (conflicts, rebase), forge automation, and CI pipeline
             scripts; <strong>Robert</strong> enforces the active mode.
           </p>
+          <p>When two developers work the same project and a merge conflict lands — in source <em>or</em> in a
+            <code>.larapilot/</code> artifact like <code>backlog.yaml</code> — see
+            <a href="#deep-dive-vps">Self-hosted VPS → <em>Resolving a conflict when it does happen</em></a>: resolve
+            code with git, but for <code>.larapilot/</code> files take the other side and re-run the Larapilot command
+            rather than hand-editing the markers.</p>
 
           <div class="table-card">
             <table>
@@ -3774,7 +4173,7 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
                     <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>, <code>code_history</code>,
-                    <code>dashboard_auth</code>, <code>github</code>,
+                    <code>dashboard_auth</code>, <code>api_auth</code>, <code>github</code>,
                     <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
@@ -3973,260 +4372,6 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               HTTPS on shared hosts.</li>
           </ul>
           <p>Settings table: <a href="#deep-dive-dashboard-auth">Dashboard auth</a>.</p>
-        </article>
-
-        <!-- Design systems -->
-        <article class="deep-dive-sub" id="deep-dive-design-systems">
-          <h3>Design systems</h3>
-          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on
-            <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
-            picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency
-            through implement and review.
-          </p>
-
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>System</th>
-                  <th>Path</th>
-                  <th>When to use</th>
-                  <th>Contents</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Filament</strong></td>
-                  <td><code>design-systems/filament/</code></td>
-                  <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Laravel Starter Kits</strong></td>
-                  <td><code>design-systems/starter-kit/</code></td>
-                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>,
-                    <code>react</code>, <code>vue</code>, <code>svelte</code>)
-                  </td>
-                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML
-                    screens</td>
-                </tr>
-                <tr>
-                  <td><strong>Bootstrap 5</strong></td>
-                  <td><code>design-systems/bootstrap-5/</code></td>
-                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a
-                    Starter Kit)</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing,
-                    dashboard, login, settings, components)</td>
-                </tr>
-                <tr>
-                  <td><strong>Tailwind CSS</strong></td>
-                  <td><code>design-systems/tailwind/</code></td>
-                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament,
-                    Starter Kit, or Bootstrap</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>AdminLTE</strong></td>
-                  <td><code>design-systems/adminlte/</code></td>
-                  <td>Admin/control panel mockups when the PRD records <strong>AdminLTE 4</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard,
-                    resource list, login, settings, components)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
-            <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
-          </p>
-
-          <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
-          <p>You can add <strong>your own</strong> design system or UI template under
-            <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
-            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.
-          </p>
-          <ul>
-            <li>Drop tokens, component notes, HTML starters, and brand assets in that folder (same shape as the packaged
-              ones helps: <code>README.md</code>, <code>tokens.css</code>, <code>components.md</code>, optional
-              <code>html/</code>).
-            </li>
-            <li>Record the choice in the PRD (or tell the agent during inception/design) so Elise, Joe, and Alex treat
-              it
-              as the source of truth for mockups and shipped UI.</li>
-            <li><code>larapilot:update</code> refreshes only the packaged systems — your custom folder is never
-              overwritten.</li>
-          </ul>
-        </article>
-
-        <!-- External frontend repo -->
-        <article class="deep-dive-sub" id="deep-dive-frontend-companion">
-          <h3>External frontend repo</h3>
-          <p class="lead"><strong>Laravel is the only Larapilot cockpit.</strong> When topology is
-            <code>API + external frontend</code>, the SPA lives in another folder on disk. Larapilot links that path
-            and implements UI there via <code>repo: frontend</code> tasks. The FE repo holds application code only — no
-            mirrored PRD.</p>
-
-          <h4>Topology choices</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Topology</th>
-                  <th>UI location</th>
-                  <th>Split repo?</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>Laravel-coupled</code></td>
-                  <td>Blade / Livewire / Inertia in Laravel</td>
-                  <td>No</td>
-                </tr>
-                <tr>
-                  <td><code>SPA-in-Laravel</code></td>
-                  <td>Vite SPA inside Laravel</td>
-                  <td>No</td>
-                </tr>
-                <tr>
-                  <td><code>API + external frontend</code></td>
-                  <td>Separate folder; Laravel is API (+ optional admin)</td>
-                  <td><strong>Yes</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h4>PRD fields</h4>
-          <div class="code-block">
-            <div class="code-block-header">Technical Architecture</div>
-            <pre><code>**Frontend Topology:** API + external frontend
-**Frontend stack (in-repo):** N/A
-**External frontend repo:** /Users/dev/acme-web
-**External frontend stack:** React</code></pre>
-          </div>
-
-          <h4>Three CLI commands (all from Laravel)</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Command</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>larapilot:frontend-set --path=…</code></td>
-                  <td>Once — persist absolute FE path in <code>config.yaml</code> (<code>data.frontend</code> on
-                    <code>config-show</code>)</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:frontend-scan</code></td>
-                  <td>Before plan on an existing FE codebase — stack, tooling, entrypoints</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h4>Delivery</h4>
-          <ul>
-            <li><strong>Laravel</strong> — PRD, backlog, plans, mockups, workflow. All <code>/larapilot-*</code>
-              skills.</li>
-            <li><strong>Frontend folder</strong> — application code from <code>larapilot-implement</code> tasks with
-              <code>repo: frontend</code>. No Larapilot workflow here.</li>
-            <li><strong>Mockups</strong> — always in Laravel <code>.larapilot/mockups/</code>; Joe implements in the FE
-              folder.</li>
-          </ul>
-
-          <h4>End-to-end</h4>
-          <p>Walkthrough: <a href="#example-frontend-companion">External frontend repo example</a>.</p>
-          <ol>
-            <li>Inception → <code>API + external frontend</code> + absolute path → <code>frontend-set</code></li>
-            <li><code>frontend-scan</code> when the FE already has code</li>
-            <li><code>/larapilot-spec</code> → plan → implement (BE + FE tasks from Laravel)</li>
-          </ol>
-
-          <div class="cli-note"><strong>PRD edits happen on Laravel only.</strong> The FE repo never holds a mirrored PRD.</div>
-        </article>
-
-        <!-- Code quality -->
-        <article class="deep-dive-sub" id="deep-dive-code-quality">
-          <h3>Code quality</h3>
-          <p class="lead">Every Larapilot project stays compatible with <a href="https://github.com/larastan/larastan"
-              target="_blank" rel="noopener">Larastan</a> (<strong>PHPStan level 5+</strong>) and <a
-              href="https://laravel.com/docs/pint" target="_blank" rel="noopener">Laravel Pint</a>. Introduced in
-            <strong>v2.3.1</strong> — not optional after install.</p>
-
-          <h4>What install scaffolds</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Artifact</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>phpstan.neon.dist</code></td>
-                  <td>Larastan extension, <code>level: 5</code>, paths <code>app/</code> · <code>bootstrap/</code> ·
-                    <code>config/</code> · <code>database/</code> · <code>routes/</code> · <code>tests/</code></td>
-                </tr>
-                <tr>
-                  <td><code>pint.json</code></td>
-                  <td>Laravel preset — code style linter/formatter</td>
-                </tr>
-                <tr>
-                  <td><code>composer.json</code></td>
-                  <td><code>require-dev</code>: <code>larastan/larastan</code>, <code>laravel/pint</code>; scripts
-                    <code>lint</code>, <code>lint:check</code>, <code>analyse</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h4>Run the gate</h4>
-          <div class="code-block">
-            <div class="code-block-header">Check-only (CI / before merge)</div>
-            <pre><code>php artisan larapilot:quality</code></pre>
-          </div>
-          <div class="code-block">
-            <div class="code-block-header">Apply Pint formatting, then Larastan</div>
-            <pre><code>php artisan larapilot:quality --fix</code></pre>
-          </div>
-          <p>Equivalent Composer shortcuts after <code>composer install</code>:</p>
-          <div class="code-block">
-            <div class="code-block-header">composer.json scripts</div>
-            <pre><code>composer lint:check   # pint --test
-composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
-          </div>
-
-          <h4>When to run</h4>
-          <ul>
-            <li><strong>Implement</strong> — <code>/larapilot-implement</code> runs <code>larapilot:quality</code> on
-              Laravel tasks before each <code>task-done</code></li>
-            <li><strong>CI</strong> — add <code>php artisan larapilot:quality</code> (or <code>composer lint:check &amp;&amp; composer analyse</code>) on every PR; failing Pint or Larastan blocks merge</li>
-            <li><strong>Health check</strong> — <code>larapilot:doctor</code> reports <code>quality_pint</code>,
-              <code>quality_larastan</code>, and <code>quality_packages</code>; install is not <code>healthy</code> when
-              the gate is missing</li>
-          </ul>
-
-          <h4>Rules</h4>
-          <ul>
-            <li><strong>Minimum level 5</strong> — never lower <code>level</code> in <code>phpstan.neon(.dist)</code>
-              without an explicit human waiver</li>
-            <li><strong>Legacy codebases</strong> — generate a baseline with
-              <code>vendor/bin/phpstan analyse --generate-baseline</code> (see <a
-                href="https://github.com/larastan/larastan" target="_blank" rel="noopener">Larastan docs</a>); do not
-              drop below level 5 for new code</li>
-            <li><code>larapilot:install --skip-composer</code> — write config files only; run
-              <code>composer require --dev larastan/larastan laravel/pint</code> yourself</li>
-          </ul>
-
-          <div class="cli-note"><strong>Andrew + Jack</strong> own the gate — Pint for style, Larastan for static analysis.
-            Robert flags regressions at review when quality was skipped.</div>
         </article>
 
         <!-- Backstage portal -->
@@ -4732,6 +4877,865 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
           </div>
         </article>
 
+        <!-- External frontend repo -->
+        <article class="deep-dive-sub" id="deep-dive-frontend-companion">
+          <h3>External frontend repo</h3>
+          <p class="lead"><strong>Laravel is the only Larapilot cockpit.</strong> When topology is
+            <code>API + external frontend</code>, the SPA lives in another folder on disk. Larapilot links that path
+            and implements UI there via <code>repo: frontend</code> tasks. The FE repo holds application code only — no
+            mirrored PRD.</p>
+
+          <h4>Topology choices</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Topology</th>
+                  <th>UI location</th>
+                  <th>Split repo?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Laravel-coupled</code></td>
+                  <td>Blade / Livewire / Inertia in Laravel</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td><code>SPA-in-Laravel</code></td>
+                  <td>Vite SPA inside Laravel</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td><code>API + external frontend</code></td>
+                  <td>Separate folder; Laravel is API (+ optional admin)</td>
+                  <td><strong>Yes</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>PRD fields</h4>
+          <div class="code-block">
+            <div class="code-block-header">Technical Architecture</div>
+            <pre><code>**Frontend Topology:** API + external frontend
+**Frontend stack (in-repo):** N/A
+**External frontend repo:** /Users/dev/acme-web
+**External frontend stack:** React</code></pre>
+          </div>
+
+          <h4>Three CLI commands (all from Laravel)</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>When</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:frontend-set --path=…</code></td>
+                  <td>Once — persist absolute FE path in <code>config.yaml</code> (<code>data.frontend</code> on
+                    <code>config-show</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:frontend-scan</code></td>
+                  <td>Before plan on an existing FE codebase — stack, tooling, entrypoints</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Delivery</h4>
+          <ul>
+            <li><strong>Laravel</strong> — PRD, backlog, plans, mockups, workflow. All <code>/larapilot-*</code>
+              skills.</li>
+            <li><strong>Frontend folder</strong> — application code from <code>larapilot-implement</code> tasks with
+              <code>repo: frontend</code>. No Larapilot workflow here.</li>
+            <li><strong>Mockups</strong> — always in Laravel <code>.larapilot/mockups/</code>; Joe implements in the FE
+              folder.</li>
+          </ul>
+
+          <h4>End-to-end</h4>
+          <p>Walkthrough: <a href="#example-frontend-companion">External frontend repo example</a>.</p>
+          <ol>
+            <li>Inception → <code>API + external frontend</code> + absolute path → <code>frontend-set</code></li>
+            <li><code>frontend-scan</code> when the FE already has code</li>
+            <li><code>/larapilot-spec</code> → plan → implement (BE + FE tasks from Laravel)</li>
+          </ol>
+
+          <div class="cli-note"><strong>PRD edits happen on Laravel only.</strong> The FE repo never holds a mirrored PRD.</div>
+        </article>
+
+        <!-- Self-hosted VPS -->
+        <article class="deep-dive-sub" id="deep-dive-vps">
+          <h3>Self-hosted VPS</h3>
+          <p class="lead"><code>larapilot:vps-provision</code> writes one standalone <code>provision.sh</code> for an
+            Ubuntu 24.04 / 26.04 LTS server that hosts <strong>several Laravel projects for a team</strong> working
+            over SSH with Claude Code and their own Claude plan. It turns a bare VPS into a shared dev/staging box
+            where each project has its own atomically-deployed site, database and queue, each developer has an
+            isolated workspace <em>and their own preview URL with its own DB</em>, and a dropped connection never
+            kills a running task.</p>
+          <p>Nothing is installed into your Laravel app — the command only emits a shell script. The script embeds
+            and generates every other component (the CLIs, the login hook, the systemd units), so there is a single
+            file to copy to the server and re-running it is how you upgrade.</p>
+
+          <div class="cli-note"><strong>What this is not.</strong> It is not a production deployment pipeline for
+            <em>your</em> app and not a PaaS. It is a team workbench: N projects on one host, browsable at
+            <code>https://&lt;project&gt;.&lt;your-domain&gt;/larapilot</code>, where the agent work happens on the
+            server instead of on every laptop.</div>
+
+          <h4>How it works, end to end</h4>
+          <p>One VPS, one wildcard DNS record (<code>*.&lt;domain&gt;</code>), and three moving parts per person.</p>
+          <ol>
+            <li><strong>The admin provisions once</strong> — <code>bash provision.sh</code>, then
+              <code>prj-ai config</code> (domain, git provider, a bot <em>service token</em> for the deploy checkouts,
+              the shared preview password), one <code>prj-ai user-add</code> per developer (paste the developer's
+              <em>public</em> SSH key — nothing secret), one <code>prj-ai add</code> per repository.</li>
+            <li><strong>Each developer connects over SSH</strong> — <code>ssh &lt;you&gt;@box</code>. A login menu
+              (<code>prj-work</code>) lists the projects. The very first time, the developer runs
+              <code>prj-token</code> and pastes <em>their own</em> git PAT / App Password.</li>
+            <li><strong>Opening a project is gated by that token.</strong> <code>prj-work</code> runs
+              <code>git ls-remote</code> against the project's repo <em>as the developer</em>. If the token can't see
+              the repo, nothing is created and the menu says so — you cannot start work on code you don't have access
+              to. If it can, the server clones a personal <strong>workspace</strong> at
+              <code>~/work/&lt;project&gt;</code> and drops you into a persistent <code>tmux</code> session there.</li>
+            <li><strong>You get a private preview URL.</strong> The same step provisions
+              <code>&lt;you&gt;-&lt;project&gt;.&lt;domain&gt;</code> — it serves your workspace's live files
+              (checked-out branch + uncommitted edits) from a PHP-FPM pool running as <em>your</em> uid, backed by
+              <em>your own</em> database (<code>prv_&lt;project&gt;_&lt;you&gt;</code>, copied once from staging).
+              Behind the shared Basic Auth. Reload it to see your changes; your migrations never touch anyone else.</li>
+            <li><strong>You deliver as yourself.</strong> Run the <code>/larapilot-*</code> loop with Claude inside the
+              tmux session; <code>prj-pr "US-XXX: …"</code> pushes and opens the PR — commit, push and PR all carry
+              your identity and your token. When the PR merges to the deploy branch, the 60&nbsp;s timer builds and
+              atomically flips <code>&lt;project&gt;.&lt;domain&gt;</code> with no downtime.</li>
+            <li><strong>Disconnecting is safe.</strong> The tmux session (and any running agent task) stays on the
+              server. Reconnect, re-pick the project, and you re-attach exactly where you left off.</li>
+          </ol>
+          <p>So <code>&lt;project&gt;.&lt;domain&gt;</code> is the shared truth (the deploy branch), and every
+            <code>&lt;user&gt;-&lt;project&gt;.&lt;domain&gt;</code> is one developer's work-in-progress — each with
+            its own database, isolated by Unix uid. Walkthroughs:
+            <a href="#example-team-server">Team on one server</a> and
+            <a href="#example-ssh-tmux">SSH, VS&nbsp;Code &amp; tmux</a>.</p>
+
+          <h4>When it is worth it</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Solo, one project, working locally</td>
+                  <td>Skip it — run Larapilot on your machine</td>
+                </tr>
+                <tr>
+                  <td>A team that wants one shared staging URL per project and a PM watching the dashboard</td>
+                  <td>The core case — <code>prj-ai add</code> per repo, one <code>prj-ai user-add</code> per person
+                  </td>
+                </tr>
+                <tr>
+                  <td>Agents that should run server-side (long tasks, thin clients, consistent tooling)</td>
+                  <td>Each developer's <code>claude</code> session lives in <code>tmux</code> on the VPS and survives
+                    logout</td>
+                </tr>
+                <tr>
+                  <td>Contractors who need repo access but not your laptop or CI secrets</td>
+                  <td>They push with their own personal token; the service token never leaves
+                    <code>/etc/prj-ai/</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Generate the script</h4>
+          <div class="code-block">
+            <div class="code-block-header">Terminal — on your machine</div>
+            <pre><code>php artisan larapilot:vps-provision                 # writes ./provision.sh (chmod 755)
+php artisan larapilot:vps-provision --with-readme   # also writes VPS-README.md (operator guide)
+php artisan larapilot:vps-provision --stdout        # print to stdout, write nothing
+php artisan larapilot:vps-provision --output=/tmp/p.sh --force   # custom path, overwrite
+
+scp provision.sh root@&lt;vps&gt;:
+ssh root@&lt;vps&gt; 'bash provision.sh'</code></pre>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Flag</th>
+                  <th>Effect</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--output=&lt;path&gt;</code></td>
+                  <td>Destination for <code>provision.sh</code> (default: <code>./provision.sh</code> in the current
+                    directory)</td>
+                </tr>
+                <tr>
+                  <td><code>--with-readme</code></td>
+                  <td>Also write <code>VPS-README.md</code> next to the script — the full operator manual</td>
+                </tr>
+                <tr>
+                  <td><code>--stdout</code></td>
+                  <td>Print the script and write no files (pipe it, hash it, inspect it)</td>
+                </tr>
+                <tr>
+                  <td><code>--force</code></td>
+                  <td>Overwrite existing files; without it the command keeps them and reports so in
+                    <code>data.hint</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cli-note"><strong>Transfer as a file — never paste it into a terminal.</strong> Web consoles
+            (AWS/Azure, EC2 Instance Connect, serial) drop characters on large pastes and run line by line. Use
+            <code>scp</code> or <code>curl</code> from a private URL, then verify before running:
+            <code>bash -n provision.sh &amp;&amp; shasum -a 256 provision.sh</code> and compare the envelope's
+            <code>data.sha256</code>.</div>
+
+          <h4>What <code>provision.sh</code> installs</h4>
+          <p>Idempotent — safe to re-run to upgrade. Targets Ubuntu 24.04 / 26.04 LTS
+            (<code>PRJ_FORCE=1</code> to override, untested).</p>
+          <ul>
+            <li><strong>PHP 8.3, 8.4, 8.5</strong> (ondrej/php PPA) — FPM with one pool per project, plus a shared
+              OPcache / realpath tune per version</li>
+            <li><strong>MySQL</strong>, <strong>Redis</strong>, <strong>Nginx</strong> + certbot, <strong>Supervisor</strong>, cron</li>
+            <li><strong>Node.js LTS</strong>, <strong>Composer</strong>, <strong>Claude Code</strong> (global binary;
+              each user logs in with their own plan)</li>
+            <li><strong>Git provider CLIs</strong> — <code>gh</code> (GitHub), <code>glab</code> (GitLab),
+              <code>az</code> (Azure DevOps). All three are installed so the provider can change later without
+              re-provisioning; Bitbucket needs no CLI</li>
+            <li><strong>ufw</strong> (OpenSSH + Nginx Full), <strong>fail2ban</strong>, unattended security upgrades,
+              persistent tmux (<code>KillUserProcesses=no</code>)</li>
+            <li><strong>Atomic release deploys</strong> per project, optional <strong>per-developer previews</strong>
+              (<code>&lt;user&gt;-&lt;project&gt;.&lt;domain&gt;</code>, own DB), and a mandatory per-developer git token
+              (<code>prj-token</code>) gate</li>
+          </ul>
+
+          <h4>The four generated CLIs</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tool</th>
+                  <th>Path / audience</th>
+                  <th>Commands</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>prj-ai</code></td>
+                  <td><code>/usr/local/sbin/</code> — admin (root)</td>
+                  <td><code>config</code> (domain, provider, service token, preview auth + TTL, defaults) ·
+                    <code>list</code> · <code>add</code> · <code>del &lt;p&gt;</code> ·
+                    <code>php &lt;p&gt; [ver]</code> · <code>user-add</code> · <code>user-del &lt;u&gt;</code> ·
+                    <code>deploy &lt;p&gt;</code> (build + flip a release) ·
+                    <code>rollback &lt;p&gt;</code> ·
+                    <code>preview {list | up | down [--drop-db] | reap}</code></td>
+                </tr>
+                <tr>
+                  <td><code>prj-work</code></td>
+                  <td><code>/usr/local/bin/</code> — developers</td>
+                  <td>Interactive project menu shown at SSH login. Picking a project provisions the personal
+                    workspace + preview if missing and drops you into <code>tmux new -A -s &lt;project&gt;</code> —
+                    re-attach if a session is already running</td>
+                </tr>
+                <tr>
+                  <td><code>prj-pr</code></td>
+                  <td><code>/usr/local/bin/</code> — developers</td>
+                  <td><code>prj-pr "Title" [--target &lt;branch&gt;] [--draft] [--desc "..."]</code> — pushes the
+                    current branch and opens a PR/MR on <strong>GitHub, GitLab, Bitbucket Cloud or Azure DevOps</strong>,
+                    detected from <code>origin</code></td>
+                </tr>
+                <tr>
+                  <td><code>prj-token</code></td>
+                  <td><code>/usr/local/bin/</code> — developers</td>
+                  <td>Save your personal git token (mode <code>600</code>, your home). <strong>Mandatory</strong> —
+                    opening a project verifies the token can read that repo and refuses otherwise. Commits, pushes
+                    and PRs are then attributed to you</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Architecture</h4>
+          <div class="code-block">
+            <div class="code-block-header">Layout on the server</div>
+            <pre><code>/srv/prj/&lt;project&gt;/
+  repo/                    SOURCE checkout — fetch/merge + clone source for workspaces; never served
+  releases/&lt;ts&gt;-&lt;sha&gt;/     one built, immutable release per deploy
+  current -> releases/…    atomically-swapped symlink — THIS is the live release
+  shared/.env             staging env (640), symlinked into every release
+  shared/storage/         uploads / logs / cache, symlinked into every release
+  logs/                   php / queue / schedule / deploy logs
+/home/&lt;dev&gt;/work/&lt;project&gt;  the developer's personal workspace (a clone of repo/)
+/etc/prj-ai/              config, project registry, service git token  (root only, 0600)</code></pre>
+          </div>
+          <p>Nginx serves <code>current/public</code> and passes <code>$realpath_root</code> to PHP-FPM, so OPcache
+            keys on a fresh path every deploy — new code is live the instant the symlink flips, with
+            <strong>no FPM reload and no dropped request</strong>. The site updates only via
+            <code>prj-ai deploy</code> — manually, from the <code>prj-deploy@&lt;name&gt;.timer</code> (every 60&nbsp;s
+            if enabled at <code>add</code>), or from CI. The PM opens
+            <code>https://&lt;name&gt;.&lt;domain&gt;/larapilot</code> and sees state after every merge. Each project also
+            gets its own MySQL database + user, a dedicated PHP-FPM pool, an Nginx vhost, a Supervisor
+            <code>queue:work</code> (running <code>current/artisan</code>), a cron <code>schedule:run</code>, and a
+            Let's Encrypt certificate when enabled.</p>
+          <p>Personal workspaces are <strong>per-dev clones</strong> of <code>repo/</code>, not
+            <code>git worktree</code>s — a real worktree shares <code>.git</code> across users and breaks permission
+            isolation. The flow is: work in the workspace → <code>prj-pr</code> → merge → the deploy branch moves →
+            the next poll builds and flips a release → dashboard refreshes.</p>
+
+          <h4>Zero-downtime deploys</h4>
+          <p>Every <code>prj-ai deploy</code> is <strong>build-then-flip</strong>: <code>git archive HEAD</code> into a
+            fresh <code>releases/&lt;ts&gt;-&lt;sha&gt;/</code>, carry <code>vendor/</code> + <code>node_modules/</code> +
+            <code>public/build/</code> forward from the live release (so a code-only deploy is a ~3–5&nbsp;s build),
+            run <code>composer install</code> / <code>npm run build</code> / <code>artisan optimize</code> /
+            <code>migrate</code> <em>only when the matching paths changed</em>, then
+            <code>mv -T current.new current</code> — a <code>rename(2)</code>, so no request ever sees a missing
+            target. The queue worker is restarted onto the new code; old releases are pruned to
+            <code>RELEASES_KEEP</code> (default 3).</p>
+          <ul>
+            <li><strong>A failed build never ships.</strong> Any error in the build steps deletes the half-built
+              release, leaves <code>current</code> on the previous one, marks the systemd unit failed, and logs an
+              <code>OK</code>/<code>FAILED</code> line to <code>/srv/prj/&lt;project&gt;/logs/deploy.log</code>.</li>
+            <li><strong>Instant rollback.</strong> <code>sudo prj-ai rollback &lt;project&gt;</code> flips
+              <code>current</code> to the previous release and restarts the worker. It does <strong>not</strong>
+              reverse migrations.</li>
+            <li><strong>Migrations are the one non-atomic step</strong> — they hit the shared DB just before the flip,
+              so the new schema is briefly live with old code. Safe for additive changes; for destructive ones use
+              <strong>expand&nbsp;→&nbsp;contract</strong>, or answer <em>yes</em> to “Maintenance mode during
+              migrations?” at <code>prj-ai add</code> (wraps migrate + flip in <code>artisan down</code>/<code>up</code>).</li>
+          </ul>
+
+          <h4>Per-developer previews</h4>
+          <p>Alongside the shared <code>&lt;project&gt;.&lt;domain&gt;</code> (the deploy branch), every developer who
+            has <strong>opened a project on the server</strong> gets their own live URL:</p>
+          <div class="code-block">
+            <div class="code-block-header">example — Maria works on both, Marco only on Barilla</div>
+            <pre><code>barilla.agency.com            deploy branch      DB prj_barilla
+  marco-barilla.agency.com    Marco's worktree   DB prv_barilla_marco
+  maria-barilla.agency.com    Maria's worktree   DB prv_barilla_maria
+vodafone.agency.com           deploy branch      DB prj_vodafone
+  maria-vodafone.agency.com   Maria's worktree   DB prv_vodafone_maria
+  luca-vodafone.agency.com    Luca's worktree    DB prv_vodafone_luca
+# marco-vodafone.agency.com   does not exist — Marco never opened Vodafone</code></pre>
+          </div>
+          <ul>
+            <li><strong>What it serves</strong> — <code>/home/&lt;user&gt;/work/&lt;project&gt;/public</code>: that
+              developer's checked-out branch <em>plus uncommitted changes</em>, on an on-demand FPM pool running as
+              their own uid (<code>pm = ondemand</code> → zero memory when idle).</li>
+            <li><strong>Its own database</strong> — <code>prv_&lt;project&gt;_&lt;user&gt;</code>, dumped once from the
+              project's staging DB; the workspace <code>.env</code> is repointed at it
+              (<code>DB_*</code>, <code>CACHE_PREFIX</code>, <code>REDIS_PREFIX</code>, <code>SESSION_COOKIE</code>).
+              Migrations and seeders are fully isolated per developer.</li>
+            <li><strong>Created automatically</strong> the first time the developer opens the project
+              (<code>workspace-init</code>); enabled per project at <code>prj-ai add</code>
+              (<em>“Per-developer preview URLs?”</em>, default yes).</li>
+            <li><strong>Gated</strong> — one shared HTTP Basic Auth credential set in <code>prj-ai config</code>
+              (a preview serves uncommitted, usually <code>APP_DEBUG=true</code> code). One wildcard
+              <code>*.&lt;domain&gt;</code> DNS record covers both project and preview hosts. Serving from the home
+              sets it to <code>0711</code>.</li>
+            <li><strong>Reaped</strong> — <code>prj-preview-reap.timer</code> (daily) tears down previews idle beyond
+              <code>PREVIEW_TTL_DAYS</code> (default 14; DB kept) or whose workspace/user is gone (DB dropped).
+              <code>prj-ai preview list</code> shows all of them with last-seen.</li>
+          </ul>
+
+          <h4>Personal git token — <code>prj-token</code> (mandatory)</h4>
+          <p>Each developer runs <code>prj-token</code> once to store
+            <code>https://&lt;user&gt;:&lt;token&gt;@&lt;host&gt;</code> in <code>~/.git-credentials</code>
+            (<code>600</code>). <strong>Opening a project is refused</strong> until that token can read the project's
+            repository: <code>workspace-init</code> runs
+            <code>GIT_TERMINAL_PROMPT=0 git ls-remote --heads &lt;repo&gt;</code> as the developer and creates no
+            workspace and no preview if it fails. A developer cannot start work on a repo their token has no access
+            to. Commits, pushes and PRs (<code>prj-pr</code>) are then all attributed to that developer; the deploy
+            service token stays in <code>/etc/prj-ai/</code> and is never used for their work.</p>
+
+          <h4>Setup walkthrough</h4>
+          <div class="code-block">
+            <div class="code-block-header">On the VPS, as root</div>
+            <pre><code>bash provision.sh
+
+sudo prj-ai config
+#   git provider: github | gitlab | bitbucket | azure
+#   base domain, default PHP + deploy branch, Let's Encrypt email
+#   service token: a bot-account PAT / App Password (root-only, /etc/prj-ai/git-credentials)
+#   preview Basic Auth username + password, idle-TTL days
+
+sudo prj-ai user-add
+#   one per developer — paste the PUBLIC SSH key they send you, set their git identity
+
+sudo prj-ai add
+#   per repo: name (= subdomain label), PHP version, repo URL (https, no token), deploy branch,
+#   auto-deploy yes/no, maintenance-mode-during-migrations yes/no, per-developer previews yes/no
+#   -> builds the first release and points 'current' at it
+
+# DNS: point  *.<base-domain>  A record at the VPS (covers project + preview hosts)
+
+# each developer, once, on first SSH login:
+prj-token
+#   paste their personal token — must cover every repo they will work on</code></pre>
+          </div>
+          <p>Then disable SSH password login (<code>PasswordAuthentication no</code>) once every developer's key is
+            loaded. Developers <code>ssh &lt;user&gt;@&lt;vps&gt;</code>, run <code>prj-token</code>, and pick a
+            project from the menu.</p>
+
+          <h4>Git providers</h4>
+          <p>Chosen (and changed) with <code>prj-ai config</code>. The <strong>service token</strong> is used only by
+            root for the canonical checkouts; it should come from a dedicated bot account and is rotated by re-running
+            <code>config</code>. Every developer saves their <strong>own</strong> personal token with
+            <code>prj-token</code> — mandatory, and a project will not open unless that token can read its repo.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Service token</th>
+                  <th>Personal PR / MR path</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>GitHub</strong></td>
+                  <td>PAT — classic scope <code>repo</code>, or fine-grained Contents R/W</td>
+                  <td><code>prj-pr</code>, or <code>gh pr create</code> after <code>gh auth login</code>. Larapilot's
+                    <code>github</code> toggle opens PRs via <code>gh</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>GitLab</strong></td>
+                  <td>PAT — scopes <code>read_repository</code>, <code>write_repository</code></td>
+                  <td><code>prj-pr</code>, or <code>glab mr create</code> after <code>glab auth login</code>.
+                    Larapilot's <code>gitlab</code> toggle opens MRs via <code>glab</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Bitbucket Cloud</strong></td>
+                  <td>App Password — Repositories R/W + Pull requests R/W</td>
+                  <td><code>prj-pr</code> (REST API — no CLI). Larapilot's <code>bitbucket</code> toggle opens PRs via
+                    REST when <code>LARAPILOT_BITBUCKET_*</code> is set.</td>
+                </tr>
+                <tr>
+                  <td><strong>Azure DevOps</strong></td>
+                  <td>PAT — scope Code (Read &amp; Write)</td>
+                  <td><code>prj-pr</code> (<code>az repos pr create</code>), or <code>az devops login</code>.
+                    Larapilot's <code>azure</code> toggle opens PRs when
+                    <code>LARAPILOT_AZURE_DEVOPS_PAT</code> is set.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>prj-pr</code> is the provider-agnostic path and the one <code>workspace-init</code> teaches the
+            agent — it writes a managed <code>CLAUDE.local.md</code> in every workspace pointing at it. It uses
+            <code>gh</code> / <code>glab</code> when they are authenticated and falls back to each provider's REST API
+            using the personal token from <code>~/.git-credentials</code>. Self-managed GitLab is recognised when the
+            host name contains <code>gitlab</code>; otherwise use <code>glab</code> directly.</p>
+
+          <h4>The four guarantees</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Guarantee</th>
+                  <th>How</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Workspace ready at login</td>
+                  <td><code>/etc/profile.d/</code> hook runs <code>prj-work</code> for interactive
+                    <code>prjdev</code> sessions (scp/rsync/VS&nbsp;Code and <code>PRJ_NO_MENU=1</code> skip it).
+                    First pick clones the workspace from the <em>local</em> canonical — instant, no network, no
+                    token — copies <code>.env</code> and runs <code>composer install</code>.</td>
+                </tr>
+                <tr>
+                  <td>Claude stays inside its project</td>
+                  <td>Unix perms (homes <code>700</code>, canonicals writable only by their system user) +
+                    a regenerated <code>.claude/settings.local.json</code> per workspace that <code>deny</code>s
+                    <code>/srv/**</code>, <code>/etc/prj-ai/**</code>, <code>~/.ssh</code>,
+                    <code>~/.git-credentials</code>, <code>~/.claude</code> and every <em>other</em> workspace.</td>
+                </tr>
+                <tr>
+                  <td>Every developer works as themselves</td>
+                  <td>The deploy service token lives in <code>/etc/prj-ai/</code> (<code>0600</code>, root) and never
+                    appears in a remote URL. Each dev saves their <strong>own</strong> git token with
+                    <code>prj-token</code> — <strong>mandatory and repo-scoped</strong>: opening a project runs
+                    <code>git ls-remote</code> with that token and refuses if it cannot see the repo. Personal token,
+                    Claude session and SSH keys stay <code>600</code>/<code>700</code> in the home (<code>711</code>
+                    when previews are on — traverse only).</td>
+                </tr>
+                <tr>
+                  <td>Disconnect ≠ lost task</td>
+                  <td>All work runs inside <code>tmux</code>; <code>KillUserProcesses=no</code> keeps it alive after
+                    logout. Reconnecting and reselecting the project re-attaches the exact session; the menu marks
+                    it as active.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cli-note">Honest limit: Bash commands the agent runs are not path-confined, so between two
+            workspaces <em>of the same user</em> the barrier is the guardrail plus human approval, not the kernel.
+            Between different users, and toward the canonicals, the barrier is the filesystem. For kernel isolation
+            between same-dev projects too, add a container / bubblewrap per workspace.</p>
+
+          <h4>Efficiency</h4>
+          <ul>
+            <li><strong>Incremental deploys</strong> — <code>prj-ai deploy</code> diffs the incoming commits and runs
+              <code>composer install</code>, <code>npm run build</code> and <code>migrate</code> only when the
+              matching paths (<code>composer.lock</code>, lockfiles / <code>vite.config.*</code> /
+              <code>resources/{js,css,…}</code>, <code>database/migrations/</code>) actually changed. With build
+              artifacts carried forward from the live release, a code-only deploy is a ~3–5&nbsp;s build, so the
+              60&nbsp;s auto-deploy timer is near-free on a quiet branch.</li>
+            <li><strong>Release build</strong> — <code>composer install --no-dev --prefer-dist --no-progress
+              --optimize-autoloader</code> (or a bare <code>dump-autoload</code> when the lock is unchanged), then
+              <code>artisan optimize</code> inside the new release; a failed step discards the release rather than
+              flipping to it.</li>
+            <li><strong>OPcache / realpath</strong> — nginx passes <code>$realpath_root</code> so every release is a
+              distinct path and OPcache picks it up with <strong>no FPM reload</strong>;
+              <code>validate_timestamps=1</code> stays on only for in-workspace edits.</li>
+            <li><strong>Disk</strong> — <code>RELEASES_KEEP</code> (default 3) releases retained for fast rollback;
+              <code>node_modules/</code> dropped from every release but the live one; older releases pruned after each
+              successful deploy.</li>
+            <li><strong>PHP-FPM pools</strong> pin <code>memory_limit</code>, idle timeout and
+              <code>pm.max_requests=500</code> (worker recycling).</li>
+            <li><strong>Nginx</strong> serves static assets with long cache headers and <code>access_log off</code>;
+              <code>favicon.ico</code> / <code>robots.txt</code> never reach PHP.</li>
+            <li><strong>Auto-deploy timer</strong> runs at <code>Nice=10</code>, <code>IOSchedulingClass=idle</code>,
+              with a <code>RandomizedDelaySec</code> so many projects don't stampede on the same second.</li>
+          </ul>
+
+          <h4>Auto-deploy &amp; CI</h4>
+          <p>Enable per project at <code>add</code> time (the systemd timer polls every 60&nbsp;s), or leave it off
+            and call <code>prj-ai deploy &lt;p&gt;</code> over SSH from a pipeline after merge for push-based
+            deploys. Either way the deploy is atomic — a failed build leaves the current release serving.</p>
+          <div class="code-block">
+            <div class="code-block-header">CI step (GitHub Actions / GitLab CI / Azure Pipelines)</div>
+            <pre><code>ssh deploy@&lt;vps&gt; 'sudo prj-ai deploy acme-shop'
+# on a bad release:
+ssh deploy@&lt;vps&gt; 'sudo prj-ai rollback acme-shop'</code></pre>
+          </div>
+
+          <h4>Working as a team without conflicts</h4>
+          <p>Every developer has their own clone, tmux session, Claude plan and git token — nothing on the filesystem
+            collides. The four things that <em>can</em> conflict, and the rule for each:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vector</th>
+                  <th>Rule</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Source code</strong></td>
+                  <td>One story, one branch: <code>larapilot:spec-start US-XXX</code> to claim it (moves it to
+                    <span class="status status-progress">IN PROGRESS</span> so no one else takes it), work on
+                    <code>feature/US-XXX-*</code>, <code>git fetch canonical &amp;&amp; rebase</code> before
+                    <code>prj-pr</code>, keep PRs small, merge daily. Protect the deploy branch (PR + green CI, linear
+                    history).</td>
+                </tr>
+                <tr>
+                  <td><strong>Database</strong></td>
+                  <td>With previews on (default) each developer has their <strong>own</strong> DB
+                    <code>prv_&lt;project&gt;_&lt;user&gt;</code> — migrations, seeders and <code>tinker</code> are
+                    isolated. With previews off, workspaces share the canonical DB (<strong>no isolation</strong> —
+                    never <code>migrate:fresh</code> / <code>db:wipe</code> there). Either way: one migration per
+                    story, rebased into linear order; destructive schema changes via expand&nbsp;→&nbsp;contract.</td>
+                </tr>
+                <tr>
+                  <td><strong>Config</strong></td>
+                  <td>The workspace <code>.env</code> is a personal copy and is never deployed. Shared config goes in
+                    <code>config/*.php</code> + <code>.env.example</code> <em>in the PR</em>; the live
+                    <code>shared/.env</code> is edited only by the admin.</td>
+                </tr>
+                <tr>
+                  <td><strong>The running site</strong></td>
+                  <td>Deploys are serialised and atomic — two PRs merged seconds apart just deploy together, nothing
+                    half-applies. A bad release → <code>sudo prj-ai rollback &lt;project&gt;</code>, then fix forward.
+                    Watch <code>tail -f /srv/prj/&lt;project&gt;/logs/deploy.log</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cli-note"><code>prj-work</code> names the tmux session after the project <strong>per user</strong>
+            — two developers on the same project get separate sessions. Only when <em>you</em> open the same project
+            from two connections do you re-attach the same screen; start a second session
+            (<code>tmux new -s &lt;project&gt;-2 -c ~/work/&lt;project&gt;</code>) for independent panes.</p>
+
+          <h4>Resolving a conflict when it does happen</h4>
+          <p>The governing rule: resolve <strong>source code</strong> with git as usual; for
+            <code>.larapilot/</code> artifacts <strong>do not hand-edit the conflict markers</strong> — take the
+            other side and <strong>re-run the Larapilot command</strong> that produced your change. The commands are
+            the source of truth for those files' shape; git is only transport. The developer whose PR is behind does
+            the work, in <em>their own</em> workspace (never on the server's <code>repo/</code>).</p>
+
+          <div class="code-block">
+            <div class="code-block-header">two recipes cover almost everything</div>
+            <pre><code># A) source code — real merge conflict
+git fetch canonical
+git rebase canonical/&lt;deploy-branch&gt;        # resolve the markers (Claude can help)
+php artisan larapilot:quality --fix &amp;&amp; php artisan test
+git push --force-with-lease                  # the PR updates, merges clean
+
+# B) a .larapilot/ file (backlog.yaml, a plan, decisions.yaml) conflicts
+git checkout --theirs .larapilot/backlog.yaml       # accept the already-merged state
+php artisan larapilot:spec-start US-015             # re-apply YOUR change on top
+#   ^ or: task-done / spec-review / decision-log — whatever you were running
+git add .larapilot/ &amp;&amp; git rebase --continue</code></pre>
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>How to resolve</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Both edited the same source lines</td>
+                  <td>Recipe A. If the logic clash is deep, let <code>/larapilot-review</code> catch it
+                    (<code>larapilot:spec-request-changes</code>) and rebase the rework.</td>
+                </tr>
+                <tr>
+                  <td><code>backlog.yaml</code> / <code>plans/US-XXX-plan.yaml</code> conflict (two stories advanced
+                    in parallel)</td>
+                  <td>Recipe B — <code>--theirs</code>, then re-run <code>larapilot:spec-start</code> /
+                    <code>task-done</code> / <code>spec-review</code> for <em>your</em> story. Larapilot rewrites the
+                    file in canonical form, so the YAML is never left broken.</td>
+                </tr>
+                <tr>
+                  <td>Same <code>US-XXX</code> code (both ran <code>spec-add</code> offline and picked
+                    <code>US-013</code>)</td>
+                  <td>One dev deletes <code>.larapilot/specs/US-013.yaml</code>, re-runs
+                    <code>larapilot:spec-add</code> (it allocates the next free code), and renames the branch.
+                    <em>Prevention:</em> run <code>/larapilot-spec</code> from one branch and merge it first, then
+                    pick stories.</td>
+                </tr>
+                <tr>
+                  <td><code>decisions.yaml</code> / other append-only file (both appended a line)</td>
+                  <td><code>git checkout --theirs</code>, then <code>larapilot:decision-log …</code> to re-append.
+                    The journal is append-only — order carries no meaning.</td>
+                </tr>
+                <tr>
+                  <td>Migrations from two branches meet at merge</td>
+                  <td>One migration per story, rebased so they land in linear timestamp order; destructive changes via
+                    <strong>expand&nbsp;→&nbsp;contract</strong>. Previews already isolate the data
+                    (<code>prv_&lt;project&gt;_&lt;user&gt;</code>), so nothing collides <em>before</em> the merge.</td>
+                </tr>
+                <tr>
+                  <td>Two PRs merged seconds apart, one shipped a bad release</td>
+                  <td>The build either fully succeeds or fully aborts — a failed one leaves <code>current</code> on the
+                    last good release. If a bad one slipped through: <code>sudo prj-ai rollback &lt;project&gt;</code>,
+                    then fix forward on a branch.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cli-note">What keeps it rare: one story = one branch = one dev (<code>spec-start</code> locks it
+            to <span class="status status-progress">IN PROGRESS</span>); small PRs merged daily; a protected deploy
+            branch; and a human approving the final merged state through <code>/larapilot-review</code>.</p>
+
+          <h4>Developer onboarding</h4>
+          <div class="code-block">
+            <div class="code-block-header">Share with the team</div>
+            <pre><code>0. on YOUR machine:  ssh-keygen -t ed25519
+   send the admin ONLY  ~/.ssh/id_ed25519.pub   (never the private key)
+1. ssh &lt;user&gt;@&lt;vps&gt;
+2. prj-token                             # REQUIRED first — paste your git token
+                                        # (must cover every project you work on)
+3. pick the project from the menu       # workspace + preview created on first open,
+                                        # refused if your token can't see the repo
+4. claude                               # first run: log in with YOUR OWN plan
+5. work normally  (/larapilot-* skills, git, artisan)
+6. open a PR/MR:  prj-pr "Title"        # commit + push + PR all as you
+7. your preview:  https://&lt;user&gt;-&lt;project&gt;.&lt;domain&gt;   (shared Basic Auth)
+8. dropped? reconnect, reselect the project -> back where you were
+   (inside tmux: Ctrl+B then D to detach on purpose)</code></pre>
+          </div>
+          <p>VS&nbsp;Code users: Remote-SSH to the VPS, open <code>~/work/&lt;project&gt;</code>, use the Claude Code
+            extension — it runs on the server with the personal login and the menu does not interfere.</p>
+
+          <div class="cli-note"><strong>Before you rely on it.</strong> The scripts are written for the two LTS
+            releases and have not been run on a production fleet — try them on a throwaway VPS first.
+            <code>prj-ai del</code> / <code>user-del</code> also remove personal workspaces and every matching
+            preview + preview DB (unpushed work is lost; both ask for confirmation, project DB dropped only on
+            <code>yes</code>). Previews need a wildcard <code>*.&lt;domain&gt;</code> DNS record, set
+            <code>/home/&lt;user&gt;</code> to <code>0711</code>, and serve uncommitted (often
+            <code>APP_DEBUG=true</code>) code behind one shared Basic Auth credential — put the box behind a VPN if
+            the code is sensitive. On a public staging box also set <code>LARAPILOT_API_TOKEN</code> and consider
+            <a href="#deep-dive-dashboard-auth"><code>dashboard_auth</code></a>. The full operator manual ships at
+            <code>resources/larapilot/vps/README.md</code> (or <code>--with-readme</code>).</div>
+        </article>
+
+        <!-- Design systems -->
+        <article class="deep-dive-sub" id="deep-dive-design-systems">
+          <h3>Design systems</h3>
+          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on
+            <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
+            picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency
+            through implement and review.
+          </p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>System</th>
+                  <th>Path</th>
+                  <th>When to use</th>
+                  <th>Contents</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Filament</strong></td>
+                  <td><code>design-systems/filament/</code></td>
+                  <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
+                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Laravel Starter Kits</strong></td>
+                  <td><code>design-systems/starter-kit/</code></td>
+                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>,
+                    <code>react</code>, <code>vue</code>, <code>svelte</code>)
+                  </td>
+                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML
+                    screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Bootstrap 5</strong></td>
+                  <td><code>design-systems/bootstrap-5/</code></td>
+                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a
+                    Starter Kit)</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing,
+                    dashboard, login, settings, components)</td>
+                </tr>
+                <tr>
+                  <td><strong>Tailwind CSS</strong></td>
+                  <td><code>design-systems/tailwind/</code></td>
+                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament,
+                    Starter Kit, or Bootstrap</td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>AdminLTE</strong></td>
+                  <td><code>design-systems/adminlte/</code></td>
+                  <td>Admin/control panel mockups when the PRD records <strong>AdminLTE 4</strong></td>
+                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard,
+                    resource list, login, settings, components)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
+            <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
+          </p>
+
+          <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
+          <p>You can add <strong>your own</strong> design system or UI template under
+            <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
+            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.
+          </p>
+          <ul>
+            <li>Drop tokens, component notes, HTML starters, and brand assets in that folder (same shape as the packaged
+              ones helps: <code>README.md</code>, <code>tokens.css</code>, <code>components.md</code>, optional
+              <code>html/</code>).
+            </li>
+            <li>Record the choice in the PRD (or tell the agent during inception/design) so Elise, Joe, and Alex treat
+              it
+              as the source of truth for mockups and shipped UI.</li>
+            <li><code>larapilot:update</code> refreshes only the packaged systems — your custom folder is never
+              overwritten.</li>
+          </ul>
+        </article>
+
+        <!-- Code quality -->
+        <article class="deep-dive-sub" id="deep-dive-code-quality">
+          <h3>Code quality</h3>
+          <p class="lead">Every Larapilot project stays compatible with <a href="https://github.com/larastan/larastan"
+              target="_blank" rel="noopener">Larastan</a> (<strong>PHPStan level 5+</strong>) and <a
+              href="https://laravel.com/docs/pint" target="_blank" rel="noopener">Laravel Pint</a>. Introduced in
+            <strong>v2.3.1</strong> — not optional after install.</p>
+
+          <h4>What install scaffolds</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Artifact</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>phpstan.neon.dist</code></td>
+                  <td>Larastan extension, <code>level: 5</code>, paths <code>app/</code> · <code>bootstrap/</code> ·
+                    <code>config/</code> · <code>database/</code> · <code>routes/</code> · <code>tests/</code></td>
+                </tr>
+                <tr>
+                  <td><code>pint.json</code></td>
+                  <td>Laravel preset — code style linter/formatter</td>
+                </tr>
+                <tr>
+                  <td><code>composer.json</code></td>
+                  <td><code>require-dev</code>: <code>larastan/larastan</code>, <code>laravel/pint</code>; scripts
+                    <code>lint</code>, <code>lint:check</code>, <code>analyse</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Run the gate</h4>
+          <div class="code-block">
+            <div class="code-block-header">Check-only (CI / before merge)</div>
+            <pre><code>php artisan larapilot:quality</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Apply Pint formatting, then Larastan</div>
+            <pre><code>php artisan larapilot:quality --fix</code></pre>
+          </div>
+          <p>Equivalent Composer shortcuts after <code>composer install</code>:</p>
+          <div class="code-block">
+            <div class="code-block-header">composer.json scripts</div>
+            <pre><code>composer lint:check   # pint --test
+composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
+          </div>
+
+          <h4>When to run</h4>
+          <ul>
+            <li><strong>Implement</strong> — <code>/larapilot-implement</code> runs <code>larapilot:quality</code> on
+              Laravel tasks before each <code>task-done</code></li>
+            <li><strong>CI</strong> — add <code>php artisan larapilot:quality</code> (or <code>composer lint:check &amp;&amp; composer analyse</code>) on every PR; failing Pint or Larastan blocks merge</li>
+            <li><strong>Health check</strong> — <code>larapilot:doctor</code> reports <code>quality_pint</code>,
+              <code>quality_larastan</code>, and <code>quality_packages</code>; install is not <code>healthy</code> when
+              the gate is missing</li>
+          </ul>
+
+          <h4>Rules</h4>
+          <ul>
+            <li><strong>Minimum level 5</strong> — never lower <code>level</code> in <code>phpstan.neon(.dist)</code>
+              without an explicit human waiver</li>
+            <li><strong>Legacy codebases</strong> — generate a baseline with
+              <code>vendor/bin/phpstan analyse --generate-baseline</code> (see <a
+                href="https://github.com/larastan/larastan" target="_blank" rel="noopener">Larastan docs</a>); do not
+              drop below level 5 for new code</li>
+            <li><code>larapilot:install --skip-composer</code> — write config files only; run
+              <code>composer require --dev larastan/larastan laravel/pint</code> yourself</li>
+          </ul>
+
+          <div class="cli-note"><strong>Andrew + Jack</strong> own the gate — Pint for style, Larastan for static analysis.
+            Robert flags regressions at review when quality was skipped.</div>
+        </article>
+
         <!-- Artisan CLI -->
         <article class="deep-dive-sub" id="deep-dive-cli">
           <h3>Artisan CLI</h3>
@@ -4788,10 +5792,12 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 </tr>
                 <tr>
                   <td>PRD</td>
-                  <td><code>larapilot:frontend-set</code> · <code>larapilot:frontend-scan</code>
+                  <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
+                    <code>larapilot:choices-set</code> · <code>larapilot:frontend-set</code> ·
+                    <code>larapilot:frontend-scan</code>
                   </td>
-                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code>,
-                    <code>/larapilot-frontend-companion</code>
+                  <td><code>/larapilot-inception</code>, <code>/larapilot-adopt</code>,
+                    <code>/larapilot-feature</code>, <code>/larapilot-frontend-companion</code>
                   </td>
                 </tr>
                 <tr>
@@ -4824,7 +5830,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                 <tr>
                   <td>Metrics</td>
                   <td><code>larapilot:metrics</code></td>
-                  <td>Dashboard, progress reporting</td>
+                  <td>Dashboard, progress reporting; same data as <code>GET /larapilot/api/metrics</code></td>
                 </tr>
                 <tr>
                   <td>Usage (Lucille)</td>
@@ -4850,6 +5856,14 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
                   </td>
                   <td><code>/larapilot-tracker</code>, CI backlog sync — see <a
                       href="#deep-dive-tracker">Project trackers</a></td>
+                </tr>
+                <tr>
+                  <td>Self-hosted VPS</td>
+                  <td><code>larapilot:vps-provision</code> (<code>--output=</code>, <code>--with-readme</code>,
+                    <code>--stdout</code>, <code>--force</code>)
+                  </td>
+                  <td>Generate <code>provision.sh</code> for a team SSH server — see <a
+                      href="#deep-dive-vps">Self-hosted VPS</a></td>
                 </tr>
               </tbody>
             </table>
@@ -5017,14 +6031,33 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
 
           <h4>Authentication</h4>
           <p>Set <code>LARAPILOT_API_TOKEN</code> to require a shared token on every API request — send it as
-            <code>Authorization: Bearer &lt;token&gt;</code> or an <code>X-Larapilot-Token</code> header. Strongly
-            recommended on shared staging hosts. Without a token configured, read endpoints stay open in the allowed
-            environments, but write endpoints (<code>POST /comments</code>) are refused outside
-            local/development/testing.
+            <code>Authorization: Bearer &lt;token&gt;</code> or an <code>X-Larapilot-Token</code> header. When the token
+            is set it is enforced on <strong>every</strong> endpoint, reads and writes alike. Without a token configured,
+            read endpoints stay open in the allowed environments, but write endpoints (<code>POST /comments</code>) are
+            refused outside local/development/testing.
           </p>
+          <p>The <code>api_auth</code> project setting (default <code>NO</code>) makes the token
+            <strong>mandatory</strong>: with <code>api_auth=YES</code> every <code>/larapilot/api/*</code> call — the
+            <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> endpoints included — requires
+            <code>LARAPILOT_API_TOKEN</code>, and the API <strong>fails closed (HTTP 503)</strong> when the env var is not
+            set instead of answering unauthenticated. Turn it on with
+            <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup and <code>curl</code> /
+            Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> → <em>API access</em>.</p>
           <p>The optional <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> setting (Basic Auth on the
-            dashboard UI) does <strong>not</strong> apply here — the JSON API is gated only by
-            <code>LARAPILOT_API_TOKEN</code> and the dashboard activation conditions.</p>
+            dashboard UI) does <strong>not</strong> apply here, and <code>api_auth</code> does <strong>not</strong> apply
+            to the dashboard UI — the JSON API is gated only by <code>LARAPILOT_API_TOKEN</code> /
+            <code>api_auth</code> and the dashboard activation conditions.</p>
+          <div class="code-block">
+            <div class="code-block-header">Calling the API with the token</div>
+            <pre><code>curl -sS -H "Authorization: Bearer $LARAPILOT_API_TOKEN" \
+  "$LARAPILOT_BASE_URL/larapilot/api/board"
+
+# Laravel HTTP client
+Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
+    -&gt;withToken(env('LARAPILOT_API_TOKEN'))
+    -&gt;get('/diagnostics', ['no_logs' =&gt; 1])
+    -&gt;throw()-&gt;json();</code></pre>
+          </div>
 
           <h4>Endpoints</h4>
           <div class="table-card">
@@ -5048,8 +6081,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>All specs with task progress, mockup screens, and counts-only feedback summaries; optional
-                    <code>?status=TODO</code> filter</td>
+                  <td>Specs with task progress, mockup screens, and counts-only feedback summaries. Optional
+                    <code>?status=TODO</code> filter; paginated with <code>?page</code> / <code>?per_page</code>
+                    (1–200, default 50) — body carries <code>total</code>, <code>page</code>, <code>per_page</code>,
+                    <code>total_pages</code></td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -5069,6 +6104,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/prd</code></td>
                   <td>PRD Markdown content and parsed heading index</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/metrics</code></td>
+                  <td>Delivery snapshot — backlog completion, plan/task progress, and (when the Lucille ledger is on)
+                    an effort-timing block: tracked hours, tokens, first/last activity
+                  </td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -5104,6 +6146,24 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               </tbody>
             </table>
           </div>
+
+          <h4 id="deep-dive-api-hardening">Rate limit, audit &amp; caching</h4>
+          <p>Independent of <code>api_auth</code> — always on for <code>/larapilot/api/*</code>:</p>
+          <ul>
+            <li><strong>Rate limit</strong> — per IP, from <code>larapilot.api.rate_limit</code>
+              (<code>"max,minutes"</code>, default <code>120,1</code>). Over budget → <code>HTTP 429</code> with
+              <code>Retry-After</code>. <code>LARAPILOT_API_RATE_LIMIT=0</code> disables it.</li>
+            <li><strong>Audit log</strong> — every <strong>mutating</strong> request
+              (<code>POST /specs/{code}/comments</code>) appends one JSON line to
+              <code>.larapilot/api-audit.log</code> (timestamp, method, path, IP, whether a token was sent, status —
+              never bodies). Git-ignored automatically. <code>LARAPILOT_API_AUDIT=false</code> to turn off.</li>
+            <li><strong>Conditional requests</strong> — <code>GET /board</code>, <code>/specs</code>,
+              <code>/specs/{code}</code>, <code>/prd</code>, <code>/metrics</code> return an <code>ETag</code>; send it
+              back as <code>If-None-Match</code> for a <code>304 Not Modified</code>. Ideal for pollers.</li>
+            <li><strong>Security headers</strong> — every dashboard and API response carries
+              <code>X-Content-Type-Options: nosniff</code> and <code>Referrer-Policy: no-referrer</code>; dashboard
+              pages also send <code>X-Frame-Options: DENY</code>.</li>
+          </ul>
 
           <h4 id="deep-dive-api-diagnostics">Diagnostics</h4>
           <p>Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
@@ -5234,7 +6294,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
   </div>
 
   <footer>
-    <p>Larapilot v2.5.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.5.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -32,7 +32,7 @@ When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + v
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — honor `data.settings` (git/testing evidence; `auto_approve`)
+1. `php artisan larapilot:config-show` — honor `data.settings` (git/testing evidence; `auto_approve`; `security_scan`)
 2. `php artisan larapilot:spec-list --status=REVIEW`
 3. `php artisan larapilot:spec-show {code}`
 4. On approval: `php artisan larapilot:spec-approve {code}`
@@ -54,6 +54,7 @@ Robert speaks in character. For the selected spec, he presents:
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
 - Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes
+- **Security scan** — when `settings.security_scan` is `YES`: run `php artisan checkpoint:scan --json` (`andreapollastri/checkpoint`). Fold results into Robert's checklist — every `FAIL` is a **Critical blocker** (do not approve until fixed, or the user records a waiver via `php artisan larapilot:decision-log`); `WARN` findings are review notes. If the command is missing, **stop and tell the user** to `composer require --dev andreapollastri/checkpoint` or turn `security_scan` back OFF via `/larapilot-settings`. Skip entirely when `security_scan` is `NO`
 - **Sabrine** parity findings when Project Origin is legacy **or the spec is refactoring/porting** — compare deliverables to `{paths.research}/legacy-parity.md` and porting/refactoring AC; flag undocumented feature or content drops; **Robert does not approve without Sabrine sign-off**
 - **Marika** + **Emily** copy/i18n notes when the spec touched user-facing text — typos, tone, clarity, **translation consistency** between source and `lang/` files _(skip or one-liner under `effort: ECO`)_
 - **Joe** design-system notes when UI changed — token/component drift vs Elise mockups and agreed design system _(skip or one-liner under `effort: ECO`)_

@@ -28,12 +28,20 @@ class OpenApiService
             'servers' => [
                 ['url' => $baseUrl],
             ],
+            // Optional shared token (LARAPILOT_API_TOKEN). Enforced on every
+            // request when the token is set, and made mandatory — failing
+            // closed when it is not — by the `api_auth` project setting.
+            'security' => [
+                ['bearerToken' => []],
+                ['larapilotTokenHeader' => []],
+            ],
             'tags' => [
                 ['name' => 'Board', 'description' => 'Kanban board overview'],
                 ['name' => 'Specs', 'description' => 'User stories (backlog specs)'],
                 ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
                 ['name' => 'Backstage', 'description' => 'Software-catalog entities, TechDocs metadata, and a delivery snapshot for backstage.io'],
+                ['name' => 'Metrics', 'description' => 'Backlog / plan progress and effort-timing snapshot'],
                 ['name' => 'Diagnostics', 'description' => 'Read-only runtime status and redacted log tail for bug triage'],
             ],
             'paths' => [
@@ -69,10 +77,24 @@ class OpenApiService
                                 'description' => 'Filter by spec status label (case-insensitive)',
                                 'schema' => ['type' => 'string', 'example' => 'TODO'],
                             ],
+                            [
+                                'name' => 'page',
+                                'in' => 'query',
+                                'required' => false,
+                                'description' => 'Page number (1-based); clamped to the last page',
+                                'schema' => ['type' => 'integer', 'minimum' => 1, 'default' => 1],
+                            ],
+                            [
+                                'name' => 'per_page',
+                                'in' => 'query',
+                                'required' => false,
+                                'description' => 'Items per page (1-200)',
+                                'schema' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 200, 'default' => 50],
+                            ],
                         ],
                         'responses' => [
                             '200' => [
-                                'description' => 'Spec list',
+                                'description' => 'Spec list (paginated: `page`, `per_page`, `total`, `total_pages`)',
                                 'content' => [
                                     'application/json' => [
                                         'schema' => ['$ref' => '#/components/schemas/SpecListResponse'],
@@ -167,6 +189,25 @@ class OpenApiService
                         ],
                     ],
                 ],
+                '/metrics' => [
+                    'get' => [
+                        'tags' => ['Metrics'],
+                        'summary' => 'Delivery metrics snapshot',
+                        'description' => 'Backlog completion, plan/task progress, and — when the Lucille usage ledger is on — '
+                            .'an effort-timing block (tracked hours, tokens, first/last activity).',
+                        'operationId' => 'getMetrics',
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Metrics snapshot',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['$ref' => '#/components/schemas/MetricsResponse'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
                 '/backstage' => [
                     'get' => [
                         'tags' => ['Backstage'],
@@ -246,7 +287,35 @@ class OpenApiService
                 ],
             ],
             'components' => [
+                'securitySchemes' => [
+                    'bearerToken' => [
+                        'type' => 'http',
+                        'scheme' => 'bearer',
+                        'description' => 'LARAPILOT_API_TOKEN sent as `Authorization: Bearer <token>`. '
+                            .'Required on every request when the token is configured, and mandatory '
+                            .'(API returns HTTP 503 when unset) while the `api_auth` project setting is ON.',
+                    ],
+                    'larapilotTokenHeader' => [
+                        'type' => 'apiKey',
+                        'in' => 'header',
+                        'name' => 'X-Larapilot-Token',
+                        'description' => 'LARAPILOT_API_TOKEN sent as the `X-Larapilot-Token` header — an alternative to the bearer token.',
+                    ],
+                ],
                 'responses' => [
+                    'Unauthorized' => [
+                        'description' => 'Missing or invalid Larapilot API token',
+                        'content' => [
+                            'application/json' => [
+                                'schema' => [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'message' => ['type' => 'string', 'example' => 'Invalid or missing Larapilot API token.'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                     'NotFound' => [
                         'description' => 'Resource not found',
                         'content' => [
@@ -487,12 +556,30 @@ class OpenApiService
                         'type' => 'object',
                         'properties' => [
                             'status' => ['type' => 'string', 'nullable' => true],
-                            'count' => ['type' => 'integer'],
+                            'count' => ['type' => 'integer', 'description' => 'Items on this page'],
+                            'total' => ['type' => 'integer', 'description' => 'Items across all pages'],
+                            'page' => ['type' => 'integer'],
+                            'per_page' => ['type' => 'integer'],
+                            'total_pages' => ['type' => 'integer'],
                             'items' => [
                                 'type' => 'array',
                                 'items' => ['$ref' => '#/components/schemas/SpecSummary'],
                             ],
                             'summary' => ['type' => 'object', 'additionalProperties' => true],
+                        ],
+                    ],
+                    'MetricsResponse' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'collected_at' => ['type' => 'string', 'format' => 'date-time'],
+                            'backlog' => ['type' => 'object', 'additionalProperties' => true],
+                            'plan' => ['type' => 'object', 'additionalProperties' => true],
+                            'delivery' => [
+                                'type' => 'object',
+                                'nullable' => true,
+                                'description' => 'null when the Lucille usage ledger is off',
+                                'additionalProperties' => true,
+                            ],
                         ],
                     ],
                     'SpecDetailResponse' => [
