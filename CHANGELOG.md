@@ -2,6 +2,14 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.6.0] - 2026-09-09
+
+### Changed
+
+- **Laravel Boost tracks latest** — `composer.json` requires `laravel/boost` `>=2.0` (latest stable, no upper bound) instead of the pinned `^1.0|^2.0` range. Installing Larapilot always pulls the current Boost 2+ release, including future majors.
+- **`larapilot:update` also updates Boost** — before republishing guidelines and skills it runs `composer update laravel/boost --with-dependencies` (skipped inside Composer scripts and with `--skip-boost`, then `boost:update` in a fresh process so the newly installed package loads). Upgrade docs/README recommend `composer update andreapollastri/larapilot laravel/boost --with-dependencies`.
+- Site / package version **v2.6.0**.
+
 ## [2.5.1] - 2026-09-01
 
 ### Added

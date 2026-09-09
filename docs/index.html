@@ -1260,7 +1260,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.5.1</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.6.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1373,7 +1373,7 @@
           </ol>
         </div>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a
-            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> 2.0+ (bundled) ·
+            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> (latest stable, bundled) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
         <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
             rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
@@ -1391,8 +1391,8 @@
           <ol class="install-commands-list">
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">1</span>
-              <code class="install-command-text">composer update andreapollastri/larapilot</code>
-              <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot"
+              <code class="install-command-text">composer update andreapollastri/larapilot laravel/boost --with-dependencies</code>
+              <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot laravel/boost --with-dependencies"
                 title="Copy command">Copy</button>
             </li>
             <li class="install-command">
@@ -1403,7 +1403,8 @@
             </li>
           </ol>
         </div>
-        <p>Verify with <code>php artisan larapilot:doctor</code>. Runtime-only refresh (skip Boost republish):
+        <p>Verify with <code>php artisan larapilot:doctor</code>. <code>larapilot:update</code> also bumps
+          <code>laravel/boost</code> to latest stable and republishes skills. Runtime-only refresh:
           <code>php artisan larapilot:update --skip-boost</code>.
         </p>
 
@@ -3044,8 +3045,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
         <!-- Upgrade -->
         <article class="deep-dive-sub" id="deep-dive-update">
           <h3>Upgrade</h3>
-          <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new version, then
-            refresh the files Larapilot publishes into your project — without touching your workflow data in
+          <p class="lead">Larapilot ships as a Composer package. Updating is two steps: pull the new Larapilot
+            <em>and</em> the latest Laravel Boost, then refresh the files Larapilot publishes into your project —
+            without touching your workflow data in
             <code>.larapilot/config.yaml</code>, specs, plans, or PRD.
           </p>
 
@@ -3054,8 +3056,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <ol class="install-commands-list">
               <li class="install-command">
                 <span class="install-command-num" aria-hidden="true">1</span>
-                <code class="install-command-text">composer update andreapollastri/larapilot</code>
-                <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot"
+                <code class="install-command-text">composer update andreapollastri/larapilot laravel/boost --with-dependencies</code>
+                <button type="button" class="install-copy-btn" data-copy="composer update andreapollastri/larapilot laravel/boost --with-dependencies"
                   title="Copy command">Copy</button>
               </li>
               <li class="install-command">
@@ -3079,17 +3081,18 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td><code>composer update andreapollastri/larapilot</code></td>
-                  <td>PHP package in <code>vendor/</code> — services, CLI, dashboard, design-system packages, Boost
-                    resources bundled with Larapilot</td>
+                  <td><code>composer update andreapollastri/larapilot laravel/boost --with-dependencies</code></td>
+                  <td>PHP packages in <code>vendor/</code> — Larapilot (services, CLI, dashboard, design-system
+                    packages) and the latest stable <code>laravel/boost</code></td>
                   <td>Your <code>.larapilot/</code> project config and workflow artifacts</td>
                 </tr>
                 <tr>
                   <td><code>php artisan larapilot:update</code></td>
                   <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged
                     <code>.larapilot/design-systems/</code> references; missing <code>phpstan.neon.dist</code> /
-                    <code>pint.json</code> and Composer quality entries; re-runs <code>boost:update</code> to republish
-                    guidelines and <code>/larapilot-*</code> skills
+                    <code>pint.json</code> and Composer quality entries; <code>composer update laravel/boost</code>
+                    (latest stable) then <code>boost:update</code> to republish guidelines and
+                    <code>/larapilot-*</code> skills
                   </td>
                   <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned
                     files</td>
@@ -3101,7 +3104,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           <h4>Options &amp; checks</h4>
           <ul>
             <li><code>php artisan larapilot:update --skip-boost</code> — refresh shared runtime and design-system copies
-              only; run <code>php artisan boost:update</code> yourself when you want new skills/guidelines</li>
+              only (does not bump <code>laravel/boost</code> or republish skills); run
+              <code>composer update laravel/boost --with-dependencies</code> and
+              <code>php artisan boost:update</code> yourself when you want the latest Boost</li>
             <li><code>php artisan larapilot:doctor</code> — verify install health after an upgrade (includes Larastan/Pint gate)</li>
             <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and
               skills are missing</li>
@@ -3118,9 +3123,11 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
     ]
 }</code></pre>
           </div>
-          <p>Omit <code>--skip-boost</code> if you always want Boost guidelines and skills republished on every Composer
-            update. Run <code>php artisan boost:update</code> manually when you use <code>--skip-boost</code> in the
-            hook.</p>
+          <p>Keep <code>--skip-boost</code> in the hook so Composer does not recurse into
+            <code>composer update laravel/boost</code>. Omit it only when you want Boost guidelines and skills
+            republished on every Composer update (the package bump is skipped automatically inside a Composer script).
+            Run <code>php artisan boost:update</code> manually when you use <code>--skip-boost</code> in the hook, or
+            include <code>laravel/boost</code> in the Composer update command so the lockfile tracks latest.</p>
 
           <div class="cli-note"><strong>Do not re-run <code>larapilot:install</code> on an existing project</strong>
             unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for
@@ -6294,7 +6301,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v2.5.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.6.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

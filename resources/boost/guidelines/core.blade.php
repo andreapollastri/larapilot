@@ -59,7 +59,7 @@ php artisan boost:install
 ### Update
 
 ```bash
-composer update andreapollastri/larapilot
+composer update andreapollastri/larapilot laravel/boost --with-dependencies
 php artisan larapilot:update
 ```
 

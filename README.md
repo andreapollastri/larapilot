@@ -360,7 +360,7 @@ Status maps live in `config/larapilot.php` → `tracker.providers.{provider}.sta
 
 - PHP **^8.3**
 - Laravel **^12** or **^13**
-- [Laravel Boost](https://laravel.com/ai/boost) `^2.0` (installed automatically)
+- [Laravel Boost](https://laravel.com/ai/boost) (latest stable, installed automatically and kept current by `larapilot:update`)
 - MCP-capable editor (Cursor, Claude Code, VS Code, …)
 
 ---
@@ -409,12 +409,12 @@ Then `/larapilot-spec`, and the per-story loop above.
 ### Upgrade
 
 ```bash
-composer update andreapollastri/larapilot
+composer update andreapollastri/larapilot laravel/boost --with-dependencies
 php artisan larapilot:update
 php artisan larapilot:doctor
 ```
 
-Runtime-only refresh (skip Boost republish): `php artisan larapilot:update --skip-boost`.
+`larapilot:update` also runs `composer update laravel/boost` (unless it is already inside a Composer script) and then `boost:update`, so Boost itself tracks the latest stable release — not only the published skills. Runtime-only refresh: `php artisan larapilot:update --skip-boost`.
 
 `larapilot:update` overwrites `.larapilot/design-systems/` with the packaged references; pass `--preserve-design-systems` to keep local customizations.
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Artisan;
+use Larapilot\Services\BoostPackageService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\PlanService;
@@ -94,6 +95,32 @@ it('fails update when boost:update is unavailable', function (): void {
     $this->artisan('larapilot:update')
         ->assertExitCode(4)
         ->expectsOutputToContain('boost:install');
+});
+
+it('skips the Boost Composer bump and republish when --skip-boost is set', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:update', ['--skip-boost' => true])
+        ->assertSuccessful()
+        ->expectsOutputToContain('Boost package update and publishing skipped');
+});
+
+it('no-ops the Boost Composer bump during the test suite', function (): void {
+    $result = app(BoostPackageService::class)->updateToLatest();
+
+    expect($result['ok'])->toBeTrue()
+        ->and($result['skipped'])->toBeTrue();
+});
+
+it('detects when it is running inside a Composer script', function (): void {
+    $previous = getenv('COMPOSER_BINARY');
+    putenv('COMPOSER_BINARY=/usr/bin/composer');
+
+    try {
+        expect(app(BoostPackageService::class)->runningInsideComposer())->toBeTrue();
+    } finally {
+        $previous === false ? putenv('COMPOSER_BINARY') : putenv('COMPOSER_BINARY='.$previous);
+    }
 });
 
 it('reports installation health via doctor', function (): void {

@@ -46,7 +46,7 @@ Specs may be implemented inside a per-spec git worktree. `php artisan larapilot:
 
 ### Laravel Boost integration
 
-Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not instead of it. During planning and implementation use Boost MCP tools when you need Laravel context: `Search Docs` (version-aware docs), `Database Schema` / `Database Query`, `Application Info` (versions and packages), `Tinker`, `Last Error` / `Read Log Entries`. Boost handles Laravel conventions; Larapilot handles the product workflow and persistent artifacts.
+Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not instead of it. Composer always resolves the **latest stable** Boost (no upper bound). `php artisan larapilot:update` runs `composer update laravel/boost --with-dependencies` and then `boost:update`, so both the package and the published skills stay current. During planning and implementation use Boost MCP tools when you need Laravel context: `Search Docs` (version-aware docs), `Database Schema` / `Database Query`, `Application Info` (versions and packages), `Tinker`, `Last Error` / `Read Log Entries`. Boost handles Laravel conventions; Larapilot handles the product workflow and persistent artifacts.
 
 ## Project Settings
 
