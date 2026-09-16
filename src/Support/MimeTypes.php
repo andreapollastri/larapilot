@@ -13,9 +13,9 @@ final class MimeTypes
      * @var array<string, string>
      */
     private const MAP = [
-        'html' => 'text/html',
-        'htm' => 'text/html',
-        'css' => 'text/css',
+        'html' => 'text/html; charset=UTF-8',
+        'htm' => 'text/html; charset=UTF-8',
+        'css' => 'text/css; charset=UTF-8',
         'js' => 'application/javascript',
         'json' => 'application/json',
         'png' => 'image/png',

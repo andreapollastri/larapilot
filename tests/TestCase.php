@@ -4,12 +4,33 @@ declare(strict_types=1);
 
 namespace Larapilot\Tests;
 
+use Illuminate\Contracts\Console\Kernel;
 use Larapilot\LarapilotServiceProvider;
+use Larapilot\Tests\Support\PendingCommandWithCleanup;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
 {
+    /**
+     * Call artisan through a PendingCommand that removes the mocked
+     * OutputStyle container binding once it has run. Laravel 11+ does this
+     * cleanup itself; on Laravel 10 the stale binding would otherwise swallow
+     * the output of any later Artisan::call() in the same test, leaving
+     * Artisan::output() empty.
+     *
+     * @param  string  $command
+     * @param  array<string, mixed>  $parameters
+     * @return \Illuminate\Testing\PendingCommand|int
+     */
+    public function artisan($command, $parameters = [])
+    {
+        if (! $this->mockConsoleOutput) {
+            return $this->app[Kernel::class]->call($command, $parameters);
+        }
+
+        return new PendingCommandWithCleanup($this, $this->app, $command, $parameters);
+    }
     protected function getPackageProviders($app): array
     {
         return [

@@ -104,7 +104,6 @@ class EffortEstimateService
 
     /**
      * @param  list<array<string, mixed>>  $specs
-     * @param  string  $doneStatus
      * @return array{total: float, remaining: float, done: float, label_total: string, label_remaining: string}
      */
     public function backlogHours(array $specs, string $doneStatus = 'DONE'): array
