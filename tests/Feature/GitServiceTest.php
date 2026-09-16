@@ -117,3 +117,39 @@ it('resolves merge commits that reference a spec code', function (): void {
     expect($commit)->not->toBeNull()
         ->and($commit['subject'])->toBe('Merge pull request #42 from user/feature/US-001-login');
 });
+
+it('builds a 12-month contribution calendar from every local branch', function (): void {
+    $recent = (new DateTimeImmutable('-2 months'))->format('Y-m-d').'T12:00:00+00:00';
+    $older = (new DateTimeImmutable('-2 years'))->format('Y-m-d').'T12:00:00+00:00';
+    $ada = 'ada-'.bin2hex(random_bytes(4)).'@example.test';
+    $grace = 'grace-'.bin2hex(random_bytes(4)).'@example.test';
+    $ancient = 'old-'.bin2hex(random_bytes(4)).'@example.test';
+
+    commitTestGitChange('feat: ancient', $older, 'Old Timer', $ancient);
+    commitTestGitChange('feat: ada work', $recent, 'Ada Lovelace', $ada);
+    commitTestGitChange('feat: ada again', $recent, 'Ada Lovelace', $ada);
+    commitTestGitChange('feat: grace work', $recent, 'Grace Hopper', $grace);
+
+    $git = app(GitService::class);
+    $all = $git->contributionActivity();
+    $adaActivity = $git->contributionActivity($ada);
+    $authors = collect($all['authors'])->keyBy('email');
+
+    expect($all['is_repository'])->toBeTrue()
+        ->and($all['weeks'])->not->toBeEmpty()
+        ->and($authors->get($ada)['commits'] ?? 0)->toBe(2)
+        ->and($authors->get($grace)['commits'] ?? 0)->toBe(1)
+        ->and($authors->has($ancient))->toBeFalse()
+        ->and($adaActivity['total'])->toBe(2)
+        ->and($adaActivity['selected_author'])->toBe($ada);
+
+    $counted = 0;
+
+    foreach ($adaActivity['weeks'] as $week) {
+        foreach ($week as $day) {
+            $counted += $day['count'];
+        }
+    }
+
+    expect($counted)->toBe(2);
+});

@@ -26,6 +26,7 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot')->assertNotFound();
     $this->get('/larapilot/prd')->assertNotFound();
     $this->get('/larapilot/settings')->assertNotFound();
+    $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();
 });
@@ -208,4 +209,30 @@ it('shows empty states when artifacts are missing', function (): void {
     $this->get('/larapilot/prd')
         ->assertOk()
         ->assertSee('No PRD found');
+});
+
+it('renders the git contribution heatmap filtered by author', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $recent = (new DateTimeImmutable('-3 weeks'))->format('Y-m-d').'T12:00:00+00:00';
+    $ada = 'ada-'.bin2hex(random_bytes(4)).'@example.test';
+    $grace = 'grace-'.bin2hex(random_bytes(4)).'@example.test';
+    commitTestGitChange('feat: ada heatmap', $recent, 'Ada Lovelace', $ada);
+    commitTestGitChange('feat: grace heatmap', $recent, 'Grace Hopper', $grace);
+
+    $this->get('/larapilot/git')
+        ->assertOk()
+        ->assertSee('Git history', false)
+        ->assertSee('Contribution graph', false)
+        ->assertSee('All developers', false)
+        ->assertSee('Ada Lovelace', false)
+        ->assertSee('Grace Hopper', false)
+        ->assertSee('heatmap-cell', false)
+        ->assertSee($ada, false)
+        ->assertSee($grace, false);
+
+    $this->get('/larapilot/git?author='.urlencode($ada))
+        ->assertOk()
+        ->assertSee('1 contribution in the last year', false)
+        ->assertSee($ada, false);
 });

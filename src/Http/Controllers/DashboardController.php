@@ -56,6 +56,15 @@ class DashboardController
         return view('larapilot::dashboard.usage', $this->dashboard->usage());
     }
 
+    public function git(Request $request): View
+    {
+        $this->guard();
+
+        $author = trim((string) $request->query('author', ''));
+
+        return view('larapilot::dashboard.git', $this->dashboard->git($author !== '' ? $author : null));
+    }
+
     public function usageReport(): Response
     {
         $this->guard();

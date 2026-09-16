@@ -4,6 +4,10 @@ All notable changes to `larapilot` will be documented in this file.
 
 ## [2.7.0] - 2026-09-16
 
+### Added
+
+- **Dashboard — Git** — `/larapilot/git` rebuilds the last 12 months of local branch history into a GitHub-style contribution heatmap. A developer dropdown filters the grid by commit author.
+
 ### Changed
 
 - **Broader platform support** — `composer.json` now targets PHP **^8.1**, Laravel **^10.49** · **^11.45.3** · **^12** · **^13**, and Laravel Boost **^1.0|^2.0** (restores Laravel 10/11 and Boost 1.x alongside existing Laravel 12/13 + Boost 2 stacks). Symfony YAML accepts **^6.4** for Laravel 10.

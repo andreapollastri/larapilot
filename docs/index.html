@@ -5971,6 +5971,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     <code>choices.yaml</code></td>
                 </tr>
                 <tr>
+                  <td><strong>Git</strong></td>
+                  <td><code>/larapilot/git</code></td>
+                  <td>Last-12-month contribution heatmap from local git history (all branches), filterable by developer</td>
+                </tr>
+                <tr>
                   <td><strong>Usage</strong></td>
                   <td><code>/larapilot/usage</code></td>
                   <td>Lucille charts (tokens/time by category), living Gantt (specs + milestones), download
@@ -6002,6 +6007,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             lucille, dashboard auth, forges, notifications) and the inception choices snapshot. <strong>Usage</strong> is Lucille's
             surface — category breakdowns, schedule Gantt, and a one-click Markdown resoconto. Same data as
             <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
+
+          <h4>Git</h4>
+          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. Pick a
+            developer from the dropdown to see only that author's squares. The page reads the repo with
+            <code>git log --all</code> — it does not call GitHub, GitLab, or any remote API.</p>
 
           <h4>Spec detail</h4>
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>

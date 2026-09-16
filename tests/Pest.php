@@ -148,6 +148,15 @@ function completeTasks(string $code = 'US-001'): void
 
 function initTestGitRepository(string $commitMessage): string
 {
+    return commitTestGitChange($commitMessage);
+}
+
+function commitTestGitChange(
+    string $commitMessage,
+    ?string $authorDate = null,
+    string $authorName = 'Test User',
+    string $authorEmail = 'test@example.com',
+): string {
     $root = base_path();
 
     if (! is_dir($root.'/.git')) {
@@ -158,7 +167,17 @@ function initTestGitRepository(string $commitMessage): string
 
     file_put_contents($root.'/git-test-marker.txt', uniqid('', true));
     shell_exec('git -C '.escapeshellarg($root).' add git-test-marker.txt 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' commit -m '.escapeshellarg($commitMessage).' 2>/dev/null');
+
+    $env = '';
+
+    if ($authorDate !== null && $authorDate !== '') {
+        $env = 'GIT_AUTHOR_DATE='.escapeshellarg($authorDate).' GIT_COMMITTER_DATE='.escapeshellarg($authorDate).' ';
+    }
+
+    shell_exec($env.'git -C '.escapeshellarg($root)
+        .' -c user.name='.escapeshellarg($authorName)
+        .' -c user.email='.escapeshellarg($authorEmail)
+        .' commit -m '.escapeshellarg($commitMessage).' 2>/dev/null');
 
     return trim((string) shell_exec('git -C '.escapeshellarg($root).' rev-parse HEAD 2>/dev/null'));
 }

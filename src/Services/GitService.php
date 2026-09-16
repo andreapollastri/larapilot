@@ -423,6 +423,358 @@ class GitService
         return null;
     }
 
+    /**
+     * Local git contribution calendar: every commit on every local branch
+     * for the last 12 months, optionally filtered by author email.
+     *
+     * @return array{
+     *     is_repository: bool,
+     *     origin_url: string|null,
+     *     origin_provider: string|null,
+     *     origin_slug: string|null,
+     *     branches: list<string>,
+     *     authors: list<array{email: string, name: string, commits: int}>,
+     *     selected_author: string|null,
+     *     total: int,
+     *     max: int,
+     *     range_start: string,
+     *     range_end: string,
+     *     weeks: list<list<array{date: string, count: int, in_range: bool, level: int, title: string}>>,
+     *     months: list<array{label: string, offset: int, span: int}>
+     * }
+     */
+    public function contributionActivity(?string $authorEmail = null): array
+    {
+        $today = new \DateTimeImmutable('today');
+        $rangeEnd = $today;
+        $rangeStart = $today->modify('-1 year')->modify('+1 day');
+        $selected = $this->normalizeAuthorEmail($authorEmail);
+
+        $empty = [
+            'is_repository' => false,
+            'origin_url' => null,
+            'origin_provider' => null,
+            'origin_slug' => null,
+            'branches' => [],
+            'authors' => [],
+            'selected_author' => $selected,
+            'total' => 0,
+            'max' => 0,
+            'range_start' => $rangeStart->format('Y-m-d'),
+            'range_end' => $rangeEnd->format('Y-m-d'),
+            'weeks' => $this->emptyContributionWeeks($rangeStart, $rangeEnd),
+            'months' => [],
+        ];
+        $empty['months'] = $this->contributionMonthLabels($empty['weeks']);
+
+        if (! $this->isRepository()) {
+            return $empty;
+        }
+
+        $empty['is_repository'] = true;
+        $empty['origin_url'] = $this->originUrl();
+        $empty['origin_provider'] = $this->originProvider();
+        $empty['origin_slug'] = $this->originRepoSlug();
+        $empty['branches'] = $this->localBranches();
+
+        $commits = $this->commitsSince($rangeStart);
+        $authors = [];
+        $counts = [];
+
+        foreach ($commits as $commit) {
+            $day = $commit['date'];
+
+            if ($day < $rangeStart->format('Y-m-d') || $day > $rangeEnd->format('Y-m-d')) {
+                continue;
+            }
+
+            $email = $commit['email'];
+
+            if (! isset($authors[$email])) {
+                $authors[$email] = [
+                    'email' => $email,
+                    'name' => $commit['name'],
+                    'commits' => 0,
+                ];
+            }
+
+            $authors[$email]['commits']++;
+
+            if ($authors[$email]['name'] === '' && $commit['name'] !== '') {
+                $authors[$email]['name'] = $commit['name'];
+            }
+
+            if ($selected !== null && $email !== $selected) {
+                continue;
+            }
+
+            $counts[$day] = ($counts[$day] ?? 0) + 1;
+        }
+
+        uasort($authors, function (array $left, array $right): int {
+            return $right['commits'] <=> $left['commits']
+                ?: strcasecmp($left['name'], $right['name']);
+        });
+
+        $authorList = array_values($authors);
+
+        if ($selected !== null && ! isset($authors[$selected])) {
+            $selected = null;
+            $counts = [];
+
+            foreach ($commits as $commit) {
+                $day = $commit['date'];
+
+                if ($day < $rangeStart->format('Y-m-d') || $day > $rangeEnd->format('Y-m-d')) {
+                    continue;
+                }
+
+                $counts[$day] = ($counts[$day] ?? 0) + 1;
+            }
+        }
+
+        $weeks = $this->buildContributionWeeks($rangeStart, $rangeEnd, $counts);
+
+        return [
+            'is_repository' => true,
+            'origin_url' => $empty['origin_url'],
+            'origin_provider' => $empty['origin_provider'],
+            'origin_slug' => $empty['origin_slug'],
+            'branches' => $empty['branches'],
+            'authors' => $authorList,
+            'selected_author' => $selected,
+            'total' => array_sum($counts),
+            'max' => $counts === [] ? 0 : max($counts),
+            'range_start' => $rangeStart->format('Y-m-d'),
+            'range_end' => $rangeEnd->format('Y-m-d'),
+            'weeks' => $weeks,
+            'months' => $this->contributionMonthLabels($weeks),
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function localBranches(): array
+    {
+        $output = $this->git('for-each-ref', '--format=%(refname:short)', 'refs/heads');
+
+        if ($output === null || $output === '') {
+            return [];
+        }
+
+        $branches = [];
+
+        foreach (explode("\n", $output) as $line) {
+            $name = trim($line);
+
+            if ($name !== '') {
+                $branches[] = $name;
+            }
+        }
+
+        return $branches;
+    }
+
+    /**
+     * @return list<array{email: string, name: string, date: string}>
+     */
+    protected function commitsSince(\DateTimeImmutable $since): array
+    {
+        // Do not pass --since to git: it stops walking a lineage at the first
+        // older commit, so a backdated HEAD hides newer ancestors. Filter dates
+        // in PHP after reading every local-branch tip.
+        $log = $this->git(
+            'log',
+            '--all',
+            '--format=%ae%x1f%an%x1f%aI',
+            '--max-count=20000'
+        );
+
+        if ($log === null || $log === '') {
+            return [];
+        }
+
+        $commits = [];
+
+        foreach (explode("\n", $log) as $line) {
+            if ($line === '') {
+                continue;
+            }
+
+            $parts = explode("\x1f", $line);
+
+            if (count($parts) < 3) {
+                continue;
+            }
+
+            [$email, $name, $authoredAt] = $parts;
+            $email = $this->normalizeAuthorEmail($email) ?? 'unknown';
+
+            try {
+                $authored = new \DateTimeImmutable($authoredAt);
+            } catch (\Exception $e) {
+                continue;
+            }
+
+            $day = $authored->format('Y-m-d');
+
+            if ($day < $since->format('Y-m-d')) {
+                continue;
+            }
+
+            $commits[] = [
+                'email' => $email,
+                'name' => trim($name) !== '' ? trim($name) : $email,
+                'date' => $day,
+            ];
+        }
+
+        return $commits;
+    }
+
+    protected function normalizeAuthorEmail(?string $email): ?string
+    {
+        $email = strtolower(trim((string) $email));
+
+        return $email !== '' ? $email : null;
+    }
+
+    /**
+     * @param  array<string, int>  $counts
+     * @return list<list<array{date: string, count: int, in_range: bool, level: int, title: string}>>
+     */
+    protected function buildContributionWeeks(
+        \DateTimeImmutable $rangeStart,
+        \DateTimeImmutable $rangeEnd,
+        array $counts,
+    ): array {
+        $gridStart = $rangeStart;
+
+        while ((int) $gridStart->format('w') !== 0) {
+            $gridStart = $gridStart->modify('-1 day');
+        }
+
+        $gridEnd = $rangeEnd;
+
+        while ((int) $gridEnd->format('w') !== 6) {
+            $gridEnd = $gridEnd->modify('+1 day');
+        }
+
+        $max = $counts === [] ? 0 : max($counts);
+        $weeks = [];
+        $cursor = $gridStart;
+
+        while ($cursor <= $gridEnd) {
+            $week = [];
+
+            for ($i = 0; $i < 7; $i++) {
+                $date = $cursor->format('Y-m-d');
+                $inRange = $cursor >= $rangeStart && $cursor <= $rangeEnd;
+                $count = $inRange ? ($counts[$date] ?? 0) : 0;
+                $level = $inRange ? $this->contributionLevel($count, $max) : 0;
+
+                $week[] = [
+                    'date' => $date,
+                    'count' => $count,
+                    'in_range' => $inRange,
+                    'level' => $level,
+                    'title' => $this->contributionTitle($count, $cursor, $inRange),
+                ];
+
+                $cursor = $cursor->modify('+1 day');
+            }
+
+            $weeks[] = $week;
+        }
+
+        return $weeks;
+    }
+
+    /**
+     * @return list<list<array{date: string, count: int, in_range: bool, level: int, title: string}>>
+     */
+    protected function emptyContributionWeeks(\DateTimeImmutable $rangeStart, \DateTimeImmutable $rangeEnd): array
+    {
+        return $this->buildContributionWeeks($rangeStart, $rangeEnd, []);
+    }
+
+    /**
+     * @param  list<list<array{date: string, count: int, in_range: bool, level: int, title: string}>>  $weeks
+     * @return list<array{label: string, offset: int, span: int}>
+     */
+    protected function contributionMonthLabels(array $weeks): array
+    {
+        $labels = [];
+        $current = null;
+        $offset = 0;
+        $span = 0;
+
+        foreach ($weeks as $index => $week) {
+            $month = null;
+
+            foreach ($week as $day) {
+                if ($day['in_range']) {
+                    $month = (new \DateTimeImmutable($day['date']))->format('M');
+                    break;
+                }
+            }
+
+            $month ??= (new \DateTimeImmutable($week[0]['date']))->format('M');
+
+            if ($current === null) {
+                $current = $month;
+                $offset = $index;
+                $span = 1;
+
+                continue;
+            }
+
+            if ($month !== $current) {
+                $labels[] = ['label' => $current, 'offset' => $offset, 'span' => $span];
+                $current = $month;
+                $offset = $index;
+                $span = 1;
+
+                continue;
+            }
+
+            $span++;
+        }
+
+        if ($current !== null) {
+            $labels[] = ['label' => $current, 'offset' => $offset, 'span' => $span];
+        }
+
+        return $labels;
+    }
+
+    protected function contributionLevel(int $count, int $max): int
+    {
+        if ($count <= 0 || $max <= 0) {
+            return 0;
+        }
+
+        return (int) max(1, min(4, (int) ceil(($count / $max) * 4)));
+    }
+
+    protected function contributionTitle(int $count, \DateTimeImmutable $day, bool $inRange): string
+    {
+        $label = $day->format('F jS');
+
+        if (! $inRange) {
+            return $label;
+        }
+
+        if ($count === 0) {
+            return 'No contributions on '.$label.'.';
+        }
+
+        $noun = $count === 1 ? 'contribution' : 'contributions';
+
+        return number_format($count).' '.$noun.' on '.$label.'.';
+    }
+
     public function commitUrl(string $sha): ?string
     {
         $remote = $this->originUrl();

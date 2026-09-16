@@ -106,7 +106,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader, Settings (options + inception choices), Usage (Lucille metrics + Gantt + report download), spec detail with mockup preview and internal feedback
+- **`/larapilot`** — Kanban board, PRD reader, Settings (options + inception choices), Git (12-month contribution heatmap from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with mockup preview and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling

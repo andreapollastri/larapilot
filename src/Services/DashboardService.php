@@ -19,6 +19,7 @@ class DashboardService
         protected UsageService $usageService,
         protected DecisionService $decisions,
         protected EffortEstimateService $estimates,
+        protected GitService $git,
     ) {}
 
     /**
@@ -202,5 +203,13 @@ class DashboardService
     public function usage(): array
     {
         return $this->usageService->dashboard();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function git(?string $authorEmail = null): array
+    {
+        return $this->git->contributionActivity($authorEmail);
     }
 }
