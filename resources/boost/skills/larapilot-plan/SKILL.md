@@ -113,7 +113,7 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 }
 ```
 
-**Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them and can distribute work across `assignee` values (developers / personas executing the step). Prefer realistic `estimate_hours` so schedule criticality is honest.
+**Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them and can distribute work across `assignee` values (developers / personas executing the step). Prefer realistic `estimate_hours` on **every** task — they roll up to the spec’s **implement** hours on the Kanban board; plan/review/rework/deploy phases are derived automatically unless the spec carries an explicit `estimate_hours` block (see `larapilot-spec`).
 
 Validate, then `spec-plan`. Delete the temp file after the CLI exits.
 

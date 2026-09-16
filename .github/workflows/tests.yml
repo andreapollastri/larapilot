@@ -52,6 +52,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Laravel 10/11 are past their security-fix window. Composer 2.9+
+          # blocks every 10.x/11.x laravel/framework release because the open
+          # advisories have no patched line. Compatibility CI only — other
+          # packages stay blocked. Drop this once a patched 10/11 ships (or
+          # those majors are dropped).
+          if [[ "${{ matrix.laravel }}" == 10.* || "${{ matrix.laravel }}" == 11.* ]]; then
+            composer config --json policy.advisories.ignore '["laravel/framework"]'
+          fi
           composer require "illuminate/support:${{ matrix.laravel }}" --no-interaction --no-update
           composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
           composer update --prefer-dist --no-interaction --no-progress

@@ -332,6 +332,23 @@ return [
         ],
     ],
 
+    // AI-assisted delivery estimates — hourly breakdown per spec (plan,
+    // implement, review, rework/fix buffer, deploy) alongside story points.
+    'estimate' => [
+        // Default wall-clock hours per story point when no plan task hours exist.
+        'hours_per_point' => (float) env('LARAPILOT_HOURS_PER_POINT', 4),
+        // Phase share of total effort (normalized automatically).
+        'phase_ratios' => [
+            'plan' => 0.15,
+            'implement' => 0.55,
+            'review' => 0.10,
+            'rework' => 0.12,
+            'deploy' => 0.08,
+        ],
+        // Extra rework/fix buffer when the spec carries rework: true.
+        'rework_multiplier' => (float) env('LARAPILOT_ESTIMATE_REWORK_MULTIPLIER', 1.5),
+    ],
+
     'workflow' => [
         'statuses' => [
             'todo' => 'TODO',

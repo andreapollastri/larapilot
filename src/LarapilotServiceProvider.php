@@ -70,6 +70,7 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\EffortEstimateService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
@@ -107,6 +108,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(FrontendService::class);
         $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
+        $this->app->singleton(EffortEstimateService::class);
         $this->app->singleton(GitService::class);
         $this->app->singleton(GithubService::class);
         $this->app->singleton(GitlabService::class);

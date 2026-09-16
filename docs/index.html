@@ -1376,6 +1376,7 @@
             href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Composer picks the latest compatible release) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
         <p>On Laravel 10/11 the MCP stack uses <code>illuminate/json-schema</code> — stay on a recent framework patch (Laravel <strong>11.47+</strong> recommended on 11.x).</p>
+        <p>Laravel <strong>10</strong> and <strong>11</strong> are past their security-fix window. Composer 2.9+ refuses every <code>laravel/framework</code> 10.x/11.x release because open advisories have no patched line (fixes shipped in Laravel <strong>12.60+</strong> / <strong>13</strong>). Larapilot CI still runs those majors by ignoring only <code>laravel/framework</code> advisories on the 10/11 jobs. Apps still on 10/11 that fail <code>composer update</code> with <em>affected by security advisories</em> need the same ignore (<code>composer config --json policy.advisories.ignore '["laravel/framework"]'</code>) or should upgrade to Laravel 12+.</p>
         <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
             rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
             target="_blank" rel="noopener">Laravel Pint</a> — <code>phpstan.neon.dist</code>, <code>pint.json</code>,

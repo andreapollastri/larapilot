@@ -951,5 +951,4 @@ class ConfigService
 
         return true;
     }
-
 }
