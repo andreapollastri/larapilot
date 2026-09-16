@@ -2,18 +2,22 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [2.7.0] - 2026-09-16
+## [2.7.0] - 2026-09-17
 
 ### Added
 
-- **Dashboard — Git** — `/larapilot/git` rebuilds the last 12 months of local branch history into a GitHub-style contribution heatmap. A developer dropdown filters the grid by commit author.
+- **Dashboard — Decision journal** — the PRD page and each spec detail page render `.larapilot/decisions.yaml`. On the PRD the entries are grouped (project / discovery vs per user story) with a timeline; on the spec page only that story’s decisions appear. Regression count and superseded context come from `DecisionService::forView()`. Partials: `dashboard/partials/decisions.blade.php` + `decisions-timeline.blade.php`.
+- **Dashboard — Git contribution heatmap** — new top-nav **Git** page at `/larapilot/git`. Rebuilds the last 12 months from local `git log --all` (every branch, no remote API) into a GitHub-style calendar. A developer dropdown (`?author=`) filters by commit-author email; metrics cover contributions, developers, and local branches. `GitService::contributionActivity()`.
+- **Delivery-hour estimates** — new `EffortEstimateService` derives per-spec hours (plan / implement / review / rework / deploy) from, in order: an explicit spec-level phase map, plan-task `estimate_hours`, or story points × `larapilot.estimate.hours_per_point` (default 4). Specs with `rework: true` apply `estimate.rework_multiplier` (default 1.5). Board, spec detail, and the JSON API expose totals plus remaining/done backlog hours. Config: `config/larapilot.php` → `estimate` (`hours_per_point`, `phase_ratios`, `rework_multiplier`; `LARAPILOT_HOURS_PER_POINT`, `LARAPILOT_ESTIMATE_REWORK_MULTIPLIER`).
+- **Internal-feedback project setting (`settings.comments`, ON by default)** — gates dashboard comments, `POST /larapilot/api/specs/{code}/comments`, and `larapilot:spec-comment` from `.larapilot/config.yaml`. `ConfigService::commentsEnabled()` / `allowedCommentsModes()`; `larapilot:settings-set --comments=YES|NO`; dashboard Settings + `/larapilot-settings`. The existing `LARAPILOT_COMMENTS_ENABLED` env remains a deployment kill-switch.
+- **`larapilot-design` design-system gate** — before writing mockup HTML, Elise + Joe detect the stack (PRD, decision journal, choices, packaged + user-added folders under `.larapilot/design-systems/`, Boost `Application Info`, existing mockups, client materials) and **AskQuestion** when it is not already explicit. Options include packaged systems, uploaded folders, match-existing-mockups, client brand, and a mandatory **new custom** path with a follow-up aesthetic round (Nordic minimal, pastels, editorial, SaaS, brutalist, …). Decision-journal topics: `design system` (+ palette / typography / tone when custom).
 
 ### Changed
 
 - **Broader platform support** — `composer.json` now targets PHP **^8.1**, Laravel **^10.49** · **^11.45.3** · **^12** · **^13**, and Laravel Boost **^1.0|^2.0** (restores Laravel 10/11 and Boost 1.x alongside existing Laravel 12/13 + Boost 2 stacks). Symfony YAML accepts **^6.4** for Laravel 10.
-- **Tracker DTOs** — drop `readonly class` (PHP 8.2+) in favour of plain `final class` so PHP 8.1 installs parse cleanly.
-- **CI** — Pest matrix covers PHP 8.1–8.5 × Laravel 10–13 (via Orchestra Testbench 8–11). Laravel 10/11 jobs ignore `laravel/framework` security-advisory blocking so Composer 2.9+ can resolve those EOL lines (no patched 10.x/11.x release exists).
-- **Docs / README / shared runtime** — requirements and Boost compatibility notes updated for the widened matrix, including Composer 2.9+ advisory blocking on EOL Laravel 10/11.
+- **Tracker DTOs** — drop `readonly class` (PHP 8.2+) in favour of plain `final class` so PHP 8.1 installs parse cleanly (`RemoteComment`, `RemoteRef`, `RemoteStory`, `StoryPayload`, `TaskPayload`).
+- **CI** — Pest matrix covers PHP 8.1–8.5 × Laravel 10–13 (Orchestra Testbench 8–11). Laravel 10/11 jobs run `composer config --json policy.advisories.ignore '["laravel/framework"]'` so Composer 2.9+ can resolve those EOL lines (open advisories have no patched 10.x/11.x release; fixes shipped in Laravel 12.60+ / 13). Other packages stay blocked.
+- **Docs / README / shared runtime / docs site** — requirements and Boost compatibility notes updated for the widened matrix; Composer 2.9+ advisory blocking on EOL Laravel 10/11 documented (same ignore command as CI); dashboard pages list **Git**; Settings / comments / estimate notes aligned.
 - Site / package version **v2.7.0**.
 
 ## [2.6.0] - 2026-09-09
