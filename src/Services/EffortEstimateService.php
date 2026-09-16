@@ -7,9 +7,25 @@ namespace Larapilot\Services;
 /**
  * AI-assisted delivery estimates per spec — story points plus an hourly
  * breakdown (plan, implement, review, rework/fix buffer, deploy).
+ *
+ * Plan-task hours are the anchor: when a plan carries `estimate_hours`, the
+ * spec estimate is that sum plus proportional overhead — story points never
+ * gross it up. Points only matter as a fallback before a plan exists.
  */
 class EffortEstimateService
 {
+    /**
+     * Specs beyond this point size should be split, not extrapolated —
+     * clamping keeps a runaway `points` value from producing absurd hours.
+     */
+    protected const MAX_POINTS = 21;
+
+    /**
+     * Per-task ceiling: plan tasks are meant to be small (1–4h). A larger
+     * value is almost always a unit mistake (minutes written as hours).
+     */
+    protected const MAX_TASK_HOURS = 16.0;
+
     /**
      * @param  array<string, mixed>  $spec
      * @param  array<string, mixed>|null  $plan
@@ -33,24 +49,25 @@ class EffortEstimateService
             return $this->finalize($explicit, 'explicit', (bool) ($spec['rework'] ?? false));
         }
 
-        $points = max(0, (int) ($spec['points'] ?? 0));
+        $points = min(self::MAX_POINTS, max(0, (int) ($spec['points'] ?? 0)));
         $taskHours = $this->taskImplementHours($plan);
         $ratios = $this->phaseRatios();
-        $hoursPerPoint = $this->hoursPerPoint();
 
         if ($points === 0 && $taskHours <= 0) {
             return $this->emptyEstimate();
         }
 
-        $baseTotal = $points > 0 ? max(2.0, $points * $hoursPerPoint) : 0.0;
         $implementRatio = max(0.01, $ratios['implement']);
 
         if ($taskHours > 0) {
+            // Task hours are the concrete signal: implement is exactly their
+            // sum, the other phases add proportional overhead on top. Points
+            // are ignored here so they can never inflate a planned spec.
             $implement = $taskHours;
-            $total = max($baseTotal, $implement / $implementRatio);
+            $total = $implement / $implementRatio;
             $source = 'tasks';
         } else {
-            $total = $baseTotal;
+            $total = $points * $this->hoursPerPoint();
             $implement = $total * $implementRatio;
             $source = 'points';
         }
@@ -208,7 +225,7 @@ class EffortEstimateService
             }
 
             if (array_key_exists('estimate_hours', $task)) {
-                $hours += max(0.0, (float) $task['estimate_hours']);
+                $hours += min(self::MAX_TASK_HOURS, max(0.0, (float) $task['estimate_hours']));
             }
         }
 
@@ -222,11 +239,11 @@ class EffortEstimateService
     {
         $configured = config('larapilot.estimate.phase_ratios', []);
         $defaults = [
-            'plan' => 0.15,
-            'implement' => 0.55,
-            'review' => 0.10,
-            'rework' => 0.12,
-            'deploy' => 0.08,
+            'plan' => 0.10,
+            'implement' => 0.75,
+            'review' => 0.05,
+            'rework' => 0.05,
+            'deploy' => 0.05,
         ];
 
         $ratios = [];
@@ -250,7 +267,7 @@ class EffortEstimateService
 
     protected function hoursPerPoint(): float
     {
-        return max(0.5, (float) config('larapilot.estimate.hours_per_point', 4));
+        return max(0.5, (float) config('larapilot.estimate.hours_per_point', 2));
     }
 
     protected function reworkMultiplier(): float

@@ -710,7 +710,7 @@ class UsageService
             $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
 
             if ($tasks === []) {
-                $remainingHours += max(2.0, $points * 4.0);
+                $remainingHours += max(1.0, $points * $this->estimateHoursPerPoint());
 
                 continue;
             }
@@ -720,7 +720,7 @@ class UsageService
                     continue;
                 }
 
-                $remainingHours += max(1.0, (float) ($task['estimate_hours'] ?? max(2.0, ($points * 4.0) / max(1, count($tasks)))));
+                $remainingHours += max(0.5, (float) ($task['estimate_hours'] ?? max(0.5, ($points * $this->estimateHoursPerPoint()) / max(1, count($tasks)))));
             }
         }
 
@@ -883,7 +883,7 @@ class UsageService
             $scheduled = $this->schedulePlanTasks($tasks, $specStart, $points, $code, $status);
 
             if ($scheduled === []) {
-                $estimatedDays = max(0.5, $points * 0.5 + ($usageMinutes / (60 * 6)));
+                $estimatedDays = max(0.5, ($points * $this->estimateHoursPerPoint()) / 6.0 + ($usageMinutes / (60 * 6)));
                 $end = $this->addDays($specStart, $estimatedDays);
                 $dates[] = $specStart;
                 $dates[] = $end;
@@ -1081,7 +1081,7 @@ class UsageService
         $ends = [];
         $starts = [];
         $bars = [];
-        $defaultHours = max(2.0, ($points * 4.0) / max(1, count($normalized)));
+        $defaultHours = max(0.5, ($points * $this->estimateHoursPerPoint()) / max(1, count($normalized)));
 
         foreach ($ordered as $task) {
             $id = (string) $task['id'];
@@ -1101,8 +1101,8 @@ class UsageService
                 }
             }
 
-            $hours = max(1.0, (float) ($task['estimate_hours'] ?? $defaultHours));
-            $days = max(0.5, $hours / 6.0);
+            $hours = max(0.5, (float) ($task['estimate_hours'] ?? $defaultHours));
+            $days = max(0.25, $hours / 6.0);
             $end = $this->addDays($start, $days);
             $taskStatus = strtoupper((string) ($task['status'] ?? 'TODO'));
 
@@ -1285,6 +1285,15 @@ class UsageService
         }
 
         return (new DateTimeImmutable('today'))->format('Y-m-d');
+    }
+
+    /**
+     * Fallback hours per story point for forecasts, shared with
+     * EffortEstimateService via larapilot.estimate.hours_per_point.
+     */
+    protected function estimateHoursPerPoint(): float
+    {
+        return max(0.5, (float) config('larapilot.estimate.hours_per_point', 2));
     }
 
     protected function addDays(string $start, float $days): string

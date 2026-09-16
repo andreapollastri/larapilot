@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.7.1] - 2026-09-17
+
+### Fixed
+
+- **Realistic delivery-hour estimates** — `EffortEstimateService` no longer inflates hours. Plan-task `estimate_hours` are now the anchor: implement is exactly their sum plus ~33% phase overhead (previously grossed up by ~82% via the implement ratio), and story points can never override a planned spec (the old `max()` between the two paths is gone). The points fallback drops from 4 to **2 hours per point** (`LARAPILOT_HOURS_PER_POINT`), default `phase_ratios` shift to implement-dominant (0.10 / 0.75 / 0.05 / 0.05 / 0.05), and runaway inputs are clamped (points capped at 21, single task hours at 16 — beyond that split the spec / fix the unit). `UsageService` forecasts (schedule criticality, Gantt scheduling) now read the same `larapilot.estimate.hours_per_point` instead of a hard-coded 4h/point, with lighter per-task floors (0.5h).
+
 ## [2.7.0] - 2026-09-17
 
 ### Added
