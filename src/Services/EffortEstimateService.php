@@ -11,6 +11,8 @@ namespace Larapilot\Services;
 class EffortEstimateService
 {
     /**
+     * @param  array<string, mixed>  $spec
+     * @param  array<string, mixed>|null  $plan
      * @return array{
      *     plan: float,
      *     implement: float,
@@ -156,6 +158,7 @@ class EffortEstimateService
     }
 
     /**
+     * @param  array<string, mixed>  $spec
      * @return array{plan: float, implement: float, review: float, rework: float, deploy: float}|null
      */
     protected function explicitPhases(array $spec): ?array

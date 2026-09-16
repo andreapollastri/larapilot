@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Testing\PendingCommand;
 use Larapilot\LarapilotServiceProvider;
 use Larapilot\Tests\Support\PendingCommandWithCleanup;
 use Laravel\Mcp\Server\McpServiceProvider;
@@ -21,7 +22,7 @@ abstract class TestCase extends OrchestraTestCase
      *
      * @param  string  $command
      * @param  array<string, mixed>  $parameters
-     * @return \Illuminate\Testing\PendingCommand|int
+     * @return PendingCommand|int
      */
     public function artisan($command, $parameters = [])
     {
@@ -31,6 +32,7 @@ abstract class TestCase extends OrchestraTestCase
 
         return new PendingCommandWithCleanup($this, $this->app, $command, $parameters);
     }
+
     protected function getPackageProviders($app): array
     {
         return [

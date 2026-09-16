@@ -494,6 +494,9 @@ class DecisionService
             : $path;
     }
 
+    /**
+     * @param  array<array<string, mixed>>  $decisions
+     */
     protected function write(array $decisions): void
     {
         $payload = [

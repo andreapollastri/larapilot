@@ -57,7 +57,14 @@ jobs:
           # advisories have no patched line. Compatibility CI only — other
           # packages stay blocked. Drop this once a patched 10/11 ships (or
           # those majors are dropped).
-          if [[ "${{ matrix.laravel }}" == 10.* || "${{ matrix.laravel }}" == 11.* ]]; then
+          if [[ "${{ matrix.php }}" == "8.1" ]]; then
+            # PHP 8.1 can only install Pest 2.36.0, which conflicts with
+            # phpunit >=10.5.62 — and every earlier phpunit 10.x release
+            # carries an open advisory (CVE-2026-24765, PHPT coverage
+            # deserialization; irrelevant to this suite). Ignore it here or
+            # nothing resolves on 8.1.
+            composer config --json policy.advisories.ignore '["laravel/framework", "phpunit/phpunit"]'
+          elif [[ "${{ matrix.laravel }}" == 10.* || "${{ matrix.laravel }}" == 11.* ]]; then
             composer config --json policy.advisories.ignore '["laravel/framework"]'
           fi
           composer require "illuminate/support:${{ matrix.laravel }}" --no-interaction --no-update
