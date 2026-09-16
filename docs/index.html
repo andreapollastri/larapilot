@@ -1260,7 +1260,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.6.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.7.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1372,9 +1372,10 @@
             </li>
           </ol>
         </div>
-        <p class="install-requirements"><strong>Requires:</strong> PHP 8.3+ · Laravel 12+ · <a
-            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> (latest stable, bundled) ·
+        <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
+            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Composer picks the latest compatible release) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
+        <p>On Laravel 10/11 the MCP stack uses <code>illuminate/json-schema</code> — stay on a recent framework patch (Laravel <strong>11.47+</strong> recommended on 11.x).</p>
         <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
             rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
             target="_blank" rel="noopener">Laravel Pint</a> — <code>phpstan.neon.dist</code>, <code>pint.json</code>,
@@ -6301,7 +6302,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v2.6.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.7.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services\Tracker;
 
-final readonly class RemoteComment
+final class RemoteComment
 {
     public function __construct(
         public string $body,

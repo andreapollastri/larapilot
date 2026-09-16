@@ -95,6 +95,7 @@ class ChoicesService
             'testing' => $this->config->allowedTestingModes(),
             'auto_approve' => $this->config->allowedAutoApproveModes(),
             'lucille' => $this->config->allowedLucilleModes(),
+            'comments' => $this->config->allowedCommentsModes(),
             'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
             'api_auth' => $this->config->allowedApiAuthModes(),
             'security_scan' => $this->config->allowedSecurityScanModes(),

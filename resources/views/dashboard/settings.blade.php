@@ -110,6 +110,7 @@
                 $settingLabels = [
                     'lucille' => 'Project tracking',
                     'auto_approve' => 'Auto approve',
+                    'comments' => 'Comments',
                     'dashboard_auth' => 'Dashboard auth',
                     'api_auth' => 'API auth',
                     'security_scan' => 'Security scan',

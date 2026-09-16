@@ -8,7 +8,7 @@ namespace Larapilot\Services\Tracker;
  * A backlog spec normalized for the remote tracker. `status` is already
  * mapped to the provider's own label — drivers never see Larapilot statuses.
  */
-final readonly class StoryPayload
+final class StoryPayload
 {
     /**
      * @param  list<TaskPayload>  $tasks

@@ -36,7 +36,7 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 - Decision journal (default ON): record every explicit user choice with `php artisan larapilot:decision-log`, and run `php artisan larapilot:decision-check` before overriding a topic that may already carry one — see **Decision journal (`settings.decision_log`)** below.
 - Code change history (default OFF): when `data.settings.code_history` is `YES`, call `php artisan larapilot:code-log` after each `task-done` — see **Code change history (`settings.code_history`)** below.
 
@@ -46,11 +46,11 @@ Specs may be implemented inside a per-spec git worktree. `php artisan larapilot:
 
 ### Laravel Boost integration
 
-Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not instead of it. Composer always resolves the **latest stable** Boost (no upper bound). `php artisan larapilot:update` runs `composer update laravel/boost --with-dependencies` and then `boost:update`, so both the package and the published skills stay current. During planning and implementation use Boost MCP tools when you need Laravel context: `Search Docs` (version-aware docs), `Database Schema` / `Database Query`, `Application Info` (versions and packages), `Tinker`, `Last Error` / `Read Log Entries`. Boost handles Laravel conventions; Larapilot handles the product workflow and persistent artifacts.
+Larapilot works **with** [Laravel Boost](https://laravel.com/ai/boost), not instead of it. Composer accepts Boost **^1** or **^2** and resolves the latest compatible release for your Laravel version (Boost 1 on Laravel 10/11, Boost 2 on Laravel 12+). `php artisan larapilot:update` runs `composer update laravel/boost --with-dependencies` and then `boost:update`, so both the package and the published skills stay current. During planning and implementation use Boost MCP tools when you need Laravel context: `Search Docs` (version-aware docs), `Database Schema` / `Database Query`, `Application Info` (versions and packages), `Tinker`, `Last Error` / `Read Log Entries`. Boost handles Laravel conventions; Larapilot handles the product workflow and persistent artifacts.
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `comments: true` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Effort (`settings.effort`)
 
@@ -147,6 +147,19 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | --- | --- |
 | **`true` / `YES`** | After each `larapilot:task-done` (and once more at `spec-review`), call `php artisan larapilot:code-log --spec=US-XXX --task=TASK-XX --skill=larapilot-implement`. The command resolves the task's commit itself (`--commit=` / `--range=` override it; it falls back to the working-tree diff when no commit resolves). `larapilot:code-history [--file= --spec=]` reports per-file touchpoints. |
 | **`false` / `NO`** | **Default.** Skip entirely — no `code-log` calls. |
+
+### Comments (`settings.comments`) — opt-out, default ON
+
+Internal feedback comments on the dashboard spec page, `POST /larapilot/api/specs/{code}/comments`, and `larapilot:spec-comment`. ON by default; when OFF the feedback UI, API writes, and CLI command are disabled (existing `.larapilot/internal-feedback/*.md` files stay readable).
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`YES`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`true` / `YES`** | **Default.** PM/dev can append comments until the spec is DONE; blocking comments feed `spec-request-changes --include-feedback`. |
+| **`false` / `NO`** | Comments disabled project-wide. Optional env kill-switch: `LARAPILOT_COMMENTS_ENABLED=false`. |
+
+Disable with `php artisan larapilot:settings-set --comments=NO`. Details: `.larapilot/internal-feedback/README.md`.
 
 ### Dashboard auth (`settings.dashboard_auth`) — opt-in, default OFF
 

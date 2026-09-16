@@ -2,6 +2,16 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.7.0] - 2026-09-16
+
+### Changed
+
+- **Broader platform support** — `composer.json` now targets PHP **^8.1**, Laravel **^10.49** · **^11.45.3** · **^12** · **^13**, and Laravel Boost **^1.0|^2.0** (restores Laravel 10/11 and Boost 1.x alongside existing Laravel 12/13 + Boost 2 stacks). Symfony YAML accepts **^6.4** for Laravel 10.
+- **Tracker DTOs** — drop `readonly class` (PHP 8.2+) in favour of plain `final class` so PHP 8.1 installs parse cleanly.
+- **CI** — Pest matrix covers PHP 8.1–8.5 × Laravel 10–13 (via Orchestra Testbench 8–11).
+- **Docs / README / shared runtime** — requirements and Boost compatibility notes updated for the widened matrix.
+- Site / package version **v2.7.0**.
+
 ## [2.6.0] - 2026-09-09
 
 ### Changed

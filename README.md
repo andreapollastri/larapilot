@@ -358,10 +358,12 @@ Status maps live in `config/larapilot.php` → `tracker.providers.{provider}.sta
 
 ## Requirements
 
-- PHP **^8.3**
-- Laravel **^12** or **^13**
-- [Laravel Boost](https://laravel.com/ai/boost) (latest stable, installed automatically and kept current by `larapilot:update`)
+- PHP **^8.1** (8.2+ recommended)
+- Laravel **^10.49** · **^11.45.3** · **^12** · **^13**
+- [Laravel Boost](https://laravel.com/ai/boost) **^1** or **^2** (Composer resolves Boost 1 on Laravel 10/11 and Boost 2 on Laravel 12+; kept current by `larapilot:update`)
 - MCP-capable editor (Cursor, Claude Code, VS Code, …)
+
+On Laravel 10/11 the MCP stack pulls `illuminate/json-schema` — use a recent framework patch (Laravel **11.47+** recommended on 11.x) so JsonSchema tooling loads cleanly.
 
 ---
 

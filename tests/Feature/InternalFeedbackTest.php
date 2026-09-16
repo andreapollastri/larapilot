@@ -138,6 +138,22 @@ it('hides dashboard comment form when comments are disabled', function (): void 
     ])->assertNotFound();
 });
 
+it('hides dashboard comment form when comments are disabled via project settings', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'PLANNED']);
+
+    $this->artisan('larapilot:settings-set', ['--comments' => 'NO'])->assertSuccessful();
+
+    $this->get('/larapilot/specs/US-001')
+        ->assertOk()
+        ->assertDontSee('Internal feedback');
+
+    $this->post('/larapilot/specs/US-001/comments', [
+        'author' => 'PM',
+        'message' => 'Should not work.',
+    ])->assertNotFound();
+});
+
 it('exposes feedback metadata via the API', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec(['status' => 'REVIEW']);

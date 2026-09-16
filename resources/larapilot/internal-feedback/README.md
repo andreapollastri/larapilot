@@ -14,4 +14,4 @@ PM and developer comments for each user story, stored as append-only markdown:
 php artisan larapilot:spec-request-changes US-001 --file=.larapilot/tmp-feedback.yaml --include-feedback
 ```
 
-Disable comments globally with `LARAPILOT_COMMENTS_ENABLED=false`.
+Disable comments per project with `/larapilot-settings` or `php artisan larapilot:settings-set --comments=NO`. An optional deployment kill-switch remains: `LARAPILOT_COMMENTS_ENABLED=false`.

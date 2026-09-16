@@ -71,6 +71,11 @@
                             <a href="#{{ $heading['id'] }}">{{ $heading['title'] }}</a>
                         </li>
                     @endforeach
+                    @if (($decisions['entry_count'] ?? 0) > 0)
+                        <li>
+                            <a href="#decision-journal">Decision journal</a>
+                        </li>
+                    @endif
                 </ul>
             </aside>
 
@@ -79,4 +84,26 @@
             </article>
         </div>
     @endif
+
+    @include('larapilot::dashboard.partials.decisions', ['decisions' => $decisions ?? null])
+
+    @push('scripts')
+    <script>
+        document.querySelectorAll('.decisions-timeline[data-exclusive-accordion]').forEach(function (accordion) {
+            accordion.querySelectorAll('.decision-entry').forEach(function (item) {
+                item.addEventListener('toggle', function () {
+                    if (! item.open) {
+                        return;
+                    }
+
+                    accordion.querySelectorAll('.decision-entry').forEach(function (other) {
+                        if (other !== item) {
+                            other.open = false;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    @endpush
 @endsection

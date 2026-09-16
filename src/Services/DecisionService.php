@@ -257,6 +257,98 @@ class DecisionService
     }
 
     /**
+     * Decision journal payload for the workflow dashboard — grouped by owning
+     * user story on the PRD page, or filtered to one spec on the spec page.
+     *
+     * @return array{
+     *     entry_count: int,
+     *     regression_count: int,
+     *     path: string,
+     *     path_short: string,
+     *     groups: list<array{key: string, label: string, spec_code: string|null, entries: list<array<string, mixed>>}>|null,
+     *     entries: list<array<string, mixed>>
+     * }
+     */
+    public function forView(?string $specCode = null): array
+    {
+        $specCode = $specCode !== null ? $this->normalizeSpec($specCode) : null;
+        $supersededIds = $this->supersededIds();
+        $formatted = array_map(
+            fn (array $entry): array => $this->formatEntryForView($entry, $supersededIds),
+            $this->entries()
+        );
+
+        usort(
+            $formatted,
+            static fn (array $a, array $b): int => strcmp((string) ($a['at_iso'] ?? ''), (string) ($b['at_iso'] ?? ''))
+        );
+
+        $regressionCount = count($this->dashboard()['regressions']);
+
+        if ($specCode !== null) {
+            $entries = array_values(array_filter(
+                $formatted,
+                static fn (array $entry): bool => strtoupper((string) ($entry['spec'] ?? '')) === $specCode
+            ));
+
+            return [
+                'entry_count' => count($entries),
+                'regression_count' => $regressionCount,
+                'path' => $this->config->relativePath($this->path()),
+                'path_short' => $this->shortPath(),
+                'groups' => null,
+                'entries' => $entries,
+            ];
+        }
+
+        $projectEntries = [];
+        $bySpec = [];
+
+        foreach ($formatted as $entry) {
+            $spec = $entry['spec'] ?? null;
+
+            if (! is_string($spec) || $spec === '') {
+                $projectEntries[] = $entry;
+
+                continue;
+            }
+
+            $bySpec[$spec][] = $entry;
+        }
+
+        ksort($bySpec);
+
+        $groups = [];
+
+        if ($projectEntries !== []) {
+            $groups[] = [
+                'key' => 'project',
+                'label' => 'Project / discovery',
+                'spec_code' => null,
+                'entries' => $projectEntries,
+            ];
+        }
+
+        foreach ($bySpec as $code => $entries) {
+            $groups[] = [
+                'key' => $code,
+                'label' => $code,
+                'spec_code' => $code,
+                'entries' => $entries,
+            ];
+        }
+
+        return [
+            'entry_count' => count($formatted),
+            'regression_count' => $regressionCount,
+            'path' => $this->config->relativePath($this->path()),
+            'path_short' => $this->shortPath(),
+            'groups' => $groups,
+            'entries' => $formatted,
+        ];
+    }
+
+    /**
      * Topics grouped with their full timeline and a `changed` flag when the
      * topic has held more than one distinct (non-superseded) value.
      *
@@ -264,15 +356,7 @@ class DecisionService
      */
     public function dashboard(): array
     {
-        $supersededIds = [];
-
-        foreach ($this->entries() as $entry) {
-            $ref = trim((string) ($entry['supersedes'] ?? ''));
-
-            if ($ref !== '') {
-                $supersededIds[$ref] = true;
-            }
-        }
+        $supersededIds = $this->supersededIds();
 
         $topics = [];
 
@@ -336,6 +420,80 @@ class DecisionService
     /**
      * @param  list<array<string, mixed>>  $decisions
      */
+    /**
+     * @return array<string, true>
+     */
+    protected function supersededIds(): array
+    {
+        $supersededIds = [];
+
+        foreach ($this->entries() as $entry) {
+            $ref = trim((string) ($entry['supersedes'] ?? ''));
+
+            if ($ref !== '') {
+                $supersededIds[$ref] = true;
+            }
+        }
+
+        return $supersededIds;
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     * @param  array<string, true>  $supersededIds
+     * @return array<string, mixed>
+     */
+    protected function formatEntryForView(array $entry, array $supersededIds): array
+    {
+        $id = (string) ($entry['id'] ?? '');
+        $ts = (string) ($entry['ts'] ?? '');
+        $at = '';
+
+        if ($ts !== '') {
+            try {
+                $at = (new DateTimeImmutable($ts))->format('Y-m-d H:i');
+            } catch (\Exception) {
+                $at = $ts;
+            }
+        }
+
+        $spec = $this->normalizeSpec($entry['spec'] ?? null);
+
+        return [
+            'id' => $id,
+            'at' => $at,
+            'at_iso' => $ts,
+            'topic' => (string) ($entry['topic'] ?? ''),
+            'label' => (string) ($entry['label'] ?? $entry['topic'] ?? ''),
+            'value' => (string) ($entry['value'] ?? ''),
+            'spec' => $spec,
+            'phase' => is_string($entry['phase'] ?? null) && trim((string) $entry['phase']) !== ''
+                ? trim((string) $entry['phase'])
+                : null,
+            'source' => is_string($entry['source'] ?? null) ? (string) $entry['source'] : null,
+            'user' => is_string($entry['user'] ?? null) ? (string) $entry['user'] : null,
+            'question' => is_string($entry['question'] ?? null) && trim((string) $entry['question']) !== ''
+                ? trim((string) $entry['question'])
+                : null,
+            'rationale' => is_string($entry['rationale'] ?? null) && trim((string) $entry['rationale']) !== ''
+                ? trim((string) $entry['rationale'])
+                : null,
+            'supersedes' => is_string($entry['supersedes'] ?? null) && trim((string) $entry['supersedes']) !== ''
+                ? trim((string) $entry['supersedes'])
+                : null,
+            'is_superseded' => $id !== '' && isset($supersededIds[$id]),
+        ];
+    }
+
+    protected function shortPath(): string
+    {
+        $path = $this->config->relativePath($this->path());
+
+        return str_starts_with($path, '.larapilot/')
+            ? substr($path, strlen('.larapilot/'))
+            : $path;
+    }
+
     protected function write(array $decisions): void
     {
         $payload = [

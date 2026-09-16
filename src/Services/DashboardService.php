@@ -17,6 +17,7 @@ class DashboardService
         protected InternalFeedbackService $feedback,
         protected ChoicesService $choices,
         protected UsageService $usageService,
+        protected DecisionService $decisions,
     ) {}
 
     /**
@@ -138,7 +139,35 @@ class DashboardService
                 ? Markdown::toHtml((string) ($plan['plan_body'] ?? ''))
                 : null,
             'feedback' => $this->feedback->forSpec($code, $data['spec']),
+            'decisions' => $this->decisions($code),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function decisions(?string $specCode = null): array
+    {
+        $payload = $this->decisions->forView($specCode);
+
+        if ($specCode === null && is_array($payload['groups'] ?? null)) {
+            $payload['groups'] = array_map(function (array $group): array {
+                $code = $group['spec_code'] ?? null;
+
+                if (! is_string($code) || $code === '') {
+                    return $group;
+                }
+
+                $spec = $this->specs->find($code);
+                $title = is_array($spec) ? trim((string) ($spec['title'] ?? '')) : '';
+
+                $group['label'] = $title !== '' ? "{$code} — {$title}" : $code;
+
+                return $group;
+            }, $payload['groups']);
+        }
+
+        return $payload;
     }
 
     /**

@@ -38,6 +38,7 @@ class DashboardController
 
         return view('larapilot::dashboard.prd', [
             'prd' => $prd,
+            'decisions' => $this->dashboard->decisions(),
         ]);
     }
 

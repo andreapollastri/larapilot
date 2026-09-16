@@ -9,7 +9,7 @@ namespace Larapilot\Services\Tracker;
  * `key` is the human label a person recognizes (ENG-42, LP-17) when the
  * provider has one, and `url` deep-links into the tool's UI.
  */
-final readonly class RemoteRef
+final class RemoteRef
 {
     public function __construct(
         public string $id,

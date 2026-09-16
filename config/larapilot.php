@@ -24,6 +24,9 @@ return [
         // Code change history (.larapilot/code-history.yaml) — per spec/task list of files and line
         // ranges touched, derived from the task git commit. OFF by default; set true to enable.
         'code_history' => false,
+        // Internal feedback comments on the dashboard, JSON API, and
+        // `larapilot:spec-comment` — ON by default; set false to disable.
+        'comments' => true,
         // HTTP Basic Auth on the /larapilot dashboard UI — OFF by default (open in the
         // allowed environments). When true, browsing the dashboard requires a username +
         // password from .larapilot/auth.yaml (manage with `larapilot:dashboard-user`).
@@ -93,6 +96,8 @@ return [
         'code_history' => '.larapilot/code-history.yaml',
     ],
 
+    // Optional deployment kill-switch for internal feedback. Project-level
+    // on/off lives in `settings.comments` (see `/larapilot-settings`).
     'comments' => [
         'enabled' => env('LARAPILOT_COMMENTS_ENABLED', true),
     ],

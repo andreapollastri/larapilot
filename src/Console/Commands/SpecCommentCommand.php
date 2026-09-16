@@ -29,7 +29,7 @@ class SpecCommentCommand extends LarapilotCommand
                 'E_PRECONDITION',
                 'Internal feedback comments are disabled.',
                 $this->exitForCode('E_PRECONDITION'),
-                'Set LARAPILOT_COMMENTS_ENABLED=true in your environment.'
+                'Enable with: php artisan larapilot:settings-set --comments=YES (or set LARAPILOT_COMMENTS_ENABLED=true).'
             );
         }
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DecisionService;
 use Larapilot\Services\PrdService;
 
 it('serves the workflow dashboard in local environment', function (): void {
@@ -49,6 +50,57 @@ it('renders the PRD with section headings', function (): void {
         ->assertOk()
         ->assertSee('Elevator Pitch')
         ->assertSee('Technical Architecture');
+});
+
+it('renders the decision journal below the PRD grouped by user story', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+    $config->ensureDirectories();
+
+    app(PrdService::class)->write(validPrd());
+    addSpec(['code' => 'US-001', 'title' => 'Login']);
+
+    app(DecisionService::class)->log([
+        'topic' => 'framework',
+        'value' => 'Laravel',
+        'skill' => 'larapilot-inception',
+    ]);
+    app(DecisionService::class)->log([
+        'topic' => 'auth provider',
+        'value' => 'Sanctum',
+        'spec' => 'US-001',
+    ]);
+
+    $this->get('/larapilot/prd')
+        ->assertOk()
+        ->assertSee('Decision journal', false)
+        ->assertSee('Project / discovery', false)
+        ->assertSee('US-001 — Login', false)
+        ->assertSee('Sanctum', false)
+        ->assertSee('href="#decision-journal"', false);
+});
+
+it('shows user-story decisions on the spec detail page', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['code' => 'US-001', 'title' => 'Login']);
+
+    app(DecisionService::class)->log([
+        'topic' => 'framework',
+        'value' => 'Laravel',
+    ]);
+    app(DecisionService::class)->log([
+        'topic' => 'auth provider',
+        'value' => 'Sanctum',
+        'spec' => 'US-001',
+        'rationale' => 'SPA-friendly token auth',
+    ]);
+
+    $this->get('/larapilot/specs/US-001')
+        ->assertOk()
+        ->assertSee('Decision journal', false)
+        ->assertSee('Sanctum', false)
+        ->assertSee('SPA-friendly token auth', false)
+        ->assertDontSee('Project / discovery');
 });
 
 it('links the PRD table of contents to heading anchors', function (): void {

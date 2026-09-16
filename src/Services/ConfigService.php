@@ -211,6 +211,7 @@ class ConfigService
      *     lucille: string,
      *     decision_log: string,
      *     code_history: string,
+     *     comments: string,
      *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
@@ -255,6 +256,7 @@ class ConfigService
      *     lucille: bool,
      *     decision_log: bool,
      *     code_history: bool,
+     *     comments: bool,
      *     dashboard_auth: bool,
      *     api_auth: bool,
      *     security_scan: bool,
@@ -299,6 +301,7 @@ class ConfigService
             'lucille' => true,
             'decision_log' => true,
             'code_history' => false,
+            'comments' => true,
             'dashboard_auth' => false,
             'api_auth' => false,
             'security_scan' => false,
@@ -327,6 +330,7 @@ class ConfigService
      *     lucille: string,
      *     decision_log: string,
      *     code_history: string,
+     *     comments: string,
      *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
@@ -420,6 +424,24 @@ class ConfigService
     public function codeHistoryEnabled(): bool
     {
         return $this->settings()['code_history'] === 'YES';
+    }
+
+    /**
+     * Internal feedback comments on the dashboard, JSON API, and
+     * `larapilot:spec-comment` — ON by default. Also honour the optional
+     * `LARAPILOT_COMMENTS_ENABLED` env kill-switch.
+     */
+    public function commentsEnabled(): bool
+    {
+        if (! config('larapilot.enabled', true)) {
+            return false;
+        }
+
+        if (! (bool) config('larapilot.comments.enabled', true)) {
+            return false;
+        }
+
+        return $this->settings()['comments'] === 'YES';
     }
 
     /**
@@ -660,6 +682,14 @@ class ConfigService
      * @return list<string>
      */
     public function allowedCodeHistoryModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedCommentsModes(): array
     {
         return $this->allowedYesNoModes();
     }
@@ -922,12 +952,4 @@ class ConfigService
         return true;
     }
 
-    public function commentsEnabled(): bool
-    {
-        if (! config('larapilot.enabled', true)) {
-            return false;
-        }
-
-        return (bool) config('larapilot.comments.enabled', true);
-    }
 }

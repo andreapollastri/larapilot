@@ -822,6 +822,13 @@
             @endif
 
             <section class="card panel">
+                @include('larapilot::dashboard.partials.decisions', [
+                    'decisions' => $decisions ?? ['entry_count' => 0, 'groups' => null, 'entries' => []],
+                    'embedded' => true,
+                ])
+            </section>
+
+            <section class="card panel">
                 <h3>Tasks ({{ count($tasks) }})</h3>
                 @if ($tasks === [])
                     <p class="empty" style="padding: 12px 0; text-align: left;">No plan tasks yet. Run <code>/larapilot-plan {{ $spec['code'] }}</code>.</p>
@@ -882,7 +889,9 @@
     document.querySelectorAll('[data-exclusive-accordion]').forEach(function (accordion) {
         var selector = accordion.classList.contains('feedback-list')
             ? '.feedback-accordion'
-            : '.task-accordion';
+            : accordion.classList.contains('decisions-timeline')
+                ? '.decision-entry'
+                : '.task-accordion';
 
         accordion.querySelectorAll(selector).forEach(function (item) {
             item.addEventListener('toggle', function () {

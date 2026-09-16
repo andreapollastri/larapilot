@@ -355,6 +355,7 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('testing: NORMAL')
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
+        ->and($yaml)->toContain('comments: true')
         ->and($yaml)->toContain('dashboard_auth: false')
         ->and($yaml)->toContain('api_auth: false')
         ->and($yaml)->toContain('security_scan: false')
@@ -403,6 +404,7 @@ it('persists project settings via settings-set', function (): void {
         'lucille' => 'NO',
         'decision_log' => 'NO',
         'code_history' => 'YES',
+        'comments' => 'YES',
         'dashboard_auth' => 'NO',
         'api_auth' => 'YES',
         'security_scan' => 'YES',

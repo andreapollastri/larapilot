@@ -7,7 +7,7 @@ namespace Larapilot\Services\Tracker;
 /**
  * One plan task, mirrored as a native sub-issue/subtask under its story.
  */
-final readonly class TaskPayload
+final class TaskPayload
 {
     public function __construct(
         public string $id,

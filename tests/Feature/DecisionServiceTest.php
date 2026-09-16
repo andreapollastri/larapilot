@@ -86,6 +86,36 @@ it('reports regressions in the dashboard view', function (): void {
         ->and($dashboard['regressions'][0]['current_value'])->toBe('red');
 });
 
+it('groups decisions for the dashboard by project scope and user story', function (): void {
+    $decisions = app(DecisionService::class);
+
+    $decisions->log(['topic' => 'framework', 'value' => 'Laravel', 'skill' => 'larapilot-inception']);
+    $decisions->log(['topic' => 'auth provider', 'value' => 'Sanctum', 'spec' => 'US-001']);
+    $decisions->log(['topic' => 'auth provider', 'value' => 'Passport', 'spec' => 'US-001']);
+
+    $view = $decisions->forView();
+
+    expect($view['entry_count'])->toBe(3)
+        ->and($view['groups'])->toHaveCount(2)
+        ->and($view['groups'][0]['key'])->toBe('project')
+        ->and($view['groups'][1]['key'])->toBe('US-001')
+        ->and($view['groups'][1]['entries'])->toHaveCount(2);
+});
+
+it('filters the dashboard view to one user story', function (): void {
+    $decisions = app(DecisionService::class);
+
+    $decisions->log(['topic' => 'framework', 'value' => 'Laravel']);
+    $decisions->log(['topic' => 'validation', 'value' => 'FormRequest', 'spec' => 'US-001']);
+    $decisions->log(['topic' => 'validation', 'value' => 'Inline', 'spec' => 'US-002']);
+
+    $view = $decisions->forView('US-001');
+
+    expect($view['entry_count'])->toBe(1)
+        ->and($view['groups'])->toBeNull()
+        ->and($view['entries'][0]['value'])->toBe('FormRequest');
+});
+
 it('exposes decision_log defaults through settings and honors the toggle', function (): void {
     $config = app(ConfigService::class);
 

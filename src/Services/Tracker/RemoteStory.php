@@ -9,7 +9,7 @@ namespace Larapilot\Services\Tracker;
  * for the drift report. `status` is the provider's own label; mapping it
  * back to a Larapilot status is the sync service's job, not the driver's.
  */
-final readonly class RemoteStory
+final class RemoteStory
 {
     public function __construct(
         public RemoteRef $ref,
