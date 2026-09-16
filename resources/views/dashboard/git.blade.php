@@ -72,7 +72,6 @@
     .panel {
         padding: 18px 20px;
         margin-bottom: 20px;
-        overflow-x: auto;
     }
 
     .panel h3 {
@@ -87,57 +86,83 @@
     }
 
     .heatmap {
-        --cell: 11px;
+        --week-count: {{ count($weeks) }};
         --gap: 3px;
-        min-width: 720px;
+        --dow-width: 24px;
+        width: 100%;
+    }
+
+    .heatmap-grid {
+        display: grid;
+        grid-template-columns: var(--dow-width) minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
     }
 
     .heatmap-months {
-        display: flex;
-        margin: 0 0 6px 32px;
+        grid-column: 2;
+        display: grid;
+        grid-template-columns: repeat(var(--week-count), minmax(0, 1fr));
+        gap: var(--gap);
+        margin-bottom: 6px;
         color: var(--muted);
         font-size: 0.7rem;
+        line-height: 1.2;
+        min-width: 0;
     }
 
     .heatmap-month {
-        flex: 0 0 auto;
         overflow: hidden;
         white-space: nowrap;
-    }
-
-    .heatmap-body {
-        display: flex;
-        gap: 8px;
-        align-items: flex-start;
+        text-overflow: ellipsis;
     }
 
     .heatmap-dow {
+        grid-row: 2;
         display: grid;
-        grid-template-rows: repeat(7, var(--cell));
+        grid-template-rows: repeat(7, minmax(0, 1fr));
         gap: var(--gap);
         color: var(--muted);
         font-size: 0.65rem;
-        line-height: var(--cell);
-        width: 24px;
-        flex: 0 0 24px;
+        align-self: stretch;
+    }
+
+    .heatmap-dow span {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 2px;
+    }
+
+    .heatmap-scroll {
+        grid-row: 2;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
     }
 
     .heatmap-weeks {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(var(--week-count), minmax(9px, 1fr));
         gap: var(--gap);
+        width: 100%;
+        min-width: min(100%, calc(var(--week-count) * 12px));
     }
 
     .heatmap-week {
         display: grid;
-        grid-template-rows: repeat(7, var(--cell));
+        grid-template-rows: repeat(7, minmax(0, 1fr));
         gap: var(--gap);
+        min-width: 0;
     }
 
     .heatmap-cell {
-        width: var(--cell);
-        height: var(--cell);
+        width: 100%;
+        aspect-ratio: 1;
         border-radius: 2px;
         background: #ebedf0;
+        min-height: 0;
     }
 
     .heatmap-cell.out {
@@ -160,7 +185,9 @@
     }
 
     .heatmap-legend .heatmap-cell {
-        display: inline-block;
+        width: 11px;
+        height: 11px;
+        flex: 0 0 11px;
     }
 
     .branch-list {
@@ -241,19 +268,22 @@
 
         <section class="card panel" aria-label="Contribution graph">
             <h3>{{ number_format($total) }} {{ $total === 1 ? 'contribution' : 'contributions' }} in the last year</h3>
-            <p class="hint">Each square is a day. Darker green means more commits by {{ $selected_author ? collect($authors)->firstWhere('email', $selected_author)['name'] ?? $selected_author : 'all developers' }}.</p>
+            <p class="hint">Each square is a day — recent on the right, older to the left. Darker green means more commits by {{ $selected_author ? collect($authors)->firstWhere('email', $selected_author)['name'] ?? $selected_author : 'all developers' }}.</p>
 
             <div class="heatmap">
-                <div class="heatmap-months" aria-hidden="true">
-                    @foreach ($months as $month)
-                        <span class="heatmap-month" style="width: calc({{ $month['span'] }} * (var(--cell) + var(--gap)))">
-                            @if ($month['span'] >= 2)
-                                {{ $month['label'] }}
-                            @endif
-                        </span>
-                    @endforeach
-                </div>
-                <div class="heatmap-body">
+                <div class="heatmap-grid">
+                    <div class="heatmap-months" aria-hidden="true">
+                        @foreach ($months as $month)
+                            <span
+                                class="heatmap-month"
+                                style="grid-column: {{ $month['offset'] + 1 }} / span {{ $month['span'] }}"
+                            >
+                                @if ($month['span'] >= 2)
+                                    {{ $month['label'] }}
+                                @endif
+                            </span>
+                        @endforeach
+                    </div>
                     <div class="heatmap-dow" aria-hidden="true">
                         <span></span>
                         <span>Mon</span>
@@ -263,17 +293,19 @@
                         <span>Fri</span>
                         <span></span>
                     </div>
-                    <div class="heatmap-weeks" role="img" aria-label="{{ number_format($total) }} contributions in the last year">
-                        @foreach ($weeks as $week)
-                            <div class="heatmap-week">
-                                @foreach ($week as $day)
-                                    <span
-                                        class="heatmap-cell level-{{ $day['level'] }}{{ $day['in_range'] ? '' : ' out' }}"
-                                        title="{{ $day['title'] }}"
-                                    ></span>
-                                @endforeach
-                            </div>
-                        @endforeach
+                    <div class="heatmap-scroll" data-heatmap-scroll>
+                        <div class="heatmap-weeks" role="img" aria-label="{{ number_format($total) }} contributions in the last year">
+                            @foreach ($weeks as $week)
+                                <div class="heatmap-week">
+                                    @foreach ($week as $day)
+                                        <span
+                                            class="heatmap-cell level-{{ $day['level'] }}{{ $day['in_range'] ? '' : ' out' }}"
+                                            title="{{ $day['title'] }}"
+                                        ></span>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
                 <div class="heatmap-legend">
@@ -301,3 +333,11 @@
         @endif
     @endif
 @endsection
+
+@push('scripts')
+<script>
+    document.querySelectorAll('[data-heatmap-scroll]').forEach((el) => {
+        el.scrollLeft = el.scrollWidth;
+    });
+</script>
+@endpush

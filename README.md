@@ -69,7 +69,7 @@ Skills write artifacts; the workflow engine blocks invalid state transitions (e.
 | Layer | File | Owns | Changed via |
 | --- | --- | --- | --- |
 | **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, diagnostics, `LARAPILOT_API_TOKEN`, notification webhooks/tokens, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
-| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, decision-log, code-history, dashboard-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, decision-log, code-history, comments, dashboard-auth, api-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
 
 The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
@@ -93,7 +93,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
-| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / decision-log / code-history / dashboard-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
+| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
@@ -106,7 +106,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader, Settings (options + inception choices), Git (12-month contribution heatmap from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with mockup preview and internal feedback
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Settings (options + inception choices), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with decision journal, mockup preview, and internal feedback
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling

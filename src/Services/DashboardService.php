@@ -18,7 +18,6 @@ class DashboardService
         protected ChoicesService $choices,
         protected UsageService $usageService,
         protected DecisionService $decisions,
-        protected EffortEstimateService $estimates,
         protected GitService $git,
     ) {}
 
@@ -30,13 +29,10 @@ class DashboardService
     {
         $code = (string) ($spec['code'] ?? '');
 
-        $plan = $code !== '' ? $this->plans->read($code) : null;
-
         return array_merge($spec, [
             'tasks' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
             'mockups' => $code !== '' ? $this->mockups->summary($code) : ['available' => false, 'screen_count' => 0],
             'feedback' => $code !== '' ? $this->feedback->summary($code, $spec) : ['enabled' => false, 'available' => false, 'entry_count' => 0, 'blocking_count' => 0, 'writable' => false, 'path' => ''],
-            'estimate' => $this->estimates->forSpec($spec, $plan),
         ]);
     }
 
@@ -81,26 +77,13 @@ class DashboardService
     public function board(): array
     {
         $board = $this->rawBoard();
-        $allEnriched = [];
 
         foreach ($board['columns'] as $status => $specs) {
-            $enriched = array_map(
+            $board['columns'][$status] = array_map(
                 fn (array $spec): array => $this->enrichSpec($spec),
                 $specs
             );
-            $board['columns'][$status] = $enriched;
-            $allEnriched = array_merge($allEnriched, $enriched);
         }
-
-        $hours = $this->estimates->backlogHours($allEnriched);
-
-        $board['metrics'] = array_merge($board['metrics'], [
-            'estimated_hours_total' => $hours['total'],
-            'estimated_hours_remaining' => $hours['remaining'],
-            'estimated_hours_done' => $hours['done'],
-            'estimated_hours_total_label' => $hours['label_total'],
-            'estimated_hours_remaining_label' => $hours['label_remaining'],
-        ]);
 
         return $board;
     }
@@ -158,7 +141,6 @@ class DashboardService
                 : null,
             'feedback' => $this->feedback->forSpec($code, $data['spec']),
             'decisions' => $this->decisions($code),
-            'estimate' => $this->estimates->forSpec($data['spec'], $plan),
         ];
     }
 

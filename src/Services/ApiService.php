@@ -16,7 +16,6 @@ class ApiService
         protected PrdService $prd,
         protected MockupService $mockups,
         protected InternalFeedbackService $feedback,
-        protected EffortEstimateService $estimates,
     ) {}
 
     /**
@@ -27,25 +26,16 @@ class ApiService
         $board = $this->dashboard->rawBoard();
 
         $columns = [];
-        $allEnriched = [];
 
         foreach ($board['columns'] as $status => $specs) {
-            $enriched = array_map(
+            $columns[$status] = array_map(
                 fn (array $item): array => $this->enrichSpecSummary($item),
                 $specs
             );
-            $columns[$status] = $enriched;
-            $allEnriched = array_merge($allEnriched, $enriched);
         }
 
-        $hours = $this->estimates->backlogHours($allEnriched);
-
         return [
-            'metrics' => array_merge($board['metrics'], [
-                'estimated_hours_total' => $hours['total'],
-                'estimated_hours_remaining' => $hours['remaining'],
-                'estimated_hours_done' => $hours['done'],
-            ]),
+            'metrics' => $board['metrics'],
             'status_order' => $board['statusOrder'],
             'columns' => $columns,
             'workflow' => $this->config->resolve()['workflow']['statuses'] ?? config('larapilot.workflow.statuses', []),
@@ -102,7 +92,6 @@ class ApiService
             'task_progress' => $taskProgress,
             'mockups' => $mockups,
             'feedback' => $feedback,
-            'estimate' => $this->estimates->forSpec($data['spec'], $plan),
         ]);
 
         return [
@@ -179,13 +168,10 @@ class ApiService
     {
         $code = (string) ($spec['code'] ?? '');
 
-        $plan = $code !== '' ? $this->plans->read($code) : null;
-
         return array_merge($spec, [
             'task_progress' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
             'mockups' => $code !== '' ? $this->mockupsForApi($code) : $this->emptyMockups(),
             'feedback' => $code !== '' ? $this->feedback->summary($code, $spec) : $this->emptyFeedback(),
-            'estimate' => $this->estimates->forSpec($spec, $plan),
         ]);
     }
 

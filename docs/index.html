@@ -1260,7 +1260,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.7.1</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.7.2</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1303,6 +1303,7 @@
       <a href="#deep-dive">Deep Dive</a>
       <a class="sub" href="#deep-dive-how-it-works">How it works</a>
       <a class="sub" href="#deep-dive-update">Upgrade</a>
+      <a class="sub" href="#deep-dive-releases">Release notes</a>
       <a class="sub" href="#deep-dive-skills">Skills</a>
       <a class="sub" href="#deep-dive-settings">Settings</a>
       <a class="sub" href="#deep-dive-personas">Personas</a>
@@ -3134,6 +3135,53 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           <div class="cli-note"><strong>Do not re-run <code>larapilot:install</code> on an existing project</strong>
             unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for
             routine upgrades.</div>
+
+          <h4 id="deep-dive-releases">Release notes</h4>
+          <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
+            <strong>v2.7.2</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+              target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Version</th>
+                  <th>Highlights</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>2.7.2</strong> <span class="chip">2026-09-17</span></td>
+                  <td>
+                    <strong>Changed:</strong> Git contribution heatmap fills the dashboard panel — week columns scale
+                    with the container, today anchors on the <strong>right</strong>, older weeks extend left; cells stay
+                    square and the view opens scrolled to the recent end.<br>
+                    <strong>Removed:</strong> delivery-hour estimates from the board, spec detail, and JSON API
+                    (<code>EffortEstimateService</code>, <code>larapilot.estimate</code> config). Story points and
+                    plan-task <code>estimate_hours</code> (Usage Gantt) are unchanged.
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>2.7.1</strong> <span class="chip">2026-09-17</span></td>
+                  <td>
+                    <strong>Fixed:</strong> CI green on PHP 8.1–8.5 × Laravel 10–13 (Composer advisory ignore on PHP 8.1,
+                    Laravel 10 <code>Artisan::output()</code> after <code>$this-&gt;artisan()</code>, API CSRF on Laravel
+                    10, mockup CSS <code>charset=UTF-8</code>). Calibrated delivery-hour estimates (removed in 2.7.2).
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>2.7.0</strong> <span class="chip">2026-09-17</span></td>
+                  <td>
+                    <strong>Added:</strong> decision journal on PRD + spec pages; Git page with 12-month local heatmap;
+                    <code>settings.comments</code>; design-system gate in <code>/larapilot-design</code>; delivery-hour
+                    estimates on board/spec/API (removed in 2.7.2).<br>
+                    <strong>Changed:</strong> PHP <strong>^8.1</strong>, Laravel <strong>10.49+ · 11.45.3+ · 12 ·
+                    13</strong>, Boost <strong>^1|^2</strong>; tracker DTOs PHP 8.1-safe; CI matrix 8.1–8.5.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
         <!-- Skills -->
@@ -3352,8 +3400,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                     <code>git_mode</code>, <code>testing</code>, <code>auto_approve</code>, <code>lucille</code></li>
                   <li><strong>Traceability</strong> — <code>decision_log</code> (journal + regression guard, ON by
                     default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
-                  <li><strong>Access</strong> — <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
-                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API) — both OFF by
+                  <li><strong>Access</strong> — <code>comments</code> (dashboard + API internal feedback, ON by default),
+                    <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
+                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API) — auth OFF by
                     default</li>
                   <li><strong>Integrations</strong> — GitHub / GitLab / Bitbucket / Azure DevOps forges,
                     Slack / Discord / Telegram channels</li>
@@ -3439,7 +3488,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3447,7 +3496,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
-            <code>decision_log: YES</code> · <code>code_history: NO</code> ·
+            <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>comments: YES</code> ·
             <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> ·
             <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
@@ -3618,6 +3667,13 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               and need no token — only the HTTP endpoint is gated.</li>
           </ul>
 
+          <h4 id="deep-dive-comments">Internal feedback / comments <span class="chip">on by default</span></h4>
+          <p><code>settings.comments</code> (default <code>YES</code>) gates dashboard comment UI on spec pages,
+            <code>POST /larapilot/api/specs/{code}/comments</code>, and <code>larapilot:spec-comment</code>. Persist with
+            <code>php artisan larapilot:settings-set --comments=YES|NO</code>. The env kill-switch
+            <code>LARAPILOT_COMMENTS_ENABLED=false</code> still disables writes even when the project setting is ON.
+          </p>
+
           <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
           <p><code>settings.decision_log</code> (default <code>YES</code>) keeps an append-only, timestamped log of every
             explicit user choice — fixed-choice answers <strong>and</strong> free-text directives like
@@ -3634,6 +3690,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <li>The file is never rewritten in place; a reversal is a new entry. Read-only
               <code>larapilot:decision-check</code> is also on the MCP allowlist.</li>
             <li>Turn it off with <code>php artisan larapilot:settings-set --decision-log=NO</code>.</li>
+            <li>The <a href="#deep-dive-dashboard">dashboard</a> renders the journal on the <strong>PRD</strong> page
+              (project / discovery vs per-story groups, timeline) and on each <strong>spec detail</strong> page (entries
+              for that story only).</li>
           </ul>
 
           <h4 id="deep-dive-code-history">Code change history <span class="chip">opt-in</span></h4>
@@ -5973,7 +6032,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Git</strong></td>
                   <td><code>/larapilot/git</code></td>
-                  <td>Last-12-month contribution heatmap from local git history (all branches), filterable by developer</td>
+                  <td>Last-12-month contribution heatmap from local git history (all branches), full-width and
+                    responsive — recent on the right — filterable by developer</td>
                 </tr>
                 <tr>
                   <td><strong>Usage</strong></td>
@@ -6000,6 +6060,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
           <p>The living product document from <code>/larapilot-inception</code> (and later
             <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
+            Below the PRD, the <strong>decision journal</strong> from <code>.larapilot/decisions.yaml</code> is grouped
+            (project / discovery vs per user story) with a timeline — see
+            <a href="#deep-dive-decision-log">Decision journal</a>.
           </p>
 
           <h4>Settings &amp; Usage</h4>
@@ -6009,14 +6072,18 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
 
           <h4>Git</h4>
-          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. Pick a
-            developer from the dropdown to see only that author's squares. The page reads the repo with
-            <code>git log --all</code> — it does not call GitHub, GitLab, or any remote API.</p>
+          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The
+            grid fills the panel width: week columns scale with the viewport, cells stay square, <strong>today sits on
+              the right</strong> and older weeks extend left (the view opens scrolled to the recent end). Pick a developer
+            from the dropdown to see only that author's squares. The page reads the repo with <code>git log --all</code>
+            — it does not call GitHub, GitLab, or any remote API.</p>
 
           <h4>Spec detail</h4>
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
           <ul>
             <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
+            <li><strong>Decision journal</strong> — entries for this spec from <code>.larapilot/decisions.yaml</code>
+              (superseded context and regression guard)</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
               <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
               <code>/mockups/{code}</code> in dev/staging)
@@ -6024,7 +6091,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
               blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
               compact footer (blocking checkbox, log path) until the story is <span
-                class="status status-done">DONE</span>. Toggle globally with <code>LARAPILOT_COMMENTS_ENABLED</code>.
+                class="status status-done">DONE</span>. Toggle with <code>settings.comments</code> /
+              <code>larapilot:settings-set --comments=YES|NO</code>; <code>LARAPILOT_COMMENTS_ENABLED=false</code> is a
+              deployment kill-switch — see <a href="#deep-dive-comments">Comments</a>.
             </li>
             <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
             <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done
@@ -6313,7 +6382,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v2.7.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v2.7.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

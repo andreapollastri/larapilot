@@ -180,8 +180,7 @@
         justify-content: flex-end;
     }
 
-    .points,
-    .hours-estimate {
+    .points {
         font-size: 0.75rem;
         font-weight: 700;
         letter-spacing: 0.04em;
@@ -190,40 +189,6 @@
         background: var(--accent-soft);
         padding: 4px 10px;
         border-radius: 999px;
-    }
-
-    .hours-estimate {
-        color: #0f766e;
-        background: color-mix(in srgb, #14b8a6 18%, var(--surface));
-    }
-
-    .estimate-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 10px;
-        margin-top: 4px;
-    }
-
-    .estimate-chip {
-        padding: 10px 12px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
-    }
-
-    .estimate-chip-label {
-        display: block;
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        margin-bottom: 4px;
-    }
-
-    .estimate-chip-value {
-        font-size: 1rem;
-        font-weight: 700;
     }
 
     .merge-commit {
@@ -681,9 +646,6 @@
                 @if (! empty($spec['points']))
                     <span class="points">{{ $spec['points'] }} SP</span>
                 @endif
-                @if (! empty($estimate['total']))
-                    <span class="hours-estimate" title="AI-assisted delivery estimate">{{ $estimate['label_total'] ?? '' }}</span>
-                @endif
                 @php
                     $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
                     $badgeClass = match ($status) {
@@ -714,40 +676,6 @@
                 <h3>User story</h3>
                 <div class="markdown">{!! $spec_html !!}</div>
             </section>
-
-            @if (! empty($estimate['total']))
-                <section class="card panel">
-                    <h3>Delivery estimate (AI-assisted)</h3>
-                    <p class="empty" style="padding: 0 0 12px; text-align: left; margin: 0;">
-                        Wall-clock hours for plan → implement → review, plus rework/fix buffer and deploy.
-                        @if (($estimate['source'] ?? '') === 'tasks')
-                            Implement hours roll up from plan task <code>estimate_hours</code>.
-                        @elseif (($estimate['source'] ?? '') === 'points')
-                            Derived from {{ $spec['points'] ?? 0 }} SP (configurable hours per point).
-                        @endif
-                    </p>
-                    <div class="estimate-grid">
-                        @foreach ([
-                            'plan' => 'Plan',
-                            'implement' => 'Implement',
-                            'review' => 'Review',
-                            'rework' => 'Rework / fix',
-                            'deploy' => 'Deploy',
-                        ] as $phase => $label)
-                            @if (($estimate[$phase] ?? 0) > 0)
-                                <div class="estimate-chip">
-                                    <span class="estimate-chip-label">{{ $label }}</span>
-                                    <span class="estimate-chip-value">{{ number_format((float) $estimate[$phase], 1) }}h</span>
-                                </div>
-                            @endif
-                        @endforeach
-                        <div class="estimate-chip">
-                            <span class="estimate-chip-label">Total</span>
-                            <span class="estimate-chip-value">{{ $estimate['label_total'] ?? '' }}</span>
-                        </div>
-                    </div>
-                </section>
-            @endif
 
             @if (! empty($mockups))
                 <section class="card panel">

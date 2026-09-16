@@ -2,11 +2,27 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [2.7.2] - 2026-09-17
+
+### Changed
+
+- **Git contribution heatmap** — fills the panel width: week columns scale with the container (`1fr` grid), cells stay square via `aspect-ratio`, month labels align to the same grid, and the view scrolls to **today on the right** (older weeks to the left). On narrow viewports cells shrink down to a minimum size before horizontal scroll kicks in.
+
+### Removed
+
+- **Delivery-hour estimates** — drops `EffortEstimateService` and all board/spec/API hour badges (`Est. remaining`, per-spec `6h`-style labels, delivery estimate panel). Story points stay on the Kanban; plan-task `estimate_hours` remain for Gantt/scheduling in Usage. Config block `larapilot.estimate` and env keys `LARAPILOT_HOURS_PER_POINT` / `LARAPILOT_ESTIMATE_REWORK_MULTIPLIER` removed.
+
+### Docs
+
+- Site / package version **v2.7.2**; docs site **Release notes** table (2.7.0–2.7.2), dashboard docs for full-width Git heatmap, decision journal on PRD/spec, and `settings.comments`.
+
 ## [2.7.1] - 2026-09-17
 
 ### Fixed
 
-- **Realistic delivery-hour estimates** — `EffortEstimateService` no longer inflates hours. Plan-task `estimate_hours` are now the anchor: implement is exactly their sum plus ~33% phase overhead (previously grossed up by ~82% via the implement ratio), and story points can never override a planned spec (the old `max()` between the two paths is gone). The points fallback drops from 4 to **2 hours per point** (`LARAPILOT_HOURS_PER_POINT`), default `phase_ratios` shift to implement-dominant (0.10 / 0.75 / 0.05 / 0.05 / 0.05), and runaway inputs are clamped (points capped at 21, single task hours at 16 — beyond that split the spec / fix the unit). `UsageService` forecasts (schedule criticality, Gantt scheduling) now read the same `larapilot.estimate.hours_per_point` instead of a hard-coded 4h/point, with lighter per-task floors (0.5h).
+- **CI pipeline** — green across PHP 8.1–8.5 × Laravel 10–13: PHP 8.1 Composer resolution (PHPUnit advisory ignore), Laravel 10 `Artisan::output()` after `$this->artisan()` (`PendingCommandWithCleanup`), API CSRF exemption for `VerifyCsrfToken`, CSS `Content-Type` charset on mockup assets, Pint/PHPStan on effort-estimate code.
+- **Delivery-hour estimates** — calibrate `EffortEstimateService`: plan-task hours anchor implement (no story-point gross-up), lower default `hours_per_point` (2), implement-dominant phase ratios, clamps on runaway points/task hours.
+- Site / package version **v2.7.1**.
 
 ## [2.7.0] - 2026-09-17
 
@@ -23,7 +39,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **Broader platform support** — `composer.json` now targets PHP **^8.1**, Laravel **^10.49** · **^11.45.3** · **^12** · **^13**, and Laravel Boost **^1.0|^2.0** (restores Laravel 10/11 and Boost 1.x alongside existing Laravel 12/13 + Boost 2 stacks). Symfony YAML accepts **^6.4** for Laravel 10.
 - **Tracker DTOs** — drop `readonly class` (PHP 8.2+) in favour of plain `final class` so PHP 8.1 installs parse cleanly (`RemoteComment`, `RemoteRef`, `RemoteStory`, `StoryPayload`, `TaskPayload`).
 - **CI** — Pest matrix covers PHP 8.1–8.5 × Laravel 10–13 (Orchestra Testbench 8–11). Laravel 10/11 jobs run `composer config --json policy.advisories.ignore '["laravel/framework"]'` so Composer 2.9+ can resolve those EOL lines (open advisories have no patched 10.x/11.x release; fixes shipped in Laravel 12.60+ / 13). Other packages stay blocked.
-- **Docs / README / shared runtime / docs site** — requirements and Boost compatibility notes updated for the widened matrix; Composer 2.9+ advisory blocking on EOL Laravel 10/11 documented (same ignore command as CI); dashboard pages list **Git**; Settings / comments / estimate notes aligned.
+- **Docs / README / shared runtime / docs site** — requirements and Boost compatibility notes updated for the widened matrix; Composer 2.9+ advisory blocking on EOL Laravel 10/11 documented (same ignore command as CI); dashboard pages list **Git**; Settings / comments notes aligned.
 - Site / package version **v2.7.0**.
 
 ## [2.6.0] - 2026-09-09

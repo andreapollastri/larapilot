@@ -127,19 +127,11 @@ specs:
     priority: HIGH
     points: 3
     status: TODO
-    # Optional — explicit AI-assisted wall-clock estimate (hours). When omitted,
-    # the dashboard derives phases from points and/or plan task estimate_hours.
-    estimate_hours:
-      plan: 1.5
-      implement: 6
-      review: 1
-      rework: 1.5      # buffer for request-changes / fixes
-      deploy: 0.5
     body: |
       ...markdown user story...
 ```
 
-**Story points + hours (Mark + Lucille):** assign `points` for relative size. Optionally set `estimate_hours` when you already know the wall-clock split (plan → implement → review → rework/fix → deploy). Default rule of thumb when hours are omitted: **1 SP ≈ 4 h total** with phases ~15% plan · 55% implement · 10% review · 12% rework · 8% deploy — implement rolls up from plan task `estimate_hours` when a plan exists. Specs in rework get a higher rework buffer automatically.
+**Story points (Mark + Lucille):** assign `points` for relative size. Per-task `estimate_hours` belong on the plan (`larapilot-plan`) — they feed Lucille’s Gantt and schedule criticality, not the Kanban board.
 
 **Epics (Mark + Lucille):** group related US specs under `EP-XXX` with a clear **objective** and, when dates exist, an epic **deadline**. Reuse epics from `spec-list` before creating new ones. Lucille validates that epic deadlines align with `schedule-set` milestones and remaining story points.
 

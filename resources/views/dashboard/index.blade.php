@@ -149,8 +149,7 @@
         justify-content: flex-end;
     }
 
-    .points,
-    .hours-estimate {
+    .points {
         font-size: 0.7rem;
         font-weight: 700;
         letter-spacing: 0.04em;
@@ -159,18 +158,6 @@
         background: var(--accent-soft);
         padding: 2px 8px;
         border-radius: 999px;
-    }
-
-    .hours-estimate {
-        color: #0f766e;
-        background: color-mix(in srgb, #14b8a6 18%, var(--surface));
-    }
-
-    .estimate-breakdown {
-        margin-top: 8px;
-        font-size: 0.72rem;
-        color: var(--muted);
-        line-height: 1.35;
     }
 
     .task-progress {
@@ -283,12 +270,6 @@
             <div class="metric-label">WIP</div>
             <div class="metric-value">{{ $metrics['wip'] ?? 0 }}</div>
         </div>
-        @if (($metrics['estimated_hours_remaining'] ?? 0) > 0)
-            <div class="card metric">
-                <div class="metric-label">Est. remaining</div>
-                <div class="metric-value">{{ $metrics['estimated_hours_remaining_label'] ?? '0h' }}</div>
-            </div>
-        @endif
     </section>
 
     @if (($metrics['total'] ?? 0) === 0)
@@ -305,13 +286,6 @@
                         fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)),
                         $items
                     ));
-                    $columnHours = array_sum(array_map(
-                        fn (array $spec): float => (float) (($spec['estimate']['total'] ?? 0)),
-                        $items
-                    ));
-                    $columnHoursLabel = $columnHours > 0
-                        ? (floor($columnHours) == $columnHours ? (int) $columnHours : rtrim(rtrim(number_format($columnHours, 1, '.', ''), '0'), '.')).'h'
-                        : null;
                     $badgeClass = match (strtoupper($status)) {
                         'TODO' => 'badge-todo',
                         'PLANNED' => 'badge-planned',
@@ -329,9 +303,6 @@
                             @if ($columnPoints > 0)
                                 <span class="points">{{ $columnPoints }} SP</span>
                             @endif
-                            @if (! empty($columnHoursLabel))
-                                <span class="hours-estimate">{{ $columnHoursLabel }}</span>
-                            @endif
                         </div>
                     </div>
                     <div class="column-body">
@@ -342,12 +313,6 @@
                                     <div class="spec-badges">
                                         @if (! empty($spec['points']))
                                             <span class="points">{{ $spec['points'] }} SP</span>
-                                        @endif
-                                        @if (! empty($spec['estimate']['total']))
-                                            <span
-                                                class="hours-estimate"
-                                                title="{{ $spec['estimate']['label_breakdown'] ?? '' }}"
-                                            >{{ $spec['estimate']['label_total'] ?? '' }}</span>
                                         @endif
                                         @if (! empty($spec['priority']))
                                             @php
@@ -364,9 +329,6 @@
                                     </div>
                                 </div>
                                 <h3>{{ $spec['title'] ?? 'Untitled' }}</h3>
-                                @if (! empty($spec['estimate']['label_breakdown']))
-                                    <p class="estimate-breakdown">{{ $spec['estimate']['label_breakdown'] }}</p>
-                                @endif
                                 @if (! empty($spec['mockups']['available']))
                                     <div class="mockup-indicator">Mockup</div>
                                 @endif
