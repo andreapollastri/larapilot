@@ -1,6 +1,6 @@
 ---
 name: larapilot-design
-description: Produces isolated HTML/CSS mockups stored in .larapilot/mockups/ and served via a dev-only /mockups route. Use for "make a mockup", "dashboard concept", "landing page", or when planning needs visual references. Italian triggers include "mockup", "prototipo visivo".
+description: Produces isolated HTML/CSS mockups stored in .larapilot/mockups/ and served via a dev-only /mockups route. Use for "make a mockup", "dashboard concept", "landing page", or when planning needs visual references. Runs a design-system gate (AskQuestion) when the stack is not already explicit — packaged systems, user-added folders under .larapilot/design-systems/, or a new custom aesthetic from scratch. Italian triggers include "mockup", "prototipo visivo", "design system", "sistema di design", "stile visivo", "palette", "look and feel".
 ---
 
 # Larapilot — UX Design
@@ -36,6 +36,120 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 ## Config & CLI
 
 1. `php artisan larapilot:config-show` — read `paths.mockups`, `paths.client_materials`, `paths.research`, `paths.design_systems`
+2. Read PRD (`paths.prd`) — especially `## Technical Architecture` (admin panel, CSS framework, Starter Kit variant)
+3. When `data.settings.decision_log` is `YES` (default), run `php artisan larapilot:decision-check --topic="design system" --value="<candidate>"` before switching away from a logged choice; after the gate settles, `php artisan larapilot:decision-log --topic="design system" --value="…" --source=askquestion --skill=larapilot-design [--spec=US-XXX] [--rationale="…"]` (and separate entries for custom aesthetic: palette, typography, tone when created from scratch)
+
+## Workflow
+
+### 0. Design system gate (Elise + Joe — **before** writing HTML)
+
+**Never assume a design system.** Run detection first; **AskQuestion** only when the answer is not already explicit and unambiguous.
+
+#### 0a. Detect current context (parallel)
+
+1. **PRD** — `## Technical Architecture`: Filament, Laravel Starter Kit variant (`livewire` / `react` / `vue` / `svelte`), Bootstrap 5, Tailwind CSS, AdminLTE, or explicit “custom / no panel”
+2. **Decision journal** — `.larapilot/decisions.yaml` topics such as `design system`, `admin panel`, `visual language`, `aesthetic`, `palette`
+3. **Inception choices** — `.larapilot/choices.yaml` (`admin_panel`, `frontend_topology`, …) when present
+4. **Available design systems** — scan `{paths.design_systems}/` (usually `.larapilot/design-systems/`):
+   - **Packaged** (refreshed on install/update): `filament/`, `starter-kit/`, `bootstrap-5/`, `tailwind/`, `adminlte/` — see `{paths.design_systems}/README.md`
+   - **User-added** — any **other** subfolder that looks like a system: contains `README.md`, and/or `tokens.css`, and/or `html/index.html`. Use the **folder name** as the option id (e.g. `acme-brand/` → `ACME_BRAND`). Never ignore user-uploaded references.
+5. **Boost `Application Info`** — installed packages (e.g. `filament/filament`, Flux, Bootstrap) when they make the stack **obvious**
+6. **Existing mockups** — `.larapilot/mockups/*/` README + HTML: keep **visual consistency** within the same product unless the user explicitly wants a break
+7. **Client materials** — `{paths.client_materials}/` brand guidelines, Figma exports, wireframes (may lock palette/typography without naming a Larapilot system folder)
+8. **Screen scope** — admin/control panel vs public marketing vs authenticated app shell (filters which packaged options are relevant)
+
+#### 0b. When to **skip** AskQuestion (state the locked system once in chat)
+
+Skip the gate and proceed when **one** system clearly applies to **this** mockup scope, for example:
+
+- PRD records **Filament** and the spec/mockup is for an **admin** area (or Filament is installed and the user asked for “Filament admin”)
+- PRD records a **Starter Kit** variant and the mockup is **authenticated app UI** for that kit
+- PRD records **Bootstrap 5**, **Tailwind-only**, or **AdminLTE** and the mockup matches that scope
+- A **prior decision** or spec note already names the system for this spec (re-run `decision-check` if the user is changing it)
+- **Existing mockups** for the same product already establish a system and the user did not ask for a new direction
+
+When skipping, cite **why** (one line): e.g. “PRD → Filament admin; using `{paths.design_systems}/filament/`.”
+
+#### 0c. When to **run** AskQuestion (mandatory)
+
+Run the gate when **any** of these hold:
+
+- PRD is silent, vague, or contradicts the mockup scope (e.g. landing page but PRD only mentions Filament)
+- Multiple systems could apply (admin **and** public in one spec — may need **split** systems; ask per surface)
+- User-added folders exist alongside packaged ones and nothing recorded which to use
+- User says “mockup”, “redesign”, “new look” without naming a stack
+- You would otherwise default to Nordic minimal **without** an explicit user or PRD choice for **public** UI
+
+Use **AskQuestion**; Elise frames trade-offs in one chat line; **copy prompts and labels below** — do not invent cryptic shorthand.
+
+**Round 1 — Design system (required when gate runs)**
+
+Build options **dynamically** from §0a:
+
+- Include every **relevant packaged** system for this screen type (do not offer Filament for a pure marketing landing unless the user asked for admin chrome)
+- Include every **user-added** folder discovered under `{paths.design_systems}/` as its own option (label = folder name + “custom / uploaded”)
+- Include **`EXISTING_MOCKUPS`** when `.larapilot/mockups/` already defines a look — “Match existing mockups in this project”
+- Include **`CLIENT_BRAND`** when `{paths.client_materials}/` has brand guidelines but no system folder — “Follow client brand materials (no packaged system)”
+- **Always** include **`NEW_CUSTOM`** last — never omit the from-scratch path
+
+- **AskQuestion prompt:** `Design system (current: {VALUE or "not set"}) — which visual system should these mockups follow?`
+- **Chat framing (one line):** 🎨 Elise + ✨ Joe — locks tokens, components, and admin vs public language before any HTML.
+
+| Option id | AskQuestion label (adapt `{name}` from folder scan) |
+| --- | --- |
+| `FILAMENT` | `Filament — admin panel (.larapilot/design-systems/filament/)` |
+| `STARTER_KIT` | `Laravel Starter Kit — authenticated app shell (.larapilot/design-systems/starter-kit/)` |
+| `BOOTSTRAP_5` | `Bootstrap 5 — marketing or Bootstrap app UI (.larapilot/design-systems/bootstrap-5/)` |
+| `TAILWIND` | `Tailwind CSS — utility-first marketing / custom app (.larapilot/design-systems/tailwind/)` |
+| `ADMINLTE` | `AdminLTE — Bootstrap admin dashboard (.larapilot/design-systems/adminlte/)` |
+| `{CUSTOM_FOLDER}` | `{Folder name} — custom design system uploaded in .larapilot/design-systems/{folder}/` |
+| `EXISTING_MOCKUPS` | `Match existing mockups — stay consistent with .larapilot/mockups/ already in this project` |
+| `CLIENT_BRAND` | `Client brand materials — follow guidelines in .larapilot/client-materials/ (extract tokens into mockup README)` |
+| `NEW_CUSTOM` | `New custom design from scratch — no packaged system; Elise will propose aesthetic direction next` |
+
+Only list options that apply; **always** list `NEW_CUSTOM`. If the user picks a packaged/custom folder, read that folder’s `README.md` + `components.md` (+ `tokens.css`, `html/` catalog) before Stage 1.
+
+**Round 2 — Custom aesthetic (required when `NEW_CUSTOM`, or when `CLIENT_BRAND` / `EXISTING_MOCKUPS` needs a named direction)**
+
+Propose concrete directions — user can pick one or combine via a follow-up chat message.
+
+- **AskQuestion prompt:** `Visual direction — what aesthetic should Elise apply? (mobile-first, light + dark unless you opt out)`
+- **Chat framing (one line):** 🎨 Elise — Nordic minimal is the Larapilot default for **public** UI only when you confirm it here or in the PRD; otherwise treat these as explicit proposals.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NORDIC_MINIMAL` | `Nordic minimal — calm neutrals, soft contrast, elegant whitespace (Larapilot default for public UI)` |
+| `PASTEL_COOL` | `Cool pastels — airy backgrounds, muted blues/mints/lavenders, gentle gradients` |
+| `WARM_EDITORIAL` | `Warm editorial — cream paper tones, serif accents, magazine-like hierarchy` |
+| `CORPORATE_SAAS` | `Corporate SaaS — dense dashboards, crisp grids, trustworthy blues/grays, clear data hierarchy` |
+| `BOLD_BRUTALIST` | `Bold / brutalist — strong typography, high contrast blocks, minimal decoration` |
+| `PLAYFUL_ROUNDED` | `Playful — rounded shapes, friendly color pops, approachable micro-interactions` |
+| `DARK_LUXURY` | `Dark luxury — deep backgrounds, refined accents, premium product feel` |
+| `MATCH_REFERENCE` | `Match a reference — I'll adapt layout/patterns from .larapilot/research/reference-products/ (not a clone)` |
+| `DESCRIBE_OTHER` | `Other — I'll describe palette, typography, and mood in chat (e.g. "minimal Japanese, warm gray + indigo")` |
+
+When the user picks `DESCRIBE_OTHER` or adds detail in chat, ask **one** short clarifying follow-up if needed (palette, serif vs sans, density, motion level) — max one extra round.
+
+**Round 3 — Surface split (only when the spec mixes admin + public and Round 1 did not split them)**
+
+- **AskQuestion prompt:** `This spec has both admin and public UI — one design system or split?`
+- **Chat framing (one line):** 🎨 Elise — Filament/AdminLTE/Starter Kit for admin; Nordic or Tailwind/Bootstrap for public is the usual split.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `SPLIT` | `Split — admin uses the panel system; public/marketing uses the custom/Nordic direction` |
+| `UNIFIED` | `Unified — one visual language everywhere (document trade-offs in README)` |
+
+#### 0d. Persist and document
+
+After the gate:
+
+1. Log the choice (`decision-log` when enabled) — topic `design system` (and `visual direction` when `NEW_CUSTOM`)
+2. Mockup **README.md** must record: chosen system path (or “custom from scratch”), aesthetic tokens, admin vs public scope, and link to `{paths.design_systems}/{folder}/` when applicable
+3. For **user-added** folders, treat them like packaged systems: copy/link `tokens.css`, map screens to `html/` catalog if present
+4. For **NEW_CUSTOM**, define tokens in README (colors, type scale, radius, spacing, motion) before `index.html`
+
+Then continue with mockup work (Rules below). Sections **Elise — Filament / Starter Kit / …** apply when the gate selected (or skipped to) that system.
 
 ## Rules
 

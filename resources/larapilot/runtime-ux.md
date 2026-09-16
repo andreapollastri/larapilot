@@ -27,7 +27,7 @@ When the PRD `## Technical Architecture` records a UI framework — **Filament**
 3. Show **light + dark** on at least one key screen; document sidebar/nav collapse on mobile.
 4. Brand/theme colors from the PRD or client materials override system defaults — document RGB/hex for implementation.
 
-When no design system is chosen, design in the project's visual language — mockups inform the panel-route decision downstream (per **Vendor & Package Policy** in `runtime-delivery.md`), not the other way around.
+When no design system is chosen, **`larapilot-design` runs the design-system gate** (AskQuestion): packaged folders under `.larapilot/design-systems/`, any **user-added** system folders there, or a **new custom aesthetic from scratch** — before writing HTML. When the PRD or decision journal already locks the stack (e.g. Filament admin), the gate is skipped. Otherwise design in the agreed visual language — mockups inform the panel-route decision downstream (per **Vendor & Package Policy** in `runtime-delivery.md`), not the other way around.
 
 ### Default visual language
 
