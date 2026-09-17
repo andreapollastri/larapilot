@@ -2,6 +2,17 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.0.1] - 2026-09-18
+
+### Added
+
+- **Dashboard board — project settings summary** — `/larapilot` now shows a compact **Project settings** panel above the Kanban metrics with the current value of every `.larapilot/config.yaml` setting (Comments, Dashboard auth, API auth, Decision log, Code history, Git mode, notifications, …). Link **View all →** opens the full Settings page with allowed options per key. Partial: `dashboard/partials/project-settings-summary.blade.php`.
+
+### Changed
+
+- **Dashboard Settings** — `decision_log` and `code_history` appear in the settings grid with human-readable labels (they were persisted in config but missing from the dashboard options list).
+- Site / package version **v3.0.1**.
+
 ## [3.0.0] - 2026-09-18
 
 ### Added

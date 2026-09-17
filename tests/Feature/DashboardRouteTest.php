@@ -13,6 +13,10 @@ it('serves the workflow dashboard in local environment', function (): void {
     $this->get('/larapilot')
         ->assertOk()
         ->assertSee('Larapilot')
+        ->assertSee('Project settings')
+        ->assertSee('Comments')
+        ->assertSee('Dashboard auth')
+        ->assertSee('Decision log')
         ->assertSee('US-001')
         ->assertSee('Login');
 });

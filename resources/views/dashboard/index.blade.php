@@ -249,10 +249,75 @@
         border-color: color-mix(in srgb, #f59e0b 35%, var(--border));
         background: color-mix(in srgb, #f59e0b 10%, var(--surface));
     }
+
+    .project-settings-summary {
+        padding: 18px 20px;
+        margin-bottom: 24px;
+    }
+
+    .project-settings-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+    }
+
+    .project-settings-summary h2 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+    }
+
+    .project-settings-summary .sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
+
+    .project-settings-link {
+        color: var(--accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+
+    .project-settings-link:hover {
+        text-decoration: underline;
+    }
+
+    .project-settings-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .setting-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: color-mix(in srgb, var(--border) 35%, transparent);
+        font-size: 0.78rem;
+        color: var(--muted);
+    }
+
+    .setting-pill strong {
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .setting-pill-label {
+        font-weight: 600;
+    }
 </style>
 @endpush
 
 @section('content')
+    @include('larapilot::dashboard.partials.project-settings-summary', ['settings' => $settings ?? []])
+
     <section class="metrics">
         <div class="card metric">
             <div class="metric-label">Total specs</div>

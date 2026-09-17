@@ -85,7 +85,9 @@ class DashboardService
             );
         }
 
-        return $board;
+        return array_merge($board, [
+            'settings' => $this->choices->dashboard()['settings'],
+        ]);
     }
 
     /**
