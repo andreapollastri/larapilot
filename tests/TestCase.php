@@ -59,6 +59,10 @@ abstract class TestCase extends OrchestraTestCase
             $this->deleteDirectory(base_path('.larapilot'));
         }
 
+        if (is_dir(base_path('_project_docs'))) {
+            $this->deleteDirectory(base_path('_project_docs'));
+        }
+
         foreach (['phpstan.neon', 'phpstan.neon.dist', 'pint.json'] as $file) {
             $path = base_path($file);
 

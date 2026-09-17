@@ -10,7 +10,7 @@ When **Frontend Topology** is `API + external frontend`, **everything runs from 
 ## How it works
 
 1. **Laravel** owns PRD, backlog, plans, mockups, workflow state.
-2. **`frontend.repo_path`** in `.larapilot/config.yaml` points to the absolute FE directory.
+2. **`LARAPILOT_FRONTEND_REPO_PATH`** in `.env` points to the absolute FE directory (set via `larapilot:frontend-set` — never commit user paths in YAML).
 3. **`larapilot-plan` / `larapilot-implement`** write UI code there via tasks marked `repo: frontend`.
 
 The FE repo holds application code only — no mirrored PRD, no Larapilot workflow.
@@ -39,13 +39,13 @@ Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-discovery.md`
 
 ### 1. Link the FE repo (once)
 
-If `config-show` → `data.frontend.configured` is **false**, ask for the **absolute path** (e.g. `/Users/dev/acme-web`).
+If `config-show` → `data.frontend.configured` is **false**, **AskQuestion** (or chat) for the **absolute path** — keep asking until provided; never use placeholder user paths in artifacts.
 
 ```bash
 php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React
 ```
 
-Record the same path in the PRD → **External frontend repo**.
+This writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`. Record the stack (not the path) in the PRD → **External frontend repo**.
 
 ### 2. Scan existing code (before plan / evolutive)
 

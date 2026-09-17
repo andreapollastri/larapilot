@@ -11,6 +11,10 @@ settings:
   decision_log: true
   # Per spec/task file + line-range history (.larapilot/code-history.yaml) — OFF by default.
   code_history: false
+  # Semver release ledger + Gitflow release branches — OFF by default.
+  release_mode: false
+  # Living project documentation (_project_docs/) — OFF by default.
+  project_docs: false
   dashboard_auth: false
   # Require LARAPILOT_API_TOKEN on every /larapilot/api/* request — OFF by default.
   api_auth: false
@@ -25,9 +29,8 @@ settings:
   notify_discord: false
   notify_telegram: false
 
-# External frontend repo — set via larapilot:frontend-set when topology is API + external frontend.
+# External frontend repo — absolute path in LARAPILOT_FRONTEND_REPO_PATH (.env); stack here.
 frontend:
-  repo_path: null
   stack: null
 
 paths:
@@ -43,6 +46,9 @@ paths:
   research: .larapilot/research/
   design_systems: .larapilot/design-systems/
   internal_feedback: .larapilot/internal-feedback/
+  releases: .larapilot/releases.yaml
+  project_docs: _project_docs/
+  custom_skills: .larapilot/skills/
 
 workflow:
   statuses:

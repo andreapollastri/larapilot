@@ -87,6 +87,9 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-feature` | Mini-inception for one evolutiva |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
 | `/larapilot-frontend-companion` | Link external FE repo path, scan code — **from Laravel only** |
+| `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (when `release_mode=YES`) |
+| `/larapilot-project-docs` | Living handbook in `_project_docs/` (when `project_docs=YES`) |
+| `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` |
 | `/larapilot-design` | Static HTML mockups from design system |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
@@ -98,7 +101,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
-During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `SPA-in-Laravel`, or `API + external frontend`. For split-repo: `larapilot:frontend-set --path=…`, then `frontend-scan` — **all from Laravel**. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
+During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `SPA-in-Laravel`, or `API + external frontend`. For split-repo: `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env` — never commit user paths in YAML), then `frontend-scan` — **all from Laravel**. Optional **release mode** tracks semver releases in `.larapilot/releases.yaml` with Gitflow release branches. Optional **project docs** maintains `_project_docs/`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ---
 
@@ -186,7 +189,7 @@ Workflow **state** still changes only via skills or Artisan — not from the das
 
 ## Frontend companion — split repo
 
-When **Frontend Topology** is `API + external frontend`, **Laravel is the only Larapilot cockpit**. PRD, backlog, plans, and all `/larapilot-*` commands run in the backend workspace. The FE repo is a **linked write target** configured with an absolute path.
+When **Frontend Topology** is `API + external frontend`, **Laravel is the only Larapilot cockpit**. PRD, backlog, plans, and all `/larapilot-*` commands run in the backend workspace. The FE repo is a **linked write target** whose absolute path lives in **`LARAPILOT_FRONTEND_REPO_PATH`** (`.env`).
 
 ### How it works
 
@@ -201,7 +204,7 @@ Laravel (cockpit)                         Frontend repo (write target)
 
 1. **Inception** records topology and asks for the FE absolute path → `larapilot:frontend-set`.
 2. **Scan** (`larapilot:frontend-scan`) reads existing FE structure before planning evolutive work.
-3. **Spec → plan → implement** run on Laravel. UI tasks use `repo: frontend` and write under `data.frontend.repo_path`.
+3. **Spec → plan → implement** run on Laravel. UI tasks use `repo: frontend` and write under the path resolved from `LARAPILOT_FRONTEND_REPO_PATH`.
 
 ### Setup commands
 
@@ -214,7 +217,11 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 
 | Command | Purpose |
 | --- | --- |
-| `larapilot:frontend-set` | Persist `frontend.repo_path` (+ optional `stack`) |
+| `larapilot:frontend-set` | Persist `LARAPILOT_FRONTEND_REPO_PATH` in `.env` (+ optional `stack` in config) |
+| `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
+| `larapilot:release-add` / `release-set` | Register or update a release |
+| `larapilot:release-import` | Rebuild shipped releases from Git semver tags |
+| `larapilot:custom-skill-list` | List skills under `.larapilot/skills/` |
 | `larapilot:frontend-scan` | Detect stack, tooling, structure, entrypoints |
 
 Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).

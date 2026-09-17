@@ -24,6 +24,10 @@ return [
         // Code change history (.larapilot/code-history.yaml) — per spec/task list of files and line
         // ranges touched, derived from the task git commit. OFF by default; set true to enable.
         'code_history' => false,
+        // Release mode — semver release ledger + Gitflow release branches. OFF by default.
+        'release_mode' => false,
+        // Living project documentation in _project_docs/ — OFF by default.
+        'project_docs' => false,
         // Internal feedback comments on the dashboard, JSON API, and
         // `larapilot:spec-comment` — ON by default; set false to disable.
         'comments' => true,
@@ -70,9 +74,10 @@ return [
     ],
 
     // External frontend repository (when PRD topology is API + external frontend).
-    // Persisted in .larapilot/config.yaml via larapilot:frontend-set.
+    // Absolute path lives in LARAPILOT_FRONTEND_REPO_PATH (.env) — never commit user paths.
+    // Stack label persists in .larapilot/config.yaml via larapilot:frontend-set.
     'frontend' => [
-        'repo_path' => null,
+        'repo_path' => env('LARAPILOT_FRONTEND_REPO_PATH'),
         'stack' => null,
     ],
 
@@ -94,6 +99,9 @@ return [
         'schedule' => '.larapilot/usage/schedule.yaml',
         'decisions' => '.larapilot/decisions.yaml',
         'code_history' => '.larapilot/code-history.yaml',
+        'releases' => '.larapilot/releases.yaml',
+        'project_docs' => '_project_docs/',
+        'custom_skills' => '.larapilot/skills/',
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level

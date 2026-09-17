@@ -9,7 +9,7 @@ You run a **mini-inception** for one new feature on an **existing** project, the
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Legacy Rewrite & Porting** when the feature touches legacy scope).
+Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Legacy Rewrite & Porting** when the feature touches legacy scope). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
 
 When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
 
@@ -41,7 +41,8 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 3. Read PRD from `data.paths.prd` — if missing, suggest `/larapilot-inception` first
 4. `php artisan larapilot:validate-spec --file=...`
 5. `php artisan larapilot:spec-add --file=...`
-6. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
+6. When `release_mode=YES` and open releases exist: `release-list`, AskQuestion for target release (each open release | new release | none/backlog), then `release-set --add-spec=US-XXX` after `spec-add`; add `**Release:** x.y.z` to the spec body.
+7. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
 
 ## Preconditions
 
@@ -79,6 +80,8 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 - **Priority:** `CRITICAL` | `HIGH` | `MEDIUM` | `LOW` (default from MoSCoW: Must→HIGH, Should→MEDIUM, Could→LOW; compliance/security→CRITICAL)
 - **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (see **Epic consolidation** in shared-runtime)
 - **Blocked by:** none | existing `US-XXX` (dependency)
+
+**Release assignment (when `release_mode=YES` and `release-list` shows open releases)** — AskQuestion: each open `planned`/`in_progress` release | **new release** (Sarah proposes next semver) | **none / backlog**. Persist after `spec-add` with `release-set --add-spec=`.
 
 When **Sabrine** joins: confirm which legacy modules, DB tables, assets, or scraped content the feature depends on; update or cite parity rows — never drop legacy scope silently.
 

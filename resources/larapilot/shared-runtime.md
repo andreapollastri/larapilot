@@ -9,6 +9,9 @@ Runtime rules shared by **all** Larapilot skills. Load this file once at activat
 | `.larapilot/runtime-ux.md`        | Mobile-first/responsive contract, WCAG/a11y, brand assets, SEO structure, design systems, copywriting, marketing                                                  | `design`, `plan` (UI specs), `ship`          |
 | `.larapilot/runtime-ship.md`      | Deploy platforms & runbooks, edge/CDN/WAF, cloud, observability, OWASP security gate, privacy/legal launch gate, launch checks                                    | `ship`                                       |
 | `.larapilot/runtime-ops.md`       | PRD Living Document, usage ledger & schedule (Lucille), maintenance & support (Sophia), red team lifecycle (Oliver)                                              | `feature`, `bug`, `ship`, `usage`, *all skills (Lucille)* |
+| `.larapilot/runtime-release.md`   | Release ledger, Gitflow release branches, parallel releases, spec ↔ release assignment, ship ceremony                                                            | `release`, `inception`, `adopt`, `feature`, `plan`, `ship` *(when `release_mode=YES`)* |
+| `.larapilot/runtime-project-docs.md` | Living `_project_docs/` handbook — structure, diagrams, retroactive catch-up, per-change updates                                                              | `project-docs`, *all skills when `project_docs=YES`* |
+| `.larapilot/runtime-custom-skills.md` | User-authored skills under `.larapilot/skills/`, Zoey authoring flow via `/larapilot-custom-skill`                                                             | `custom-skill` |
 
 `larapilot-settings` and `larapilot-frontend-companion` need this core file only. **`larapilot-usage`** loads core + `runtime-ops.md` (Usage Ledger & Schedule). Every concept has **one** canonical copy — other files reference it by file + heading name, never re-paste it.
 
@@ -36,7 +39,7 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `release_mode`, `project_docs`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 - Decision journal (default ON): record every explicit user choice with `php artisan larapilot:decision-log`, and run `php artisan larapilot:decision-check` before overriding a topic that may already carry one — see **Decision journal (`settings.decision_log`)** below.
 - Code change history (default OFF): when `data.settings.code_history` is `YES`, call `php artisan larapilot:code-log` after each `task-done` — see **Code change history (`settings.code_history`)** below.
 
@@ -52,7 +55,17 @@ Laravel **10** and **11** are past their security-fix window. Composer 2.9+ refu
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `comments: true` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: true` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+
+### Environment paths (never commit user-specific absolute paths)
+
+Machine-specific absolute paths **must not** appear in committed YAML or skill examples. Store them in `.env` and resolve via `config-show`:
+
+| Concern | Env key | Set via |
+| --- | --- | --- |
+| External frontend repo | `LARAPILOT_FRONTEND_REPO_PATH` | `/larapilot-frontend-companion` or `larapilot:frontend-set --path=…` (writes `.env`) |
+
+When a skill needs a path that is missing from env, **AskQuestion** (or chat) until the user provides it, then persist with the matching CLI command and continue. Never embed `/Users/…` style examples in artifacts.
 
 ### Effort (`settings.effort`)
 
@@ -149,6 +162,32 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | --- | --- |
 | **`true` / `YES`** | After each `larapilot:task-done` (and once more at `spec-review`), call `php artisan larapilot:code-log --spec=US-XXX --task=TASK-XX --skill=larapilot-implement`. The command resolves the task's commit itself (`--commit=` / `--range=` override it; it falls back to the working-tree diff when no commit resolves). `larapilot:code-history [--file= --spec=]` reports per-file touchpoints. |
 | **`false` / `NO`** | **Default.** Skip entirely — no `code-log` calls. |
+
+### Release mode (`settings.release_mode`) — opt-in, default OFF
+
+Semver **release ledger** (`.larapilot/releases.yaml`) plus optional Gitflow **`release/x.y.z`** branches when `git_mode` is `GITFLOW` or `GITFLOW_PUSH`. Full contract: `.larapilot/runtime-release.md`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** Ignore release ledger, release branches, and release AskQuestion rounds — classic `develop` / `feature/US-XXX-*` flow only. |
+| **`true` / `YES`** | Sarah owns Git mechanics; Jack owns policy. `/larapilot-release` manages the ledger; inception/adopt propose roadmaps; `/larapilot-feature` assigns specs to open releases; `/larapilot-ship` runs the release ship ceremony. |
+
+Enable with `php artisan larapilot:settings-set --release-mode=YES`.
+
+### Project docs (`settings.project_docs`) — opt-in, default OFF
+
+Living technical + functional handbook under **`_project_docs/`** (path key `paths.project_docs`). Albert owns structure; every material change updates the relevant chapter. Full contract: `.larapilot/runtime-project-docs.md`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** No `_project_docs/` maintenance obligation. |
+| **`true` / `YES`** | After each implement/review/ship (and on enable mid-project), update `_project_docs/`; bootstrap retroactively from PRD, specs, plans, and git history when not enabled from day 1. |
+
+Enable with `php artisan larapilot:settings-set --project-docs=YES`.
 
 ### Comments (`settings.comments`) — opt-out, default ON
 

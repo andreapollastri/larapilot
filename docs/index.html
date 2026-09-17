@@ -1260,7 +1260,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v2.7.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.0.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -3138,7 +3138,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v2.7.2</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v3.0.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3150,6 +3150,18 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>3.0.0</strong> <span class="chip">2026-09-18</span></td>
+                  <td>
+                    <strong>Added:</strong> <code>settings.release_mode</code> + <code>/larapilot-release</code>
+                    (ledger <code>.larapilot/releases.yaml</code>, Gitflow <code>release/x.y.z</code>, parallel releases,
+                    tag import); <code>settings.project_docs</code> + <code>/larapilot-project-docs</code>
+                    (<code>_project_docs/</code> handbook); <code>/larapilot-custom-skill</code> + <code>.larapilot/skills/</code>;
+                    <code>LARAPILOT_FRONTEND_REPO_PATH</code> in <code>.env</code> (no user paths in YAML).<br>
+                    <strong>CLI:</strong> <code>release-list</code>, <code>release-add</code>, <code>release-set</code>,
+                    <code>release-import</code>, <code>custom-skill-list</code>.
+                  </td>
+                </tr>
                 <tr>
                   <td><strong>2.7.2</strong> <span class="chip">2026-09-17</span></td>
                   <td>

@@ -835,6 +835,85 @@ class GitService
         return null;
     }
 
+    /**
+     * Semver tags from the repository (`vX.Y.Z` or `X.Y.Z`).
+     *
+     * @return list<array{version: string, tagged_at: string|null, subject: string|null}>
+     */
+    public function semverTags(bool $includeAnnotated = false): array
+    {
+        if (! $this->isRepository()) {
+            return [];
+        }
+
+        $format = $includeAnnotated ? '%(refname:short)%x1f%(creatordate:iso-strict)%x1f%(contents:subject)' : '%(refname:short)%x1f%(creatordate:iso-strict)';
+        $raw = $this->git('tag', '-l', '--sort=version:refname', '--format='.$format);
+
+        if ($raw === null || trim($raw) === '') {
+            return [];
+        }
+
+        $tags = [];
+
+        foreach (explode("\n", $raw) as $line) {
+            if ($line === '') {
+                continue;
+            }
+
+            $parts = explode("\x1f", $line);
+            $name = trim($parts[0] ?? '');
+
+            if ($name === '') {
+                continue;
+            }
+
+            $version = ltrim($name, 'vV');
+
+            if (preg_match('/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/', $version) !== 1) {
+                continue;
+            }
+
+            $tags[] = [
+                'version' => $version,
+                'tagged_at' => isset($parts[1]) && trim($parts[1]) !== '' ? trim($parts[1]) : null,
+                'subject' => isset($parts[2]) && trim($parts[2]) !== '' ? trim($parts[2]) : null,
+            ];
+        }
+
+        return $tags;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function releaseBranches(): array
+    {
+        if (! $this->isRepository()) {
+            return [];
+        }
+
+        $raw = $this->git('branch', '-a', '--list', 'release/*');
+
+        if ($raw === null || trim($raw) === '') {
+            return [];
+        }
+
+        $branches = [];
+
+        foreach (explode("\n", $raw) as $line) {
+            $branch = trim(str_replace('*', '', $line));
+
+            if ($branch === '' || ! str_contains($branch, 'release/')) {
+                continue;
+            }
+
+            $branch = preg_replace('#^remotes/[^/]+/#', '', $branch) ?? $branch;
+            $branches[] = $branch;
+        }
+
+        return array_values(array_unique($branches));
+    }
+
     protected function git(string ...$args): ?string
     {
         $command = 'git -C '.escapeshellarg($this->config->projectRoot()).' ';

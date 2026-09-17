@@ -6,6 +6,7 @@ namespace Larapilot\Services;
 
 use Illuminate\Support\Arr;
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\EnvWriter;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigService
@@ -86,6 +87,9 @@ class ConfigService
                 'schedule' => $this->absolutePath($config['paths']['schedule'] ?? '.larapilot/usage/schedule.yaml'),
                 'decisions' => $this->absolutePath($config['paths']['decisions'] ?? '.larapilot/decisions.yaml'),
                 'code_history' => $this->absolutePath($config['paths']['code_history'] ?? '.larapilot/code-history.yaml'),
+                'releases' => $this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml'),
+                'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
+                'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -108,9 +112,7 @@ class ConfigService
         $defaults = $this->defaultFrontend();
         $merged = array_replace($defaults, array_intersect_key($raw, $defaults));
 
-        $repoPath = is_string($merged['repo_path'] ?? null) && trim($merged['repo_path']) !== ''
-            ? rtrim(trim($merged['repo_path']), '/\\')
-            : null;
+        $repoPath = $this->resolveFrontendRepoPath($merged);
 
         $stack = is_string($merged['stack'] ?? null) && trim($merged['stack']) !== ''
             ? trim($merged['stack'])
@@ -141,13 +143,33 @@ class ConfigService
         $defaults = config('larapilot.frontend', []);
 
         return [
-            'repo_path' => is_string($defaults['repo_path'] ?? null) && $defaults['repo_path'] !== ''
-                ? $defaults['repo_path']
-                : null,
+            'repo_path' => $this->resolveFrontendRepoPath([]),
             'stack' => is_string($defaults['stack'] ?? null) && $defaults['stack'] !== ''
                 ? $defaults['stack']
                 : null,
         ];
+    }
+
+    /**
+     * Resolve the external frontend repo path from env first, then legacy YAML.
+     *
+     * @param  array<string, mixed>  $merged
+     */
+    protected function resolveFrontendRepoPath(array $merged): ?string
+    {
+        $candidates = [
+            EnvWriter::get('LARAPILOT_FRONTEND_REPO_PATH'),
+            is_string($merged['repo_path'] ?? null) ? trim($merged['repo_path']) : null,
+            is_string(config('larapilot.frontend.repo_path')) ? trim((string) config('larapilot.frontend.repo_path')) : null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) && $candidate !== '') {
+                return rtrim($candidate, '/\\');
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -175,15 +197,25 @@ class ConfigService
                 continue;
             }
 
+            if ($key === 'repo_path') {
+                if ($value === null || $value === '') {
+                    EnvWriter::set('LARAPILOT_FRONTEND_REPO_PATH', '');
+                    unset($frontend['repo_path']);
+                } else {
+                    EnvWriter::set('LARAPILOT_FRONTEND_REPO_PATH', rtrim(trim((string) $value), '/\\'));
+                    unset($frontend['repo_path']);
+                }
+
+                continue;
+            }
+
             if ($value === null || $value === '') {
                 $frontend[$key] = null;
 
                 continue;
             }
 
-            $frontend[$key] = $key === 'repo_path'
-                ? rtrim(trim((string) $value), '/\\')
-                : trim((string) $value);
+            $frontend[$key] = trim((string) $value);
         }
 
         $existing['frontend'] = $frontend;
@@ -222,7 +254,9 @@ class ConfigService
      *     notifications: string,
      *     notify_slack: string,
      *     notify_discord: string,
-     *     notify_telegram: string
+     *     notify_telegram: string,
+     *     release_mode: string,
+     *     project_docs: string
      * }
      */
     public function settings(): array
@@ -267,7 +301,9 @@ class ConfigService
      *     notifications: bool,
      *     notify_slack: bool,
      *     notify_discord: bool,
-     *     notify_telegram: bool
+     *     notify_telegram: bool,
+     *     release_mode: bool,
+     *     project_docs: bool
      * }
      */
     public function defaultSettings(): array
@@ -313,6 +349,8 @@ class ConfigService
             'notify_slack' => false,
             'notify_discord' => false,
             'notify_telegram' => false,
+            'release_mode' => false,
+            'project_docs' => false,
         ];
     }
 
@@ -424,6 +462,22 @@ class ConfigService
     public function codeHistoryEnabled(): bool
     {
         return $this->settings()['code_history'] === 'YES';
+    }
+
+    /**
+     * Semver release ledger + Gitflow release branches — OFF by default.
+     */
+    public function releaseModeEnabled(): bool
+    {
+        return $this->settings()['release_mode'] === 'YES';
+    }
+
+    /**
+     * Living project documentation in `_project_docs/` — OFF by default.
+     */
+    public function projectDocsEnabled(): bool
+    {
+        return $this->settings()['project_docs'] === 'YES';
     }
 
     /**
@@ -766,6 +820,22 @@ class ConfigService
         return $this->allowedYesNoModes();
     }
 
+    /**
+     * @return list<string>
+     */
+    public function allowedReleaseModeModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedProjectDocsModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
     public function absolutePath(string $relative): string
     {
         if (str_starts_with($relative, '/') || preg_match('/^[A-Za-z]:[\\\\\\/]/', $relative) === 1) {
@@ -836,6 +906,9 @@ class ConfigService
             $this->absolutePath($config['paths']['usage'] ?? '.larapilot/usage/'),
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
             $this->absolutePath('.larapilot/brand/'),
+            dirname($this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml')),
+            $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
+            $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
         ]));
     }
 

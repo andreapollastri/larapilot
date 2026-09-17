@@ -29,6 +29,11 @@ use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\NotifyCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
+use Larapilot\Console\Commands\ReleaseAddCommand;
+use Larapilot\Console\Commands\ReleaseImportCommand;
+use Larapilot\Console\Commands\ReleaseListCommand;
+use Larapilot\Console\Commands\ReleaseSetCommand;
+use Larapilot\Console\Commands\CustomSkillListCommand;
 use Larapilot\Console\Commands\ScheduleSetCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
@@ -80,7 +85,9 @@ use Larapilot\Services\MockupService;
 use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
+use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\PrdService;
+use Larapilot\Services\ReleaseService;
 use Larapilot\Services\SpecService;
 use Larapilot\Services\Tracker\TrackerLinkStore;
 use Larapilot\Services\Tracker\TrackerManager;
@@ -93,7 +100,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '2.7.2';
+    public const VERSION = '3.0.0';
 
     public function register(): void
     {
@@ -130,6 +137,8 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(TrackerManager::class);
         $this->app->singleton(TrackerLinkStore::class);
         $this->app->singleton(TrackerService::class);
+        $this->app->singleton(ReleaseService::class);
+        $this->app->singleton(CustomSkillService::class);
     }
 
     public function boot(): void
@@ -174,6 +183,11 @@ class LarapilotServiceProvider extends ServiceProvider
                 DecisionCheckCommand::class,
                 CodeHistoryLogCommand::class,
                 CodeHistoryShowCommand::class,
+                ReleaseListCommand::class,
+                ReleaseAddCommand::class,
+                ReleaseSetCommand::class,
+                ReleaseImportCommand::class,
+                CustomSkillListCommand::class,
                 QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,

@@ -22,6 +22,8 @@ Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions
 
 When `data.settings.decision_log` is `YES` (default), journal the choices the user makes about adopted scope with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
 
+When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
+
 ## The Team (this phase)
 
 🤖 Zoey · 💎 Mark · 🔎 Tom · 📐 John · 🗄️ Mike · 👾 Andrew · ⌨️ Sarah · 🚀 Jack · 🔐 Lars · ⚖️ Violet · 📈 Emma · 🎨 Elise · ✨ Joe · 📱 Ricky · ✍️ Marika · 🌍 Emily · 📝 Albert · 📒 Lucille — roles in the shared-runtime roster. Participation depth follows the **Project Kind branching rules** in `runtime-discovery.md`, applied to what the code actually contains.
@@ -37,7 +39,7 @@ When `data.settings.decision_log` is `YES` (default), journal the choices the us
 ## Config & CLI
 
 1. Run `php artisan larapilot:config-show` and parse the stdout JSON envelope.
-2. This skill uses: `config-show`, `prd-write`, `validate-prd`, `choices-set`, `frontend-set` (only if an external FE repo is discovered), `schedule-set` (only if the user gives deadlines), `usage-log`.
+2. This skill uses: `config-show`, `prd-write`, `validate-prd`, `choices-set`, `frontend-set` (only if an external FE repo is discovered), `schedule-set` (only if the user gives deadlines), `usage-log`, `release-import`, `release-add`, `release-list`, `settings-set --release-mode=YES` (when enabling release mode).
 3. **Never** create backlog, plan, or spec artifacts here — that is `/larapilot-spec`.
 
 ## Preconditions
@@ -103,7 +105,9 @@ Ask **only** what the code cannot tell you. Persona intro in chat; options in As
 **Round 3 — Gaps the repo left blank (John + Jack, only if unresolved)**
 
 - **Deploy platform / edge / cloud** when no infra config exists — never assume Sail, Cloudflare, or AWS (see **Infrastructure & Cloud** in `runtime-ship.md`).
-- **External frontend repo** if the API has no coupled UI — capture the absolute path; run `larapilot:frontend-set` + `larapilot:frontend-scan` (see `runtime-discovery.md` → **Frontend Topology**).
+- **External frontend repo** if the API has no coupled UI — AskQuestion until path is known; run `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`) + `larapilot:frontend-scan` (see `runtime-discovery.md` → **Frontend Topology**).
+
+**Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `runtime-release.md`.
 
 ### 4. Codebase analysis report
 

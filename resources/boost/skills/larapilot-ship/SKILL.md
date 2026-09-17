@@ -9,7 +9,7 @@ Release accepted increments to production. **Oliver** runs red-team assessment (
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), and `.larapilot/runtime-ops.md` (support runbook / Sophia).
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), and `.larapilot/runtime-ops.md` (support runbook / Sophia). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs the **ship ceremony** (merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, `release-set --status=shipped`).
 
 ## Output Economy
 
@@ -37,6 +37,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (d
 1. `php artisan larapilot:config-show` — project root, backlog progress, paths
 2. `php artisan larapilot:spec-list --status=DONE` — verify accepted specs
 3. `php artisan larapilot:metrics` — release readiness overview
+4. When `release_mode=YES`: `php artisan larapilot:release-list --status=in_progress` — confirm target release version before deploy
 
 ## Prerequisites
 

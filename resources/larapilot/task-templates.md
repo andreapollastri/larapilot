@@ -64,6 +64,46 @@ Bootstrap Gitflow for this spec: create the feature branch from `develop`, push 
 
 ---
 
+## TASK-00 — Release branch variant (release_mode + Gitflow)
+
+Use when **`settings.release_mode` is `YES`**, `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, and the spec body carries **`Release: x.y.z`** (assigned to an `in_progress` release). Branch **from** `release/x.y.z`, merge **into** `release/x.y.z` — **not** `develop`. Sarah owns Git mechanics.
+
+Replace `{RELEASE}` with the semver (e.g. `1.2.0`).
+
+### `GITFLOW` (no automatic push)
+
+```markdown
+## Description
+Bootstrap Gitflow for this spec on release `{RELEASE}`: create `feature/US-XXX-*` from `release/{RELEASE}` and prepare the internal PR description toward `release/{RELEASE}`. Do **not** push unless the user asks.
+
+## Files Involved
+- (git only — no application files)
+
+## Steps
+1. `git fetch` (when remotes exist)
+2. `git checkout release/{RELEASE}` (create from `develop` first if the release branch does not exist yet)
+3. `git checkout -b feature/US-XXX-short-desc`
+4. Draft internal PR title/body toward `release/{RELEASE}`
+5. Optional empty commit: `chore(US-XXX): TASK-00 bootstrap feature branch for release/{RELEASE}`
+
+## Completion Criteria
+- [ ] Branch `feature/US-XXX-*` exists locally from `release/{RELEASE}`
+- [ ] PR title/body drafted toward `release/{RELEASE}` (not `develop`)
+
+## Git Deliverables
+- Commit: `chore(US-XXX): TASK-00 bootstrap feature branch for release/{RELEASE}`
+- Push: **skip** (`git_mode: GITFLOW`)
+- PR: prepare locally toward `release/{RELEASE}` — open remote only if user requests
+```
+
+### `GITFLOW_PUSH`
+
+Same as above, but push `feature/US-XXX-*` and open/update the PR toward **`release/{RELEASE}`** after TASK-00.
+
+When the spec has **no** `Release:` line, use the standard **TASK-00 — Git bootstrap** templates toward `develop`.
+
+---
+
 ## Entity task — model + migration + factory + seeder
 
 Use when introducing or materially changing an Eloquent model.

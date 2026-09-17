@@ -2,6 +2,23 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.0.0] - 2026-09-18
+
+### Added
+
+- **Release mode (`settings.release_mode`, OFF by default)** — semver release ledger in `.larapilot/releases.yaml` with lifecycle `planned` → `in_progress` → `shipped`. New CLI: `larapilot:release-list`, `release-add`, `release-set`, `release-import` (rebuild shipped releases from Git `vX.Y.Z` tags). **`/larapilot-release`** skill — Sarah owns Git mechanics (parallel `release/x.y.z` branches when Gitflow is active); Jack owns policy; Mark assigns specs. Inception/adopt propose roadmaps; `/larapilot-feature` assigns specs to open releases; `/larapilot-ship` runs the release ship ceremony. Runtime pack: `runtime-release.md`. TASK-00 **release branch variant** in `task-templates.md`.
+- **Project docs (`settings.project_docs`, OFF by default)** — living technical + functional handbook under **`_project_docs/`** (chapters, Mermaid diagrams, retroactive bootstrap when enabled mid-project). **`/larapilot-project-docs`** skill; runtime pack `runtime-project-docs.md`. Albert maintains chapters incrementally after implement/review/ship when ON.
+- **Custom skills** — user-authored Boost skills in **`.larapilot/skills/{name}/SKILL.md`**. **`/larapilot-custom-skill`** (Zoey interview → Sarah scaffolds files). `larapilot:custom-skill-list`; runtime pack `runtime-custom-skills.md`.
+- **`EnvWriter`** — machine-specific paths (external frontend repo) persist in **`.env`** (`LARAPILOT_FRONTEND_REPO_PATH`) instead of committed YAML. `larapilot:frontend-set --path=` writes env; skills ask until the path is provided. No user-specific absolute paths in YAML comments or examples.
+
+### Changed
+
+- **`config-show`** exposes `settings.release_mode`, `settings.project_docs`, and paths `releases`, `project_docs`, `custom_skills`.
+- **`larapilot:settings-set`** — `--release-mode=YES|NO`, `--project-docs=YES|NO`.
+- **Skills updated** — `inception`, `adopt`, `feature`, `plan`, `ship`, `settings`, `frontend-companion`; Boost `core.blade.php` workflow table.
+- **Shared runtime** — pack loading matrix, **Environment paths**, release/project-docs setting sections.
+- Site / package version **v3.0.0**; README + docs site updated.
+
 ## [2.7.2] - 2026-09-17
 
 ### Changed

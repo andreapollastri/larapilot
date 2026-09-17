@@ -56,6 +56,10 @@ class FrontendSetCommand extends LarapilotCommand
             'frontend' => $saved,
             'updated' => array_keys($partial),
             'config_path' => $config->configPath(),
+            'env_key' => array_key_exists('repo_path', $partial) ? 'LARAPILOT_FRONTEND_REPO_PATH' : null,
+            'hint' => array_key_exists('repo_path', $partial)
+                ? 'Frontend repo path is stored in LARAPILOT_FRONTEND_REPO_PATH (.env), not in config.yaml.'
+                : null,
         ]);
     }
 }

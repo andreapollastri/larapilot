@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, dashboard comments, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, internal feedback comments on the dashboard/API, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "commenti dashboard", "disabilita commenti", "abilita commenti", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
+description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, release mode, project docs, dashboard comments, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, internal feedback comments on the dashboard/API, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "commenti dashboard", "disabilita commenti", "abilita commenti", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
 ---
 
 # Larapilot — Project Settings
@@ -45,7 +45,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -142,6 +142,17 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 | `decision_log` | `YES — journal AskQuestion answers + explicit directives; decision-check flags contradictions (default)` | `NO — do not record decisions or run the regression guard` |
 | `code_history` | `YES — after each task-done, log touched files + line ranges from the task commit` | `NO — no code change history (default)` |
 | `comments` | `YES — dashboard + API + larapilot:spec-comment until spec is DONE (default)` | `NO — hide feedback UI and reject new comments project-wide` |
+
+**6c. Release mode & Project docs**
+
+- **Release mode prompt:** `Release mode (current: {VALUE}) — track semver releases in .larapilot/releases.yaml with Gitflow release/x.y.z branches?`
+- **Project docs prompt:** `Project docs (current: {VALUE}) — maintain living handbook in _project_docs/ updated on every material change?`
+- **Chat framing (one line):** ⌨️ Sarah — release branches; 📝 Albert — `_project_docs/` chapters + diagrams. Both OFF by default.
+
+| Setting | YES label | NO label |
+| --- | --- | --- |
+| `release_mode` | `YES — release ledger + /larapilot-release + Gitflow release branches` | `NO — classic develop/feature flow only (default)` |
+| `project_docs` | `YES — Albert maintains _project_docs/ (bootstrap from history if enabled mid-project)` | `NO — no handbook obligation (default)` |
 
 **7. Remote forge** — optional GitHub / GitLab / Bitbucket / Azure DevOps (each default OFF; orthogonal to git_mode)
 
