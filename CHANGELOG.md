@@ -2,6 +2,17 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.0.2] - 2026-09-18
+
+### Changed
+
+- **Dashboard Settings page** — single full-width column layout; each setting shows a title, `config.yaml` key, description, current-value chips, and per-option explanations. Inception choices use a responsive card grid below.
+- **Dashboard Settings & board summary** — `release_mode` and `project_docs` appear in the options list and board pills with human-readable labels (they were persisted in config but missing from the dashboard).
+
+### Docs
+
+- Site / package version **v3.0.2**.
+
 ## [3.0.1] - 2026-09-18
 
 ### Added

@@ -103,6 +103,8 @@ MD);
     $this->get('/larapilot/settings')
         ->assertOk()
         ->assertSee('Project settings')
+        ->assertSee('How deep Larapilot works')
+        ->assertSee('Decision journal')
         ->assertSee('Package')
         ->assertSee('Inception choices');
 });

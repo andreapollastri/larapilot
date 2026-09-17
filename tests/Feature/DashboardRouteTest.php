@@ -17,6 +17,7 @@ it('serves the workflow dashboard in local environment', function (): void {
         ->assertSee('Comments')
         ->assertSee('Dashboard auth')
         ->assertSee('Decision log')
+        ->assertSee('Project docs')
         ->assertSee('US-001')
         ->assertSee('Login');
 });

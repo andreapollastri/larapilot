@@ -8,6 +8,8 @@
         'auto_approve' => 'Auto approve',
         'decision_log' => 'Decision log',
         'code_history' => 'Code history',
+        'release_mode' => 'Release mode',
+        'project_docs' => 'Project docs',
         'comments' => 'Comments',
         'dashboard_auth' => 'Dashboard auth',
         'api_auth' => 'API auth',

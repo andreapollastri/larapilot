@@ -97,6 +97,8 @@ class ChoicesService
             'lucille' => $this->config->allowedLucilleModes(),
             'decision_log' => $this->config->allowedDecisionLogModes(),
             'code_history' => $this->config->allowedCodeHistoryModes(),
+            'release_mode' => $this->config->allowedReleaseModeModes(),
+            'project_docs' => $this->config->allowedProjectDocsModes(),
             'comments' => $this->config->allowedCommentsModes(),
             'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
             'api_auth' => $this->config->allowedApiAuthModes(),
