@@ -953,6 +953,31 @@
       align-items: start;
     }
 
+    .skill-details {
+      margin-top: 0.85rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--line);
+    }
+
+    .skill-details summary {
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      list-style: none;
+    }
+
+    .skill-details summary::-webkit-details-marker { display: none; }
+
+    .skill-details summary::before {
+      content: "▸ ";
+      color: var(--signal);
+    }
+
+    .skill-details[open] summary::before { content: "▾ "; }
+
+    .skill-details > :not(summary) { margin-top: 0.65rem; }
+
     .skill-badge {
       font-family: var(--mono);
       font-size: 0.78rem;
@@ -1265,7 +1290,7 @@
       <p>
         Spec-driven workflow for Laravel — integrated with
         <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a>.
-        Thirty personas, fifteen skills, apps and packages — install, enable MCP, run
+        Thirty personas, nineteen skills, apps and packages — install, enable MCP, run
         <code>/larapilot-*</code> in your editor.
       </p>
       <div class="hero-actions">
@@ -1457,15 +1482,19 @@
             <code>/larapilot-usage</code> for Lucille time/token reports ·
             <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
             <code>/larapilot-tracker</code> to mirror the backlog into a
-            <a href="#deep-dive-tracker">project tracker</a>.
+            <a href="#deep-dive-tracker">project tracker</a>. More opt-in skills in
+            <a href="#deep-dive-skills">Skills</a> (release mode, project docs, custom skills).
           </p>
         </div>
 
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
           <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
           <strong>lucille</strong>, <strong>decision journal</strong>, <strong>code history</strong>,
+          optional <strong>release mode</strong>, optional <strong>project docs</strong>,
           optional <strong>dashboard auth / api auth / github / gitlab / bitbucket / azure</strong> and
-          <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>.
+          <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>. Machine-specific paths
+          (external frontend repo) live in <code>.env</code> — see
+          <a href="#deep-dive-frontend-companion">Frontend companion</a>.
           Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
           <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
           <code>ECO</code>). <a href="#deep-dive-settings">Settings</a> ·
@@ -2363,19 +2392,20 @@ body: |
           <h3>1 · Inception (Laravel)</h3>
           <div class="code-block">
             <div class="code-block-header">Laravel editor</div>
-            <pre><code>/larapilot-inception "Clinic booking API — React SPA in /Users/dev/clinic-web"</code></pre>
+            <pre><code>/larapilot-inception "Clinic booking API — React SPA in a separate repo"</code></pre>
           </div>
           <p>John + Joe ask <strong>Frontend Topology</strong> → you pick <code>API + external frontend</code>,
-            <strong>React</strong>, absolute path <code>/Users/dev/clinic-web</code>. Filament for ops admin on
-            Laravel. PRD records API + OpenAPI as Must.</p>
+            <strong>React</strong>, and provide the absolute path when asked (stored in
+            <code>LARAPILOT_FRONTEND_REPO_PATH</code>). Filament for ops admin on Laravel. PRD records stack + API +
+            OpenAPI as Must — not the machine path.</p>
 
           <h3>2 · Link + scan (Laravel)</h3>
           <div class="code-block">
             <div class="code-block-header">Laravel terminal</div>
-            <pre><code>php artisan larapilot:frontend-set --path=/Users/dev/clinic-web --stack=React
+            <pre><code>php artisan larapilot:frontend-set --path=/absolute/path/to/clinic-web --stack=React
 php artisan larapilot:frontend-scan</code></pre>
           </div>
-          <p><code>frontend-set</code> saves the path in <code>.larapilot/config.yaml</code>.
+          <p><code>frontend-set</code> writes <code>LARAPILOT_FRONTEND_REPO_PATH</code> in <code>.env</code>.
             <code>frontend-scan</code> detects Vite, <code>src/</code>, entrypoints — specs start from existing code.</p>
 
           <h3>3 · Deliver (Laravel only)</h3>
@@ -2386,8 +2416,9 @@ php artisan larapilot:frontend-scan</code></pre>
 /larapilot-implement US-003</code></pre>
           </div>
           <p>API stories touch Laravel. UI stories use plan tasks with <code>repo: frontend</code> — implement writes
-            <code>src/…</code> under <code>data.frontend.repo_path</code>, runs <code>npm test</code>, commits with
-            <code>git -C /Users/dev/clinic-web …</code>. Mockups stay in Laravel <code>.larapilot/mockups/</code>.</p>
+            <code>src/…</code> under the path from <code>data.frontend.repo_path</code> (env-resolved), runs
+            <code>npm test</code>, commits with <code>git -C "$LARAPILOT_FRONTEND_REPO_PATH" …</code>. Mockups stay in
+            Laravel <code>.larapilot/mockups/</code>.</p>
 
           <dl class="walkthrough-grid">
             <div>
@@ -3199,11 +3230,13 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Sixteen</strong> editor-native skills cover the full product lifecycle — discovery,
-            brownfield onboarding, delivery, ship, settings, usage (Lucille), Backstage, trackers, and frontend
-            companion. Each is a <code>SKILL.md</code> file with a name, description, persona roster, execution steps,
-            and allowed CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; coding
-            <strong>guidelines</strong> ship alongside (not a skill).
+          <p class="lead"><strong>Nineteen</strong> editor-native skills cover the full product lifecycle — discovery,
+            brownfield onboarding, delivery, ship, settings, usage (Lucille), Backstage, trackers, frontend companion,
+            and three opt-in extras (<code>/larapilot-release</code>, <code>/larapilot-project-docs</code>,
+            <code>/larapilot-custom-skill</code>). Each packaged skill is a <code>SKILL.md</code> under
+            <code>resources/boost/skills/</code> with a name, description, persona roster, execution steps, and allowed
+            CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; user-authored skills live
+            in <code>.larapilot/skills/</code>. Coding <strong>guidelines</strong> ship alongside (not a skill).
           </p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
@@ -3231,7 +3264,10 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   <li>Mark opens with Project Kind (Personal · Website · Application · Package)</li>
                   <li>Package branch: origin (new / local / git), distribution, consumer install, CI/docs</li>
                   <li>John + Joe ask <strong>Frontend Topology</strong> when there is a UI; Mike on data stores;
-                    Lucille on deadlines (skippable)</li>
+                    Lucille on deadlines (skippable); optional <strong>release mode</strong> AskQuestion on greenfield
+                    projects</li>
+                  <li>When <code>release_mode=YES</code>: Sarah proposes a semver roadmap; starting release persisted via
+                    <code>release-add</code></li>
                   <li>AskQuestion rounds (max 3 questions each, skippable)</li>
                   <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present; snapshots choices via
                     <code>choices-set</code></li>
@@ -3312,10 +3348,14 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                     <code>effort: ECO</code>)</li>
                   <li>Not for greenfield ideas (<code>/larapilot-inception</code>) or rewrites away from a non-Laravel
                     system (<code>/larapilot-inception</code> + <code>.larapilot/legacy/</code>)</li>
+                  <li>When <code>release_mode=YES</code>: <code>release-import</code> rebuilds shipped releases from Git
+                    tags; AskQuestion for current production version and in-progress release branches</li>
                 </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
                   <code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
-                  <code>larapilot:choices-set</code>. See <a href="#example-adopt">the adoption walkthrough</a>.
+                  <code>larapilot:choices-set</code> · <code>larapilot:release-import</code> ·
+                  <code>larapilot:release-add</code>. See <a href="#example-adopt">the adoption walkthrough</a> and
+                  <a href="#skill-larapilot-release">/larapilot-release</a>.
                 </p>
               </div>
             </div>
@@ -3338,9 +3378,13 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-feature "…"</code></h3>
                 <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
-                  FR).</p>
+                  FR). When <code>release_mode=YES</code> and open releases exist, AskQuestion assigns the spec to a
+                  release (or backlog) → <code>**Release:** x.y.z</code> line + <code>release-set --add-spec=</code>.
+                </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
-                  <code>larapilot:validate-spec</code> — optionally <code>prd-write</code> when a new FR is added.
+                  <code>larapilot:validate-spec</code> · <code>larapilot:release-list</code> ·
+                  <code>larapilot:release-set --add-spec=</code> — optionally <code>prd-write</code> when a new FR is
+                  added.
                 </p>
               </div>
             </div>
@@ -3388,17 +3432,19 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </div>
             </div>
             <div class="skill-item">
-              <span class="skill-badge">release</span>
+              <span class="skill-badge">ship</span>
               <div class="skill-body">
                 <h3><code>/larapilot-ship</code> <span class="skills-group-note" style="display:inline">— when the MVP is DONE</span></h3>
-                <p>OWASP security gate + multi-platform deploy runbook when all MVP stories are <span
-                    class="status status-done">DONE</span>.</p>
+                <p>OWASP security gate + multi-platform deploy runbook when target stories are <span
+                    class="status status-done">DONE</span>. With <code>release_mode=YES</code>, Sarah runs the
+                  <strong>release ship ceremony</strong> (merge <code>release/x.y.z</code> → <code>main</code>, tag
+                  <code>vX.Y.Z</code>, back-merge → <code>develop</code>) before or alongside deploy.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
-                  <code>larapilot:metrics</code> — paths and DONE coverage before release checks.
+                  <code>larapilot:metrics</code> · <code>larapilot:release-list --status=in_progress</code> when release
+                  mode is on.
                 </p>
               </div>
             </div>
-
             <h4 class="skills-group" id="skills-ops">Project setup &amp; ops</h4>
             <p class="skills-group-note">Configure how Larapilot works on this project, and follow effort over time.</p>
 
@@ -3412,6 +3458,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                     <code>git_mode</code>, <code>testing</code>, <code>auto_approve</code>, <code>lucille</code></li>
                   <li><strong>Traceability</strong> — <code>decision_log</code> (journal + regression guard, ON by
                     default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
+                  <li><strong>Delivery extras</strong> — <code>release_mode</code> (semver ledger + Gitflow release
+                    branches, OFF), <code>project_docs</code> (living <code>_project_docs/</code> handbook, OFF)</li>
                   <li><strong>Access</strong> — <code>comments</code> (dashboard + API internal feedback, ON by default),
                     <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
                     <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API) — auth OFF by
@@ -3423,6 +3471,141 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:settings-set</code> — write settings;
                   <code>larapilot:config-show</code> — read <code>data.settings</code>.
                 </p>
+              </div>
+            </div>
+            <div class="skill-item" id="skill-larapilot-release">
+              <span class="skill-badge">semver</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-release</code> <span class="skills-group-note" style="display:inline">— requires <code>release_mode=YES</code></span></h3>
+                <p>Manage the semver release ledger (<code>.larapilot/releases.yaml</code>): roadmaps, register releases,
+                  assign specs, switch active <code>release/*</code> branches, import history from Git tags, move status
+                  toward ship. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:release-list</code> ·
+                  <code>larapilot:release-add --semver=… --title=…</code> ·
+                  <code>larapilot:release-set --semver=…</code> · <code>larapilot:release-import</code>.
+                </p>
+                <details class="skill-details">
+                  <summary>Full reference</summary>
+                  <p><strong>Opt-in</strong> — enable with <code>settings.release_mode: YES</code>
+                    (<code>/larapilot-settings</code> or <code>larapilot:settings-set --release-mode=YES</code>). When
+                    OFF, Larapilot keeps classic <code>develop</code> + <code>feature/US-XXX-*</code> only.</p>
+                  <ul>
+                    <li>Ledger at <code>.larapilot/releases.yaml</code> — semver, title, status, branch, assigned specs,
+                      timestamps.</li>
+                    <li>Wired into <code>/larapilot-inception</code>, <code>/larapilot-adopt</code>,
+                      <code>/larapilot-feature</code>, <code>/larapilot-plan</code>, and <code>/larapilot-ship</code>.
+                    </li>
+                    <li>With Gitflow: specs assigned to a release branch from <code>release/x.y.z</code> (TASK-00
+                      variant in <code>task-templates.md</code>).</li>
+                    <li><strong>Parallel releases</strong> — Sarah confirms the active release branch when several are
+                      open.</li>
+                  </ul>
+                  <div class="table-card">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Status</th>
+                          <th>Meaning</th>
+                          <th>Next step</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>planned</code></td>
+                          <td>Registered, scope negotiable</td>
+                          <td>Assign specs → <code>in_progress</code></td>
+                        </tr>
+                        <tr>
+                          <td><code>in_progress</code></td>
+                          <td>Actively built on <code>release/x.y.z</code></td>
+                          <td>Ship ceremony → <code>shipped</code></td>
+                        </tr>
+                        <tr>
+                          <td><code>shipped</code></td>
+                          <td>On <code>main</code>, tagged <code>vX.Y.Z</code></td>
+                          <td>Terminal — new row for follow-up work</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p><strong>Ship ceremony</strong> (Gitflow + release mode): merge <code>release/x.y.z</code> →
+                    <code>main</code>, tag <code>vX.Y.Z</code>, back-merge → <code>develop</code>, then
+                    <code>release-set --status=shipped</code>. Use <code>--semver=</code>, not
+                    <code>--version=</code> (Artisan reserves <code>--version</code>). Runtime pack:
+                    <code>.larapilot/runtime-release.md</code>.
+                  </p>
+                </details>
+              </div>
+            </div>
+            <div class="skill-item" id="skill-larapilot-project-docs">
+              <span class="skill-badge">handbook</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-project-docs</code> <span class="skills-group-note" style="display:inline">— requires <code>project_docs=YES</code></span></h3>
+                <p>Albert maintains a living technical + functional handbook under <code>_project_docs/</code> — chapters,
+                  Mermaid diagrams, API/CLI/architecture coverage. Bootstrap retroactively when enabled mid-project;
+                  incremental updates after implement/review/ship.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> ·
+                  <code>larapilot:spec-list</code> — no dedicated write command; the skill updates Markdown chapters
+                  directly.
+                </p>
+                <details class="skill-details">
+                  <summary>Full reference</summary>
+                  <p>Enable with <code>settings.project_docs: YES</code> (<code>larapilot:settings-set
+                    --project-docs=YES</code>). Default path: <code>_project_docs/</code> at repo root.</p>
+                  <div class="file-tree">_project_docs/
+├── README.md
+├── 01-overview.md
+├── 02-architecture.md
+├── 03-features/
+├── 04-api.md
+├── 05-cli-and-jobs.md
+├── 06-frontend.md
+├── 07-operations.md
+├── 08-releases.md         <span class="comment"># when release_mode=YES</span>
+└── diagrams/
+                  </div>
+                  <p>After material changes: implement → feature chapter; review/ship → operations/releases. Never store
+                    secrets or user-specific paths — env var <strong>names</strong> only. Mid-project bootstrap: Albert
+                    scaffolds from PRD, specs, plans, and git history; marks uncertain blocks
+                    <code>&lt;!-- TODO: verify --&gt;</code>. Runtime pack:
+                    <code>.larapilot/runtime-project-docs.md</code>.
+                  </p>
+                </details>
+              </div>
+            </div>
+            <div class="skill-item" id="skill-larapilot-custom-skill">
+              <span class="skill-badge">extend</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-custom-skill</code></h3>
+                <p>Zoey interviews you; Sarah scaffolds user-authored Boost skills under
+                  <code>.larapilot/skills/{name}/SKILL.md</code> — team deploy checklists, compliance gates, internal
+                  runbooks on top of Larapilot. Run <code>php artisan boost:update</code> after creation.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:custom-skill-list</code>.
+                </p>
+                <details class="skill-details">
+                  <summary>Full reference</summary>
+                  <ol>
+                    <li><strong>Zoey</strong> AskQuestion: one skill vs family · slash name + Boost
+                      <code>description</code> · personas and CLI calls.</li>
+                    <li><strong>Sarah</strong> writes <code>.larapilot/skills/{name}/SKILL.md</code> mirroring packaged
+                      skill structure.</li>
+                    <li><code>custom-skill-list</code> confirms discovery; <code>boost:update</code> registers the slash
+                      command.</li>
+                  </ol>
+                  <ul>
+                    <li>Every custom skill starts with <code>config-show</code> and honors
+                      <code>data.settings</code>.</li>
+                    <li>Persistence only via <code>larapilot:*</code> — no ad-hoc YAML for workflow artifacts.</li>
+                    <li>Custom skills <strong>extend</strong> inception → spec → plan → implement → review; they do not
+                      replace it.</li>
+                  </ul>
+                  <div class="file-tree">.larapilot/
+└── skills/
+    └── my-deploy-checklist/
+        └── SKILL.md
+                  </div>
+                  <p>Runtime pack: <code>.larapilot/runtime-custom-skills.md</code>.</p>
+                </details>
               </div>
             </div>
             <div class="skill-item">
@@ -3447,11 +3630,12 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">frontend repo</span>
               <div class="skill-body">
                 <h3><code>/larapilot-frontend-companion</code></h3>
-                <p>For <strong>API + external frontend</strong>: link the FE absolute path, scan existing code.
-                  All delivery stays on Laravel via <code>repo: frontend</code> tasks.
+                <p>For <strong>API + external frontend</strong>: link the FE absolute path (stored in
+                  <code>LARAPILOT_FRONTEND_REPO_PATH</code> in <code>.env</code>, never committed in YAML), scan
+                  existing code. All delivery stays on Laravel via <code>repo: frontend</code> tasks.
                   <a href="#deep-dive-frontend-companion">External frontend repo</a>.</p>
                 <ul>
-                  <li><code>larapilot:frontend-set --path=/abs/fe/repo</code></li>
+                  <li><code>larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React</code></li>
                   <li><code>larapilot:frontend-scan</code></li>
                 </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>frontend-set</code> · <code>frontend-scan</code>.
@@ -3493,14 +3677,14 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
           <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, auto-approve, Lucille,
-            optional dashboard auth, and
+            optional release mode &amp; project docs, optional dashboard auth, and
             optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram (dashboard auth, forges and chat OFF by default).
             Configure with <code>/larapilot-settings</code> (AskQuestion). Values live under <code>settings:</code> in
             <code>.larapilot/config.yaml</code>. Every skill reads and honors them via <code>config-show</code>.
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3508,7 +3692,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
-            <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>comments: YES</code> ·
+            <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>release_mode: NO</code> ·
+            <code>project_docs: NO</code> · <code>comments: YES</code> ·
             <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> ·
             <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
@@ -3721,6 +3906,44 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <li><code>php artisan larapilot:code-history --file=app/Models/Post.php</code> (read-only, also on the MCP
               allowlist) reports every touchpoint for a path.</li>
           </ul>
+
+          <h4 id="deep-dive-release-mode">Release mode <span class="chip">opt-in</span></h4>
+          <p><code>settings.release_mode</code> (default <code>NO</code>) turns on semver release tracking in
+            <code>.larapilot/releases.yaml</code>, the <code>/larapilot-release</code> skill, release AskQuestion rounds
+            in inception/adopt/feature, Gitflow <code>release/x.y.z</code> branches when
+            <code>git_mode</code> is Gitflow, and the release ship ceremony in <code>/larapilot-ship</code>. Enable with
+            <code>php artisan larapilot:settings-set --release-mode=YES</code>. Skill:
+            <a href="#skill-larapilot-release">/larapilot-release</a>.</p>
+
+          <h4 id="deep-dive-project-docs-setting">Project docs <span class="chip">opt-in</span></h4>
+          <p><code>settings.project_docs</code> (default <code>NO</code>) obligates Albert to maintain
+            <code>_project_docs/</code> — bootstrap + incremental chapter updates after material product changes. Enable
+            with <code>php artisan larapilot:settings-set --project-docs=YES</code>. Skill:
+            <a href="#skill-larapilot-project-docs">/larapilot-project-docs</a>.</p>
+
+          <h4 id="deep-dive-env-paths">Environment paths</h4>
+          <p>Machine-specific absolute paths <strong>must not</strong> appear in committed YAML or skill examples. Store
+            them in <code>.env</code> and resolve via <code>config-show</code>:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Concern</th>
+                  <th>Env key</th>
+                  <th>Set via</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>External frontend repo</td>
+                  <td><code>LARAPILOT_FRONTEND_REPO_PATH</code></td>
+                  <td><code>larapilot:frontend-set --path=…</code> or <code>/larapilot-frontend-companion</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>When a skill needs a path that is missing from env, it keeps asking until you provide it, then persists
+            with the matching CLI command. The PRD records the <strong>stack</strong>, not the absolute path.</p>
 
           <h4 id="deep-dive-testing-mode">Testing</h4>
           <div class="table-card">
@@ -4147,6 +4370,11 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             route through <code>hotfix/*</code> via <code>/larapilot-bug</code>. Mode table:
             <a href="#deep-dive-git-mode">Git mode settings</a>.
           </p>
+          <p>When <code>release_mode=YES</code> and Gitflow is active, specs assigned to an <code>in_progress</code>
+            release branch from <code>release/x.y.z</code> and merge back into that branch (see
+            <a href="#skill-larapilot-release">/larapilot-release</a>). Unassigned specs keep branching from
+            <code>develop</code>. Multiple <code>release/*</code> branches may run in parallel — Sarah confirms which
+            release context is active before starting work.</p>
 
           <h4>Status machine</h4>
           <div class="table-card">
@@ -4212,11 +4440,16 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / lucille / forges…)</span>
+            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / release_mode / …)</span>
             ├── integrations.md <span class="comment"># optional GitHub/GitLab/Bitbucket/Azure DevOps + Slack/Discord/Telegram</span>
             ├── choices.yaml <span class="comment"># inception/settings snapshot (choices-set)</span>
+            ├── releases.yaml <span class="comment"># semver release ledger (when release_mode=YES)</span>
             ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
-            ├── task-templates.md <span class="comment"># plan/implement task body shapes</span>
+            ├── runtime-release.md <span class="comment"># release pack (copied on install/update)</span>
+            ├── runtime-project-docs.md <span class="comment"># project docs pack</span>
+            ├── runtime-custom-skills.md <span class="comment"># custom skills pack</span>
+            ├── task-templates.md <span class="comment"># plan/implement task body shapes (+ TASK-00 release variant)</span>
+            ├── skills/ <span class="comment"># user-authored custom Boost skills</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
             ├── usage/ <span class="comment"># Lucille ledger + schedule (committed)</span>
             │ ├── ledger.jsonl
@@ -4236,6 +4469,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             ├── legacy/ <span class="comment"># legacy snapshot for rewrite/port</span>
             ├── research/ <span class="comment"># deepsearch, parity matrices</span>
             └── design-systems/ <span class="comment"># Filament / Starter Kit / Bootstrap / Tailwind / AdminLTE</span>
+
+_project_docs/ <span class="comment"># living handbook (when project_docs=YES) — at repo root, not under .larapilot/</span>
           </div>
 
           <div class="table-card">
@@ -4253,10 +4488,28 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
                     <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>, <code>code_history</code>,
+                    <code>release_mode</code>, <code>project_docs</code>,
                     <code>dashboard_auth</code>, <code>api_auth</code>, <code>github</code>,
                     <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
+                </tr>
+                <tr>
+                  <td><code>releases.yaml</code></td>
+                  <td><code>/larapilot-release</code>, inception/adopt/feature/ship when release mode on</td>
+                  <td>Semver release ledger — versions, statuses, assigned specs, branches. CLI only; see
+                    <a href="#skill-larapilot-release">/larapilot-release</a></td>
+                </tr>
+                <tr>
+                  <td><code>_project_docs/</code></td>
+                  <td><code>/larapilot-project-docs</code>, implement/review/ship when project docs on</td>
+                  <td>Living technical + functional handbook — see
+                    <a href="#skill-larapilot-project-docs">/larapilot-project-docs</a></td>
+                </tr>
+                <tr>
+                  <td><code>skills/{name}/SKILL.md</code></td>
+                  <td><code>/larapilot-custom-skill</code></td>
+                  <td>User-authored Boost skills — see <a href="#skill-larapilot-custom-skill">/larapilot-custom-skill</a></td>
                 </tr>
                 <tr>
                   <td><code>PRD.md</code></td>
@@ -5000,11 +5253,18 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
             <div class="code-block-header">Technical Architecture</div>
             <pre><code>**Frontend Topology:** API + external frontend
 **Frontend stack (in-repo):** N/A
-**External frontend repo:** /Users/dev/acme-web
-**External frontend stack:** React</code></pre>
+**External frontend stack:** React
+**External frontend repo:** (path in LARAPILOT_FRONTEND_REPO_PATH — not in committed YAML)</code></pre>
           </div>
 
-          <h4>Three CLI commands (all from Laravel)</h4>
+          <h4>Path storage (v3.0)</h4>
+          <p>The absolute FE directory is stored in <code>LARAPILOT_FRONTEND_REPO_PATH</code> inside
+            <code>.env</code> — never in <code>config.yaml</code> (avoids committing user-specific paths). Stack label
+            stays in <code>config.yaml</code> → <code>frontend.stack</code>. <code>config-show</code> resolves
+            <code>data.frontend.repo_path</code> from env. If missing, skills ask until you provide the path, then run
+            <code>frontend-set</code>.</p>
+
+          <h4>CLI commands (all from Laravel)</h4>
           <div class="table-card">
             <table>
               <thead>
@@ -5015,9 +5275,9 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
               </thead>
               <tbody>
                 <tr>
-                  <td><code>larapilot:frontend-set --path=…</code></td>
-                  <td>Once — persist absolute FE path in <code>config.yaml</code> (<code>data.frontend</code> on
-                    <code>config-show</code>)</td>
+                  <td><code>larapilot:frontend-set --path=… [--stack=React]</code></td>
+                  <td>Once — writes <code>LARAPILOT_FRONTEND_REPO_PATH</code> to <code>.env</code>; optional stack in
+                    YAML</td>
                 </tr>
                 <tr>
                   <td><code>larapilot:frontend-scan</code></td>
@@ -5944,6 +6204,23 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                   </td>
                   <td>Generate <code>provision.sh</code> for a team SSH server — see <a
                       href="#deep-dive-vps">Self-hosted VPS</a></td>
+                </tr>
+                <tr>
+                  <td>Release ledger</td>
+                  <td><code>larapilot:release-list</code> · <code>larapilot:release-add</code>
+                    (<code>--semver=</code>, <code>--title=</code>, <code>--status=</code>, <code>--specs=</code>) ·
+                    <code>larapilot:release-set</code> (<code>--semver=</code>, <code>--status=</code>,
+                    <code>--add-spec=</code>, …) · <code>larapilot:release-import</code> (<code>--dry-run</code>)
+                  </td>
+                  <td><code>/larapilot-release</code>, inception/adopt/feature/ship when
+                    <code>release_mode=YES</code> — see <a href="#skill-larapilot-release">/larapilot-release</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Custom skills</td>
+                  <td><code>larapilot:custom-skill-list</code></td>
+                  <td><code>/larapilot-custom-skill</code> — see <a href="#skill-larapilot-custom-skill">/larapilot-custom-skill</a>
+                  </td>
                 </tr>
               </tbody>
             </table>

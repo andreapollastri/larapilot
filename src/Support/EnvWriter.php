@@ -17,18 +17,60 @@ class EnvWriter
 
     public static function get(string $key, ?string $envPath = null): ?string
     {
+        $path = $envPath ?? self::envPath();
+
+        if (is_file($path)) {
+            $fromFile = self::readFromFile($path, $key);
+
+            if ($fromFile !== null) {
+                return $fromFile;
+            }
+        }
+
         $value = env($key);
 
         if (is_string($value) && trim($value) !== '') {
             return trim($value);
         }
 
+        return null;
+    }
+
+    public static function set(string $key, string $value, ?string $envPath = null): bool
+    {
         $path = $envPath ?? self::envPath();
+        $quoted = self::quote($value);
+        $line = $key.'='.$quoted;
 
         if (! is_file($path)) {
-            return null;
+            AtomicFile::write($path, $line.PHP_EOL);
+            self::refreshRuntimeEnv($key, $value);
+
+            return true;
         }
 
+        $content = file_get_contents($path);
+
+        if ($content === false) {
+            return false;
+        }
+
+        $pattern = '/^'.preg_quote($key, '/').'=.*$/m';
+
+        if (preg_match($pattern, $content) === 1) {
+            $updated = (string) preg_replace($pattern, $line, $content, 1);
+        } else {
+            $updated = rtrim($content).PHP_EOL.$line.PHP_EOL;
+        }
+
+        AtomicFile::write($path, $updated);
+        self::refreshRuntimeEnv($key, $value);
+
+        return true;
+    }
+
+    protected static function readFromFile(string $path, string $key): ?string
+    {
         $content = file_get_contents($path);
 
         if ($content === false) {
@@ -57,33 +99,18 @@ class EnvWriter
         return $raw;
     }
 
-    public static function set(string $key, string $value, ?string $envPath = null): bool
+    protected static function refreshRuntimeEnv(string $key, string $value): void
     {
-        $path = $envPath ?? self::envPath();
-        $quoted = self::quote($value);
-        $line = $key.'='.$quoted;
+        if ($value === '') {
+            putenv($key);
+            unset($_ENV[$key], $_SERVER[$key]);
 
-        if (! is_file($path)) {
-            return AtomicFile::write($path, $line.PHP_EOL);
+            return;
         }
 
-        $content = file_get_contents($path);
-
-        if ($content === false) {
-            return false;
-        }
-
-        $pattern = '/^'.preg_quote($key, '/').'=.*$/m';
-
-        if (preg_match($pattern, $content) === 1) {
-            $updated = (string) preg_replace($pattern, $line, $content, 1);
-        } else {
-            $updated = rtrim($content).PHP_EOL.$line.PHP_EOL;
-        }
-
-        AtomicFile::write($path, $updated);
-
-        return true;
+        putenv("{$key}={$value}");
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
     }
 
     protected static function quote(string $value): string

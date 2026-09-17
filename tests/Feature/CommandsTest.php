@@ -416,6 +416,8 @@ it('persists project settings via settings-set', function (): void {
         'notify_slack' => 'YES',
         'notify_discord' => 'NO',
         'notify_telegram' => 'YES',
+        'release_mode' => 'NO',
+        'project_docs' => 'NO',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
         ->and(app(ConfigService::class)->autoApproveEnabled())->toBeTrue()

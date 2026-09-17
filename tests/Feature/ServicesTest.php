@@ -95,6 +95,8 @@ it('exposes default project settings and updates them', function (): void {
         'notify_slack' => 'NO',
         'notify_discord' => 'NO',
         'notify_telegram' => 'NO',
+        'release_mode' => 'NO',
+        'project_docs' => 'NO',
     ])->and($config->autoApproveEnabled())->toBeFalse()
         ->and($config->lucilleEnabled())->toBeTrue()
         ->and($config->decisionLogEnabled())->toBeTrue()
