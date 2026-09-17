@@ -84,6 +84,7 @@ it('does not rate-limit when the limit is disabled', function (): void {
 
 it('writes an audit line for mutating API requests only', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->getJson('/larapilot/api/board')->assertOk();
@@ -110,6 +111,7 @@ it('can disable the API audit log', function (): void {
     config()->set('larapilot.api.audit', false);
 
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->postJson('/larapilot/api/specs/US-001/comments', [

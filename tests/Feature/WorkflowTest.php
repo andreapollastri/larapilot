@@ -131,6 +131,7 @@ it('sends a spec back to todo with rework feedback', function (): void {
 
 it('blocks review and approval until tasks and blocking feedback are resolved', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
 
     addSpec();
     planSpec();

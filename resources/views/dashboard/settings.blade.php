@@ -135,40 +135,6 @@
         color: var(--accent);
     }
 
-    .inception-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 12px;
-    }
-
-    .inception-item {
-        padding: 14px 16px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
-    }
-
-    .inception-item .label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
-        margin-bottom: 6px;
-    }
-
-    .inception-item .value {
-        font-size: 0.92rem;
-        font-weight: 600;
-        word-break: break-word;
-    }
-
-    .path-note {
-        margin-top: 20px;
-        font-size: 0.8rem;
-        color: var(--muted);
-    }
 </style>
 @endpush
 
@@ -263,8 +229,8 @@
                 'label' => 'Comments',
                 'description' => 'Internal PM/dev feedback on dashboard specs and via the API until the spec is DONE. Stored in .larapilot/internal-feedback/.',
                 'options' => [
-                    'YES' => 'Dashboard UI, API, and larapilot:spec-comment enabled (default).',
-                    'NO' => 'Hide feedback UI and reject new comments project-wide.',
+                    'YES' => 'Dashboard UI, API, and larapilot:spec-comment enabled.',
+                    'NO' => 'Hide feedback UI and reject new comments project-wide (default).',
                 ],
             ],
             'dashboard_auth' => [
@@ -406,26 +372,6 @@
                     </article>
                 @endforeach
             </div>
-        </section>
-
-        <section class="card settings-panel">
-            <h2>Inception choices</h2>
-            <p class="sub">Discovery decisions synced from the PRD into <code>.larapilot/choices.yaml</code>. Update with <code>larapilot:choices-set --from-prd</code> after inception.</p>
-
-            @if (($inception ?? []) === [])
-                <div class="empty" style="padding: 24px;">No choices yet. Run inception, then <code>larapilot:choices-set --from-prd</code>.</div>
-            @else
-                <div class="inception-grid">
-                    @foreach ($inception as $label => $value)
-                        <div class="inception-item">
-                            <span class="label">{{ $label }}</span>
-                            <span class="value">{{ is_array($value) ? json_encode($value) : $value }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            <p class="path-note">Snapshot: <code>{{ $path ?? '.larapilot/choices.yaml' }}</code></p>
         </section>
     </div>
 @endsection

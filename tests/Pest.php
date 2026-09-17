@@ -124,6 +124,11 @@ function addSpec(array $overrides = []): void
         ->assertSuccessful();
 }
 
+function enableComments(): void
+{
+    test()->artisan('larapilot:settings-set', ['--comments' => 'YES'])->assertSuccessful();
+}
+
 function planSpec(string $code = 'US-001'): void
 {
     test()->artisan('larapilot:spec-plan', ['code' => $code, '--file' => payloadFile(planPayload(), 'tmp-plan.yaml')])

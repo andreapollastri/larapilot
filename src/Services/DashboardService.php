@@ -79,15 +79,59 @@ class DashboardService
         $board = $this->rawBoard();
 
         foreach ($board['columns'] as $status => $specs) {
-            $board['columns'][$status] = array_map(
+            $enriched = array_map(
                 fn (array $spec): array => $this->enrichSpec($spec),
                 $specs
             );
+
+            usort(
+                $enriched,
+                fn (array $a, array $b): int => $this->specActivityTimestamp($b) <=> $this->specActivityTimestamp($a)
+                    ?: strcmp((string) ($b['code'] ?? ''), (string) ($a['code'] ?? ''))
+            );
+
+            $board['columns'][$status] = $enriched;
         }
 
-        return array_merge($board, [
-            'settings' => $this->choices->dashboard()['settings'],
-        ]);
+        return $board;
+    }
+
+    /**
+     * @param  array<string, mixed>  $spec
+     */
+    protected function specActivityTimestamp(array $spec): int
+    {
+        $history = is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [];
+
+        foreach (array_reverse($history) as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $at = $entry['at'] ?? null;
+
+            if (! is_string($at) || $at === '') {
+                continue;
+            }
+
+            $timestamp = strtotime($at);
+
+            if ($timestamp !== false) {
+                return $timestamp;
+            }
+        }
+
+        $committedAt = $spec['merge_commit']['committed_at'] ?? null;
+
+        if (is_string($committedAt) && $committedAt !== '') {
+            $timestamp = strtotime($committedAt);
+
+            if ($timestamp !== false) {
+                return $timestamp;
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -178,7 +222,35 @@ class DashboardService
      */
     public function settings(): array
     {
-        return $this->choices->dashboard();
+        $data = $this->choices->dashboard();
+
+        return [
+            'settings' => $data['settings'],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function inception(): array
+    {
+        $data = $this->choices->dashboard();
+
+        return [
+            'inception' => $data['inception'],
+            'path' => $data['path'],
+            'updated_at' => is_string($data['raw']['updated_at'] ?? null) ? $data['raw']['updated_at'] : null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function docs(): array
+    {
+        return [
+            'settings' => $this->config->settings(),
+        ];
     }
 
     /**

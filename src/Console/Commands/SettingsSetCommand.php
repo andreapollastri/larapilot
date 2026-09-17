@@ -20,7 +20,7 @@ class SettingsSetCommand extends LarapilotCommand
                             {--code-history= : Per spec/task code change history: YES or NO (default NO)}
                             {--release-mode= : Semver release ledger + Gitflow release branches: YES or NO (default NO)}
                             {--project-docs= : Living project documentation in _project_docs/: YES or NO (default NO)}
-                            {--comments= : Internal feedback comments on dashboard/API: YES (default) or NO}
+                            {--comments= : Internal feedback comments on dashboard/API: YES or NO (default NO)}
                             {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
                             {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
                             {--security-scan= : Run andreapollastri/checkpoint in /larapilot-review + pre-ship: YES or NO (default NO)}

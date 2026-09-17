@@ -29,8 +29,8 @@ return [
         // Living project documentation in _project_docs/ — OFF by default.
         'project_docs' => false,
         // Internal feedback comments on the dashboard, JSON API, and
-        // `larapilot:spec-comment` — ON by default; set false to disable.
-        'comments' => true,
+        // `larapilot:spec-comment` — OFF by default; set true to enable.
+        'comments' => false,
         // HTTP Basic Auth on the /larapilot dashboard UI — OFF by default (open in the
         // allowed environments). When true, browsing the dashboard requires a username +
         // password from .larapilot/auth.yaml (manage with `larapilot:dashboard-user`).

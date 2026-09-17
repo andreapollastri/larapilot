@@ -49,6 +49,20 @@ class DashboardController
         return view('larapilot::dashboard.settings', $this->dashboard->settings());
     }
 
+    public function inception(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.inception', $this->dashboard->inception());
+    }
+
+    public function docs(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.docs', $this->dashboard->docs());
+    }
+
     public function usage(): View
     {
         $this->guard();

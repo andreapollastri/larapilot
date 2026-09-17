@@ -59,7 +59,7 @@ it('records deadlines and schedule notes', function (): void {
         ->and($schedule['notes'][0]['status'])->toBe('at_risk');
 });
 
-it('persists choices from the PRD for the settings dashboard', function (): void {
+it('persists choices from the PRD for the inception dashboard', function (): void {
     $config = app(ConfigService::class);
     $config->writeProjectConfig();
     $config->ensureDirectories();
@@ -100,13 +100,17 @@ MD);
         ->and($choices['delivery_target'])->toBe('V1 Complete')
         ->and($choices['data_store'])->toBe('PostgreSQL');
 
+    $this->get('/larapilot/inception')
+        ->assertOk()
+        ->assertSee('Inception choices')
+        ->assertSee('Package');
+
     $this->get('/larapilot/settings')
         ->assertOk()
         ->assertSee('Project settings')
         ->assertSee('How deep Larapilot works')
         ->assertSee('Decision journal')
-        ->assertSee('Package')
-        ->assertSee('Inception choices');
+        ->assertDontSee('Inception choices');
 });
 
 it('renders the usage dashboard with gantt and report download', function (): void {

@@ -337,7 +337,7 @@ class ConfigService
             'lucille' => true,
             'decision_log' => true,
             'code_history' => false,
-            'comments' => true,
+            'comments' => false,
             'dashboard_auth' => false,
             'api_auth' => false,
             'security_scan' => false,

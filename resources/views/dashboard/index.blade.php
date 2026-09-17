@@ -105,6 +105,29 @@
         gap: 10px;
     }
 
+    .column-body:not(.is-expanded) .spec-card-extra {
+        display: none;
+    }
+
+    .show-more-btn {
+        display: block;
+        width: 100%;
+        margin-top: 2px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px dashed var(--border);
+        background: transparent;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .show-more-btn:hover {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+    }
+
     .spec-card {
         display: block;
         padding: 12px 14px;
@@ -249,75 +272,10 @@
         border-color: color-mix(in srgb, #f59e0b 35%, var(--border));
         background: color-mix(in srgb, #f59e0b 10%, var(--surface));
     }
-
-    .project-settings-summary {
-        padding: 18px 20px;
-        margin-bottom: 24px;
-    }
-
-    .project-settings-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-        margin-bottom: 14px;
-    }
-
-    .project-settings-summary h2 {
-        margin: 0 0 4px;
-        font-size: 1rem;
-    }
-
-    .project-settings-summary .sub {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.82rem;
-    }
-
-    .project-settings-link {
-        color: var(--accent);
-        font-size: 0.85rem;
-        font-weight: 600;
-        white-space: nowrap;
-        text-decoration: none;
-    }
-
-    .project-settings-link:hover {
-        text-decoration: underline;
-    }
-
-    .project-settings-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .setting-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 5px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--border) 35%, transparent);
-        font-size: 0.78rem;
-        color: var(--muted);
-    }
-
-    .setting-pill strong {
-        color: var(--text);
-        font-weight: 700;
-    }
-
-    .setting-pill-label {
-        font-weight: 600;
-    }
 </style>
 @endpush
 
 @section('content')
-    @include('larapilot::dashboard.partials.project-settings-summary', ['settings' => $settings ?? []])
-
     <section class="metrics">
         <div class="card metric">
             <div class="metric-label">Total specs</div>
@@ -351,6 +309,7 @@
                         fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)),
                         $items
                     ));
+                    $hiddenCount = max(0, count($items) - 5);
                     $badgeClass = match (strtoupper($status)) {
                         'TODO' => 'badge-todo',
                         'PLANNED' => 'badge-planned',
@@ -371,79 +330,19 @@
                         </div>
                     </div>
                     <div class="column-body">
-                        @forelse ($items as $spec)
-                            <a class="spec-card" href="{{ route('larapilot.dashboard.spec', $spec['code']) }}">
-                                <div class="spec-meta">
-                                    <strong>{{ $spec['code'] }}</strong>
-                                    <div class="spec-badges">
-                                        @if (! empty($spec['points']))
-                                            <span class="points">{{ $spec['points'] }} SP</span>
-                                        @endif
-                                        @if (! empty($spec['priority']))
-                                            @php
-                                                $priorityClass = match (strtoupper((string) $spec['priority'])) {
-                                                    'CRITICAL' => 'priority-critical',
-                                                    'HIGH' => 'priority-high',
-                                                    'MEDIUM' => 'priority-medium',
-                                                    'LOW' => 'priority-low',
-                                                    default => 'priority-medium',
-                                                };
-                                            @endphp
-                                            <span class="priority {{ $priorityClass }}">{{ $spec['priority'] }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <h3>{{ $spec['title'] ?? 'Untitled' }}</h3>
-                                @if (! empty($spec['mockups']['available']))
-                                    <div class="mockup-indicator">Mockup</div>
-                                @endif
-                                @if (! empty($spec['feedback']['entry_count']))
-                                    <div class="spec-indicators">
-                                        <span class="spec-indicator spec-indicator--comments" title="{{ $spec['feedback']['entry_count'] }} comment{{ $spec['feedback']['entry_count'] === 1 ? '' : 's' }}">
-                                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9H7v2h2V9z" clip-rule="evenodd" />
-                                            </svg>
-                                            {{ $spec['feedback']['entry_count'] }}
-                                        </span>
-                                        @if (! empty($spec['feedback']['blocking_count']))
-                                            <span class="spec-indicator spec-indicator--blocking" title="{{ $spec['feedback']['blocking_count'] }} blocking comment{{ $spec['feedback']['blocking_count'] === 1 ? '' : 's' }}">
-                                                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-                                                </svg>
-                                                {{ $spec['feedback']['blocking_count'] }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                @endif
-                                @if (! empty($spec['epic']['title']))
-                                    <p>{{ $spec['epic']['title'] }}</p>
-                                @endif
-                                @php
-                                    $taskTotal = (int) ($spec['tasks']['total'] ?? 0);
-                                    $taskDone = (int) ($spec['tasks']['done'] ?? 0);
-                                    $taskPercent = $taskTotal > 0 ? round($taskDone / $taskTotal * 100) : 0;
-                                @endphp
-                                @if ($taskTotal > 0)
-                                    <div class="task-progress" title="{{ $taskDone }} of {{ $taskTotal }} subtasks done">
-                                        <div class="task-progress-track" aria-hidden="true">
-                                            <div class="task-progress-fill" style="width: {{ $taskPercent }}%"></div>
-                                        </div>
-                                        <span class="task-progress-label">{{ $taskDone }}/{{ $taskTotal }}</span>
-                                    </div>
-                                @endif
-                                @if (! empty($spec['merge_commit']['short_sha']) || ! empty($spec['merge_commit']['sha']))
-                                    <div class="merge-commit" title="{{ $spec['merge_commit']['subject'] ?? 'Merge commit' }}">
-                                        @if (! empty($spec['merge_commit']['url']))
-                                            <a href="{{ $spec['merge_commit']['url'] }}" onclick="event.stopPropagation();" target="_blank" rel="noopener noreferrer">MR {{ $spec['merge_commit']['short_sha'] ?? substr((string) $spec['merge_commit']['sha'], 0, 7) }}</a>
-                                        @else
-                                            MR {{ $spec['merge_commit']['short_sha'] ?? substr((string) $spec['merge_commit']['sha'], 0, 7) }}
-                                        @endif
-                                    </div>
-                                @endif
-                            </a>
+                        @forelse ($items as $index => $spec)
+                            @include('larapilot::dashboard.partials.spec-card', [
+                                'spec' => $spec,
+                                'extra' => $index >= 5,
+                            ])
                         @empty
                             <div class="column-empty">No specs</div>
                         @endforelse
+                        @if ($hiddenCount > 0)
+                            <button type="button" class="show-more-btn" data-more="{{ $hiddenCount }}" aria-expanded="false">
+                                Show {{ $hiddenCount }} more
+                            </button>
+                        @endif
                     </div>
                 </article>
             @endforeach
@@ -451,3 +350,20 @@
         </div>
     @endif
 @endsection
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.show-more-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            const body = button.closest('.column-body');
+            const expanded = body.classList.toggle('is-expanded');
+            const hidden = Number(button.dataset.more || 0);
+
+            button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            button.textContent = expanded
+                ? 'Show less'
+                : `Show ${hidden} more`;
+        });
+    });
+</script>
+@endpush

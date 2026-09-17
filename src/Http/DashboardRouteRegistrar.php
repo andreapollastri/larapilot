@@ -37,6 +37,12 @@ class DashboardRouteRegistrar
                 Route::get('/settings', [DashboardController::class, 'settings'])
                     ->name('larapilot.dashboard.settings');
 
+                Route::get('/inception', [DashboardController::class, 'inception'])
+                    ->name('larapilot.dashboard.inception');
+
+                Route::get('/docs', [DashboardController::class, 'docs'])
+                    ->name('larapilot.dashboard.docs');
+
                 Route::get('/git', [DashboardController::class, 'git'])
                     ->name('larapilot.dashboard.git');
 

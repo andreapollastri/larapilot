@@ -240,6 +240,7 @@ it('includes specs with unknown statuses on the board API', function (): void {
 
 it('accepts internal feedback comments via the API', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->postJson('/larapilot/api/specs/US-001/comments', [
@@ -259,6 +260,7 @@ it('accepts internal feedback comments via the API', function (): void {
 
 it('rejects invalid API comment submissions', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->postJson('/larapilot/api/specs/US-001/comments', [
@@ -270,6 +272,7 @@ it('rejects invalid API comment submissions', function (): void {
 
 it('rejects API comments on done specs', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'DONE']);
 
     $this->postJson('/larapilot/api/specs/US-001/comments', [
@@ -353,6 +356,7 @@ it('persists the api_auth setting via settings-set', function (): void {
 
 it('blocks API writes outside local environments when no token is configured', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'REVIEW']);
 
     $this->app['env'] = 'staging';

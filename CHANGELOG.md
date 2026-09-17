@@ -2,6 +2,27 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.0.3] - 2026-09-18
+
+### Added
+
+- **Dashboard Inception page** — `/larapilot/inception` shows the discovery choices snapshot from `.larapilot/choices.yaml` (moved out of Settings).
+- **Dashboard Docs page** — `/larapilot/docs` explains the Larapilot delivery loop, optional flow branches keyed off current project settings, every Boost skill with primary output and lead personas, and the persona roster.
+
+### Changed
+
+- **Dashboard board** — removes the Project settings summary from `/larapilot`; Kanban columns show only the **five most recently active** specs (by `status_history` / merge commit), newest first, with **Show N more** to expand the full column.
+- **Dashboard Settings** — project settings only; inception choices live on the dedicated Inception page. Top nav adds **Inception** and **Docs**.
+- **`settings.comments` default OFF** — new `larapilot:install` writes `comments: false`; dashboard/API internal feedback and `larapilot:spec-comment` stay disabled until `larapilot:settings-set --comments=YES` or `/larapilot-settings`. Existing projects with an explicit `comments: true` in `.larapilot/config.yaml` are unchanged.
+
+### Removed
+
+- **Board project-settings panel** — `dashboard/partials/project-settings-summary.blade.php` (settings remain on `/larapilot/settings`).
+
+### Docs
+
+- Site / package version **v3.0.3**; shared runtime, Boost settings skill, and dashboard Settings/Docs copy updated for comments default OFF.
+
 ## [3.0.2] - 2026-09-18
 
 ### Changed

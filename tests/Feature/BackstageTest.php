@@ -201,6 +201,7 @@ it('skips techdocs generation with --no-techdocs', function (): void {
 
 it('reports blocking feedback and task progress in the snapshot', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec();
     planSpec();
 

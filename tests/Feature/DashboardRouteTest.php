@@ -13,13 +13,41 @@ it('serves the workflow dashboard in local environment', function (): void {
     $this->get('/larapilot')
         ->assertOk()
         ->assertSee('Larapilot')
-        ->assertSee('Project settings')
-        ->assertSee('Comments')
-        ->assertSee('Dashboard auth')
-        ->assertSee('Decision log')
-        ->assertSee('Project docs')
+        ->assertDontSee('Project settings')
         ->assertSee('US-001')
         ->assertSee('Login');
+});
+
+it('collapses kanban columns to the five most recent specs with show more', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    foreach (range(1, 6) as $index) {
+        addSpec([
+            'code' => sprintf('US-%03d', $index),
+            'title' => "Story {$index}",
+            'status' => 'TODO',
+        ]);
+    }
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('Show 1 more', false)
+        ->assertSee('US-006', false)
+        ->assertSee('US-002', false);
+});
+
+it('serves the inception and docs dashboard pages', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->get('/larapilot/inception')
+        ->assertOk()
+        ->assertSee('Inception choices');
+
+    $this->get('/larapilot/docs')
+        ->assertOk()
+        ->assertSee('How Larapilot works')
+        ->assertSee('/larapilot-inception')
+        ->assertSee('Personas');
 });
 
 it('hides the dashboard in production environment', function (): void {
@@ -31,6 +59,8 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot')->assertNotFound();
     $this->get('/larapilot/prd')->assertNotFound();
     $this->get('/larapilot/settings')->assertNotFound();
+    $this->get('/larapilot/inception')->assertNotFound();
+    $this->get('/larapilot/docs')->assertNotFound();
     $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();

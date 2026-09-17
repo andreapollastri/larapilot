@@ -55,7 +55,7 @@ Laravel **10** and **11** are past their security-fix window. Composer 2.9+ refu
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: true` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Environment paths (never commit user-specific absolute paths)
 
@@ -189,18 +189,18 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 
 Enable with `php artisan larapilot:settings-set --project-docs=YES`.
 
-### Comments (`settings.comments`) — opt-out, default ON
+### Comments (`settings.comments`) — opt-in, default OFF
 
-Internal feedback comments on the dashboard spec page, `POST /larapilot/api/specs/{code}/comments`, and `larapilot:spec-comment`. ON by default; when OFF the feedback UI, API writes, and CLI command are disabled (existing `.larapilot/internal-feedback/*.md` files stay readable).
+Internal feedback comments on the dashboard spec page, `POST /larapilot/api/specs/{code}/comments`, and `larapilot:spec-comment`. OFF by default; when ON, PM/dev can append comments until the spec is DONE. When OFF the feedback UI, API writes, and CLI command are disabled (existing `.larapilot/internal-feedback/*.md` files stay readable).
 
-Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`YES`**.
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
 
 | Value | Behavior |
 | --- | --- |
-| **`true` / `YES`** | **Default.** PM/dev can append comments until the spec is DONE; blocking comments feed `spec-request-changes --include-feedback`. |
-| **`false` / `NO`** | Comments disabled project-wide. Optional env kill-switch: `LARAPILOT_COMMENTS_ENABLED=false`. |
+| **`true` / `YES`** | PM/dev can append comments until the spec is DONE; blocking comments feed `spec-request-changes --include-feedback`. |
+| **`false` / `NO`** | **Default.** Comments disabled project-wide. Optional env kill-switch: `LARAPILOT_COMMENTS_ENABLED=false`. |
 
-Disable with `php artisan larapilot:settings-set --comments=NO`. Details: `.larapilot/internal-feedback/README.md`.
+Enable with `php artisan larapilot:settings-set --comments=YES`. Details: `.larapilot/internal-feedback/README.md`.
 
 ### Dashboard auth (`settings.dashboard_auth`) — opt-in, default OFF
 

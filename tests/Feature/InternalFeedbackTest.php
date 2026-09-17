@@ -7,6 +7,7 @@ use Larapilot\Services\SpecService;
 
 it('appends internal feedback via artisan command', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'IN PROGRESS']);
 
     $this->artisan('larapilot:spec-comment', [
@@ -48,6 +49,7 @@ it('rejects comments on done specs', function (): void {
 
 it('includes blocking internal feedback in request changes', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
 
     addSpec();
     planSpec();
@@ -83,6 +85,7 @@ it('includes blocking internal feedback in request changes', function (): void {
 
 it('rejects empty dashboard comment submissions', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->from(route('larapilot.dashboard.spec', 'US-001'))
@@ -95,6 +98,7 @@ it('rejects empty dashboard comment submissions', function (): void {
 
 it('shows feedback entries in accordion on the dashboard spec page', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'REVIEW']);
 
     app(InternalFeedbackService::class)->append('US-001', 'Dev', 'Need API contract clarification.');
@@ -111,6 +115,7 @@ it('shows feedback entries in accordion on the dashboard spec page', function ()
 
 it('accepts dashboard comment submissions when enabled', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'PLANNED']);
 
     $this->post('/larapilot/specs/US-001/comments', [
@@ -156,6 +161,7 @@ it('hides dashboard comment form when comments are disabled via project settings
 
 it('exposes feedback metadata via the API', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec(['status' => 'REVIEW']);
 
     app(InternalFeedbackService::class)->append('US-001', 'PM', 'Blocking issue.', statusAt: 'REVIEW', blocksMerge: true);
@@ -184,6 +190,7 @@ it('exposes feedback metadata via the API', function (): void {
 
 it('deletes internal feedback when a spec is removed', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec();
 
     app(InternalFeedbackService::class)->append('US-001', 'PM', 'Temporary note.');

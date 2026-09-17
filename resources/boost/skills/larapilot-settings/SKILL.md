@@ -141,7 +141,7 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 | --- | --- | --- |
 | `decision_log` | `YES — journal AskQuestion answers + explicit directives; decision-check flags contradictions (default)` | `NO — do not record decisions or run the regression guard` |
 | `code_history` | `YES — after each task-done, log touched files + line ranges from the task commit` | `NO — no code change history (default)` |
-| `comments` | `YES — dashboard + API + larapilot:spec-comment until spec is DONE (default)` | `NO — hide feedback UI and reject new comments project-wide` |
+| `comments` | `YES — dashboard + API + larapilot:spec-comment until spec is DONE` | `NO — hide feedback UI and reject new comments project-wide (default)` |
 
 **6c. Release mode & Project docs**
 
@@ -229,8 +229,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.  
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `comments` → YES; missing `code_history` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
 
 ### 2. Persist
 
