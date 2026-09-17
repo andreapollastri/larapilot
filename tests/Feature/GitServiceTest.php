@@ -34,78 +34,56 @@ it('extracts changed files with counts and hunks for a commit range', function (
 });
 
 it('builds github commit urls from ssh remotes', function (): void {
-    $git = app(GitService::class);
-    $root = base_path();
+    withGitRemoteSandbox(function (string $root, GitService $git): void {
+        expect($git->commitUrl('abc123def456'))->toBeNull();
 
-    if (! is_dir($root.'/.git')) {
-        initTestGitRepository('chore: bootstrap');
-    }
+        shell_exec('git -C '.escapeshellarg($root).' remote add origin git@github.com:andreapollastri/larapilot.git 2>/dev/null');
 
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-
-    expect($git->commitUrl('abc123def456'))->toBeNull();
-
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin git@github.com:andreapollastri/larapilot.git 2>/dev/null');
-
-    expect($git->commitUrl('abc123def456'))
-        ->toBe('https://github.com/andreapollastri/larapilot/commit/abc123def456')
-        ->and($git->originProvider())->toBe('github');
+        expect($git->commitUrl('abc123def456'))
+            ->toBe('https://github.com/andreapollastri/larapilot/commit/abc123def456')
+            ->and($git->originProvider())->toBe('github');
+    });
 });
 
 it('builds gitlab and bitbucket commit urls from remotes', function (): void {
-    $git = app(GitService::class);
-    $root = base_path();
+    withGitRemoteSandbox(function (string $root, GitService $git): void {
+        shell_exec('git -C '.escapeshellarg($root).' remote add origin git@gitlab.com:acme/app.git 2>/dev/null');
 
-    if (! is_dir($root.'/.git')) {
-        initTestGitRepository('chore: bootstrap');
-    }
+        expect($git->originProvider())->toBe('gitlab')
+            ->and($git->commitUrl('abc123def456'))
+            ->toBe('https://gitlab.com/acme/app/-/commit/abc123def456');
 
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin git@gitlab.com:acme/app.git 2>/dev/null');
+        shell_exec('git -C '.escapeshellarg($root).' remote set-url origin https://bitbucket.org/acme/app.git 2>/dev/null');
 
-    expect($git->originProvider())->toBe('gitlab')
-        ->and($git->commitUrl('abc123def456'))
-        ->toBe('https://gitlab.com/acme/app/-/commit/abc123def456');
-
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin https://bitbucket.org/acme/app.git 2>/dev/null');
-
-    expect($git->originProvider())->toBe('bitbucket')
-        ->and($git->commitUrl('abc123def456'))
-        ->toBe('https://bitbucket.org/acme/app/commits/abc123def456');
+        expect($git->originProvider())->toBe('bitbucket')
+            ->and($git->commitUrl('abc123def456'))
+            ->toBe('https://bitbucket.org/acme/app/commits/abc123def456');
+    });
 });
 
 it('detects azure devops remotes and builds commit urls', function (): void {
-    $git = app(GitService::class);
-    $root = base_path();
+    withGitRemoteSandbox(function (string $root, GitService $git): void {
+        shell_exec('git -C '.escapeshellarg($root).' remote add origin https://dev.azure.com/acme/checkout/_git/app 2>/dev/null');
 
-    if (! is_dir($root.'/.git')) {
-        initTestGitRepository('chore: bootstrap');
-    }
+        expect($git->originProvider())->toBe('azure')
+            ->and($git->originRepoSlug())->toBe('acme/checkout/app')
+            ->and($git->commitUrl('abc123def456'))
+            ->toBe('https://dev.azure.com/acme/checkout/_git/app/commit/abc123def456');
 
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin https://dev.azure.com/acme/checkout/_git/app 2>/dev/null');
+        shell_exec('git -C '.escapeshellarg($root).' remote set-url origin git@ssh.dev.azure.com:v3/acme/checkout/app 2>/dev/null');
 
-    expect($git->originProvider())->toBe('azure')
-        ->and($git->originRepoSlug())->toBe('acme/checkout/app')
-        ->and($git->commitUrl('abc123def456'))
-        ->toBe('https://dev.azure.com/acme/checkout/_git/app/commit/abc123def456');
+        expect($git->originProvider())->toBe('azure')
+            ->and($git->originRepoSlug())->toBe('acme/checkout/app')
+            ->and($git->commitUrl('abc123def456'))
+            ->toBe('https://dev.azure.com/acme/checkout/_git/app/commit/abc123def456');
 
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin git@ssh.dev.azure.com:v3/acme/checkout/app 2>/dev/null');
+        shell_exec('git -C '.escapeshellarg($root).' remote set-url origin https://acme.visualstudio.com/checkout/_git/app 2>/dev/null');
 
-    expect($git->originProvider())->toBe('azure')
-        ->and($git->originRepoSlug())->toBe('acme/checkout/app')
-        ->and($git->commitUrl('abc123def456'))
-        ->toBe('https://dev.azure.com/acme/checkout/_git/app/commit/abc123def456');
-
-    shell_exec('git -C '.escapeshellarg($root).' remote remove origin 2>/dev/null');
-    shell_exec('git -C '.escapeshellarg($root).' remote add origin https://acme.visualstudio.com/checkout/_git/app 2>/dev/null');
-
-    expect($git->originProvider())->toBe('azure')
-        ->and($git->originRepoSlug())->toBe('acme/checkout/app')
-        ->and($git->commitUrl('abc123def456'))
-        ->toBe('https://acme.visualstudio.com/checkout/_git/app/commit/abc123def456');
+        expect($git->originProvider())->toBe('azure')
+            ->and($git->originRepoSlug())->toBe('acme/checkout/app')
+            ->and($git->commitUrl('abc123def456'))
+            ->toBe('https://acme.visualstudio.com/checkout/_git/app/commit/abc123def456');
+    });
 });
 
 it('resolves merge commits that reference a spec code', function (): void {

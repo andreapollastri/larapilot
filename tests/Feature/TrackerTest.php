@@ -708,6 +708,7 @@ it('flags a link whose remote record was deleted', function (): void {
 
 it('imports remote comments once as internal feedback', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
+    enableComments();
     addSpec();
 
     Http::fake([

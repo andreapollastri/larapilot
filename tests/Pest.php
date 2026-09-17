@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Larapilot\Services\ConfigService;
+use Larapilot\Services\GitService;
 use Larapilot\Services\PlanService;
 use Larapilot\Tests\DisabledTestCase;
 use Larapilot\Tests\TestCase;
@@ -127,6 +129,45 @@ function addSpec(array $overrides = []): void
 function enableComments(): void
 {
     test()->artisan('larapilot:settings-set', ['--comments' => 'YES'])->assertSuccessful();
+}
+
+/**
+ * Run callback against an isolated git repository so remote URL tests do not
+ * mutate the shared Testbench origin.
+ *
+ * @param  callable(string $root, GitService $git): void  $callback
+ */
+function withGitRemoteSandbox(callable $callback): void
+{
+    $sandbox = dirname(__DIR__).'/storage/framework/testing/git-remote-sandbox-'.bin2hex(random_bytes(8));
+
+    if (is_dir($sandbox)) {
+        shell_exec('rm -rf '.escapeshellarg($sandbox));
+    }
+
+    mkdir($sandbox, 0755, true);
+    shell_exec('git init -b main --template= '.escapeshellarg($sandbox));
+    file_put_contents($sandbox.'/README.md', "sandbox\n");
+    shell_exec('git -C '.escapeshellarg($sandbox).' config user.email test@example.com');
+    shell_exec('git -C '.escapeshellarg($sandbox).' config user.name "Test User"');
+    shell_exec('git -C '.escapeshellarg($sandbox).' add README.md');
+    shell_exec('git -C '.escapeshellarg($sandbox).' commit -m init');
+
+    try {
+        $sandboxConfig = new class($sandbox) extends ConfigService
+        {
+            public function __construct(private readonly string $root) {}
+
+            public function projectRoot(): string
+            {
+                return $this->root;
+            }
+        };
+
+        $callback($sandbox, new GitService($sandboxConfig));
+    } finally {
+        shell_exec('rm -rf '.escapeshellarg($sandbox));
+    }
 }
 
 function planSpec(string $code = 'US-001'): void
