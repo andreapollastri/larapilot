@@ -11,7 +11,7 @@ Runtime rules shared by **all** Larapilot skills. Load this file once at activat
 | `.larapilot/runtime-ops.md`       | PRD Living Document, usage ledger & schedule (Lucille), maintenance & support (Sophia), red team lifecycle (Oliver)                                              | `feature`, `bug`, `ship`, `usage`, *all skills (Lucille)* |
 | `.larapilot/runtime-release.md`   | Release ledger, Gitflow release branches, parallel releases, spec ↔ release assignment, ship ceremony                                                            | `release`, `inception`, `adopt`, `feature`, `plan`, `ship` *(when `release_mode=YES`)* |
 | `.larapilot/runtime-project-docs.md` | Living `_project_docs/` handbook — structure, diagrams, retroactive catch-up, per-change updates                                                              | `project-docs`, *all skills when `project_docs=YES`* |
-| `.larapilot/runtime-custom-skills.md` | User-authored skills under `.larapilot/skills/`, Zoey authoring flow via `/larapilot-custom-skill`                                                             | `custom-skill` |
+| `.larapilot/runtime-custom-skills.md` | User-authored skills under `.larapilot/skills/` (`.gitkeep` on install), persisted with `larapilot:custom-skill-add` and listed at `/larapilot/skills` | `custom-skill` |
 
 `larapilot-settings` and `larapilot-frontend-companion` need this core file only. **`larapilot-usage`** loads core + `runtime-ops.md` (Usage Ledger & Schedule). Every concept has **one** canonical copy — other files reference it by file + heading name, never re-paste it.
 

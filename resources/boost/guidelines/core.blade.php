@@ -45,7 +45,7 @@ Use Larapilot skills when the user wants to:
 | Ship (optional) | `larapilot-ship` | Security assessment + deploy + web launch checks |
 | Release (optional) | `larapilot-release` | `.larapilot/releases.yaml` + Gitflow `release/x.y.z` branches when `release_mode=YES` |
 | Project docs (optional) | `larapilot-project-docs` | Living handbook in `_project_docs/` when `project_docs=YES` |
-| Custom skills | `larapilot-custom-skill` | Author skills under `.larapilot/skills/` |
+| Custom skills | `larapilot-custom-skill` | Author skills under `.larapilot/skills/` via `larapilot:custom-skill-add` (auto-registered with Boost; listed at `/larapilot/skills`) |
 | Settings | `larapilot-settings` | Persist project settings in `.larapilot/config.yaml` |
 | Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown resoconto |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |

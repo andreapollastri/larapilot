@@ -15,6 +15,7 @@ use Larapilot\Console\Commands\ChoicesSetCommand;
 use Larapilot\Console\Commands\CodeHistoryLogCommand;
 use Larapilot\Console\Commands\CodeHistoryShowCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
+use Larapilot\Console\Commands\CustomSkillAddCommand;
 use Larapilot\Console\Commands\CustomSkillListCommand;
 use Larapilot\Console\Commands\DashboardUserCommand;
 use Larapilot\Console\Commands\DecisionCheckCommand;
@@ -100,7 +101,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.0.3';
+    public const VERSION = '3.0.4';
 
     public function register(): void
     {
@@ -188,6 +189,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseSetCommand::class,
                 ReleaseImportCommand::class,
                 CustomSkillListCommand::class,
+                CustomSkillAddCommand::class,
                 QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,

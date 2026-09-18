@@ -11,18 +11,18 @@ class CustomSkillListCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:custom-skill-list';
 
-    protected $description = 'List custom Larapilot skills under .larapilot/skills/';
+    protected $description = 'List custom Larapilot skills under .larapilot/skills/ and register them with Boost';
 
     public function handle(CustomSkillService $customSkills): int
     {
-        $customSkills->ensureDirectory();
-
+        $registered = $customSkills->registerAll();
         $skills = $customSkills->list();
 
         return $this->success('custom_skill_list', [
             'skills' => $skills,
             'count' => count($skills),
             'directory' => $customSkills->directory(),
+            'registered' => $registered,
         ]);
     }
 }

@@ -59,6 +59,10 @@ abstract class TestCase extends OrchestraTestCase
             $this->deleteDirectory(base_path('.larapilot'));
         }
 
+        if (is_dir(base_path('.ai'))) {
+            $this->deleteDirectory(base_path('.ai'));
+        }
+
         if (is_dir(base_path('_project_docs'))) {
             $this->deleteDirectory(base_path('_project_docs'));
         }

@@ -105,29 +105,6 @@
         gap: 10px;
     }
 
-    .column-body:not(.is-expanded) .spec-card-extra {
-        display: none;
-    }
-
-    .show-more-btn {
-        display: block;
-        width: 100%;
-        margin-top: 2px;
-        padding: 8px 10px;
-        border-radius: 8px;
-        border: 1px dashed var(--border);
-        background: transparent;
-        color: var(--accent);
-        font-size: 0.78rem;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .show-more-btn:hover {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-    }
-
     .spec-card {
         display: block;
         padding: 12px 14px;
@@ -309,7 +286,6 @@
                         fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)),
                         $items
                     ));
-                    $hiddenCount = max(0, count($items) - 5);
                     $badgeClass = match (strtoupper($status)) {
                         'TODO' => 'badge-todo',
                         'PLANNED' => 'badge-planned',
@@ -330,19 +306,11 @@
                         </div>
                     </div>
                     <div class="column-body">
-                        @forelse ($items as $index => $spec)
-                            @include('larapilot::dashboard.partials.spec-card', [
-                                'spec' => $spec,
-                                'extra' => $index >= 5,
-                            ])
+                        @forelse ($items as $spec)
+                            @include('larapilot::dashboard.partials.spec-card', ['spec' => $spec])
                         @empty
                             <div class="column-empty">No specs</div>
                         @endforelse
-                        @if ($hiddenCount > 0)
-                            <button type="button" class="show-more-btn" data-more="{{ $hiddenCount }}" aria-expanded="false">
-                                Show {{ $hiddenCount }} more
-                            </button>
-                        @endif
                     </div>
                 </article>
             @endforeach
@@ -350,20 +318,3 @@
         </div>
     @endif
 @endsection
-
-@push('scripts')
-<script>
-    document.querySelectorAll('.show-more-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-            const body = button.closest('.column-body');
-            const expanded = body.classList.toggle('is-expanded');
-            const hidden = Number(button.dataset.more || 0);
-
-            button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-            button.textContent = expanded
-                ? 'Show less'
-                : `Show ${hidden} more`;
-        });
-    });
-</script>
-@endpush

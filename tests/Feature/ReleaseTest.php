@@ -77,4 +77,6 @@ it('lists custom skills directory', function (): void {
     $this->artisan('larapilot:custom-skill-list')
         ->assertSuccessful()
         ->expectsOutputToContain('demo-skill');
+
+    expect(base_path('.larapilot/skills/.gitkeep'))->toBeFile();
 });

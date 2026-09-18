@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.0.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.0.4</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -3169,7 +3169,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v3.0.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v3.0.4</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3181,6 +3181,21 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>3.0.4</strong> <span class="chip">2026-09-18</span></td>
+                  <td>
+                    <strong>Added:</strong> dashboard <strong>Skills</strong> page
+                    (<code>/larapilot/skills</code>) listing custom skills with descriptions;
+                    <code>larapilot:custom-skill-add</code> persists
+                    <code>.larapilot/skills/{name}/SKILL.md</code>.<br>
+                    <strong>Changed:</strong> custom skills auto-register into
+                    <code>.ai/skills/</code> (and existing agent skill folders);
+                    <code>.larapilot/skills/.gitkeep</code> on install;
+                    <code>/larapilot-custom-skill</code> saves via the Artisan command;
+                    Kanban shows the full column again (no Show more / newest-first);
+                    dashboard <strong>Docs</strong> is the last nav item.
+                  </td>
+                </tr>
                 <tr>
                   <td><strong>3.0.0</strong> <span class="chip">2026-09-18</span></td>
                   <td>
@@ -3236,7 +3251,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <code>/larapilot-custom-skill</code>). Each packaged skill is a <code>SKILL.md</code> under
             <code>resources/boost/skills/</code> with a name, description, persona roster, execution steps, and allowed
             CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; user-authored skills live
-            in <code>.larapilot/skills/</code>. Coding <strong>guidelines</strong> ship alongside (not a skill).
+            in <code>.larapilot/skills/</code> (created with <code>.gitkeep</code>; persisted with
+            <code>larapilot:custom-skill-add</code> and auto-registered into <code>.ai/skills/</code>).
+            Coding <strong>guidelines</strong> ship alongside (not a skill).
           </p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
@@ -3577,30 +3594,39 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">extend</span>
               <div class="skill-body">
                 <h3><code>/larapilot-custom-skill</code></h3>
-                <p>Zoey interviews you; Sarah scaffolds user-authored Boost skills under
-                  <code>.larapilot/skills/{name}/SKILL.md</code> — team deploy checklists, compliance gates, internal
-                  runbooks on top of Larapilot. Run <code>php artisan boost:update</code> after creation.</p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:custom-skill-list</code>.
+                <p>Zoey interviews you; Sarah persists user-authored Boost skills under
+                  <code>.larapilot/skills/{name}/SKILL.md</code> via <code>larapilot:custom-skill-add</code>
+                  — team deploy checklists, compliance gates, internal
+                  runbooks on top of Larapilot. Registration with Boost is automatic
+                  (<code>.ai/skills/</code> + <code>boost:update</code>). Browse them on the dashboard
+                  <a href="#deep-dive-dashboard">Skills</a> page.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:custom-skill-add</code> ·
+                  <code>larapilot:custom-skill-list</code>.
                 </p>
                 <details class="skill-details">
                   <summary>Full reference</summary>
                   <ol>
                     <li><strong>Zoey</strong> AskQuestion: one skill vs family · slash name + Boost
                       <code>description</code> · personas and CLI calls.</li>
-                    <li><strong>Sarah</strong> writes <code>.larapilot/skills/{name}/SKILL.md</code> mirroring packaged
-                      skill structure.</li>
-                    <li><code>custom-skill-list</code> confirms discovery; <code>boost:update</code> registers the slash
-                      command.</li>
+                    <li><strong>Sarah</strong> writes a temp draft, then
+                      <code>larapilot:custom-skill-add --name={name} --file=…</code>. The command
+                      saves <code>.larapilot/skills/{name}/SKILL.md</code> (and a folder
+                      <code>.gitkeep</code>) and mirrors it into Boost.</li>
+                    <li><code>custom-skill-list</code> confirms discovery and re-registers any skills
+                      already on disk. The dashboard <code>/larapilot/skills</code> page lists
+                      triggers and descriptions.</li>
                   </ol>
                   <ul>
                     <li>Every custom skill starts with <code>config-show</code> and honors
                       <code>data.settings</code>.</li>
-                    <li>Persistence only via <code>larapilot:*</code> — no ad-hoc YAML for workflow artifacts.</li>
+                    <li>Persistence only via <code>larapilot:*</code> — no ad-hoc YAML for workflow artifacts,
+                      and no raw <code>SKILL.md</code> writes for custom skills.</li>
                     <li>Custom skills <strong>extend</strong> inception → spec → plan → implement → review; they do not
                       replace it.</li>
                   </ul>
                   <div class="file-tree">.larapilot/
 └── skills/
+    ├── .gitkeep
     └── my-deploy-checklist/
         └── SKILL.md
                   </div>
@@ -4449,7 +4475,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             ├── runtime-project-docs.md <span class="comment"># project docs pack</span>
             ├── runtime-custom-skills.md <span class="comment"># custom skills pack</span>
             ├── task-templates.md <span class="comment"># plan/implement task body shapes (+ TASK-00 release variant)</span>
-            ├── skills/ <span class="comment"># user-authored custom Boost skills</span>
+            ├── skills/ <span class="comment"># user-authored custom Boost skills (.gitkeep)</span>
             ├── backlog.yaml <span class="comment"># spec index + statuses</span>
             ├── usage/ <span class="comment"># Lucille ledger + schedule (committed)</span>
             │ ├── ledger.jsonl
@@ -6218,7 +6244,9 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                 </tr>
                 <tr>
                   <td>Custom skills</td>
-                  <td><code>larapilot:custom-skill-list</code></td>
+                  <td><code>larapilot:custom-skill-list</code> ·
+                    <code>larapilot:custom-skill-add</code> (<code>--name=</code>,
+                    <code>--file=</code> / <code>--content=</code>, <code>--force</code>)</td>
                   <td><code>/larapilot-custom-skill</code> — see <a href="#skill-larapilot-custom-skill">/larapilot-custom-skill</a>
                   </td>
                 </tr>
@@ -6313,10 +6341,20 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Rendered <code>PRD.md</code> with a section table of contents</td>
                 </tr>
                 <tr>
+                  <td><strong>Inception</strong></td>
+                  <td><code>/larapilot/inception</code></td>
+                  <td>Discovery choices snapshot from <code>.larapilot/choices.yaml</code></td>
+                </tr>
+                <tr>
                   <td><strong>Settings</strong></td>
                   <td><code>/larapilot/settings</code></td>
-                  <td>Current <code>settings.*</code> + allowed options; visual summary of inception
-                    <code>choices.yaml</code></td>
+                  <td>Current <code>settings.*</code> with allowed options and per-option explanations</td>
+                </tr>
+                <tr>
+                  <td><strong>Skills</strong></td>
+                  <td><code>/larapilot/skills</code></td>
+                  <td>Custom skills from <code>.larapilot/skills/</code> — slash trigger plus YAML
+                    <code>description</code></td>
                 </tr>
                 <tr>
                   <td><strong>Git</strong></td>
@@ -6334,6 +6372,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><strong>API docs</strong></td>
                   <td><code>/larapilot/api/docs</code></td>
                   <td>Interactive OpenAPI browser for the workflow JSON API</td>
+                </tr>
+                <tr>
+                  <td><strong>Docs</strong></td>
+                  <td><code>/larapilot/docs</code></td>
+                  <td>Delivery loop, packaged Boost skills, and persona roster</td>
                 </tr>
               </tbody>
             </table>
@@ -6354,9 +6397,12 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <a href="#deep-dive-decision-log">Decision journal</a>.
           </p>
 
-          <h4>Settings &amp; Usage</h4>
+          <h4>Settings, Inception, Docs &amp; Skills</h4>
           <p><strong>Settings</strong> shows the live project modes (effort, backlog, git, testing, auto-approve,
-            lucille, dashboard auth, forges, notifications) and the inception choices snapshot. <strong>Usage</strong> is Lucille's
+            lucille, dashboard auth, forges, notifications). <strong>Inception</strong> is the discovery
+            choices snapshot. <strong>Docs</strong> explains the delivery loop and packaged skills.
+            <strong>Skills</strong> lists every user-authored skill under <code>.larapilot/skills/</code>
+            with its slash command and description. <strong>Usage</strong> is Lucille's
             surface — category breakdowns, schedule Gantt, and a one-click Markdown resoconto. Same data as
             <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
 

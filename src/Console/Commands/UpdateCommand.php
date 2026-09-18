@@ -7,6 +7,7 @@ namespace Larapilot\Console\Commands;
 use Larapilot\Services\BoostPackageService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\CustomSkillService;
 use Larapilot\Support\LarapilotCommand;
 use Larapilot\Support\SharedRuntime;
 use Symfony\Component\Process\Process;
@@ -19,7 +20,7 @@ class UpdateCommand extends LarapilotCommand
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + latest Boost + guidelines and skills)';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage): int
+    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills): int
     {
         if (! $config->hasProjectConfig()) {
             return $this->failure(
@@ -49,6 +50,8 @@ class UpdateCommand extends LarapilotCommand
                 .'. Persist them with larapilot:settings-set.'
             );
         }
+
+        $customSkills->registerAll();
 
         if ($this->option('skip-boost')) {
             $this->line('Boost package update and publishing skipped. Run php artisan larapilot:update (without --skip-boost), or composer update laravel/boost --with-dependencies && php artisan boost:update.');

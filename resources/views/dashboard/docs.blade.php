@@ -253,7 +253,7 @@
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
                     <tr><td><code>/larapilot-tracker</code></td><td>Linear/Jira/… mirror in <code>tracker.yaml</code></td><td>🔗 Matt · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-backstage</code></td><td>Backstage catalog + TechDocs</td><td>📝 Albert · 🚀 Jack</td></tr>
-                    <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code></td><td>🤖 Zoey · ⌨️ Sarah</td></tr>
+                    <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code> — listed on the <a href="{{ route('larapilot.dashboard.skills') }}">Skills</a> page</td><td>🤖 Zoey · ⌨️ Sarah</td></tr>
                 </tbody>
             </table>
         </section>

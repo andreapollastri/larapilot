@@ -42,6 +42,7 @@ it('installs the project scaffolding', function (): void {
         ->and(base_path('.larapilot/mockups/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/docs/test-results/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/research/reference-products/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/skills/.gitkeep'))->toBeFile()
         ->and(base_path('phpstan.neon.dist'))->toBeFile()
         ->and(base_path('pint.json'))->toBeFile();
 });

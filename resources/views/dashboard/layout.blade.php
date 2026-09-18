@@ -247,12 +247,13 @@
                 <a href="{{ route('larapilot.dashboard.prd') }}" @class(['active' => request()->routeIs('larapilot.dashboard.prd')])>PRD</a>
                 <a href="{{ route('larapilot.dashboard.inception') }}" @class(['active' => request()->routeIs('larapilot.dashboard.inception')])>Inception</a>
                 <a href="{{ route('larapilot.dashboard.settings') }}" @class(['active' => request()->routeIs('larapilot.dashboard.settings')])>Settings</a>
-                <a href="{{ route('larapilot.dashboard.docs') }}" @class(['active' => request()->routeIs('larapilot.dashboard.docs')])>Docs</a>
+                <a href="{{ route('larapilot.dashboard.skills') }}" @class(['active' => request()->routeIs('larapilot.dashboard.skills')])>Skills</a>
                 <a href="{{ route('larapilot.dashboard.git') }}" @class(['active' => request()->routeIs('larapilot.dashboard.git')])>Git</a>
                 <a href="{{ route('larapilot.dashboard.usage') }}" @class(['active' => request()->routeIs('larapilot.dashboard.usage')])>Usage</a>
                 @if (Route::has('larapilot.api.docs'))
                     <a href="{{ route('larapilot.api.docs') }}" @class(['active' => request()->routeIs('larapilot.api.*')])>API</a>
                 @endif
+                <a href="{{ route('larapilot.dashboard.docs') }}" @class(['active' => request()->routeIs('larapilot.dashboard.docs')])>Docs</a>
             </nav>
         </header>
 

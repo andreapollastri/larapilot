@@ -63,6 +63,13 @@ class DashboardController
         return view('larapilot::dashboard.docs', $this->dashboard->docs());
     }
 
+    public function skills(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.skills', $this->dashboard->skills());
+    }
+
     public function usage(): View
     {
         $this->guard();

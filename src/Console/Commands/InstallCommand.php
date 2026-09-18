@@ -49,6 +49,7 @@ class InstallCommand extends LarapilotCommand
         $this->line('  - .larapilot/legacy/');
         $this->line('  - .larapilot/research/');
         $this->line('  - .larapilot/design-systems/ (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE references for mockups)');
+        $this->line('  - .larapilot/skills/ (.gitkeep)');
 
         foreach ($qualityResult['written'] as $file) {
             $this->line('  - '.$file);

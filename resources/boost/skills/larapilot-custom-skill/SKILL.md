@@ -5,7 +5,7 @@ description: Create one or more custom Larapilot/Boost skills under .larapilot/s
 
 # Larapilot — Custom Skills
 
-Author **user-defined Boost skills** stored in `.larapilot/skills/`. Zoey interviews; Sarah writes files; packaged Larapilot skills remain the base layer.
+Author **user-defined Boost skills** stored in `.larapilot/skills/`. Zoey interviews; Sarah persists files via `larapilot:custom-skill-add` (never hand-write `SKILL.md`). Packaged Larapilot skills remain the base layer.
 
 ## Shared Runtime
 
@@ -16,13 +16,13 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-custom-skil
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AskQuestion interview — intent, triggers, workflow |
-| ⌨️ **Sarah** | Scaffold folders + `SKILL.md` files |
+| ⌨️ **Sarah** | Persist folders + `SKILL.md` via `larapilot:custom-skill-add` |
 | 📝 **Albert** | Clear descriptions and step numbering |
 
 ## Config & CLI
 
 1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:custom-skill-list` — avoid duplicate names
+2. `php artisan larapilot:custom-skill-list` — avoid duplicate names; also registers discovered skills with Boost
 
 ## Workflow
 
@@ -38,7 +38,7 @@ When `list`: run `custom-skill-list`, print triggers, stop.
 
 ### 2. AskQuestion — Round 2 (when creating)
 
-- **Slash name** — e.g. `my-deploy-checklist` (becomes `/my-deploy-checklist` in Boost after update)
+- **Slash name** — e.g. `my-deploy-checklist` (becomes `/my-deploy-checklist` in Boost after auto-register)
 - **Trigger description** — one paragraph for the YAML `description:` field (when to activate)
 
 ### 3. AskQuestion — Round 3 (workflow)
@@ -49,12 +49,18 @@ When `list`: run `custom-skill-list`, print triggers, stop.
 
 Free-text allowed for step details after the round.
 
-### 4. Draft & write
+### 4. Draft & persist
 
-1. Zoey drafts full `SKILL.md` (front matter + sections mirroring packaged skills: Shared Runtime, Team, Config & CLI, Workflow, Output Economy).
-2. Sarah writes `.larapilot/skills/{name}/SKILL.md`.
-3. Run `custom-skill-list` to confirm.
-4. Tell the user: `php artisan boost:update` (or `larapilot:update`) to register the skill in Boost.
+1. Zoey drafts full `SKILL.md` (front matter + sections mirroring packaged skills: Shared Runtime, Team, Config & CLI, Workflow, Output Economy). Front matter **must** include `name` and `description`.
+2. Sarah **must** persist with Artisan (never write the canonical `SKILL.md` by hand). Write the draft to a temp file, then:
+
+```bash
+php artisan larapilot:custom-skill-add --name={name} --file=.larapilot/tmp-{name}-SKILL.md
+```
+
+Delete the temp file after a successful envelope. For a family, call `custom-skill-add` once per skill. Use `--force` only when the user asked to overwrite.
+3. Run `custom-skill-list` to confirm. The command also copies each skill into `.ai/skills/` (and existing agent skill folders) so Boost can publish the slash command.
+4. Tell the user the skill lives at `.larapilot/skills/{name}/SKILL.md` and is listed on the dashboard **Skills** page (`/larapilot/skills`). Do **not** ask them to run `boost:update` — `custom-skill-add` already registered it.
 
 ### 5. Quality checklist (before finish)
 
@@ -62,7 +68,8 @@ Free-text allowed for step details after the round.
 - [ ] Honors `data.settings`
 - [ ] No user-specific paths in examples
 - [ ] Persistence only via `larapilot:*` commands
+- [ ] Saved with `larapilot:custom-skill-add`, not a raw file write
 
 ## Output Economy
 
-**High** — show the draft skill structure in chat; file on disk is the deliverable.
+**High** — show the draft skill structure in chat; `.larapilot/skills/{name}/SKILL.md` is the deliverable.

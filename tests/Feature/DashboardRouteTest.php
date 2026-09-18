@@ -18,7 +18,7 @@ it('serves the workflow dashboard in local environment', function (): void {
         ->assertSee('Login');
 });
 
-it('collapses kanban columns to the five most recent specs with show more', function (): void {
+it('shows every spec in a kanban column without collapsing', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
     foreach (range(1, 6) as $index) {
@@ -31,9 +31,9 @@ it('collapses kanban columns to the five most recent specs with show more', func
 
     $this->get('/larapilot')
         ->assertOk()
-        ->assertSee('Show 1 more', false)
-        ->assertSee('US-006', false)
-        ->assertSee('US-002', false);
+        ->assertDontSee('Show 1 more', false)
+        ->assertSee('US-001', false)
+        ->assertSee('US-006', false);
 });
 
 it('serves the inception and docs dashboard pages', function (): void {
@@ -48,6 +48,34 @@ it('serves the inception and docs dashboard pages', function (): void {
         ->assertSee('How Larapilot works')
         ->assertSee('/larapilot-inception')
         ->assertSee('Personas');
+
+    $html = $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('>Usage</a>', false)
+        ->assertSee('>Docs</a>', false)
+        ->getContent();
+
+    expect(strrpos($html, '>Docs</a>'))->toBeGreaterThan(strpos($html, '>Usage</a>'));
+});
+
+it('serves the skills dashboard page with custom skill descriptions', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->get('/larapilot/skills')
+        ->assertOk()
+        ->assertSee('Custom skills')
+        ->assertSee('/larapilot-custom-skill');
+
+    $this->artisan('larapilot:custom-skill-add', [
+        '--name' => 'staging-gate',
+        '--content' => "---\nname: staging-gate\ndescription: Confirm staging is green before promote.\n---\n\n# Staging gate\n",
+    ])->assertSuccessful();
+
+    $this->get('/larapilot/skills')
+        ->assertOk()
+        ->assertSee('/staging-gate')
+        ->assertSee('Confirm staging is green before promote.')
+        ->assertSee('Registered');
 });
 
 it('hides the dashboard in production environment', function (): void {
@@ -61,6 +89,7 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot/settings')->assertNotFound();
     $this->get('/larapilot/inception')->assertNotFound();
     $this->get('/larapilot/docs')->assertNotFound();
+    $this->get('/larapilot/skills')->assertNotFound();
     $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();

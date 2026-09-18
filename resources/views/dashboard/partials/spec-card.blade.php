@@ -1,4 +1,4 @@
-<a @class(['spec-card', 'spec-card-extra' => ($extra ?? false)]) href="{{ route('larapilot.dashboard.spec', $spec['code']) }}">
+<a class="spec-card" href="{{ route('larapilot.dashboard.spec', $spec['code']) }}">
     <div class="spec-meta">
         <strong>{{ $spec['code'] }}</strong>
         <div class="spec-badges">

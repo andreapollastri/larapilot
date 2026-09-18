@@ -19,6 +19,7 @@ class DashboardService
         protected UsageService $usageService,
         protected DecisionService $decisions,
         protected GitService $git,
+        protected CustomSkillService $customSkills,
     ) {}
 
     /**
@@ -79,59 +80,13 @@ class DashboardService
         $board = $this->rawBoard();
 
         foreach ($board['columns'] as $status => $specs) {
-            $enriched = array_map(
+            $board['columns'][$status] = array_map(
                 fn (array $spec): array => $this->enrichSpec($spec),
                 $specs
             );
-
-            usort(
-                $enriched,
-                fn (array $a, array $b): int => $this->specActivityTimestamp($b) <=> $this->specActivityTimestamp($a)
-                    ?: strcmp((string) ($b['code'] ?? ''), (string) ($a['code'] ?? ''))
-            );
-
-            $board['columns'][$status] = $enriched;
         }
 
         return $board;
-    }
-
-    /**
-     * @param  array<string, mixed>  $spec
-     */
-    protected function specActivityTimestamp(array $spec): int
-    {
-        $history = is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [];
-
-        foreach (array_reverse($history) as $entry) {
-            if (! is_array($entry)) {
-                continue;
-            }
-
-            $at = $entry['at'] ?? null;
-
-            if (! is_string($at) || $at === '') {
-                continue;
-            }
-
-            $timestamp = strtotime($at);
-
-            if ($timestamp !== false) {
-                return $timestamp;
-            }
-        }
-
-        $committedAt = $spec['merge_commit']['committed_at'] ?? null;
-
-        if (is_string($committedAt) && $committedAt !== '') {
-            $timestamp = strtotime($committedAt);
-
-            if ($timestamp !== false) {
-                return $timestamp;
-            }
-        }
-
-        return 0;
     }
 
     /**
@@ -250,6 +205,19 @@ class DashboardService
     {
         return [
             'settings' => $this->config->settings(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function skills(): array
+    {
+        $this->customSkills->registerAll();
+
+        return [
+            'skills' => $this->customSkills->list(),
+            'directory' => $this->customSkills->directory(),
         ];
     }
 

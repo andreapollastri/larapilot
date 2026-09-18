@@ -2,6 +2,24 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.0.4] - 2026-09-18
+
+### Added
+
+- **Dashboard Skills page** — `/larapilot/skills` lists every custom skill under `.larapilot/skills/` with slash trigger, YAML `description` (what it does), and Boost registration status.
+- **`larapilot:custom-skill-add`** — persist user-authored skills to `.larapilot/skills/{name}/SKILL.md` (`--name`, `--file` / `--content` / stdin, `--force`). `/larapilot-custom-skill` now saves through this command instead of a raw file write.
+
+### Changed
+
+- **Custom skills auto-register** — `custom-skill-add`, `custom-skill-list`, `larapilot:update`, and the Skills dashboard mirror each skill into Laravel Boost's `.ai/skills/` (and existing agent skill folders such as `.cursor/skills/`). `custom-skill-add` also runs `boost:update` when available.
+- **Skills folder `.gitkeep`** — `CustomSkillService::ensureDirectory()` (install, list, add) always writes `.larapilot/skills/.gitkeep` so the empty folder is committed.
+- **Dashboard board** — restores full Kanban columns (no “Show N more” collapse, no newest-first sort by `status_history`). Specs list in backlog order again, as before 3.0.3.
+- **Dashboard nav** — **Docs** is the last item in the `/larapilot` menu.
+
+### Docs
+
+- Site / package version **v3.0.4**; dashboard Skills tab; custom-skill authoring via `custom-skill-add`; Docs nav last.
+
 ## [3.0.3] - 2026-09-18
 
 ### Added

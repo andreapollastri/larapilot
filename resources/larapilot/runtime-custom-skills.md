@@ -4,7 +4,7 @@ Phase pack for **`larapilot-custom-skill`**. Read `.larapilot/shared-runtime.md`
 
 ## Storage _(Zoey + Sarah)_
 
-User-authored Boost skills live under **`.larapilot/skills/{skill-name}/SKILL.md`** (path key `paths.custom_skills`). Each folder is one skill; the file follows the same front-matter contract as packaged Larapilot skills:
+User-authored Boost skills live under **`.larapilot/skills/{skill-name}/SKILL.md`** (path key `paths.custom_skills`). The folder is created on `larapilot:install` with a `.gitkeep`. Each folder is one skill; the file follows the same front-matter contract as packaged Larapilot skills:
 
 ```yaml
 ---
@@ -13,11 +13,15 @@ description: When to trigger this skill — be explicit for Boost routing.
 ---
 ```
 
-List discovered skills: `php artisan larapilot:custom-skill-list`.
+List (and auto-register) discovered skills: `php artisan larapilot:custom-skill-list`.
+
+Persist a new skill: `php artisan larapilot:custom-skill-add --name=… --content=…` (or `--file=`). Sarah **never** writes `SKILL.md` by hand. The command saves under `.larapilot/skills/` and mirrors the folder into **`.ai/skills/`** (Laravel Boost's custom-skill source) plus any existing agent skill directories (`.cursor/skills/`, `.claude/skills/`, …), then runs `boost:update` when available.
 
 Custom skills extend Larapilot's base layer — they **never replace** core workflow commands; they call `php artisan larapilot:*` for persistence exactly like packaged skills.
 
-## Authoring flow _(Zoey interviews; Sarah scaffolds files)_
+The dashboard **Skills** page (`/larapilot/skills`) lists every custom skill with its slash trigger and the YAML `description` (what it does).
+
+## Authoring flow _(Zoey interviews; Sarah persists via CLI)_
 
 `/larapilot-custom-skill` runs an AskQuestion-driven interview (max 3 per round):
 
@@ -26,11 +30,11 @@ Custom skills extend Larapilot's base layer — they **never replace** core work
 3. **Workflow** — numbered steps, personas involved, which runtime packs to load, which CLI commands to call.
 4. **Persistence** — new artifacts (if any) must use existing `.larapilot/` paths or propose a new path key via `/larapilot-settings` — never ad-hoc files outside the workspace contract.
 
-Zoey drafts the `SKILL.md` body; Sarah writes the file(s) under `.larapilot/skills/`. After creation, remind the user to run `php artisan boost:update` (or `larapilot:update`) so Boost picks up the new skill.
+Zoey drafts the `SKILL.md` body; Sarah saves it with `larapilot:custom-skill-add`. Registration with Boost is automatic.
 
 ## ON / OFF
 
-Custom skills are **always available** once written — there is no global toggle. Remove a skill by deleting its folder. Packaged Larapilot skills remain the default workflow; custom skills are opt-in via their slash command.
+Custom skills are **always available** once written — there is no global toggle. Remove a skill by deleting its folder (then re-run `custom-skill-list` or `larapilot:update` so Boost drops the stale copy). Packaged Larapilot skills remain the default workflow; custom skills are opt-in via their slash command.
 
 ## Quality bar
 

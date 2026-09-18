@@ -89,7 +89,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-frontend-companion` | Link external FE repo path, scan code — **from Laravel only** |
 | `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (when `release_mode=YES`) |
 | `/larapilot-project-docs` | Living handbook in `_project_docs/` (when `project_docs=YES`) |
-| `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` |
+| `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` (auto-registered with Boost) |
 | `/larapilot-design` | Static HTML mockups from design system |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
@@ -109,7 +109,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Settings (options + inception choices), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with decision journal, mockup preview, and internal feedback
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
@@ -221,7 +221,8 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 | `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
 | `larapilot:release-add` / `release-set` | Register or update a release |
 | `larapilot:release-import` | Rebuild shipped releases from Git semver tags |
-| `larapilot:custom-skill-list` | List skills under `.larapilot/skills/` |
+| `larapilot:custom-skill-list` | List skills under `.larapilot/skills/` and auto-register them with Boost |
+| `larapilot:custom-skill-add` | Persist a skill to `.larapilot/skills/{name}/SKILL.md` and register it (`.ai/skills/` + `boost:update`) |
 | `larapilot:frontend-scan` | Detect stack, tooling, structure, entrypoints |
 
 Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
