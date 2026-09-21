@@ -20,6 +20,10 @@ Set only via `php artisan larapilot:settings-set --account=…`. Never hand-edit
 
 `.larapilot/economics.yaml` (path `paths.economics`) holds the **account profile**. Persist only through `larapilot:economics-set`. Keys:
 
+The **computed snapshot** (quote, tax, effort, sales, scenarios, SaaS forecast) is written automatically to `.larapilot/economics.snapshot.yaml` (`paths.economics_snapshot`) whenever `economics-show`, the dashboard, the API, or `economics-set` runs — so the last preventivo stays on disk and refreshes when specs or plans change.
+
+Profile keys:
+
 | Key | Meaning |
 | --- | --- |
 | `country` | `IT` `DE` `FR` `ES` `GB` `US` `NL` `PT` `CH` `AT` `BE` `IE` |
@@ -32,18 +36,21 @@ Set only via `php artisan larapilot:settings-set --account=…`. Never hand-edit
 | `maintenance_annual_pct` | Suggested retainer vs the build quote (default 15) |
 | `overhead_monthly` | Tools, coworking, accountant share |
 | `vat_registered` | `true` / `false` / omit to infer from the regime |
+| `vat_mode` | `domestic` (22% IT) or `eu_b2b` (reverse charge, no VAT on invoice) |
+| `owner_working` | Company only: habitual/prevalent working shareholder → Gestione Commercianti (default `true`) |
+| `extraction` | Company only: `auto` (best mix), `dividends`, or `mixed` |
 | `product_model` | `auto` `fixed` `saas` `ecommerce` `package` |
 | `saas.*` | List price, churn, growth, infra, CAC, target customers |
 
-`economics-show` returns the computed snapshot (quote, tax, payback, SaaS). Dashboard: `/larapilot/economics`. JSON: `GET /larapilot/api/economics`.
+`economics-show` returns the computed snapshot (quote, tax, payback, SaaS). Dashboard: `/larapilot/economics`. JSON: `GET /larapilot/api/economics`. Client-facing Markdown proposal (PRD language, totals, maintenance, Gantt): `php artisan larapilot:economics-show --format=quote` or `/larapilot/economics/quote.md`. Internal tax report: `--format=md`.
 
 ## How the quote is built
 
-1. **Hours** — sum of plan-task `estimate_hours` when present; else story points × hours/point (`ECO` 3, `STANDARD` 4, `MAX` 5.5); else a delivery-target heuristic.
-2. **Multipliers** — delivery target (MVP 1.0 → Enterprise 2.8), project kind, website type (SaaS / e-commerce 1.25), +15% PM/QA buffer.
+1. **Hours** — per spec: sum plan-task `estimate_hours` when the plan exists; otherwise story points × hours/point for that spec only (`ECO` 3, `STANDARD` 4, `MAX` 5.5). If nothing is sized yet, a delivery-target heuristic applies.
+2. **Multipliers** — delivery/kind/type multipliers apply **only to the heuristic fallback**. Spec-backed hours (`plan_hours`, `story_points`, `mixed`) get the 15% PM/QA buffer only — no double inflation.
 3. **Labor** = hours × hourly rate. **Overhead** = monthly overhead × calendar months (+ allocated compliance).
 4. **Margin** on that direct cost. **Gross** is the client price ex VAT. VAT applies unless the regime is exempt (Italian forfettario, US federal, French micro).
-5. **Tax** — catalogue engine for the country × account × regime (flat / progressive / corporate). Net to owner is what remains after income/corporate tax, social contributions, local tax, dividend extraction, and compliance.
+5. **Tax** — `TaxEngine` + FY-2026 catalogue. Italy forfettario: INPS Gestione Separata deducted from substitute-tax base. Italy SRL: IRES + IRAP (production value) + Gestione Commercianti for working shareholders + legal reserve + optimised director pay / dividends. Net to owner is after all taxes, social, retained reserve, and operating costs (compliance is shown separately).
 6. **Payback** — utilization vs annual capacity; projects/year at capacity; for SaaS, customers needed to recover the build in 12/18/24 months.
 
 ## SaaS
@@ -74,4 +81,5 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
 php artisan larapilot:economics-set --product-model=saas --price-monthly=29 --churn=4 --target-customers=80
 php artisan larapilot:economics-show
 php artisan larapilot:economics-show --format=md
+php artisan larapilot:economics-show --format=quote
 ```

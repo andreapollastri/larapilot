@@ -31,7 +31,7 @@ Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `
 3. Persist answers with `php artisan larapilot:economics-set` (only answered flags)
 4. Re-run `economics-show` and confirm
 
-Never edit `.larapilot/economics.yaml` by hand. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
+Never edit `.larapilot/economics.yaml` by hand. The computed preventivo is auto-saved to `.larapilot/economics.snapshot.yaml` on each show/set/dashboard refresh. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
 
 If `data.settings.account` is `NONE`, **stop** and send the user to `/larapilot-settings` (Account = FREELANCE or COMPANY) or:
 
@@ -56,7 +56,7 @@ Copy prompts closely. Mark the **current** value when known.
 **Round 1 — Country & regime**
 
 - **Country prompt:** `Country (current: {VALUE}) — where is the account tax-resident?`
-- Options (id = code): `IT` Italy · `DE` Germany · `FR` France · `ES` Spain · `GB` United Kingdom · `US` United States · `NL` Netherlands · `PT` Portugal · `CH` Switzerland · `AT` Austria · `BE` Belgium · `IE` Ireland
+- Options (id = code): `IT` · `DE` · `FR` · `ES` · `GB` · `IE` · `AT` · `CH` · `BE` · `NL` · `PT` · `SI` · `HR` · `NO` · `SE` · `DK` · `FI` · `IS` · `LU` · `MT` · `CY` · `PL` · `CZ` · `SK` · `HU` · `RO` · `BG` · `GR` · `EE` · `LV` · `LT` · `US` · `CA` · `AU` · `NZ` · `SG` · `JP` · `MX` (full list in `economics-show` → `countries`)
 
 Then **regime** from `data.regime.options` in `economics-show` (ids and labels). Do not invent regimes.
 
@@ -106,10 +106,10 @@ Pass **only** answered keys. On success, parse the JSON envelope (`kind: "econom
 Re-run `economics-show`. Give Aurora's summary in this order (short):
 
 1. **Preventivo** — client price ex VAT, VAT, client total
-2. **Net to owner** — after tax/social/compliance + effective %
+2. **Net to owner** — after tax/social/compliance + effective % (Italy: show INPS, legal reserve, extraction mix when present)
 3. **Hours** — source + billable hours + calendar months
 4. **If SaaS** — break-even customers, customers to recover in 12 months, ARR at planning, LTV:CAC, months to recover
-5. Point at `/larapilot/economics` for charts and the 36-month forecast
+5. Point at `/larapilot/economics` for charts and the 36-month forecast. Client-facing preventivo: dashboard **Download quote** or `php artisan larapilot:economics-show --format=quote`.
 6. One-line disclaimer: planning estimate, FY-2026 statutory rates, not tax advice
 
 ## Rules

@@ -12,6 +12,7 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
 
@@ -23,6 +24,7 @@ class DashboardController
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
         protected EconomicsService $economics,
+        protected MockupPackageService $mockupPackage,
     ) {}
 
     public function index(): View
@@ -93,6 +95,50 @@ class DashboardController
         return response($this->economics->reportMarkdown(), 200, [
             'Content-Type' => 'text/markdown; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="larapilot-economics.md"',
+        ]);
+    }
+
+    public function economicsQuote(): Response
+    {
+        $this->guard();
+
+        return response($this->economics->quoteMarkdown(), 200, [
+            'Content-Type' => 'text/markdown; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$this->economics->quoteFilename().'"',
+        ]);
+    }
+
+    public function design(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.design', $this->dashboard->design());
+    }
+
+    public function designPresentation(): Response
+    {
+        $this->guard();
+
+        return response($this->mockupPackage->presentationHtml(false), 200, [
+            'Content-Type' => 'text/html; charset=UTF-8',
+        ]);
+    }
+
+    public function designPackage(): Response
+    {
+        $this->guard();
+
+        $path = $this->mockupPackage->writeZip();
+        $contents = (string) file_get_contents($path);
+        $filename = $this->mockupPackage->downloadFilename();
+
+        if (is_file($path)) {
+            unlink($path);
+        }
+
+        return response($contents, 200, [
+            'Content-Type' => 'application/zip',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 

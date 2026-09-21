@@ -10,7 +10,7 @@ use Larapilot\Support\LarapilotCommand;
 class EconomicsShowCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:economics-show
-                            {--format=json : json or md}';
+                            {--format=json : json, md (internal report), or quote (client proposal)}';
 
     protected $description = 'Show the Economics quote, tax, payback, and SaaS forecast';
 
@@ -20,6 +20,12 @@ class EconomicsShowCommand extends LarapilotCommand
 
         if ($format === 'md') {
             $this->line($economics->reportMarkdown());
+
+            return self::SUCCESS;
+        }
+
+        if ($format === 'quote') {
+            $this->line($economics->quoteMarkdown());
 
             return self::SUCCESS;
         }

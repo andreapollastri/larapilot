@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\TaxCatalog;
+use Larapilot\Support\TaxEngine;
 use Symfony\Component\Yaml\Yaml;
 
 class EconomicsService
@@ -19,6 +21,7 @@ class EconomicsService
         protected PlanService $plans,
         protected PrdService $prd,
         protected UsageService $usage,
+        protected EconomicsQuoteWriter $quoteWriter,
     ) {}
 
     public function path(): string
@@ -26,6 +29,29 @@ class EconomicsService
         $config = $this->config->resolve();
 
         return $this->config->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml');
+    }
+
+    public function snapshotPath(): string
+    {
+        $config = $this->config->resolve();
+
+        return $this->config->absolutePath($config['paths']['economics_snapshot'] ?? '.larapilot/economics.snapshot.yaml');
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function readStoredSnapshot(): ?array
+    {
+        $path = $this->snapshotPath();
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $parsed = Yaml::parseFile($path);
+
+        return is_array($parsed) ? $parsed : null;
     }
 
     /**
@@ -50,6 +76,9 @@ class EconomicsService
             'maintenance_annual_pct' => 15.0,
             'overhead_monthly' => $account === 'COMPANY' ? 800.0 : 250.0,
             'vat_registered' => null,
+            'vat_mode' => 'domestic',
+            'owner_working' => $account === 'COMPANY' ? true : null,
+            'extraction' => 'auto',
             'product_model' => 'auto',
             'saas' => [
                 'price_monthly' => 29.0,
@@ -154,6 +183,26 @@ class EconomicsService
             $current['product_model'] = $model;
         }
 
+        if (isset($current['vat_mode'])) {
+            $mode = strtolower(trim((string) $current['vat_mode']));
+            if (! in_array($mode, ['domestic', 'eu_b2b'], true)) {
+                throw new \InvalidArgumentException('Invalid vat_mode. Allowed: domestic, eu_b2b.');
+            }
+            $current['vat_mode'] = $mode;
+        }
+
+        if (isset($current['extraction'])) {
+            $extraction = strtolower(trim((string) $current['extraction']));
+            if (! in_array($extraction, ['auto', 'dividends', 'mixed'], true)) {
+                throw new \InvalidArgumentException('Invalid extraction. Allowed: auto, dividends, mixed.');
+            }
+            $current['extraction'] = $extraction;
+        }
+
+        if (array_key_exists('owner_working', $current) && $current['owner_working'] !== null) {
+            $current['owner_working'] = (bool) $current['owner_working'];
+        }
+
         foreach (['hourly_rate', 'hours_per_day', 'margin_target_pct', 'maintenance_annual_pct', 'overhead_monthly'] as $numeric) {
             if (array_key_exists($numeric, $current)) {
                 $current[$numeric] = max(0, (float) $current[$numeric]);
@@ -220,6 +269,8 @@ class EconomicsService
                 'quote' => null,
                 'tax' => null,
                 'alternate' => null,
+                'scenarios' => [],
+                'sales' => null,
                 'payback' => null,
                 'product' => ['model' => 'off'],
                 'saas' => null,
@@ -233,20 +284,29 @@ class EconomicsService
         $countryMeta = TaxCatalog::country($country);
 
         $quote = $this->buildQuote($effort, $profile, $regime, $countryMeta);
-        $tax = $this->applyTax((float) $quote['gross'], (float) $quote['overhead'], $profile, $regime, $countryMeta, $account);
+        $tax = $this->applyTax(
+            (float) $quote['gross'],
+            (float) $quote['overhead_operating'],
+            $profile,
+            $regime,
+            $countryMeta,
+            $account,
+            (float) $quote['calendar_months']
+        );
         $quote['net_to_owner'] = $tax['net_to_owner'];
         $quote['effective_tax_pct'] = $tax['effective_rate_pct'];
         $quote['client_total'] = $quote['gross'] + $quote['vat'];
 
         $alternateAccount = $account === 'FREELANCE' ? 'COMPANY' : 'FREELANCE';
         $alternate = $this->alternateQuote($quote, $profile, $country, $alternateAccount, $countryMeta);
+        $scenarios = $this->taxScenarios($quote, $profile, $regime, $countryMeta, $account);
 
         $productModel = $this->resolveProductModel($profile, $inception);
-        $saas = $productModel === 'saas'
-            ? $this->saasModel($quote, $profile, $inception, $tax)
-            : null;
+        $saas = $this->saasModel($quote, $profile, $inception, $tax);
+        $sales = $this->salesEstimates($quote, $profile, $inception, $tax, $productModel, $saas);
 
-        return $payload + [
+        $computedAt = (new \DateTimeImmutable('now'))->format(\DateTimeInterface::ATOM);
+        $result = $payload + [
             'country' => [
                 'code' => $country,
                 'name' => $countryMeta['name'],
@@ -262,6 +322,8 @@ class EconomicsService
             'quote' => $quote,
             'tax' => $tax,
             'alternate' => $alternate,
+            'scenarios' => $scenarios,
+            'sales' => $sales,
             'payback' => $this->payback($quote, $effort, $profile, $productModel, $saas),
             'product' => [
                 'model' => $productModel,
@@ -269,7 +331,56 @@ class EconomicsService
             ],
             'saas' => $saas,
             'forecast' => $saas['forecast'] ?? [],
+            'snapshot_path' => $this->config->relativePath($this->snapshotPath()),
+            'snapshot_saved_at' => $computedAt,
         ];
+
+        $this->writeSnapshot($result, $computedAt);
+
+        return $result;
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     */
+    protected function writeSnapshot(array $snapshot, string $computedAt): void
+    {
+        $stored = $this->normalizeSnapshotForStorage($snapshot);
+        $stored['computed_at'] = $computedAt;
+
+        $directory = dirname($this->snapshotPath());
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        AtomicFile::write(
+            $this->snapshotPath(),
+            Yaml::dump($stored, 6, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $snapshot
+     * @return array<string, mixed>
+     */
+    protected function normalizeSnapshotForStorage(array $snapshot): array
+    {
+        unset($snapshot['countries']);
+
+        if (isset($snapshot['regime']) && is_array($snapshot['regime'])) {
+            unset($snapshot['regime']['options']);
+        }
+
+        if (isset($snapshot['inception']['prd_excerpt']) && is_string($snapshot['inception']['prd_excerpt'])) {
+            $excerpt = trim($snapshot['inception']['prd_excerpt']);
+            if (strlen($excerpt) > 400) {
+                $snapshot['inception']['prd_excerpt'] = substr($excerpt, 0, 400).'…';
+            }
+        }
+
+        unset($snapshot['snapshot_path'], $snapshot['snapshot_saved_at']);
+
+        return $snapshot;
     }
 
     /**
@@ -336,9 +447,81 @@ class EconomicsService
             $lines[] = '- Income / corporate tax: '.$this->money((float) ($tax['income_tax'] ?? 0), $currency);
             $lines[] = '- Social contributions: '.$this->money((float) ($tax['social'] ?? 0), $currency);
             $lines[] = '- Local tax: '.$this->money((float) ($tax['local_tax'] ?? 0), $currency);
+            if ((float) ($tax['personal_tax'] ?? 0) > 0) {
+                $lines[] = '- Personal income tax: '.$this->money((float) $tax['personal_tax'], $currency);
+            }
             $lines[] = '- Dividend / extraction: '.$this->money((float) ($tax['dividend_tax'] ?? 0), $currency);
+            if ((float) ($tax['legal_reserve'] ?? 0) > 0) {
+                $lines[] = '- Legal reserve (retained): '.$this->money((float) $tax['legal_reserve'], $currency);
+            }
             $lines[] = '- Compliance: '.$this->money((float) ($tax['compliance'] ?? 0), $currency);
             $lines[] = '- Effective rate: '.($tax['effective_rate_pct'] ?? 0).'%';
+
+            $extraction = is_array($tax['extraction'] ?? null) ? $tax['extraction'] : [];
+            if ($extraction !== []) {
+                $lines[] = '- Extraction: '.($extraction['method'] ?? 'auto');
+                if ((float) ($extraction['director_gross'] ?? 0) > 0) {
+                    $lines[] = '- Director pay (gross): '.$this->money((float) $extraction['director_gross'], $currency);
+                    $lines[] = '- Director pay (net): '.$this->money((float) ($extraction['director_net'] ?? 0), $currency);
+                }
+                if ((float) ($extraction['dividends_net'] ?? 0) > 0) {
+                    $lines[] = '- Dividends (net): '.$this->money((float) $extraction['dividends_net'], $currency);
+                }
+            }
+
+            $assumptions = is_array($tax['assumptions'] ?? null) ? $tax['assumptions'] : [];
+            if ($assumptions !== []) {
+                $lines[] = '';
+                $lines[] = '## Assumptions';
+                $lines[] = '';
+                foreach ($assumptions as $assumption) {
+                    $lines[] = '- '.$assumption;
+                }
+            }
+
+            if (! empty($tax['over_cap'])) {
+                $lines[] = '';
+                $lines[] = 'Revenue exceeds the regime ceiling of '.$this->money((float) ($tax['revenue_cap'] ?? 0), $currency)
+                    .(! empty($tax['forced_exit']) ? ' — computed under the exit regime.' : ' — you must leave this regime next year.');
+            }
+        }
+
+        $sales = is_array($data['sales'] ?? null) ? $data['sales'] : [];
+        if ($sales !== []) {
+            $lines[] = '';
+            $lines[] = '## Sales estimates';
+            $lines[] = '';
+            $oneShot = is_array($sales['one_shot'] ?? null) ? $sales['one_shot'] : [];
+            if ($oneShot !== []) {
+                $lines[] = '### One-shot';
+                $lines[] = '';
+                $lines[] = '- Client price (ex VAT): '.$this->money((float) ($oneShot['client_price_ex_vat'] ?? 0), $currency);
+                $lines[] = '- Net to owner: '.$this->money((float) ($oneShot['net_to_owner'] ?? 0), $currency);
+                $lines[] = '- Maintenance / year: '.$this->money((float) ($oneShot['maintenance_annual'] ?? 0), $currency);
+                $lines[] = '- License units to recover build: '.($oneShot['units_to_recover_build'] ?? 0);
+            }
+            $saasSale = is_array($sales['saas'] ?? null) ? $sales['saas'] : [];
+            if ($saasSale !== []) {
+                $lines[] = '';
+                $lines[] = '### SaaS critical mass';
+                $lines[] = '';
+                $lines[] = '- Price: '.$this->money((float) ($saasSale['price_monthly'] ?? 0), $currency).'/mo';
+                $lines[] = '- Critical mass customers: '.($saasSale['critical_mass_customers'] ?? 0);
+                $lines[] = '- ARR at critical mass: '.$this->money((float) ($saasSale['critical_mass_arr'] ?? 0), $currency);
+                $lines[] = '- Monthly margin at critical mass: '.$this->money((float) ($saasSale['monthly_margin_at_critical_mass'] ?? 0), $currency);
+                $lines[] = '- Customers to recover build in 12 months: '.($saasSale['customers_to_recover_build_12m'] ?? 0);
+            }
+        }
+
+        $scenarios = is_array($data['scenarios'] ?? null) ? $data['scenarios'] : [];
+        if ($scenarios !== []) {
+            $lines[] = '';
+            $lines[] = '## Tax scenarios';
+            $lines[] = '';
+            foreach ($scenarios as $scenario) {
+                $lines[] = '- **'.($scenario['label'] ?? '').'**: net '.$this->money((float) ($scenario['net_to_owner'] ?? 0), $currency)
+                    .' · '.($scenario['effective_rate_pct'] ?? 0).'% effective';
+            }
         }
 
         $saas = is_array($data['saas'] ?? null) ? $data['saas'] : [];
@@ -359,6 +542,22 @@ class EconomicsService
         $lines[] = '';
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Client-facing commercial proposal (PRD language). Internal tax
+     * figures stay in reportMarkdown().
+     */
+    public function quoteMarkdown(): string
+    {
+        return $this->quoteWriter->render($this->snapshot());
+    }
+
+    public function quoteFilename(): string
+    {
+        $prd = $this->prd->read() ?? '';
+
+        return $this->quoteWriter->filename($prd, ArtifactLanguage::detect($prd !== '' ? $prd : null));
     }
 
     /**
@@ -390,6 +589,7 @@ class EconomicsService
         $planHours = 0.0;
         $plannedTasks = 0;
         $storyPoints = 0;
+        $unplannedPoints = 0;
         $specCount = 0;
 
         foreach ($this->specs->allSpecs() as $spec) {
@@ -398,23 +598,29 @@ class EconomicsService
             }
 
             $specCount++;
-            $storyPoints += max(0, (int) ($spec['points'] ?? 0));
+            $points = max(0, (int) ($spec['points'] ?? 0));
+            $storyPoints += $points;
             $code = (string) ($spec['code'] ?? '');
+            $specPlanHours = 0.0;
 
-            if ($code === '') {
-                continue;
+            if ($code !== '') {
+                $plan = $this->plans->read($code);
+                $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
+
+                foreach ($tasks as $task) {
+                    if (! is_array($task)) {
+                        continue;
+                    }
+
+                    $plannedTasks++;
+                    $specPlanHours += max(0.0, (float) ($task['estimate_hours'] ?? 0));
+                }
             }
 
-            $plan = $this->plans->read($code);
-            $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-
-            foreach ($tasks as $task) {
-                if (! is_array($task)) {
-                    continue;
-                }
-
-                $plannedTasks++;
-                $planHours += max(0.0, (float) ($task['estimate_hours'] ?? 0));
+            if ($specPlanHours > 0) {
+                $planHours += $specPlanHours;
+            } elseif ($points > 0) {
+                $unplannedPoints += $points;
             }
         }
 
@@ -425,35 +631,62 @@ class EconomicsService
             default => 4.0,
         };
 
-        $fromPoints = $storyPoints * $hoursPerPoint;
-        $source = $planHours > 0 ? 'plan_hours' : ($storyPoints > 0 ? 'story_points' : 'heuristic');
-        $baseHours = $planHours > 0 ? $planHours : ($fromPoints > 0 ? $fromPoints : $this->heuristicHours($inception));
-
-        $deliveryMultiplier = $this->deliveryMultiplier((string) ($inception['delivery_target'] ?? ''));
-        $kindMultiplier = $this->kindMultiplier((string) ($inception['project_kind'] ?? ''));
-        $typeMultiplier = $this->typeMultiplier((string) ($inception['website_type'] ?? ''));
+        $fromPoints = $unplannedPoints * $hoursPerPoint;
+        $heuristicHours = $this->heuristicHours($inception);
         $buffer = 1.15;
 
-        $adjusted = $baseHours * $deliveryMultiplier * $kindMultiplier * $typeMultiplier * $buffer;
+        if ($planHours > 0 && $unplannedPoints > 0) {
+            $source = 'mixed';
+            $baseHours = $planHours + $fromPoints;
+            $deliveryMultiplier = 1.0;
+            $kindMultiplier = 1.0;
+            $typeMultiplier = 1.0;
+        } elseif ($planHours > 0) {
+            $source = 'plan_hours';
+            $baseHours = $planHours;
+            $deliveryMultiplier = 1.0;
+            $kindMultiplier = 1.0;
+            $typeMultiplier = 1.0;
+        } elseif ($fromPoints > 0) {
+            $source = 'story_points';
+            $baseHours = $fromPoints;
+            $deliveryMultiplier = 1.0;
+            $kindMultiplier = 1.0;
+            $typeMultiplier = 1.0;
+        } else {
+            $source = 'heuristic';
+            $baseHours = $heuristicHours;
+            $deliveryMultiplier = $this->deliveryMultiplier((string) ($inception['delivery_target'] ?? ''));
+            $kindMultiplier = $this->kindMultiplier((string) ($inception['project_kind'] ?? ''));
+            $typeMultiplier = $this->typeMultiplier((string) ($inception['website_type'] ?? ''));
+        }
+
+        $scopeMultiplier = $deliveryMultiplier * $kindMultiplier * $typeMultiplier;
+        $adjusted = $baseHours * $scopeMultiplier * $buffer;
         $actualHours = (float) ($this->usage->summary()['total_hours'] ?? 0);
 
         return [
             'source' => $source,
             'spec_count' => $specCount,
             'story_points' => $storyPoints,
+            'unplanned_points' => $unplannedPoints,
             'planned_tasks' => $plannedTasks,
             'plan_hours' => round($planHours, 1),
             'hours_from_points' => round($fromPoints, 1),
             'hours_per_point' => $hoursPerPoint,
-            'heuristic_hours' => round($this->heuristicHours($inception), 1),
+            'heuristic_hours' => round($heuristicHours, 1),
             'base_hours' => round($baseHours, 1),
             'delivery_multiplier' => $deliveryMultiplier,
             'kind_multiplier' => $kindMultiplier,
             'type_multiplier' => $typeMultiplier,
+            'scope_multiplier' => round($scopeMultiplier, 3),
             'buffer' => $buffer,
             'billable_hours' => round($adjusted, 1),
             'calendar_months' => round($adjusted / max(1.0, ((float) $profile['hours_per_day']) * 20), 1),
             'actual_hours' => round($actualHours, 1),
+            'notes' => $source === 'heuristic'
+                ? 'Heuristic estimate — delivery/kind/type multipliers applied.'
+                : 'Spec-backed hours — only the 15% PM/QA buffer is applied (no delivery/kind/type inflation).',
         ];
     }
 
@@ -531,7 +764,9 @@ class EconomicsService
         $rate = (float) $profile['hourly_rate'];
         $labor = $hours * $rate;
         $months = max(0.25, (float) $effort['calendar_months']);
-        $overhead = ((float) $profile['overhead_monthly'] + ((float) ($regime['compliance_annual'] ?? 0) / 12)) * $months;
+        $operatingOverhead = ((float) $profile['overhead_monthly']) * $months;
+        $complianceInQuote = ((float) ($regime['compliance_annual'] ?? 0) / 12) * $months;
+        $overhead = $operatingOverhead;
         $direct = $labor + $overhead;
         $marginPct = (float) $profile['margin_target_pct'];
         $margin = $direct * ($marginPct / 100);
@@ -542,7 +777,13 @@ class EconomicsService
         if ($vatRegistered === null) {
             $vatRegistered = ! $vatExempt;
         }
-        $vatRate = $vatRegistered && ! $vatExempt ? (float) ($country['vat_rate'] ?? 0) : 0.0;
+        $vatMode = strtolower((string) ($profile['vat_mode'] ?? 'domestic'));
+        if (! in_array($vatMode, ['domestic', 'eu_b2b'], true)) {
+            $vatMode = 'domestic';
+        }
+        $vatRate = $vatRegistered && ! $vatExempt && $vatMode !== 'eu_b2b'
+            ? (float) ($country['vat_rate'] ?? 0)
+            : 0.0;
         $vat = $gross * ($vatRate / 100);
         $maintenance = $gross * ((float) $profile['maintenance_annual_pct'] / 100);
 
@@ -552,6 +793,8 @@ class EconomicsService
             'calendar_months' => round($months, 1),
             'labor' => round($labor, 2),
             'overhead' => round($overhead, 2),
+            'overhead_operating' => round($operatingOverhead, 2),
+            'overhead_compliance' => round($complianceInQuote, 2),
             'direct' => round($direct, 2),
             'margin' => round($margin, 2),
             'margin_pct' => $marginPct,
@@ -559,6 +802,7 @@ class EconomicsService
             'vat_rate' => $vatRate,
             'vat' => round($vat, 2),
             'vat_registered' => (bool) $vatRegistered,
+            'vat_mode' => $vatMode,
             'maintenance_year' => round($maintenance, 2),
             'maintenance_monthly' => round($maintenance / 12, 2),
             'currency' => (string) ($profile['currency'] ?: ($country['currency'] ?? 'EUR')),
@@ -571,137 +815,25 @@ class EconomicsService
      * @param  array<string, mixed>  $country
      * @return array<string, mixed>
      */
-    protected function applyTax(float $revenue, float $operatingCosts, array $profile, array $regime, array $country, string $account): array
+    protected function applyTax(float $revenue, float $operatingCosts, array $profile, array $regime, array $country, string $account, ?float $months = null): array
     {
-        $compliance = (float) ($regime['compliance_annual'] ?? 0);
-        $months = max(0.25, $revenue / max(1.0, (float) $profile['hourly_rate'] * (float) $profile['hours_per_day'] * 20));
-        $complianceAlloc = $compliance * min(1.0, $months / 12);
-        $costs = $operatingCosts + $complianceAlloc;
-        $profit = max(0.0, $revenue - $costs);
-
-        $coefficient = (float) ($regime['revenue_coefficient'] ?? 1.0);
-        $cap = isset($regime['revenue_cap']) ? (float) $regime['revenue_cap'] : null;
-        $cappedRevenue = $cap !== null ? min($revenue, $cap) : $revenue;
-
-        $model = (string) ($regime['model'] ?? 'flat');
-        $taxable = match ($model) {
-            'flat' => $cappedRevenue * $coefficient,
-            'progressive' => $profit,
-            default => $profit,
-        };
-
-        $incomeTax = 0.0;
-        if ($model === 'progressive') {
-            $incomeTax = $this->progressiveTax($taxable, is_array($regime['brackets'] ?? null) ? $regime['brackets'] : []);
-        } elseif ($model === 'corporate') {
-            $incomeTax = $this->corporateTax($profit, $regime);
-        } else {
-            $incomeTax = $taxable * (float) ($regime['income_tax_rate'] ?? 0);
+        $calendarMonths = $months ?? max(
+            0.25,
+            $revenue / max(1.0, (float) $profile['hourly_rate'] * (float) $profile['hours_per_day'] * 20)
+        );
+        $yearFraction = min(1.0, max(0.02, $calendarMonths / 12));
+        $compliance = (float) ($regime['compliance_annual'] ?? 0) * $yearFraction;
+        $ownerWorking = $profile['owner_working'] ?? null;
+        if ($ownerWorking === null) {
+            $ownerWorking = $account === 'COMPANY';
         }
 
-        $incomeTax += $incomeTax * (float) ($regime['surtax_rate'] ?? 0);
-        $incomeTax += $taxable * (float) ($regime['additional_rate'] ?? 0);
-
-        $socialBase = match ((string) ($regime['social_base'] ?? 'profit')) {
-            'revenue' => $cappedRevenue,
-            'taxable' => $taxable,
-            default => $profit,
-        };
-        $social = $socialBase * (float) ($regime['social_rate'] ?? 0) + (float) ($regime['social_fixed_annual'] ?? 0) * min(1.0, $months / 12);
-
-        $localTax = $profit * (float) ($regime['local_tax_rate'] ?? 0);
-
-        $afterEntity = max(0.0, $profit - $incomeTax - $localTax - ($model === 'corporate' ? 0.0 : $social));
-        if ($model !== 'corporate') {
-            $afterEntity = max(0.0, $revenue - $costs - $incomeTax - $social - $localTax);
-        }
-
-        $dividend = $model === 'corporate' ? $afterEntity * (float) ($regime['dividend_rate'] ?? 0) : 0.0;
-        $net = $model === 'corporate' ? $afterEntity - $dividend : $afterEntity;
-
-        if ($model === 'corporate') {
-            $net -= $social;
-        }
-
-        $totalTax = $incomeTax + $social + $localTax + $dividend + $complianceAlloc;
-        $effective = $revenue > 0 ? round($totalTax / $revenue * 100, 1) : 0.0;
-
-        return [
-            'model' => $model,
-            'account' => $account,
-            'country' => $country['code'] ?? null,
-            'regime' => $regime['id'] ?? null,
-            'revenue' => round($revenue, 2),
-            'costs' => round($costs, 2),
-            'profit' => round($profit, 2),
-            'taxable' => round($taxable, 2),
-            'income_tax' => round($incomeTax, 2),
-            'social' => round($social, 2),
-            'local_tax' => round($localTax, 2),
-            'dividend_tax' => round($dividend, 2),
-            'compliance' => round($complianceAlloc, 2),
-            'total_tax' => round($totalTax, 2),
-            'net_to_owner' => round(max(0.0, $net), 2),
-            'effective_rate_pct' => $effective,
-            'over_cap' => $cap !== null && $revenue > $cap,
-            'revenue_cap' => $cap,
-            'notes' => $regime['notes'] ?? null,
-        ];
-    }
-
-    /**
-     * @param  list<array{up_to: float|int|null, rate: float}>  $brackets
-     */
-    protected function progressiveTax(float $income, array $brackets): float
-    {
-        if ($income <= 0 || $brackets === []) {
-            return 0.0;
-        }
-
-        $tax = 0.0;
-        $previous = 0.0;
-
-        foreach ($brackets as $bracket) {
-            $limit = $bracket['up_to'];
-            $rate = (float) ($bracket['rate'] ?? 0);
-            $upper = $limit === null ? $income : min($income, (float) $limit);
-            $slice = max(0.0, $upper - $previous);
-
-            if ($slice <= 0) {
-                continue;
-            }
-
-            $tax += $slice * $rate;
-            $previous = $limit === null ? $income : (float) $limit;
-
-            if ($limit !== null && $income <= (float) $limit) {
-                break;
-            }
-        }
-
-        return $tax;
-    }
-
-    /**
-     * @param  array<string, mixed>  $regime
-     */
-    protected function corporateTax(float $profit, array $regime): float
-    {
-        if ($profit <= 0) {
-            return 0.0;
-        }
-
-        $smallUpTo = (float) ($regime['small_profit_up_to'] ?? 0);
-        $smallRate = (float) ($regime['small_profit_rate'] ?? 0);
-        $mainRate = (float) ($regime['income_tax_rate'] ?? 0);
-
-        if ($smallUpTo > 0 && $smallRate > 0) {
-            $lower = min($profit, $smallUpTo);
-
-            return ($lower * $smallRate) + (max(0.0, $profit - $smallUpTo) * $mainRate);
-        }
-
-        return $profit * $mainRate;
+        return TaxEngine::compute($revenue, $operatingCosts, $regime, $country, $account, [
+            'year_fraction' => $yearFraction,
+            'compliance' => $compliance,
+            'owner_working' => (bool) $ownerWorking,
+            'extraction' => (string) ($profile['extraction'] ?? 'auto'),
+        ]);
     }
 
     /**
@@ -714,14 +846,149 @@ class EconomicsService
     {
         $regimeId = TaxCatalog::defaultRegime($countryCode, $account);
         $regime = TaxCatalog::regime($countryCode, $account, $regimeId);
-        $tax = $this->applyTax((float) $quote['gross'], (float) $quote['overhead'], $profile, $regime, $country, $account);
+        $gross = (float) $quote['gross'];
+        $cap = isset($regime['revenue_cap'])
+            ? (float) $regime['revenue_cap']
+            : (isset($regime['revenue_hard_cap']) ? (float) $regime['revenue_hard_cap'] : null);
+
+        if ($cap !== null && $gross > $cap) {
+            return [
+                'account' => $account,
+                'regime' => $regime['label'],
+                'applicable' => false,
+                'reason' => 'Client price exceeds the €'.number_format($cap, 0, '.', ',').' ceiling for this regime.',
+                'revenue_cap' => $cap,
+                'net_to_owner' => null,
+                'effective_rate_pct' => null,
+                'total_tax' => null,
+            ];
+        }
+
+        $months = (float) ($quote['calendar_months'] ?? 6);
+        $operating = (float) ($quote['overhead_operating'] ?? (float) ($quote['overhead'] ?? 0));
+        $tax = $this->applyTax(
+            $gross,
+            $operating,
+            $profile,
+            $regime,
+            $country,
+            $account,
+            $months
+        );
 
         return [
             'account' => $account,
             'regime' => $regime['label'],
+            'applicable' => true,
             'net_to_owner' => $tax['net_to_owner'],
             'effective_rate_pct' => $tax['effective_rate_pct'],
             'total_tax' => $tax['total_tax'],
+            'social' => $tax['social'] ?? 0,
+            'extraction' => is_array($tax['extraction'] ?? null) ? ($tax['extraction']['method'] ?? null) : null,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $regime
+     * @param  array<string, mixed>  $country
+     * @return list<array<string, mixed>>
+     */
+    protected function taxScenarios(array $quote, array $profile, array $regime, array $country, string $account): array
+    {
+        if (($regime['model'] ?? '') !== 'corporate' || $account !== 'COMPANY') {
+            return [];
+        }
+
+        $gross = (float) $quote['gross'];
+        $operating = (float) ($quote['overhead_operating'] ?? (float) ($quote['overhead'] ?? 0));
+        $months = (float) ($quote['calendar_months'] ?? 6);
+        $rows = [];
+
+        foreach ([
+            'optimistic' => ['owner_working' => false, 'extraction' => 'dividends', 'label' => 'Optimistic', 'hint' => 'Non-prevalent shareholder / investor path — no Gestione Commercianti.'],
+            'realistic' => [
+                'owner_working' => $profile['owner_working'] ?? true,
+                'extraction' => (string) ($profile['extraction'] ?? 'auto'),
+                'label' => 'Realistic',
+                'hint' => 'Current profile settings.',
+            ],
+            'prudent' => ['owner_working' => true, 'extraction' => 'dividends', 'label' => 'Prudent', 'hint' => 'Working shareholder, dividends only — conservative INPS exposure.'],
+        ] as $id => $scenario) {
+            $tax = TaxEngine::compute($gross, $operating, $regime, $country, $account, [
+                'year_fraction' => min(1.0, max(0.02, $months / 12)),
+                'compliance' => (float) ($regime['compliance_annual'] ?? 0) * min(1.0, max(0.02, $months / 12)),
+                'owner_working' => (bool) $scenario['owner_working'],
+                'extraction' => $scenario['extraction'],
+            ]);
+
+            $rows[] = [
+                'id' => $id,
+                'label' => $scenario['label'],
+                'hint' => $scenario['hint'],
+                'net_to_owner' => $tax['net_to_owner'],
+                'effective_rate_pct' => $tax['effective_rate_pct'],
+                'social' => $tax['social'] ?? 0,
+                'extraction' => is_array($tax['extraction'] ?? null) ? ($tax['extraction']['method'] ?? null) : null,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>  $tax
+     * @param  array<string, mixed>  $saas
+     * @return array<string, mixed>
+     */
+    protected function salesEstimates(array $quote, array $profile, array $inception, array $tax, string $productModel, array $saas): array
+    {
+        $gross = (float) $quote['gross'];
+        $net = (float) ($quote['net_to_owner'] ?? 0);
+        $maintenance = (float) ($quote['maintenance_year'] ?? 0);
+        $license = max(49.0, round($gross / 80, 0));
+        $unitsBreakEven = $license > 0 ? (int) ceil($gross / $license) : 0;
+        $contribution = (float) ($saas['contribution_per_customer'] ?? 0);
+        $fixedMonthly = (float) ($saas['fixed_monthly'] ?? 0);
+        $criticalMass = (int) ($saas['break_even_customers'] ?? 0);
+        $marginMonthlyAtCritical = $criticalMass > 0
+            ? round(($criticalMass * $contribution) - $fixedMonthly, 2)
+            : 0.0;
+
+        return [
+            'one_shot' => [
+                'label' => 'One-shot delivery / license',
+                'client_price_ex_vat' => $gross,
+                'client_total' => (float) ($quote['client_total'] ?? $gross),
+                'net_to_owner' => $net,
+                'effective_tax_pct' => (float) ($quote['effective_tax_pct'] ?? 0),
+                'maintenance_annual' => $maintenance,
+                'maintenance_monthly' => (float) ($quote['maintenance_monthly'] ?? 0),
+                'suggested_license_price' => $license,
+                'units_to_recover_build' => $unitsBreakEven,
+                'primary' => in_array($productModel, ['fixed', 'package', 'ecommerce'], true),
+            ],
+            'saas' => [
+                'label' => 'SaaS / subscription',
+                'price_monthly' => (float) ($saas['price_monthly'] ?? 0),
+                'price_annual' => (float) ($saas['price_annual'] ?? 0),
+                'critical_mass_customers' => $criticalMass,
+                'critical_mass_mrr' => round($criticalMass * (float) ($saas['price_monthly'] ?? 0), 2),
+                'critical_mass_arr' => (float) ($saas['arr_at_break_even'] ?? 0),
+                'monthly_margin_at_critical_mass' => $marginMonthlyAtCritical,
+                'monthly_fixed_costs' => $fixedMonthly,
+                'infrastructure_monthly' => (float) ($saas['infrastructure_monthly'] ?? 0),
+                'maintenance_monthly' => (float) ($quote['maintenance_monthly'] ?? 0),
+                'customers_to_recover_build_12m' => (int) ($saas['customers_to_recover_12m'] ?? 0),
+                'customers_to_recover_build_24m' => (int) ($saas['customers_to_recover_24m'] ?? 0),
+                'contribution_per_customer' => $contribution,
+                'gross_margin_pct' => (float) ($saas['gross_margin_pct'] ?? 0),
+                'primary' => $productModel === 'saas',
+            ],
         ];
     }
 

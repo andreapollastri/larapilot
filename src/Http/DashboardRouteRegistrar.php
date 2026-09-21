@@ -58,8 +58,20 @@ class DashboardRouteRegistrar
                 Route::get('/economics', [DashboardController::class, 'economics'])
                     ->name('larapilot.dashboard.economics');
 
+                Route::get('/economics/quote.md', [DashboardController::class, 'economicsQuote'])
+                    ->name('larapilot.dashboard.economics.quote');
+
                 Route::get('/economics/report.md', [DashboardController::class, 'economicsReport'])
                     ->name('larapilot.dashboard.economics.report');
+
+                Route::get('/design', [DashboardController::class, 'design'])
+                    ->name('larapilot.dashboard.design');
+
+                Route::get('/design/presentation', [DashboardController::class, 'designPresentation'])
+                    ->name('larapilot.dashboard.design.presentation');
+
+                Route::get('/design/package.zip', [DashboardController::class, 'designPackage'])
+                    ->name('larapilot.dashboard.design.package');
 
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')

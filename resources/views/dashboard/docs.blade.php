@@ -151,7 +151,7 @@
                 <div class="flow-step"><strong>Discovery</strong><span><code>/larapilot-inception</code> or <code>/larapilot-adopt</code> → PRD</span></div>
                 <div class="flow-step"><strong>Backlog</strong><span><code>/larapilot-spec</code> → user stories</span></div>
                 <div class="flow-step"><strong>Plan</strong><span><code>/larapilot-plan</code> → tasks + tests</span></div>
-                <div class="flow-step"><strong>Design</strong><span><code>/larapilot-design</code> → mockups (optional)</span></div>
+                <div class="flow-step"><strong>Design</strong><span><code>/larapilot-design</code> → mockups — gallery at <a href="{{ route('larapilot.dashboard.design') }}">/larapilot/design</a></span></div>
                 <div class="flow-step"><strong>Implement</strong><span><code>/larapilot-implement</code> → code + commits</span></div>
                 <div class="flow-step"><strong>Review</strong><span><code>/larapilot-review</code> → DONE or rework</span></div>
                 <div class="flow-step"><strong>Ship</strong><span><code>/larapilot-ship</code> → deploy (optional)</span></div>
@@ -244,14 +244,14 @@
                     <tr><td><code>/larapilot-feature</code></td><td>New user story + optional PRD FR</td><td>💎 Mark · 🔎 Tom</td></tr>
                     <tr><td><code>/larapilot-bug</code></td><td>Fix spec, support intake</td><td>🎧 Sophia · 🔎 Tom · 🧪 Anne</td></tr>
                     <tr><td><code>/larapilot-plan</code></td><td><code>plans/US-XXX-plan.yaml</code></td><td>📐 John · 🧪 Anne · 🗄️ Mike</td></tr>
-                    <tr><td><code>/larapilot-design</code> <span class="skill-optional">optional</span></td><td><code>mockups/{spec}/</code>, dev route <code>/mockups/{spec}</code></td><td>🎨 Elise · ✨ Joe</td></tr>
+                    <tr><td><code>/larapilot-design</code> <span class="skill-optional">optional</span></td><td><code>mockups/{spec}/</code>, gallery <a href="{{ route('larapilot.dashboard.design') }}">/larapilot/design</a></td><td>🎨 Elise · ✨ Joe</td></tr>
                     <tr><td><code>/larapilot-implement</code></td><td>Code, tests, atomic commits per git_mode</td><td>🔧 Alex · 👾 Andrew · ⌨️ Sarah</td></tr>
                     <tr><td><code>/larapilot-review</code></td><td>DONE or rework feedback</td><td>🛡️ Robert · 🧪 Anne · 🔐 Lars</td></tr>
                     <tr><td><code>/larapilot-ship</code> <span class="skill-optional">optional</span></td><td>Security gate + deploy + launch checks</td><td>🚀 Jack · 🔐 Lars · ⚖️ Violet</td></tr>
                     <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td><code>_project_docs/</code> handbook</td><td>📝 Albert</td></tr>
                     <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
-                    <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Preventivo, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
+                    <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Preventivo cliente, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query, Gantt, Markdown report</td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>

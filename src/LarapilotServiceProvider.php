@@ -79,6 +79,7 @@ use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GithubService;
@@ -86,6 +87,7 @@ use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MetricsService;
+use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
 use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
@@ -104,7 +106,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.1.0';
+    public const VERSION = '3.1.1';
 
     public function register(): void
     {
@@ -131,6 +133,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(MockupHtmlProcessor::class);
         $this->app->singleton(MockupCssProcessor::class);
         $this->app->singleton(MockupService::class);
+        $this->app->singleton(MockupPackageService::class);
         $this->app->singleton(InternalFeedbackService::class);
         $this->app->singleton(DashboardService::class);
         $this->app->singleton(ApiService::class);
@@ -143,6 +146,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(TrackerService::class);
         $this->app->singleton(ReleaseService::class);
         $this->app->singleton(CustomSkillService::class);
+        $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
     }
 

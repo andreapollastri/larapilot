@@ -12,7 +12,7 @@ use Larapilot\Support\TaxCatalog;
 class EconomicsSetCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:economics-set
-                            {--country= : ISO country code (IT, DE, FR, ES, GB, US, NL, PT, CH, AT, BE, IE)}
+                            {--country= : ISO country code (IT, DE, FR, ES, GB, IE, AT, CH, BE, NL, PT, SI, HR, NO, SE, DK, FI, IS, LU, MT, CY, PL, CZ, SK, HU, RO, BG, GR, EE, LV, LT, US, CA, AU, NZ, SG, JP, MX)}
                             {--regime= : Tax regime id (forfettario_15, srl, ltd, …)}
                             {--hourly-rate= : Billable hourly rate in the account currency}
                             {--currency= : ISO currency (EUR, GBP, USD, CHF)}
@@ -22,6 +22,9 @@ class EconomicsSetCommand extends LarapilotCommand
                             {--maintenance= : Annual maintenance as percent of the build quote}
                             {--overhead-monthly= : Monthly overhead (tools, office, accountant share)}
                             {--vat-registered= : YES or NO (blank = infer from the regime)}
+                            {--vat-mode= : domestic or eu_b2b (reverse charge, no VAT on invoice)}
+                            {--owner-working= : YES or NO — working shareholder in a company (default YES for COMPANY)}
+                            {--extraction= : auto, dividends, or mixed (company extraction strategy)}
                             {--product-model= : auto, fixed, saas, ecommerce, or package}
                             {--price-monthly= : SaaS list price per month}
                             {--price-annual= : SaaS list price per year}
@@ -88,6 +91,21 @@ class EconomicsSetCommand extends LarapilotCommand
             $partial['vat_registered'] = $vat;
         }
 
+        $vatMode = $this->option('vat-mode');
+        if (is_string($vatMode) && trim($vatMode) !== '') {
+            $partial['vat_mode'] = strtolower(trim($vatMode));
+        }
+
+        $ownerWorking = $this->normalizeYesNoOption('owner-working');
+        if ($ownerWorking !== null) {
+            $partial['owner_working'] = $ownerWorking;
+        }
+
+        $extraction = $this->option('extraction');
+        if (is_string($extraction) && trim($extraction) !== '') {
+            $partial['extraction'] = strtolower(trim($extraction));
+        }
+
         $model = $this->option('product-model');
         if (is_string($model) && trim($model) !== '') {
             $partial['product_model'] = strtolower(trim($model));
@@ -127,6 +145,7 @@ class EconomicsSetCommand extends LarapilotCommand
 
         try {
             $profile = $economics->update($partial);
+            $snapshot = $economics->snapshot();
         } catch (\InvalidArgumentException $e) {
             return $this->failure('E_INVALID_INPUT', $e->getMessage(), $this->exitForCode('E_INVALID_INPUT'));
         }
@@ -136,6 +155,9 @@ class EconomicsSetCommand extends LarapilotCommand
             'account' => $config->accountMode(),
             'updated' => array_keys($partial),
             'path' => $economics->path(),
+            'snapshot_path' => $snapshot['snapshot_path'] ?? null,
+            'snapshot_saved_at' => $snapshot['snapshot_saved_at'] ?? null,
+            'quote' => $snapshot['quote'] ?? null,
             'hint' => 'Open /larapilot/economics or run larapilot:economics-show',
         ]);
     }

@@ -9,7 +9,89 @@ use Symfony\Component\Finder\Finder;
 
 class MockupService
 {
-    public function __construct(protected ConfigService $config) {}
+    public function __construct(
+        protected ConfigService $config,
+        protected SpecService $specs,
+    ) {}
+
+    /**
+     * Every mockup folder under the configured mockups root, joined with
+     * backlog titles when the folder name matches a spec code.
+     *
+     * @return array<string, mixed>
+     */
+    public function catalog(): array
+    {
+        $items = [];
+        $screenCount = 0;
+        $root = $this->mockupsRoot();
+
+        if ($root !== null) {
+            $specsByCode = [];
+
+            foreach ($this->specs->allSpecs() as $spec) {
+                if (! is_array($spec)) {
+                    continue;
+                }
+
+                $code = (string) ($spec['code'] ?? '');
+
+                if ($code !== '') {
+                    $specsByCode[$code] = $spec;
+                }
+            }
+
+            foreach (scandir($root) ?: [] as $entry) {
+                if ($entry === '.' || $entry === '..' || ! SpecCode::isValid($entry)) {
+                    continue;
+                }
+
+                if (! is_dir($root.DIRECTORY_SEPARATOR.$entry)) {
+                    continue;
+                }
+
+                $screens = $this->discoverScreens($entry);
+
+                if ($screens === []) {
+                    continue;
+                }
+
+                $screenCount += count($screens);
+                $spec = $specsByCode[$entry] ?? null;
+                $entryScreen = $this->entryScreen($screens);
+
+                $items[] = [
+                    'code' => $entry,
+                    'title' => is_array($spec) ? (string) ($spec['title'] ?? $entry) : $entry,
+                    'priority' => is_array($spec) ? (string) ($spec['priority'] ?? '') : '',
+                    'status' => is_array($spec) ? (string) ($spec['status'] ?? '') : '',
+                    'points' => is_array($spec) ? (int) ($spec['points'] ?? 0) : 0,
+                    'has_spec' => is_array($spec),
+                    'path' => $this->relativeMockupPath($entry),
+                    'entry' => $entryScreen,
+                    'entry_url' => $this->screenUrl($entry, $entryScreen),
+                    'browsable' => $this->config->mockupsBrowsable(),
+                    'screens' => array_map(
+                        fn (string $file): array => [
+                            'file' => $file,
+                            'label' => $this->screenLabel($file),
+                            'url' => $this->screenUrl($entry, $file),
+                        ],
+                        $screens
+                    ),
+                ];
+            }
+        }
+
+        return [
+            'available' => $items !== [],
+            'spec_count' => count($items),
+            'screen_count' => $screenCount,
+            'path' => $this->relativeMockupsRoot(),
+            'browsable' => $this->config->mockupsBrowsable(),
+            'items' => $items,
+        ];
+    }
 
     /**
      * @return array<string, mixed>
@@ -146,10 +228,27 @@ class MockupService
 
     protected function relativeMockupPath(string $code): string
     {
-        $config = $this->config->resolve();
-        $mockupsPath = trim((string) ($config['paths']['mockups'] ?? '.larapilot/mockups/'), '/');
+        return $this->relativeMockupsRoot().'/'.$code.'/';
+    }
 
-        return $mockupsPath.'/'.$code.'/';
+    protected function relativeMockupsRoot(): string
+    {
+        $config = $this->config->resolve();
+
+        return trim((string) ($config['paths']['mockups'] ?? '.larapilot/mockups/'), '/');
+    }
+
+    protected function mockupsRoot(): ?string
+    {
+        $root = rtrim($this->config->absolutePath($this->relativeMockupsRoot()), DIRECTORY_SEPARATOR);
+
+        if (! is_dir($root)) {
+            return null;
+        }
+
+        $real = realpath($root);
+
+        return $real === false ? null : $real;
     }
 
     protected function absoluteMockupDirectory(string $code): ?string

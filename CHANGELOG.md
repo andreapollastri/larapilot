@@ -2,12 +2,34 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.1.1] - 2026-09-21
+
+### Added
+
+- **Economics snapshot persistence** — every `economics-show`, dashboard/API load, and `economics-set` writes the full computed preventivo to `.larapilot/economics.snapshot.yaml` (`computed_at`, effort, quote, tax, scenarios, sales, SaaS forecast). Profile inputs remain in `.larapilot/economics.yaml`.
+- **Client commercial proposal** — Economics download is a client-facing Markdown quote (same language as the PRD): letterhead, totals + VAT + maintenance, included / not included / client-provided, technical synthesis, payment schedule, and a mermaid Gantt. Internal tax report remains at `/larapilot/economics/report.md` and `economics-show --format=md`; the quote is `/larapilot/economics/quote.md` and `--format=quote`.
+- **Design gallery** — `/larapilot/design` (nav after Inception) opens a presentation index of every mockup, a viewer for all screens, and a zip download of HTML + assets (`/larapilot/design/package.zip`).
+- **Economics sales estimates** — every snapshot includes `sales.one_shot` (client price, net, maintenance, license units to recover) and `sales.saas` (critical mass customers/MRR/ARR above server + maintenance fixed costs, contribution margin, customers to recover the build in 12/24 months). SaaS projection runs even when `product_model=fixed`.
+- **Tax scenarios (company)** — optimistic / realistic / prudent side-by-side for corporate regimes (INPS prevalence, extraction mix).
+- **Tax catalogue expansion** — Slovenia, Croatia, Norway, Sweden, Denmark, Finland, Iceland, Luxembourg, Malta, Cyprus, Poland, Czechia, Slovakia, Hungary, Romania, Bulgaria, Greece, Estonia, Latvia, Lithuania, plus Canada, Australia, New Zealand, Singapore, Japan, Mexico (FY-2026 planning rates).
+
+### Changed
+
+- **Economics effort model** — `plan_hours` and `story_points` follow specs directly with only the 15% PM/QA buffer; delivery/kind/type multipliers apply to heuristic estimates only. Mixed mode sums planned task hours plus story points for specs without plans.
+- **Overhead quote** — monthly overhead no longer double-counts compliance (compliance stays in the tax block only).
+- **Alternate regime compare** — marks regimes as not applicable when client price exceeds the revenue ceiling (e.g. forfettario €85k).
+- **Economics tax engine (Italy FY-2026)** — Forfettario deducts INPS Gestione Separata from the substitute-tax base; SRL models Gestione Commercianti, IRAP on production value, legal reserve, and optimised director pay + dividends. Profile flags: `vat_mode`, `owner_working`, `extraction`.
+
+### Docs
+
+- Site / package version **v3.1.1**; expanded country list in `larapilot:economics-set` and runtime economics.
+
 ## [3.1.0] - 2026-09-21
 
 ### Added
 
 - **Account mode (`settings.account`, NONE by default)** — `NONE` | `FREELANCE` | `COMPANY`. Freelance maps to partita IVA / sole-trader regimes; company maps to SRL / SPA / Ltd / GmbH / C-Corp. Unlock with `/larapilot-settings` or `larapilot:settings-set --account=FREELANCE|COMPANY`. (`OFF` is accepted as an alias of `NONE` — YAML 1.1 would otherwise parse `OFF` as a boolean.)
-- **Economics dashboard** — `/larapilot/economics` (nav item before API/Docs) shows a preventivo (hours × rate, overhead, margin, VAT), net to owner after country tax, payback, and charts. Download `economics/report.md`.
+- **Economics dashboard** — `/larapilot/economics` (nav item before API/Docs) shows a preventivo (hours × rate, overhead, margin, VAT), net to owner after country tax, payback, and charts. Download the client quote at `economics/quote.md` (internal report still at `economics/report.md`).
 - **Tax catalogue (FY 2026)** — Italy (forfettario 5/15, IRPEF, SRL/SRLS/SPA), Germany, France, Spain, UK, US, Netherlands, Portugal, Switzerland, Austria, Belgium, Ireland. Planning estimates, not tax advice.
 - **SaaS forecast** — when inception/PRD looks like a subscription (or `product_model=saas`): ARR/MRR, break-even customers, customers to recover the build in 12/18/24 months, hosting from deploy platform, LTV:CAC, 36-month growth/churn chart.
 - **`/larapilot-economics`** — Aurora interview persists `.larapilot/economics.yaml` via `larapilot:economics-set`. `larapilot:economics-show` (`--format=md`) returns the snapshot. Runtime pack `runtime-economics.md`.

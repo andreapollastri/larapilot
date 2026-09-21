@@ -204,6 +204,8 @@
         $quote = is_array($quote ?? null) ? $quote : [];
         $tax = is_array($tax ?? null) ? $tax : [];
         $saas = is_array($saas ?? null) ? $saas : null;
+        $sales = is_array($sales ?? null) ? $sales : [];
+        $scenarios = is_array($scenarios ?? null) ? $scenarios : [];
         $effort = is_array($effort ?? null) ? $effort : [];
         $payback = is_array($payback ?? null) ? $payback : [];
         $forecast = is_array($forecast ?? null) ? $forecast : [];
@@ -235,7 +237,7 @@
                         · {{ $product['label'] ?? 'delivery' }}.
                         Numbers follow inception answers, plan hours, and FY-{{ $fiscal_year ?? 2026 }} statutory rates.</p>
                 </div>
-                <a class="btn" href="{{ route('larapilot.dashboard.economics.report') }}">Download report</a>
+                <a class="btn" href="{{ route('larapilot.dashboard.economics.quote') }}">Download quote</a>
             </div>
 
             @if (empty($profile['configured']))
@@ -254,7 +256,15 @@
                 <article class="card metric">
                     <div class="metric-label">Client total</div>
                     <div class="metric-value">{{ $money($quote['client_total'] ?? 0) }}</div>
-                    <div class="metric-hint">{{ ($quote['vat_rate'] ?? 0) > 0 ? 'incl. VAT '.$quote['vat_rate'].'%' : 'VAT exempt / not registered' }}</div>
+                    <div class="metric-hint">
+                        @if (($quote['vat_mode'] ?? 'domestic') === 'eu_b2b')
+                            EU B2B reverse charge · no VAT on invoice
+                        @elseif (($quote['vat_rate'] ?? 0) > 0)
+                            incl. VAT {{ $quote['vat_rate'] }}%
+                        @else
+                            VAT exempt / not registered
+                        @endif
+                    </div>
                 </article>
                 <article class="card metric">
                     <div class="metric-label">Net to owner</div>
@@ -285,10 +295,23 @@
                     <h3>Preventivo</h3>
                     <p class="hint">Effort from {{ str_replace('_', ' ', $effort['source'] ?? 'heuristic') }}
                         @if (($effort['spec_count'] ?? 0) > 0)
-                            · {{ $effort['spec_count'] }} specs · {{ $effort['story_points'] ?? 0 }} SP
+                            · {{ $effort['spec_count'] }} specs
+                            @if (($effort['plan_hours'] ?? 0) > 0)
+                                · {{ $effort['plan_hours'] }}h planned
+                            @endif
+                            @if (($effort['unplanned_points'] ?? $effort['story_points'] ?? 0) > 0)
+                                · {{ $effort['unplanned_points'] ?? $effort['story_points'] }} SP unplanned
+                            @endif
                         @endif
-                        · delivery ×{{ $effort['delivery_multiplier'] ?? 1 }}
-                        · {{ $effort['calendar_months'] ?? 0 }} months.</p>
+                        @if (($effort['scope_multiplier'] ?? 1) > 1)
+                            · scope ×{{ $effort['scope_multiplier'] }}
+                        @endif
+                        · buffer ×{{ $effort['buffer'] ?? 1.15 }}
+                        · {{ $effort['calendar_months'] ?? 0 }} months.
+                        @if (! empty($effort['notes']))
+                            {{ $effort['notes'] }}
+                        @endif
+                    </p>
 
                     <div class="bars">
                         @foreach ([
@@ -316,19 +339,112 @@
                             <tr><th>Income / corporate</th><td class="num">{{ $money($tax['income_tax'] ?? 0) }}</td></tr>
                             <tr><th>Social contributions</th><td class="num">{{ $money($tax['social'] ?? 0) }}</td></tr>
                             <tr><th>Local tax</th><td class="num">{{ $money($tax['local_tax'] ?? 0) }}</td></tr>
+                            @if ((float) ($tax['personal_tax'] ?? 0) > 0)
+                                <tr><th>Personal income tax</th><td class="num">{{ $money($tax['personal_tax']) }}</td></tr>
+                            @endif
                             <tr><th>Dividend / extraction</th><td class="num">{{ $money($tax['dividend_tax'] ?? 0) }}</td></tr>
+                            @if ((float) ($tax['legal_reserve'] ?? 0) > 0)
+                                <tr><th>Legal reserve (retained)</th><td class="num">{{ $money($tax['legal_reserve']) }}</td></tr>
+                            @endif
                             <tr><th>Compliance (allocated)</th><td class="num">{{ $money($tax['compliance'] ?? 0) }}</td></tr>
                             <tr><th>Total withdrawn</th><td class="num"><strong>{{ $money($tax['total_tax'] ?? 0) }}</strong></td></tr>
                         </tbody>
                     </table>
+                    @php $extraction = is_array($tax['extraction'] ?? null) ? $tax['extraction'] : []; @endphp
+                    @if ($extraction !== [])
+                        <p class="hint" style="margin-top:14px">
+                            <strong>Extraction:</strong> {{ ucfirst($extraction['method'] ?? 'auto') }}
+                            @if ((float) ($extraction['director_gross'] ?? 0) > 0)
+                                · director {{ $money($extraction['director_gross']) }} gross → {{ $money($extraction['director_net'] ?? 0) }} net
+                            @endif
+                            @if ((float) ($extraction['dividends_net'] ?? 0) > 0)
+                                · dividends {{ $money($extraction['dividends_net']) }} net
+                            @endif
+                        </p>
+                    @endif
+                    @if (! empty($tax['assumptions']))
+                        <ul class="notes" style="margin-top:12px">
+                            @foreach ($tax['assumptions'] as $assumption)
+                                <li>{{ $assumption }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
                     @if (! empty($tax['over_cap']))
-                        <p class="hint">Revenue exceeds the {{ $money($tax['revenue_cap']) }} regime ceiling — switch regime or split the year.</p>
+                        <p class="hint">Revenue exceeds the {{ $money($tax['revenue_cap']) }} regime ceiling{{ ! empty($tax['forced_exit']) ? ' — computed under the exit regime' : ' — you must leave this regime next year' }}.</p>
+                    @endif
+                    @if (! empty($scenarios))
+                        <h3 style="margin-top:18px;font-size:0.9rem">Scenarios (company)</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Scenario</th>
+                                    <th class="num">Net</th>
+                                    <th class="num">Effective</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($scenarios as $scenario)
+                                    <tr>
+                                        <td title="{{ $scenario['hint'] ?? '' }}">{{ $scenario['label'] ?? '' }}</td>
+                                        <td class="num">{{ $money($scenario['net_to_owner'] ?? 0) }}</td>
+                                        <td class="num">{{ $scenario['effective_rate_pct'] ?? 0 }}%</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     @endif
                     @if (! empty($alternate))
-                        <p class="hint" style="margin-top:14px">If this were a <strong>{{ $alternate['account'] }}</strong> ({{ $alternate['regime'] }}): net {{ $money($alternate['net_to_owner']) }} at {{ $alternate['effective_rate_pct'] }}% effective.</p>
+                        <p class="hint" style="margin-top:14px">
+                            @if (($alternate['applicable'] ?? true) === false)
+                                <strong>{{ $alternate['account'] }}</strong> ({{ $alternate['regime'] }}): not applicable — {{ $alternate['reason'] ?? 'regime ceiling exceeded' }}.
+                            @else
+                                If this were a <strong>{{ $alternate['account'] }}</strong> ({{ $alternate['regime'] }}): net {{ $money($alternate['net_to_owner']) }} at {{ $alternate['effective_rate_pct'] }}% effective{{ ! empty($alternate['social']) ? ' · INPS '.$money($alternate['social']) : '' }}.
+                            @endif
+                        </p>
                     @endif
                 </section>
             </div>
+
+            @if (! empty($sales))
+                <div class="grid-2">
+                    @php $oneShot = is_array($sales['one_shot'] ?? null) ? $sales['one_shot'] : []; @endphp
+                    @if ($oneShot !== [])
+                        <section class="card panel">
+                            <h3>One-shot sale</h3>
+                            <p class="hint">Single delivery or perpetual license — client pays once, maintenance is recurring.</p>
+                            <table class="table">
+                                <tbody>
+                                    <tr><th>Client price ex VAT</th><td class="num">{{ $money($oneShot['client_price_ex_vat'] ?? 0) }}</td></tr>
+                                    <tr><th>Client total</th><td class="num">{{ $money($oneShot['client_total'] ?? 0) }}</td></tr>
+                                    <tr><th>Net to owner</th><td class="num">{{ $money($oneShot['net_to_owner'] ?? 0) }}</td></tr>
+                                    <tr><th>Maintenance / yr</th><td class="num">{{ $money($oneShot['maintenance_annual'] ?? 0) }}</td></tr>
+                                    <tr><th>Suggested license</th><td class="num">{{ $money($oneShot['suggested_license_price'] ?? 0) }}</td></tr>
+                                    <tr><th>Units to recover build</th><td class="num">{{ $oneShot['units_to_recover_build'] ?? 0 }}</td></tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    @endif
+                    @php $saasSale = is_array($sales['saas'] ?? null) ? $sales['saas'] : []; @endphp
+                    @if ($saasSale !== [])
+                        <section class="card panel">
+                            <h3>SaaS critical mass</h3>
+                            <p class="hint">Paying customers needed so MRR contribution covers hosting + maintenance + allocated overhead (margin above fixed run-rate).</p>
+                            <table class="table">
+                                <tbody>
+                                    <tr><th>Price</th><td class="num">{{ $money($saasSale['price_monthly'] ?? 0) }}/mo</td></tr>
+                                    <tr><th>Critical mass (customers)</th><td class="num"><strong>{{ $saasSale['critical_mass_customers'] ?? 0 }}</strong></td></tr>
+                                    <tr><th>MRR at critical mass</th><td class="num">{{ $money($saasSale['critical_mass_mrr'] ?? 0) }}</td></tr>
+                                    <tr><th>ARR at critical mass</th><td class="num">{{ $money($saasSale['critical_mass_arr'] ?? 0) }}</td></tr>
+                                    <tr><th>Monthly margin at critical mass</th><td class="num">{{ $money($saasSale['monthly_margin_at_critical_mass'] ?? 0) }}</td></tr>
+                                    <tr><th>Fixed monthly (infra + maint.)</th><td class="num">{{ $money($saasSale['monthly_fixed_costs'] ?? 0) }}</td></tr>
+                                    <tr><th>Customers to recover build (12m)</th><td class="num">{{ $saasSale['customers_to_recover_build_12m'] ?? 0 }}</td></tr>
+                                    <tr><th>Customers to recover build (24m)</th><td class="num">{{ $saasSale['customers_to_recover_build_24m'] ?? 0 }}</td></tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    @endif
+                </div>
+            @endif
 
             <div class="grid-2">
                 <section class="card panel">
@@ -462,7 +578,14 @@
                 </section>
             @endif
 
-            <p class="disclaimer">{{ $disclaimer ?? '' }} Override rates in <code>.larapilot/economics.yaml</code> via <code>larapilot:economics-set</code>. Inception: {{ $inception['project_kind'] ?? '—' }} · {{ $inception['delivery_target'] ?? '—' }} · {{ $inception['deploy_platform'] ?? 'deploy unset' }}.</p>
+            <p class="disclaimer">
+                {{ $disclaimer ?? '' }}
+                Profile: <code>{{ $path ?? '.larapilot/economics.yaml' }}</code>
+                @if (! empty($snapshot_path))
+                    · Snapshot: <code>{{ $snapshot_path }}</code>@if (! empty($snapshot_saved_at)) ({{ $snapshot_saved_at }})@endif
+                @endif
+                · Inception: {{ $inception['project_kind'] ?? '—' }} · {{ $inception['delivery_target'] ?? '—' }} · {{ $inception['deploy_platform'] ?? 'deploy unset' }}.
+            </p>
         @endif
     </div>
 @endsection

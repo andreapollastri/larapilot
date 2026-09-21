@@ -106,6 +106,7 @@ return [
         'project_docs' => '_project_docs/',
         'custom_skills' => '.larapilot/skills/',
         'economics' => '.larapilot/economics.yaml',
+        'economics_snapshot' => '.larapilot/economics.snapshot.yaml',
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level

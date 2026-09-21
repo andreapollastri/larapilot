@@ -17,6 +17,14 @@ final class TaxCatalog
      */
     public static function countries(): array
     {
+        return array_replace(self::coreCountries(), TaxCatalogExtra::countries());
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    protected static function coreCountries(): array
+    {
         return [
             'IT' => [
                 'name' => 'Italy',
@@ -25,75 +33,50 @@ final class TaxCatalog
                 'hourly' => ['FREELANCE' => 55.0, 'COMPANY' => 75.0],
                 'regimes' => [
                     'FREELANCE' => [
-                        'forfettario_5' => [
-                            'label' => 'Forfettario 5% (startup, first 5 years)',
-                            'model' => 'flat',
-                            'revenue_coefficient' => 0.67,
-                            'income_tax_rate' => 0.05,
-                            'social_rate' => 0.2607,
-                            'social_base' => 'taxable',
-                            'vat_exempt' => true,
-                            'revenue_cap' => 85000,
-                            'compliance_annual' => 900,
-                            'notes' => 'ATECO 62 software/consulenza coefficient 67%. INPS gestione separata on taxable income. No VAT, no IRAP.',
-                        ],
-                        'forfettario_15' => [
-                            'label' => 'Forfettario 15%',
-                            'model' => 'flat',
-                            'revenue_coefficient' => 0.67,
-                            'income_tax_rate' => 0.15,
-                            'social_rate' => 0.2607,
-                            'social_base' => 'taxable',
-                            'vat_exempt' => true,
-                            'revenue_cap' => 85000,
-                            'compliance_annual' => 900,
-                            'notes' => 'Same forfettario rules after the 5-year startup window. Ceiling €85,000.',
-                        ],
+                        'forfettario_5' => self::italyForfettario(
+                            'Forfettario 5% (startup, first 5 years)',
+                            0.05,
+                            'ATECO 62 software/consulenza coefficient 67%. INPS Gestione Separata 26.07% (circ. 8/2026) on forfettario income, then deducted from the 5% substitute-tax base. No VAT, no IRAP. 35% INPS cut is for artigiani/commercianti only.'
+                        ),
+                        'forfettario_15' => self::italyForfettario(
+                            'Forfettario 15%',
+                            0.15,
+                            'Same forfettario rules after the 5-year startup window. Soft ceiling €85,000 (exit next year); immediate exit above €100,000 into IRPEF ordinario.'
+                        ),
                         'ordinario' => [
                             'label' => 'IRPEF ordinario + INPS',
                             'model' => 'progressive',
-                            'brackets' => [
-                                ['up_to' => 28000, 'rate' => 0.23],
-                                ['up_to' => 50000, 'rate' => 0.35],
-                                ['up_to' => null, 'rate' => 0.43],
-                            ],
+                            'brackets' => self::italyIrpefBrackets(),
                             'additional_rate' => 0.023,
                             'social_rate' => 0.2607,
                             'social_base' => 'profit',
-                            'local_tax_rate' => 0.039,
+                            'social_deductible' => true,
+                            'social_cap' => 122295,
+                            'local_tax_rate' => 0.0,
                             'vat_exempt' => false,
-                            'compliance_annual' => 1800,
-                            'notes' => 'IRPEF 23/35/43 + addizionali ~2.3% + INPS 26.07% + IRAP 3.9% when due. VAT 22%.',
+                            'compliance_annual' => 2200,
+                            'notes' => 'IRPEF 23/35/43 + addizionali ~2.3% blended. INPS Gestione Separata 26.07% deductible from the IRPEF base (circ. 8/2026, massimale €122,295). IRAP 0 for a solo professional without autonoma organizzazione. VAT 22%.',
                         ],
                     ],
                     'COMPANY' => [
-                        'srl' => [
-                            'label' => 'SRL (IRES + IRAP + dividend 26%)',
-                            'model' => 'corporate',
-                            'income_tax_rate' => 0.24,
-                            'local_tax_rate' => 0.039,
-                            'dividend_rate' => 0.26,
-                            'compliance_annual' => 4500,
-                            'notes' => 'IRES 24% + IRAP 3.9% on profit; 26% withholding when profits are distributed to individuals.',
-                        ],
-                        'srls' => [
-                            'label' => 'SRL semplificata',
-                            'model' => 'corporate',
-                            'income_tax_rate' => 0.24,
-                            'local_tax_rate' => 0.039,
-                            'dividend_rate' => 0.26,
-                            'compliance_annual' => 2800,
-                            'notes' => 'Same IRES/IRAP/dividend as SRL; lower compliance floor.',
-                        ],
-                        'spa' => [
-                            'label' => 'SPA',
-                            'model' => 'corporate',
-                            'income_tax_rate' => 0.24,
-                            'local_tax_rate' => 0.039,
-                            'dividend_rate' => 0.26,
-                            'compliance_annual' => 12000,
-                            'notes' => 'Same corporate rates as SRL plus collegio sindacale / heavier compliance.',
-                        ],
+                        'srl' => self::italyCorporate(
+                            'SRL (IRES + IRAP + INPS + dividend 26%)',
+                            5500,
+                            2000,
+                            'IRES 24% (no premiale when profits are distributed). IRAP 3.9% on production value. Working shareholder: Gestione Commercianti (minimale €4,611.64, 24.48%/25.48%, circ. 14/2026) on the IRES base. Extraction defaults to the better of dividends vs director pay + dividends. 26% withholding on distributed profits. Legal reserve 5% (cap €2,000 on a €10k capital).'
+                        ),
+                        'srls' => self::italyCorporate(
+                            'SRL semplificata',
+                            3500,
+                            200,
+                            'Same IRES/IRAP/INPS/dividend engine as SRL; lower compliance floor and €200 legal-reserve cap (€1,000 capital).'
+                        ),
+                        'spa' => self::italyCorporate(
+                            'SPA',
+                            12000,
+                            10000,
+                            'Same corporate engine as SRL plus collegio sindacale / heavier compliance.'
+                        ),
                     ],
                 ],
             ],
@@ -579,6 +562,49 @@ final class TaxCatalog
             'BELGIUM' => 'BE',
             'IRL' => 'IE',
             'IRELAND' => 'IE',
+            'SLOVENIA' => 'SI',
+            'SVN' => 'SI',
+            'CROATIA' => 'HR',
+            'HRVATSKA' => 'HR',
+            'NORWAY' => 'NO',
+            'NORGE' => 'NO',
+            'SWEDEN' => 'SE',
+            'SVERIGE' => 'SE',
+            'DENMARK' => 'DK',
+            'DANMARK' => 'DK',
+            'FINLAND' => 'FI',
+            'SUOMI' => 'FI',
+            'ICELAND' => 'IS',
+            'ISLAND' => 'IS',
+            'LUXEMBOURG' => 'LU',
+            'MALTA' => 'MT',
+            'CYPRUS' => 'CY',
+            'POLAND' => 'PL',
+            'POLSKA' => 'PL',
+            'CZECH' => 'CZ',
+            'CZECHIA' => 'CZ',
+            'CZECH_REPUBLIC' => 'CZ',
+            'SLOVAKIA' => 'SK',
+            'SVK' => 'SK',
+            'HUNGARY' => 'HU',
+            'MAGYARORSZAG' => 'HU',
+            'ROMANIA' => 'RO',
+            'BULGARIA' => 'BG',
+            'GREECE' => 'GR',
+            'ELLADA' => 'GR',
+            'ESTONIA' => 'EE',
+            'LATVIA' => 'LV',
+            'LITHUANIA' => 'LT',
+            'CANADA' => 'CA',
+            'AUSTRALIA' => 'AU',
+            'AUS' => 'AU',
+            'NEW_ZEALAND' => 'NZ',
+            'SINGAPORE' => 'SG',
+            'SGP' => 'SG',
+            'JAPAN' => 'JP',
+            'JPN' => 'JP',
+            'MEXICO' => 'MX',
+            'MEX' => 'MX',
         ];
 
         return $aliases[$normalized] ?? $normalized;
@@ -690,5 +716,73 @@ final class TaxCatalog
     public static function defaultVatRate(string $country): float
     {
         return (float) (self::country($country)['vat_rate'] ?? 0.0);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function italyForfettario(string $label, float $rate, string $notes): array
+    {
+        return [
+            'label' => $label,
+            'model' => 'flat',
+            'revenue_coefficient' => 0.67,
+            'income_tax_rate' => $rate,
+            'social_rate' => 0.2607,
+            'social_base' => 'taxable',
+            'social_deductible' => true,
+            'social_cap' => 122295,
+            'vat_exempt' => true,
+            'revenue_cap' => 85000,
+            'revenue_hard_cap' => 100000,
+            'exit_regime' => 'ordinario',
+            'compliance_annual' => 1200,
+            'notes' => $notes,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function italyCorporate(string $label, float $compliance, float $reserveCap, string $notes): array
+    {
+        return [
+            'label' => $label,
+            'model' => 'corporate',
+            'income_tax_rate' => 0.24,
+            'local_tax_rate' => 0.039,
+            'local_tax_base' => 'production',
+            'dividend_rate' => 0.26,
+            'legal_reserve_rate' => 0.05,
+            'legal_reserve_cap' => $reserveCap,
+            'extraction_model' => 'salary_dividend',
+            'social_kind' => 'commercianti',
+            'social_rate' => 0.2448,
+            'social_rate_upper' => 0.2548,
+            'social_floor_income' => 18808,
+            'social_fixed_annual' => 4611.64,
+            'social_threshold' => 56224,
+            'social_cap' => 122295,
+            'social_maternity_annual' => 7.44,
+            'director_gs_rate' => 0.3503,
+            'director_gs_rate_working' => 0.24,
+            'director_gs_company_share' => 2 / 3,
+            'personal_brackets' => self::italyIrpefBrackets(),
+            'personal_additional_rate' => 0.023,
+            'compliance_annual' => $compliance,
+            'notes' => $notes,
+        ];
+    }
+
+    /**
+     * @return list<array{up_to: float|int|null, rate: float}>
+     */
+    protected static function italyIrpefBrackets(): array
+    {
+        return [
+            ['up_to' => 28000, 'rate' => 0.23],
+            ['up_to' => 50000, 'rate' => 0.35],
+            ['up_to' => null, 'rate' => 0.43],
+        ];
     }
 }

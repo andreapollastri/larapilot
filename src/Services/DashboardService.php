@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\Markdown;
 
 class DashboardService
@@ -244,5 +245,44 @@ class DashboardService
     public function economics(): array
     {
         return $this->economicsService->dashboard();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function design(): array
+    {
+        $prd = $this->prd->read();
+        $catalog = $this->mockups->catalog();
+
+        return [
+            'catalog' => $catalog,
+            'project_title' => $this->projectTitle($prd),
+            'language' => ArtifactLanguage::detect($prd),
+            'presentation_url' => $this->routeIfAvailable('larapilot.dashboard.design.presentation'),
+            'package_url' => $this->routeIfAvailable('larapilot.dashboard.design.package'),
+        ];
+    }
+
+    protected function projectTitle(?string $prd): string
+    {
+        if (is_string($prd) && preg_match('/^#\s+(.+)$/m', $prd, $matches) === 1) {
+            $title = trim($matches[1]);
+
+            if ($title !== '') {
+                return $title;
+            }
+        }
+
+        return 'Larapilot';
+    }
+
+    protected function routeIfAvailable(string $name): ?string
+    {
+        if (! app('router')->has($name)) {
+            return null;
+        }
+
+        return route($name, absolute: false);
     }
 }

@@ -54,6 +54,7 @@ it('serves the inception and docs dashboard pages', function (): void {
         ->assertOk()
         ->assertSee('>Usage</a>', false)
         ->assertSee('>Economics</a>', false)
+        ->assertSee('>Design</a>', false)
         ->assertSee('>Docs</a>', false)
         ->getContent();
 
@@ -95,6 +96,7 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/economics')->assertNotFound();
+    $this->get('/larapilot/design')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();
 });
 
