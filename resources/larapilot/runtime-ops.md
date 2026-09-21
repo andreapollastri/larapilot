@@ -208,7 +208,7 @@ Use exactly these labels for `--category=`:
 
 `analysis` · `planning` · `implementation` · `support` · `feature` · `review` · `ship` · `other`
 
-Map skills roughly: inception/discovery → `analysis`; plan → `planning`; implement → `implementation`; feature evolutiva → `feature`; bug/Sophia → `support`; review → `review`; ship → `ship`.
+Map skills roughly: inception/discovery → `analysis`; plan → `planning`; implement → `implementation`; feature enhancement → `feature`; bug/Sophia → `support`; review → `review`; ship → `ship`.
 
 ### When to log
 
@@ -231,7 +231,7 @@ Map skills roughly: inception/discovery → `analysis`; plan → `planning`; imp
    ```
 
 2. During later skills, if the team is behind or blocked, Lucille updates schedule notes (`--status=at_risk|delayed|on_track`) and mentions drift briefly in chat — never blocks Mark/John decisions.
-3. Dashboard **Usage** page renders ledger aggregates + a **dependency-aware Gantt** (epics → tasks with `dependencies` / `assignee` / `estimate_hours`) + schedule milestones; `larapilot:usage-report` exports a consolidated Markdown resoconto.
+3. Dashboard **Usage** page renders ledger aggregates + a **dependency-aware Gantt** (epics → tasks with `dependencies` / `assignee` / `estimate_hours`) + schedule milestones; `larapilot:usage-report` exports a consolidated Markdown report.
 4. **Interrogation skill** — `/larapilot-usage` (Lucille) answers questions about tempistiche and token burn. Prefer `php artisan larapilot:usage-report --format=json --insights` with filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`) over hand-reading `ledger.jsonl`.
 5. **Effort forecast** — Lucille compares remaining story points / task `estimate_hours` against project milestones and epic `deadline` fields, surfacing temporal criticality on the dashboard (`criticality` in `--insights`).
 6. **Zoey vs Lucille** — Zoey’s `context ≈ Nk` is loaded-context size; Lucille’s ledger is session spend (often `--estimated` from Zoey’s end line). The dashboard explains why the two figures diverge; do not force them equal.

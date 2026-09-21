@@ -127,7 +127,7 @@ Use `.larapilot/task-templates.md` — do not invent ad-hoc task shapes.
 | **Entity task**     | New/changed Eloquent model — migration + factory + seeder in the **same task**                                                                                                 |
 | **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A`                                                                                                                                  |
 | **Test task**       | Anne — reuse factories; `test(US-XXX): TASK-NN` commit; depth per `settings.testing`                                                                                           |
-| **Fix / evolutiva** | Rework — same Git + factory/seeder rules when schema changes                                                                                                                   |
+| **Fix / enhancement** | Rework — same Git + factory/seeder rules when schema changes                                                                                                                   |
 
 Every **Impl** and **Fix** task body MUST include:
 

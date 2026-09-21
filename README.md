@@ -84,21 +84,21 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-inception` | Product discovery → PRD (includes **Frontend Topology**) |
 | `/larapilot-adopt` | Reverse-engineer a PRD from an existing production codebase (brownfield onboarding) |
 | `/larapilot-spec` | MoSCoW backlog from PRD |
-| `/larapilot-feature` | Mini-inception for one evolutiva |
+| `/larapilot-feature` | Mini-inception for one enhancement |
 | `/larapilot-bug` | Bug triage → fix spec or rework |
 | `/larapilot-frontend-companion` | Link external FE repo path, scan code — **from Laravel only** |
 | `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (when `release_mode=YES`) |
 | `/larapilot-project-docs` | Living handbook in `_project_docs/` (when `project_docs=YES`) |
 | `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` (auto-registered with Boost) |
-| `/larapilot-design` | Static HTML mockups from design system |
+| `/larapilot-design` | Static HTML mockups from design system — gallery at `/larapilot/design` |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / backlog / git / testing / account / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
-| `/larapilot-economics` | **Aurora** — preventivo, country tax, payback, SaaS ARR (when `account` is FREELANCE or COMPANY) |
-| `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
+| `/larapilot-economics` | **Aurora** — quote, country tax, payback, SaaS ARR; client quote Markdown (when `account` is FREELANCE or COMPANY) |
+| `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown report |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
@@ -110,7 +110,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (account-mode quotes, tax, SaaS forecast — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (presentation index of every mockup + zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (account-mode quotes, tax, SaaS forecast, **client quote download** — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, Economics, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/economics`** — quote, tax, payback, SaaS forecast (`enabled: false` when `account` is NONE)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
@@ -137,7 +137,7 @@ Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.git
 
 ### Account mode & Economics (`account`, NONE by default)
 
-`settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a preventivo (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast.
+`settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a quote (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast. Download the **client quote** (Markdown, same language as the PRD) at `/larapilot/economics/quote.md` or `php artisan larapilot:economics-show --format=quote`.
 
 ```bash
 php artisan larapilot:settings-set --account=FREELANCE

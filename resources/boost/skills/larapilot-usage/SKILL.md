@@ -5,7 +5,7 @@ description: Lucille's time & token interrogation skill. Analyze and query Larap
 
 # Larapilot — Usage & Time Tracking (Lucille)
 
-Interrogate the committed Lucille ledger and schedule. Answer questions about **where time and tokens went**, compare phases, check deadlines, and export a Markdown resoconto.
+Interrogate the committed Lucille ledger and schedule. Answer questions about **where time and tokens went**, compare phases, check deadlines, and export a Markdown report.
 
 ## Shared Runtime
 

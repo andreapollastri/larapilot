@@ -31,7 +31,7 @@ Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `
 3. Persist answers with `php artisan larapilot:economics-set` (only answered flags)
 4. Re-run `economics-show` and confirm
 
-Never edit `.larapilot/economics.yaml` by hand. The computed preventivo is auto-saved to `.larapilot/economics.snapshot.yaml` on each show/set/dashboard refresh. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
+Never edit `.larapilot/economics.yaml` by hand. The computed quote is auto-saved to `.larapilot/economics.snapshot.yaml` on each show/set/dashboard refresh. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
 
 If `data.settings.account` is `NONE`, **stop** and send the user to `/larapilot-settings` (Account = FREELANCE or COMPANY) or:
 
@@ -62,7 +62,7 @@ Then **regime** from `data.regime.options` in `economics-show` (ids and labels).
 
 **Round 2 — Rate & margin**
 
-- **Hourly rate prompt:** `Hourly rate (current: {VALUE} {CURRENCY}) — billable rate used for the preventivo`
+- **Hourly rate prompt:** `Hourly rate (current: {VALUE} {CURRENCY}) — billable rate used for the quote`
 - Offer 3–4 realistic options around the catalogue default for this country × account (e.g. Italy freelance 45 / 55 / 70 / 90).
 - **Margin prompt:** `Target margin % (current: {VALUE}) — markup on labor + overhead`
 - Options: `25` lean · `30` standard freelance · `35` company default · `45` premium
@@ -72,7 +72,7 @@ Then **regime** from `data.regime.options` in `economics-show` (ids and labels).
 
 - **Product prompt:** `Product model (current: {VALUE}) — how will this project make money?`
 - `auto` — infer from inception (SaaS / e-commerce / package / fixed)
-- `fixed` — one-off client delivery (preventivo)
+- `fixed` — one-off client delivery (quote)
 - `saas` — subscription (ARR, break-even customers, hosting)
 - `ecommerce` — take-rate / orders to recover
 - `package` — license units to recover
@@ -105,11 +105,11 @@ Pass **only** answered keys. On success, parse the JSON envelope (`kind: "econom
 
 Re-run `economics-show`. Give Aurora's summary in this order (short):
 
-1. **Preventivo** — client price ex VAT, VAT, client total
+1. **Quote** — client price ex VAT, VAT, client total
 2. **Net to owner** — after tax/social/compliance + effective % (Italy: show INPS, legal reserve, extraction mix when present)
 3. **Hours** — source + billable hours + calendar months
 4. **If SaaS** — break-even customers, customers to recover in 12 months, ARR at planning, LTV:CAC, months to recover
-5. Point at `/larapilot/economics` for charts and the 36-month forecast. Client-facing preventivo: dashboard **Download quote** or `php artisan larapilot:economics-show --format=quote`.
+5. Point at `/larapilot/economics` for charts and the 36-month forecast. Client-facing quote: dashboard **Download quote** or `php artisan larapilot:economics-show --format=quote`.
 6. One-line disclaimer: planning estimate, FY-2026 statutory rates, not tax advice
 
 ## Rules

@@ -239,7 +239,7 @@ Add Pest coverage for {feature/API/policy}, including responsive/browser checks 
 
 ---
 
-## Fix / evolutiva task (rework)
+## Fix / enhancement task (rework)
 
 ```markdown
 ## Description

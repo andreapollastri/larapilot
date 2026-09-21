@@ -6,7 +6,7 @@ All notable changes to `larapilot` will be documented in this file.
 
 ### Added
 
-- **Economics snapshot persistence** — every `economics-show`, dashboard/API load, and `economics-set` writes the full computed preventivo to `.larapilot/economics.snapshot.yaml` (`computed_at`, effort, quote, tax, scenarios, sales, SaaS forecast). Profile inputs remain in `.larapilot/economics.yaml`.
+- **Economics snapshot persistence** — every `economics-show`, dashboard/API load, and `economics-set` writes the full computed quote to `.larapilot/economics.snapshot.yaml` (`computed_at`, effort, quote, tax, scenarios, sales, SaaS forecast). Profile inputs remain in `.larapilot/economics.yaml`.
 - **Client commercial proposal** — Economics download is a client-facing Markdown quote (same language as the PRD): letterhead, totals + VAT + maintenance, included / not included / client-provided, technical synthesis, payment schedule, and a mermaid Gantt. Internal tax report remains at `/larapilot/economics/report.md` and `economics-show --format=md`; the quote is `/larapilot/economics/quote.md` and `--format=quote`.
 - **Design gallery** — `/larapilot/design` (nav after Inception) opens a presentation index of every mockup, a viewer for all screens, and a zip download of HTML + assets (`/larapilot/design/package.zip`).
 - **Economics sales estimates** — every snapshot includes `sales.one_shot` (client price, net, maintenance, license units to recover) and `sales.saas` (critical mass customers/MRR/ARR above server + maintenance fixed costs, contribution margin, customers to recover the build in 12/24 months). SaaS projection runs even when `product_model=fixed`.
@@ -20,16 +20,20 @@ All notable changes to `larapilot` will be documented in this file.
 - **Alternate regime compare** — marks regimes as not applicable when client price exceeds the revenue ceiling (e.g. forfettario €85k).
 - **Economics tax engine (Italy FY-2026)** — Forfettario deducts INPS Gestione Separata from the substitute-tax base; SRL models Gestione Commercianti, IRAP on production value, legal reserve, and optimised director pay + dividends. Profile flags: `vat_mode`, `owner_working`, `extraction`.
 
+### Fixed
+
+- **Lint** — PHPStan `phpdoc.checkParameterNames` on `TaxEngine::progressive()` (`@param $options` referenced a parameter the method does not have).
+
 ### Docs
 
-- Site / package version **v3.1.1**; expanded country list in `larapilot:economics-set` and runtime economics.
+- Site / package version **v3.1.1**; docs site — Design gallery, client quote download, expanded country list in `larapilot:economics-set` and runtime economics. English copy uses **quote** (Italian *preventivo* remains only as a skill trigger and in generated Italian filenames).
 
 ## [3.1.0] - 2026-09-21
 
 ### Added
 
 - **Account mode (`settings.account`, NONE by default)** — `NONE` | `FREELANCE` | `COMPANY`. Freelance maps to partita IVA / sole-trader regimes; company maps to SRL / SPA / Ltd / GmbH / C-Corp. Unlock with `/larapilot-settings` or `larapilot:settings-set --account=FREELANCE|COMPANY`. (`OFF` is accepted as an alias of `NONE` — YAML 1.1 would otherwise parse `OFF` as a boolean.)
-- **Economics dashboard** — `/larapilot/economics` (nav item before API/Docs) shows a preventivo (hours × rate, overhead, margin, VAT), net to owner after country tax, payback, and charts. Download the client quote at `economics/quote.md` (internal report still at `economics/report.md`).
+- **Economics dashboard** — `/larapilot/economics` (nav item before API/Docs) shows a quote (hours × rate, overhead, margin, VAT), net to owner after country tax, payback, and charts. Download the client quote at `economics/quote.md` (internal report still at `economics/report.md`).
 - **Tax catalogue (FY 2026)** — Italy (forfettario 5/15, IRPEF, SRL/SRLS/SPA), Germany, France, Spain, UK, US, Netherlands, Portugal, Switzerland, Austria, Belgium, Ireland. Planning estimates, not tax advice.
 - **SaaS forecast** — when inception/PRD looks like a subscription (or `product_model=saas`): ARR/MRR, break-even customers, customers to recover the build in 12/18/24 months, hosting from deploy platform, LTV:CAC, 36-month growth/churn chart.
 - **`/larapilot-economics`** — Aurora interview persists `.larapilot/economics.yaml` via `larapilot:economics-set`. `larapilot:economics-show` (`--format=md`) returns the snapshot. Runtime pack `runtime-economics.md`.
@@ -255,7 +259,7 @@ All notable changes to `larapilot` will be documented in this file.
 - **Project Kind: Package** — inception AskQuestion adds `Package` beside Personal / Website / Application. Workflow covers new vs existing local path vs existing git, Laravel package standards (tests, security, CI, semver), distribution (Packagist / Satis / VCS), docs, optional GitHub Pages / dedicated minisite, and consumer integration modes.
 - **Usage persistence (Lucille)** — committed under `.larapilot/usage/` (`ledger.jsonl`, `schedule.yaml`).
     - `larapilot:usage-log` — append ledger entries (git user by default).
-    - `larapilot:usage-report` — JSON/MD/human summary + filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`, `--limit=`) + `--insights` (top categories, hot specs, deadline drift) + optional `--output=` Markdown resoconto.
+    - `larapilot:usage-report` — JSON/MD/human summary + filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`, `--limit=`) + `--insights` (top categories, hot specs, deadline drift) + optional `--output=` Markdown report.
     - `larapilot:schedule-set` — deadlines and drift notes.
     - `larapilot:choices-set` — inception/settings snapshot (`--from-prd` or flags) into `.larapilot/choices.yaml`.
 - **`/larapilot-usage`** — Lucille skill to analyze and query time/token tracking, schedule status, and export consolidated reports.
@@ -520,7 +524,7 @@ Website version update and minor fixies.
 ### Added
 
 - **Workflow JSON API** — read-only REST endpoints under `/larapilot/api/` (same access rules as the dashboard): `GET /board` (full Kanban snapshot), `GET /specs` (optional `?status=` filter), `GET /specs/{code}` (spec + plan + tasks), `GET /prd`. OpenAPI 3.1 spec at `/larapilot/api/openapi.json` and Swagger UI at `/larapilot/api/docs`, linked from the dashboard nav. Documented in `docs/index.html` (`#api`, `#dashboard`).
-- **`/larapilot-feature`** — mini-inception for one new evolutiva on an existing project: interactive AskQuestion rounds (MoSCoW, FR traceability, mockup-first, legacy touch), optional PRD `FR-XXX` sync, spec via `spec-add`. Mark + Tom lead; Sabrine/John/Andrew join when relevant.
+- **`/larapilot-feature`** — mini-inception for one new enhancement on an existing project: interactive AskQuestion rounds (MoSCoW, FR traceability, mockup-first, legacy touch), optional PRD `FR-XXX` sync, spec via `spec-add`. Mark + Tom lead; Sabrine/John/Andrew join when relevant.
 - **`/larapilot-bug`** — Sophia-led bug triage with interactive intake: severity, environment, security, routing to `spec-add` (fix spec) or `spec-request-changes` (rework); logs to `{paths.support}/intake.md`; Critical production → `hotfix/*` note.
 - **Legacy folder — proactive refactor proposal in inception** — when `.larapilot/legacy/` has content, Mark (with Sabrine) asks via AskQuestion whether to pursue legacy rewrite/port before deep discovery.
 - **Sabrine — expanded expertise** — content scraping/extraction, DB migration, and assets porting (legacy → new); updated across `shared-runtime.md`, inception/spec/plan skills, `core.blade.php`, and `legacy/README.md`.
@@ -620,7 +624,7 @@ Website version update and minor fixies.
 
 - **Project Kind — inception interview branches** — Mark now opens discovery with **AskQuestion** for `Personal`, `Website`, or `Application`, switching persona depth and follow-up questions (website type, delivery target, multi-tenancy). Recorded in PRD `## MVP Scope`; downstream skills (`spec`, `design`, `ship`) read it. Updated `shared-runtime.md`, `larapilot-inception`, `larapilot-spec`, README, and docs.
 
-- **Alex — factories, seeders & strict Gitflow** — Alex must create/update Eloquent factories (domain-meaningful Faker data, states, relationships) and keep seeders (`DatabaseSeeder` + dedicated seeders) producing a coherent demo dataset; updates ship in the same task as model/migration changes with `migrate:fresh --seed` verification. **Git discipline** is now non-negotiable: one atomic Conventional Commit per completed task or evolutiva, push after each task, and open/update an internal PR toward `develop` (Robert blocks handoff on violation). Updated `shared-runtime.md`, `larapilot-plan`, `larapilot-implement`, `larapilot-review`, `core.blade.php`, and README.
+- **Alex — factories, seeders & strict Gitflow** — Alex must create/update Eloquent factories (domain-meaningful Faker data, states, relationships) and keep seeders (`DatabaseSeeder` + dedicated seeders) producing a coherent demo dataset; updates ship in the same task as model/migration changes with `migrate:fresh --seed` verification. **Git discipline** is now non-negotiable: one atomic Conventional Commit per completed task or enhancement, push after each task, and open/update an internal PR toward `develop` (Robert blocks handoff on violation). Updated `shared-runtime.md`, `larapilot-plan`, `larapilot-implement`, `larapilot-review`, `core.blade.php`, and README.
 
 - **Mobile First — Elise & Anne** — UI design and tests must follow **Mobile First**: smallest viewport first (320–375 px), progressive desktop enhancement without neglecting large screens; extremely navigable and simple on any device/resolution. Elise documents breakpoint/nav contract in mockup README; Anne plans and runs multi-viewport tests (375 / 768 / 1280 px minimum, mobile nav, axe at mobile). Updated `shared-runtime.md`, `larapilot-design`, `larapilot-plan`, `larapilot-implement`, `larapilot-inception`, `larapilot-review`, `core.blade.php`, and README.
 

@@ -16,13 +16,13 @@ Use Larapilot skills when the user wants to:
 - **Adopt an existing production Laravel app** built without Larapilot — reverse-engineer a complete PRD (+ `.larapilot/research/codebase-analysis.md`) from the code so the normal loop can continue (`larapilot-adopt`)
 - Build or evolve a **PHP/Laravel Composer package** (new or existing path/git) with professional standards, distribution, and docs
 - Create or extend a backlog of user stories / specs
-- Add **one new feature or evolutiva** on an existing project (`larapilot-feature`)
+- Add **one new feature or enhancement** on an existing project (`larapilot-feature`)
 - Report or triage a **bug** (`larapilot-bug`)
 - Link an **external frontend repo** from Laravel (`larapilot-frontend-companion`)
 - Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
 - Mirror the backlog into a **project tracker** — Linear, Asana, Jira, Trello, ClickUp, Monday (`larapilot-tracker`)
 - Interrogate **time/token tracking** and deadlines with Lucille (`larapilot-usage`)
-- Build a **preventivo / Economics** quote (freelance or company, country tax, SaaS ARR) (`larapilot-economics`)
+- Build an **Economics** quote (freelance or company, country tax, SaaS ARR) (`larapilot-economics`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -35,7 +35,7 @@ Use Larapilot skills when the user wants to:
 | --- | --- | --- |
 | Discovery | `larapilot-inception` | `.larapilot/docs/PRD.md` |
 | Brownfield onboarding | `larapilot-adopt` | `.larapilot/docs/PRD.md` (reverse-engineered) + `.larapilot/research/codebase-analysis.md` |
-| Feature / evolutiva | `larapilot-feature` | New `US-XXX` spec (+ optional PRD `FR-XXX`) |
+| Feature / enhancement | `larapilot-feature` | New `US-XXX` spec (+ optional PRD `FR-XXX`) |
 | Bug report | `larapilot-bug` | Fix spec or rework + `.larapilot/docs/support/intake.md` |
 | FE companion (split repo) | `larapilot-frontend-companion` | Link FE path, scan code; implement via `repo: frontend` from Laravel |
 | Design (optional) | `larapilot-design` | `.larapilot/mockups/{spec}/` (dev route `/mockups/{spec}`); design system per PRD from `.larapilot/design-systems/` |
@@ -49,7 +49,7 @@ Use Larapilot skills when the user wants to:
 | Custom skills | `larapilot-custom-skill` | Author skills under `.larapilot/skills/` via `larapilot:custom-skill-add` (auto-registered with Boost; listed at `/larapilot/skills`) |
 | Settings | `larapilot-settings` | Persist project settings in `.larapilot/config.yaml` |
 | Economics (optional) | `larapilot-economics` | Quotes, tax, payback, SaaS ARR when `account` is FREELANCE or COMPANY |
-| Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown resoconto |
+| Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown report |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
 | Project tracker (optional) | `larapilot-tracker` | Stories + plan subtasks in Linear/Asana/Jira/Trello/ClickUp/Monday; links in `.larapilot/tracker.yaml` |
 
@@ -101,7 +101,7 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:spec-approve US-001`
 - `php artisan larapilot:metrics`
 - `php artisan larapilot:usage-log --category=… --tokens=… --minutes=…` _(Lucille ledger)_
-- `php artisan larapilot:usage-report [--insights] [--category=] [--user=] [--skill=] [--spec=] [--from=] [--to=]` _(Lucille query + Markdown resoconto)_
+- `php artisan larapilot:usage-report [--insights] [--category=] [--user=] [--skill=] [--spec=] [--from=] [--to=]` _(Lucille query + Markdown report)_
 - `php artisan larapilot:schedule-set --deadline=YYYY-MM-DD` _(deadlines / drift notes)_
 - `php artisan larapilot:choices-set --from-prd` _(dashboard inception snapshot)_
 - `php artisan larapilot:decision-log --topic=… --value=… [--source=chat|askquestion --skill=… --spec=… --supersedes=…]` _(decision journal; ON by default)_

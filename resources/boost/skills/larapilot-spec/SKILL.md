@@ -45,7 +45,7 @@ Read the PRD — **do not write** to it. For scoped product additions with inter
 
 - If `spec-list` returns empty `data.summary.codes` → **bootstrap backlog** from PRD
 - If backlog exists → **extend** with only the requested specs
-- For **one new feature/evolutiva** with interactive discovery → prefer `/larapilot-feature`
+- For **one new feature/enhancement** with interactive discovery → prefer `/larapilot-feature`
 - For **bug reports** → prefer `/larapilot-bug` (Sophia triage)
 
 Read PRD from `data.paths.prd`. If missing, ask for path, content, or suggest `larapilot-inception`.

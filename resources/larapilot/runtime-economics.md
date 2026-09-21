@@ -20,7 +20,7 @@ Set only via `php artisan larapilot:settings-set --account=…`. Never hand-edit
 
 `.larapilot/economics.yaml` (path `paths.economics`) holds the **account profile**. Persist only through `larapilot:economics-set`. Keys:
 
-The **computed snapshot** (quote, tax, effort, sales, scenarios, SaaS forecast) is written automatically to `.larapilot/economics.snapshot.yaml` (`paths.economics_snapshot`) whenever `economics-show`, the dashboard, the API, or `economics-set` runs — so the last preventivo stays on disk and refreshes when specs or plans change.
+The **computed snapshot** (quote, tax, effort, sales, scenarios, SaaS forecast) is written automatically to `.larapilot/economics.snapshot.yaml` (`paths.economics_snapshot`) whenever `economics-show`, the dashboard, the API, or `economics-set` runs — so the last quote stays on disk and refreshes when specs or plans change.
 
 Profile keys:
 

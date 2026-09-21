@@ -292,7 +292,7 @@
 
             <div class="grid-2">
                 <section class="card panel">
-                    <h3>Preventivo</h3>
+                    <h3>Quote</h3>
                     <p class="hint">Effort from {{ str_replace('_', ' ', $effort['source'] ?? 'heuristic') }}
                         @if (($effort['spec_count'] ?? 0) > 0)
                             · {{ $effort['spec_count'] }} specs

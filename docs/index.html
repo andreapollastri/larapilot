@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1480,7 +1480,8 @@
             <code>/larapilot-autopilot</code> to batch plan+implement ·
             <code>/larapilot-settings</code> for project modes ·
             <code>/larapilot-usage</code> for Lucille time/token reports ·
-            <code>/larapilot-economics</code> for preventivi / SaaS ARR (when account is FREELANCE or COMPANY) ·
+            <code>/larapilot-economics</code> for quotes / SaaS ARR (when account is FREELANCE or COMPANY) —
+            client quote at <code>/larapilot/economics/quote.md</code> ·
             <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
             <code>/larapilot-tracker</code> to mirror the backlog into a
             <a href="#deep-dive-tracker">project tracker</a>. More opt-in skills in
@@ -1535,7 +1536,7 @@
                 <td><code>/larapilot-usage</code></td>
               </tr>
               <tr>
-                <td>Preventivo, tax, SaaS ARR / break-even</td>
+                <td>Quote, tax, SaaS ARR / break-even · client quote Markdown</td>
                 <td><code>/larapilot-economics</code></td>
               </tr>
             </tbody>
@@ -1718,8 +1719,9 @@
           </div>
           <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>,
             <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>).
-            Preview at <code>/mockups/US-001</code> — and in the <a href="#deep-dive-dashboard">dashboard</a> on the US
-            detail page (embedded preview + screen links).
+            Preview at <code>/mockups/US-001</code>, on the spec detail page, and in the dashboard
+            <strong>Design</strong> gallery (<code>/larapilot/design</code>) — presentation index of every screen,
+            plus a zip of HTML + assets.
           </p>
 
           <div class="code-block">
@@ -2203,7 +2205,7 @@ body: |
 
   **Epic:** EP-002 | **Priority:** MEDIUM | **Points:** 3 | **Status:** TODO
   **Blocked by:** US-004
-  **Type:** Feature | Evolutiva
+  **Type:** Feature | Enhancement
   **Traces to:** FR-011 (MoSCoW: Should), extends FR-004
 
   **User Story**
@@ -3175,7 +3177,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v3.1.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v3.1.1</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3188,12 +3190,26 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </thead>
               <tbody>
                 <tr>
+                  <td><strong>3.1.1</strong> <span class="chip">2026-09-21</span></td>
+                  <td>
+                    <strong>Added:</strong> dashboard <strong>Design</strong> gallery
+                    (<code>/larapilot/design</code>) — presentation index of every mockup,
+                    viewer for all screens, zip of HTML + assets
+                    (<code>/larapilot/design/package.zip</code>). Economics
+                    <strong>client quote</strong> download
+                    (<code>/larapilot/economics/quote.md</code>,
+                    <code>economics-show --format=quote</code>) in the PRD language
+                    (totals, maintenance, included / not included / client-provided, Gantt).
+                    Snapshot persistence, sales estimates, tax scenarios, expanded FY-2026 catalogue.
+                  </td>
+                </tr>
+                <tr>
                   <td><strong>3.1.0</strong> <span class="chip">2026-09-21</span></td>
                   <td>
                     <strong>Added:</strong> <strong>Account</strong> mode
                     (<code>NONE</code> / <code>FREELANCE</code> / <code>COMPANY</code>)
                     unlocks the <strong>Economics</strong> dashboard
-                    (<code>/larapilot/economics</code>) — preventivo, country tax
+                    (<code>/larapilot/economics</code>) — quote, country tax
                     (forfettario, SRL, Ltd, …), payback, and SaaS ARR / break-even
                     forecasts. Skill <code>/larapilot-economics</code>;
                     CLI <code>economics-set</code> / <code>economics-show</code>.
@@ -3412,7 +3428,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">one feature</span>
               <div class="skill-body">
                 <h3><code>/larapilot-feature "…"</code></h3>
-                <p>Mini-inception for one evolutiva on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
+                <p>Mini-inception for one enhancement on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
                   FR). When <code>release_mode=YES</code> and open releases exist, AskQuestion assigns the spec to a
                   release (or backlog) → <code>**Release:** x.y.z</code> line + <code>release-set --add-spec=</code>.
                 </p>
@@ -3446,7 +3462,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <h3><code>/larapilot-design US-XXX</code> <span class="skills-group-note" style="display:inline">— before plan</span></h3>
                 <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
                   Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
-                  (non-production) and on the <a href="#deep-dive-dashboard">dashboard</a> spec page when HTML exists.
+                  (non-production), on the spec page, and in the <a href="#deep-dive-dashboard">dashboard</a>
+                  <strong>Design</strong> gallery (<code>/larapilot/design</code>) — presentation index, all screens,
+                  zip download of HTML + assets.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
                   <code>paths.mockups</code> and <code>paths.design_systems</code>.
@@ -3657,11 +3675,15 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-economics</code></h3>
                 <p><strong>Aurora</strong> calibrates country + tax regime (forfettario, SRL, Ltd, …) and produces a
-                  preventivo, net-to-owner after FY-2026 rates, payback, and — for SaaS — ARR, break-even customers,
+                  quote, net-to-owner after FY-2026 rates, payback, and — for SaaS — ARR, break-even customers,
                   hosting, and a 36-month forecast. Requires <code>settings.account</code> <code>FREELANCE</code> or
-                  <code>COMPANY</code>. Dashboard: <code>/larapilot/economics</code>.</p>
+                  <code>COMPANY</code>. Dashboard: <code>/larapilot/economics</code> — download the
+                  <strong>client quote</strong> (Markdown, PRD language, totals + maintenance + Gantt) at
+                  <code>/larapilot/economics/quote.md</code>. Internal tax report:
+                  <code>/larapilot/economics/report.md</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:economics-set</code> ·
-                  <code>larapilot:economics-show</code> · <code>larapilot:settings-set --account=…</code>.
+                  <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>) ·
+                  <code>larapilot:settings-set --account=…</code>.
                 </p>
               </div>
             </div>
@@ -3670,7 +3692,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-usage</code></h3>
                 <p><strong>Lucille</strong> interrogates the committed time/token ledger and schedule — overview,
-                  filters by category/user/skill/spec/date, deadline drift, and Markdown resoconto export.
+                  filters by category/user/skill/spec/date, deadline drift, and Markdown report export.
                   Read-only while <code>settings.lucille</code> is <code>NO</code>. Full reference:
                   <a href="#deep-dive-usage">Usage &amp; Lucille</a>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:usage-report</code> ·
@@ -4594,8 +4616,9 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
                 <tr>
                   <td><code>mockups/{spec}/</code></td>
                   <td><code>/larapilot-design</code></td>
-                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); linked in the <a
-                      href="#deep-dive-dashboard">dashboard</a> and JSON API when present</td>
+                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); gallery at
+                    <code>/larapilot/design</code> (presentation index + zip of HTML/assets); linked on spec
+                    detail and in the JSON API when present</td>
                 </tr>
                 <tr>
                   <td><code>internal-feedback/{code}.md</code></td>
@@ -4614,6 +4637,12 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
                   <td>skills (Lucille) · <code>/larapilot-usage</code></td>
                   <td><code>ledger.jsonl</code> + <code>schedule.yaml</code> — tokens, minutes, deadlines; see
                     <a href="#deep-dive-usage">Usage</a></td>
+                </tr>
+                <tr>
+                  <td><code>economics.yaml</code> · <code>economics.snapshot.yaml</code></td>
+                  <td><code>/larapilot-economics</code> · <code>larapilot:economics-set</code></td>
+                  <td>Account profile (country, regime, rate) and the last computed quote. Client quote:
+                    <code>/larapilot/economics/quote.md</code></td>
                 </tr>
                 <tr>
                   <td><code>choices.yaml</code></td>
@@ -6033,7 +6062,9 @@ git add .larapilot/ &amp;&amp; git rebase --continue</code></pre>
               </tbody>
             </table>
           </div>
-          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog. Skills resolve paths via
+          <p>Open each folder's <code>html/index.html</code> locally as a visual catalog — or browse every
+            project mockup in the dashboard <a href="#deep-dive-dashboard">Design</a> gallery
+            (<code>/larapilot/design</code>). Skills resolve paths via
             <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
           </p>
 
@@ -6238,6 +6269,13 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                     <a href="#deep-dive-usage">Usage</a></td>
                 </tr>
                 <tr>
+                  <td>Economics (Aurora)</td>
+                  <td><code>larapilot:economics-set</code> ·
+                    <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>)</td>
+                  <td><code>/larapilot-economics</code> — client quote Markdown via
+                    <code>--format=quote</code> or <code>/larapilot/economics/quote.md</code></td>
+                </tr>
+                <tr>
                   <td>Developer portal</td>
                   <td><code>larapilot:backstage-export</code> (<code>--write</code>, <code>--force</code>,
                     <code>--no-techdocs</code>, <code>--file=</code>, <code>--api-base=</code>)
@@ -6297,7 +6335,8 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
         <article class="deep-dive-sub" id="deep-dive-dashboard">
           <h3>Dashboard</h3>
           <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
-            the PRD, inspect settings/choices, and Lucille usage — then drill into spec detail between skill sessions.
+            the PRD, browse the <strong>Design</strong> gallery, inspect settings/choices, Lucille usage, and Economics
+            quotes — then drill into spec detail between skill sessions.
             You can also post <strong>internal feedback</strong> comments from the spec page (dev/staging only) —
             workflow state still changes only via skills/CLI.</p>
 
@@ -6377,6 +6416,12 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Discovery choices snapshot from <code>.larapilot/choices.yaml</code></td>
                 </tr>
                 <tr>
+                  <td><strong>Design</strong></td>
+                  <td><code>/larapilot/design</code></td>
+                  <td>Presentation index of every mockup, viewer for all screens, download
+                    <code>/larapilot/design/package.zip</code> (HTML + assets)</td>
+                </tr>
+                <tr>
                   <td><strong>Settings</strong></td>
                   <td><code>/larapilot/settings</code></td>
                   <td>Current <code>settings.*</code> with allowed options and per-option explanations</td>
@@ -6398,6 +6443,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><code>/larapilot/usage</code></td>
                   <td>Lucille charts (tokens/time by category), living Gantt (specs + milestones), download
                     <code>/larapilot/usage/report.md</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Economics</strong></td>
+                  <td><code>/larapilot/economics</code></td>
+                  <td>Account-mode quote, tax, payback, SaaS forecast (when
+                    <code>account</code> is FREELANCE or COMPANY). Download the client quote at
+                    <code>/larapilot/economics/quote.md</code></td>
                 </tr>
                 <tr>
                   <td><strong>API docs</strong></td>
@@ -6431,11 +6483,31 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
           <h4>Settings, Inception, Docs &amp; Skills</h4>
           <p><strong>Settings</strong> shows the live project modes (effort, backlog, git, testing, auto-approve,
             lucille, dashboard auth, forges, notifications). <strong>Inception</strong> is the discovery
-            choices snapshot. <strong>Docs</strong> explains the delivery loop and packaged skills.
+            choices snapshot. <strong>Design</strong> is the mockup gallery (presentation index, every screen,
+            zip package). <strong>Docs</strong> explains the delivery loop and packaged skills.
             <strong>Skills</strong> lists every user-authored skill under <code>.larapilot/skills/</code>
             with its slash command and description. <strong>Usage</strong> is Lucille's
-            surface — category breakdowns, schedule Gantt, and a one-click Markdown resoconto. Same data as
-            <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.</p>
+            surface — category breakdowns, schedule Gantt, and a one-click Markdown report. Same data as
+            <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.
+            <strong>Economics</strong> (when <code>account</code> is FREELANCE or COMPANY) is Aurora's quote —
+            client price, tax, payback, SaaS forecast, and a downloadable commercial proposal.</p>
+
+          <h4>Design</h4>
+          <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
+            <code>/larapilot-design</code>. The first view is a <strong>presentation index</strong> (table of
+            contents, same language as the PRD). The left index loads each screen in a viewer; below, a gallery
+            shows all screens. Top-right <strong>Download zip</strong> packages the presentation
+            <code>index.html</code>, every mockup HTML file, local assets, and referenced design-system files
+            so the pack can be opened offline.</p>
+
+          <h4>Economics</h4>
+          <p>When <code>settings.account</code> is FREELANCE or COMPANY, <code>/larapilot/economics</code>
+            shows the quote (hours × rate, VAT, maintenance), net-to-owner after country tax, and SaaS
+            charts. <strong>Download quote</strong> saves a client-facing Markdown proposal — letterhead,
+            totals, included / not included / client-provided, technical synthesis, payment schedule, mermaid
+            Gantt — in the same language as the PRD. Convert with
+            <code>pandoc quote.md -o quote.pdf</code>. The internal tax report remains at
+            <code>/larapilot/economics/report.md</code>.</p>
 
           <h4>Git</h4>
           <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The
@@ -6452,7 +6524,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               (superseded context and regression guard)</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
               <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
-              <code>/mockups/{code}</code> in dev/staging)
+              <code>/mockups/{code}</code> in dev/staging). All mockups also live in the
+              <strong>Design</strong> gallery at <code>/larapilot/design</code>
             </li>
             <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
               blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
@@ -6564,6 +6637,13 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
                   <td><code>/larapilot/api/metrics</code></td>
                   <td>Delivery snapshot — backlog completion, plan/task progress, and (when the Lucille ledger is on)
                     an effort-timing block: tracked hours, tokens, first/last activity
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/economics</code></td>
+                  <td>Economics snapshot — quote, tax, payback, SaaS forecast
+                    (<code>enabled: false</code> when <code>account</code> is NONE)
                   </td>
                 </tr>
                 <tr>

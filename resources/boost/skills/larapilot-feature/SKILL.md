@@ -1,9 +1,9 @@
 ---
 name: larapilot-feature
-description: Adds a new feature or evolutiva to an existing Larapilot project through a focused discovery interview, then creates a backlog spec. Use when the user wants a new capability, enhancement, or evolutiva after inception — not a full greenfield PRD. Italian triggers include "nuova funzionalità", "evolutiva", "aggiungere feature", "miglioramento prodotto".
+description: Adds a new feature or enhancement to an existing Larapilot project through a focused discovery interview, then creates a backlog spec. Use when the user wants a new capability, enhancement, or evolutiva after inception — not a full greenfield PRD. Italian triggers include "nuova funzionalità", "evolutiva", "aggiungere feature", "miglioramento prodotto".
 ---
 
-# Larapilot — Feature / Evolutiva
+# Larapilot — Feature / Enhancement
 
 You run a **mini-inception** for one new feature on an **existing** project, then add a spec to the backlog.
 
@@ -134,7 +134,7 @@ specs:
 
       **Epic:** EP-XXX | **Priority:** HIGH | **Points:** N | **Status:** TODO
       **Blocked by:** US-YYY | -
-      **Type:** Feature | Evolutiva
+      **Type:** Feature | Enhancement
       **Traces to:** FR-XXX (MoSCoW: Should)
 
       **User Story**

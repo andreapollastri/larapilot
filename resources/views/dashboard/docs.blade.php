@@ -159,7 +159,7 @@
 
             <h3>Side paths</h3>
             <div class="flow-steps">
-                <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new evolutiva on brownfield</span></div>
+                <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
                 <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — batch implement/review</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
@@ -251,7 +251,7 @@
                     <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td><code>_project_docs/</code> handbook</td><td>📝 Albert</td></tr>
                     <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
-                    <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Preventivo cliente, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
+                    <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Client quote, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query, Gantt, Markdown report</td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>

@@ -161,7 +161,6 @@ final class TaxEngine
     /**
      * @param  array<string, mixed>  $regime
      * @param  array<string, mixed>  $country
-     * @param  array<string, mixed>  $options
      * @return array<string, mixed>
      */
     protected static function progressive(
