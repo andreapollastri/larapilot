@@ -17,6 +17,8 @@ class TaskDoneCommand extends LarapilotCommand
 
     protected $description = 'Mark one plan task as completed';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(PlanService $plans, NotifyService $notify): int
     {
         $code = (string) $this->argument('code');

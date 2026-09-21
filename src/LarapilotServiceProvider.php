@@ -22,6 +22,7 @@ use Larapilot\Console\Commands\DecisionCheckCommand;
 use Larapilot\Console\Commands\DecisionLogCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
+use Larapilot\Console\Commands\EconomicsQuoteWriteCommand;
 use Larapilot\Console\Commands\EconomicsSetCommand;
 use Larapilot\Console\Commands\EconomicsShowCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
@@ -106,7 +107,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.1.1';
+    public const VERSION = '3.1.2';
 
     public function register(): void
     {
@@ -198,6 +199,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseImportCommand::class,
                 CustomSkillListCommand::class,
                 CustomSkillAddCommand::class,
+                EconomicsQuoteWriteCommand::class,
                 EconomicsSetCommand::class,
                 EconomicsShowCommand::class,
                 QualityCommand::class,

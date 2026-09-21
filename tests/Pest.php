@@ -139,7 +139,9 @@ function enableComments(): void
  */
 function withGitRemoteSandbox(callable $callback): void
 {
-    $sandbox = dirname(__DIR__).'/storage/framework/testing/git-remote-sandbox-'.bin2hex(random_bytes(8));
+    // Outside the repository: a sandbox that leaks on an aborted run must never
+    // end up as a committed artifact.
+    $sandbox = sys_get_temp_dir().'/larapilot-git-remote-sandbox-'.bin2hex(random_bytes(8));
 
     if (is_dir($sandbox)) {
         shell_exec('rm -rf '.escapeshellarg($sandbox));

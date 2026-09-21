@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Larapilot\Services\PrdService;
 
-it('serves the design gallery with a presentation index', function (): void {
+it('serves the design gallery as one navigable index', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec(['title' => 'Login']);
     addMockup('US-001', [
@@ -17,22 +17,45 @@ it('serves the design gallery with a presentation index', function (): void {
         ->assertOk()
         ->assertSee('>Design</a>', false);
 
-    $this->get('/larapilot/design')
+    $response = $this->get('/larapilot/design')
         ->assertOk()
         ->assertSee('Design', false)
         ->assertSee('Presentation index', false)
+        ->assertSee('Start at the presentation index', false)
+        ->assertSee('Open index in new tab', false)
         ->assertSee('US-001', false)
         ->assertSee('Login', false)
         ->assertSee('Download zip', false)
         ->assertSee('/larapilot/design/package.zip', false)
         ->assertSee('/mockups/US-001', false)
-        ->assertSee('/mockups/US-001/dark.html', false);
+        ->assertSee('/mockups/US-001/dark.html', false)
+        // prev / next walk, contextual flow gallery, collapsed full listing
+        ->assertSee('design-prev', false)
+        ->assertSee('design-next', false)
+        ->assertSee('design-counter', false)
+        ->assertSee('flow-gallery', false)
+        ->assertSee('All 2 screens, flow by flow', false);
+
+    // The ordered walk starts at the index and leads with each flow's entry.
+    $html = $response->getContent();
+    $indexPosition = strpos($html, '"url":"\/larapilot\/design\/presentation"');
+    $entryPosition = strpos($html, '"url":"\/mockups\/US-001"');
+    $darkPosition = strpos($html, '"url":"\/mockups\/US-001\/dark.html"');
+
+    expect($indexPosition)->not->toBeFalse()
+        ->and($entryPosition)->not->toBeFalse()
+        ->and($darkPosition)->not->toBeFalse()
+        ->and($indexPosition)->toBeLessThan($entryPosition)
+        ->and($entryPosition)->toBeLessThan($darkPosition);
 
     $this->get('/larapilot/design/presentation')
         ->assertOk()
         ->assertHeader('Content-Type', 'text/html; charset=UTF-8')
         ->assertSee('Design presentation', false)
         ->assertSee('Contents', false)
+        ->assertSee('Start at the first screen', false)
+        ->assertSee('2 screens · the first one is the entry point', false)
+        ->assertSee('class="screen is-entry"', false)
         ->assertSee('US-001', false)
         ->assertSee('/mockups/US-001', false);
 });
@@ -108,5 +131,6 @@ MD);
         ->assertOk()
         ->assertSee('Presentazione design', false)
         ->assertSee('Sommario', false)
+        ->assertSee('Inizia dalla prima schermata', false)
         ->assertSee('Negozio', false);
 });

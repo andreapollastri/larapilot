@@ -78,6 +78,7 @@ Skills call Artisan commands — never invent persistence logic:
 - `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=…`
 - `php artisan larapilot:economics-set --country=… --regime=… --hourly-rate=…` _(when `account` is FREELANCE or COMPANY)_
 - `php artisan larapilot:economics-show`
+- `php artisan larapilot:economics-quote-write --file=… --lang=…` _(client quote document, PRD language)_
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]`

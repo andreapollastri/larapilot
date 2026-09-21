@@ -24,12 +24,14 @@
         margin: 0;
         color: var(--muted);
         font-size: 0.875rem;
-        max-width: 72ch;
+        max-width: 80ch;
         line-height: 1.5;
     }
+    .design-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn {
         display: inline-flex;
         align-items: center;
+        gap: 6px;
         padding: 8px 14px;
         border-radius: 999px;
         border: 1px solid var(--accent);
@@ -39,9 +41,17 @@
         font-weight: 600;
         text-decoration: none;
         white-space: nowrap;
+        cursor: pointer;
+        font-family: inherit;
     }
     .btn:hover { text-decoration: none; }
-    .btn.is-disabled {
+    .btn.ghost {
+        border-color: var(--border);
+        background: var(--surface);
+        color: var(--text);
+    }
+    .btn.is-disabled,
+    .btn[disabled] {
         opacity: 0.45;
         pointer-events: none;
         border-color: var(--border);
@@ -51,33 +61,43 @@
 
     .design-stage {
         display: grid;
-        grid-template-columns: 280px 1fr;
+        grid-template-columns: 290px 1fr;
         gap: 16px;
-        min-height: 70vh;
-        align-items: stretch;
+        align-items: start;
     }
-    @media (max-width: 960px) {
+    @media (max-width: 1000px) {
         .design-stage { grid-template-columns: 1fr; }
+        .design-toc { position: static !important; max-height: none !important; }
     }
 
+    /* index: one list, ordered, with the entry screen of each flow marked */
     .design-toc {
-        padding: 16px 14px 20px;
+        padding: 14px 12px 18px;
         overflow: auto;
-        max-height: calc(100vh - 180px);
+        max-height: calc(100vh - 140px);
         position: sticky;
         top: 16px;
     }
     .design-toc h3 {
-        margin: 0 0 10px;
+        margin: 0 0 4px;
         font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--muted);
+        padding: 0 8px;
+    }
+    .design-toc .toc-lead {
+        margin: 0 8px 12px;
+        color: var(--muted);
+        font-size: 0.75rem;
+        line-height: 1.45;
     }
     .toc-list { list-style: none; margin: 0; padding: 0; }
-    .toc-index,
-    .toc-screen {
-        display: block;
+    .toc-item,
+    .toc-flow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         width: 100%;
         text-align: left;
         padding: 8px 10px;
@@ -89,29 +109,46 @@
         font-size: 0.85rem;
         cursor: pointer;
     }
-    .toc-index { font-weight: 700; margin-bottom: 8px; }
-    .toc-group { margin: 10px 0 4px; }
-    .toc-group-title {
-        font-size: 0.78rem;
+    .toc-item.is-overview {
         font-weight: 700;
-        padding: 6px 10px 2px;
+        border: 1px solid var(--border);
+        margin-bottom: 10px;
+    }
+    .toc-flow {
+        font-weight: 600;
+        font-size: 0.82rem;
+        margin-top: 6px;
+    }
+    .toc-flow .toc-count {
+        margin-left: auto;
+        font-size: 0.7rem;
+        font-weight: 600;
         color: var(--muted);
     }
-    .toc-screen { padding-left: 16px; color: var(--text); }
-    .toc-index:hover,
-    .toc-screen:hover,
-    .toc-index.is-active,
-    .toc-screen.is-active {
+    .toc-screens { list-style: none; margin: 0 0 4px; padding: 0 0 0 10px; border-left: 1px solid var(--border); }
+    .toc-screen { padding-left: 12px; font-size: 0.82rem; }
+    .toc-item:hover,
+    .toc-flow:hover,
+    .toc-item.is-active,
+    .toc-flow.is-active {
         background: var(--accent-soft);
         color: var(--accent);
     }
-
-    .design-frame-wrap {
-        display: flex;
-        flex-direction: column;
-        min-height: 70vh;
-        overflow: hidden;
+    .toc-badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid var(--status-done);
+        color: var(--status-done);
+        white-space: nowrap;
     }
+
+    .design-viewer { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+    .design-frame-wrap { display: flex; flex-direction: column; overflow: hidden; }
     .design-frame-bar {
         display: flex;
         justify-content: space-between;
@@ -120,34 +157,39 @@
         padding: 10px 14px;
         border-bottom: 1px solid var(--border);
         font-size: 0.82rem;
+        flex-wrap: wrap;
     }
-    .design-frame-bar span { color: var(--muted); }
-    .design-frame-bar a { font-weight: 600; }
+    .design-crumb { display: flex; flex-direction: column; min-width: 0; }
+    .design-crumb .flow { color: var(--muted); font-size: 0.72rem; }
+    .design-crumb .screen { font-weight: 600; }
+    .design-nav { display: flex; align-items: center; gap: 8px; }
+    .design-nav .counter { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+    .design-nav .step {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        border-radius: 8px;
+        width: 30px;
+        height: 28px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .design-nav .step:disabled { opacity: 0.4; cursor: default; }
     .design-frame {
-        flex: 1;
         width: 100%;
-        min-height: 64vh;
+        height: min(76vh, 900px);
         border: 0;
         background: #fff;
     }
 
-    .gallery h3 {
-        margin: 0 0 6px;
-        font-size: 1rem;
-    }
-    .gallery .hint {
-        margin: 0 0 14px;
-        color: var(--muted);
-        font-size: 0.82rem;
-    }
-    .gallery-spec { margin-bottom: 28px; }
-    .gallery-spec h4 {
-        margin: 0 0 10px;
-        font-size: 0.95rem;
-    }
+    .flow-gallery { padding: 16px 18px 20px; }
+    .flow-gallery header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .flow-gallery h3 { margin: 0; font-size: 0.95rem; }
+    .flow-gallery .hint { margin: 4px 0 14px; color: var(--muted); font-size: 0.8rem; }
     .gallery-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 12px;
     }
     .gallery-card {
@@ -156,23 +198,46 @@
         text-decoration: none;
         color: inherit;
         display: block;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
     }
     .gallery-card:hover { text-decoration: none; border-color: var(--accent); }
-    .gallery-card iframe {
+    .gallery-card.is-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+    .gallery-thumb {
+        height: 170px;
+        overflow: hidden;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+    }
+    .gallery-thumb iframe {
         display: block;
-        width: 100%;
-        height: 220px;
+        width: 200%;
+        height: 340px;
         border: 0;
         pointer-events: none;
-        background: #fff;
-        transform: scale(1);
+        transform: scale(0.5);
+        transform-origin: 0 0;
     }
     .gallery-card-label {
-        padding: 8px 12px 12px;
+        padding: 9px 12px 12px;
         font-size: 0.82rem;
         font-weight: 600;
-        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+
+    details.all-screens summary {
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 14px 18px;
+    }
+    details.all-screens .all-body { padding: 0 18px 18px; }
+    .all-flow { margin-top: 18px; }
+    .all-flow:first-child { margin-top: 6px; }
+    .all-flow h4 { margin: 0 0 8px; font-size: 0.86rem; }
 
     .empty-card { padding: 40px 28px; text-align: center; }
     .empty-card h2 { margin: 0 0 8px; }
@@ -188,6 +253,45 @@
         $presentationUrl = $presentation_url ?? '';
         $packageUrl = $package_url ?? '';
         $projectTitle = $project_title ?? 'Larapilot';
+
+        // One ordered walk through the whole package: the index first, then
+        // every flow, entry screen leading. Prev / next follow this order.
+        $stops = [];
+
+        if ($presentationUrl !== '') {
+            $stops[] = [
+                'url' => $presentationUrl,
+                'flow' => 'Overview',
+                'label' => 'Presentation index',
+                'entry' => true,
+            ];
+        }
+
+        foreach ($items as $item) {
+            $flow = ($item['code'] ?? '').' — '.($item['title'] ?? '');
+            $entry = $item['entry'] ?? null;
+            $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+
+            usort($screens, static function (array $a, array $b) use ($entry): int {
+                $aEntry = ($a['file'] ?? null) === $entry ? 0 : 1;
+                $bEntry = ($b['file'] ?? null) === $entry ? 0 : 1;
+
+                return $aEntry <=> $bEntry;
+            });
+
+            foreach ($screens as $screen) {
+                if (empty($screen['url'])) {
+                    continue;
+                }
+
+                $stops[] = [
+                    'url' => $screen['url'],
+                    'flow' => $flow,
+                    'label' => $screen['label'] ?? $screen['file'],
+                    'entry' => ($screen['file'] ?? null) === $entry,
+                ];
+            }
+        }
     @endphp
 
     <div class="design-page">
@@ -195,74 +299,126 @@
             <div>
                 <h2>Design</h2>
                 <p class="sub">
-                    Presentation index and every mockup for <strong>{{ $projectTitle }}</strong>
+                    Start at the presentation index and walk the mockups for <strong>{{ $projectTitle }}</strong> in order
                     @if ($available)
-                        · {{ $catalog['spec_count'] }} flow{{ $catalog['spec_count'] === 1 ? '' : 's' }}
-                        · {{ $catalog['screen_count'] }} screen{{ $catalog['screen_count'] === 1 ? '' : 's' }}
+                        — {{ $catalog['spec_count'] }} flow{{ $catalog['spec_count'] === 1 ? '' : 's' }},
+                        {{ $catalog['screen_count'] }} screen{{ $catalog['screen_count'] === 1 ? '' : 's' }}
                     @endif
-                    . Artifacts live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
+                    . Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
                 </p>
             </div>
-            @if ($packageUrl && $available)
-                <a class="btn" href="{{ $packageUrl }}">Download zip</a>
-            @else
-                <span class="btn is-disabled">Download zip</span>
-            @endif
+            <div class="design-actions">
+                @if ($presentationUrl && $available)
+                    <a class="btn ghost" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open index in new tab</a>
+                @endif
+                @if ($packageUrl && $available)
+                    <a class="btn" href="{{ $packageUrl }}">Download zip</a>
+                @else
+                    <span class="btn is-disabled">Download zip</span>
+                @endif
+            </div>
         </div>
 
         @if (! $available)
             <section class="card empty-card">
                 <h2>No designs yet</h2>
-                <p>Run <code>/larapilot-design</code> to produce HTML mockups. They will appear here as a presentation index plus a viewer for every screen.</p>
+                <p>Run <code>/larapilot-design</code> to produce HTML mockups. They appear here as one navigable index: a presentation cover, then every screen of every flow in order.</p>
             </section>
         @else
             <div class="design-stage">
                 <aside class="card design-toc" aria-label="Design index">
                     <h3>Index</h3>
-                    <button type="button" class="toc-index is-active" data-src="{{ $presentationUrl }}" data-label="Presentation index">Presentation index</button>
+                    <p class="toc-lead">Click a flow to open its first screen, or step through everything with the arrows in the viewer.</p>
+
+                    @if ($presentationUrl)
+                        <button type="button" class="toc-item is-overview is-active" data-src="{{ $presentationUrl }}">
+                            Presentation index
+                            <span class="toc-badge">start</span>
+                        </button>
+                    @endif
+
                     <ul class="toc-list">
                         @foreach ($items as $item)
-                            <li class="toc-group">
-                                <div class="toc-group-title">{{ $item['code'] }} — {{ $item['title'] }}</div>
-                                @foreach ($item['screens'] ?? [] as $screen)
-                                    <button type="button" class="toc-screen" data-src="{{ $screen['url'] ?? '' }}" data-label="{{ $item['code'] }} · {{ $screen['label'] ?? $screen['file'] }}">
-                                        {{ $screen['label'] ?? $screen['file'] }}
-                                    </button>
-                                @endforeach
+                            @php
+                                $entryUrl = $item['entry_url'] ?? null;
+                                $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+                            @endphp
+                            <li>
+                                <button type="button" class="toc-flow" @if ($entryUrl) data-src="{{ $entryUrl }}" @endif>
+                                    <span>{{ $item['code'] }} — {{ $item['title'] }}</span>
+                                    <span class="toc-count">{{ count($screens) }}</span>
+                                </button>
+                                <ul class="toc-screens">
+                                    @foreach ($screens as $screen)
+                                        <li>
+                                            <button type="button" class="toc-item toc-screen" data-src="{{ $screen['url'] ?? '' }}">
+                                                {{ $screen['label'] ?? $screen['file'] }}
+                                                @if (($screen['file'] ?? null) === ($item['entry'] ?? null))
+                                                    <span class="toc-badge">entry</span>
+                                                @endif
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </li>
                         @endforeach
                     </ul>
                 </aside>
-                <section class="card design-frame-wrap">
-                    <div class="design-frame-bar">
-                        <span id="design-caption">Presentation index</span>
-                        <a id="design-open" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open in new tab</a>
-                    </div>
-                    <iframe id="design-frame" class="design-frame" src="{{ $presentationUrl }}" title="Design viewer"></iframe>
-                </section>
+
+                <div class="design-viewer">
+                    <section class="card design-frame-wrap">
+                        <div class="design-frame-bar">
+                            <div class="design-crumb">
+                                <span class="flow" id="design-flow">Overview</span>
+                                <span class="screen" id="design-caption">Presentation index</span>
+                            </div>
+                            <div class="design-nav">
+                                <span class="counter" id="design-counter"></span>
+                                <button type="button" class="step" id="design-prev" title="Previous screen" aria-label="Previous screen">←</button>
+                                <button type="button" class="step" id="design-next" title="Next screen" aria-label="Next screen">→</button>
+                                <a class="btn ghost" id="design-open" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
+                            </div>
+                        </div>
+                        <iframe id="design-frame" class="design-frame" src="{{ $presentationUrl }}" title="Design viewer"></iframe>
+                    </section>
+
+                    <section class="card flow-gallery" id="flow-gallery" hidden>
+                        <header>
+                            <h3 id="flow-gallery-title"></h3>
+                        </header>
+                        <p class="hint">Screens in this flow. Click one to open it in the viewer above.</p>
+                        <div class="gallery-grid" id="flow-gallery-grid"></div>
+                    </section>
+                </div>
             </div>
 
-            <section class="card" style="padding: 18px 20px;">
-                <div class="gallery">
-                    <h3>All screens</h3>
-                    <p class="hint">Every mockup in the package. Click a card to load it in the viewer above.</p>
+            <details class="card all-screens">
+                <summary>All {{ $catalog['screen_count'] }} screens, flow by flow</summary>
+                <div class="all-body">
                     @foreach ($items as $item)
-                        <div class="gallery-spec">
+                        <div class="all-flow">
                             <h4>{{ $item['code'] }} — {{ $item['title'] }}</h4>
                             <div class="gallery-grid">
                                 @foreach ($item['screens'] ?? [] as $screen)
-                                    <a class="card gallery-card" href="{{ $screen['url'] ?? '#' }}" data-src="{{ $screen['url'] ?? '' }}" data-label="{{ $item['code'] }} · {{ $screen['label'] ?? $screen['file'] }}">
+                                    <a class="gallery-card" href="{{ $screen['url'] ?? '#' }}" data-src="{{ $screen['url'] ?? '' }}">
                                         @if (! empty($screen['url']))
-                                            <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $screen['label'] ?? $screen['file'] }}" tabindex="-1"></iframe>
+                                            <div class="gallery-thumb">
+                                                <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $screen['label'] ?? $screen['file'] }}" tabindex="-1"></iframe>
+                                            </div>
                                         @endif
-                                        <div class="gallery-card-label">{{ $screen['label'] ?? $screen['file'] }}</div>
+                                        <div class="gallery-card-label">
+                                            {{ $screen['label'] ?? $screen['file'] }}
+                                            @if (($screen['file'] ?? null) === ($item['entry'] ?? null))
+                                                <span class="toc-badge">entry</span>
+                                            @endif
+                                        </div>
                                     </a>
                                 @endforeach
                             </div>
                         </div>
                     @endforeach
                 </div>
-            </section>
+            </details>
         @endif
     </div>
 @endsection
@@ -271,33 +427,136 @@
 <script>
     (function () {
         const frame = document.getElementById('design-frame');
-        const caption = document.getElementById('design-caption');
-        const openLink = document.getElementById('design-open');
         if (!frame) return;
 
-        const activate = (src, label, button) => {
-            if (!src) return;
-            frame.src = src;
-            if (caption) caption.textContent = label || src;
-            if (openLink) openLink.href = src;
-            document.querySelectorAll('.toc-index, .toc-screen').forEach((el) => el.classList.remove('is-active'));
-            if (button) button.classList.add('is-active');
-            frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const stops = @json(array_values($stops));
+        const caption = document.getElementById('design-caption');
+        const flowLabel = document.getElementById('design-flow');
+        const counter = document.getElementById('design-counter');
+        const openLink = document.getElementById('design-open');
+        const prev = document.getElementById('design-prev');
+        const next = document.getElementById('design-next');
+        const gallery = document.getElementById('flow-gallery');
+        const galleryTitle = document.getElementById('flow-gallery-title');
+        const galleryGrid = document.getElementById('flow-gallery-grid');
+        let current = 0;
+
+        const indexOf = (src) => stops.findIndex((stop) => stop.url === src);
+
+        const renderGallery = (stop) => {
+            if (!gallery || !galleryGrid) return;
+
+            const siblings = stops.filter((item) => item.flow === stop.flow && item.flow !== 'Overview');
+
+            if (stop.flow === 'Overview' || siblings.length < 2) {
+                gallery.hidden = true;
+                galleryGrid.innerHTML = '';
+                return;
+            }
+
+            if (galleryTitle) galleryTitle.textContent = stop.flow;
+            galleryGrid.innerHTML = '';
+
+            siblings.forEach((item) => {
+                const card = document.createElement('a');
+                card.className = 'gallery-card' + (item.url === stop.url ? ' is-active' : '');
+                card.href = item.url;
+                card.dataset.src = item.url;
+
+                const thumb = document.createElement('div');
+                thumb.className = 'gallery-thumb';
+                const preview = document.createElement('iframe');
+                preview.src = item.url;
+                preview.loading = 'lazy';
+                preview.tabIndex = -1;
+                preview.title = item.label;
+                thumb.appendChild(preview);
+
+                const label = document.createElement('div');
+                label.className = 'gallery-card-label';
+                label.textContent = item.label;
+
+                if (item.entry) {
+                    const badge = document.createElement('span');
+                    badge.className = 'toc-badge';
+                    badge.textContent = 'entry';
+                    label.appendChild(badge);
+                }
+
+                card.appendChild(thumb);
+                card.appendChild(label);
+                card.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    go(indexOf(item.url));
+                });
+
+                galleryGrid.appendChild(card);
+            });
+
+            gallery.hidden = false;
         };
 
-        document.querySelectorAll('.toc-index, .toc-screen').forEach((button) => {
-            button.addEventListener('click', () => activate(button.getAttribute('data-src'), button.getAttribute('data-label'), button));
-        });
+        const paint = (position) => {
+            const stop = stops[position];
+            if (!stop) return;
 
-        document.querySelectorAll('.gallery-card').forEach((card) => {
-            card.addEventListener('click', (event) => {
-                const src = card.getAttribute('data-src');
+            current = position;
+            if (caption) caption.textContent = stop.label;
+            if (flowLabel) flowLabel.textContent = stop.flow;
+            if (counter) counter.textContent = (position + 1) + ' / ' + stops.length;
+            if (openLink) openLink.href = stop.url;
+            if (prev) prev.disabled = position === 0;
+            if (next) next.disabled = position === stops.length - 1;
+
+            document.querySelectorAll('.toc-item, .toc-flow').forEach((el) => {
+                el.classList.toggle('is-active', el.dataset.src === stop.url);
+            });
+
+            renderGallery(stop);
+        };
+
+        const go = (position) => {
+            if (position < 0 || position >= stops.length) return;
+            frame.src = stops[position].url;
+            paint(position);
+            frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+
+        document.querySelectorAll('.toc-item, .toc-flow, .all-screens .gallery-card').forEach((el) => {
+            el.addEventListener('click', (event) => {
+                const src = el.dataset.src;
                 if (!src) return;
                 event.preventDefault();
-                const match = document.querySelector('.toc-screen[data-src="' + CSS.escape(src) + '"]');
-                activate(src, card.getAttribute('data-label'), match);
+                const position = indexOf(src);
+                if (position >= 0) go(position);
             });
         });
+
+        if (prev) prev.addEventListener('click', () => go(current - 1));
+        if (next) next.addEventListener('click', () => go(current + 1));
+
+        document.addEventListener('keydown', (event) => {
+            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+            if (event.key === 'ArrowLeft') go(current - 1);
+            if (event.key === 'ArrowRight') go(current + 1);
+        });
+
+        // Links inside the index (and inside the mockups) navigate the iframe
+        // itself — keep the breadcrumb, index, and arrows in step with it.
+        frame.addEventListener('load', () => {
+            let path = null;
+
+            try {
+                path = frame.contentWindow.location.pathname + frame.contentWindow.location.search;
+            } catch (error) {
+                return;
+            }
+
+            const position = stops.findIndex((stop) => stop.url === path || stop.url === decodeURIComponent(path));
+            if (position >= 0 && position !== current) paint(position);
+        });
+
+        paint(0);
     })();
 </script>
 @endpush

@@ -15,6 +15,8 @@ class PrdWriteCommand extends LarapilotCommand
 
     protected $description = 'Persist PRD markdown to the configured path';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(PrdService $prd): int
     {
         $content = $this->option('content');

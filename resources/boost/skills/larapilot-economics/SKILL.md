@@ -29,9 +29,10 @@ Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `
 1. `php artisan larapilot:config-show` — `data.settings.account` must be `FREELANCE` or `COMPANY`
 2. `php artisan larapilot:economics-show` — current snapshot
 3. Persist answers with `php artisan larapilot:economics-set` (only answered flags)
-4. Re-run `economics-show` and confirm
+4. Write the client document with `php artisan larapilot:economics-quote-write` (Aurora, step 4 below)
+5. Re-run `economics-show` and confirm
 
-Never edit `.larapilot/economics.yaml` by hand. The computed quote is auto-saved to `.larapilot/economics.snapshot.yaml` on each show/set/dashboard refresh. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
+Never edit `.larapilot/economics.yaml` by hand. The computed quote is auto-saved to `.larapilot/economics.snapshot.yaml` on each show/set/dashboard refresh, and every command that changes specs, plans, the PRD, or inception refreshes it too — the cost board follows the backlog with no manual trigger. Never invent tax percentages — the FY-2026 catalogue in the engine is the source of truth. These numbers are **planning estimates, not tax advice**.
 
 If `data.settings.account` is `NONE`, **stop** and send the user to `/larapilot-settings` (Account = FREELANCE or COMPANY) or:
 
@@ -106,15 +107,36 @@ Pass **only** answered keys. On success, parse the JSON envelope (`kind: "econom
 Re-run `economics-show`. Give Aurora's summary in this order (short):
 
 1. **Quote** — client price ex VAT, VAT, client total
-2. **Net to owner** — after tax/social/compliance + effective % (Italy: show INPS, legal reserve, extraction mix when present)
-3. **Hours** — source + billable hours + calendar months
+2. **Net to owner** — client price minus operating costs minus `tax.total_withheld` (tax + contributions + accountant + retained reserve), with the effective tax % (Italy: show INPS, legal reserve, extraction mix when present). If `tax.loss` is true, say plainly that the price does not cover its own costs
+3. **Hours** — `effort.source_label` + billable hours + calendar months. Read `effort.warnings` aloud when present (unsized specs, scope beyond one person-year, hours-per-point calibrated off the plans) and say which specs drive the hours (`effort.breakdown`)
 4. **If SaaS** — break-even customers, customers to recover in 12 months, ARR at planning, LTV:CAC, months to recover
-5. Point at `/larapilot/economics` for charts and the 36-month forecast. Client-facing quote: dashboard **Download quote** or `php artisan larapilot:economics-show --format=quote`.
+5. Point at `/larapilot/economics` for the per-spec effort table, charts, and the 36-month forecast
 6. One-line disclaimer: planning estimate, FY-2026 statutory rates, not tax advice
+
+### 4. Write the client quote (Aurora) — in the user's language
+
+The downloadable quote is a **document Aurora writes**, exactly like the PRD: same language the PRD is written in (any language — German, Portuguese, Dutch, Polish …), never a translation of a fixed template. Larapilot only ships an en/it/es/fr fallback for projects where nobody wrote one yet.
+
+Write it after every material change to the numbers or the scope:
+
+```bash
+php artisan larapilot:economics-quote-write --file=<path-to-quote.md> --lang=<PRD language tag>
+```
+
+Rules for the document:
+
+- **Language:** the PRD's. Match its register and its vocabulary. If there is no PRD yet, ask the user which language before writing.
+- **Commercial, not technical.** No story points, task ids, spec codes, architecture diagrams, framework internals, or tax breakdown. One plain sentence about the platform is enough.
+- **Numbers come only from `economics-show`** — `quote.gross`, `quote.vat`, `quote.client_total`, `quote.maintenance_year`, `effort.billable_hours` / `calendar_months`. Never invent or round to something nicer.
+- **Sections** (name them in the user's language): offer summary · objectives · what the client gets (business-readable capability list from the backlog titles) · investment table (build, VAT, total, annual maintenance) · delivery timeline with phases · payment milestones · maintenance and support · what is included · what is not included · what the client provides · next steps · acceptance signatures.
+- Express effort as **working days and elapsed months**, not raw hours.
+- Keep the whole thing something a non-technical buyer can sign: no engineering jargon, no internal rates, no margin or tax figures.
+
+Then confirm the path in one line and point at the download (`/larapilot/economics/quote.md`).
 
 ## Rules
 
-- Do not change PRD, backlog, or code — economics profile only
+- Do not change PRD, backlog, or code — economics profile and the quote document only
 - Do not re-ask skipped questions; keep previous values
 - If the user wants a single field changed, AskQuestion only that field
 - Never invent persistence — CLI only

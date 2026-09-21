@@ -17,6 +17,8 @@ class TrackerPullCommand extends LarapilotCommand
 
     protected $description = 'Read the project tracker and report drift against the backlog; --apply writes statuses back';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(TrackerService $tracker, ConfigService $config): int
     {
         if (! $config->hasProjectConfig()) {

@@ -16,11 +16,15 @@ These are **planning estimates** from statutory FY-2026 rates. They are not pers
 
 Set only via `php artisan larapilot:settings-set --account=…`. Never hand-edit `config.yaml` from a skill.
 
+Every catalogue figure — brackets, caps, hourly rates, and `compliance_annual` — is expressed in the **country's own currency**, never converted to EUR.
+
 ## Profile file
 
 `.larapilot/economics.yaml` (path `paths.economics`) holds the **account profile**. Persist only through `larapilot:economics-set`. Keys:
 
-The **computed snapshot** (quote, tax, effort, sales, scenarios, SaaS forecast) is written automatically to `.larapilot/economics.snapshot.yaml` (`paths.economics_snapshot`) whenever `economics-show`, the dashboard, the API, or `economics-set` runs — so the last quote stays on disk and refreshes when specs or plans change.
+The **computed snapshot** (quote, tax, effort, sales, scenarios, SaaS forecast) is written automatically to `.larapilot/economics.snapshot.yaml` (`paths.economics_snapshot`) whenever `economics-show`, the dashboard, the API, or `economics-set` runs.
+
+It also refreshes **by itself**: every command that changes a quote input — `spec-add`, `spec-plan`, `task-done`, `spec-start` / `spec-review` / `spec-approve` / `spec-request-changes`, `spec-delete`, `prd-write`, `choices-set`, `settings-set`, `usage-log`, `tracker-pull` — recomputes the snapshot when the inputs fingerprint (backlog, plans, PRD, inception, usage ledger, profile, settings) changed. Nobody has to trigger the cost board by hand, and `/larapilot/economics` always computes live on load.
 
 Profile keys:
 
@@ -40,18 +44,40 @@ Profile keys:
 | `owner_working` | Company only: habitual/prevalent working shareholder → Gestione Commercianti (default `true`) |
 | `extraction` | Company only: `auto` (best mix), `dividends`, or `mixed` |
 | `product_model` | `auto` `fixed` `saas` `ecommerce` `package` |
-| `saas.*` | List price, churn, growth, infra, CAC, target customers |
+| `saas.*` | List price, churn, growth, infra, CAC, target customers (`price_annual` 0 = not decided, derived from the monthly price) |
 
-`economics-show` returns the computed snapshot (quote, tax, payback, SaaS). Dashboard: `/larapilot/economics`. JSON: `GET /larapilot/api/economics`. Client-facing Markdown proposal (PRD language, totals, maintenance, Gantt): `php artisan larapilot:economics-show --format=quote` or `/larapilot/economics/quote.md`. Internal tax report: `--format=md`.
+`economics-set` refuses a non-numeric or out-of-range flag instead of casting it to 0: `--hourly-rate` 1–5000, `--margin` 0–300, `--churn` / `--maintenance` 0–100, `--payment-fee` 0–50, `--growth` 0–200, `--hours-per-day` 1–24, `--billable-days` 1–366, `--currency` a 3-letter ISO code. Changing `--country` moves the regime to that country's default unless `--regime` is passed in the same call.
+
+`economics-show` returns the computed snapshot (quote, tax, payback, SaaS). Dashboard: `/larapilot/economics`. JSON: `GET /larapilot/api/economics`. Internal tax report: `--format=md`.
+
+## The client quote document
+
+The downloadable quote is a **document written by `/larapilot-economics`**, like the PRD — so it speaks whatever language the PRD speaks, not only the languages Larapilot ships strings for.
+
+| | |
+| --- | --- |
+| File | `.larapilot/docs/quote.md` (`paths.economics_quote`) |
+| Written by | `php artisan larapilot:economics-quote-write --file=… --lang=…` |
+| Download | `/larapilot/economics/quote.md`, dashboard **Download quote**, or `economics-show --format=quote` |
+| Fallback | A built-in template in `en` / `it` / `es` / `fr` renders the download while no document exists |
+
+Larapilot stamps front matter on the stored document: `lang`, `generated_at`, and the `inputs` fingerprint it was written against. When the backlog, plans, or PRD move on, the dashboard marks the document **outdated** and asks for a rewrite — the numbers in a client document are never silently patched.
+
+Content rules (enforced socially by the skill, not by the engine): commercial register, no story points or task ids, no tax or margin figures, effort in working days and elapsed months, and every amount taken from the snapshot. The engine only checks that the document has a level-1 heading and enough substance to be a client document.
+
+Language detection exists only for prose **Larapilot itself writes**: the built-in fallback template, the design presentation index, and the download filename. It reads **function-word frequency** from the PRD, so an Italian PRD full of English technical vocabulary is still Italian, and falls back to English when there is no PRD to read. A document written by an agent carries its own `lang` and never goes through detection.
 
 ## How the quote is built
 
-1. **Hours** — per spec: sum plan-task `estimate_hours` when the plan exists; otherwise story points × hours/point for that spec only (`ECO` 3, `STANDARD` 4, `MAX` 5.5). If nothing is sized yet, a delivery-target heuristic applies.
-2. **Multipliers** — delivery/kind/type multipliers apply **only to the heuristic fallback**. Spec-backed hours (`plan_hours`, `story_points`, `mixed`) get the 15% PM/QA buffer only — no double inflation.
-3. **Labor** = hours × hourly rate. **Overhead** = monthly overhead × calendar months (+ allocated compliance).
-4. **Margin** on that direct cost. **Gross** is the client price ex VAT. VAT applies unless the regime is exempt (Italian forfettario, US federal, French micro).
-5. **Tax** — `TaxEngine` + FY-2026 catalogue. Italy forfettario: INPS Gestione Separata deducted from substitute-tax base. Italy SRL: IRES + IRAP (production value) + Gestione Commercianti for working shareholders + legal reserve + optimised director pay / dividends. Net to owner is after all taxes, social, retained reserve, and operating costs (compliance is shown separately).
-6. **Payback** — utilization vs annual capacity; projects/year at capacity; for SaaS, customers needed to recover the build in 12/18/24 months.
+1. **Hours** — per spec, in this order: sum plan-task `estimate_hours` when the plan exists; otherwise story points × hours-per-point for that spec only; otherwise (no plan, no points) the spec counts as 3 points so it is never free. `effort.breakdown` lists every spec with the source of its hours. If the backlog is empty, a scope heuristic applies.
+2. **Hours per point** — `ECO` 3, `STANDARD` 4, `MAX` 5.5, but once at least two specs with points carry plans, the rate those plans imply replaces the constant (clamped to 0.5–12h). `effort.hours_per_point_source` says which was used.
+3. **Multipliers** — delivery/kind/type multipliers apply **only to the heuristic fallback** (100h floor × kind × delivery target × product type), each exactly once. Spec-backed hours (`plan_hours`, `story_points`, `mixed`) get the 15% PM/QA buffer only — no double inflation.
+4. **Warnings** — `effort.warnings` flags unsized specs, an unsized backlog, a calibration that disagrees with the effort setting, and any scope beyond one person-year of the configured capacity.
+5. **Labor** = hours × hourly rate. **Overhead** = monthly overhead × calendar months (+ allocated compliance).
+6. **Margin** on that direct cost. **Gross** is the client price ex VAT. VAT applies unless the regime is exempt (Italian forfettario, US federal, French micro).
+7. **Tax** — `TaxEngine` + FY-2026 catalogue. Italy forfettario: INPS Gestione Separata deducted from substitute-tax base. Italy SRL: IRES + IRAP (production value) + Gestione Commercianti for working shareholders + legal reserve + optimised director pay / dividends. Contributions are charged only when the owner actually works in the company (`owner_working`).
+8. **What you keep** — `total_tax` is tax + contributions; `total_withheld` adds compliance (accountant, filings) and any retained legal reserve. The identity always holds: `net_to_owner = revenue − operating costs − total_withheld`. A price that cannot carry its own costs returns a negative net with `loss: true` instead of a reassuring zero. `effective_rate_pct` is tax over revenue; `withheld_rate_pct` is everything over revenue.
+9. **Payback** — utilization vs annual capacity (above 100% when the project does not fit in a year), fractional projects/year at capacity, and for SaaS the customers needed to recover the build in 12/18/24 months.
 
 ## SaaS
 
@@ -70,8 +96,9 @@ When `product_model` is `saas`, or inception / PRD mention SaaS, subscription, M
 2. `larapilot:economics-show` — current snapshot (empty profile still computes on catalogue defaults).
 3. AskQuestion: country → regime (from `data.regime.options`) → hourly rate / margin / overhead → product model → SaaS prices when SaaS.
 4. Persist with `larapilot:economics-set` (only answered keys).
-5. Re-run `economics-show` and summarise: client price, net to owner, effective tax %, and (if SaaS) break-even customers + ARR.
-6. Point at `/larapilot/economics` for charts. Never invent tax rates — the catalogue is the source of truth.
+5. Re-run `economics-show` and summarise: client price, net to owner, effective tax %, effort source + `effort.warnings`, and (if SaaS) break-even customers + ARR.
+6. Write the client document in the PRD language with `larapilot:economics-quote-write` — commercial register, numbers from the snapshot only.
+7. Point at `/larapilot/economics` for the per-spec effort table and charts. Never invent tax rates — the catalogue is the source of truth.
 
 ## CLI
 
@@ -82,4 +109,7 @@ php artisan larapilot:economics-set --product-model=saas --price-monthly=29 --ch
 php artisan larapilot:economics-show
 php artisan larapilot:economics-show --format=md
 php artisan larapilot:economics-show --format=quote
+php artisan larapilot:economics-quote-write --file=quote.md --lang=it
 ```
+
+Changing the country resets the regime to that country's default unless `--regime` is passed in the same call.

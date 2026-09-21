@@ -48,15 +48,19 @@ class MockupPackageService
 
         $cards = '';
         $index = 1;
+        $startHref = null;
+        $startLabel = null;
 
         foreach ($items as $item) {
             if (! is_array($item)) {
                 continue;
             }
 
-            $code = htmlspecialchars((string) ($item['code'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $itemTitle = htmlspecialchars((string) ($item['title'] ?? $code), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $code = (string) ($item['code'] ?? '');
+            $safeCode = $this->escape($code);
+            $itemTitle = $this->escape((string) ($item['title'] ?? $code));
             $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+            $entry = $item['entry'] ?? null;
             $links = '';
 
             foreach ($screens as $screen) {
@@ -65,19 +69,26 @@ class MockupPackageService
                 }
 
                 $file = (string) ($screen['file'] ?? '');
-                $label = htmlspecialchars((string) ($screen['label'] ?? $file), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                $href = $forZip
-                    ? htmlspecialchars($code.'/'.$file, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
-                    : htmlspecialchars((string) ($screen['url'] ?? '#'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                $links .= '<a class="screen" href="'.$href.'">'.$label.'</a>';
+                $label = $this->escape((string) ($screen['label'] ?? $file));
+                $href = $this->screenHref($code, $screen, $forZip);
+                $isEntry = $file !== '' && $file === $entry;
+
+                $links .= '<a class="screen'.($isEntry ? ' is-entry' : '').'" href="'.$href.'">'.$label.'</a>';
+
+                if ($startHref === null && $isEntry) {
+                    $startHref = $href;
+                    $startLabel = $safeCode.' · '.$label;
+                }
             }
 
             $number = str_pad((string) $index, 2, '0', STR_PAD_LEFT);
+            $count = $this->escape(sprintf($copy['screens'], count($screens)));
             $cards .= <<<HTML
             <article class="card">
                 <div class="num">{$number}</div>
-                <div>
-                    <h2>{$code} — {$itemTitle}</h2>
+                <div class="body">
+                    <h2>{$safeCode} — {$itemTitle}</h2>
+                    <p class="count">{$count}</p>
                     <div class="screens">{$links}</div>
                 </div>
             </article>
@@ -86,18 +97,22 @@ HTML;
         }
 
         if ($cards === '') {
-            $empty = htmlspecialchars($copy['empty'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $cards = '<p class="empty">'.$empty.'</p>';
+            $cards = '<p class="empty">'.$this->escape($copy['empty']).'</p>';
         }
 
-        $safeTitle = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $kicker = htmlspecialchars($copy['kicker'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $contents = htmlspecialchars($copy['contents'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $lead = htmlspecialchars($copy['lead'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        $meta = htmlspecialchars(
-            sprintf($copy['meta'], (int) ($catalog['spec_count'] ?? 0), (int) ($catalog['screen_count'] ?? 0)),
-            ENT_QUOTES | ENT_SUBSTITUTE,
-            'UTF-8'
+        $start = '';
+
+        if ($startHref !== null) {
+            $start = '<p class="start"><a class="cta" href="'.$startHref.'">'.$this->escape($copy['start']).'</a>'
+                .'<span class="start-hint">'.$this->escape($copy['start_hint']).' '.(string) $startLabel.'</span></p>';
+        }
+
+        $safeTitle = $this->escape($title);
+        $kicker = $this->escape($copy['kicker']);
+        $contents = $this->escape($copy['contents']);
+        $lead = $this->escape($copy['lead']);
+        $meta = $this->escape(
+            sprintf($copy['meta'], (int) ($catalog['spec_count'] ?? 0), (int) ($catalog['screen_count'] ?? 0))
         );
 
         return <<<HTML
@@ -155,7 +170,26 @@ HTML;
             line-height: 1.15;
         }
         .lead, .meta { color: var(--muted); margin: 0 0 8px; }
-        .meta { font-size: 0.9rem; margin-bottom: 36px; }
+        .meta { font-size: 0.9rem; margin-bottom: 24px; }
+        .start {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin: 0 0 32px;
+        }
+        .cta {
+            display: inline-flex;
+            padding: 10px 20px;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+        .cta:hover { filter: brightness(1.08); }
+        .start-hint { color: var(--muted); font-size: 0.84rem; }
         h2.toc {
             margin: 0 0 16px;
             font-size: 0.78rem;
@@ -182,12 +216,18 @@ HTML;
             letter-spacing: -0.04em;
         }
         .card h2 {
-            margin: 0 0 8px;
+            margin: 0 0 2px;
             font-size: 1.05rem;
+        }
+        .card .count {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 0.78rem;
         }
         .screens { display: flex; flex-wrap: wrap; gap: 8px; }
         .screen {
             display: inline-flex;
+            align-items: center;
             padding: 4px 10px;
             border-radius: 999px;
             border: 1px solid var(--line);
@@ -197,6 +237,16 @@ HTML;
             font-weight: 600;
         }
         .screen:hover { border-color: var(--accent); color: var(--accent); }
+        .screen.is-entry {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+        }
+        .screen.is-entry::before {
+            content: '▶';
+            font-size: 0.6rem;
+            margin-right: 6px;
+        }
         .empty { color: var(--muted); }
     </style>
 </head>
@@ -206,6 +256,7 @@ HTML;
         <h1>{$safeTitle}</h1>
         <p class="lead">{$lead}</p>
         <p class="meta">{$meta}</p>
+        {$start}
         <h2 class="toc">{$contents}</h2>
         {$cards}
     </main>
@@ -400,6 +451,26 @@ HTML;
         return $prefix.implode('/', $to);
     }
 
+    protected function escape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    /**
+     * Dashboard links hit the live mockup route; the zip links sit next to the
+     * screen files themselves.
+     *
+     * @param  array<string, mixed>  $screen
+     */
+    protected function screenHref(string $code, array $screen, bool $forZip): string
+    {
+        if ($forZip) {
+            return $this->escape($code.'/'.(string) ($screen['file'] ?? ''));
+        }
+
+        return $this->escape((string) ($screen['url'] ?? '#'));
+    }
+
     protected function projectTitle(?string $prd): string
     {
         if (is_string($prd) && preg_match('/^#\s+(.+)$/m', $prd, $matches) === 1) {
@@ -425,7 +496,7 @@ HTML;
     }
 
     /**
-     * @return array{kicker: string, contents: string, lead: string, meta: string, empty: string}
+     * @return array{kicker: string, contents: string, lead: string, meta: string, empty: string, start: string, start_hint: string, screens: string}
      */
     protected function copy(string $lang): array
     {
@@ -433,30 +504,42 @@ HTML;
             'it' => [
                 'kicker' => 'Presentazione design',
                 'contents' => 'Sommario',
-                'lead' => 'Indice di tutte le schermate mockup del prodotto. Apri una voce per visualizzare il design.',
+                'lead' => 'Punto di partenza per navigare tutte le schermate del prodotto, flusso per flusso.',
                 'meta' => '%d flussi · %d schermate',
                 'empty' => 'Nessun mockup ancora. Esegui /larapilot-design per generarli.',
+                'start' => 'Inizia dalla prima schermata',
+                'start_hint' => 'Parti da:',
+                'screens' => '%d schermate · la prima è il punto di ingresso',
             ],
             'es' => [
                 'kicker' => 'Presentación de diseño',
                 'contents' => 'Índice',
-                'lead' => 'Índice de todas las pantallas mockup del producto. Abre una entrada para ver el diseño.',
+                'lead' => 'Punto de partida para recorrer todas las pantallas del producto, flujo por flujo.',
                 'meta' => '%d flujos · %d pantallas',
                 'empty' => 'Todavía no hay mockups. Ejecuta /larapilot-design para generarlos.',
+                'start' => 'Empieza por la primera pantalla',
+                'start_hint' => 'Empieza en:',
+                'screens' => '%d pantallas · la primera es la de entrada',
             ],
             'fr' => [
                 'kicker' => 'Présentation design',
                 'contents' => 'Sommaire',
-                'lead' => 'Sommaire de tous les écrans mockup du produit. Ouvrez une entrée pour afficher le design.',
+                'lead' => 'Point de départ pour parcourir tous les écrans du produit, parcours par parcours.',
                 'meta' => '%d parcours · %d écrans',
                 'empty' => 'Aucun mockup pour le moment. Lancez /larapilot-design pour les générer.',
+                'start' => 'Commencer par le premier écran',
+                'start_hint' => 'Départ :',
+                'screens' => '%d écrans · le premier est l\'écran d\'entrée',
             ],
             default => [
                 'kicker' => 'Design presentation',
                 'contents' => 'Contents',
-                'lead' => 'Index of every mockup screen in this product. Open an entry to view the design.',
+                'lead' => 'The starting point for walking every screen of this product, flow by flow.',
                 'meta' => '%d flows · %d screens',
                 'empty' => 'No mockups yet. Run /larapilot-design to generate them.',
+                'start' => 'Start at the first screen',
+                'start_hint' => 'Starting at:',
+                'screens' => '%d screens · the first one is the entry point',
             ],
         };
     }

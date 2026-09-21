@@ -23,6 +23,8 @@ class UsageLogCommand extends LarapilotCommand
 
     protected $description = 'Append a Lucille usage ledger entry (tokens + time)';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(ConfigService $config, UsageService $usage): int
     {
         if (! $config->lucilleEnabled()) {

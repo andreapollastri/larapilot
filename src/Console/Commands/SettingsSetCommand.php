@@ -36,6 +36,8 @@ class SettingsSetCommand extends LarapilotCommand
 
     protected $description = 'Persist Larapilot project settings into .larapilot/config.yaml';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(ConfigService $config): int
     {
         $partial = [];

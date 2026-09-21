@@ -2,6 +2,40 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.1.2] - 2026-09-21
+
+### Added
+
+- **Client quote is a written document, in the user's language** — `/larapilot-economics` now writes the commercial proposal itself (like the PRD), in whatever language the PRD is written in, through `php artisan larapilot:economics-quote-write --file=… --lang=…`. It lands in `.larapilot/docs/quote.md` (`paths.economics_quote`) with `lang`, `generated_at`, and an input fingerprint in the front matter, and it is what `/larapilot/economics/quote.md`, the dashboard **Download quote** button, and `economics-show --format=quote` serve. No more four-language ceiling: German, Portuguese, Dutch, Polish, anything.
+- **Per-spec effort breakdown** — every snapshot carries `effort.breakdown` (one row per user story: status, points, planned tasks, where its hours come from), `effort.warnings`, `effort.source_label`, `planned_specs`, `unsized_specs`, `delivered_hours`, `remaining_hours`, `person_years`, and `capacity_hours_year`. The dashboard renders the whole table, so a quote can be traced back to the story that produced it.
+- **Live cost board** — `spec-add`, `spec-plan`, `task-done`, `spec-start` / `spec-review` / `spec-approve` / `spec-request-changes`, `spec-delete`, `prd-write`, `choices-set`, `settings-set`, `usage-log`, and `tracker-pull` recompute `.larapilot/economics.snapshot.yaml` when a quote input changed (fingerprint over backlog, plans, PRD, inception, usage, profile, settings). Nothing has to be triggered by hand. New API on the service: `inputsFingerprint()`, `isStale()`, `refreshIfStale()`.
+- **Design page is one navigable index** — `/larapilot/design` opens on the presentation index and walks every flow in order: sidebar index grouped by flow with the entry screen marked, prev/next arrows (and ← → keys) over the whole package with a position counter, a breadcrumb, a contextual gallery of the current flow only, and the full screen list collapsed behind a disclosure. The standalone presentation index (dashboard iframe and zip) gained a **Start at the first screen** call to action, per-flow screen counts, and entry-point markers.
+
+### Changed
+
+- **Effort engine follows the specs** — hours are built per spec (plan task hours → story points → 3 points assumed for an unsized spec) and hours-per-point is **calibrated on the specs that already have plans** instead of the flat `ECO 3 / STANDARD 4 / MAX 5.5` constant when there is enough signal. Scope multipliers stay confined to the empty-backlog heuristic, and the backlog can no longer contain a spec that contributes nothing.
+- **Economics dashboard restructured** — six numbered sections (scope & effort → what the client pays → what you keep → payback & capacity → recurring revenue → inputs & files) instead of a flat wall of cards, with a plain-language explanation under **every** figure and table row, and a glossary that spells out MRR, ARR, churn, contribution margin, LTV:CAC, and break-even customers.
+- **Built-in quote template is commercial, not technical** — the fallback document drops the story-point table, the inception-choice dump, the plan task titles, and the architecture excerpt; it now leads with the offer summary, project objectives, a business-readable capability list, the investment table, timeline, payment milestones, maintenance, scope in/out, and signatures. Effort reads as working days and elapsed months. Spanish and French are full catalogues instead of English with translated headings.
+
+### Fixed
+
+- **The accountant was billed to nobody** — `compliance_annual` was computed, displayed, kept out of the client price (3.1.1), and then never subtracted from anything. Net to owner now nets it out, and the engine returns `total_withheld` (tax + contributions + compliance + retained legal reserve) so the on-screen arithmetic closes: `net = client price − overhead − total withheld`. `effective_rate_pct` stays tax-only; `withheld_rate_pct` is the whole bite.
+- **Losses were rounded up to zero** — `net_to_owner` was clamped at 0, so a price that could not carry its own costs looked break-even. It now reports the negative figure with `loss: true`, and the dashboard says so.
+- **Catalogue figures written on a EUR scale for non-EUR countries** — tax brackets and hourly rates were correctly localised, but `compliance_annual` was not: a Hungarian Kft budgeted 3,000 HUF (~€8) a year of accountancy, a Japanese KK ¥5,000 (~€31), an Icelandic ehf 4,000 ISK (~€27). Every non-EUR country (NO, SE, DK, IS, PL, CZ, HU, RO, BG, JP, MX) now carries local-currency figures, and a regression test holds the whole catalogue to its own currency scale.
+- **Missing social contributions** — Polish ryczałt charged 12% income tax and no ZUS at all (a ~20,000 PLN a year bill); Icelandic self-employment charged no tryggingagjald. Flat and progressive regimes now support a fixed annual contribution, prorated over part-year projects.
+- **Contributions for a shareholder who does not work in the company** — `owner_working=false` only suppressed them under Italian Gestione Commercianti; any other corporate regime charged owner-level social anyway.
+- **`economics-set` accepted nonsense** — `--hourly-rate=sessanta` or `-40` was cast to `0` and written into the profile, producing a €0 quote with no error; SaaS prices were stored as raw strings. Numeric flags are now range-checked, `--currency` must be a 3-letter ISO code, and subscription values are coerced to numbers.
+- **Capacity maths flattered oversized projects** — utilization was clamped to 100% and `projects_per_year` floored to at least 1, so a two-person-year project claimed to fit in a year. Both now report the truth (`over_capacity`, fractional projects per year).
+- **Licence price was circular** — `units_to_recover_build` was always ~80 because the suggested price was the build divided by 80. A configured annual price (`--price-annual`) is now used when set, and the snapshot names the source (`license_price_source`).
+- **Test sandboxes were committed** — `withGitRemoteSandbox()` created its scratch repository inside `storage/` in the package, and three of them had been committed. Sandboxes now live in the system temp directory, and `/storage/` is ignored.
+- **Delivery target was counted twice in the heuristic estimate** — an unsized enterprise application was sized at ~1,777h (`base × target boost × delivery × kind × type × buffer`). The heuristic is now a 100h floor with kind, delivery target, and product type applied exactly once (644h for the same project).
+- **Quote language ignored the PRD** — detection scored a language by *presence* of a handful of words, so an Italian PRD carrying English technical vocabulary ("requirements", "acceptance criteria") tied with English and lost to it on array order. Detection now scores function-word frequency over the whole document (code fences stripped) and keeps headings as a strong signal. It is confined to prose Larapilot itself emits — the fallback template, the design presentation index, the download filename — since an agent-written document carries its own language tag.
+- **Changing the Economics country no longer fails** — `economics-set --country=DE` left the previous country's regime in place and aborted with `E_INVALID_INPUT`; the regime now falls back to the new country's default unless `--regime` is passed in the same call.
+
+### Docs
+
+- Site / package version **v3.1.2**; `larapilot-economics` skill gained the quote-authoring step (language, commercial register, sections, numbers from the snapshot only); `runtime-economics.md` documents the quote document, the self-refreshing snapshot, calibrated hours-per-point, and the effort warnings.
+
 ## [3.1.1] - 2026-09-21
 
 ### Added

@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.1</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.2</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1720,7 +1720,7 @@
           <p>Static HTML mockup from the PRD-chosen packaged design system (<code>design-systems/filament/</code>,
             <code>starter-kit/</code>, <code>bootstrap-5/</code>, <code>tailwind/</code>, or <code>adminlte/</code>).
             Preview at <code>/mockups/US-001</code>, on the spec detail page, and in the dashboard
-            <strong>Design</strong> gallery (<code>/larapilot/design</code>) — presentation index of every screen,
+            <strong>Design</strong> index (<code>/larapilot/design</code>) — navigable walk through every screen,
             plus a zip of HTML + assets.
           </p>
 
@@ -3177,7 +3177,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v3.1.1</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v3.1.2</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3189,6 +3189,34 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>3.1.2</strong> <span class="chip">2026-09-21</span></td>
+                  <td>
+                    <strong>Added:</strong> the <strong>client quote is a document Aurora writes</strong>
+                    in the PRD's own language — any language, not a fixed template set —
+                    persisted with <code>larapilot:economics-quote-write</code> to
+                    <code>.larapilot/docs/quote.md</code> and served by
+                    <code>/larapilot/economics/quote.md</code>. Per-spec
+                    <code>effort.breakdown</code> + warnings; the Economics snapshot
+                    refreshes itself whenever specs, plans, the PRD, or inception change.
+                    <code>/larapilot/design</code> is one navigable index (ordered walk,
+                    prev/next, per-flow gallery).<br>
+                    <strong>Changed:</strong> effort follows the backlog with hours-per-point
+                    calibrated on existing plans; Economics dashboard restructured into six
+                    explained sections (MRR / ARR / churn / LTV:CAC spelled out); built-in quote
+                    template is commercial, not technical.<br>
+                    <strong>Fixed:</strong> the delivery target was applied twice to heuristic
+                    estimates (1,777h → 644h for an unsized enterprise app); PRD language
+                    detection now reads function-word frequency, so an Italian PRD no longer
+                    produces an English quote; compliance costs are finally charged to the owner
+                    (<code>total_withheld</code>) and losses are no longer clamped to zero;
+                    <code>compliance_annual</code> is localised for every non-EUR country;
+                    Polish ZUS and Icelandic tryggingagjald were missing; contributions are
+                    dropped for a non-working shareholder; <code>economics-set</code> refuses
+                    non-numeric or out-of-range flags instead of storing zeros; capacity and
+                    licence-price figures no longer flatter oversized projects.
+                  </td>
+                </tr>
                 <tr>
                   <td><strong>3.1.1</strong> <span class="chip">2026-09-21</span></td>
                   <td>
@@ -3677,12 +3705,18 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <p><strong>Aurora</strong> calibrates country + tax regime (forfettario, SRL, Ltd, …) and produces a
                   quote, net-to-owner after FY-2026 rates, payback, and — for SaaS — ARR, break-even customers,
                   hosting, and a 36-month forecast. Requires <code>settings.account</code> <code>FREELANCE</code> or
-                  <code>COMPANY</code>. Dashboard: <code>/larapilot/economics</code> — download the
-                  <strong>client quote</strong> (Markdown, PRD language, totals + maintenance + Gantt) at
-                  <code>/larapilot/economics/quote.md</code>. Internal tax report:
+                  <code>COMPANY</code>. Hours come from the backlog spec by spec (planned task hours, then story
+                  points, with hours-per-point calibrated on the plans you already wrote), and the snapshot
+                  refreshes itself whenever specs, plans, the PRD, or inception change.</p>
+                <p>Aurora also <strong>writes the client quote</strong> — a commercial document in the PRD's own
+                  language, any language — to <code>.larapilot/docs/quote.md</code>, served at
+                  <code>/larapilot/economics/quote.md</code> and by the dashboard's
+                  <strong>Download quote</strong> button. A built-in <code>en</code>/<code>it</code>/<code>es</code>/<code>fr</code>
+                  template covers projects where nobody wrote one yet. Internal tax report:
                   <code>/larapilot/economics/report.md</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:economics-set</code> ·
                   <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>) ·
+                  <code>larapilot:economics-quote-write</code> (<code>--file=</code>, <code>--lang=</code>) ·
                   <code>larapilot:settings-set --account=…</code>.
                 </p>
               </div>
@@ -6271,9 +6305,10 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                 <tr>
                   <td>Economics (Aurora)</td>
                   <td><code>larapilot:economics-set</code> ·
-                    <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>)</td>
-                  <td><code>/larapilot-economics</code> — client quote Markdown via
-                    <code>--format=quote</code> or <code>/larapilot/economics/quote.md</code></td>
+                    <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>) ·
+                    <code>larapilot:economics-quote-write</code></td>
+                  <td><code>/larapilot-economics</code> — client quote document in the PRD language at
+                    <code>/larapilot/economics/quote.md</code></td>
                 </tr>
                 <tr>
                   <td>Developer portal</td>
@@ -6418,7 +6453,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Design</strong></td>
                   <td><code>/larapilot/design</code></td>
-                  <td>Presentation index of every mockup, viewer for all screens, download
+                  <td>One navigable index: presentation cover, ordered walk through every flow with
+                    prev/next, per-flow gallery, download
                     <code>/larapilot/design/package.zip</code> (HTML + assets)</td>
                 </tr>
                 <tr>
@@ -6490,23 +6526,34 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             surface — category breakdowns, schedule Gantt, and a one-click Markdown report. Same data as
             <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.
             <strong>Economics</strong> (when <code>account</code> is FREELANCE or COMPANY) is Aurora's quote —
-            client price, tax, payback, SaaS forecast, and a downloadable commercial proposal.</p>
+            scope and effort from the backlog, client price, take-home after tax, payback, recurring-revenue
+            maths, and a downloadable commercial proposal.</p>
 
           <h4>Design</h4>
           <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
-            <code>/larapilot-design</code>. The first view is a <strong>presentation index</strong> (table of
-            contents, same language as the PRD). The left index loads each screen in a viewer; below, a gallery
-            shows all screens. Top-right <strong>Download zip</strong> packages the presentation
+            <code>/larapilot-design</code>. It is <strong>one navigable index</strong>, not a pile of files: the
+            viewer opens on the presentation cover (same language as the PRD, with a <em>start at the first
+            screen</em> call to action), the left index groups screens by flow and marks each flow's entry
+            point, and the arrows — or the ← → keys — walk the whole package in order with a position counter.
+            Under the viewer, a gallery shows only the flow you are in; the full screen list stays collapsed
+            until you ask for it. Top-right <strong>Download zip</strong> packages the presentation
             <code>index.html</code>, every mockup HTML file, local assets, and referenced design-system files
             so the pack can be opened offline.</p>
 
           <h4>Economics</h4>
-          <p>When <code>settings.account</code> is FREELANCE or COMPANY, <code>/larapilot/economics</code>
-            shows the quote (hours × rate, VAT, maintenance), net-to-owner after country tax, and SaaS
-            charts. <strong>Download quote</strong> saves a client-facing Markdown proposal — letterhead,
-            totals, included / not included / client-provided, technical synthesis, payment schedule, mermaid
-            Gantt — in the same language as the PRD. Convert with
-            <code>pandoc quote.md -o quote.pdf</code>. The internal tax report remains at
+          <p>When <code>settings.account</code> is FREELANCE or COMPANY, <code>/larapilot/economics</code> reads
+            top to bottom in six numbered sections: <strong>scope &amp; effort</strong> (per-spec breakdown of
+            where every hour comes from, plus warnings), <strong>what the client pays</strong>,
+            <strong>what you keep</strong> after tax, <strong>payback &amp; capacity</strong>,
+            <strong>recurring revenue</strong> (MRR, ARR, churn, LTV:CAC and break-even customers, each
+            explained in plain words), and <strong>inputs &amp; files</strong>. Every figure carries a
+            one-line explanation underneath, and the page recomputes on load — the stored snapshot also
+            refreshes itself whenever specs, plans, the PRD, or inception change.</p>
+          <p><strong>Download quote</strong> saves the client-facing commercial document
+            <code>/larapilot-economics</code> wrote in the PRD's language (<code>.larapilot/docs/quote.md</code>),
+            or the built-in <code>en</code>/<code>it</code>/<code>es</code>/<code>fr</code> template when no
+            document exists yet. Convert with <code>pandoc quote.md -o quote.pdf</code>. The internal tax
+            report — taxable base, contributions, extraction, scenarios — remains at
             <code>/larapilot/economics/report.md</code>.</p>
 
           <h4>Git</h4>

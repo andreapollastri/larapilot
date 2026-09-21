@@ -20,6 +20,8 @@ class SpecApproveCommand extends LarapilotCommand
 
     protected $description = 'Mark a reviewed spec as DONE after human approval';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(
         SpecService $specs,
         ConfigService $config,

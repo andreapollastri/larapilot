@@ -214,6 +214,7 @@ class OpenApiService
                         'tags' => ['Economics'],
                         'summary' => 'Economics snapshot',
                         'description' => 'Account-mode quote (freelance or company), country tax, payback, and — for SaaS products — ARR, break-even customers, hosting, and a 36-month forecast. '
+                            .'Hours are derived from the backlog spec by spec and recomputed on every call. '
                             .'Empty/`enabled: false` when `settings.account` is NONE.',
                         'operationId' => 'getEconomics',
                         'responses' => [
@@ -229,6 +230,9 @@ class OpenApiService
                                                 'quote' => ['type' => 'object', 'nullable' => true],
                                                 'tax' => ['type' => 'object', 'nullable' => true],
                                                 'saas' => ['type' => 'object', 'nullable' => true],
+                                                'effort' => ['type' => 'object', 'description' => 'Hours per spec (`breakdown`), source, calibrated hours per point, and warnings'],
+                                                'quote_document' => ['type' => 'object', 'nullable' => true, 'description' => 'Client quote document: source (document|template), language, and whether it predates the current backlog'],
+                                                'inputs' => ['type' => 'string', 'description' => 'Fingerprint of backlog, plans, PRD, inception, usage, profile, and settings'],
                                             ],
                                         ],
                                     ],

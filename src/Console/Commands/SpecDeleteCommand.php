@@ -14,6 +14,8 @@ class SpecDeleteCommand extends LarapilotCommand
 
     protected $description = 'Remove a spec from the backlog together with its spec and plan files';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(SpecService $specs, InternalFeedbackService $feedback): int
     {
         $code = (string) $this->argument('code');

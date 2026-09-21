@@ -20,6 +20,8 @@ class SpecReviewCommand extends LarapilotCommand
 
     protected $description = 'Move a spec to REVIEW after implementation';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(SpecService $specs, ConfigService $config, PlanService $plans): int
     {
         $code = (string) $this->argument('code');

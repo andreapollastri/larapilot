@@ -78,6 +78,10 @@ final class TaxEngine
             return null;
         }
 
+        // Leaving the regime means the exit regime's own compliance bill, not
+        // the one the caller allocated for the regime being left.
+        unset($options['compliance']);
+
         $result = self::compute($revenue, $costs, $fallback, $country, $account, $options);
         $result['forced_exit'] = true;
         $result['forced_exit_from'] = $regime['id'] ?? null;
@@ -121,7 +125,7 @@ final class TaxEngine
         $incomeTax += $taxable * (float) ($regime['additional_rate'] ?? 0);
         $localTax = $profit * (float) ($regime['local_tax_rate'] ?? 0);
         $totalTax = $incomeTax + $social + $localTax;
-        $net = $revenue - $costs - $totalTax;
+        $net = $revenue - $costs - $totalTax - $compliance;
 
         $assumptions = array_values(array_filter([
             $regime['notes'] ?? null,
@@ -182,7 +186,7 @@ final class TaxEngine
         $incomeTax += $taxable * (float) ($regime['additional_rate'] ?? 0);
         $localTax = $profit * (float) ($regime['local_tax_rate'] ?? 0);
         $totalTax = $incomeTax + $social + $localTax;
-        $net = $revenue - $costs - $totalTax;
+        $net = $revenue - $costs - $totalTax - $compliance;
 
         $assumptions = array_values(array_filter([
             $regime['notes'] ?? null,
@@ -401,12 +405,9 @@ final class TaxEngine
         $divTax = $divGross * (float) ($regime['dividend_rate'] ?? 0);
         $divNet = $divGross - $divTax;
 
-        $ownerSocial = 0.0;
-        if ($ownerWorking && ($regime['social_kind'] ?? '') === 'commercianti') {
-            $ownerSocial = self::socialOn($ebit, $regime, $yearFraction);
-        } elseif (($regime['social_kind'] ?? '') !== 'commercianti') {
-            $ownerSocial = self::socialOn($ebit, $regime, $yearFraction);
-        }
+        // A shareholder who does not work in the company owes no owner-level
+        // contributions on its profit, in any regime.
+        $ownerSocial = $ownerWorking ? self::socialOn($ebit, $regime, $yearFraction) : 0.0;
 
         $personalBase = max(0.0, $wage - $employeeGs - $ownerSocial);
         $brackets = is_array($regime['personal_brackets'] ?? null) ? $regime['personal_brackets'] : [];
@@ -416,7 +417,7 @@ final class TaxEngine
 
         $social = $ownerSocial + $companyGs + $employeeGs;
         $totalTax = $ires + $irap + $social + $personalTax + $divTax;
-        $net = $revenue - $costs - $totalTax - $reserve;
+        $net = $revenue - $costs - $totalTax - $compliance - $reserve;
 
         $method = $wage > 0.0 ? 'mixed' : 'dividends';
         $assumptions = self::corporateAssumptions($regime, $ownerWorking, $method, $reserve, $gsRate);
@@ -611,7 +612,8 @@ final class TaxEngine
         $totalTax = (float) ($data['total_tax'] ?? 0);
         $money = [
             'revenue', 'costs', 'profit', 'taxable', 'income_tax', 'social', 'local_tax',
-            'personal_tax', 'dividend_tax', 'legal_reserve', 'compliance', 'total_tax', 'net_to_owner',
+            'personal_tax', 'dividend_tax', 'legal_reserve', 'compliance', 'total_tax',
+            'total_withheld', 'net_to_owner',
         ];
 
         foreach ($money as $key) {
@@ -620,8 +622,17 @@ final class TaxEngine
             }
         }
 
+        $withheld = $totalTax + (float) ($data['compliance'] ?? 0) + (float) ($data['legal_reserve'] ?? 0);
+        $net = (float) ($data['net_to_owner'] ?? 0);
+
+        // Tax rate is tax over revenue; compliance and the legal reserve are
+        // costs, not tax, so they stay out of the rate and inside `total_withheld`
+        // — which is what revenue minus costs minus net actually equals.
         $data['effective_rate_pct'] = $revenue > 0 ? round($totalTax / $revenue * 100, 1) : 0.0;
-        $data['net_to_owner'] = round(max(0.0, (float) ($data['net_to_owner'] ?? 0)), 2);
+        $data['total_withheld'] = round($withheld, 2);
+        $data['withheld_rate_pct'] = $revenue > 0 ? round($withheld / $revenue * 100, 1) : 0.0;
+        $data['net_to_owner'] = round($net, 2);
+        $data['loss'] = $net < 0.0;
         $data['forced_exit'] = (bool) ($data['forced_exit'] ?? false);
         $data['over_cap'] = (bool) ($data['over_cap'] ?? false);
         $data['assumptions'] = array_values(array_filter(is_array($data['assumptions'] ?? null) ? $data['assumptions'] : []));

@@ -39,6 +39,31 @@ class EconomicsSetCommand extends LarapilotCommand
 
     protected $description = 'Persist the Economics account profile into .larapilot/economics.yaml';
 
+    /**
+     * Accepted range per numeric flag. Anything else is refused instead of
+     * being cast to 0 and quietly written into the profile.
+     *
+     * @var array<string, array{0: float, 1: float}>
+     */
+    protected const NUMERIC_RANGES = [
+        'hourly-rate' => [1.0, 5000.0],
+        'billable-days' => [1.0, 366.0],
+        'hours-per-day' => [1.0, 24.0],
+        'margin' => [0.0, 300.0],
+        'maintenance' => [0.0, 100.0],
+        'overhead-monthly' => [0.0, 1000000.0],
+        'price-monthly' => [0.0, 100000.0],
+        'price-annual' => [0.0, 1000000.0],
+        'churn' => [0.0, 100.0],
+        'target-customers' => [0.0, 10000000.0],
+        'growth' => [0.0, 200.0],
+        'infra-monthly' => [0.0, 1000000.0],
+        'support-per-customer' => [0.0, 100000.0],
+        'payment-fee' => [0.0, 50.0],
+        'cac' => [0.0, 1000000.0],
+        'starting-customers' => [0.0, 10000000.0],
+    ];
+
     public function handle(ConfigService $config, EconomicsService $economics): int
     {
         if (! $config->accountEnabled()) {
@@ -47,6 +72,17 @@ class EconomicsSetCommand extends LarapilotCommand
                 'Account mode is NONE (settings.account = NONE).',
                 $this->exitForCode('E_PRECONDITION'),
                 'Enable with: php artisan larapilot:settings-set --account=FREELANCE  or  --account=COMPANY'
+            );
+        }
+
+        $invalid = $this->numericViolations();
+
+        if ($invalid !== []) {
+            return $this->failure(
+                'E_INVALID_INPUT',
+                implode(' ', $invalid),
+                $this->exitForCode('E_INVALID_INPUT'),
+                'Pass plain numbers, e.g. --hourly-rate=55 --margin=30 --churn=4.'
             );
         }
 
@@ -83,7 +119,23 @@ class EconomicsSetCommand extends LarapilotCommand
                 continue;
             }
 
-            $partial[$key] = $option === 'currency' ? strtoupper(trim((string) $value)) : $value;
+            if ($option === 'currency') {
+                $currency = strtoupper(trim((string) $value));
+
+                if (preg_match('/^[A-Z]{3}$/', $currency) !== 1) {
+                    return $this->failure(
+                        'E_INVALID_INPUT',
+                        'Invalid --currency: expected a 3-letter ISO code (EUR, GBP, USD, CHF, …).',
+                        $this->exitForCode('E_INVALID_INPUT')
+                    );
+                }
+
+                $partial[$key] = $currency;
+
+                continue;
+            }
+
+            $partial[$key] = (float) $value;
         }
 
         $vat = $this->normalizeYesNoOption('vat-registered');
@@ -128,7 +180,9 @@ class EconomicsSetCommand extends LarapilotCommand
                 continue;
             }
 
-            $saas[$key] = $value;
+            $saas[$key] = in_array($key, ['target_customers', 'starting_customers'], true)
+                ? (int) $value
+                : (float) $value;
         }
 
         if ($saas !== []) {
@@ -160,6 +214,38 @@ class EconomicsSetCommand extends LarapilotCommand
             'quote' => $snapshot['quote'] ?? null,
             'hint' => 'Open /larapilot/economics or run larapilot:economics-show',
         ]);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function numericViolations(): array
+    {
+        $violations = [];
+
+        foreach (self::NUMERIC_RANGES as $option => [$min, $max]) {
+            $raw = $this->option($option);
+
+            if ($raw === null || $raw === false || $raw === '') {
+                continue;
+            }
+
+            if (! is_numeric($raw)) {
+                $violations[] = '--'.$option.' must be a number ("'.(string) $raw.'" given).';
+
+                continue;
+            }
+
+            $value = (float) $raw;
+
+            if ($value < $min || $value > $max) {
+                $violations[] = '--'.$option.' must be between '
+                    .rtrim(rtrim(number_format($min, 2, '.', ''), '0'), '.').' and '
+                    .rtrim(rtrim(number_format($max, 2, '.', ''), '0'), '.').' ('.(string) $raw.' given).';
+            }
+        }
+
+        return $violations;
     }
 
     protected function normalizeYesNoOption(string $name): ?bool

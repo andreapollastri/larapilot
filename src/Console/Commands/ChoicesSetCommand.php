@@ -32,6 +32,8 @@ class ChoicesSetCommand extends LarapilotCommand
 
     protected $description = 'Persist inception/settings choices for the Larapilot dashboard';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(ChoicesService $choices): int
     {
         if ((bool) $this->option('from-prd')) {

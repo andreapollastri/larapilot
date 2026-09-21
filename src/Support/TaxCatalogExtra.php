@@ -51,10 +51,10 @@ final class TaxCatalogExtra
                         ['up_to' => 670000, 'rate' => 0.24],
                         ['up_to' => 967050, 'rate' => 0.245],
                         ['up_to' => null, 'rate' => 0.257],
-                    ], 0.108, 2500),
+                    ], 0.108, 12000),
                 ],
                 'COMPANY' => [
-                    'as' => self::corporate('AS (22% CIT + dividend)', 0.22, 0.0, 0.3784, 6000),
+                    'as' => self::corporate('AS (22% CIT + dividend)', 0.22, 0.0, 0.3784, 45000),
                 ],
             ]),
             'SE' => self::country('Sweden', 'SEK', 25.0, 750.0, 950.0, [
@@ -62,10 +62,10 @@ final class TaxCatalogExtra
                     'enskild' => self::progressive('Enskild firma', [
                         ['up_to' => 573000, 'rate' => 0.0],
                         ['up_to' => null, 'rate' => 0.20],
-                    ], 0.2897, 2200),
+                    ], 0.2897, 12000),
                 ],
                 'COMPANY' => [
-                    'ab' => self::corporate('AB (20.6% CIT + dividend)', 0.206, 0.0, 0.30, 5500),
+                    'ab' => self::corporate('AB (20.6% CIT + dividend)', 0.206, 0.0, 0.30, 45000),
                 ],
             ]),
             'DK' => self::country('Denmark', 'DKK', 25.0, 650.0, 850.0, [
@@ -73,10 +73,10 @@ final class TaxCatalogExtra
                     'enkeltmand' => self::progressive('Enkeltmandsvirksomhed', [
                         ['up_to' => 49700, 'rate' => 0.37],
                         ['up_to' => null, 'rate' => 0.52],
-                    ], 0.0, 2800),
+                    ], 0.0, 10000),
                 ],
                 'COMPANY' => [
-                    'aps' => self::corporate('ApS (22% CIT + dividend)', 0.22, 0.0, 0.42, 5000),
+                    'aps' => self::corporate('ApS (22% CIT + dividend)', 0.22, 0.0, 0.42, 35000),
                 ],
             ]),
             'FI' => self::country('Finland', 'EUR', 25.5, 60.0, 80.0, [
@@ -96,10 +96,10 @@ final class TaxCatalogExtra
                     'self_employed' => self::progressive('Self-employed', [
                         ['up_to' => 4460000, 'rate' => 0.3145],
                         ['up_to' => null, 'rate' => 0.4625],
-                    ], 0.0, 3000),
+                    ], 0.0635, 350000, 'Income tax bands plus 6.35% tryggingagjald on the calculated reference wage.'),
                 ],
                 'COMPANY' => [
-                    'ehf' => self::corporate('ehf (20% CIT + dividend)', 0.20, 0.0, 0.22, 4000),
+                    'ehf' => self::corporate('ehf (20% CIT + dividend)', 0.20, 0.0, 0.22, 700000),
                 ],
             ]),
             'LU' => self::country('Luxembourg', 'EUR', 17.0, 85.0, 110.0, [
@@ -147,26 +147,36 @@ final class TaxCatalogExtra
             ]),
             'PL' => self::country('Poland', 'PLN', 23.0, 180.0, 240.0, [
                 'FREELANCE' => [
-                    'ryczalt' => self::flat('Ryczałt (flat on revenue)', 0.12, 0.0, 0.85, 900, false, 0),
+                    'ryczalt' => self::flat(
+                        'Ryczałt (flat on revenue)',
+                        0.12,
+                        0.0,
+                        0.85,
+                        4500,
+                        false,
+                        0,
+                        'Ryczałt 12% for IT services on 85% of revenue, plus the flat ZUS bill (social + health, ~20,000 PLN a year) which is deducted from the taxed base.',
+                        20000.0,
+                    ),
                     'scale' => self::progressive('Skala podatkowa + ZUS', [
                         ['up_to' => 120000, 'rate' => 0.12],
                         ['up_to' => null, 'rate' => 0.32],
-                    ], 0.1952, 1600),
+                    ], 0.1952, 6000),
                 ],
                 'COMPANY' => [
-                    'spzoo' => self::corporate('sp. z o.o. (19% CIT + dividend)', 0.19, 0.0, 0.19, 3500),
+                    'spzoo' => self::corporate('sp. z o.o. (19% CIT + dividend)', 0.19, 0.0, 0.19, 14000),
                 ],
             ]),
             'CZ' => self::country('Czech Republic', 'CZK', 21.0, 1200.0, 1600.0, [
                 'FREELANCE' => [
-                    'osvc' => self::flat('OSVČ paušální / flat', 0.15, 0.292, 0.60, 700, false, 0),
+                    'osvc' => self::flat('OSVČ paušální / flat', 0.15, 0.292, 0.60, 15000, false, 0),
                     'progressive' => self::progressive('Progressive + social', [
                         ['up_to' => 1677000, 'rate' => 0.15],
                         ['up_to' => null, 'rate' => 0.23],
-                    ], 0.292, 1400),
+                    ], 0.292, 25000),
                 ],
                 'COMPANY' => [
-                    'sro' => self::corporate('s.r.o. (21% CIT + dividend)', 0.21, 0.0, 0.15, 3200),
+                    'sro' => self::corporate('s.r.o. (21% CIT + dividend)', 0.21, 0.0, 0.15, 70000),
                 ],
             ]),
             'SK' => self::country('Slovakia', 'EUR', 23.0, 40.0, 55.0, [
@@ -182,26 +192,26 @@ final class TaxCatalogExtra
             ]),
             'HU' => self::country('Hungary', 'HUF', 27.0, 18000.0, 24000.0, [
                 'FREELANCE' => [
-                    'ev' => self::flat('EV / KATA-style flat', 0.09, 0.185, 0.60, 600, false, 0),
+                    'ev' => self::flat('EV / KATA-style flat', 0.09, 0.185, 0.60, 400000, false, 0),
                 ],
                 'COMPANY' => [
-                    'kft' => self::corporate('Kft (9% CIT + dividend)', 0.09, 0.0, 0.15, 3000),
+                    'kft' => self::corporate('Kft (9% CIT + dividend)', 0.09, 0.0, 0.15, 1400000),
                 ],
             ]),
             'RO' => self::country('Romania', 'RON', 19.0, 180.0, 240.0, [
                 'FREELANCE' => [
-                    'pfa' => self::flat('PFA / micro-style', 0.10, 0.25, 0.70, 800, false, 0),
+                    'pfa' => self::flat('PFA / micro-style', 0.10, 0.25, 0.70, 4000, false, 0),
                 ],
                 'COMPANY' => [
-                    'srl' => self::corporate('SRL (16% CIT + dividend)', 0.16, 0.0, 0.08, 2600),
+                    'srl' => self::corporate('SRL (16% CIT + dividend)', 0.16, 0.0, 0.08, 14000),
                 ],
             ]),
             'BG' => self::country('Bulgaria', 'BGN', 20.0, 45.0, 60.0, [
                 'FREELANCE' => [
-                    'sole_trader' => self::flat('Sole trader 10% + social', 0.10, 0.248, 0.75, 700, false, 0),
+                    'sole_trader' => self::flat('Sole trader 10% + social', 0.10, 0.248, 0.75, 1400, false, 0),
                 ],
                 'COMPANY' => [
-                    'ood' => self::corporate('OOD (10% CIT + dividend)', 0.10, 0.0, 0.05, 2200),
+                    'ood' => self::corporate('OOD (10% CIT + dividend)', 0.10, 0.0, 0.05, 4000),
                 ],
             ]),
             'GR' => self::country('Greece', 'EUR', 24.0, 40.0, 55.0, [
@@ -315,10 +325,10 @@ final class TaxCatalogExtra
                         ['up_to' => 6950000, 'rate' => 0.20],
                         ['up_to' => 9000000, 'rate' => 0.23],
                         ['up_to' => null, 'rate' => 0.33],
-                    ], 0.145, 2000, 'National income tax bands; local inhabitant tax not included.'),
+                    ], 0.145, 250000, 'National income tax bands; local inhabitant tax not included.'),
                 ],
                 'COMPANY' => [
-                    'kk' => self::corporate('KK (23.2% CIT + dividend)', 0.232, 0.0, 0.20315, 5000),
+                    'kk' => self::corporate('KK (23.2% CIT + dividend)', 0.232, 0.0, 0.20315, 700000),
                 ],
             ]),
             'MX' => self::country('Mexico', 'MXN', 16.0, 650.0, 900.0, [
@@ -327,10 +337,10 @@ final class TaxCatalogExtra
                         ['up_to' => 125900, 'rate' => 0.0192],
                         ['up_to' => 1000000, 'rate' => 0.2136],
                         ['up_to' => null, 'rate' => 0.35],
-                    ], 0.0, 1100),
+                    ], 0.0, 25000),
                 ],
                 'COMPANY' => [
-                    'srl' => self::corporate('S. de R.L. (30% CIT + dividend)', 0.30, 0.0, 0.10, 3200),
+                    'srl' => self::corporate('S. de R.L. (30% CIT + dividend)', 0.30, 0.0, 0.10, 70000),
                 ],
             ]),
         ];
@@ -369,6 +379,7 @@ final class TaxCatalogExtra
         bool $vatExempt,
         float $cap,
         ?string $notes = null,
+        float $socialFixedAnnual = 0.0,
     ): array {
         return [
             'label' => $label,
@@ -376,8 +387,9 @@ final class TaxCatalogExtra
             'revenue_coefficient' => $coefficient,
             'income_tax_rate' => $taxRate,
             'social_rate' => $socialRate,
+            'social_fixed_annual' => $socialFixedAnnual,
             'social_base' => 'taxable',
-            'social_deductible' => $socialRate > 0,
+            'social_deductible' => $socialRate > 0 || $socialFixedAnnual > 0,
             'vat_exempt' => $vatExempt,
             'revenue_cap' => $cap > 0 ? $cap : null,
             'compliance_annual' => $compliance,
@@ -395,14 +407,16 @@ final class TaxCatalogExtra
         float $socialRate,
         float $compliance,
         ?string $notes = null,
+        float $socialFixedAnnual = 0.0,
     ): array {
         return [
             'label' => $label,
             'model' => 'progressive',
             'brackets' => $brackets,
             'social_rate' => $socialRate,
+            'social_fixed_annual' => $socialFixedAnnual,
             'social_base' => 'profit',
-            'social_deductible' => $socialRate > 0,
+            'social_deductible' => $socialRate > 0 || $socialFixedAnnual > 0,
             'vat_exempt' => false,
             'compliance_annual' => $compliance,
             'notes' => $notes ?? $label,

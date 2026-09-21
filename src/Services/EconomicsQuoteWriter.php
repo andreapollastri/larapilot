@@ -21,6 +21,10 @@ class EconomicsQuoteWriter
     /**
      * Client-facing commercial proposal in the PRD language.
      *
+     * This is a sales document, not an engineering one: what the client gets,
+     * what it costs, when it lands, and what each side has to bring. Story
+     * points, task lists, and architecture stay in the internal report.
+     *
      * @param  array<string, mixed>  $snapshot
      */
     public function render(array $snapshot): string
@@ -31,23 +35,27 @@ class EconomicsQuoteWriter
         $title = $this->projectTitle($prd);
         $quote = is_array($snapshot['quote'] ?? null) ? $snapshot['quote'] : [];
         $effort = is_array($snapshot['effort'] ?? null) ? $snapshot['effort'] : [];
+        $profile = is_array($snapshot['profile'] ?? null) ? $snapshot['profile'] : [];
         $inception = is_array($snapshot['inception'] ?? null) ? $snapshot['inception'] : [];
-        $product = is_array($snapshot['product'] ?? null) ? $snapshot['product'] : [];
         $currency = (string) ($snapshot['country']['currency'] ?? $quote['currency'] ?? 'EUR');
         $today = new DateTimeImmutable('now');
         $months = max(0.5, (float) ($quote['calendar_months'] ?? $effort['calendar_months'] ?? 1));
         $hours = (float) ($quote['billable_hours'] ?? $effort['billable_hours'] ?? 0);
+        $hoursPerDay = max(1.0, (float) ($profile['hours_per_day'] ?? 6));
+        $days = (int) max(1, ceil($hours / $hoursPerDay));
         $gross = (float) ($quote['gross'] ?? 0);
         $vat = (float) ($quote['vat'] ?? 0);
         $total = (float) ($quote['client_total'] ?? ($gross + $vat));
         $maintenanceYear = (float) ($quote['maintenance_year'] ?? 0);
         $maintenanceMonth = (float) ($quote['maintenance_monthly'] ?? ($maintenanceYear / 12));
+        $maintenancePct = (float) ($profile['maintenance_annual_pct'] ?? 15);
         $vatRate = (float) ($quote['vat_rate'] ?? 0);
         $vatMode = (string) ($quote['vat_mode'] ?? 'domestic');
         $reference = 'LP-'.$today->format('Ymd').'-'.strtoupper(substr($this->slug($title), 0, 8));
+        $money = fn (float $amount): string => $this->money($amount, $currency, $lang);
         $sections = $this->prdSections($prd);
-        $specs = $this->specRows();
-        $technical = $this->technicalPoints($sections, $inception, $specs);
+        $deliverables = $this->deliverables($sections);
+        $objectives = $this->objectives($sections);
         $scope = $this->scopeLists($sections, $t);
 
         $lines = [
@@ -66,7 +74,6 @@ class EconomicsQuoteWriter
             '| **'.$t['reference'].'** | '.$reference.' |',
             '| **'.$t['date'].'** | '.$this->formatDate($today, $lang).' |',
             '| **'.$t['validity'].'** | '.$t['validity_value'].' |',
-            '| **'.$t['product_model'].'** | '.(string) ($product['label'] ?? '').' |',
             '',
         ];
 
@@ -78,10 +85,10 @@ class EconomicsQuoteWriter
         $lines[] = sprintf(
             $t['summary_body'],
             '**'.$title.'**',
-            $this->hoursLabel($hours, $lang),
+            $this->daysLabel($days, $lang),
             $this->durationLabel($months, $lang),
-            $this->money($gross, $currency),
-            $this->money($maintenanceYear, $currency)
+            '**'.$money($gross).'**',
+            $money($maintenanceYear)
         );
         $lines[] = '';
 
@@ -95,64 +102,86 @@ class EconomicsQuoteWriter
             $lines[] = '';
         }
 
-        $lines[] = '## '.$t['investment'];
-        $lines[] = '';
-        $lines[] = '| '.$t['item'].' | '.$t['amount'].' |';
-        $lines[] = '| --- | ---: |';
-        $lines[] = '| '.$t['build'].' | '.$this->money($gross, $currency).' |';
-
-        if ($vatMode === 'eu_b2b') {
-            $lines[] = '| '.$t['vat_reverse'].' | '.$this->money(0, $currency).' |';
-        } elseif ($vatRate > 0) {
-            $lines[] = '| '.$t['vat'].' ('.$vatRate.'%) | '.$this->money($vat, $currency).' |';
-        } else {
-            $lines[] = '| '.$t['vat_exempt'].' | '.$this->money(0, $currency).' |';
-        }
-
-        $lines[] = '| **'.$t['total'].'** | **'.$this->money($total, $currency).'** |';
-        $lines[] = '| '.$t['maintenance_year'].' | '.$this->money($maintenanceYear, $currency).' |';
-        $lines[] = '| '.$t['maintenance_month'].' | '.$this->money($maintenanceMonth, $currency).' |';
-        $lines[] = '';
-        $lines[] = sprintf($t['hours_note'], $this->hoursLabel($hours, $lang), $this->durationLabel($months, $lang));
-        $lines[] = '';
-
-        $lines[] = '## '.$t['deliverables'];
-        $lines[] = '';
-
-        if ($specs === []) {
-            $lines[] = $t['deliverables_empty'];
+        if ($objectives !== []) {
+            $lines[] = '## '.$t['objectives'];
             $lines[] = '';
-        } else {
-            $lines[] = '| '.$t['story_id'].' | '.$t['story_title'].' | '.$t['points'].' |';
-            $lines[] = '| --- | --- | ---: |';
-            foreach ($specs as $row) {
-                $lines[] = '| '.$row['code'].' | '.$row['title'].' | '.$row['points'].' |';
+            foreach ($objectives as $objective) {
+                $lines[] = '- '.$objective;
             }
             $lines[] = '';
         }
 
-        $mvp = trim((string) ($sections['mvp'] ?? ''));
-        if ($mvp !== '') {
-            $lines[] = '### '.$t['mvp'];
+        $lines[] = '## '.$t['deliverables'];
+        $lines[] = '';
+
+        if ($deliverables === []) {
+            $lines[] = $t['deliverables_empty'];
+        } else {
+            $lines[] = $t['deliverables_intro'];
             $lines[] = '';
-            $lines[] = $this->clip($mvp, 1200);
+            foreach ($deliverables as $deliverable) {
+                $lines[] = '- '.$deliverable;
+            }
+        }
+
+        $lines[] = '';
+
+        $techNote = $this->techNote($inception, $t);
+        if ($techNote !== null) {
+            $lines[] = $techNote;
             $lines[] = '';
         }
 
-        $lines[] = '## '.$t['technical'];
+        $lines[] = '## '.$t['investment'];
         $lines[] = '';
-        foreach ($technical as $point) {
-            $lines[] = '- '.$point;
+        $lines[] = '| '.$t['item'].' | '.$t['amount'].' |';
+        $lines[] = '| --- | ---: |';
+        $lines[] = '| '.$t['build'].' | '.$money($gross).' |';
+
+        if ($vatMode === 'eu_b2b') {
+            $lines[] = '| '.$t['vat_reverse'].' | '.$money(0).' |';
+        } elseif ($vatRate > 0) {
+            $lines[] = '| '.$t['vat'].' ('.$vatRate.'%) | '.$money($vat).' |';
+        } else {
+            $lines[] = '| '.$t['vat_exempt'].' | '.$money(0).' |';
         }
+
+        $lines[] = '| **'.$t['total'].'** | **'.$money($total).'** |';
+        $lines[] = '| '.$t['maintenance_year'].' | '.$money($maintenanceYear).' |';
+        $lines[] = '';
+        $lines[] = sprintf($t['effort_note'], $this->daysLabel($days, $lang), $this->durationLabel($months, $lang));
         $lines[] = '';
 
-        $arch = trim((string) ($sections['architecture'] ?? ''));
-        if ($arch !== '') {
-            $lines[] = '### '.$t['architecture'];
-            $lines[] = '';
-            $lines[] = $this->clip($arch, 1600);
-            $lines[] = '';
-        }
+        $lines[] = '## '.$t['timeline'];
+        $lines[] = '';
+        $lines[] = sprintf($t['timeline_intro'], $this->durationLabel($months, $lang), $this->daysLabel($days, $lang));
+        $lines[] = '';
+        array_push($lines, ...$this->gantt($today, $months, $t));
+        $lines[] = '';
+
+        $lines[] = '## '.$t['payment'];
+        $lines[] = '';
+        $kickoff = round($total * 0.40, 2);
+        $uat = round($total * 0.40, 2);
+        $golive = round($total - $kickoff - $uat, 2);
+        $lines[] = '| '.$t['milestone'].' | '.$t['share'].' | '.$t['amount'].' |';
+        $lines[] = '| --- | ---: | ---: |';
+        $lines[] = '| '.$t['pay_kickoff'].' | 40% | '.$money($kickoff).' |';
+        $lines[] = '| '.$t['pay_uat'].' | 40% | '.$money($uat).' |';
+        $lines[] = '| '.$t['pay_golive'].' | 20% | '.$money($golive).' |';
+        $lines[] = '';
+        $lines[] = $t['payment_note'];
+        $lines[] = '';
+
+        $lines[] = '## '.$t['maintenance_section'];
+        $lines[] = '';
+        $lines[] = sprintf(
+            $t['maintenance_body'],
+            $money($maintenanceYear),
+            $money($maintenanceMonth),
+            $this->number($maintenancePct, $lang)
+        );
+        $lines[] = '';
 
         $lines[] = '## '.$t['included'];
         $lines[] = '';
@@ -173,33 +202,6 @@ class EconomicsQuoteWriter
         foreach ($scope['client'] as $item) {
             $lines[] = '- '.$item;
         }
-        $lines[] = '';
-
-        $lines[] = '## '.$t['timeline'];
-        $lines[] = '';
-        $lines[] = sprintf($t['timeline_intro'], $this->durationLabel($months, $lang), $this->hoursLabel($hours, $lang));
-        $lines[] = '';
-        $gantt = $this->gantt($today, $months, $t);
-        array_push($lines, ...$gantt);
-        $lines[] = '';
-
-        $lines[] = '## '.$t['payment'];
-        $lines[] = '';
-        $kickoff = round($total * 0.40, 2);
-        $uat = round($total * 0.40, 2);
-        $golive = round($total - $kickoff - $uat, 2);
-        $lines[] = '| '.$t['milestone'].' | '.$t['share'].' | '.$t['amount'].' |';
-        $lines[] = '| --- | ---: | ---: |';
-        $lines[] = '| '.$t['pay_kickoff'].' | 40% | '.$this->money($kickoff, $currency).' |';
-        $lines[] = '| '.$t['pay_uat'].' | 40% | '.$this->money($uat, $currency).' |';
-        $lines[] = '| '.$t['pay_golive'].' | 20% | '.$this->money($golive, $currency).' |';
-        $lines[] = '';
-        $lines[] = $t['payment_note'];
-        $lines[] = '';
-
-        $lines[] = '## '.$t['maintenance_section'];
-        $lines[] = '';
-        $lines[] = sprintf($t['maintenance_body'], $this->money($maintenanceYear, $currency), $this->money($maintenanceMonth, $currency));
         $lines[] = '';
 
         $lines[] = '## '.$t['next_steps'];
@@ -228,10 +230,13 @@ class EconomicsQuoteWriter
     public function filename(?string $prd, string $lang): string
     {
         $slug = $this->slug($this->projectTitle($prd ?? ''));
-        $suffix = match ($lang) {
+        $suffix = match (preg_replace('/-.*$/', '', strtolower($lang))) {
             'it' => 'preventivo',
             'es' => 'presupuesto',
             'fr' => 'devis',
+            'de' => 'angebot',
+            'pt' => 'orcamento',
+            'nl' => 'aanbieding',
             default => 'proposal',
         };
 
@@ -244,11 +249,12 @@ class EconomicsQuoteWriter
     protected function prdSections(string $prd): array
     {
         $map = [
-            'elevator' => ['Elevator Pitch', 'Pitch', 'Sintesi', 'Accroche'],
+            'elevator' => ['Elevator Pitch', 'Pitch', 'Sintesi', 'Panoramica', 'Accroche', 'Resumen', 'Synthèse', 'Overview'],
             'vision' => ['Vision', 'Visione', 'Visión'],
+            'goals' => ['Business Goals', 'Goals', 'Objectives', 'Obiettivi', 'Obiettivi di business', 'Objetivos', 'Objectifs'],
             'mvp' => ['MVP Scope', 'Ambito MVP', 'Alcance MVP', 'Périmètre MVP'],
             'architecture' => ['Technical Architecture', 'Architettura tecnica', 'Arquitectura técnica', 'Architecture technique'],
-            'requirements' => ['Functional Requirements', 'Requisiti funzionali', 'Requisitos funcionales', 'Exigences fonctionnelles'],
+            'requirements' => ['Functional Requirements', 'Requisiti funzionali', 'Funzionalità', 'Funzionalità principali', 'Requisitos funcionales', 'Funcionalidades', 'Exigences fonctionnelles', 'Fonctionnalités'],
         ];
 
         $found = [];
@@ -260,7 +266,7 @@ class EconomicsQuoteWriter
 
             foreach ($map as $key => $labels) {
                 foreach ($labels as $label) {
-                    if (strcasecmp($heading, $label) === 0) {
+                    if (strcasecmp($heading, $label) === 0 && ! isset($found[$key])) {
                         $found[$key] = $body;
                     }
                 }
@@ -271,101 +277,75 @@ class EconomicsQuoteWriter
     }
 
     /**
-     * @return list<array{code: string, title: string, points: int, tasks: list<string>}>
+     * What the client receives, in their own words: backlog titles first, PRD
+     * requirements when the backlog is still empty.
+     *
+     * @param  array<string, string>  $sections
+     * @return list<string>
      */
-    protected function specRows(): array
+    protected function deliverables(array $sections): array
     {
-        $rows = [];
+        $items = [];
 
         foreach ($this->specs->allSpecs() as $spec) {
             if (! is_array($spec)) {
                 continue;
             }
 
-            $code = (string) ($spec['code'] ?? '');
+            $title = trim((string) ($spec['title'] ?? ''));
 
-            if ($code === '') {
-                continue;
+            if ($title !== '') {
+                $items[$this->normalizeKey($title)] = $this->sentence($title);
             }
-
-            $tasks = [];
-            $plan = $this->plans->read($code);
-            $planTasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-
-            foreach ($planTasks as $task) {
-                if (! is_array($task)) {
-                    continue;
-                }
-
-                $title = trim((string) ($task['title'] ?? ''));
-
-                if ($title !== '') {
-                    $tasks[] = $title;
-                }
-            }
-
-            $rows[] = [
-                'code' => $code,
-                'title' => (string) ($spec['title'] ?? $code),
-                'points' => (int) ($spec['points'] ?? 0),
-                'tasks' => $tasks,
-            ];
         }
 
-        return $rows;
+        if ($items === []) {
+            foreach ($this->bulletLines((string) ($sections['requirements'] ?? ''), 14) as $line) {
+                $items[$this->normalizeKey($line)] = $this->sentence($line);
+            }
+        }
+
+        if ($items === []) {
+            foreach ($this->bulletLines((string) ($sections['mvp'] ?? ''), 10) as $line) {
+                $items[$this->normalizeKey($line)] = $this->sentence($line);
+            }
+        }
+
+        return array_slice(array_values($items), 0, 24);
     }
 
     /**
      * @param  array<string, string>  $sections
-     * @param  array<string, mixed>  $inception
-     * @param  list<array{code: string, title: string, points: int, tasks: list<string>}>  $specs
      * @return list<string>
      */
-    protected function technicalPoints(array $sections, array $inception, array $specs): array
+    protected function objectives(array $sections): array
     {
-        $points = [];
+        $bullets = $this->bulletLines((string) ($sections['goals'] ?? ''), 6);
+
+        if ($bullets !== []) {
+            return array_map(fn (string $line): string => $this->sentence($line), $bullets);
+        }
+
+        return [];
+    }
+
+    /**
+     * One commercial line about the platform — never a stack dump.
+     *
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>  $t
+     */
+    protected function techNote(array $inception, array $t): ?string
+    {
         $choices = $this->choices->read();
+        $platform = $inception['deploy_platform'] ?? $choices['deploy_platform'] ?? null;
+        $platform = is_string($platform) ? trim($platform) : '';
 
-        foreach ([
-            'project_kind' => $inception['project_kind'] ?? $choices['project_kind'] ?? null,
-            'delivery_target' => $inception['delivery_target'] ?? $choices['delivery_target'] ?? null,
-            'website_type' => $inception['website_type'] ?? $choices['website_type'] ?? null,
-            'frontend_topology' => $inception['frontend_topology'] ?? $choices['frontend_topology'] ?? null,
-            'admin_panel' => $choices['admin_panel'] ?? null,
-            'data_store' => $choices['data_store'] ?? null,
-            'deploy_platform' => $inception['deploy_platform'] ?? $choices['deploy_platform'] ?? null,
-            'local_dev' => $choices['local_dev'] ?? null,
-        ] as $label => $value) {
-            if (is_string($value) && trim($value) !== '') {
-                $points[] = $this->choiceLabel($label).': '.trim($value);
-            }
+        if ($platform === '') {
+            return '_'.$t['tech_note_generic'].'_';
         }
 
-        $taskTitles = [];
-
-        foreach ($specs as $spec) {
-            foreach ($spec['tasks'] as $task) {
-                $taskTitles[$task] = true;
-            }
-        }
-
-        $unique = array_slice(array_keys($taskTitles), 0, 12);
-
-        if ($unique !== []) {
-            $points[] = implode(', ', $unique);
-        }
-
-        $reqs = $this->bulletLines((string) ($sections['requirements'] ?? ''), 8);
-
-        foreach ($reqs as $req) {
-            $points[] = $req;
-        }
-
-        if ($points === []) {
-            $points[] = 'Laravel application delivery with tests and documented handover.';
-        }
-
-        return array_values(array_unique($points));
+        return '_'.sprintf($t['tech_note'], $platform).'_';
     }
 
     /**
@@ -514,9 +494,14 @@ class EconomicsQuoteWriter
                 'date' => 'Data',
                 'validity' => 'Validità',
                 'validity_value' => '15 giorni dalla data del documento',
-                'product_model' => 'Modello di prodotto',
                 'summary' => 'Sintesi dell\'offerta',
-                'summary_body' => 'La presente offerta copre la realizzazione di %s. L\'impegno stimato è di %s (circa %s). Il corrispettivo per la realizzazione è %s (IVA come da tabella), con manutenzione annuale suggerita di %s.',
+                'summary_body' => 'Questa offerta descrive la realizzazione di %s. Il lavoro è stimato in %s, con una durata indicativa di %s dall\'accettazione. L\'investimento per la realizzazione è di %s, con manutenzione annuale opzionale di %s.',
+                'objectives' => 'Obiettivi',
+                'deliverables' => 'Cosa realizziamo',
+                'deliverables_intro' => 'Il progetto consegna le seguenti funzionalità:',
+                'deliverables_empty' => 'Il perimetro segue il documento di progetto condiviso; le funzionalità saranno elencate in dettaglio al kick-off.',
+                'tech_note' => 'Realizzazione su misura in tecnologia Laravel, pubblicata su %s. Codice, dati e accessi restano di proprietà del cliente.',
+                'tech_note_generic' => 'Realizzazione su misura in tecnologia Laravel. Codice, dati e accessi restano di proprietà del cliente.',
                 'investment' => 'Investimento',
                 'item' => 'Voce',
                 'amount' => 'Importo',
@@ -524,57 +509,20 @@ class EconomicsQuoteWriter
                 'vat' => 'IVA',
                 'vat_exempt' => 'IVA non applicata',
                 'vat_reverse' => 'IVA — reverse charge UE B2B',
-                'total' => 'Totale cliente',
+                'total' => 'Totale',
                 'maintenance_year' => 'Manutenzione annuale (opzionale)',
-                'maintenance_month' => 'Manutenzione mensile equivalente',
-                'hours_note' => 'Stima di effort: **%s**, calendario indicativo **%s** (include buffer di progetto / QA).',
-                'deliverables' => 'Perimetro e deliverable',
-                'deliverables_empty' => 'Il perimetro segue il PRD. Le user story saranno elencate a backlog consolidato.',
-                'story_id' => 'ID',
-                'story_title' => 'User story',
-                'points' => 'Punti',
-                'mvp' => 'Ambito MVP',
-                'technical' => 'Aspetti tecnici',
-                'architecture' => 'Architettura',
-                'included' => 'Cosa è compreso',
-                'not_included' => 'Cosa non è compreso',
-                'client_provides' => 'Cosa deve fornire il cliente',
-                'included_defaults' => [
-                    'Analisi, progettazione e implementazione delle user story elencate / ambito MVP',
-                    'Mockup HTML già prodotti e allineamento visivo in fase di sviluppo',
-                    'Test automatici previsti dai plan di delivery',
-                    'Messa in produzione sull\'ambiente concordato',
-                    'Documentazione di handover e sessione di consegna',
-                    'Correzione di bug di regressione per 30 giorni dal go-live',
-                ],
-                'excluded_defaults' => [
-                    'Funzionalità fuori ambito, fasi future e voci MoSCoW Won\'t',
-                    'Canoni di hosting, licenze SaaS e servizi terzi',
-                    'Produzione continuativa di contenuti marketing, SEM e community management',
-                    'Formazione oltre la sessione di handover',
-                    'Cambi di scope o redesign dopo il freeze di progetto',
-                    'Consulenza fiscale, legale o privacy oltre i testi previsti nel PRD',
-                ],
-                'client_defaults' => [
-                    'Referente unico per decisioni, contenuti e approvazioni nei tempi di progetto',
-                    'Logo, palette e materiali di brand se già esistenti (altrimenti si usa l\'identità prodotta in design)',
-                    'Testi, immagini e contenuti di dominio; indicazioni per privacy e termini se non in scope',
-                    'Accesso a dominio, DNS e credenziali dell\'ambiente di deploy',
-                    'Credenziali sandbox dei servizi terzi da integrare (pagamenti, email, CRM, …)',
-                    'Feedback puntuali sui mockup e sugli sprint, entro i tempi concordati',
-                ],
-                'client_deploy' => 'Accesso operativo alla piattaforma di deploy indicata: %s',
-                'timeline' => 'Stime e tempistiche',
-                'timeline_intro' => 'Calendario indicativo di **%s**, basato su **%s** di lavoro. Le date partono dall\'accettazione dell\'offerta e si adattano a ferie e tempi di feedback del cliente.',
+                'effort_note' => 'Impegno stimato: **%s**, calendario indicativo **%s**, buffer di progetto e collaudo inclusi.',
+                'timeline' => 'Tempi di consegna',
+                'timeline_intro' => 'Durata indicativa **%s** su un impegno di **%s**. Le date decorrono dall\'accettazione dell\'offerta e si adattano ai tempi di feedback e alle chiusure aziendali.',
                 'phase' => 'Fase',
                 'start' => 'Inizio',
                 'end' => 'Fine',
                 'days' => 'Giorni',
                 'phase_kickoff' => 'Kick-off e analisi',
-                'phase_design' => 'Design freeze',
-                'phase_build' => 'Implementazione',
-                'phase_qa' => 'QA e UAT',
-                'phase_launch' => 'Go-live e consegna',
+                'phase_design' => 'Approvazione grafica',
+                'phase_build' => 'Realizzazione',
+                'phase_qa' => 'Collaudo e verifica',
+                'phase_launch' => 'Pubblicazione e consegna',
                 'gantt_title' => 'Piano di consegna',
                 'section_start' => 'Avvio',
                 'section_build' => 'Realizzazione',
@@ -583,25 +531,229 @@ class EconomicsQuoteWriter
                 'milestone' => 'Milestone',
                 'share' => 'Quota',
                 'pay_kickoff' => 'All\'accettazione / kick-off',
-                'pay_uat' => 'All\'avvio UAT',
-                'pay_golive' => 'Al go-live',
-                'payment_note' => 'Fatture a 30 giorni data fattura, salvo diverso accordo. Il go-live avviene a saldo della quota precedente.',
-                'maintenance_section' => 'Manutenzione',
-                'maintenance_body' => 'Canone annuale suggerito: **%s** (circa **%s**/mese), pari al 15%% della realizzazione. Copre aggiornamenti di sicurezza, dipendenze e correzioni minori. Evolutive extra sono stimate a parte.',
+                'pay_uat' => 'All\'avvio del collaudo',
+                'pay_golive' => 'Alla pubblicazione',
+                'payment_note' => 'Fatture a 30 giorni data fattura, salvo diverso accordo. La pubblicazione avviene a saldo della quota precedente.',
+                'maintenance_section' => 'Manutenzione e assistenza',
+                'maintenance_body' => 'Canone annuale suggerito: **%s** (circa **%s** al mese), pari al %s%% della realizzazione. Comprende aggiornamenti di sicurezza, aggiornamento delle componenti software, piccole correzioni e assistenza sull\'uso. Nuove funzionalità sono quotate a parte.',
+                'included' => 'Cosa è compreso',
+                'not_included' => 'Cosa non è compreso',
+                'client_provides' => 'Cosa deve fornire il cliente',
+                'included_defaults' => [
+                    'Analisi, progettazione e realizzazione delle funzionalità elencate',
+                    'Interfacce grafiche condivise e approvate prima della realizzazione',
+                    'Verifica di funzionamento su tutte le funzionalità consegnate',
+                    'Pubblicazione in ambiente di produzione concordato',
+                    'Sessione di consegna e materiale di utilizzo',
+                    'Correzione dei difetti segnalati nei 30 giorni successivi alla pubblicazione',
+                ],
+                'excluded_defaults' => [
+                    'Funzionalità non elencate in questa offerta e fasi successive',
+                    'Canoni di hosting, domini, licenze e servizi di terze parti',
+                    'Produzione di contenuti, campagne pubblicitarie e gestione social',
+                    'Formazione oltre la sessione di consegna',
+                    'Modifiche al perimetro o rifacimenti grafici dopo l\'approvazione',
+                    'Consulenza fiscale, legale o in materia di privacy',
+                ],
+                'client_defaults' => [
+                    'Un referente unico per decisioni, contenuti e approvazioni',
+                    'Logo e materiali di immagine coordinata, se già esistenti',
+                    'Testi, immagini e dati da inserire',
+                    'Accesso a dominio, DNS e caselle email coinvolte',
+                    'Credenziali di prova dei servizi da collegare (pagamenti, email, gestionali)',
+                    'Riscontri sulle interfacce e sulle consegne nei tempi concordati',
+                ],
+                'client_deploy' => 'Accesso operativo alla piattaforma di pubblicazione indicata: %s',
                 'next_steps' => 'Passi successivi',
                 'next_steps_items' => [
-                    'Conferma scritta di questa offerta entro la validità indicata',
-                    'Kick-off, accesso agli ambienti e freeze del perimetro MVP',
-                    'Avvio del calendario di cui al Gantt',
+                    'Conferma scritta dell\'offerta entro la validità indicata',
+                    'Kick-off, raccolta accessi e approvazione del perimetro',
+                    'Avvio del calendario di consegna',
                 ],
                 'signoff' => 'Accettazione',
                 'supplier' => 'Fornitore',
                 'client' => 'Cliente',
                 'date_sign' => 'Data',
-                'disclaimer' => 'Documento di offerta commerciale generato da Larapilot a partire da PRD, backlog e stime di effort. Importi e date sono pianificazioni, non un contratto vincolante finché non sottoscritti. Non costituisce consulenza fiscale.',
+                'disclaimer' => 'Offerta commerciale generata con Larapilot a partire dal documento di progetto e dalle stime di lavoro. Importi e date sono una pianificazione e diventano vincolanti con la sottoscrizione.',
             ],
-            'es' => $this->romance('es'),
-            'fr' => $this->romance('fr'),
+            'es' => [
+                'document_title' => 'Oferta comercial',
+                'project' => 'Proyecto',
+                'reference' => 'Referencia',
+                'date' => 'Fecha',
+                'validity' => 'Validez',
+                'validity_value' => '15 días desde la fecha del documento',
+                'summary' => 'Resumen de la oferta',
+                'summary_body' => 'Esta oferta describe el desarrollo de %s. El trabajo se estima en %s, con una duración aproximada de %s desde la aceptación. La inversión de desarrollo es de %s, con mantenimiento anual opcional de %s.',
+                'objectives' => 'Objetivos',
+                'deliverables' => 'Qué entregamos',
+                'deliverables_intro' => 'El proyecto entrega las siguientes funcionalidades:',
+                'deliverables_empty' => 'El alcance sigue el documento de proyecto compartido; las funcionalidades se detallarán en el arranque.',
+                'tech_note' => 'Desarrollo a medida con tecnología Laravel, publicado en %s. El código, los datos y los accesos son propiedad del cliente.',
+                'tech_note_generic' => 'Desarrollo a medida con tecnología Laravel. El código, los datos y los accesos son propiedad del cliente.',
+                'investment' => 'Inversión',
+                'item' => 'Concepto',
+                'amount' => 'Importe',
+                'build' => 'Desarrollo (base imponible)',
+                'vat' => 'IVA',
+                'vat_exempt' => 'IVA no aplicado',
+                'vat_reverse' => 'IVA — inversión del sujeto pasivo UE B2B',
+                'total' => 'Total',
+                'maintenance_year' => 'Mantenimiento anual (opcional)',
+                'effort_note' => 'Esfuerzo estimado: **%s**, calendario aproximado **%s**, con margen de gestión y pruebas incluido.',
+                'timeline' => 'Plazos de entrega',
+                'timeline_intro' => 'Duración aproximada de **%s** sobre un esfuerzo de **%s**. Las fechas empiezan con la aceptación de la oferta y se ajustan a los tiempos de respuesta y a los periodos de cierre.',
+                'phase' => 'Fase',
+                'start' => 'Inicio',
+                'end' => 'Fin',
+                'days' => 'Días',
+                'phase_kickoff' => 'Arranque y análisis',
+                'phase_design' => 'Aprobación del diseño',
+                'phase_build' => 'Desarrollo',
+                'phase_qa' => 'Pruebas y validación',
+                'phase_launch' => 'Publicación y entrega',
+                'gantt_title' => 'Plan de entrega',
+                'section_start' => 'Arranque',
+                'section_build' => 'Desarrollo',
+                'section_launch' => 'Publicación',
+                'payment' => 'Condiciones de pago',
+                'milestone' => 'Hito',
+                'share' => 'Parte',
+                'pay_kickoff' => 'A la aceptación / arranque',
+                'pay_uat' => 'Al inicio de las pruebas',
+                'pay_golive' => 'A la publicación',
+                'payment_note' => 'Facturas a 30 días desde la fecha de factura, salvo acuerdo distinto. La publicación se realiza tras el cobro del hito anterior.',
+                'maintenance_section' => 'Mantenimiento y soporte',
+                'maintenance_body' => 'Cuota anual sugerida: **%s** (unos **%s** al mes), el %s%% del desarrollo. Incluye actualizaciones de seguridad, actualización de componentes, correcciones menores y soporte de uso. Las nuevas funcionalidades se presupuestan aparte.',
+                'included' => 'Qué incluye',
+                'not_included' => 'Qué no incluye',
+                'client_provides' => 'Qué debe aportar el cliente',
+                'included_defaults' => [
+                    'Análisis, diseño y desarrollo de las funcionalidades listadas',
+                    'Interfaces revisadas y aprobadas antes del desarrollo',
+                    'Verificación de funcionamiento de todo lo entregado',
+                    'Publicación en el entorno de producción acordado',
+                    'Sesión de entrega y material de uso',
+                    'Corrección de defectos notificados durante 30 días tras la publicación',
+                ],
+                'excluded_defaults' => [
+                    'Funcionalidades no listadas en esta oferta y fases posteriores',
+                    'Hosting, dominios, licencias y servicios de terceros',
+                    'Producción de contenidos, campañas de publicidad y gestión de redes',
+                    'Formación más allá de la sesión de entrega',
+                    'Cambios de alcance o rediseños después de la aprobación',
+                    'Asesoramiento fiscal, legal o de protección de datos',
+                ],
+                'client_defaults' => [
+                    'Una persona de contacto para decisiones, contenidos y aprobaciones',
+                    'Logotipo y materiales de marca, si ya existen',
+                    'Textos, imágenes y datos a incorporar',
+                    'Acceso a dominio, DNS y cuentas de correo implicadas',
+                    'Credenciales de prueba de los servicios a conectar (pagos, correo, ERP)',
+                    'Respuestas sobre interfaces y entregas en los plazos acordados',
+                ],
+                'client_deploy' => 'Acceso operativo a la plataforma de publicación indicada: %s',
+                'next_steps' => 'Próximos pasos',
+                'next_steps_items' => [
+                    'Confirmación por escrito de la oferta dentro de su validez',
+                    'Arranque, recogida de accesos y aprobación del alcance',
+                    'Inicio del calendario de entrega',
+                ],
+                'signoff' => 'Aceptación',
+                'supplier' => 'Proveedor',
+                'client' => 'Cliente',
+                'date_sign' => 'Fecha',
+                'disclaimer' => 'Oferta comercial generada con Larapilot a partir del documento de proyecto y de las estimaciones de trabajo. Importes y fechas son una planificación y pasan a ser vinculantes con la firma.',
+            ],
+            'fr' => [
+                'document_title' => 'Offre commerciale',
+                'project' => 'Projet',
+                'reference' => 'Référence',
+                'date' => 'Date',
+                'validity' => 'Validité',
+                'validity_value' => '15 jours à compter de la date du document',
+                'summary' => 'Synthèse de l\'offre',
+                'summary_body' => 'Cette offre décrit la réalisation de %s. La charge est estimée à %s, pour une durée indicative de %s à compter de l\'acceptation. L\'investissement de réalisation est de %s, avec une maintenance annuelle optionnelle de %s.',
+                'objectives' => 'Objectifs',
+                'deliverables' => 'Ce que nous livrons',
+                'deliverables_intro' => 'Le projet livre les fonctionnalités suivantes :',
+                'deliverables_empty' => 'Le périmètre suit le document de projet partagé ; les fonctionnalités seront détaillées au lancement.',
+                'tech_note' => 'Réalisation sur mesure en technologie Laravel, publiée sur %s. Le code, les données et les accès restent la propriété du client.',
+                'tech_note_generic' => 'Réalisation sur mesure en technologie Laravel. Le code, les données et les accès restent la propriété du client.',
+                'investment' => 'Investissement',
+                'item' => 'Poste',
+                'amount' => 'Montant',
+                'build' => 'Réalisation (hors taxes)',
+                'vat' => 'TVA',
+                'vat_exempt' => 'TVA non applicable',
+                'vat_reverse' => 'TVA — autoliquidation UE B2B',
+                'total' => 'Total',
+                'maintenance_year' => 'Maintenance annuelle (optionnelle)',
+                'effort_note' => 'Charge estimée : **%s**, calendrier indicatif **%s**, marge de gestion et de recette incluse.',
+                'timeline' => 'Délais de livraison',
+                'timeline_intro' => 'Durée indicative de **%s** pour une charge de **%s**. Les dates courent à partir de l\'acceptation de l\'offre et s\'adaptent aux délais de retour et aux périodes de fermeture.',
+                'phase' => 'Phase',
+                'start' => 'Début',
+                'end' => 'Fin',
+                'days' => 'Jours',
+                'phase_kickoff' => 'Lancement et analyse',
+                'phase_design' => 'Validation du design',
+                'phase_build' => 'Réalisation',
+                'phase_qa' => 'Recette et vérification',
+                'phase_launch' => 'Mise en ligne et livraison',
+                'gantt_title' => 'Plan de livraison',
+                'section_start' => 'Lancement',
+                'section_build' => 'Réalisation',
+                'section_launch' => 'Mise en ligne',
+                'payment' => 'Modalités de paiement',
+                'milestone' => 'Jalon',
+                'share' => 'Part',
+                'pay_kickoff' => 'À l\'acceptation / lancement',
+                'pay_uat' => 'Au début de la recette',
+                'pay_golive' => 'À la mise en ligne',
+                'payment_note' => 'Factures à 30 jours date de facture, sauf accord contraire. La mise en ligne intervient après règlement du jalon précédent.',
+                'maintenance_section' => 'Maintenance et assistance',
+                'maintenance_body' => 'Forfait annuel conseillé : **%s** (environ **%s** par mois), soit %s%% de la réalisation. Il couvre les mises à jour de sécurité, la mise à jour des composants, les corrections mineures et l\'assistance à l\'usage. Les nouvelles fonctionnalités sont chiffrées séparément.',
+                'included' => 'Ce qui est inclus',
+                'not_included' => 'Ce qui n\'est pas inclus',
+                'client_provides' => 'Éléments à fournir par le client',
+                'included_defaults' => [
+                    'Analyse, conception et réalisation des fonctionnalités listées',
+                    'Interfaces partagées et validées avant la réalisation',
+                    'Vérification du bon fonctionnement de tout ce qui est livré',
+                    'Mise en production sur l\'environnement convenu',
+                    'Séance de livraison et support d\'utilisation',
+                    'Correction des anomalies signalées pendant 30 jours après la mise en ligne',
+                ],
+                'excluded_defaults' => [
+                    'Fonctionnalités non listées dans cette offre et phases ultérieures',
+                    'Hébergement, noms de domaine, licences et services tiers',
+                    'Production de contenus, campagnes publicitaires et animation des réseaux',
+                    'Formation au-delà de la séance de livraison',
+                    'Changements de périmètre ou refonte graphique après validation',
+                    'Conseil fiscal, juridique ou en protection des données',
+                ],
+                'client_defaults' => [
+                    'Un interlocuteur unique pour les décisions, contenus et validations',
+                    'Logo et éléments de charte graphique, s\'ils existent déjà',
+                    'Textes, images et données à intégrer',
+                    'Accès au domaine, au DNS et aux boîtes email concernées',
+                    'Identifiants de test des services à connecter (paiement, email, ERP)',
+                    'Retours sur les interfaces et les livraisons dans les délais convenus',
+                ],
+                'client_deploy' => 'Accès opérationnel à la plateforme de publication indiquée : %s',
+                'next_steps' => 'Prochaines étapes',
+                'next_steps_items' => [
+                    'Confirmation écrite de l\'offre pendant sa durée de validité',
+                    'Lancement, collecte des accès et validation du périmètre',
+                    'Démarrage du calendrier de livraison',
+                ],
+                'signoff' => 'Acceptation',
+                'supplier' => 'Prestataire',
+                'client' => 'Client',
+                'date_sign' => 'Date',
+                'disclaimer' => 'Offre commerciale générée avec Larapilot à partir du document de projet et des estimations de charge. Les montants et les dates constituent une planification et deviennent contractuels à la signature.',
+            ],
             default => [
                 'document_title' => 'Commercial proposal',
                 'project' => 'Project',
@@ -609,9 +761,14 @@ class EconomicsQuoteWriter
                 'date' => 'Date',
                 'validity' => 'Validity',
                 'validity_value' => '15 days from the document date',
-                'product_model' => 'Product model',
                 'summary' => 'Offer summary',
-                'summary_body' => 'This proposal covers delivery of %s. Estimated effort is %s (about %s). The build price is %s (VAT as per the table), with suggested annual maintenance of %s.',
+                'summary_body' => 'This proposal covers the delivery of %s. The work is estimated at %s, over roughly %s from acceptance. The build investment is %s, with optional annual maintenance of %s.',
+                'objectives' => 'Objectives',
+                'deliverables' => 'What you get',
+                'deliverables_intro' => 'The project delivers the following capabilities:',
+                'deliverables_empty' => 'Scope follows the shared project document; capabilities will be listed in detail at kick-off.',
+                'tech_note' => 'Custom build on Laravel, published on %s. Code, data, and access stay the client\'s property.',
+                'tech_note_generic' => 'Custom build on Laravel. Code, data, and access stay the client\'s property.',
                 'investment' => 'Investment',
                 'item' => 'Item',
                 'amount' => 'Amount',
@@ -619,56 +776,19 @@ class EconomicsQuoteWriter
                 'vat' => 'VAT',
                 'vat_exempt' => 'VAT not applied',
                 'vat_reverse' => 'VAT — EU B2B reverse charge',
-                'total' => 'Client total',
+                'total' => 'Total',
                 'maintenance_year' => 'Annual maintenance (optional)',
-                'maintenance_month' => 'Equivalent monthly maintenance',
-                'hours_note' => 'Effort estimate: **%s**, indicative calendar **%s** (includes project / QA buffer).',
-                'deliverables' => 'Scope and deliverables',
-                'deliverables_empty' => 'Scope follows the PRD. User stories will be listed once the backlog is consolidated.',
-                'story_id' => 'ID',
-                'story_title' => 'User story',
-                'points' => 'Points',
-                'mvp' => 'MVP scope',
-                'technical' => 'Technical aspects',
-                'architecture' => 'Architecture',
-                'included' => 'Included',
-                'not_included' => 'Not included',
-                'client_provides' => 'What the client provides',
-                'included_defaults' => [
-                    'Analysis, design, and implementation of the listed user stories / MVP scope',
-                    'Existing HTML mockups and visual alignment during build',
-                    'Automated tests defined in the delivery plans',
-                    'Production deployment on the agreed environment',
-                    'Handover documentation and a delivery session',
-                    'Regression bug fixes for 30 days after go-live',
-                ],
-                'excluded_defaults' => [
-                    'Out-of-scope features, future phases, and MoSCoW Won\'t items',
-                    'Hosting fees, SaaS licences, and third-party subscriptions',
-                    'Ongoing marketing content, SEM, and community management',
-                    'Training beyond the handover session',
-                    'Scope changes or redesign after project freeze',
-                    'Tax, legal, or privacy advice beyond copy already scoped in the PRD',
-                ],
-                'client_defaults' => [
-                    'A single decision-maker for content, approvals, and timely feedback',
-                    'Existing brand assets (logo, palette) — otherwise the design identity is used',
-                    'Domain copy, imagery, and guidance for privacy/terms if not in scope',
-                    'Domain, DNS, and deploy-environment credentials',
-                    'Sandbox credentials for third-party services to integrate (payments, email, CRM, …)',
-                    'Prompt feedback on mockups and sprints within agreed turnaround',
-                ],
-                'client_deploy' => 'Operational access to the named deploy platform: %s',
-                'timeline' => 'Estimates and timeline',
-                'timeline_intro' => 'Indicative calendar of **%s**, based on **%s** of work. Dates start at offer acceptance and flex for holidays and client feedback.',
+                'effort_note' => 'Estimated effort: **%s**, indicative calendar **%s**, project and testing buffer included.',
+                'timeline' => 'Delivery timeline',
+                'timeline_intro' => 'Indicative duration of **%s** on **%s** of work. Dates start at offer acceptance and flex with feedback turnaround and holiday closures.',
                 'phase' => 'Phase',
                 'start' => 'Start',
                 'end' => 'End',
                 'days' => 'Days',
                 'phase_kickoff' => 'Kick-off and analysis',
-                'phase_design' => 'Design freeze',
-                'phase_build' => 'Implementation',
-                'phase_qa' => 'QA and UAT',
+                'phase_design' => 'Design sign-off',
+                'phase_build' => 'Build',
+                'phase_qa' => 'Testing and validation',
                 'phase_launch' => 'Go-live and handover',
                 'gantt_title' => 'Delivery plan',
                 'section_start' => 'Start',
@@ -678,78 +798,52 @@ class EconomicsQuoteWriter
                 'milestone' => 'Milestone',
                 'share' => 'Share',
                 'pay_kickoff' => 'On acceptance / kick-off',
-                'pay_uat' => 'At UAT start',
+                'pay_uat' => 'At testing start',
                 'pay_golive' => 'At go-live',
                 'payment_note' => 'Invoices due 30 days from invoice date unless agreed otherwise. Go-live follows settlement of the previous instalment.',
-                'maintenance_section' => 'Maintenance',
-                'maintenance_body' => 'Suggested annual retainer: **%s** (about **%s**/month), 15%% of the build. Covers security updates, dependency bumps, and minor fixes. Extra evolutions are quoted separately.',
+                'maintenance_section' => 'Maintenance and support',
+                'maintenance_body' => 'Suggested annual retainer: **%s** (about **%s** per month), %s%% of the build. It covers security updates, dependency upgrades, minor fixes, and usage support. New features are quoted separately.',
+                'included' => 'Included',
+                'not_included' => 'Not included',
+                'client_provides' => 'What the client provides',
+                'included_defaults' => [
+                    'Analysis, design, and build of the listed capabilities',
+                    'Interfaces shared and signed off before the build',
+                    'Functional verification of everything delivered',
+                    'Deployment to the agreed production environment',
+                    'Handover session and usage material',
+                    'Fixes for defects reported within 30 days of go-live',
+                ],
+                'excluded_defaults' => [
+                    'Capabilities not listed in this proposal, and later phases',
+                    'Hosting, domains, licences, and third-party services',
+                    'Content production, advertising campaigns, and social media management',
+                    'Training beyond the handover session',
+                    'Scope changes or visual redesign after sign-off',
+                    'Tax, legal, or data-protection advice',
+                ],
+                'client_defaults' => [
+                    'One point of contact for decisions, content, and approvals',
+                    'Logo and brand assets, where they already exist',
+                    'Copy, imagery, and the data to load',
+                    'Access to the domain, DNS, and the mailboxes involved',
+                    'Test credentials for the services to connect (payments, email, ERP)',
+                    'Feedback on interfaces and deliveries within the agreed turnaround',
+                ],
+                'client_deploy' => 'Operational access to the named publishing platform: %s',
                 'next_steps' => 'Next steps',
                 'next_steps_items' => [
-                    'Written acceptance of this proposal within the stated validity',
-                    'Kick-off, environment access, and MVP scope freeze',
-                    'Start of the Gantt calendar above',
+                    'Written acceptance of this proposal within its validity',
+                    'Kick-off, access collection, and scope sign-off',
+                    'Start of the delivery calendar',
                 ],
                 'signoff' => 'Acceptance',
                 'supplier' => 'Supplier',
                 'client' => 'Client',
                 'date_sign' => 'Date',
-                'disclaimer' => 'Commercial proposal generated by Larapilot from the PRD, backlog, and effort estimates. Amounts and dates are planning figures, not a binding contract until signed. This is not tax advice.',
+                'disclaimer' => 'Commercial proposal generated with Larapilot from the project document and effort estimates. Amounts and dates are planning figures and become binding once signed.',
             ],
         };
-    }
-
-    /**
-     * Compact Spanish / French catalogues reuse the English structure.
-     *
-     * @return array<string, mixed>
-     */
-    protected function romance(string $lang): array
-    {
-        $base = $this->strings('en');
-
-        if ($lang === 'es') {
-            $base['document_title'] = 'Oferta comercial';
-            $base['project'] = 'Proyecto';
-            $base['reference'] = 'Referencia';
-            $base['date'] = 'Fecha';
-            $base['validity'] = 'Validez';
-            $base['validity_value'] = '15 días desde la fecha del documento';
-            $base['summary'] = 'Resumen de la oferta';
-            $base['investment'] = 'Inversión';
-            $base['included'] = 'Incluido';
-            $base['not_included'] = 'No incluido';
-            $base['client_provides'] = 'Qué debe aportar el cliente';
-            $base['timeline'] = 'Estimaciones y calendario';
-            $base['payment'] = 'Condiciones de pago';
-            $base['maintenance_section'] = 'Mantenimiento';
-            $base['signoff'] = 'Aceptación';
-            $base['supplier'] = 'Proveedor';
-            $base['client'] = 'Cliente';
-            $base['disclaimer'] = 'Oferta comercial generada por Larapilot a partir del PRD, el backlog y las estimaciones. No es un contrato ni asesoramiento fiscal hasta su firma.';
-        }
-
-        if ($lang === 'fr') {
-            $base['document_title'] = 'Offre commerciale';
-            $base['project'] = 'Projet';
-            $base['reference'] = 'Référence';
-            $base['date'] = 'Date';
-            $base['validity'] = 'Validité';
-            $base['validity_value'] = '15 jours à compter de la date du document';
-            $base['summary'] = 'Synthèse de l\'offre';
-            $base['investment'] = 'Investissement';
-            $base['included'] = 'Inclus';
-            $base['not_included'] = 'Non inclus';
-            $base['client_provides'] = 'Éléments à fournir par le client';
-            $base['timeline'] = 'Estimations et planning';
-            $base['payment'] = 'Modalités de paiement';
-            $base['maintenance_section'] = 'Maintenance';
-            $base['signoff'] = 'Acceptation';
-            $base['supplier'] = 'Prestataire';
-            $base['client'] = 'Client';
-            $base['disclaimer'] = 'Offre commerciale générée par Larapilot à partir du PRD, du backlog et des estimations. Ce n\'est pas un contrat ni un conseil fiscal tant qu\'elle n\'est pas signée.';
-        }
-
-        return $base;
     }
 
     protected function projectTitle(string $prd): string
@@ -801,28 +895,55 @@ class EconomicsQuoteWriter
         return rtrim(substr($text, 0, $max - 1)).'…';
     }
 
-    protected function hoursLabel(float $hours, string $lang): string
+    /**
+     * Client-readable line item: no trailing punctuation, no bold markers,
+     * no leading spec code.
+     */
+    protected function sentence(string $text): string
     {
-        $value = rtrim(rtrim(number_format($hours, 1, '.', ''), '0'), '.');
+        $text = trim($text);
+        $text = preg_replace('/^(?:US|BUG|TASK)-\d+\s*[—:-]\s*/i', '', $text) ?? $text;
+        $text = preg_replace('/\*\*(.+?)\*\*/', '$1', $text) ?? $text;
+        $text = rtrim(trim($text), '.;');
 
+        return $this->clip($text, 180);
+    }
+
+    protected function normalizeKey(string $text): string
+    {
+        return strtolower(preg_replace('/[^a-z0-9]+/i', '', $text) ?? $text);
+    }
+
+    protected function daysLabel(int $days, string $lang): string
+    {
         return match ($lang) {
-            'it' => $value.' ore',
-            'es' => $value.' horas',
-            'fr' => $value.' heures',
-            default => $value.' hours',
+            'it' => $days.' '.($days === 1 ? 'giornata di lavoro' : 'giornate di lavoro'),
+            'es' => $days.' '.($days === 1 ? 'jornada de trabajo' : 'jornadas de trabajo'),
+            'fr' => $days.' '.($days === 1 ? 'jour de travail' : 'jours de travail'),
+            default => $days.' '.($days === 1 ? 'working day' : 'working days'),
         };
     }
 
     protected function durationLabel(float $months, string $lang): string
     {
-        $value = rtrim(rtrim(number_format($months, 1, '.', ''), '0'), '.');
+        $value = $this->number($months, $lang);
 
         return match ($lang) {
-            'it' => $value.' mesi',
-            'es' => $value.' meses',
+            'it' => $value.($months <= 1 ? ' mese' : ' mesi'),
+            'es' => $value.($months <= 1 ? ' mes' : ' meses'),
             'fr' => $value.' mois',
-            default => $value.' months',
+            default => $value.($months <= 1 ? ' month' : ' months'),
         };
+    }
+
+    /**
+     * Decimal comma for it / es / fr, decimal point for en.
+     */
+    protected function number(float $value, string $lang = 'en'): string
+    {
+        $formatted = rtrim(rtrim(number_format($value, 1, '.', ''), '0'), '.');
+
+        return $lang === 'en' ? $formatted : str_replace('.', ',', $formatted);
     }
 
     protected function formatDate(DateTimeImmutable $date, string $lang): string
@@ -836,15 +957,14 @@ class EconomicsQuoteWriter
 
         $month = $months[(int) $date->format('n') - 1] ?? $date->format('F');
 
-        return match ($lang) {
-            'en' => $date->format('j').' '.$month.' '.$date->format('Y'),
-            default => $date->format('j').' '.$month.' '.$date->format('Y'),
-        };
+        return $date->format('j').' '.$month.' '.$date->format('Y');
     }
 
-    protected function money(float $amount, string $currency): string
+    protected function money(float $amount, string $currency, string $lang = 'en'): string
     {
-        return $currency.' '.number_format($amount, 0, '.', ',');
+        $separator = $lang === 'en' ? ',' : '.';
+
+        return $currency.' '.number_format($amount, 0, '.', $separator);
     }
 
     protected function slug(string $title): string
@@ -859,20 +979,5 @@ class EconomicsQuoteWriter
     protected function yamlScalar(string $value): string
     {
         return '"'.str_replace(['\\', '"'], ['\\\\', '\\"'], $value).'"';
-    }
-
-    protected function choiceLabel(string $key): string
-    {
-        return match ($key) {
-            'project_kind' => 'Project kind',
-            'delivery_target' => 'Delivery target',
-            'website_type' => 'Website type',
-            'frontend_topology' => 'Frontend topology',
-            'admin_panel' => 'Admin panel',
-            'data_store' => 'Data store',
-            'deploy_platform' => 'Deploy',
-            'local_dev' => 'Local dev',
-            default => $key,
-        };
     }
 }

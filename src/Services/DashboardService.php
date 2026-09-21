@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
-use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\Markdown;
 
 class DashboardService
@@ -258,7 +257,6 @@ class DashboardService
         return [
             'catalog' => $catalog,
             'project_title' => $this->projectTitle($prd),
-            'language' => ArtifactLanguage::detect($prd),
             'presentation_url' => $this->routeIfAvailable('larapilot.dashboard.design.presentation'),
             'package_url' => $this->routeIfAvailable('larapilot.dashboard.design.package'),
         ];

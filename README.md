@@ -90,7 +90,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (when `release_mode=YES`) |
 | `/larapilot-project-docs` | Living handbook in `_project_docs/` (when `project_docs=YES`) |
 | `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` (auto-registered with Boost) |
-| `/larapilot-design` | Static HTML mockups from design system — gallery at `/larapilot/design` |
+| `/larapilot-design` | Static HTML mockups from design system — navigable index at `/larapilot/design` |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests on a feature branch |
 | `/larapilot-review` | Human gate → **DONE** or rework |
@@ -110,7 +110,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (presentation index of every mockup + zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (account-mode quotes, tax, SaaS forecast, **client quote download** — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (one navigable index: presentation cover, ordered walk through every flow with prev/next and a contextual flow gallery, plus a zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (scope & effort from the backlog, client price, take-home after tax, payback, recurring-revenue maths with MRR/ARR explained, **client quote download** — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, Economics, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/economics`** — quote, tax, payback, SaaS forecast (`enabled: false` when `account` is NONE)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
@@ -137,7 +137,9 @@ Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.git
 
 ### Account mode & Economics (`account`, NONE by default)
 
-`settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a quote (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast. Download the **client quote** (Markdown, same language as the PRD) at `/larapilot/economics/quote.md` or `php artisan larapilot:economics-show --format=quote`.
+`settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a quote (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast. Every figure in the catalogue (brackets, hourly rates, accountancy costs) is in the country's own currency, `net to owner` is what is left after tax, contributions, the accountant, and any retained reserve — a price that cannot carry its own costs reports a loss rather than a zero. Hours come straight from the backlog — planned task hours per spec, story points where no plan exists, with a per-spec breakdown and warnings on the dashboard — and the snapshot refreshes itself whenever specs, plans, the PRD, or inception change.
+
+The **client quote** is a commercial document `/larapilot-economics` writes in the PRD's own language (any language, not a fixed set of templates), stored at `.larapilot/docs/quote.md` via `larapilot:economics-quote-write`. Download it at `/larapilot/economics/quote.md` or with `php artisan larapilot:economics-show --format=quote`; until one is written, a built-in `en`/`it`/`es`/`fr` template renders the download.
 
 ```bash
 php artisan larapilot:settings-set --account=FREELANCE
@@ -233,7 +235,8 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 | --- | --- |
 | `larapilot:frontend-set` | Persist `LARAPILOT_FRONTEND_REPO_PATH` in `.env` (+ optional `stack` in config) |
 | `larapilot:economics-set` | Persist country, tax regime, hourly rate, SaaS prices (requires `account` ≠ NONE) |
-| `larapilot:economics-show` | Quote, tax, payback, SaaS forecast (`--format=md` for Markdown) |
+| `larapilot:economics-show` | Quote, tax, payback, SaaS forecast (`--format=md` internal report, `--format=quote` client document) |
+| `larapilot:economics-quote-write` | Persist the client quote document written in the PRD language (`--file=`, `--content=`, `--lang=`) |
 | `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
 | `larapilot:release-add` / `release-set` | Register or update a release |
 | `larapilot:release-import` | Rebuild shipped releases from Git semver tags |

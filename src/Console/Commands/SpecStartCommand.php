@@ -14,6 +14,8 @@ class SpecStartCommand extends LarapilotCommand
 
     protected $description = 'Move a planned spec to IN PROGRESS';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(SpecService $specs, ConfigService $config): int
     {
         $code = (string) $this->argument('code');

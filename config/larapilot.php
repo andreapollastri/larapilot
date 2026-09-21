@@ -107,6 +107,9 @@ return [
         'custom_skills' => '.larapilot/skills/',
         'economics' => '.larapilot/economics.yaml',
         'economics_snapshot' => '.larapilot/economics.snapshot.yaml',
+        // Client-facing commercial quote, written by /larapilot-economics in the
+        // PRD language. Absent = the built-in template renders the download.
+        'economics_quote' => '.larapilot/docs/quote.md',
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level

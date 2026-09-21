@@ -14,6 +14,26 @@ class EconomicsService
 {
     public const PRODUCT_MODELS = ['auto', 'fixed', 'saas', 'ecommerce', 'package'];
 
+    /**
+     * PM / QA buffer applied on top of every effort figure.
+     */
+    public const PM_QA_BUFFER = 1.15;
+
+    /**
+     * Size assumed for a spec that carries neither a plan nor story points.
+     */
+    public const DEFAULT_SPEC_POINTS = 3;
+
+    /**
+     * Floor for a project with an empty backlog, before scope multipliers.
+     */
+    public const HEURISTIC_BASE_HOURS = 100.0;
+
+    /**
+     * Per-spec effort rows kept in the snapshot.
+     */
+    protected const MAX_BREAKDOWN_ROWS = 200;
+
     public function __construct(
         protected ConfigService $config,
         protected ChoicesService $choices,
@@ -55,6 +75,79 @@ class EconomicsService
     }
 
     /**
+     * Fingerprint of every input the quote depends on: backlog, plans, PRD,
+     * inception answers, usage ledger, profile, and project settings.
+     *
+     * The dashboard, the API, and `economics-show` always compute live; this is
+     * what lets a mutating command notice the stored snapshot fell behind.
+     */
+    public function inputsFingerprint(): string
+    {
+        $config = $this->config->resolve();
+        $parts = [];
+
+        $files = [
+            'config' => $this->config->configPath(),
+            'economics' => $this->path(),
+            'backlog' => $this->config->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
+            'choices' => $this->config->absolutePath($config['paths']['choices'] ?? '.larapilot/choices.yaml'),
+            'prd' => $this->prd->path(),
+            'usage' => $this->usage->ledgerPath(),
+        ];
+
+        foreach ($files as $label => $path) {
+            $parts[] = $label.':'.$this->fileStamp($path);
+        }
+
+        $planning = rtrim($this->config->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'), '/\\');
+
+        foreach (glob($planning.DIRECTORY_SEPARATOR.'*-plan.yaml') ?: [] as $plan) {
+            $parts[] = 'plan:'.basename($plan).':'.$this->fileStamp($plan);
+        }
+
+        return substr(hash('sha256', implode('|', $parts)), 0, 32);
+    }
+
+    /**
+     * Whether the stored snapshot predates the current backlog / plans / PRD.
+     */
+    public function isStale(): bool
+    {
+        $stored = $this->readStoredSnapshot();
+
+        if ($stored === null) {
+            return true;
+        }
+
+        return (string) ($stored['inputs'] ?? '') !== $this->inputsFingerprint();
+    }
+
+    /**
+     * Recompute and persist the snapshot when an input changed. Called after
+     * every command that touches specs, plans, the PRD, inception, or settings,
+     * so `.larapilot/economics.snapshot.yaml` tracks the backlog by itself.
+     */
+    public function refreshIfStale(): bool
+    {
+        if (! $this->enabled() || ! $this->isStale()) {
+            return false;
+        }
+
+        $this->snapshot();
+
+        return true;
+    }
+
+    protected function fileStamp(string $path): string
+    {
+        if (! is_file($path)) {
+            return '0';
+        }
+
+        return ((int) filemtime($path)).'-'.((int) filesize($path));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function defaults(): array
@@ -82,7 +175,7 @@ class EconomicsService
             'product_model' => 'auto',
             'saas' => [
                 'price_monthly' => 29.0,
-                'price_annual' => 290.0,
+                'price_annual' => 0.0,
                 'churn_monthly_pct' => 4.0,
                 'conversion_pct' => 3.0,
                 'trial_to_paid_pct' => 20.0,
@@ -145,11 +238,11 @@ class EconomicsService
         $saasDefaults = is_array($defaults['saas'] ?? null) ? $defaults['saas'] : [];
 
         if (isset($partial['saas']) && is_array($partial['saas'])) {
-            $current['saas'] = array_replace(
+            $current['saas'] = $this->normalizeSaas(array_replace(
                 $saasDefaults,
                 is_array($current['saas'] ?? null) ? $current['saas'] : [],
                 array_intersect_key($partial['saas'], $saasDefaults)
-            );
+            ));
             unset($partial['saas']);
         }
 
@@ -164,9 +257,20 @@ class EconomicsService
         $account = $this->accountMode();
 
         if (isset($current['country'])) {
+            $previousCountry = TaxCatalog::normalizeCountry((string) ($this->read()['country'] ?? $current['country']));
             $current['country'] = TaxCatalog::normalizeCountry((string) $current['country']);
             TaxCatalog::country($current['country']);
             $current['currency'] = $current['currency'] ?: TaxCatalog::defaultCurrency($current['country']);
+
+            // Moving the tax residency leaves the old country's regime behind:
+            // fall back to the new country's default unless the caller named one.
+            if ($account !== 'NONE' && $previousCountry !== $current['country'] && ! isset($partial['regime'])) {
+                $allowed = array_keys(TaxCatalog::regimesFor((string) $current['country'], $account));
+
+                if (! in_array((string) ($current['regime'] ?? ''), $allowed, true)) {
+                    $current['regime'] = TaxCatalog::defaultRegime((string) $current['country'], $account);
+                }
+            }
         }
 
         if (isset($current['regime']) && is_string($current['regime']) && $current['regime'] !== '' && $account !== 'NONE') {
@@ -228,6 +332,23 @@ class EconomicsService
         return $this->read();
     }
 
+    /**
+     * Subscription inputs are money and counts — never strings, never negative.
+     *
+     * @param  array<string, mixed>  $saas
+     * @return array<string, mixed>
+     */
+    protected function normalizeSaas(array $saas): array
+    {
+        foreach ($saas as $key => $value) {
+            $saas[$key] = in_array($key, ['target_customers', 'starting_customers'], true)
+                ? max(0, (int) $value)
+                : max(0.0, round((float) $value, 2));
+        }
+
+        return $saas;
+    }
+
     public function accountMode(): string
     {
         $mode = strtoupper((string) ($this->config->settings()['account'] ?? 'NONE'));
@@ -262,6 +383,7 @@ class EconomicsService
             'effort' => $effort,
             'path' => $this->config->relativePath($this->path()),
             'countries' => $this->countryOptions(),
+            'inputs' => $this->inputsFingerprint(),
         ];
 
         if ($account === 'NONE') {
@@ -331,6 +453,7 @@ class EconomicsService
             ],
             'saas' => $saas,
             'forecast' => $saas['forecast'] ?? [],
+            'quote_document' => $this->quoteMeta(),
             'snapshot_path' => $this->config->relativePath($this->snapshotPath()),
             'snapshot_saved_at' => $computedAt,
         ];
@@ -455,7 +578,12 @@ class EconomicsService
                 $lines[] = '- Legal reserve (retained): '.$this->money((float) $tax['legal_reserve'], $currency);
             }
             $lines[] = '- Compliance: '.$this->money((float) ($tax['compliance'] ?? 0), $currency);
-            $lines[] = '- Effective rate: '.($tax['effective_rate_pct'] ?? 0).'%';
+            $lines[] = '- **Total withheld (tax + contributions + compliance + reserve):** '.$this->money((float) ($tax['total_withheld'] ?? 0), $currency);
+            $lines[] = '- Effective tax rate: '.($tax['effective_rate_pct'] ?? 0).'% · withheld '.($tax['withheld_rate_pct'] ?? 0).'% of revenue';
+
+            if (! empty($tax['loss'])) {
+                $lines[] = '- **This price does not cover its own costs and taxes — net to owner is negative.**';
+            }
 
             $extraction = is_array($tax['extraction'] ?? null) ? $tax['extraction'] : [];
             if ($extraction !== []) {
@@ -544,20 +672,201 @@ class EconomicsService
         return implode("\n", $lines);
     }
 
+    public function quotePath(): string
+    {
+        $config = $this->config->resolve();
+
+        return $this->config->absolutePath($config['paths']['economics_quote'] ?? '.larapilot/docs/quote.md');
+    }
+
     /**
-     * Client-facing commercial proposal (PRD language). Internal tax
-     * figures stay in reportMarkdown().
+     * The quote document written by `/larapilot-economics` — any language the
+     * PRD is in, not just the built-in template catalogue.
+     *
+     * @return array{content: string, lang: string|null, generated_at: string|null, inputs: string|null, stale: bool, path: string}|null
+     */
+    public function readStoredQuote(): ?array
+    {
+        $path = $this->quotePath();
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $content = (string) file_get_contents($path);
+
+        if (trim($content) === '') {
+            return null;
+        }
+
+        $meta = $this->quoteFrontMatter($content);
+        $inputs = $meta['inputs'] ?? null;
+
+        return [
+            'content' => $content,
+            'lang' => $meta['lang'] ?? null,
+            'generated_at' => $meta['generated_at'] ?? null,
+            'inputs' => $inputs,
+            'stale' => $inputs === null || $inputs !== $this->inputsFingerprint(),
+            'path' => $this->config->relativePath($path),
+        ];
+    }
+
+    /**
+     * Persist an agent-written commercial quote. Larapilot stamps the language
+     * and the input fingerprint it was written against so the dashboard can say
+     * when the backlog moved on.
+     *
+     * @return array<string, mixed>
+     */
+    public function writeQuote(string $content, ?string $lang = null): array
+    {
+        $body = trim($content);
+
+        if ($body === '') {
+            throw new \InvalidArgumentException('Quote content is empty.');
+        }
+
+        $language = ArtifactLanguage::normalizeTag($lang);
+        $stamps = [
+            'lang' => $language ?? $this->quoteLanguage(),
+            'generated_at' => (new \DateTimeImmutable('now'))->format(\DateTimeInterface::ATOM),
+            'inputs' => $this->inputsFingerprint(),
+        ];
+
+        $document = $this->stampQuoteFrontMatter($body, $stamps);
+
+        $directory = dirname($this->quotePath());
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        AtomicFile::write($this->quotePath(), $document);
+
+        return [
+            'path' => $this->config->relativePath($this->quotePath()),
+            'bytes' => strlen($document),
+            'lang' => $stamps['lang'],
+            'generated_at' => $stamps['generated_at'],
+            'inputs' => $stamps['inputs'],
+            'filename' => $this->quoteFilename(),
+        ];
+    }
+
+    /**
+     * Client-facing commercial proposal. The stored document wins; the built-in
+     * template (en/it/es/fr) renders the download when no one wrote one yet.
+     * Internal tax figures stay in reportMarkdown().
      */
     public function quoteMarkdown(): string
     {
+        $stored = $this->readStoredQuote();
+
+        if ($stored !== null) {
+            return $stored['content'];
+        }
+
         return $this->quoteWriter->render($this->snapshot());
+    }
+
+    /**
+     * Where the downloadable quote comes from, for the dashboard and the CLI.
+     *
+     * @return array<string, mixed>
+     */
+    public function quoteMeta(): array
+    {
+        $stored = $this->readStoredQuote();
+
+        if ($stored !== null) {
+            return [
+                'source' => 'document',
+                'lang' => $stored['lang'],
+                'generated_at' => $stored['generated_at'],
+                'stale' => $stored['stale'],
+                'path' => $stored['path'],
+                'filename' => $this->quoteFilename(),
+            ];
+        }
+
+        return [
+            'source' => 'template',
+            'lang' => $this->quoteLanguage(),
+            'generated_at' => null,
+            'stale' => false,
+            'path' => null,
+            'filename' => $this->quoteFilename(),
+        ];
+    }
+
+    /**
+     * Language of the downloadable quote: the stored document's own stamp when
+     * there is one, otherwise the PRD's language for the built-in template.
+     */
+    public function quoteLanguage(): string
+    {
+        return ArtifactLanguage::detect($this->prd->read());
     }
 
     public function quoteFilename(): string
     {
         $prd = $this->prd->read() ?? '';
+        $stored = is_file($this->quotePath()) ? $this->quoteFrontMatter((string) file_get_contents($this->quotePath())) : [];
+        $lang = ArtifactLanguage::normalizeTag($stored['lang'] ?? null) ?? $this->quoteLanguage();
 
-        return $this->quoteWriter->filename($prd, ArtifactLanguage::detect($prd !== '' ? $prd : null));
+        return $this->quoteWriter->filename($prd, $lang);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function quoteFrontMatter(string $content): array
+    {
+        if (preg_match('/\A---\R(.*?)\R---\R/s', $content, $matches) !== 1) {
+            return [];
+        }
+
+        $parsed = Yaml::parse($matches[1]);
+
+        if (! is_array($parsed)) {
+            return [];
+        }
+
+        $meta = [];
+
+        foreach (['lang', 'generated_at', 'inputs', 'title'] as $key) {
+            if (is_scalar($parsed[$key] ?? null)) {
+                $meta[$key] = (string) $parsed[$key];
+            }
+        }
+
+        return $meta;
+    }
+
+    /**
+     * Merge Larapilot's stamps into the document front matter, creating the
+     * block when the author did not write one.
+     *
+     * @param  array<string, string>  $stamps
+     */
+    protected function stampQuoteFrontMatter(string $content, array $stamps): string
+    {
+        if (preg_match('/\A---\R(.*?)\R---\R?/s', $content, $matches) === 1) {
+            $parsed = Yaml::parse($matches[1]);
+            $front = is_array($parsed) ? $parsed : [];
+            $body = substr($content, strlen($matches[0]));
+        } else {
+            $front = [];
+            $body = $content;
+        }
+
+        foreach ($stamps as $key => $value) {
+            $front[$key] = $value;
+        }
+
+        $front = ['title' => $front['title'] ?? 'Commercial quote'] + $front;
+
+        return '---'."\n".rtrim(Yaml::dump($front, 2, 2))."\n".'---'."\n\n".ltrim($body)."\n";
     }
 
     /**
@@ -580,100 +889,140 @@ class EconomicsService
     }
 
     /**
+     * Effort follows the backlog: planned task hours first, story points for
+     * specs without a plan, and a scope heuristic only when nothing is sized.
+     *
      * @param  array<string, mixed>  $inception
      * @param  array<string, mixed>  $profile
      * @return array<string, mixed>
      */
     protected function effortModel(array $inception, array $profile): array
     {
-        $planHours = 0.0;
-        $plannedTasks = 0;
-        $storyPoints = 0;
-        $unplannedPoints = 0;
-        $specCount = 0;
-
-        foreach ($this->specs->allSpecs() as $spec) {
-            if (! is_array($spec)) {
-                continue;
-            }
-
-            $specCount++;
-            $points = max(0, (int) ($spec['points'] ?? 0));
-            $storyPoints += $points;
-            $code = (string) ($spec['code'] ?? '');
-            $specPlanHours = 0.0;
-
-            if ($code !== '') {
-                $plan = $this->plans->read($code);
-                $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-
-                foreach ($tasks as $task) {
-                    if (! is_array($task)) {
-                        continue;
-                    }
-
-                    $plannedTasks++;
-                    $specPlanHours += max(0.0, (float) ($task['estimate_hours'] ?? 0));
-                }
-            }
-
-            if ($specPlanHours > 0) {
-                $planHours += $specPlanHours;
-            } elseif ($points > 0) {
-                $unplannedPoints += $points;
-            }
-        }
-
         $settings = $this->config->settings();
-        $hoursPerPoint = match ($settings['effort'] ?? 'STANDARD') {
+        $settingHoursPerPoint = match ($settings['effort'] ?? 'STANDARD') {
             'ECO' => 3.0,
             'MAX' => 5.5,
             default => 4.0,
         };
 
-        $fromPoints = $unplannedPoints * $hoursPerPoint;
-        $heuristicHours = $this->heuristicHours($inception);
-        $buffer = 1.15;
+        $rows = $this->specEffortRows();
 
-        if ($planHours > 0 && $unplannedPoints > 0) {
-            $source = 'mixed';
-            $baseHours = $planHours + $fromPoints;
-            $deliveryMultiplier = 1.0;
-            $kindMultiplier = 1.0;
-            $typeMultiplier = 1.0;
-        } elseif ($planHours > 0) {
-            $source = 'plan_hours';
-            $baseHours = $planHours;
-            $deliveryMultiplier = 1.0;
-            $kindMultiplier = 1.0;
-            $typeMultiplier = 1.0;
-        } elseif ($fromPoints > 0) {
-            $source = 'story_points';
-            $baseHours = $fromPoints;
-            $deliveryMultiplier = 1.0;
-            $kindMultiplier = 1.0;
-            $typeMultiplier = 1.0;
-        } else {
-            $source = 'heuristic';
-            $baseHours = $heuristicHours;
-            $deliveryMultiplier = $this->deliveryMultiplier((string) ($inception['delivery_target'] ?? ''));
-            $kindMultiplier = $this->kindMultiplier((string) ($inception['project_kind'] ?? ''));
-            $typeMultiplier = $this->typeMultiplier((string) ($inception['website_type'] ?? ''));
+        $plannedHours = 0.0;
+        $plannedPoints = 0;
+        $plannedSpecs = 0;
+        $plannedTasks = 0;
+        $storyPoints = 0;
+
+        foreach ($rows as $row) {
+            $plannedTasks += $row['tasks'];
+            $storyPoints += $row['points'];
+
+            if ($row['plan_hours'] > 0) {
+                $plannedHours += $row['plan_hours'];
+                $plannedSpecs++;
+                $plannedPoints += $row['points'];
+            }
         }
 
-        $scopeMultiplier = $deliveryMultiplier * $kindMultiplier * $typeMultiplier;
+        // Plans are the strongest estimate the project has. Once enough of the
+        // backlog is planned, the rest of the story points convert at the rate
+        // those plans actually imply instead of the generic effort constant.
+        $calibratedHoursPerPoint = $plannedSpecs >= 2 && $plannedPoints >= 5 && $plannedHours > 0
+            ? min(12.0, max(0.5, round($plannedHours / $plannedPoints, 2)))
+            : null;
+
+        $hoursPerPoint = $calibratedHoursPerPoint ?? $settingHoursPerPoint;
+
+        $breakdown = [];
+        $baseHours = 0.0;
+        $hoursFromPoints = 0.0;
+        $unplannedPoints = 0;
+        $unsizedSpecs = 0;
+        $deliveredBase = 0.0;
+
+        foreach ($rows as $row) {
+            if ($row['plan_hours'] > 0) {
+                $hours = $row['plan_hours'];
+                $from = 'plan';
+            } elseif ($row['points'] > 0) {
+                $hours = $row['points'] * $hoursPerPoint;
+                $from = 'points';
+                $unplannedPoints += $row['points'];
+                $hoursFromPoints += $hours;
+            } else {
+                $hours = self::DEFAULT_SPEC_POINTS * $hoursPerPoint;
+                $from = 'unsized';
+                $unsizedSpecs++;
+                $hoursFromPoints += $hours;
+            }
+
+            $baseHours += $hours;
+
+            if ($row['done']) {
+                $deliveredBase += $hours;
+            }
+
+            if (count($breakdown) < self::MAX_BREAKDOWN_ROWS) {
+                $breakdown[] = [
+                    'code' => $row['code'],
+                    'title' => $row['title'],
+                    'status' => $row['status'],
+                    'points' => $row['points'],
+                    'tasks' => $row['tasks'],
+                    'from' => $from,
+                    'hours' => round($hours, 1),
+                    'done' => $row['done'],
+                ];
+            }
+        }
+
+        $deliveryMultiplier = $this->deliveryMultiplier((string) ($inception['delivery_target'] ?? ''));
+        $kindMultiplier = $this->kindMultiplier((string) ($inception['project_kind'] ?? ''));
+        $typeMultiplier = $this->typeMultiplier((string) ($inception['website_type'] ?? ''));
+        $heuristicHours = self::HEURISTIC_BASE_HOURS * $deliveryMultiplier * $kindMultiplier * $typeMultiplier;
+
+        if ($rows === []) {
+            $source = 'heuristic';
+            $baseHours = self::HEURISTIC_BASE_HOURS;
+            $scopeMultiplier = $deliveryMultiplier * $kindMultiplier * $typeMultiplier;
+        } else {
+            // Spec-backed hours already describe the real scope — scope
+            // multipliers would double-count what the backlog says.
+            $scopeMultiplier = 1.0;
+            $deliveryMultiplier = 1.0;
+            $kindMultiplier = 1.0;
+            $typeMultiplier = 1.0;
+
+            $source = match (true) {
+                $plannedHours > 0 && ($unplannedPoints > 0 || $unsizedSpecs > 0) => 'mixed',
+                $plannedHours > 0 => 'plan_hours',
+                default => 'story_points',
+            };
+        }
+
+        $buffer = self::PM_QA_BUFFER;
         $adjusted = $baseHours * $scopeMultiplier * $buffer;
+        $deliveredHours = $deliveredBase * $scopeMultiplier * $buffer;
         $actualHours = (float) ($this->usage->summary()['total_hours'] ?? 0);
+
+        $hoursPerDay = max(1.0, (float) $profile['hours_per_day']);
+        $capacityYear = max(1.0, ((int) $profile['billable_days_per_year']) * $hoursPerDay);
+        $personYears = round($adjusted / $capacityYear, 2);
 
         return [
             'source' => $source,
-            'spec_count' => $specCount,
+            'source_label' => $this->effortSourceLabel($source),
+            'spec_count' => count($rows),
+            'planned_specs' => $plannedSpecs,
+            'unsized_specs' => $unsizedSpecs,
             'story_points' => $storyPoints,
             'unplanned_points' => $unplannedPoints,
             'planned_tasks' => $plannedTasks,
-            'plan_hours' => round($planHours, 1),
-            'hours_from_points' => round($fromPoints, 1),
+            'plan_hours' => round($plannedHours, 1),
+            'hours_from_points' => round($hoursFromPoints, 1),
             'hours_per_point' => $hoursPerPoint,
+            'hours_per_point_source' => $calibratedHoursPerPoint !== null ? 'plans' : 'settings',
+            'hours_per_point_setting' => $settingHoursPerPoint,
             'heuristic_hours' => round($heuristicHours, 1),
             'base_hours' => round($baseHours, 1),
             'delivery_multiplier' => $deliveryMultiplier,
@@ -682,37 +1031,118 @@ class EconomicsService
             'scope_multiplier' => round($scopeMultiplier, 3),
             'buffer' => $buffer,
             'billable_hours' => round($adjusted, 1),
-            'calendar_months' => round($adjusted / max(1.0, ((float) $profile['hours_per_day']) * 20), 1),
+            'delivered_hours' => round($deliveredHours, 1),
+            'remaining_hours' => round(max(0.0, $adjusted - $deliveredHours), 1),
+            'calendar_months' => round($adjusted / max(1.0, $hoursPerDay * 20), 1),
+            'capacity_hours_year' => round($capacityYear, 1),
+            'person_years' => $personYears,
             'actual_hours' => round($actualHours, 1),
-            'notes' => $source === 'heuristic'
-                ? 'Heuristic estimate — delivery/kind/type multipliers applied.'
-                : 'Spec-backed hours — only the 15% PM/QA buffer is applied (no delivery/kind/type inflation).',
+            'warnings' => $this->effortWarnings($source, $unsizedSpecs, $personYears, $calibratedHoursPerPoint, $settingHoursPerPoint),
+            'breakdown' => $breakdown,
+            'notes' => $this->effortNotes($source, $calibratedHoursPerPoint !== null),
         ];
     }
 
     /**
-     * @param  array<string, mixed>  $inception
+     * One row per backlog item with the estimate signals it carries.
+     *
+     * @return list<array{code: string, title: string, status: string, points: int, tasks: int, plan_hours: float, done: bool}>
      */
-    protected function heuristicHours(array $inception): float
+    protected function specEffortRows(): array
     {
-        $kind = strtolower((string) ($inception['project_kind'] ?? 'application'));
-        $target = strtolower((string) ($inception['delivery_target'] ?? 'mvp'));
+        $rows = [];
 
-        $base = match (true) {
-            str_contains($kind, 'personal') => 40.0,
-            str_contains($kind, 'package') => 80.0,
-            str_contains($kind, 'website') => 90.0,
-            default => 160.0,
+        foreach ($this->specs->allSpecs() as $spec) {
+            if (! is_array($spec)) {
+                continue;
+            }
+
+            $code = (string) ($spec['code'] ?? '');
+            $planHours = 0.0;
+            $tasks = 0;
+
+            if ($code !== '') {
+                $plan = $this->plans->read($code);
+
+                foreach (is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [] as $task) {
+                    if (! is_array($task)) {
+                        continue;
+                    }
+
+                    $tasks++;
+                    $planHours += max(0.0, (float) ($task['estimate_hours'] ?? 0));
+                }
+            }
+
+            $status = strtoupper(trim((string) ($spec['status'] ?? 'TODO')));
+
+            $rows[] = [
+                'code' => $code !== '' ? $code : '—',
+                'title' => (string) ($spec['title'] ?? ($code !== '' ? $code : 'Untitled')),
+                'status' => $status !== '' ? $status : 'TODO',
+                'points' => max(0, (int) ($spec['points'] ?? 0)),
+                'tasks' => $tasks,
+                'plan_hours' => round($planHours, 1),
+                'done' => $status === 'DONE',
+            ];
+        }
+
+        return $rows;
+    }
+
+    protected function effortSourceLabel(string $source): string
+    {
+        return match ($source) {
+            'plan_hours' => 'Plan task hours',
+            'story_points' => 'Story points',
+            'mixed' => 'Plan hours + story points',
+            default => 'Scope heuristic (nothing sized yet)',
         };
+    }
 
-        $targetBoost = match (true) {
-            str_contains($target, 'enterprise') => 2.4,
-            str_contains($target, 'full') => 1.8,
-            str_contains($target, 'v1') => 1.3,
-            default => 1.0,
-        };
+    protected function effortNotes(string $source, bool $calibrated): string
+    {
+        if ($source === 'heuristic') {
+            return 'No backlog yet — sized from the inception answers (kind, delivery target, type). Add specs and the quote follows them instead.';
+        }
 
-        return $base * $targetBoost;
+        $note = 'Straight from the backlog: '.($source === 'plan_hours'
+            ? 'planned task hours'
+            : ($source === 'mixed' ? 'planned task hours plus story points for specs without a plan' : 'story points per spec'))
+            .', plus the '.(int) round((self::PM_QA_BUFFER - 1) * 100).'% PM/QA buffer. No scope inflation.';
+
+        if ($calibrated) {
+            $note .= ' Hours per point are calibrated on the specs that already have a plan.';
+        }
+
+        return $note;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function effortWarnings(string $source, int $unsizedSpecs, float $personYears, ?float $calibrated, float $setting): array
+    {
+        $warnings = [];
+
+        if ($source === 'heuristic') {
+            $warnings[] = 'Nothing in the backlog is sized yet, so the hours are a scope heuristic — add story points or plans and the quote follows them.';
+        }
+
+        if ($unsizedSpecs > 0) {
+            $warnings[] = $unsizedSpecs.' spec'.($unsizedSpecs === 1 ? '' : 's').' carry neither a plan nor story points — each counted as '
+                .self::DEFAULT_SPEC_POINTS.' points. Size them for a firmer quote.';
+        }
+
+        if ($personYears > 1.0) {
+            $warnings[] = 'Scope is '.$personYears.' person-years at the configured capacity. Split it into releases, or re-check the story points: one person cannot bill this inside a year.';
+        }
+
+        if ($calibrated !== null && abs($calibrated - $setting) >= 1.0) {
+            $warnings[] = 'Your plans imply '.$calibrated.'h per story point instead of the '.$setting.'h effort default — the quote uses the planned rate.';
+        }
+
+        return $warnings;
     }
 
     protected function deliveryMultiplier(string $target): float
@@ -732,10 +1162,10 @@ class EconomicsService
         $value = strtolower($kind);
 
         return match (true) {
-            str_contains($value, 'personal') => 0.75,
-            str_contains($value, 'package') => 0.85,
-            str_contains($value, 'website') => 1.0,
-            default => 1.15,
+            str_contains($value, 'personal') => 0.5,
+            str_contains($value, 'package') => 0.8,
+            str_contains($value, 'website') => 0.9,
+            default => 1.6,
         };
     }
 
@@ -950,7 +1380,7 @@ class EconomicsService
         $gross = (float) $quote['gross'];
         $net = (float) ($quote['net_to_owner'] ?? 0);
         $maintenance = (float) ($quote['maintenance_year'] ?? 0);
-        $license = max(49.0, round($gross / 80, 0));
+        [$license, $licenseSource] = $this->licensePrice($gross, $profile);
         $unitsBreakEven = $license > 0 ? (int) ceil($gross / $license) : 0;
         $contribution = (float) ($saas['contribution_per_customer'] ?? 0);
         $fixedMonthly = (float) ($saas['fixed_monthly'] ?? 0);
@@ -969,6 +1399,7 @@ class EconomicsService
                 'maintenance_annual' => $maintenance,
                 'maintenance_monthly' => (float) ($quote['maintenance_monthly'] ?? 0),
                 'suggested_license_price' => $license,
+                'license_price_source' => $licenseSource,
                 'units_to_recover_build' => $unitsBreakEven,
                 'primary' => in_array($productModel, ['fixed', 'package', 'ecommerce'], true),
             ],
@@ -1026,6 +1457,30 @@ class EconomicsService
         return 'fixed';
     }
 
+    /**
+     * Resale price for one licence of what this project builds.
+     *
+     * An annual price the user actually set is a real decision, so it wins
+     * (the profile default is 0 = undecided). Without one the fallback is
+     * deliberately a round fraction of the build — it says "sell 80 of these to
+     * earn the build back", nothing more, and the snapshot reports which of the
+     * two produced the number.
+     *
+     * @param  array<string, mixed>  $profile
+     * @return array{0: float, 1: string}
+     */
+    protected function licensePrice(float $gross, array $profile): array
+    {
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $configured = (float) ($saas['price_annual'] ?? 0);
+
+        if ($configured > 0) {
+            return [round($configured, 2), 'configured_annual_price'];
+        }
+
+        return [max(49.0, round($gross / 80, 0)), 'heuristic_build_fraction'];
+    }
+
     protected function productLabel(string $model): string
     {
         return match ($model) {
@@ -1052,13 +1507,17 @@ class EconomicsService
         $yearDays = max(1, (int) $profile['billable_days_per_year']);
         $hoursPerDay = max(1.0, (float) $profile['hours_per_day']);
         $annualCapacity = $yearDays * $hoursPerDay;
-        $utilizationPct = $annualCapacity > 0 ? round($hours / $annualCapacity * 100, 1) : 0.0;
 
-        $projectsPerYear = max(1, (int) floor($annualCapacity / max(1.0, $hours)));
+        // Honest numbers: a project larger than a working year shows above 100%
+        // utilization and less than one project per year, instead of a
+        // reassuring 100% / 1 that hides the overrun.
+        $utilizationPct = $annualCapacity > 0 ? round($hours / $annualCapacity * 100, 1) : 0.0;
+        $projectsPerYear = $hours > 0 ? round($annualCapacity / $hours, 2) : 0.0;
 
         $payload = [
             'model' => $productModel,
-            'utilization_pct' => min(100.0, $utilizationPct),
+            'utilization_pct' => $utilizationPct,
+            'over_capacity' => $utilizationPct > 100.0,
             'capacity_hours_year' => $annualCapacity,
             'projects_per_year' => $projectsPerYear,
             'annual_gross_at_capacity' => round($projectsPerYear * $gross, 2),
@@ -1083,9 +1542,10 @@ class EconomicsService
         }
 
         if ($productModel === 'package') {
-            $license = max(49.0, round($gross / 80, 0));
+            [$license, $licenseSource] = $this->licensePrice($gross, $profile);
             $payload['licenses_to_recover'] = $license > 0 ? (int) ceil($gross / $license) : 0;
             $payload['suggested_license_price'] = $license;
+            $payload['license_price_source'] = $licenseSource;
         }
 
         return $payload;

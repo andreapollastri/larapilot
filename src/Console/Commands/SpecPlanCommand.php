@@ -19,6 +19,8 @@ class SpecPlanCommand extends LarapilotCommand
 
     protected $description = 'Save implementation plan and move spec to PLANNED';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(PlanService $plans, SpecService $specs, ValidationService $validation, ConfigService $config): int
     {
         $code = (string) $this->argument('code');

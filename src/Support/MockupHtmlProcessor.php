@@ -29,12 +29,8 @@ class MockupHtmlProcessor
     protected function rewriteAttributes(string $html, string $spec, string $mockupRoot, string $currentDir, ?string $designSystem, ?callable $urlMapper = null): string
     {
         $html = (string) preg_replace_callback(
-            '/(?<attr>href|src|poster|content)\s*=\s*(?<quote>["\'])(?<url>(?!(?:https?:|\/\/|\/|#|data:|mailto:))[^"\']+)\k<quote>/i',
+            '/(?<attr>href|src|poster)\s*=\s*(?<quote>["\'])(?<url>(?!(?:https?:|\/\/|\/|#|data:|mailto:))[^"\']+)\k<quote>/i',
             function (array $matches) use ($spec, $mockupRoot, $currentDir, $designSystem, $urlMapper): string {
-                if ($matches['attr'] === 'content' && ! str_contains($matches[0], 'og:image')) {
-                    return $matches[0];
-                }
-
                 $resolved = $this->assets->resolveAssetReference(
                     $spec,
                     $mockupRoot,

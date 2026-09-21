@@ -91,6 +91,8 @@ class ConfigService
                 'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
                 'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
                 'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
+                'economics_snapshot' => $this->absolutePath($config['paths']['economics_snapshot'] ?? '.larapilot/economics.snapshot.yaml'),
+                'economics_quote' => $this->absolutePath($config['paths']['economics_quote'] ?? '.larapilot/docs/quote.md'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],

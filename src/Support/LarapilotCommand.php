@@ -5,18 +5,46 @@ declare(strict_types=1);
 namespace Larapilot\Support;
 
 use Illuminate\Console\Command;
+use Larapilot\Services\EconomicsService;
 use Larapilot\Support\Envelope as EnvelopeWriter;
 
 abstract class LarapilotCommand extends Command
 {
+    /**
+     * Set on commands that change a quote input — specs, plans, tasks, PRD,
+     * inception answers, usage, or settings. Those commands recompute the
+     * Economics snapshot on success, so the cost board follows the backlog
+     * without anyone triggering it by hand.
+     */
+    protected bool $refreshesEconomics = false;
+
     /**
      * @param  array<string, mixed>  $data
      */
     protected function success(string $kind, array $data): int
     {
         $this->line(EnvelopeWriter::success($kind, $data));
+        $this->refreshEconomics();
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Economics is advisory: a snapshot refresh never fails the command that
+     * triggered it.
+     */
+    protected function refreshEconomics(): void
+    {
+        if (! $this->refreshesEconomics) {
+            return;
+        }
+
+        try {
+            app(EconomicsService::class)->refreshIfStale();
+        } catch (\Throwable) {
+            // the profile or catalogue is misconfigured — the Economics
+            // surfaces report that themselves.
+        }
     }
 
     /**

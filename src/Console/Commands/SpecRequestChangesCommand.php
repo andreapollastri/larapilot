@@ -19,6 +19,8 @@ class SpecRequestChangesCommand extends LarapilotCommand
 
     protected $description = 'Send a spec in REVIEW back to TODO with rework feedback';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(
         SpecService $specs,
         ConfigService $config,

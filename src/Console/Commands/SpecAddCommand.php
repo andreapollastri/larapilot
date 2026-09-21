@@ -16,6 +16,8 @@ class SpecAddCommand extends LarapilotCommand
 
     protected $description = 'Create or extend the backlog with specs';
 
+    protected bool $refreshesEconomics = true;
+
     public function handle(SpecService $specs, ValidationService $validation): int
     {
         $file = $this->option('file');
