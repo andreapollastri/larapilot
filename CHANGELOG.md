@@ -2,6 +2,21 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.1.0] - 2026-09-21
+
+### Added
+
+- **Account mode (`settings.account`, NONE by default)** — `NONE` | `FREELANCE` | `COMPANY`. Freelance maps to partita IVA / sole-trader regimes; company maps to SRL / SPA / Ltd / GmbH / C-Corp. Unlock with `/larapilot-settings` or `larapilot:settings-set --account=FREELANCE|COMPANY`. (`OFF` is accepted as an alias of `NONE` — YAML 1.1 would otherwise parse `OFF` as a boolean.)
+- **Economics dashboard** — `/larapilot/economics` (nav item before API/Docs) shows a preventivo (hours × rate, overhead, margin, VAT), net to owner after country tax, payback, and charts. Download `economics/report.md`.
+- **Tax catalogue (FY 2026)** — Italy (forfettario 5/15, IRPEF, SRL/SRLS/SPA), Germany, France, Spain, UK, US, Netherlands, Portugal, Switzerland, Austria, Belgium, Ireland. Planning estimates, not tax advice.
+- **SaaS forecast** — when inception/PRD looks like a subscription (or `product_model=saas`): ARR/MRR, break-even customers, customers to recover the build in 12/18/24 months, hosting from deploy platform, LTV:CAC, 36-month growth/churn chart.
+- **`/larapilot-economics`** — Aurora interview persists `.larapilot/economics.yaml` via `larapilot:economics-set`. `larapilot:economics-show` (`--format=md`) returns the snapshot. Runtime pack `runtime-economics.md`.
+- **`GET /larapilot/api/economics`** — same snapshot for JSON consumers.
+
+### Docs
+
+- Site / package version **v3.1.0**; Account setting; Economics skill and dashboard.
+
 ## [3.0.4] - 2026-09-18
 
 ### Added

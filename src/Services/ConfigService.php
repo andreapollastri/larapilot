@@ -90,6 +90,7 @@ class ConfigService
                 'releases' => $this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml'),
                 'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
                 'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
+                'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -239,6 +240,7 @@ class ConfigService
      *     backlog: string,
      *     git_mode: string,
      *     testing: string,
+     *     account: string,
      *     auto_approve: string,
      *     lucille: string,
      *     decision_log: string,
@@ -271,6 +273,7 @@ class ConfigService
             'backlog' => (string) $merged['backlog'],
             'git_mode' => (string) $merged['git_mode'],
             'testing' => (string) $merged['testing'],
+            'account' => $this->normalizeAccount($merged['account'] ?? 'NONE'),
         ];
 
         foreach ($boolDefaults as $key => $default) {
@@ -286,6 +289,7 @@ class ConfigService
      *     backlog: string,
      *     git_mode: string,
      *     testing: string,
+     *     account: string,
      *     auto_approve: bool,
      *     lucille: bool,
      *     decision_log: bool,
@@ -316,6 +320,7 @@ class ConfigService
             'backlog' => (string) ($defaults['backlog'] ?? 'STANDARD'),
             'git_mode' => (string) ($defaults['git_mode'] ?? 'GITFLOW'),
             'testing' => (string) ($defaults['testing'] ?? 'NORMAL'),
+            'account' => $this->normalizeAccount($defaults['account'] ?? 'NONE'),
         ];
 
         foreach ($boolDefaults as $key => $default) {
@@ -418,7 +423,7 @@ class ConfigService
                 continue;
             }
 
-            $settings[$key] = $value;
+            $settings[$key] = $key === 'account' ? $this->normalizeAccount($value) : $value;
         }
 
         $existing['settings'] = $settings;
@@ -478,6 +483,22 @@ class ConfigService
     public function projectDocsEnabled(): bool
     {
         return $this->settings()['project_docs'] === 'YES';
+    }
+
+    /**
+     * Account mode for Economics quotes — NONE | FREELANCE | COMPANY.
+     */
+    public function accountMode(): string
+    {
+        return $this->normalizeAccount($this->settings()['account'] ?? 'NONE');
+    }
+
+    /**
+     * Whether the Economics dashboard and tax engine are active.
+     */
+    public function accountEnabled(): bool
+    {
+        return $this->accountMode() !== 'NONE';
     }
 
     /**
@@ -617,7 +638,8 @@ class ConfigService
         $ok = in_array($settings['effort'], $this->allowedEfforts(), true)
             && in_array($settings['backlog'], $this->allowedBacklogModes(), true)
             && in_array($settings['git_mode'], $this->allowedGitModes(), true)
-            && in_array($settings['testing'], $this->allowedTestingModes(), true);
+            && in_array($settings['testing'], $this->allowedTestingModes(), true)
+            && in_array($settings['account'], $this->allowedAccountModes(), true);
 
         foreach (array_keys($this->booleanSettingDefaults()) as $key) {
             if (! in_array($settings[$key] ?? null, $this->allowedYesNoModes(), true)) {
@@ -698,6 +720,53 @@ class ConfigService
     public function allowedTestingModes(): array
     {
         return ['MINIMAL', 'NORMAL', 'BEST'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedAccountModes(): array
+    {
+        return ['NONE', 'FREELANCE', 'COMPANY'];
+    }
+
+    public function normalizeAccount(mixed $value): string
+    {
+        if (is_bool($value)) {
+            return $value ? 'FREELANCE' : 'NONE';
+        }
+
+        $normalized = strtoupper(trim((string) $value));
+        $normalized = str_replace(['-', ' ', '/'], '_', $normalized);
+        $normalized = (string) preg_replace('/_+/', '_', $normalized);
+        $normalized = trim($normalized, '_');
+
+        $aliases = [
+            'OFF' => 'NONE',
+            'NO' => 'NONE',
+            'FALSE' => 'NONE',
+            'DISABLED' => 'NONE',
+            '0' => 'NONE',
+            'SOLE' => 'FREELANCE',
+            'SOLE_TRADER' => 'FREELANCE',
+            'PIVA' => 'FREELANCE',
+            'PARTITA_IVA' => 'FREELANCE',
+            'IVA' => 'FREELANCE',
+            'FORFETTARIO' => 'FREELANCE',
+            'INDIPENDENTE' => 'FREELANCE',
+            'SRL' => 'COMPANY',
+            'SRLS' => 'COMPANY',
+            'SPA' => 'COMPANY',
+            'LTD' => 'COMPANY',
+            'GMBH' => 'COMPANY',
+            'LLC' => 'COMPANY',
+            'SOCIETA' => 'COMPANY',
+            'CORPORATE' => 'COMPANY',
+        ];
+
+        $mapped = $aliases[$normalized] ?? $normalized;
+
+        return in_array($mapped, $this->allowedAccountModes(), true) ? $mapped : 'NONE';
     }
 
     /**

@@ -250,6 +250,7 @@
                 <a href="{{ route('larapilot.dashboard.skills') }}" @class(['active' => request()->routeIs('larapilot.dashboard.skills')])>Skills</a>
                 <a href="{{ route('larapilot.dashboard.git') }}" @class(['active' => request()->routeIs('larapilot.dashboard.git')])>Git</a>
                 <a href="{{ route('larapilot.dashboard.usage') }}" @class(['active' => request()->routeIs('larapilot.dashboard.usage')])>Usage</a>
+                <a href="{{ route('larapilot.dashboard.economics') }}" @class(['active' => request()->routeIs('larapilot.dashboard.economics*')])>Economics</a>
                 @if (Route::has('larapilot.api.docs'))
                     <a href="{{ route('larapilot.api.docs') }}" @class(['active' => request()->routeIs('larapilot.api.*')])>API</a>
                 @endif

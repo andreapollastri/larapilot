@@ -69,7 +69,7 @@ Skills write artifacts; the workflow engine blocks invalid state transitions (e.
 | Layer | File | Owns | Changed via |
 | --- | --- | --- | --- |
 | **Laravel config** | `config/larapilot.php` (publishable) + `.env` | Environment toggles: routes, diagnostics, `LARAPILOT_API_TOKEN`, notification webhooks/tokens, package defaults | `php artisan vendor:publish --tag=larapilot-config`, env vars |
-| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, auto-approve, lucille, decision-log, code-history, comments, dashboard-auth, api-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
+| **Project workflow** | `.larapilot/config.yaml` (committed) | Per-project `settings` (effort, backlog, git, testing, account, auto-approve, lucille, decision-log, code-history, comments, dashboard-auth, api-auth, github/gitlab/bitbucket/azure, notifications), paths, statuses | `/larapilot-settings` or `php artisan larapilot:settings-set` |
 
 The YAML wins for workflow settings; Laravel config only provides their defaults on first install.
 
@@ -96,7 +96,8 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
-| `/larapilot-settings` | Persist effort / backlog / git / testing / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
+| `/larapilot-settings` | Persist effort / backlog / git / testing / account / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
+| `/larapilot-economics` | **Aurora** — preventivo, country tax, payback, SaaS ARR (when `account` is FREELANCE or COMPANY) |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown resoconto |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
@@ -109,8 +110,9 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
-- **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, OpenAPI at `/larapilot/api/docs`)
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (account-mode quotes, tax, SaaS forecast — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
+- **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, Economics, OpenAPI at `/larapilot/api/docs`)
+- **`GET /larapilot/api/economics`** — quote, tax, payback, SaaS forecast (`enabled: false` when `account` is NONE)
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
@@ -132,6 +134,18 @@ php artisan larapilot:settings-set --dashboard-auth=YES
 ```
 
 Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.gitignore` automatically — never committed, no database, no `User` model). Manage them with `larapilot:dashboard-user {list|add|remove}`. Failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). This gate **never** touches `/larapilot/api/*` (use `LARAPILOT_API_TOKEN`) or the MCP server. Use HTTPS on shared hosts — Basic Auth sends credentials on every request.
+
+### Account mode & Economics (`account`, NONE by default)
+
+`settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a preventivo (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast.
+
+```bash
+php artisan larapilot:settings-set --account=FREELANCE
+php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourly-rate=55
+php artisan larapilot:economics-set --product-model=saas --price-monthly=29 --churn=4
+```
+
+Or `/larapilot-settings` then `/larapilot-economics`. Profile lives in `.larapilot/economics.yaml`. Figures are planning estimates, not tax advice.
 
 ### Decision journal & regression guard (`decision_log`, ON by default)
 
@@ -218,6 +232,8 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 | Command | Purpose |
 | --- | --- |
 | `larapilot:frontend-set` | Persist `LARAPILOT_FRONTEND_REPO_PATH` in `.env` (+ optional `stack` in config) |
+| `larapilot:economics-set` | Persist country, tax regime, hourly rate, SaaS prices (requires `account` ≠ NONE) |
+| `larapilot:economics-show` | Quote, tax, payback, SaaS forecast (`--format=md` for Markdown) |
 | `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
 | `larapilot:release-add` / `release-set` | Register or update a release |
 | `larapilot:release-import` | Rebuild shipped releases from Git semver tags |

@@ -12,6 +12,7 @@ Runtime rules shared by **all** Larapilot skills. Load this file once at activat
 | `.larapilot/runtime-release.md`   | Release ledger, Gitflow release branches, parallel releases, spec ↔ release assignment, ship ceremony                                                            | `release`, `inception`, `adopt`, `feature`, `plan`, `ship` *(when `release_mode=YES`)* |
 | `.larapilot/runtime-project-docs.md` | Living `_project_docs/` handbook — structure, diagrams, retroactive catch-up, per-change updates                                                              | `project-docs`, *all skills when `project_docs=YES`* |
 | `.larapilot/runtime-custom-skills.md` | User-authored skills under `.larapilot/skills/` (`.gitkeep` on install), persisted with `larapilot:custom-skill-add` and listed at `/larapilot/skills` | `custom-skill` |
+| `.larapilot/runtime-economics.md` | Account mode (freelance / company), country tax catalogue, quotes, payback, SaaS ARR | `economics`, `settings` *(when `account` ≠ NONE)* |
 
 `larapilot-settings` and `larapilot-frontend-companion` need this core file only. **`larapilot-usage`** loads core + `runtime-ops.md` (Usage Ledger & Schedule). Every concept has **one** canonical copy — other files reference it by file + heading name, never re-paste it.
 
@@ -39,7 +40,7 @@ Larapilot skills use `php artisan larapilot:*` as the only backend for PRD, back
 - Treat exit codes as stable: `0` success · `1` generic error · `2` invalid input · `3` connector/backend failure · `4` missing precondition.
 - When `.larapilot/config.yaml` is absent, the CLI applies its built-in defaults for connector, paths, workflow statuses, and **project settings**.
 - `config-show` returns `data.project_root`: the ABSOLUTE project root containing `.larapilot/config.yaml` (or the current directory when defaults are used). Run connector/backlog commands from this root unless a command-specific rule says otherwise.
-- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `release_mode`, `project_docs`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
+- `config-show` also returns `data.settings` (`effort`, `backlog`, `git_mode`, `testing`, `account`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `release_mode`, `project_docs`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram`). **Every skill MUST read and honor these before planning work.** Change them only via `/larapilot-settings` → `php artisan larapilot:settings-set`.
 - Decision journal (default ON): record every explicit user choice with `php artisan larapilot:decision-log`, and run `php artisan larapilot:decision-check` before overriding a topic that may already carry one — see **Decision journal (`settings.decision_log`)** below.
 - Code change history (default OFF): when `data.settings.code_history` is `YES`, call `php artisan larapilot:code-log` after each `task-done` — see **Code change history (`settings.code_history`)** below.
 
@@ -55,7 +56,7 @@ Laravel **10** and **11** are past their security-fix window. Composer 2.9+ refu
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Environment paths (never commit user-specific absolute paths)
 
@@ -114,6 +115,20 @@ Anne scales plan tasks, implement verification, and review evidence to this bar 
 | **`BEST`** | All imaginable automation for the stack: above + integration/HTTP fakes, tenancy isolation when multi-tenant, primary-journey E2E, Playwright or Dusk (or Pest browser), viewport matrix (375 / 768 / 1280), axe at mobile, Lighthouse a11y when public UI — match project tooling. |
 
 **Do not** plan or run Playwright/Dusk/E2E/viewport-browser work under `MINIMAL` or `NORMAL`. Those belong to `BEST` only. Full bar details: **Testing Standards** in `runtime-delivery.md`.
+
+### Account (`settings.account`) — opt-in, default NONE
+
+Who is selling the work. Unlocks the **Economics** dashboard (`/larapilot/economics`), `larapilot:economics-set` / `economics-show`, and `/larapilot-economics`. Aurora owns the numbers. Full contract: `.larapilot/runtime-economics.md`.
+
+Stored as an enum string (`NONE` / `FREELANCE` / `COMPANY`) — not a boolean (`OFF` is a YAML 1.1 bool token, so the idle value is `NONE`). Missing key → **`NONE`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`NONE`** | **Default.** No Economics quotes. `/larapilot/economics` shows the enable empty-state. |
+| **`FREELANCE`** | Sole trader / partita IVA. Tax engine uses forfettario, IRPEF, autónomo, sole trader, … for the chosen country. |
+| **`COMPANY`** | Structured entity (SRL, SPA, Ltd, GmbH, C-Corp). Corporate tax + dividend extraction + higher compliance. |
+
+Enable with `php artisan larapilot:settings-set --account=FREELANCE` or `--account=COMPANY`, then persist country/regime/rates with `larapilot:economics-set`.
 
 ### Auto-approve (`settings.auto_approve`)
 

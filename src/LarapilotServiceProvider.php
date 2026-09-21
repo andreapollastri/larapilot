@@ -22,6 +22,8 @@ use Larapilot\Console\Commands\DecisionCheckCommand;
 use Larapilot\Console\Commands\DecisionLogCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
+use Larapilot\Console\Commands\EconomicsSetCommand;
+use Larapilot\Console\Commands\EconomicsShowCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
 use Larapilot\Console\Commands\FrontendSetCommand;
 use Larapilot\Console\Commands\GithubStatusCommand;
@@ -77,6 +79,7 @@ use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\EconomicsService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
@@ -101,7 +104,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.0.4';
+    public const VERSION = '3.1.0';
 
     public function register(): void
     {
@@ -140,6 +143,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(TrackerService::class);
         $this->app->singleton(ReleaseService::class);
         $this->app->singleton(CustomSkillService::class);
+        $this->app->singleton(EconomicsService::class);
     }
 
     public function boot(): void
@@ -190,6 +194,8 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseImportCommand::class,
                 CustomSkillListCommand::class,
                 CustomSkillAddCommand::class,
+                EconomicsSetCommand::class,
+                EconomicsShowCommand::class,
                 QualityCommand::class,
                 ValidateSpecCommand::class,
                 ValidatePlanCommand::class,

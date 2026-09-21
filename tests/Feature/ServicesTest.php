@@ -79,6 +79,7 @@ it('exposes default project settings and updates them', function (): void {
         'backlog' => 'STANDARD',
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
+        'account' => 'NONE',
         'auto_approve' => 'NO',
         'lucille' => 'YES',
         'decision_log' => 'YES',

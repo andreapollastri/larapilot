@@ -177,6 +177,15 @@
                     'BEST' => 'Full automation: E2E, viewport matrix, axe, Lighthouse when applicable.',
                 ],
             ],
+            'account' => [
+                'label' => 'Account',
+                'description' => 'Who is selling the work. FREELANCE and COMPANY unlock the Economics page with country-aware quotes, tax, margins, and SaaS forecasts. Calibrate country and regime with /larapilot-economics.',
+                'options' => [
+                    'NONE' => 'No Economics section — quotes stay out of scope (default).',
+                    'FREELANCE' => 'Partita IVA / sole trader: forfettario, IRPEF, autónomo, sole trader…',
+                    'COMPANY' => 'Structured entity: SRL, SPA, Ltd, GmbH, C-Corp…',
+                ],
+            ],
             'auto_approve' => [
                 'label' => 'Auto approve',
                 'description' => 'Whether autopilot may mark specs DONE after implement without waiting for your explicit Approve.',

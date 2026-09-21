@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, auto-approve, lucille, decision journal, code change history, release mode, project docs, dashboard comments, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, internal feedback comments on the dashboard/API, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "commenti dashboard", "disabilita commenti", "abilita commenti", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops".
+description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, account/economics mode, auto-approve, lucille, decision journal, code change history, release mode, project docs, dashboard comments, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, freelance/company account mode, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, internal feedback comments on the dashboard/API, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "commenti dashboard", "disabilita commenti", "abilita commenti", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops", "modalità account", "partita iva", "freelance", "preventivi".
 ---
 
 # Larapilot — Project Settings
@@ -9,7 +9,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, auto_approve, lucille, decision_log, code_history, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`.
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
 
 ## Output Economy
 
@@ -28,6 +28,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 | 📒 **Lucille** | Project tracking — owns the lucille on/exclude setting; default is always ON |
 | 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle + dashboard users (`larapilot:dashboard-user`), the `api_auth` toggle (`LARAPILOT_API_TOKEN` on `/larapilot/api/*`) **and** the `security_scan` toggle (`andreapollastri/checkpoint` in review/ship) |
 | 🔗 **Matt** | Integration Manager — owns Slack/Discord/Telegram notification toggles (secrets stay in `.env`) |
+| 💰 **Aurora** | FinOps — owns `account` (NONE / FREELANCE / COMPANY) and the Economics follow-up |
 
 ## Config & CLI
 
@@ -45,7 +46,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -154,6 +155,19 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 | `release_mode` | `YES — release ledger + /larapilot-release + Gitflow release branches` | `NO — classic develop/feature flow only (default)` |
 | `project_docs` | `YES — Albert maintains _project_docs/ (bootstrap from history if enabled mid-project)` | `NO — no handbook obligation (default)` |
 
+**6d. Account mode** — unlocks `/larapilot/economics` quotes (default NONE)
+
+- **AskQuestion prompt:** `Account (current: {VALUE}) — who is selling this work? Unlocks Economics quotes and tax.`
+- **Chat framing (one line):** 💰 Aurora — NONE by default; FREELANCE = partita IVA / sole trader; COMPANY = SRL / Ltd / structured.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NONE` | `NONE — no Economics section (default)` |
+| `FREELANCE` | `FREELANCE — partita IVA / sole trader (forfettario, IRPEF, autónomo, …)` |
+| `COMPANY` | `COMPANY — SRL, SPA, Ltd, GmbH, C-Corp — corporate tax + dividends` |
+
+When the user picks `FREELANCE` or `COMPANY`, remind once: next run `/larapilot-economics` (or `larapilot:economics-set --country=… --regime=… --hourly-rate=…`) to set country and tax regime. Do not collect rates in this skill.
+
 **7. Remote forge** — optional GitHub / GitLab / Bitbucket / Azure DevOps (each default OFF; orthogonal to git_mode)
 
 Ask only the forge(s) that match the user's remote (skip others or leave NO).
@@ -229,7 +243,7 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
 (`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
 
 ### 2. Persist
@@ -242,6 +256,7 @@ php artisan larapilot:settings-set \
   --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
+  --account=NONE \
   --auto-approve=NO \
   --lucille=YES \
   --decision-log=YES \
@@ -262,7 +277,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.

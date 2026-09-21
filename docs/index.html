@@ -1285,12 +1285,12 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.0.4</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
         <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a>.
-        Thirty personas, nineteen skills, apps and packages — install, enable MCP, run
+        Thirty personas, twenty skills, apps and packages — install, enable MCP, run
         <code>/larapilot-*</code> in your editor.
       </p>
       <div class="hero-actions">
@@ -1480,6 +1480,7 @@
             <code>/larapilot-autopilot</code> to batch plan+implement ·
             <code>/larapilot-settings</code> for project modes ·
             <code>/larapilot-usage</code> for Lucille time/token reports ·
+            <code>/larapilot-economics</code> for preventivi / SaaS ARR (when account is FREELANCE or COMPANY) ·
             <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
             <code>/larapilot-tracker</code> to mirror the backlog into a
             <a href="#deep-dive-tracker">project tracker</a>. More opt-in skills in
@@ -1488,7 +1489,8 @@
         </div>
 
         <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
-          <strong>git mode</strong>, <strong>testing</strong>, <strong>auto-approve</strong>,
+          <strong>git mode</strong>, <strong>testing</strong>, optional <strong>account</strong> (freelance / company Economics),
+          <strong>auto-approve</strong>,
           <strong>lucille</strong>, <strong>decision journal</strong>, <strong>code history</strong>,
           optional <strong>release mode</strong>, optional <strong>project docs</strong>,
           optional <strong>dashboard auth / api auth / github / gitlab / bitbucket / azure</strong> and
@@ -1531,6 +1533,10 @@
               <tr>
                 <td>Time/token spend, deadlines, Gantt</td>
                 <td><code>/larapilot-usage</code></td>
+              </tr>
+              <tr>
+                <td>Preventivo, tax, SaaS ARR / break-even</td>
+                <td><code>/larapilot-economics</code></td>
               </tr>
             </tbody>
           </table>
@@ -3169,7 +3175,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v3.0.4</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v3.1.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3181,6 +3187,18 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>3.1.0</strong> <span class="chip">2026-09-21</span></td>
+                  <td>
+                    <strong>Added:</strong> <strong>Account</strong> mode
+                    (<code>NONE</code> / <code>FREELANCE</code> / <code>COMPANY</code>)
+                    unlocks the <strong>Economics</strong> dashboard
+                    (<code>/larapilot/economics</code>) — preventivo, country tax
+                    (forfettario, SRL, Ltd, …), payback, and SaaS ARR / break-even
+                    forecasts. Skill <code>/larapilot-economics</code>;
+                    CLI <code>economics-set</code> / <code>economics-show</code>.
+                  </td>
+                </tr>
                 <tr>
                   <td><strong>3.0.4</strong> <span class="chip">2026-09-18</span></td>
                   <td>
@@ -3245,7 +3263,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Nineteen</strong> editor-native skills cover the full product lifecycle — discovery,
+          <p class="lead"><strong>Twenty</strong> editor-native skills cover the full product lifecycle — discovery,
             brownfield onboarding, delivery, ship, settings, usage (Lucille), Backstage, trackers, frontend companion,
             and three opt-in extras (<code>/larapilot-release</code>, <code>/larapilot-project-docs</code>,
             <code>/larapilot-custom-skill</code>). Each packaged skill is a <code>SKILL.md</code> under
@@ -3635,6 +3653,19 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </div>
             </div>
             <div class="skill-item">
+              <span class="skill-badge">economics</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-economics</code></h3>
+                <p><strong>Aurora</strong> calibrates country + tax regime (forfettario, SRL, Ltd, …) and produces a
+                  preventivo, net-to-owner after FY-2026 rates, payback, and — for SaaS — ARR, break-even customers,
+                  hosting, and a 36-month forecast. Requires <code>settings.account</code> <code>FREELANCE</code> or
+                  <code>COMPANY</code>. Dashboard: <code>/larapilot/economics</code>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:economics-set</code> ·
+                  <code>larapilot:economics-show</code> · <code>larapilot:settings-set --account=…</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
               <span class="skill-badge">time &amp; tokens</span>
               <div class="skill-body">
                 <h3><code>/larapilot-usage</code></h3>
@@ -3702,7 +3733,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
         <!-- Project settings -->
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
-          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, auto-approve, Lucille,
+          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, account (Economics), auto-approve, Lucille,
             optional release mode &amp; project docs, optional dashboard auth, and
             optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram (dashboard auth, forges and chat OFF by default).
             Configure with <code>/larapilot-settings</code> (AskQuestion). Values live under <code>settings:</code> in
@@ -3710,14 +3741,14 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </p>
 
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
 
           <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
             <code>git_mode: GITFLOW</code> ·
-            <code>testing: NORMAL</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
+            <code>testing: NORMAL</code> · <code>account: NONE</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
             <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>release_mode: NO</code> ·
             <code>project_docs: NO</code> · <code>comments: YES</code> ·
             <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> ·

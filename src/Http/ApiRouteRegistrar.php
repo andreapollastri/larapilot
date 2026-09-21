@@ -53,6 +53,9 @@ class ApiRouteRegistrar
                 Route::get('/metrics', [ApiController::class, 'metricsSnapshot'])
                     ->name('larapilot.api.metrics');
 
+                Route::get('/economics', [ApiController::class, 'economics'])
+                    ->name('larapilot.api.economics');
+
                 Route::get('/diagnostics', [ApiController::class, 'diagnostics'])
                     ->name('larapilot.api.diagnostics');
 

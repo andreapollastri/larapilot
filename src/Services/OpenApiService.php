@@ -42,6 +42,7 @@ class OpenApiService
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
                 ['name' => 'Backstage', 'description' => 'Software-catalog entities, TechDocs metadata, and a delivery snapshot for backstage.io'],
                 ['name' => 'Metrics', 'description' => 'Backlog / plan progress and effort-timing snapshot'],
+                ['name' => 'Economics', 'description' => 'Account-mode quotes, tax, payback, and SaaS forecast'],
                 ['name' => 'Diagnostics', 'description' => 'Read-only runtime status and redacted log tail for bug triage'],
             ],
             'paths' => [
@@ -202,6 +203,34 @@ class OpenApiService
                                 'content' => [
                                     'application/json' => [
                                         'schema' => ['$ref' => '#/components/schemas/MetricsResponse'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                '/economics' => [
+                    'get' => [
+                        'tags' => ['Economics'],
+                        'summary' => 'Economics snapshot',
+                        'description' => 'Account-mode quote (freelance or company), country tax, payback, and — for SaaS products — ARR, break-even customers, hosting, and a 36-month forecast. '
+                            .'Empty/`enabled: false` when `settings.account` is NONE.',
+                        'operationId' => 'getEconomics',
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Economics snapshot',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'enabled' => ['type' => 'boolean'],
+                                                'account' => ['type' => 'string', 'enum' => ['NONE', 'FREELANCE', 'COMPANY']],
+                                                'quote' => ['type' => 'object', 'nullable' => true],
+                                                'tax' => ['type' => 'object', 'nullable' => true],
+                                                'saas' => ['type' => 'object', 'nullable' => true],
+                                            ],
+                                        ],
                                     ],
                                 ],
                             ],

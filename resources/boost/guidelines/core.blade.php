@@ -6,7 +6,7 @@ Larapilot brings **spec-driven product development** to Laravel projects via [La
 
 **Runtime loading:** at skill activation read `.larapilot/shared-runtime.md` (core rules: settings, personas, language, output economy, sub-agents); each skill names the additional runtime packs it needs (`.larapilot/runtime-discovery.md`, `runtime-delivery.md`, `runtime-ux.md`, `runtime-ship.md`, `runtime-ops.md`). Task body templates: `.larapilot/task-templates.md`.
 
-**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `release_mode`, `project_docs`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents and **disables Lucille automatically** (re-enable with `larapilot:settings-set --lucille=YES`); boolean settings are `true`/`false` in YAML and `YES`/`NO` in envelopes; **Lucille and the decision journal (`decision_log`) are ON by default**; **`comments`, `code_history`, `release_mode`, `project_docs`, `dashboard_auth`, `api_auth`, `security_scan`, GitHub/GitLab/Bitbucket/Azure DevOps + notifications are OFF by default**; record every explicit user choice with `larapilot:decision-log` and check `larapilot:decision-check` before overriding one; external FE repo path lives in `LARAPILOT_FRONTEND_REPO_PATH` (`.env`) — never commit user-specific absolute paths in YAML (setup in `.larapilot/integrations.md`).
+**Project settings:** `.larapilot/config.yaml` → `settings` (`effort`, `backlog`, `git_mode`, `testing`, `account`, `auto_approve`, `lucille`, `decision_log`, `code_history`, `release_mode`, `project_docs`, `comments`, `dashboard_auth`, `api_auth`, `security_scan`, `github`, `gitlab`, `bitbucket`, `azure`, `notifications`, `notify_slack`, `notify_discord`, `notify_telegram` — set via `/larapilot-settings`, exposed on `config-show` as `data.settings`). Every skill must read and honor `data.settings` before planning or implementing — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**. Note: `GITFLOW` never auto-pushes (only `GITFLOW_PUSH` does); `ECO` never spawns sub-agents and **disables Lucille automatically** (re-enable with `larapilot:settings-set --lucille=YES`); boolean settings are `true`/`false` in YAML and `YES`/`NO` in envelopes; **Lucille and the decision journal (`decision_log`) are ON by default**; **`comments`, `code_history`, `release_mode`, `project_docs`, `dashboard_auth`, `api_auth`, `security_scan`, GitHub/GitLab/Bitbucket/Azure DevOps + notifications are OFF by default**; record every explicit user choice with `larapilot:decision-log` and check `larapilot:decision-check` before overriding one; external FE repo path lives in `LARAPILOT_FRONTEND_REPO_PATH` (`.env`) — never commit user-specific absolute paths in YAML (setup in `.larapilot/integrations.md`).
 
 ### When to use Larapilot
 
@@ -22,6 +22,7 @@ Use Larapilot skills when the user wants to:
 - Publish the repo into a **Backstage developer portal** — catalog entity + TechDocs (`larapilot-backstage`)
 - Mirror the backlog into a **project tracker** — Linear, Asana, Jira, Trello, ClickUp, Monday (`larapilot-tracker`)
 - Interrogate **time/token tracking** and deadlines with Lucille (`larapilot-usage`)
+- Build a **preventivo / Economics** quote (freelance or company, country tax, SaaS ARR) (`larapilot-economics`)
 - Plan a spec with technical tasks and test strategy
 - Implement a planned spec in a Laravel codebase
 - Review and accept (or reject) a delivered increment
@@ -47,6 +48,7 @@ Use Larapilot skills when the user wants to:
 | Project docs (optional) | `larapilot-project-docs` | Living handbook in `_project_docs/` when `project_docs=YES` |
 | Custom skills | `larapilot-custom-skill` | Author skills under `.larapilot/skills/` via `larapilot:custom-skill-add` (auto-registered with Boost; listed at `/larapilot/skills`) |
 | Settings | `larapilot-settings` | Persist project settings in `.larapilot/config.yaml` |
+| Economics (optional) | `larapilot-economics` | Quotes, tax, payback, SaaS ARR when `account` is FREELANCE or COMPANY |
 | Usage / time tracking | `larapilot-usage` | Lucille: query ledger (tokens/minutes), schedule drift, export Markdown resoconto |
 | Developer portal (optional) | `larapilot-backstage` | `catalog-info.yaml` + TechDocs (`mkdocs.yml`, `.larapilot/techdocs/`) for backstage.io |
 | Project tracker (optional) | `larapilot-tracker` | Stories + plan subtasks in Linear/Asana/Jira/Trello/ClickUp/Monday; links in `.larapilot/tracker.yaml` |
@@ -73,7 +75,9 @@ Register the Larapilot MCP server in your editor (in addition to `laravel-boost`
 Skills call Artisan commands — never invent persistence logic:
 
 - `php artisan larapilot:config-show`
-- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --auto-approve=… --lucille=… --decision-log=… --code-history=…`
+- `php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=…`
+- `php artisan larapilot:economics-set --country=… --regime=… --hourly-rate=…` _(when `account` is FREELANCE or COMPANY)_
+- `php artisan larapilot:economics-show`
 - `php artisan larapilot:prd-write`
 - `php artisan larapilot:validate-prd`
 - `php artisan larapilot:frontend-set --path=/abs/fe/repo [--stack=React]`

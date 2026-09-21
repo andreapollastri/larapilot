@@ -12,6 +12,7 @@ use Larapilot\Services\ApiService;
 use Larapilot\Services\BackstageService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\EconomicsService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MetricsService;
 use Larapilot\Services\OpenApiService;
@@ -29,6 +30,7 @@ class ApiController
         protected InternalFeedbackService $feedback,
         protected DiagnosticsService $diagnostics,
         protected MetricsService $metrics,
+        protected EconomicsService $economics,
     ) {}
 
     public function board(Request $request): JsonResponse
@@ -74,6 +76,13 @@ class ApiController
         $this->guard();
 
         return $this->cacheable($request, $this->metrics->snapshot());
+    }
+
+    public function economics(Request $request): JsonResponse
+    {
+        $this->guard();
+
+        return $this->cacheable($request, $this->economics->snapshot());
     }
 
     public function storeComment(Request $request, string $code): JsonResponse

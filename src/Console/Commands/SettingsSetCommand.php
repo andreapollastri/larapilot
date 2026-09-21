@@ -14,6 +14,7 @@ class SettingsSetCommand extends LarapilotCommand
                             {--backlog= : Backlog granularity: LEAN, STANDARD, or GRANULAR}
                             {--git-mode= : Git mode: NO_GITFLOW, GITFLOW, or GITFLOW_PUSH}
                             {--testing= : Testing mode: MINIMAL, NORMAL, or BEST}
+                            {--account= : Account mode: NONE, FREELANCE, or COMPANY (unlocks /larapilot/economics)}
                             {--auto-approve= : Auto-approve after implement: YES or NO}
                             {--lucille= : Lucille usage tracking: YES (default) or NO to exclude explicitly}
                             {--decision-log= : Decision journal + regression guard: YES (default) or NO}
@@ -91,6 +92,26 @@ class SettingsSetCommand extends LarapilotCommand
             $partial['testing'] = $testing;
         }
 
+        $account = $this->normalizeOption('account');
+        if ($account !== null) {
+            $known = array_merge($config->allowedAccountModes(), [
+                'OFF', 'NO', 'FALSE', 'DISABLED', '0',
+                'SOLE', 'SOLE_TRADER', 'PIVA', 'PARTITA_IVA', 'IVA', 'FORFETTARIO', 'INDIPENDENTE',
+                'SRL', 'SRLS', 'SPA', 'LTD', 'GMBH', 'LLC', 'SOCIETA', 'CORPORATE',
+            ]);
+
+            if (! in_array($account, $known, true)) {
+                return $this->failure(
+                    'E_INVALID_INPUT',
+                    "Invalid --account value: {$account}.",
+                    $this->exitForCode('E_INVALID_INPUT'),
+                    'Allowed: '.implode(', ', $config->allowedAccountModes()).'.'
+                );
+            }
+
+            $partial['account'] = $config->normalizeAccount($account);
+        }
+
         foreach ([
             'auto-approve' => ['auto_approve', $config->allowedAutoApproveModes()],
             'lucille' => ['lucille', $config->allowedLucilleModes()],
@@ -131,7 +152,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --comments, --dashboard-auth, --api-auth, --security-scan, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --comments, --dashboard-auth, --api-auth, --security-scan, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

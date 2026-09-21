@@ -5,6 +5,8 @@ settings:
   backlog: STANDARD
   git_mode: GITFLOW
   testing: NORMAL
+  # Account mode — NONE, FREELANCE, or COMPANY. Unlocks /larapilot/economics.
+  account: NONE
   auto_approve: false
   lucille: true
   # Decision journal + regression guard (.larapilot/decisions.yaml) — ON by default.
@@ -51,6 +53,7 @@ paths:
   releases: .larapilot/releases.yaml
   project_docs: _project_docs/
   custom_skills: .larapilot/skills/
+  economics: .larapilot/economics.yaml
 
 workflow:
   statuses:

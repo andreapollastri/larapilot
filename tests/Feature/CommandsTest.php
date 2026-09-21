@@ -354,6 +354,7 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('backlog: STANDARD')
         ->and($yaml)->toContain('git_mode: GITFLOW')
         ->and($yaml)->toContain('testing: NORMAL')
+        ->and($yaml)->toContain('account: NONE')
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
         ->and($yaml)->toContain('comments: false')
@@ -401,6 +402,7 @@ it('persists project settings via settings-set', function (): void {
         'backlog' => 'LEAN',
         'git_mode' => 'GITFLOW_PUSH',
         'testing' => 'BEST',
+        'account' => 'NONE',
         'auto_approve' => 'YES',
         'lucille' => 'NO',
         'decision_log' => 'NO',

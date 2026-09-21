@@ -55,6 +55,12 @@ class DashboardRouteRegistrar
                 Route::get('/usage/report.md', [DashboardController::class, 'usageReport'])
                     ->name('larapilot.dashboard.usage.report');
 
+                Route::get('/economics', [DashboardController::class, 'economics'])
+                    ->name('larapilot.dashboard.economics');
+
+                Route::get('/economics/report.md', [DashboardController::class, 'economicsReport'])
+                    ->name('larapilot.dashboard.economics.report');
+
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec');

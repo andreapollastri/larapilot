@@ -14,6 +14,9 @@ return [
         'backlog' => 'STANDARD',
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
+        // Account mode — NONE, FREELANCE, or COMPANY. Unlocks /larapilot/economics
+        // quotes calibrated to country tax (forfettario, SRL, Ltd, …).
+        'account' => 'NONE',
         'auto_approve' => false,
         // Lucille · Project tracking (usage ledger + schedule) is ON by default; set false to exclude explicitly.
         'lucille' => true,
@@ -102,6 +105,7 @@ return [
         'releases' => '.larapilot/releases.yaml',
         'project_docs' => '_project_docs/',
         'custom_skills' => '.larapilot/skills/',
+        'economics' => '.larapilot/economics.yaml',
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
+use Larapilot\Services\EconomicsService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
@@ -21,6 +22,7 @@ class DashboardController
         protected DashboardService $dashboard,
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
+        protected EconomicsService $economics,
     ) {}
 
     public function index(): View
@@ -75,6 +77,23 @@ class DashboardController
         $this->guard();
 
         return view('larapilot::dashboard.usage', $this->dashboard->usage());
+    }
+
+    public function economics(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.economics', $this->dashboard->economics());
+    }
+
+    public function economicsReport(): Response
+    {
+        $this->guard();
+
+        return response($this->economics->reportMarkdown(), 200, [
+            'Content-Type' => 'text/markdown; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="larapilot-economics.md"',
+        ]);
     }
 
     public function git(Request $request): View

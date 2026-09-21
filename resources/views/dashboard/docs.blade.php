@@ -192,6 +192,9 @@
                 <li @class(['is-on' => ($s['testing'] ?? 'NORMAL') === 'BEST'])>
                     <strong>Testing = BEST</strong> — E2E (Playwright/Dusk), viewport matrix, axe, Lighthouse when applicable.
                 </li>
+                <li @class(['is-on' => in_array($s['account'] ?? 'NONE', ['FREELANCE', 'COMPANY'], true)])>
+                    <strong>Account = {{ $s['account'] ?? 'NONE' }}</strong> — Economics quotes on <a href="{{ route('larapilot.dashboard.economics') }}">/larapilot/economics</a> (freelance or company tax). Calibrate with <code>/larapilot-economics</code>.
+                </li>
                 <li @class(['is-on' => $isYes($s['auto_approve'] ?? 'NO')])>
                     <strong>Auto approve = YES</strong> — autopilot may mark specs DONE from REVIEW without human Approve.
                 </li>
@@ -247,7 +250,8 @@
                     <tr><td><code>/larapilot-ship</code> <span class="skill-optional">optional</span></td><td>Security gate + deploy + launch checks</td><td>🚀 Jack · 🔐 Lars · ⚖️ Violet</td></tr>
                     <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td><code>_project_docs/</code> handbook</td><td>📝 Albert</td></tr>
-                    <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars</td></tr>
+                    <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
+                    <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Preventivo, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query, Gantt, Markdown report</td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
@@ -284,7 +288,8 @@
                     <tr><td>🗄️ Mike</td><td>Database — schema, migrations, search, data architecture</td></tr>
                     <tr><td>🔗 Matt</td><td>Integrations — OAuth, webhooks, tracker sync, notifications</td></tr>
                     <tr><td>🎧 Sophia</td><td>Support — post-ship bug intake and triage</td></tr>
-                    <tr><td>💰 Aurora · ⚖️ Violet · 📈 Emma</td><td>FinOps, legal/privacy, SEO &amp; performance — mainly ship/discovery gates</td></tr>
+                    <tr><td>💰 Aurora</td><td>FinOps — Account mode, Economics quotes, country tax, SaaS ARR</td></tr>
+                    <tr><td>⚖️ Violet · 📈 Emma</td><td>Legal/privacy and SEO &amp; performance — mainly ship/discovery gates</td></tr>
                 </tbody>
             </table>
         </section>

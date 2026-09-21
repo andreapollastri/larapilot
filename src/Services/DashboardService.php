@@ -20,6 +20,7 @@ class DashboardService
         protected DecisionService $decisions,
         protected GitService $git,
         protected CustomSkillService $customSkills,
+        protected EconomicsService $economicsService,
     ) {}
 
     /**
@@ -235,5 +236,13 @@ class DashboardService
     public function git(?string $authorEmail = null): array
     {
         return $this->git->contributionActivity($authorEmail);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function economics(): array
+    {
+        return $this->economicsService->dashboard();
     }
 }

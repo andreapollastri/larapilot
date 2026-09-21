@@ -93,6 +93,7 @@ class ChoicesService
             'backlog' => $this->config->allowedBacklogModes(),
             'git_mode' => $this->config->allowedGitModes(),
             'testing' => $this->config->allowedTestingModes(),
+            'account' => $this->config->allowedAccountModes(),
             'auto_approve' => $this->config->allowedAutoApproveModes(),
             'lucille' => $this->config->allowedLucilleModes(),
             'decision_log' => $this->config->allowedDecisionLogModes(),
