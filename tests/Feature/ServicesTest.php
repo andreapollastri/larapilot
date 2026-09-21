@@ -250,7 +250,10 @@ it('creates intake directories, readme stubs, and gitkeeps on install', function
         ->and(is_dir(base_path('.larapilot/research/reference-products')))->toBeTrue()
         ->and(is_file(base_path('.larapilot/client-materials/README.md')))->toBeTrue()
         ->and(is_file(base_path('.larapilot/legacy/README.md')))->toBeTrue()
-        ->and(is_file(base_path('.larapilot/research/README.md')))->toBeTrue();
+        ->and(is_file(base_path('.larapilot/research/README.md')))->toBeTrue()
+        ->and(is_dir(base_path('.larapilot/docs/devs')))->toBeTrue()
+        ->and(is_file(base_path('.larapilot/docs/devs/README.md')))->toBeTrue()
+        ->and(is_file(base_path('.larapilot/docs/devs/TEMPLATE.md')))->toBeTrue();
 
     foreach ($config->workspaceDirectoryPaths() as $directory) {
         expect(is_file(rtrim($directory, '/\\').'/.gitkeep'))->toBeTrue();
@@ -258,11 +261,44 @@ it('creates intake directories, readme stubs, and gitkeeps on install', function
 
     $info = $config->setupInfo();
 
-    expect($info['paths'])->toHaveKeys(['client_materials', 'legacy', 'research', 'design_systems'])
+    expect($info['paths'])->toHaveKeys(['client_materials', 'legacy', 'research', 'design_systems', 'dev_docs'])
         ->and($info['paths']['client_materials'])->toContain('.larapilot/client-materials')
         ->and($info['paths']['legacy'])->toContain('.larapilot/legacy')
         ->and($info['paths']['research'])->toContain('.larapilot/research')
-        ->and($info['paths']['design_systems'])->toContain('.larapilot/design-systems');
+        ->and($info['paths']['design_systems'])->toContain('.larapilot/design-systems')
+        ->and($info['paths']['dev_docs'])->toContain('.larapilot/docs/devs');
+});
+
+it('reports the developer domain docs catch-up state', function (): void {
+    $config = app(ConfigService::class);
+    $config->ensureDirectories();
+
+    $status = $config->devDocsStatus();
+
+    expect($status['documented'])->toBeFalse()
+        ->and($status['count'])->toBe(0)
+        ->and($status['domains'])->toBe([])
+        ->and($status['path'])->toContain('.larapilot/docs/devs');
+
+    file_put_contents(base_path('.larapilot/docs/devs/webhook-ingestion.md'), '# Webhook ingestion');
+    file_put_contents(base_path('.larapilot/docs/devs/billing.md'), '# Billing');
+
+    $status = $config->devDocsStatus();
+
+    expect($status['documented'])->toBeTrue()
+        ->and($status['count'])->toBe(2)
+        ->and($status['domains'])->toBe(['billing', 'webhook-ingestion']);
+});
+
+it('never overwrites developer domain docs that the project already wrote', function (): void {
+    $config = app(ConfigService::class);
+    $config->ensureDirectories();
+
+    file_put_contents(base_path('.larapilot/docs/devs/README.md'), '# Our own index');
+
+    $config->ensureDevDocsScaffold();
+
+    expect(file_get_contents(base_path('.larapilot/docs/devs/README.md')))->toBe('# Our own index');
 });
 
 it('writes files atomically, creating parent directories', function (): void {

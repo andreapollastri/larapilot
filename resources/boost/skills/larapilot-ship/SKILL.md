@@ -9,7 +9,7 @@ Release accepted increments to production. **Oliver** runs red-team assessment (
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), and `.larapilot/runtime-ops.md` (support runbook / Sophia). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs the **ship ceremony** (merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, `release-set --status=shipped`).
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), `.larapilot/runtime-ops.md` (support runbook / Sophia), and `.larapilot/runtime-dev-docs.md` (**Freshness gate** — no shipped feature leaves without a current domain doc). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs the **ship ceremony** (merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, `release-set --status=shipped`).
 
 ## Output Economy
 

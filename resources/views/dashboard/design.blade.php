@@ -61,13 +61,15 @@
 
     .design-stage {
         display: grid;
-        grid-template-columns: 290px 1fr;
+        grid-template-columns: 280px minmax(0, 1fr);
         gap: 16px;
         align-items: start;
     }
-    @media (max-width: 1000px) {
-        .design-stage { grid-template-columns: 1fr; }
-        .design-toc { position: static !important; max-height: none !important; }
+    @media (max-width: 1100px) {
+        .design-stage { grid-template-columns: minmax(0, 1fr); }
+        /* stacked above the viewer: keep the index scrollable so it never
+           pushes the screen itself below the fold */
+        .design-toc { position: static !important; max-height: 46vh !important; }
     }
 
     /* index: one list, ordered, with the entry screen of each flow marked */
@@ -117,13 +119,28 @@
     .toc-flow {
         font-weight: 600;
         font-size: 0.82rem;
-        margin-top: 6px;
+        gap: 10px;
+    }
+    .toc-flow .toc-code {
+        font-variant-numeric: tabular-nums;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        flex: none;
+    }
+    .toc-flow.is-active .toc-code { color: inherit; }
+    .toc-flow .toc-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
     }
     .toc-flow .toc-count {
         margin-left: auto;
         font-size: 0.7rem;
         font-weight: 600;
         color: var(--muted);
+        flex: none;
     }
     .toc-screens { list-style: none; margin: 0 0 4px; padding: 0 0 0 10px; border-left: 1px solid var(--border); }
     .toc-screen { padding-left: 12px; font-size: 0.82rem; }
@@ -144,6 +161,7 @@
         border: 1px solid var(--status-done);
         color: var(--status-done);
         white-space: nowrap;
+        flex: none;
     }
 
     .design-viewer { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
@@ -160,7 +178,13 @@
         flex-wrap: wrap;
     }
     .design-crumb { display: flex; flex-direction: column; min-width: 0; }
-    .design-crumb .flow { color: var(--muted); font-size: 0.72rem; }
+    .design-crumb .flow {
+        color: var(--muted);
+        font-size: 0.72rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .design-crumb .screen { font-weight: 600; }
     .design-nav { display: flex; align-items: center; gap: 8px; }
     .design-nav .counter { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.78rem; }
@@ -178,66 +202,126 @@
     .design-nav .step:disabled { opacity: 0.4; cursor: default; }
     .design-frame {
         width: 100%;
-        height: min(76vh, 900px);
+        height: clamp(420px, 76vh, 900px);
         border: 0;
         background: #fff;
     }
 
-    .flow-gallery { padding: 16px 18px 20px; }
-    .flow-gallery header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-    .flow-gallery h3 { margin: 0; font-size: 0.95rem; }
-    .flow-gallery .hint { margin: 4px 0 14px; color: var(--muted); font-size: 0.8rem; }
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 12px;
+    /* screen galleries: live previews, as many per row as the width allows */
+    .screen-section { padding: 16px 18px 20px; }
+    .screen-section > header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px 14px;
+        flex-wrap: wrap;
+        margin-bottom: 2px;
     }
-    .gallery-card {
+    .screen-section h3 { margin: 0; font-size: 0.95rem; }
+    .screen-section .hint { margin: 4px 0 14px; color: var(--muted); font-size: 0.8rem; }
+
+    .screen-grid {
+        --thumb-zoom: 0.32;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+        gap: 14px;
+    }
+    @media (min-width: 1600px) {
+        .screen-grid { --thumb-zoom: 0.28; }
+    }
+
+    .screen-card {
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
-        cursor: pointer;
-        text-decoration: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+        font: inherit;
         color: inherit;
-        display: block;
+        text-decoration: none;
+        cursor: pointer;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
     }
-    .gallery-card:hover { text-decoration: none; border-color: var(--accent); }
-    .gallery-card.is-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
-    .gallery-thumb {
-        height: 170px;
+    .screen-card:hover {
+        text-decoration: none;
+        border-color: var(--accent);
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+    }
+    .screen-card:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+    .screen-card.is-active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .screen-thumb {
+        position: relative;
+        aspect-ratio: 4 / 3;
         overflow: hidden;
         background: #fff;
         border-bottom: 1px solid var(--border);
     }
-    .gallery-thumb iframe {
-        display: block;
-        width: 200%;
-        height: 340px;
+    .screen-thumb iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% / var(--thumb-zoom));
+        height: calc(100% / var(--thumb-zoom));
         border: 0;
         pointer-events: none;
-        transform: scale(0.5);
+        transform: scale(var(--thumb-zoom));
         transform-origin: 0 0;
     }
-    .gallery-card-label {
-        padding: 9px 12px 12px;
-        font-size: 0.82rem;
-        font-weight: 600;
+    /* keeps the preview from swallowing clicks meant for the card */
+    .screen-thumb::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+    }
+
+    .screen-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 10px 12px 12px;
+        min-width: 0;
+    }
+    .screen-meta .row {
         display: flex;
         align-items: center;
         gap: 8px;
+        min-width: 0;
     }
-
-    details.all-screens summary {
-        cursor: pointer;
+    .screen-code {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--accent);
+        flex: none;
+    }
+    .screen-name {
         font-size: 0.85rem;
         font-weight: 600;
-        padding: 14px 18px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
-    details.all-screens .all-body { padding: 0 18px 18px; }
-    .all-flow { margin-top: 18px; }
-    .all-flow:first-child { margin-top: 6px; }
-    .all-flow h4 { margin: 0 0 8px; font-size: 0.86rem; }
+    .screen-flow {
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
     .empty-card { padding: 40px 28px; text-align: center; }
     .empty-card h2 { margin: 0 0 8px; }
@@ -254,6 +338,51 @@
         $packageUrl = $package_url ?? '';
         $projectTitle = $project_title ?? 'Larapilot';
 
+        // Normalize the catalog once: every flow keeps its screens in walk
+        // order, entry screen first.
+        $flows = [];
+
+        foreach ($items as $item) {
+            $entry = $item['entry'] ?? null;
+            $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+
+            usort($screens, static function (array $a, array $b) use ($entry): int {
+                $aEntry = ($a['file'] ?? null) === $entry ? 0 : 1;
+                $bEntry = ($b['file'] ?? null) === $entry ? 0 : 1;
+
+                return $aEntry <=> $bEntry;
+            });
+
+            $normalized = [];
+
+            foreach ($screens as $screen) {
+                if (empty($screen['url'])) {
+                    continue;
+                }
+
+                $normalized[] = [
+                    'url' => (string) $screen['url'],
+                    'label' => (string) ($screen['label'] ?? $screen['file'] ?? ''),
+                    'entry' => ($screen['file'] ?? null) === $entry,
+                ];
+            }
+
+            if ($normalized === []) {
+                continue;
+            }
+
+            $code = (string) ($item['code'] ?? '');
+            $title = (string) ($item['title'] ?? $code);
+
+            $flows[] = [
+                'code' => $code,
+                'title' => $title,
+                'label' => $code.' — '.$title,
+                'entry_url' => (string) ($item['entry_url'] ?? $normalized[0]['url']),
+                'screens' => $normalized,
+            ];
+        }
+
         // One ordered walk through the whole package: the index first, then
         // every flow, entry screen leading. Prev / next follow this order.
         $stops = [];
@@ -267,31 +396,33 @@
             ];
         }
 
-        foreach ($items as $item) {
-            $flow = ($item['code'] ?? '').' — '.($item['title'] ?? '');
-            $entry = $item['entry'] ?? null;
-            $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+        $allScreens = [];
 
-            usort($screens, static function (array $a, array $b) use ($entry): int {
-                $aEntry = ($a['file'] ?? null) === $entry ? 0 : 1;
-                $bEntry = ($b['file'] ?? null) === $entry ? 0 : 1;
-
-                return $aEntry <=> $bEntry;
-            });
-
-            foreach ($screens as $screen) {
-                if (empty($screen['url'])) {
-                    continue;
-                }
-
+        foreach ($flows as $flow) {
+            foreach ($flow['screens'] as $screen) {
                 $stops[] = [
                     'url' => $screen['url'],
-                    'flow' => $flow,
-                    'label' => $screen['label'] ?? $screen['file'],
-                    'entry' => ($screen['file'] ?? null) === $entry,
+                    'flow' => $flow['label'],
+                    'label' => $screen['label'],
+                    'entry' => $screen['entry'],
                 ];
+
+                $allScreens[] = $screen + ['code' => $flow['code'], 'flow_title' => $flow['title']];
             }
         }
+
+        // Open on the first real mockup rather than the cover sheet — the
+        // index stays reachable as stop one of the walk.
+        $start = 0;
+
+        foreach ($stops as $position => $stop) {
+            if ($stop['flow'] !== 'Overview') {
+                $start = $position;
+                break;
+            }
+        }
+
+        $startStop = $stops[$start] ?? null;
     @endphp
 
     <div class="design-page">
@@ -299,12 +430,13 @@
             <div>
                 <h2>Design</h2>
                 <p class="sub">
-                    Start at the presentation index and walk the mockups for <strong>{{ $projectTitle }}</strong> in order
+                    Every mockup screen for <strong>{{ $projectTitle }}</strong>, flow by flow
                     @if ($available)
                         — {{ $catalog['spec_count'] }} flow{{ $catalog['spec_count'] === 1 ? '' : 's' }},
                         {{ $catalog['screen_count'] }} screen{{ $catalog['screen_count'] === 1 ? '' : 's' }}
                     @endif
-                    . Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
+                    . Pick one from the gallery, step through them with the arrows, or start at the presentation index.
+                    Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
                 </p>
             </div>
             <div class="design-actions">
@@ -331,35 +463,36 @@
                     <p class="toc-lead">Click a flow to open its first screen, or step through everything with the arrows in the viewer.</p>
 
                     @if ($presentationUrl)
-                        <button type="button" class="toc-item is-overview is-active" data-src="{{ $presentationUrl }}">
+                        <button type="button" class="toc-item is-overview" data-src="{{ $presentationUrl }}">
                             Presentation index
                             <span class="toc-badge">start</span>
                         </button>
                     @endif
 
                     <ul class="toc-list">
-                        @foreach ($items as $item)
-                            @php
-                                $entryUrl = $item['entry_url'] ?? null;
-                                $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
-                            @endphp
+                        @foreach ($flows as $flow)
                             <li>
-                                <button type="button" class="toc-flow" @if ($entryUrl) data-src="{{ $entryUrl }}" @endif>
-                                    <span>{{ $item['code'] }} — {{ $item['title'] }}</span>
-                                    <span class="toc-count">{{ count($screens) }}</span>
+                                <button type="button" class="toc-flow" data-src="{{ $flow['entry_url'] }}" title="{{ $flow['label'] }}">
+                                    <span class="toc-code">{{ $flow['code'] }}</span>
+                                    <span class="toc-name">{{ $flow['title'] }}</span>
+                                    @if (count($flow['screens']) > 1)
+                                        <span class="toc-count">{{ count($flow['screens']) }}</span>
+                                    @endif
                                 </button>
-                                <ul class="toc-screens">
-                                    @foreach ($screens as $screen)
-                                        <li>
-                                            <button type="button" class="toc-item toc-screen" data-src="{{ $screen['url'] ?? '' }}">
-                                                {{ $screen['label'] ?? $screen['file'] }}
-                                                @if (($screen['file'] ?? null) === ($item['entry'] ?? null))
-                                                    <span class="toc-badge">entry</span>
-                                                @endif
-                                            </button>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                                @if (count($flow['screens']) > 1)
+                                    <ul class="toc-screens">
+                                        @foreach ($flow['screens'] as $screen)
+                                            <li>
+                                                <button type="button" class="toc-item toc-screen" data-src="{{ $screen['url'] }}">
+                                                    {{ $screen['label'] }}
+                                                    @if ($screen['entry'])
+                                                        <span class="toc-badge">entry</span>
+                                                    @endif
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </li>
                         @endforeach
                     </ul>
@@ -369,56 +502,54 @@
                     <section class="card design-frame-wrap">
                         <div class="design-frame-bar">
                             <div class="design-crumb">
-                                <span class="flow" id="design-flow">Overview</span>
-                                <span class="screen" id="design-caption">Presentation index</span>
+                                <span class="flow" id="design-flow">{{ $startStop['flow'] ?? 'Overview' }}</span>
+                                <span class="screen" id="design-caption">{{ $startStop['label'] ?? 'Presentation index' }}</span>
                             </div>
                             <div class="design-nav">
                                 <span class="counter" id="design-counter"></span>
                                 <button type="button" class="step" id="design-prev" title="Previous screen" aria-label="Previous screen">←</button>
                                 <button type="button" class="step" id="design-next" title="Next screen" aria-label="Next screen">→</button>
-                                <a class="btn ghost" id="design-open" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
+                                <a class="btn ghost" id="design-open" href="{{ $startStop['url'] ?? $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
                             </div>
                         </div>
-                        <iframe id="design-frame" class="design-frame" src="{{ $presentationUrl }}" title="Design viewer"></iframe>
+                        <iframe id="design-frame" class="design-frame" src="{{ $startStop['url'] ?? $presentationUrl }}" title="Design viewer"></iframe>
                     </section>
 
-                    <section class="card flow-gallery" id="flow-gallery" hidden>
+                    <section class="card screen-section" id="flow-gallery" hidden>
                         <header>
                             <h3 id="flow-gallery-title"></h3>
                         </header>
                         <p class="hint">Screens in this flow. Click one to open it in the viewer above.</p>
-                        <div class="gallery-grid" id="flow-gallery-grid"></div>
+                        <div class="screen-grid" id="flow-gallery-grid"></div>
                     </section>
                 </div>
             </div>
 
-            <details class="card all-screens">
-                <summary>All {{ $catalog['screen_count'] }} screens, flow by flow</summary>
-                <div class="all-body">
-                    @foreach ($items as $item)
-                        <div class="all-flow">
-                            <h4>{{ $item['code'] }} — {{ $item['title'] }}</h4>
-                            <div class="gallery-grid">
-                                @foreach ($item['screens'] ?? [] as $screen)
-                                    <a class="gallery-card" href="{{ $screen['url'] ?? '#' }}" data-src="{{ $screen['url'] ?? '' }}">
-                                        @if (! empty($screen['url']))
-                                            <div class="gallery-thumb">
-                                                <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $screen['label'] ?? $screen['file'] }}" tabindex="-1"></iframe>
-                                            </div>
-                                        @endif
-                                        <div class="gallery-card-label">
-                                            {{ $screen['label'] ?? $screen['file'] }}
-                                            @if (($screen['file'] ?? null) === ($item['entry'] ?? null))
-                                                <span class="toc-badge">entry</span>
-                                            @endif
-                                        </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
+            <section class="card screen-section all-screens">
+                <header>
+                    <h3>All {{ $catalog['screen_count'] }} screens, flow by flow</h3>
+                    <span class="hint" style="margin: 0;">Live previews — click one to open it in the viewer above.</span>
+                </header>
+                <div class="screen-grid">
+                    @foreach ($allScreens as $screen)
+                        <a class="screen-card" href="{{ $screen['url'] }}" data-src="{{ $screen['url'] }}">
+                            <span class="screen-thumb">
+                                <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $screen['code'] }} — {{ $screen['label'] }}" tabindex="-1" aria-hidden="true" scrolling="no"></iframe>
+                            </span>
+                            <span class="screen-meta">
+                                <span class="row">
+                                    <span class="screen-code">{{ $screen['code'] }}</span>
+                                    <span class="screen-name">{{ $screen['label'] }}</span>
+                                    @if ($screen['entry'])
+                                        <span class="toc-badge" style="margin-left: auto;">entry</span>
+                                    @endif
+                                </span>
+                                <span class="screen-flow">{{ $screen['flow_title'] }}</span>
+                            </span>
+                        </a>
                     @endforeach
                 </div>
-            </details>
+            </section>
         @endif
     </div>
 @endsection
@@ -430,6 +561,7 @@
         if (!frame) return;
 
         const stops = @json(array_values($stops));
+        const start = @json($start);
         const caption = document.getElementById('design-caption');
         const flowLabel = document.getElementById('design-flow');
         const counter = document.getElementById('design-counter');
@@ -439,9 +571,50 @@
         const gallery = document.getElementById('flow-gallery');
         const galleryTitle = document.getElementById('flow-gallery-title');
         const galleryGrid = document.getElementById('flow-gallery-grid');
-        let current = 0;
+        let current = start;
 
         const indexOf = (src) => stops.findIndex((stop) => stop.url === src);
+
+        const card = (item, active) => {
+            const node = document.createElement('a');
+            node.className = 'screen-card' + (active ? ' is-active' : '');
+            node.href = item.url;
+            node.dataset.src = item.url;
+
+            const thumb = document.createElement('span');
+            thumb.className = 'screen-thumb';
+            const preview = document.createElement('iframe');
+            preview.src = item.url;
+            preview.loading = 'lazy';
+            preview.tabIndex = -1;
+            preview.setAttribute('aria-hidden', 'true');
+            preview.setAttribute('scrolling', 'no');
+            preview.title = item.label;
+            thumb.appendChild(preview);
+
+            const meta = document.createElement('span');
+            meta.className = 'screen-meta';
+            const row = document.createElement('span');
+            row.className = 'row';
+            const name = document.createElement('span');
+            name.className = 'screen-name';
+            name.textContent = item.label;
+            row.appendChild(name);
+
+            if (item.entry) {
+                const badge = document.createElement('span');
+                badge.className = 'toc-badge';
+                badge.style.marginLeft = 'auto';
+                badge.textContent = 'entry';
+                row.appendChild(badge);
+            }
+
+            meta.appendChild(row);
+            node.appendChild(thumb);
+            node.appendChild(meta);
+
+            return node;
+        };
 
         const renderGallery = (stop) => {
             if (!gallery || !galleryGrid) return;
@@ -456,43 +629,7 @@
 
             if (galleryTitle) galleryTitle.textContent = stop.flow;
             galleryGrid.innerHTML = '';
-
-            siblings.forEach((item) => {
-                const card = document.createElement('a');
-                card.className = 'gallery-card' + (item.url === stop.url ? ' is-active' : '');
-                card.href = item.url;
-                card.dataset.src = item.url;
-
-                const thumb = document.createElement('div');
-                thumb.className = 'gallery-thumb';
-                const preview = document.createElement('iframe');
-                preview.src = item.url;
-                preview.loading = 'lazy';
-                preview.tabIndex = -1;
-                preview.title = item.label;
-                thumb.appendChild(preview);
-
-                const label = document.createElement('div');
-                label.className = 'gallery-card-label';
-                label.textContent = item.label;
-
-                if (item.entry) {
-                    const badge = document.createElement('span');
-                    badge.className = 'toc-badge';
-                    badge.textContent = 'entry';
-                    label.appendChild(badge);
-                }
-
-                card.appendChild(thumb);
-                card.appendChild(label);
-                card.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    go(indexOf(item.url));
-                });
-
-                galleryGrid.appendChild(card);
-            });
-
+            siblings.forEach((item) => galleryGrid.appendChild(card(item, item.url === stop.url)));
             gallery.hidden = false;
         };
 
@@ -508,7 +645,7 @@
             if (prev) prev.disabled = position === 0;
             if (next) next.disabled = position === stops.length - 1;
 
-            document.querySelectorAll('.toc-item, .toc-flow').forEach((el) => {
+            document.querySelectorAll('.toc-item, .toc-flow, .all-screens .screen-card').forEach((el) => {
                 el.classList.toggle('is-active', el.dataset.src === stop.url);
             });
 
@@ -522,14 +659,17 @@
             frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         };
 
-        document.querySelectorAll('.toc-item, .toc-flow, .all-screens .gallery-card').forEach((el) => {
-            el.addEventListener('click', (event) => {
-                const src = el.dataset.src;
-                if (!src) return;
-                event.preventDefault();
-                const position = indexOf(src);
-                if (position >= 0) go(position);
-            });
+        // One delegated handler covers the index, the full gallery, and the
+        // flow gallery cards built on the fly.
+        document.addEventListener('click', (event) => {
+            const target = event.target instanceof Element ? event.target.closest('[data-src]') : null;
+            if (!target) return;
+
+            const position = indexOf(target.dataset.src);
+            if (position < 0) return;
+
+            event.preventDefault();
+            go(position);
         });
 
         if (prev) prev.addEventListener('click', () => go(current - 1));
@@ -556,7 +696,7 @@
             if (position >= 0 && position !== current) paint(position);
         });
 
-        paint(0);
+        paint(start);
     })();
 </script>
 @endpush

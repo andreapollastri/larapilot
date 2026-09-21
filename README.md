@@ -55,6 +55,7 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 | `code-history.yaml` | Per spec/task files + line ranges touched, from git commits (`code_history`, OFF by default) |
 | `integrations.md` | Setup guide for optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram |
 | `docs/PRD.md` | Product Requirements Document |
+| `docs/devs/` | **Developer domain docs** — one Markdown file per domain/entity/feature: functional flow, technical design, architectural choices with the alternatives that were rejected, key decisions and invariants. Always English, written by every spec that changes the domain, at every effort level |
 | `backlog/` | User stories (`US-XXX`) with status machine |
 | `plans/` | Technical plans and tasks per spec |
 | `mockups/{spec}/` | Static HTML previews (optional) |
@@ -63,6 +64,31 @@ Git discipline follows **`settings.git_mode`** (default **Gitflow without auto-p
 | `techdocs/` | Generated Backstage TechDocs sources (only after `larapilot:backstage-export --write`) |
 
 Skills write artifacts; the workflow engine blocks invalid state transitions (e.g. implement before plan, approve before review, approve with open `[blocks-merge]` feedback or unfinished tasks — override with `--force`).
+
+### Developer domain docs (`docs/devs/`, always on)
+
+The one place where the **reasoning** behind the implementation survives the session that produced it. `/larapilot-implement` writes a Markdown file per **domain / entity / feature** — `billing.md`, `user-authentication.md`, `webhook-ingestion.md` — with a fixed skeleton:
+
+| Section | What it carries |
+| --- | --- |
+| `Purpose` | What the domain is responsible for, in business terms |
+| `Functional flow` | How it behaves step by step at runtime, failure paths included |
+| `Technical design` | Models, services, actions, jobs, events, routes, commands, config keys, tests — and where they live |
+| `Architectural choices` | What was chosen, **what was rejected, and why** |
+| `Key decisions & invariants` | The rules that must stay true, and what breaks when they do not |
+| `Extension points & gotchas` | Where to plug new behavior in, and the traps |
+
+Three rules make it useful instead of decorative:
+
+- **Always English**, whatever language the PRD and the conversation use — these files address whoever inherits the codebase.
+- **Updated in the same spec that changes the behavior.** A task is not `task-done` while its domain doc describes the old code, and a domain whose code moved in the diff without its doc is a **High** review finding.
+- **Never deferred.** Unlike README/diagram/runbook work, domain docs survive `effort: ECO` — the prose gets terse, the file still gets written.
+
+There is no setting to turn them on: the folder ships with its contract (`README.md`) and its skeleton (`TEMPLATE.md`) on install, and `/larapilot-ship` blocks on a stale one. Path key: `paths.dev_docs`. Full contract: `.larapilot/runtime-dev-docs.md`.
+
+**A project with no docs is brought level on the first change, not gradually.** `config-show` reports `data.dev_docs.documented`; when it is `false` and the codebase already has domains to describe, the first spec, fix, or hotfix inventories **every** existing domain, writes a file for each, commits the backfill on its own (`docs(US-XXX): bring developer domain docs level`), and only then runs its own work. No AskQuestion, no partial pass, no `ECO` exemption — "we will fill the rest in later" is exactly what produced the empty folder. `/larapilot-adopt` runs the same catch-up at the end of onboarding, so a brownfield project reaches its first spec already level. Where the original reasoning is unrecoverable from git history, the PRD, `decisions.yaml`, and the plans, the file says `<!-- TODO: verify -->` rather than inventing a motive.
+
+This is not `_project_docs/` — that optional handbook is a mixed technical/functional manual for the whole project. `docs/devs/` is engineering-only and mandatory.
 
 ### Two configuration layers
 
@@ -92,15 +118,17 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-custom-skill` | Create custom skills under `.larapilot/skills/` (auto-registered with Boost) |
 | `/larapilot-design` | Static HTML mockups from design system — navigable index at `/larapilot/design` |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
-| `/larapilot-implement` | Code + tests on a feature branch |
+| `/larapilot-implement` | Code + tests on a feature branch, plus the developer domain docs in `.larapilot/docs/devs/` |
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
 | `/larapilot-autopilot` | Batch plan + implement |
 | `/larapilot-settings` | Persist effort / backlog / git / testing / account / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
-| `/larapilot-economics` | **Aurora** — quote, country tax, payback, SaaS ARR; client quote Markdown (when `account` is FREELANCE or COMPANY) |
+| `/larapilot-economics` | **Aurora + Jennifer + Benjamin** — quote, country tax, payback, competitor research, BASE/PRO/PREMIUM packaging, three-line business plan, client quote Markdown (when `account` is FREELANCE or COMPANY) |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown report |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal (catalog entity + TechDocs) |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
+
+Inception is run as a **conversation**: AskQuestion only for the fixed choices Larapilot persists, a reaction to every answer before the next question, and — before any requirement is written — at least two **challenge** exchanges from Mark, Jennifer, and Benjamin on the goal itself (who has this problem and what they do instead, what changes if it works, how you will know in 90 days, the riskiest assumption, what would make you stop). Four rounds always happen whatever the branch, including on a legacy rewrite: **Project Kind**, **Delivery Target**, **Business Model** (client project · SaaS · e-commerce · licensed package · internal tool), and **Operations & support** (who manages the server, who is on the hook when it is down, what support window is promised). A skipped round is recorded as `Not decided`, never as a guess, and the ones that feed the quote say what skipping them costs.
 
 During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `SPA-in-Laravel`, or `API + external frontend`. For split-repo: `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env` — never commit user paths in YAML), then `frontend-scan` — **all from Laravel**. Optional **release mode** tracks semver releases in `.larapilot/releases.yaml` with Gitflow release branches. Optional **project docs** maintains `_project_docs/`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
@@ -110,9 +138,9 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (one navigable index: presentation cover, ordered walk through every flow with prev/next and a contextual flow gallery, plus a zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (scope & effort from the backlog, client price, take-home after tax, payback, recurring-revenue maths with MRR/ARR explained, **client quote download** — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
+- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (one navigable index: presentation cover, ordered walk through every flow with prev/next and a contextual flow gallery, plus a zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (**an interactive pricing console**: dropdowns for rate, discount, team size, regime, account type, price line and market scenario recompute the whole page and the downloadable quote live, over scope & effort from the backlog, take-home after tax, payback, packaging, business plan and competitors — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, Economics, OpenAPI at `/larapilot/api/docs`)
-- **`GET /larapilot/api/economics`** — quote, tax, payback, SaaS forecast (`enabled: false` when `account` is NONE)
+- **`GET /larapilot/api/economics`** — quote, tax, payback, packaging, business plan, SaaS forecast (`enabled: false` when `account` is NONE). Accepts what-if query parameters (`?hourly_rate=70&discount_pct=10&tier=premium`) that are computed and returned, never stored
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
 - **`POST /larapilot/api/specs/{code}/comments`** — append internal feedback from scripts or tooling
 
@@ -139,7 +167,11 @@ Credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (added to `.git
 
 `settings.account` is `NONE` | `FREELANCE` | `COMPANY`. Freelance uses partita IVA / sole-trader regimes (Italian forfettario, IRPEF, autónomo, …); company uses SRL / SPA / Ltd / GmbH / C-Corp tax plus dividend extraction. Both unlock `/larapilot/economics` with a quote (hours × rate, overhead, margin, VAT), net-to-owner after FY-2026 statutory rates, payback, and — when the product looks like a SaaS — ARR, break-even customers, hosting, LTV:CAC, and a 36-month forecast. Every figure in the catalogue (brackets, hourly rates, accountancy costs) is in the country's own currency, `net to owner` is what is left after tax, contributions, the accountant, and any retained reserve — a price that cannot carry its own costs reports a loss rather than a zero. Hours come straight from the backlog — planned task hours per spec, story points where no plan exists, with a per-spec breakdown and warnings on the dashboard — and the snapshot refreshes itself whenever specs, plans, the PRD, or inception change.
 
-The **client quote** is a commercial document `/larapilot-economics` writes in the PRD's own language (any language, not a fixed set of templates), stored at `.larapilot/docs/quote.md` via `larapilot:economics-quote-write`. Download it at `/larapilot/economics/quote.md` or with `php artisan larapilot:economics-show --format=quote`; until one is written, a built-in `en`/`it`/`es`/`fr` template renders the download.
+`/larapilot/economics` is an **interactive pricing tool**, not a report: a console of dropdowns (hourly rate, margin, commercial discount, team size, overhead, maintenance, account type, country, regime, VAT, how it is sold, monthly list price, BASE/PRO/PREMIUM price line, market scenario, churn, growth, planning customers) recomputes every figure, chart, and the quote download on each change. A discount comes out of the margin and flags the project when it drops below cost; team size compresses the timeline without moving the price. Nothing is written from the browser — a simulation prints the `economics-set` command that would make it real. Sold as a subscription, the page adds three price lines with the features each carries, and pessimistic / realistic / optimistic 36-month projections you can switch between. Competitors, price trend, demand, and packaging come from `.larapilot/economics.market.yaml`, researched by Jennifer and Benjamin during `/larapilot-economics` and persisted with `larapilot:economics-market-write` — Larapilot plots that research and never invents it.
+
+The **maintenance retainer follows the inception answers** instead of a flat percentage: delivery target, who manages the server and who is on the hook when it is down, the support window, budget sensitivity, and the ship method (release mode, Gitflow, testing mode, security scan) each move it by a stated amount from a 12% baseline. The dashboard shows the whole arithmetic, what the client gets for it, and which questions inception never asked — an unanswered server question prices the retainer as application-only and says so.
+
+The **client quote** is a commercial document `/larapilot-economics` writes in the PRD's own language (any language, not a fixed set of templates), stored at `.larapilot/docs/quote.md` via `larapilot:economics-quote-write`. Between the capability list and the price it carries two chapters a buyer actually reads: **infrastructure and hosting** (platform, who manages the server, backups, monitoring, certificates, support window, estimated running cost — only when inception decided one, never invented) and **security and quality**, which sells what a demo cannot show, with every claim derived from what the project's settings genuinely do. Download it at `/larapilot/economics/quote.md` or with `php artisan larapilot:economics-show --format=quote`; until one is written, a built-in `en`/`it`/`es`/`fr` template renders the download.
 
 ```bash
 php artisan larapilot:settings-set --account=FREELANCE
@@ -234,9 +266,10 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 | Command | Purpose |
 | --- | --- |
 | `larapilot:frontend-set` | Persist `LARAPILOT_FRONTEND_REPO_PATH` in `.env` (+ optional `stack` in config) |
-| `larapilot:economics-set` | Persist country, tax regime, hourly rate, SaaS prices (requires `account` ≠ NONE) |
+| `larapilot:economics-set` | Persist country, tax regime, hourly rate, margin, discount, team size, SaaS prices (requires `account` ≠ NONE) |
 | `larapilot:economics-show` | Quote, tax, payback, SaaS forecast (`--format=md` internal report, `--format=quote` client document) |
 | `larapilot:economics-quote-write` | Persist the client quote document written in the PRD language (`--file=`, `--content=`, `--lang=`) |
+| `larapilot:economics-market-write` | Persist the researched market: competitors, price trend, demand scenarios, packaging tiers (`--file=`, `--content=`) |
 | `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
 | `larapilot:release-add` / `release-set` | Register or update a release |
 | `larapilot:release-import` | Rebuild shipped releases from Git semver tags |

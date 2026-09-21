@@ -9,13 +9,13 @@ Present the delivered increment and execute the human verdict.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — including **Project Settings** and **Sub-agents** (review artifact from implement).
+Read `.larapilot/shared-runtime.md` — including **Project Settings** and **Sub-agents** (review artifact from implement) — then `.larapilot/runtime-dev-docs.md` (**Freshness gate**).
 
 ## Output Economy
 
 **High** — see `larapilot-review` in shared-runtime. Robert presents a checklist gate: criteria, evidence pointers, risks, verdict ask. Summarize diffs; do not narrate every hunk.
 
-When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + verdict); **do not block on missing README/PDF**; **do block if public API routes changed without OpenAPI update**. When **`MAX`**: expand residual risks, design-system, docs, and copy notes.
+When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + verdict); **do not block on missing README/PDF**; **do block if public API routes changed without OpenAPI update, or if a touched domain has no current file under `{paths.dev_docs}`** — domain docs are not part of the `ECO` deferral. When **`MAX`**: expand residual risks, design-system, docs, and copy notes.
 
 ## The Team
 

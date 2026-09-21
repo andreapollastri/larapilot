@@ -122,6 +122,7 @@ class ChoicesService
             'Package git' => $choices['package_git'] ?? null,
             'Project Origin' => $choices['project_origin'] ?? null,
             'Delivery Target' => $choices['delivery_target'] ?? null,
+            'Business Model' => $choices['business_model'] ?? null,
             'Budget Sensitivity' => $choices['budget_sensitivity'] ?? null,
             'Frontend Topology' => $choices['frontend_topology'] ?? null,
             'Admin panel' => $choices['admin_panel'] ?? null,
@@ -132,6 +133,9 @@ class ChoicesService
             'Deadlines' => $choices['deadlines'] ?? null,
             'Local dev' => $choices['local_dev'] ?? null,
             'Deploy platform' => $choices['deploy_platform'] ?? null,
+            'Server management' => $choices['server_management'] ?? null,
+            'Ops owner' => $choices['ops_owner'] ?? null,
+            'Support window' => $choices['support_window'] ?? null,
         ];
 
         return [
@@ -163,6 +167,7 @@ class ChoicesService
             'package_git' => $this->matchField($content, 'Package git'),
             'project_origin' => $this->matchField($content, 'Project Origin'),
             'delivery_target' => $this->matchField($content, 'Delivery Target'),
+            'business_model' => $this->matchField($content, 'Business Model'),
             'budget_sensitivity' => $this->matchField($content, 'Budget Sensitivity'),
             'frontend_topology' => $this->matchField($content, 'Frontend Topology'),
             'deadlines' => $this->matchField($content, 'Deadlines'),
@@ -172,6 +177,9 @@ class ChoicesService
             'admin_panel' => $this->matchField($content, 'Admin panel'),
             'local_dev' => $this->matchField($content, 'Local dev'),
             'deploy_platform' => $this->matchField($content, 'Deploy'),
+            'server_management' => $this->matchField($content, 'Server Management'),
+            'ops_owner' => $this->matchField($content, 'Ops Owner'),
+            'support_window' => $this->matchField($content, 'Support Window'),
             'cli_tooling' => $this->matchField($content, 'CLI tooling'),
         ], static fn (mixed $value): bool => $value !== null && $value !== '');
     }

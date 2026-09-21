@@ -35,6 +35,8 @@ class DoctorCommand extends LarapilotCommand
                 fn (string $file): bool => is_file(SharedRuntime::projectDocPath($file))
             ),
             'design_systems' => is_dir($designSystems) && count(glob($designSystems.'/*') ?: []) > 0,
+            'dev_docs_scaffold' => is_file(base_path('.larapilot/docs/devs/README.md'))
+                && is_file(base_path('.larapilot/docs/devs/TEMPLATE.md')),
             'backlog' => is_file($specs->backlogPath()),
             'prd' => $prd->exists(),
             'boost' => class_exists(BoostServiceProvider::class),
@@ -77,6 +79,7 @@ class DoctorCommand extends LarapilotCommand
         return $this->success('doctor', [
             'healthy' => $healthy,
             'checks' => $checks,
+            'dev_docs' => $config->devDocsStatus(),
             'quality' => $qualityStatus,
             'settings_missing_keys' => $missingSettings,
             'project_root' => $config->projectRoot(),

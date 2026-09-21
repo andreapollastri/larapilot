@@ -241,9 +241,13 @@ class DashboardService
     /**
      * @return array<string, mixed>
      */
-    public function economics(): array
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    public function economics(array $overrides = []): array
     {
-        return $this->economicsService->dashboard();
+        return $this->economicsService->dashboard($overrides);
     }
 
     /**

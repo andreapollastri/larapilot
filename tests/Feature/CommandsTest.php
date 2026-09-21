@@ -41,6 +41,10 @@ it('installs the project scaffolding', function (): void {
         ->and(base_path('.larapilot/plans/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/mockups/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/docs/test-results/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/docs/devs/.gitkeep'))->toBeFile()
+        ->and(base_path('.larapilot/docs/devs/README.md'))->toBeFile()
+        ->and(base_path('.larapilot/docs/devs/TEMPLATE.md'))->toBeFile()
+        ->and(base_path('.larapilot/runtime-dev-docs.md'))->toBeFile()
         ->and(base_path('.larapilot/research/reference-products/.gitkeep'))->toBeFile()
         ->and(base_path('.larapilot/skills/.gitkeep'))->toBeFile()
         ->and(base_path('phpstan.neon.dist'))->toBeFile()
@@ -130,6 +134,30 @@ it('reports installation health via doctor', function (): void {
     $this->artisan('larapilot:doctor')
         ->assertSuccessful()
         ->expectsOutputToContain('"healthy":true');
+});
+
+it('reports the developer domain docs catch-up state on doctor', function (): void {
+    expect(Artisan::call('larapilot:install'))->toBe(0);
+    expect(Artisan::call('larapilot:doctor'))->toBe(0);
+
+    $envelope = json_decode(Artisan::output(), true);
+
+    expect($envelope['data']['checks']['dev_docs_scaffold'])->toBeTrue()
+        ->and($envelope['data']['dev_docs'])->toBe([
+            'path' => '.larapilot/docs/devs',
+            'documented' => false,
+            'count' => 0,
+            'domains' => [],
+        ]);
+
+    file_put_contents(base_path('.larapilot/docs/devs/billing.md'), '# Billing');
+
+    expect(Artisan::call('larapilot:doctor'))->toBe(0);
+
+    $envelope = json_decode(Artisan::output(), true);
+
+    expect($envelope['data']['dev_docs']['documented'])->toBeTrue()
+        ->and($envelope['data']['dev_docs']['domains'])->toBe(['billing']);
 });
 
 it('writes and validates a prd', function (): void {

@@ -96,6 +96,7 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
     $this->get('/larapilot/economics')->assertNotFound();
+    $this->get('/larapilot/economics/panel')->assertNotFound();
     $this->get('/larapilot/design')->assertNotFound();
     $this->get('/larapilot/specs/US-001')->assertNotFound();
 });

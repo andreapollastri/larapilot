@@ -245,7 +245,7 @@
                     <tr><td><code>/larapilot-bug</code></td><td>Fix spec, support intake</td><td>🎧 Sophia · 🔎 Tom · 🧪 Anne</td></tr>
                     <tr><td><code>/larapilot-plan</code></td><td><code>plans/US-XXX-plan.yaml</code></td><td>📐 John · 🧪 Anne · 🗄️ Mike</td></tr>
                     <tr><td><code>/larapilot-design</code> <span class="skill-optional">optional</span></td><td><code>mockups/{spec}/</code>, gallery <a href="{{ route('larapilot.dashboard.design') }}">/larapilot/design</a></td><td>🎨 Elise · ✨ Joe</td></tr>
-                    <tr><td><code>/larapilot-implement</code></td><td>Code, tests, atomic commits per git_mode</td><td>🔧 Alex · 👾 Andrew · ⌨️ Sarah</td></tr>
+                    <tr><td><code>/larapilot-implement</code></td><td>Code, tests, atomic commits per git_mode, developer domain docs in <code>.larapilot/docs/devs/</code></td><td>🔧 Alex · 👾 Andrew · ⌨️ Sarah · 📝 Albert</td></tr>
                     <tr><td><code>/larapilot-review</code></td><td>DONE or rework feedback</td><td>🛡️ Robert · 🧪 Anne · 🔐 Lars</td></tr>
                     <tr><td><code>/larapilot-ship</code> <span class="skill-optional">optional</span></td><td>Security gate + deploy + launch checks</td><td>🚀 Jack · 🔐 Lars · ⚖️ Violet</td></tr>
                     <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>

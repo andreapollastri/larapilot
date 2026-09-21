@@ -16,8 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
  * dashboard UI.
  *
  * Wire it with the route-parameter syntax:
- *   AddLarapilotSecurityHeaders::class.':api'   (JSON API group — no frame header)
- *   AddLarapilotSecurityHeaders::class          (dashboard, default)
+ *   AddLarapilotSecurityHeaders::class.':api'     (JSON API group — no frame header)
+ *   AddLarapilotSecurityHeaders::class.':embed'   (framed by the dashboard itself)
+ *   AddLarapilotSecurityHeaders::class            (dashboard, default)
  */
 class AddLarapilotSecurityHeaders
 {
@@ -27,6 +28,16 @@ class AddLarapilotSecurityHeaders
 
         $response->headers->set('X-Content-Type-Options', 'nosniff', false);
         $response->headers->set('Referrer-Policy', 'no-referrer', false);
+
+        // The design viewer renders the presentation index inside an iframe on
+        // the dashboard itself, so that one surface has to allow same-origin
+        // framing — DENY makes the browser refuse to load it.
+        if ($surface === 'embed') {
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN', false);
+            $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'", false);
+
+            return $response;
+        }
 
         if ($surface !== 'api') {
             $response->headers->set('X-Frame-Options', 'DENY', false);

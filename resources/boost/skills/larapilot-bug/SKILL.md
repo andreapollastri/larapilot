@@ -9,7 +9,7 @@ You triage a **bug** on an existing project and route it into the Larapilot work
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**) and `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`).
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**), `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`), and `.larapilot/runtime-dev-docs.md` — a fix that changes a domain's behavior updates that domain's file under `{paths.dev_docs}` in the same change, and when `data.dev_docs.documented` is `false` the fix first brings the whole project level (**First-change catch-up**).
 
 When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice. When `data.settings.code_history` is `YES` (default OFF), run `php artisan larapilot:code-log` after each `task-done`. Contracts in `shared-runtime.md`.
 

@@ -23,7 +23,7 @@ John designs **scalable, complete products** whose depth matches the **delivery 
 6. **DTOs & boundaries** — use Data objects / DTOs (Spatie Laravel Data, readonly PHP classes, or Form Request → DTO mappers) at API and integration boundaries when payloads are non-trivial; keep Eloquent models out of external contracts.
 7. **Quality bar** — clear layers (Controller → Action/Service → Model); **fail-fast validation** at the edge (Form Requests); **idempotent** writes where retries are possible (webhooks, jobs); **transaction boundaries** around multi-model mutations; **authorization at the policy/gate layer** (not only UI); explicit error/domain exceptions over silent failure; migrations that own indexes and constraints with the schema change.
 8. **Technical debt** — one migration per concern; explicit interfaces only when multiple implementations exist; document trade-offs in plan/ADR notes instead of hidden shortcuts; prefer readable Laravel idioms over premature abstraction.
-9. **Documentation** — keep docs current with code in the same spec that changes the API or integration (see **Technical Documentation** below, including the `ECO` gate).
+9. **Documentation** — keep docs current with code in the same spec that changes the API or integration, and update the touched **developer domain docs** under `paths.dev_docs` in that same spec (see **Technical Documentation** below, including the `ECO` gate, and `.larapilot/runtime-dev-docs.md`).
 
 **SSO / social login** — prefer **[Laravel Socialite](https://laravel.com/docs/socialite)** with official drivers; for providers beyond the core set use **[Socialite Providers](https://socialiteproviders.com/)** — never roll custom OAuth unless no provider exists. Store provider IDs on the User model (UUID PK); link accounts; respect Violet's consent requirements.
 
@@ -333,10 +333,13 @@ Always present **both** mainstream SaaS/managed options and the self-hosted open
 
 Every Larapilot project carries a **baseline technical documentation layer** by default — Albert never treats docs as optional at the project level — **except when `settings.effort` is `ECO`** (see the Effort gate below).
 
+**Developer domain docs sit outside that gate**: they are written at every effort level, in every project, in English. Full contract: `.larapilot/runtime-dev-docs.md`.
+
 | Tier          | Always present                                                                                                        |
 | ------------- | -----------------------------------------------------------------------------------------------------------------------|
 | **Baseline**  | README (setup, local dev method per PRD, env vars, queue worker, scheduler, test commands), architecture overview, CHANGELOG discipline |
 | **Technical** | Developer-facing docs for APIs, webhooks, and domain modules touched by the backlog — **OpenAPI/Swagger** for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship verifies the spec matches routes |
+| **Domain (devs)** | One Markdown file per domain/entity/feature under **`paths.dev_docs`** (default `.larapilot/docs/devs/`): functional flow, technical design, architectural choices with rejected alternatives, key decisions and invariants. **English only, never deferred — including under `ECO`.** Written in the same spec that changes the behavior |
 | **Extended**  | Diagram sets (draw.io/Mermaid), runbooks, admin handbooks, **PDF client tutorials/manuals** — only when the user opts in per spec |
 
 Rules:
@@ -344,8 +347,8 @@ Rules:
 1. **Inception** — Albert records the baseline doc set in the PRD; notes optional extended deliverables without assuming them globally.
 2. **Spec approval (`larapilot-spec`)** — when presenting user stories for approval, **Albert proposes via AskQuestion** whether the spec needs **extended documentation** beyond the baseline. Default may be baseline-only; extended scope is explicit per spec. Under **`ECO`**: skip this AskQuestion entirely.
 3. **Plan** — explicit doc tasks per spec: baseline updates always; extended tasks only when approved.
-4. **Implement** — Albert writes or updates docs alongside code; never leaves API routes undocumented when OpenAPI is in scope; update docs in the same spec that changes the API or integration.
-5. **Ship / maintenance** — verify baseline completeness before release; keep docs in sync with **Sophia** on every maintenance release; flag stale OpenAPI or runbooks in review.
+4. **Implement** — Albert writes or updates docs alongside code; never leaves API routes undocumented when OpenAPI is in scope; update docs in the same spec that changes the API or integration. **Always** update the touched domain files under `paths.dev_docs` before `spec-review` — a domain whose code moved while its doc did not is a **High** review finding. On a project where `data.dev_docs.documented` is `false`, the first change documents **every existing domain** first (**First-change catch-up** in `runtime-dev-docs.md`).
+5. **Ship / maintenance** — verify baseline completeness before release; keep docs in sync with **Sophia** on every maintenance release; flag stale OpenAPI, runbooks, or domain docs in review.
 
 ### Effort gate — `ECO` docs deferral
 
@@ -355,9 +358,10 @@ When `settings.effort` is **`ECO`**:
 | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------|
 | Workflow artifacts: PRD, specs, plans, AC, review checklist                                                              | Albert baseline + extended doc tasks (README, architecture notes, runbooks)                                                       |
 | **OpenAPI/Swagger** when public/partner API routes change (`public/openapi.yaml`, Scramble, L5-Swagger, or equivalent)   | Diagrams, PDF manuals, Postman collections, doc-site polish                                                                       |
+| **Developer domain docs** under `paths.dev_docs` — same sections, terse prose (bullets and tables instead of narrative)   | Nothing in this folder is deferred — under `ECO` it gets shorter, never skipped                                                    |
 | Code comments only when needed to unblock the next task                                                                  | AskQuestion for extended docs; CHANGELOG narrative passes (a one-line Unreleased bump stays OK for a user-requested release)      |
 
-Ownership: **Albert** owns technical documentation and client manuals (default **English**; localized editions with **Emily**); **Marika** owns product/marketing copy (not technical docs); **John** owns API design accuracy; **Alex** implements doc-site routes when applicable.
+Ownership: **Albert** owns technical documentation, developer domain docs (**always English** — Emily does not localize these), and client manuals (default **English**; localized editions with **Emily**); **Marika** owns product/marketing copy (not technical docs); **John** owns API design accuracy; **Alex** implements doc-site routes when applicable.
 
 ## Laravel Ecosystem Expertise _(Andrew owns)_
 

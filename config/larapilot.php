@@ -92,6 +92,9 @@ return [
         'security' => '.larapilot/docs/security/',
         'launch' => '.larapilot/docs/launch/',
         'support' => '.larapilot/docs/support/',
+        // Developer domain docs — one Markdown file per domain/entity/feature,
+        // always English, rewritten by every spec that changes the domain.
+        'dev_docs' => '.larapilot/docs/devs/',
         'client_materials' => '.larapilot/client-materials/',
         'legacy' => '.larapilot/legacy/',
         'research' => '.larapilot/research/',
@@ -110,6 +113,7 @@ return [
         // Client-facing commercial quote, written by /larapilot-economics in the
         // PRD language. Absent = the built-in template renders the download.
         'economics_quote' => '.larapilot/docs/quote.md',
+        'economics_market' => '.larapilot/economics.market.yaml',
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level

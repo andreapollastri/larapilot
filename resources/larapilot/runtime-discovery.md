@@ -2,6 +2,35 @@
 
 Phase pack for **`larapilot-inception`**, **`larapilot-adopt`**, **`larapilot-feature`**, and **`larapilot-spec`**. Read `.larapilot/shared-runtime.md` (core) first; this file holds the canonical discovery and scoping rules.
 
+## Conversation & Goal Challenge _(how the interview is run)_
+
+Discovery is a **conversation**, not a form. The failure mode of an interview driven by an agent is a rapid-fire questionnaire: options fired at the user, answers recorded, PRD written, nobody ever asked whether the thing is worth building. Larapilot's inception must not read like that.
+
+**How the team talks**
+
+1. **Prose first, AskQuestion second.** Use **AskQuestion** only where the answer is one of a fixed set Larapilot will persist (Project Kind, Delivery Target, Business Model, topology, platform, support window, …). Everything else — the problem, the users, the risks, the trade-offs — is discussed in chat, in full sentences.
+2. **React before you advance.** Every answer gets a reaction from the persona who owns it: what it implies, what it rules out, what it will cost later. Never move to the next question without saying what the last one changed.
+3. **One thread at a time.** Follow the user's answer where it leads before opening a new topic. A round of three unrelated questions is a form; a follow-up on what they just said is an interview.
+4. **Say what you assumed.** When the team fills a gap with a default, state the default and the reason in one line, so the user can correct it.
+5. **Skippable means skippable.** A skipped question is recorded as `Not decided` — never quietly replaced with a guess that later reads as a decision the user made.
+
+**The challenge (Mark + Jennifer + Benjamin) — before scope**
+
+Before a single functional requirement is written, the team has to understand *why* this should exist, and say so plainly when it does not add up. Run **at least two challenge exchanges in chat**, adapted to the project (lighter for **Personal**, sharper for anything with customers or a budget):
+
+| Question | What the team is listening for |
+| --- | --- |
+| Who has this problem today, and what do they do instead? | A named user and a real alternative. "Everyone" and "nothing" both mean the problem is not understood yet |
+| What changes if this works? | An outcome, not a feature list |
+| How will you know in 90 days whether it worked? | One measurable signal. If there is none, scope is unfalsifiable |
+| What is the riskiest assumption underneath it? | The thing that, if wrong, makes the rest pointless — it should be the first thing the MVP tests |
+| Why now, and why you? | Timing and unfair advantage, or the honest absence of both |
+| What would make you stop? | A kill condition. A project without one tends to grow instead of ship |
+
+Rules: **challenge the goal, never the person.** Say the uncomfortable thing once, clearly, with the reason — then accept the user's decision and move on; a repeated objection is nagging, not diligence. When the answers contradict each other (an MVP target with an enterprise feature list, a two-week deadline against a six-month scope, a free product with a paid support promise), name the contradiction and ask which side gives. **Jennifer** challenges positioning and competitors, **Benjamin** the market and the buyer, **Mark** the scope, **Aurora** the money — each in their own voice, none of them blocking.
+
+The challenge is recorded: promote the surviving answers into `## Vision` (what changes if it works), `## User Personas` (who has the problem), and `## MVP Scope` → `**Success signal:**` (how you will know in 90 days). Log the durable ones through the decision journal.
+
 ## Project Kind
 
 The **first interview layer** in **`larapilot-inception`**. **Mark** asks before delivery target, budget, or deep architecture (via **AskQuestion**, right after the team intro). The choice switches the rest of discovery and is persisted in the PRD under `## MVP Scope` as:
@@ -92,6 +121,24 @@ Then drive the **Package professional workflow** (persist answers under `## Tech
 
 Skip or minimize for Package: **Elise/Joe/Ricky** UI mockups (unless the package ships Blade/Livewire/Filament UI), **Lauren** SEM, **multi-tenancy** (unless the package *implements* tenancy), **Emma** public SEO except for the package minisite. Keep active: **Mark**, **Andrew**, **John**, **Mike**, **Anne**, **Lars**, **Jack**, **Albert**, **Sarah**, **Aurora**, **Zoey**, **Lucille**; **Tom** for API/AC quality; **Sabrine** when porting an existing non-package codebase into a package.
 
+### Core rounds _(always asked, whatever the branch)_
+
+Branching changes **how deep** discovery goes, never **whether** these four are asked. A legacy proposal, a client brief, an adopted codebase, or an impatient user changes *when* they are asked — not *whether*:
+
+| # | Round | Owner | Persisted as |
+| - | ----- | ----- | ------------ |
+| 1 | **Project Kind** | Mark | `**Project Kind:**` in `## MVP Scope` |
+| 2 | **Delivery Target** — how far this has to go | Mark | `**Delivery Target:**` in `## MVP Scope` |
+| 3 | **Business Model** — how it makes money | Mark + Aurora | `**Business Model:**` in `## MVP Scope` |
+| 4 | **Operations & support** — who runs the server, how fast support answers | Jack + Sophia | `**Server Management:**`, `**Ops Owner:**`, `**Support Window:**` in `## Technical Architecture` |
+
+Before writing the PRD, check all four. If one is still missing, ask it then. If the user skips it, write **`Not decided`** — never a guess — and say once, in a line, what that costs downstream:
+
+- No **Delivery Target** → the backlog is scoped as V1 Complete.
+- No **Business Model** → Economics falls back to reading the PRD for keywords and may price a subscription product as a one-off.
+- No **Server Management** / **Ops Owner** → the maintenance retainer is priced as application-only, with nothing for patching, backups, or uptime.
+- No **Support Window** → the retainer assumes business hours, best effort.
+
 ### Downstream behavior
 
 All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work. If missing, infer from `## MVP Scope` / `## Technical Architecture` content or ask once.
@@ -131,6 +178,7 @@ Ownership: **Mark** ensures the interview covers gaps; **Tom** traces specs to s
 
 1. **Parity contract** — when `{paths.legacy}` has content beyond the README, treat every legacy feature and data entity as **in scope** until explicitly deferred in the PRD `### Out of Scope`.
 2. **Inception — proactive legacy proposal** — when `{paths.legacy}` has content beyond the README, **Mark** (with **Sabrine**) **MUST** propose a legacy refactor/port **before** deep architecture discovery — via **AskQuestion** (max 3 per round, skippable): **Legacy rewrite** | **Legacy port** | **Partial modules only** (follow-up in chat) | **Reference only** (greenfield build; legacy as inspiration) | **Decide later**. Record in PRD `## MVP Scope` as **`Project Origin: Greenfield | Legacy rewrite | Legacy port`**. When the user chooses partial scope, document included/excluded modules in `### In Scope` / `### Out of Scope`.
+2b. **The legacy proposal does not replace the core rounds** — it only changes their order. After **Project Origin** is settled, continue with **Delivery Target**, **Business Model**, and **Operations & support** (see **Core rounds**) before deep architecture. On a rewrite the server question is more urgent, not less: there is already a machine running the old system, and who keeps it alive during and after the cutover is part of the scope. Ask explicitly whether the legacy infrastructure stays, is replaced, or runs in parallel during migration, and record it under `**Server Management:**`.
 3. **Sabrine leads legacy analysis** — **Sabrine** inventories every legacy **content item** and **functionality**, documents how each is implemented today, and maps it to the target Laravel stack. She **scrapes or extracts content** from legacy codebases, sanitized dumps, exports, and (when permitted) public legacy URLs to bring text, media, and structured data into the new product. She is the expert for **DB migration**, **assets porting** (uploads, media libraries, static files, CDN paths), config/env mapping, and other **legacy → new** cutover work — coordinating with **Matt** (ETL/import jobs) and **John** (cutover strategy). She flags items that may be **discarded**, **reorganized**, or **reimplemented differently** — always proposing options to the user before anything is dropped. Upgrades (UX, performance, security, stack) are enhancements — never excuses to drop features or data.
 4. **Parity matrix** — **Sabrine** persists `{paths.research}/legacy-parity.md` (or a PRD subsection) during inception or spec: legacy feature/module/content → current implementation → new implementation → migration strategy → test evidence → status (preserve / reorganize / defer / discard-with-consent).
 5. **Data migration** — **Sebastian** + **Matt** plan import paths (ETL, dual-write, cutover) from Sabrine's inventory; **Anne** requires row-count/checksum/spot-check verification; **Violet** reviews personal-data handling in dumps.
@@ -183,6 +231,48 @@ Rules for all skills:
 2. **Never downgrade** the user's chosen target to MVP unless they explicitly change it.
 3. **MVP is a method, not a ceiling** — trade-off framing stays useful at every level; scope depth follows the target.
 4. The PRD section stays named `## MVP Scope` for validator compatibility; its body reflects the chosen target (In Scope / Out of Scope / Future Phases).
+
+## Business Model _(Mark + Aurora — core round 3)_
+
+**How far** the product goes (Delivery Target) and **how it makes money** are two different questions, and they are routinely conflated. "SaaS" is not a delivery target — it is a business model, and a SaaS can perfectly well be delivered as an MVP.
+
+Asked via **AskQuestion** in the same round as the delivery target or right after it, for every Project Kind:
+
+```markdown
+**Business Model:** Client project | SaaS subscription | E-commerce | Licensed package | Internal tool | Not decided
+```
+
+| Option | Meaning | What it switches on |
+| ------ | ------- | ------------------- |
+| **Client project** | Built once for one client, paid on delivery | Quote, payment milestones, maintenance retainer |
+| **SaaS subscription** | Many customers pay monthly or yearly | Tenancy question (John), pricing tiers, churn/ARR maths, break-even customers |
+| **E-commerce** | Revenue through orders on the product itself | Payments, catalogue, order flow, take-rate maths |
+| **Licensed package** | Sold or distributed as a reusable product | Distribution, versioning, licence price, units to recover the build |
+| **Internal tool** | No revenue — cost centre | No pricing round; Economics still sizes cost and effort |
+| **Not decided** | Genuinely open | Ask again before the quote; Economics reads the PRD instead |
+
+Persist with `php artisan larapilot:choices-set --business-model="…"`. **`/larapilot-economics` reads it** and sets the product model from it — a stated answer always beats guessing from PRD keywords. When it is `SaaS subscription`, Economics prices the BASE / PRO / PREMIUM lines and the three business-plan scenarios; when it is `Client project`, it prices one delivery plus the maintenance retainer.
+
+## Operations & Support _(Jack + Sophia — core round 4)_
+
+Who keeps the thing alive after go-live, and how quickly someone has to answer when it breaks. **Always asked** — including on legacy rewrites and adopted codebases, where the existing server usually comes with the project and its arrangement is the first thing nobody writes down. Asked via **AskQuestion** (max 3, skippable), after the deploy platform when that round runs, otherwise on its own:
+
+1. **Server management** — `Managed platform` (Forge, Vapor, Laravel Cloud, PaaS) · `Self-managed VPS / bare metal` · `Kubernetes / cloud account we operate` · `Client's own infrastructure` · `Not decided`
+2. **Ops owner** — who is on the hook when it is down: `Me / my team` · `Client's team` · `Managed provider` · `Shared` · `Not decided`
+3. **Support window** — `Best effort` · `Business hours` · `Extended hours` · `24/7` · `Not decided`
+
+```markdown
+**Server Management:** Managed platform | Self-managed VPS | Kubernetes / cloud | Client infrastructure | Not decided
+**Ops Owner:** Me / my team | Client team | Managed provider | Shared | Not decided
+**Support Window:** Best effort | Business hours | Extended hours | 24/7 | Not decided
+```
+
+Recorded under `## Technical Architecture`, mirrored in `### Maintenance & support`, and persisted with
+`php artisan larapilot:choices-set --server-management="…" --ops-owner="…" --support-window="…"`.
+
+**This is what prices the maintenance retainer.** Economics builds the recommended percentage from these answers plus the delivery target, the budget sensitivity, and the ship method (`release_mode`, `git_mode`, `settings.testing`, `security_scan`): a self-managed server adds patching, backups, certificates, and uptime to the retainer; a client-operated one takes them out; round-the-clock support is the single most expensive line in it. Unanswered, the retainer is priced as application-only and `/larapilot/economics` says so under **What the retainer is priced on**. Ask them at inception and the number stops being a guess.
+
+**Sophia** owns what the retainer actually covers (bug intake channel, response targets, runbook ownership) and records it in `### Maintenance & support`; **Jack** owns the platform and the deploy path; **Aurora** turns both into money.
 
 ## MoSCoW Prioritization _(Functional Requirements)_
 

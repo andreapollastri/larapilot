@@ -19,6 +19,7 @@ class ChoicesSetCommand extends LarapilotCommand
                             {--package-path=}
                             {--package-git=}
                             {--delivery-target=}
+                            {--business-model=}
                             {--budget-sensitivity=}
                             {--frontend-topology=}
                             {--data-store=}
@@ -28,7 +29,10 @@ class ChoicesSetCommand extends LarapilotCommand
                             {--deadlines=}
                             {--admin-panel=}
                             {--local-dev=}
-                            {--deploy-platform=}';
+                            {--deploy-platform=}
+                            {--server-management=}
+                            {--ops-owner=}
+                            {--support-window=}';
 
     protected $description = 'Persist inception/settings choices for the Larapilot dashboard';
 
@@ -76,6 +80,7 @@ class ChoicesSetCommand extends LarapilotCommand
             'package_path' => 'package-path',
             'package_git' => 'package-git',
             'delivery_target' => 'delivery-target',
+            'business_model' => 'business-model',
             'budget_sensitivity' => 'budget-sensitivity',
             'frontend_topology' => 'frontend-topology',
             'data_store' => 'data-store',
@@ -86,6 +91,9 @@ class ChoicesSetCommand extends LarapilotCommand
             'admin_panel' => 'admin-panel',
             'local_dev' => 'local-dev',
             'deploy_platform' => 'deploy-platform',
+            'server_management' => 'server-management',
+            'ops_owner' => 'ops-owner',
+            'support_window' => 'support-window',
         ];
 
         foreach ($map as $key => $option) {

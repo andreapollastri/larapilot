@@ -77,6 +77,7 @@ class ConfigService
                 'security' => $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
                 'launch' => $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
                 'support' => $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
+                'dev_docs' => $this->absolutePath($config['paths']['dev_docs'] ?? '.larapilot/docs/devs/'),
                 'client_materials' => $this->absolutePath($config['paths']['client_materials'] ?? '.larapilot/client-materials/'),
                 'legacy' => $this->absolutePath($config['paths']['legacy'] ?? '.larapilot/legacy/'),
                 'research' => $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
@@ -93,13 +94,53 @@ class ConfigService
                 'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
                 'economics_snapshot' => $this->absolutePath($config['paths']['economics_snapshot'] ?? '.larapilot/economics.snapshot.yaml'),
                 'economics_quote' => $this->absolutePath($config['paths']['economics_quote'] ?? '.larapilot/docs/quote.md'),
+                'economics_market' => $this->absolutePath($config['paths']['economics_market'] ?? '.larapilot/economics.market.yaml'),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
             'workflow' => $config['workflow'] ?? config('larapilot.workflow'),
             'settings' => $this->settings(),
             'frontend' => $this->frontend(),
+            'dev_docs' => $this->devDocsStatus(),
             'personas' => config('larapilot.personas'),
+        ];
+    }
+
+    /**
+     * State of the developer domain docs folder. `documented` is false while
+     * the project has never written a domain file — the signal that the next
+     * change owes the project a full catch-up, not just the touched domain.
+     * `README.md` and `TEMPLATE.md` are scaffolding, never domains.
+     *
+     * @return array{path: string, documented: bool, count: int, domains: list<string>}
+     */
+    public function devDocsStatus(): array
+    {
+        $config = $this->resolve();
+        $directory = rtrim(
+            $this->absolutePath($config['paths']['dev_docs'] ?? '.larapilot/docs/devs/'),
+            '/\\'
+        );
+
+        $domains = [];
+
+        foreach (glob($directory.'/*.md') ?: [] as $file) {
+            $slug = basename($file, '.md');
+
+            if (in_array($slug, ['README', 'TEMPLATE'], true)) {
+                continue;
+            }
+
+            $domains[] = $slug;
+        }
+
+        sort($domains);
+
+        return [
+            'path' => $this->relativePath($directory),
+            'documented' => $domains !== [],
+            'count' => count($domains),
+            'domains' => $domains,
         ];
     }
 
@@ -958,6 +999,7 @@ class ConfigService
             $this->absolutePath($config['paths']['security'] ?? '.larapilot/docs/security/'),
             $this->absolutePath($config['paths']['launch'] ?? '.larapilot/docs/launch/'),
             $this->absolutePath($config['paths']['support'] ?? '.larapilot/docs/support/'),
+            $this->absolutePath($config['paths']['dev_docs'] ?? '.larapilot/docs/devs/'),
             $this->absolutePath($config['paths']['client_materials'] ?? '.larapilot/client-materials/'),
             $this->absolutePath($config['paths']['legacy'] ?? '.larapilot/legacy/'),
             $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
@@ -992,6 +1034,7 @@ class ConfigService
         }
 
         $this->ensureIntakeReadmes();
+        $this->ensureDevDocsScaffold();
         $this->ensureGitkeeps();
     }
 
@@ -1019,6 +1062,29 @@ class ConfigService
         foreach ($intakeReadmes as $projectRelative => $packageRelative) {
             $target = $this->absolutePath($projectRelative);
             $source = dirname(__DIR__, 2).'/resources/larapilot/'.$packageRelative;
+
+            if (! is_file($target) && is_file($source)) {
+                AtomicFile::write($target, (string) file_get_contents($source));
+            }
+        }
+    }
+
+    /**
+     * Seed the developer domain docs folder with its contract (README) and
+     * the per-domain skeleton (TEMPLATE.md). Both are scaffolding: written
+     * once, never overwritten, so a project can adapt them.
+     */
+    public function ensureDevDocsScaffold(): void
+    {
+        $config = $this->resolve();
+        $directory = rtrim(
+            $this->absolutePath($config['paths']['dev_docs'] ?? '.larapilot/docs/devs/'),
+            '/\\'
+        );
+
+        foreach (['README.md', 'TEMPLATE.md'] as $filename) {
+            $target = $directory.DIRECTORY_SEPARATOR.$filename;
+            $source = dirname(__DIR__, 2).'/resources/larapilot/dev-docs/'.$filename;
 
             if (! is_file($target) && is_file($source)) {
                 AtomicFile::write($target, (string) file_get_contents($source));

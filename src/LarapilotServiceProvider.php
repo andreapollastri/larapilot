@@ -22,6 +22,7 @@ use Larapilot\Console\Commands\DecisionCheckCommand;
 use Larapilot\Console\Commands\DecisionLogCommand;
 use Larapilot\Console\Commands\DiagnosticsCommand;
 use Larapilot\Console\Commands\DoctorCommand;
+use Larapilot\Console\Commands\EconomicsMarketWriteCommand;
 use Larapilot\Console\Commands\EconomicsQuoteWriteCommand;
 use Larapilot\Console\Commands\EconomicsSetCommand;
 use Larapilot\Console\Commands\EconomicsShowCommand;
@@ -80,6 +81,7 @@ use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
+use Larapilot\Services\EconomicsMarketService;
 use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\FrontendService;
@@ -107,7 +109,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.1.2';
+    public const VERSION = '3.2.0';
 
     public function register(): void
     {
@@ -147,6 +149,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(TrackerService::class);
         $this->app->singleton(ReleaseService::class);
         $this->app->singleton(CustomSkillService::class);
+        $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
     }
@@ -199,6 +202,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseImportCommand::class,
                 CustomSkillListCommand::class,
                 CustomSkillAddCommand::class,
+                EconomicsMarketWriteCommand::class,
                 EconomicsQuoteWriteCommand::class,
                 EconomicsSetCommand::class,
                 EconomicsShowCommand::class,

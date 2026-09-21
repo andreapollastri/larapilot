@@ -81,31 +81,54 @@ class DashboardController
         return view('larapilot::dashboard.usage', $this->dashboard->usage());
     }
 
-    public function economics(): View
+    public function economics(Request $request): View
     {
         $this->guard();
 
-        return view('larapilot::dashboard.economics', $this->dashboard->economics());
+        return view('larapilot::dashboard.economics', $this->dashboard->economics($this->pricingOverrides($request)));
     }
 
-    public function economicsReport(): Response
+    /**
+     * Everything the pricing tool recomputes, rendered on its own so a changed
+     * dropdown swaps the panel instead of reloading the page.
+     */
+    public function economicsPanel(Request $request): View
     {
         $this->guard();
 
-        return response($this->economics->reportMarkdown(), 200, [
+        return view('larapilot::dashboard.partials.economics-panel', $this->dashboard->economics($this->pricingOverrides($request)));
+    }
+
+    public function economicsReport(Request $request): Response
+    {
+        $this->guard();
+
+        return response($this->economics->reportMarkdown($this->pricingOverrides($request)), 200, [
             'Content-Type' => 'text/markdown; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="larapilot-economics.md"',
         ]);
     }
 
-    public function economicsQuote(): Response
+    public function economicsQuote(Request $request): Response
     {
         $this->guard();
 
-        return response($this->economics->quoteMarkdown(), 200, [
+        return response($this->economics->quoteMarkdown($this->pricingOverrides($request)), 200, [
             'Content-Type' => 'text/markdown; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="'.$this->economics->quoteFilename().'"',
         ]);
+    }
+
+    /**
+     * Query-string what-ifs for the Economics pricing tool. The service keeps
+     * only the keys it knows and refuses anything outside their range, so an
+     * edited URL can move the simulation and nothing else.
+     *
+     * @return array<string, mixed>
+     */
+    protected function pricingOverrides(Request $request): array
+    {
+        return $this->economics->normalizeOverrides($request->query());
     }
 
     public function design(): View

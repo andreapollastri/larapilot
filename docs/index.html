@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.1.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1536,7 +1536,7 @@
                 <td><code>/larapilot-usage</code></td>
               </tr>
               <tr>
-                <td>Quote, tax, SaaS ARR / break-even · client quote Markdown</td>
+                <td>Interactive pricing tool: quote, tax, discount, packaging, business plan, competitors · client quote Markdown</td>
                 <td><code>/larapilot-economics</code></td>
               </tr>
             </tbody>
@@ -3190,6 +3190,37 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </thead>
               <tbody>
                 <tr>
+                  <td><strong>3.2.0</strong> <span class="chip">2026-09-21</span></td>
+                  <td>
+                    <strong>Added:</strong> <code>/larapilot/economics</code> is an
+                    <strong>interactive pricing tool</strong> — dropdowns for hourly rate,
+                    margin, <strong>commercial discount</strong>, <strong>team size</strong>,
+                    account type, country, regime, price line and market scenario recompute
+                    the whole page, the charts and the quote download live, server side
+                    through the same snapshot the CLI uses. Nothing is written from the
+                    browser: a simulation prints the <code>economics-set</code> command that
+                    would make it real. <strong>BASE / PRO / PREMIUM packaging</strong> with
+                    the backlog split across the plans, a <strong>three-line business
+                    plan</strong> (pessimistic / realistic / optimistic, 36 months each), and
+                    <strong>market research</strong> — competitors, price trend, demand and
+                    tiers — researched by Jennifer and Benjamin and persisted with
+                    <code>larapilot:economics-market-write</code>. Effort totals by epic and
+                    by release.<br>
+                    <strong>Also added:</strong> <strong>developer domain docs</strong> in
+                    <code>.larapilot/docs/devs/</code> — one always-English file per domain
+                    carrying the reasoning behind the code (including the alternatives that were
+                    rejected and why), updated in the same spec that changes the behavior, never
+                    deferred; review and ship block on a stale one, and a project with none is
+                    brought level on the first change. New runtime pack
+                    <code>runtime-dev-docs.md</code> and path key <code>paths.dev_docs</code>.<br>
+                    <strong>Changed:</strong> the Economics dashboard is rebuilt around the
+                    decision (console + five sections, glossary collapsed); overhead follows
+                    person-months, so team size moves the timeline and never the price;
+                    discovery is run as a conversation with a goal challenge before any
+                    requirement is written.
+                  </td>
+                </tr>
+                <tr>
                   <td><strong>3.1.2</strong> <span class="chip">2026-09-21</span></td>
                   <td>
                     <strong>Added:</strong> the <strong>client quote is a document Aurora writes</strong>
@@ -3338,9 +3369,20 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">discovery</span>
               <div class="skill-body">
                 <h3><code>/larapilot-inception</code></h3>
-                <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.</p>
+                <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.
+                  It is run as a <strong>conversation, not a questionnaire</strong>: AskQuestion only for the fixed
+                  choices Larapilot persists, a reaction to every answer before the next question, and — before any
+                  requirement is written — at least two <strong>challenge</strong> exchanges on the goal itself (who has
+                  this problem and what they do instead, what changes if it works, how you will know in 90 days, the
+                  riskiest assumption, what would make you stop).</p>
                 <ul>
                   <li>Mark opens with Project Kind (Personal · Website · Application · Package)</li>
+                  <li><strong>Four rounds always happen</strong>, whatever the branch and whatever the legacy answer:
+                    Project Kind · <strong>Delivery Target</strong> · <strong>Business Model</strong> (client project ·
+                    SaaS · e-commerce · licensed package · internal tool) · <strong>Operations &amp; support</strong>
+                    (who manages the server, who is on the hook when it is down, what support window is promised).
+                    A skipped round is recorded as <code>Not decided</code>, never as a guess — and the ones that feed
+                    the quote say what skipping them costs</li>
                   <li>Package branch: origin (new / local / git), distribution, consumer install, CI/docs</li>
                   <li>John + Joe ask <strong>Frontend Topology</strong> when there is a UI; Mike on data stores;
                     Lucille on deadlines (skippable); optional <strong>release mode</strong> AskQuestion on greenfield
@@ -3708,6 +3750,19 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   <code>COMPANY</code>. Hours come from the backlog spec by spec (planned task hours, then story
                   points, with hours-per-point calibrated on the plans you already wrote), and the snapshot
                   refreshes itself whenever specs, plans, the PRD, or inception change.</p>
+                <p><code>/larapilot/economics</code> is an <strong>interactive pricing tool</strong>: dropdowns for
+                  hourly rate, margin, <strong>commercial discount</strong>, <strong>team size</strong>, account type,
+                  country, regime, monthly price, <strong>BASE / PRO / PREMIUM price line</strong> and market scenario
+                  recompute every figure, chart and the quote download live — server side, through the same snapshot the
+                  CLI uses. Nothing is written from the browser: a simulation prints the <code>economics-set</code>
+                  command that would make it real. A discount comes out of the margin and flags the project when it drops
+                  below cost; team size compresses the timeline and never the price.</p>
+                <p>For a subscription product the page carries three price lines with the slice of the backlog each one
+                  includes, and a <strong>business plan</strong> read three ways — pessimistic, realistic, optimistic,
+                  36 months each. <strong>Jennifer</strong> and <strong>Benjamin</strong> research the market during the
+                  skill (sector, named competitors with their price and trend, demand, packaging) and persist it with
+                  <code>larapilot:economics-market-write</code>; the dashboard plots it and shows where your price sits
+                  against the researched set. Larapilot never invents a competitor or a price.</p>
                 <p>Aurora also <strong>writes the client quote</strong> — a commercial document in the PRD's own
                   language, any language — to <code>.larapilot/docs/quote.md</code>, served at
                   <code>/larapilot/economics/quote.md</code> and by the dashboard's
@@ -3717,6 +3772,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:economics-set</code> ·
                   <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>) ·
                   <code>larapilot:economics-quote-write</code> (<code>--file=</code>, <code>--lang=</code>) ·
+                  <code>larapilot:economics-market-write</code> (<code>--file=</code>) ·
                   <code>larapilot:settings-set --account=…</code>.
                 </p>
               </div>

@@ -19,9 +19,19 @@ class DashboardRouteRegistrar
         }
 
         $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
+        $base = (array) config('larapilot.dashboard_route.middleware', ['web']);
+
         $middleware = [
-            ...(array) config('larapilot.dashboard_route.middleware', ['web']),
+            ...$base,
             AddLarapilotSecurityHeaders::class,
+            EnsureDashboardAuthorized::class,
+        ];
+
+        // The design viewer frames the presentation index, so that route runs
+        // with same-origin framing allowed instead of the dashboard's DENY.
+        $embedded = [
+            ...$base,
+            AddLarapilotSecurityHeaders::class.':embed',
             EnsureDashboardAuthorized::class,
         ];
 
@@ -58,6 +68,9 @@ class DashboardRouteRegistrar
                 Route::get('/economics', [DashboardController::class, 'economics'])
                     ->name('larapilot.dashboard.economics');
 
+                Route::get('/economics/panel', [DashboardController::class, 'economicsPanel'])
+                    ->name('larapilot.dashboard.economics.panel');
+
                 Route::get('/economics/quote.md', [DashboardController::class, 'economicsQuote'])
                     ->name('larapilot.dashboard.economics.quote');
 
@@ -66,9 +79,6 @@ class DashboardRouteRegistrar
 
                 Route::get('/design', [DashboardController::class, 'design'])
                     ->name('larapilot.dashboard.design');
-
-                Route::get('/design/presentation', [DashboardController::class, 'designPresentation'])
-                    ->name('larapilot.dashboard.design.presentation');
 
                 Route::get('/design/package.zip', [DashboardController::class, 'designPackage'])
                     ->name('larapilot.dashboard.design.package');
@@ -80,6 +90,13 @@ class DashboardRouteRegistrar
                 Route::post('/specs/{code}/comments', [DashboardController::class, 'storeComment'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec.comments.store');
+            });
+
+        Route::middleware($embedded)
+            ->prefix($prefix)
+            ->group(function (): void {
+                Route::get('/design/presentation', [DashboardController::class, 'designPresentation'])
+                    ->name('larapilot.dashboard.design.presentation');
             });
     }
 }

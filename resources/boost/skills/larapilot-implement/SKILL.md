@@ -9,7 +9,7 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture standards, Git discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs).
+Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture standards, Git discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs) and `.larapilot/runtime-dev-docs.md` (developer domain docs — mandatory, English, every effort level).
 
 Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections per `data.settings`.
 
@@ -17,7 +17,7 @@ Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables**
 
 **High** — see `larapilot-implement` in the shared-runtime table. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
 
-When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** except OpenAPI when public/partner API routes change; short inline Robert/Lars checklist only; one-line status. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
+When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** except OpenAPI when public/partner API routes change **and the developer domain docs under `{paths.dev_docs}`, which are written every time** (terse prose, same sections); short inline Robert/Lars checklist only; one-line status. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
 
 ## The Team
 
@@ -25,7 +25,7 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`) and **`data.frontend`** when topology is external; honor them for the whole run
+1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`), **`data.frontend`** when topology is external, and **`data.dev_docs`** (`documented`, `count`, `domains`); honor them for the whole run
 2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
@@ -55,6 +55,7 @@ Apply the canonical delivery rules from `runtime-delivery.md` — do not re-deri
 - **Test Data — Factories & Seeders** — factory + seeder updated in the **same task** as model/migration changes; `migrate:fresh --seed` verified before `task-done`.
 - **Vendor & Package Policy** — Laravel first-party → Spatie → Filament plugins (only when the PRD chose Filament — never introduce it on your own) → other vetted vendors; Starter Kit specs scaffold per [starter-kits docs](https://laravel.com/docs/starter-kits) — never mix a mismatched UI stack. Verify compatibility via `Application Info`; `composer audit` after `composer require`.
 - **Technical Documentation** — update OpenAPI/Swagger in the same spec that changes APIs (**including under `ECO`**); README/CHANGELOG/`security.txt`/`SECURITY.md` when in scope and effort is not `ECO`.
+- **Developer Domain Docs (Albert)** — when the project has none yet, the first change documents **every existing domain** before its own work (**First-change catch-up** in `runtime-dev-docs.md`). Then, for every domain/entity/feature the spec touches, write or refresh `{paths.dev_docs}/{domain}.md` (default `.larapilot/docs/devs/`) per `runtime-dev-docs.md`: functional flow, technical design, architectural choices **with the alternatives that were rejected and why**, key decisions and invariants. **English regardless of the project language. Never deferred, at any effort level.** Commit the doc with the task that changed the behavior, and keep the folder `README.md` index current.
 - **Code quality gate** — run `larapilot:quality` on Laravel tasks before `task-done`; project stays on [Larastan](https://github.com/larastan/larastan) level 5+ and Laravel Pint (never lower level without human waiver).
 
 Skill-specific execution notes:
@@ -75,15 +76,18 @@ Skill-specific execution notes:
 
 From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
 
+**Developer domain docs catch-up gate.** When `data.dev_docs.documented` is `false` and the codebase already has domains to describe, Albert brings the **whole project** level before any task runs — one file per existing domain, not just the ones this spec touches — per **First-change catch-up** in `runtime-dev-docs.md`. Announce the scope in one line (no AskQuestion), commit it on its own as `docs({code}): bring developer domain docs level`, then start Phase 1. A greenfield project on its first spec has nothing to catch up on and skips straight to Phase 1. This gate runs at **every** effort level, `ECO` included.
+
 ### Phase 1 — Execute tasks in waves
 
 Group tasks by dependencies. For each task:
 
 1. Alex / Joe implement per the task body contract — backend under `data.workdir`, frontend under `data.frontend.repo_path` when `repo: frontend`
 2. Anne writes/runs tests per `settings.testing` — `php artisan test` / Pest for Laravel; `npm test` / vitest / playwright from the FE root for `repo: frontend` tasks
-3. Alex commits (one atomic commit per task). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks). If a forge setting is `YES`, open/update via `gh` / `glab` / Bitbucket API / `az repos` (Azure DevOps), print the PR/MR URL, and notify `pr_opened` / `pr_updated` when notifications are on
-4. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria and may emit a `task_done` notification; never edit the plan YAML manually
-5. When `data.settings.code_history` is `YES` (default OFF): `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — records the touched files + line ranges from the task commit into `.larapilot/code-history.yaml`
+3. Albert updates the touched `{paths.dev_docs}/{domain}.md` files (create from `TEMPLATE.md` when the domain is new) — **a task is not done while its domain doc describes the old behavior**
+4. Alex commits (one atomic commit per task, code + tests + domain docs together). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks). If a forge setting is `YES`, open/update via `gh` / `glab` / Bitbucket API / `az repos` (Azure DevOps), print the PR/MR URL, and notify `pr_opened` / `pr_updated` when notifications are on
+5. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria and may emit a `task_done` notification; never edit the plan YAML manually
+6. When `data.settings.code_history` is `YES` (default OFF): `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — records the touched files + line ranges from the task commit into `.larapilot/code-history.yaml`
 
 ### Phase 2 — Review (sub-agents or inline)
 
@@ -115,7 +119,7 @@ branch: feature/{code}-* (or current branch in workdir)
 plan: {paths.planning}/{code}-plan.yaml (under project_root)
 spec body: {acceptance criteria + Demonstrates from data.spec.body}
 
-Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main/develop commits), **per-task commit + internal PR discipline**, **factory/seeder completeness** for touched models. Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
+Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main/develop commits), **per-task commit + internal PR discipline**, **factory/seeder completeness** for touched models, **developer domain doc freshness** — any domain whose code changed in the diff while `{paths.dev_docs}/{domain}.md` did not is a High finding (`stale dev doc — {file}`). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
 
 Lars (security review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
 ```
@@ -127,6 +131,7 @@ Lars (security review): OWASP Top 10 on branch diff; auth/access-control; compos
 3. Re-run **Lars only** if auth, policies, or security files changed materially; skip a Robert re-run unless code changed widely.
 4. Write `{paths.review}/{code}.md` (from `config-show`; default `.larapilot/docs/review/`) per **Sub-agents → Review artifact** in shared-runtime.
 5. Document **Medium** findings in Parent actions if not fixed.
+6. Before handoff, confirm every domain the spec touched has a current file under `{paths.dev_docs}` and an index row in its `README.md`.
 
 Robert and Lars still speak in character when the **parent** summarizes merged findings in chat (Output Economy bullets).
 
@@ -134,4 +139,4 @@ Robert and Lars still speak in character when the **parent** summarizes merged f
 
 `php artisan larapilot:spec-review {code}` with a summary note.
 
-Report (concise): spec code, tasks completed, tests run, review outcome — per the Output Economy handoff limit.
+Report (concise): spec code, tasks completed, tests run, review outcome, developer domain docs written or updated — per the Output Economy handoff limit.

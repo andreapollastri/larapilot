@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use Larapilot\Services\ChoicesService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\EconomicsMarketService;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\TaxCatalog;
+use Symfony\Component\Yaml\Yaml;
 
 it('defaults account mode to NONE and rejects unknown values', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
@@ -166,9 +168,10 @@ it('serves the economics dashboard and API', function (): void {
         ->assertSee('Economics', false)
         ->assertSee('Forfettario 5%', false)
         ->assertSee('Client price', false)
-        ->assertSee('Scope &amp; effort', false)
-        ->assertSee('What the client pays', false)
-        ->assertSee('What you keep', false)
+        ->assertSee('Where the hours come from', false)
+        ->assertSee('What the client pays and what you keep', false)
+        ->assertSee('Hourly rate', false)
+        ->assertSee('Commercial discount', false)
         ->assertSee('Download quote', false)
         ->assertDontSee('Economics is off', false);
 
@@ -673,4 +676,409 @@ it('prices a licence from the configured annual price when there is one', functi
         ->and($configured['payback']['suggested_license_price'])->toBe(990.0)
         ->and($configured['sales']['one_shot']['units_to_recover_build'])
         ->toBe((int) ceil($configured['quote']['gross'] / 990));
+});
+
+it('simulates a price without writing the profile or the snapshot', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--hourly-rate' => '55',
+        '--margin' => '30',
+    ])->assertSuccessful();
+
+    $service = app(EconomicsService::class);
+    $saved = $service->snapshot();
+    $storedBefore = $service->readStoredSnapshot();
+
+    $simulated = $service->snapshot(['hourly_rate' => 90, 'discount_pct' => 15]);
+
+    expect($simulated['simulation']['active'])->toBeTrue()
+        ->and($simulated['simulation']['overrides'])->toBe(['hourly_rate' => 90.0, 'discount_pct' => 15.0])
+        ->and($simulated['simulation']['command'])->toContain('--hourly-rate=90')
+        ->and($simulated['simulation']['command'])->toContain('--discount=15')
+        ->and($simulated['quote']['hourly_rate'])->toBe(90.0)
+        ->and($simulated['quote']['gross'])->toBeGreaterThan($saved['quote']['gross'])
+        // the profile on disk and the stored cost board still describe the saved rate
+        ->and($service->read()['hourly_rate'])->toBe(55.0)
+        ->and($service->readStoredSnapshot()['quote']['gross'])->toBe($storedBefore['quote']['gross'])
+        ->and($service->snapshot()['simulation']['active'])->toBeFalse();
+});
+
+it('takes the discount out of the margin, not out of the cost', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--hourly-rate' => '55', '--margin' => '30'])->assertSuccessful();
+
+    $service = app(EconomicsService::class);
+    $quote = $service->snapshot(['discount_pct' => 20])['quote'];
+
+    expect($quote['list_price'])->toBe(round($quote['direct'] + $quote['margin'], 2))
+        ->and($quote['discount'])->toBe(round($quote['list_price'] * 0.2, 2))
+        ->and($quote['gross'])->toBe(round($quote['list_price'] - $quote['discount'], 2))
+        ->and($quote['margin_after_discount'])->toBeLessThan($quote['margin'])
+        ->and($quote['below_cost'])->toBeFalse();
+
+    // A discount deeper than the margin prices the project under its own cost.
+    $deep = $service->snapshot(['discount_pct' => 40])['quote'];
+
+    expect($deep['below_cost'])->toBeTrue()
+        ->and($deep['margin_after_discount'])->toBeLessThan(0);
+});
+
+it('lets the team size move the calendar but never the price', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 21]);
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--hourly-rate' => '55'])->assertSuccessful();
+
+    $service = app(EconomicsService::class);
+    $solo = $service->snapshot();
+    $team = $service->snapshot(['team_size' => 3]);
+
+    expect($team['effort']['billable_hours'])->toBe($solo['effort']['billable_hours'])
+        ->and($team['effort']['person_months'])->toBe($solo['effort']['person_months'])
+        ->and($team['effort']['calendar_months'])->toBeLessThan($solo['effort']['calendar_months'])
+        ->and($team['quote']['overhead'])->toBe($solo['quote']['overhead'])
+        ->and($team['quote']['gross'])->toBe($solo['quote']['gross'])
+        ->and($team['effort']['team_size'])->toBe(3.0);
+});
+
+it('derives three price lines and runs the forecast on the selected one', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 5]);
+    addSpec(['code' => 'US-002', 'title' => 'Billing', 'points' => 5]);
+    addSpec(['code' => 'US-003', 'title' => 'Reporting', 'points' => 8]);
+
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--hourly-rate' => '55',
+        '--product-model' => 'saas',
+        '--price-monthly' => '29',
+    ])->assertSuccessful();
+
+    $service = app(EconomicsService::class);
+    $snapshot = $service->snapshot();
+    $tiers = collect($snapshot['packaging']['tiers'])->keyBy('id');
+
+    expect($tiers->keys()->all())->toBe(['base', 'pro', 'premium'])
+        ->and($tiers['pro']['price_monthly'])->toBe(29.0)
+        ->and($tiers['base']['price_monthly'])->toBeLessThan(29.0)
+        ->and($tiers['premium']['price_monthly'])->toBeGreaterThan(29.0)
+        ->and($tiers['base']['features'])->not->toBeEmpty()
+        ->and($snapshot['packaging']['source'])->toBe('derived')
+        ->and($snapshot['business_plan']['price_monthly'])->toBe(29.0);
+
+    $premium = $service->snapshot(['tier' => 'premium']);
+
+    expect($premium['business_plan']['price_monthly'])->toBe($tiers['premium']['price_monthly'])
+        ->and($premium['saas']['price_monthly'])->toBe($tiers['premium']['price_monthly'])
+        ->and($premium['business_plan']['lines'])->toHaveCount(3);
+
+    // Optimistic must never read worse than pessimistic on the same price line.
+    $lines = collect($premium['business_plan']['lines'])->keyBy('id');
+
+    expect($lines['optimistic']['arr_m36'])->toBeGreaterThan($lines['pessimistic']['arr_m36'])
+        ->and($lines['optimistic']['churn_monthly_pct'])->toBeLessThan($lines['pessimistic']['churn_monthly_pct']);
+});
+
+it('prices against the researched market when the research file exists', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--hourly-rate' => '55',
+        '--product-model' => 'saas',
+        '--price-monthly' => '49',
+    ])->assertSuccessful();
+
+    $research = base_path('.larapilot/market.yaml');
+    file_put_contents($research, Yaml::dump([
+        'sector' => 'Field service management',
+        'segment' => 'SMB installers',
+        'summary' => 'Crowded mid-market, thin at the low end.',
+        'competitors' => [
+            ['name' => 'Alpha', 'price_monthly' => 39, 'trend' => 'up', 'change_pct' => 12, 'url' => 'https://alpha.test'],
+            ['name' => 'Beta', 'price_monthly' => 99, 'trend' => 'flat'],
+            ['name' => 'Gamma', 'price_monthly' => 149, 'trend' => 'up', 'change_pct' => 6],
+        ],
+        'demand' => [
+            'pessimistic' => ['customers' => 20, 'growth_monthly_pct' => 3, 'churn_monthly_pct' => 9, 'conversion_pct' => 1],
+            'realistic' => ['customers' => 120, 'growth_monthly_pct' => 10, 'churn_monthly_pct' => 4, 'conversion_pct' => 2.5],
+            'optimistic' => ['customers' => 400, 'growth_monthly_pct' => 18, 'churn_monthly_pct' => 2, 'conversion_pct' => 4],
+        ],
+        'tiers' => [
+            ['id' => 'base', 'name' => 'STARTER', 'price_monthly' => 25, 'share_pct' => 60, 'features' => ['Jobs', 'Scheduling']],
+            ['id' => 'pro', 'price_monthly' => 59, 'share_pct' => 30],
+            ['id' => 'premium', 'price_monthly' => 129, 'share_pct' => 10],
+        ],
+        'risks' => ['Alpha is bundling scheduling for free.'],
+        'sources' => ['https://alpha.test/pricing'],
+    ], 6, 2));
+
+    $this->artisan('larapilot:economics-market-write', ['--file' => $research])->assertSuccessful();
+
+    $snapshot = app(EconomicsService::class)->snapshot();
+    $market = $snapshot['market'];
+    $tiers = collect($snapshot['packaging']['tiers'])->keyBy('id');
+
+    expect($market['available'])->toBeTrue()
+        ->and($market['sector'])->toBe('Field service management')
+        ->and($market['competitors'])->toHaveCount(3)
+        ->and($market['competitors'][0]['name'])->toBe('Alpha')
+        ->and($market['trend']['direction'])->toBe('up')
+        ->and($market['trend']['average_change_pct'])->toBe(9.0)
+        ->and($market['stale'])->toBeFalse()
+        ->and($tiers['base']['name'])->toBe('STARTER')
+        ->and($tiers['base']['price_monthly'])->toBe(25.0)
+        ->and($tiers['base']['features'])->toBe(['Jobs', 'Scheduling'])
+        ->and($snapshot['packaging']['source'])->toBe('research')
+        ->and($snapshot['packaging']['positioning']['median'])->toBe(99.0)
+        ->and($snapshot['packaging']['positioning']['cheaper_than_us'])->toBe(1)
+        ->and($snapshot['business_plan']['source'])->toBe('research');
+
+    $lines = collect($snapshot['business_plan']['lines'])->keyBy('id');
+
+    expect($lines['realistic']['target_customers'])->toBe(120)
+        ->and($lines['realistic']['churn_monthly_pct'])->toBe(4.0)
+        ->and($lines['optimistic']['target_customers'])->toBe(400)
+        ->and($lines['realistic']['source'])->toBe('research');
+});
+
+it('refuses market research it cannot read', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:economics-market-write', ['--content' => 'sector: X'])
+        ->assertExitCode(4);
+
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+
+    $this->artisan('larapilot:economics-market-write', ['--content' => "- one\n- two"])
+        ->assertExitCode(2)
+        ->expectsOutputToContain('YAML mapping');
+
+    $this->artisan('larapilot:economics-market-write', ['--content' => 'notes: nothing useful'])
+        ->assertExitCode(2);
+
+    expect(app(EconomicsMarketService::class)->exists())->toBeFalse();
+});
+
+it('keeps an out-of-range simulation out of the engine', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 5]);
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--hourly-rate' => '55'])->assertSuccessful();
+
+    $service = app(EconomicsService::class);
+    $overrides = $service->normalizeOverrides([
+        'hourly_rate' => '-40',
+        'discount_pct' => '250',
+        'team_size' => 'due',
+        'regime' => 'invented_regime',
+        'country' => 'ZZ',
+        'tier' => 'gold',
+        'scenario' => 'hopeful',
+        'margin_target_pct' => '45',
+        'unknown_key' => '1',
+    ]);
+
+    expect($overrides)->toBe(['margin_target_pct' => 45.0, 'regime' => 'invented_regime']);
+
+    // An unknown regime still cannot reach the catalogue: it falls back to the
+    // country default instead of throwing.
+    $snapshot = $service->snapshot($overrides);
+
+    expect($snapshot['regime']['id'])->toBe('forfettario_15')
+        ->and($snapshot['quote']['margin_pct'])->toBe(45.0);
+});
+
+it('recomputes the economics panel from the query string', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--hourly-rate' => '55',
+        '--product-model' => 'saas',
+        '--price-monthly' => '29',
+    ])->assertSuccessful();
+
+    $saved = app(EconomicsService::class)->snapshot();
+
+    // The panel is the page without the shell, so a changed dropdown can swap it.
+    $this->get('/larapilot/economics/panel')
+        ->assertOk()
+        ->assertSee('Hourly rate', false)
+        ->assertDontSee('<!DOCTYPE html>', false)
+        ->assertSee('Saved profile', false);
+
+    $this->get('/larapilot/economics/panel?hourly_rate=90&discount_pct=10&tier=premium')
+        ->assertOk()
+        ->assertSee('This is a simulation', false)
+        ->assertSee('--hourly-rate=90', false)
+        ->assertSee('forecast runs on this', false);
+
+    // The download follows the simulation, and the stored snapshot does not.
+    $this->get('/larapilot/economics/quote.md?hourly_rate=90')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8');
+
+    expect(app(EconomicsService::class)->readStoredSnapshot()['quote']['gross'])
+        ->toBe($saved['quote']['gross']);
+
+    $this->getJson('/larapilot/api/economics?hourly_rate=90&tier=premium')
+        ->assertOk()
+        ->assertJsonPath('simulation.active', true)
+        ->assertJsonPath('quote.hourly_rate', 90)
+        ->assertJsonPath('packaging.selected_tier', 'premium');
+});
+
+it('prices the maintenance retainer from the inception answers', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+
+    $service = app(EconomicsService::class);
+
+    // Nothing asked yet: the retainer says so instead of inventing a number.
+    $blank = $service->snapshot()['maintenance'];
+
+    expect($blank['gaps'])->not->toBeEmpty()
+        ->and($blank['adopted'] ?? false)->toBeTrue()
+        ->and($blank['configured_pct'])->toBe($blank['recommended_pct']);
+
+    $this->artisan('larapilot:choices-set', [
+        '--delivery-target' => 'Enterprise',
+        '--business-model' => 'SaaS subscription',
+        '--budget-sensitivity' => 'Relaxed',
+        '--server-management' => 'Self-managed VPS',
+        '--ops-owner' => 'Me / my team',
+        '--support-window' => '24/7',
+    ])->assertSuccessful();
+
+    $answered = app(EconomicsService::class)->snapshot();
+    $maintenance = $answered['maintenance'];
+    $reasons = implode(' ', array_column($maintenance['drivers'], 'reason'));
+
+    expect($maintenance['recommended_pct'])->toBeGreaterThan($blank['recommended_pct'])
+        ->and($maintenance['gaps'])->toBeEmpty()
+        ->and($reasons)->toContain('Enterprise delivery target')
+        ->and($reasons)->toContain('You operate the server')
+        ->and($reasons)->toContain('Round-the-clock support')
+        ->and(implode(' ', $maintenance['covers']))->toContain('backup verification')
+        // the business model the user stated decides how the product is priced
+        ->and($answered['product']['model'])->toBe('saas');
+
+    // A client's own ops team takes the machine back out of the retainer.
+    $this->artisan('larapilot:choices-set', [
+        '--server-management' => "Client's own infrastructure",
+        '--ops-owner' => 'Client team',
+        '--support-window' => 'Business hours',
+    ])->assertSuccessful();
+
+    $lighter = app(EconomicsService::class)->snapshot()['maintenance'];
+
+    expect($lighter['recommended_pct'])->toBeLessThan($maintenance['recommended_pct'])
+        ->and(implode(' ', array_column($lighter['drivers'], 'reason')))->toContain("client's own team");
+
+    // An explicit figure always wins, and the dashboard says it diverges.
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--maintenance' => '8'])->assertSuccessful();
+
+    $chosen = app(EconomicsService::class)->snapshot();
+
+    expect($chosen['maintenance']['configured_pct'])->toBe(8.0)
+        ->and($chosen['maintenance']['adopted'] ?? false)->toBeFalse()
+        ->and($chosen['maintenance']['follows_inception'])->toBeFalse()
+        ->and($chosen['quote']['maintenance_year'])->toBe(round($chosen['quote']['gross'] * 0.08, 2));
+});
+
+it('writes the infrastructure chapter only once the project decided one', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['points' => 8]);
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--hourly-rate' => '55'])->assertSuccessful();
+
+    $economics = app(EconomicsService::class);
+
+    // Nothing decided about hosting: the quote promises no arrangement.
+    expect($economics->quoteMarkdown())->not->toContain('Infrastructure and hosting');
+
+    $this->artisan('larapilot:choices-set', [
+        '--deploy-platform' => 'Laravel Forge on Hetzner',
+        '--server-management' => 'Self-managed VPS',
+        '--ops-owner' => 'Me / my team',
+        '--support-window' => 'Business hours',
+    ])->assertSuccessful();
+
+    $ours = app(EconomicsService::class)->quoteMarkdown();
+
+    expect($ours)->toContain('## Infrastructure and hosting')
+        ->toContain('| **Hosting platform** | Laravel Forge on Hetzner |')
+        ->toContain('| **Server management** | Self-managed VPS |')
+        ->toContain('Automated daily backups with periodic restore testing')
+        ->toContain('Uptime checks and alerting')
+        ->toContain('TLS certificate renewed automatically')
+        ->toContain('| **Support window** | Business hours |')
+        ->toContain('per month')
+        ->toContain('billed directly by the hosting provider')
+        ->toContain('stay in the client\'s name')
+        // the chapter sits before the price, where value belongs
+        ->and(strpos($ours, '## Infrastructure and hosting'))->toBeLessThan(strpos($ours, '## Investment'));
+
+    // The client's own IT takes the operational promises back out.
+    $this->artisan('larapilot:choices-set', [
+        '--server-management' => "Client's own infrastructure",
+        '--ops-owner' => 'Client team',
+    ])->assertSuccessful();
+
+    $theirs = app(EconomicsService::class)->quoteMarkdown();
+
+    expect($theirs)->toContain("Owned by the client's IT team")
+        ->not->toContain('Automated daily backups with periodic restore testing');
+});
+
+it('sells security and quality from what the project actually does', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--testing' => 'MINIMAL'])->assertSuccessful();
+    addSpec(['points' => 8]);
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--hourly-rate' => '55'])->assertSuccessful();
+
+    $lean = app(EconomicsService::class)->quoteMarkdown();
+
+    expect($lean)->toContain('## Security and quality: what protects this investment')
+        ->toContain('independent review')
+        ->toContain('acceptance criteria written before it is built')
+        ->toContain('Automated tests on the critical paths')
+        ->toContain('No lock-in')
+        // claims the project does not earn are simply absent
+        ->not->toContain('automated security scan')
+        ->and($lean)->not->toContain('broad automated test suite')
+        ->and($lean)->not->toContain('Numbered releases')
+        ->and($lean)->not->toContain('Personal data handled to GDPR');
+
+    $this->artisan('larapilot:settings-set', ['--testing' => 'BEST'])->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--security-scan' => 'YES'])->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--release-mode' => 'YES'])->assertSuccessful();
+    $this->artisan('larapilot:prd-write', ['--content' => str_replace(
+        'Laravel monolith.',
+        'Laravel monolith. The service stores personal data and follows GDPR.',
+        validPrd()
+    )])->assertSuccessful();
+
+    $full = app(EconomicsService::class)->quoteMarkdown();
+
+    expect($full)->toContain('A broad automated test suite')
+        ->toContain('An automated security scan on every change')
+        ->toContain('Numbered releases with a list of what changed')
+        ->toContain('Personal data handled to GDPR')
+        ->toContain('OWASP')
+        // still a sales document: no engineering artefacts leak into it
+        ->not->toContain('story point')
+        ->and($full)->not->toContain('US-001');
 });

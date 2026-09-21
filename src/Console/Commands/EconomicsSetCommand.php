@@ -19,6 +19,8 @@ class EconomicsSetCommand extends LarapilotCommand
                             {--billable-days= : Billable days per year (default 220)}
                             {--hours-per-day= : Billable hours per day (default 6)}
                             {--margin= : Target margin percent on direct cost}
+                            {--discount= : Commercial discount percent taken off the list price (0-90)}
+                            {--team-size= : People working in parallel — compresses the timeline, not the price}
                             {--maintenance= : Annual maintenance as percent of the build quote}
                             {--overhead-monthly= : Monthly overhead (tools, office, accountant share)}
                             {--vat-registered= : YES or NO (blank = infer from the regime)}
@@ -50,6 +52,8 @@ class EconomicsSetCommand extends LarapilotCommand
         'billable-days' => [1.0, 366.0],
         'hours-per-day' => [1.0, 24.0],
         'margin' => [0.0, 300.0],
+        'discount' => [0.0, 90.0],
+        'team-size' => [0.25, 50.0],
         'maintenance' => [0.0, 100.0],
         'overhead-monthly' => [0.0, 1000000.0],
         'price-monthly' => [0.0, 100000.0],
@@ -111,6 +115,8 @@ class EconomicsSetCommand extends LarapilotCommand
             'billable-days' => 'billable_days_per_year',
             'hours-per-day' => 'hours_per_day',
             'margin' => 'margin_target_pct',
+            'discount' => 'discount_pct',
+            'team-size' => 'team_size',
             'maintenance' => 'maintenance_annual_pct',
             'overhead-monthly' => 'overhead_monthly',
         ] as $option => $key) {

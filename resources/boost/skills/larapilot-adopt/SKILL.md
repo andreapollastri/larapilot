@@ -18,7 +18,7 @@ You bring an **existing, running Laravel project** under Larapilot. The codebase
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Decision Journal**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
+Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Decision Journal**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-dev-docs.md` (**Retroactive bootstrap**) — an adopted codebase gets one best-effort domain doc per domain under `{paths.dev_docs}`. Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
 
 When `data.settings.decision_log` is `YES` (default), journal the choices the user makes about adopted scope with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
 
@@ -99,12 +99,14 @@ Ask **only** what the code cannot tell you. Persona intro in chat; options in As
 **Round 2 — Forward scope (Mark + Tom)**
 
 - **Delivery Target going forward** — `MVP (harden what exists)` | `V1 Complete` | `Full Product` | `Enterprise`.
+- **Business Model** — `Client project` | `SaaS subscription` | `E-commerce` | `Licensed package` | `Internal tool` | `Not decided`. An adopted codebase already makes money somehow (or deliberately does not); ask rather than infer. Persist with `choices-set --business-model="…"` — Economics prices the product from it.
 - **Half-built areas** — for each ambiguous module: `Keep & finish (Future Phases)` | `Ship as-is (In Scope)` | `Retire (Out of Scope)`.
 - **Deadlines?** — skip unless `data.settings.lucille` is `YES` and the user has dates; persist with `larapilot:schedule-set`.
 
 **Round 3 — Gaps the repo left blank (John + Jack, only if unresolved)**
 
 - **Deploy platform / edge / cloud** when no infra config exists — never assume Sail, Cloudflare, or AWS (see **Infrastructure & Cloud** in `runtime-ship.md`).
+- **Operations & support** — always ask, even when the repo shows the platform: who manages the server, who is on the hook when it is down, and what support window is promised (`--server-management=`, `--ops-owner=`, `--support-window=`; options in **Operations & Support**, `runtime-discovery.md`). On an adopted codebase there is already a machine in production and the arrangement around it is usually undocumented — it is also what prices the maintenance retainer in Economics.
 - **External frontend repo** if the API has no coupled UI — AskQuestion until path is known; run `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`) + `larapilot:frontend-scan` (see `runtime-discovery.md` → **Frontend Topology**).
 
 **Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `runtime-release.md`.
@@ -150,20 +152,25 @@ Use the **PRD Template in `/larapilot-inception`** (canonical section rules in `
   - `**Project Kind:** …` (confirmed)
   - `**Project Origin:** Adopted (existing codebase)`
   - `**Delivery Target:** …` (forward-looking, from Round 2)
+  - `**Business Model:** …` (from Round 2)
 - Add a short lead paragraph under `## Functional Requirements`: *"Requirements FR-001…FR-NNN are reverse-engineered from the running codebase at commit {{GIT_SHA}}; see `research/codebase-analysis.md` for evidence."*
 - Every FR body cites its evidence paths and carries a **MoSCoW** tag (production code → Must).
-- `## Technical Architecture` reflects the **real** stack; unknowns are marked `Not recorded in repo — confirm`, never invented. Do not propose migrations or rewrites here.
+- `## Technical Architecture` reflects the **real** stack, plus `**Server Management:**`, `**Ops Owner:**`, and `**Support Window:**` from Round 3; unknowns are marked `Not recorded in repo — confirm`, never invented. Do not propose migrations or rewrites here.
 - `## PRD Revision History` first row: `| {{DATE}} | larapilot-adopt | Initial PRD reverse-engineered from codebase @ {{GIT_SHA}} |`.
 
 Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
 
-### 6. Dashboard snapshot & ledger
+### 6. Developer domain docs (retroactive bootstrap)
+
+Albert writes one best-effort file per domain under `{paths.dev_docs}` (default `.larapilot/docs/devs/`), derived from the analysis report's **Domain Model** and **Feature Inventory** — **English**, from `TEMPLATE.md`, with anything inferred rather than verified marked `<!-- TODO: verify -->`. Keep the folder `README.md` index in sync. Cover **every** domain the analysis found, not a sample: this is the project's catch-up, and a project adopted through this skill must reach its first spec already level. Accuracy is best-effort — `<!-- TODO: verify -->` is the honest marker, and the next spec that touches a domain corrects its file. Contract: **First-change catch-up** in `.larapilot/runtime-dev-docs.md`.
+
+### 7. Dashboard snapshot & ledger
 
 - `php artisan larapilot:choices-set --from-prd` (plus flags for any architecture choice not scraped).
 - When `data.settings.lucille` is `YES`: `php artisan larapilot:usage-log --category=analysis --tokens=… --minutes=… --skill=larapilot-adopt --estimated`.
 - Zoey posts the end **Context estimate** line.
 
-### 7. Next steps
+### 8. Next steps
 
 Offer, in order:
 
@@ -174,7 +181,7 @@ Offer, in order:
 ## Output Boundaries
 
 - Read-only on the application codebase — no refactors, migrations, renames, or "cleanup" in this skill.
-- No backlog / spec / plan artifacts — only the PRD and `codebase-analysis.md`.
+- No backlog / spec / plan artifacts — only the PRD, `codebase-analysis.md`, and the developer domain docs bootstrap.
 - Do not fabricate architecture the repo does not show — mark it `confirm` and ask, or leave it for `/larapilot-inception`-style discovery later.
 - Not a substitute for `/larapilot-inception` on true greenfield or legacy-rewrite work.
 - Agents speak in character during discovery; the PRD and analysis report are formal documents in the detected language.

@@ -34,6 +34,54 @@ class EconomicsService
      */
     protected const MAX_BREAKDOWN_ROWS = 200;
 
+    /**
+     * Inputs the dashboard pricing tool may change without persisting anything.
+     * Anything outside this list is ignored: a simulation can move the price,
+     * never the shape of the engine.
+     *
+     * @var array<string, array{0: float, 1: float}>
+     */
+    public const NUMERIC_OVERRIDES = [
+        'hourly_rate' => [1.0, 5000.0],
+        'margin_target_pct' => [0.0, 300.0],
+        'discount_pct' => [0.0, 90.0],
+        'overhead_monthly' => [0.0, 1000000.0],
+        'maintenance_annual_pct' => [0.0, 100.0],
+        'team_size' => [0.25, 50.0],
+        'hours_per_day' => [1.0, 24.0],
+        'billable_days_per_year' => [1.0, 366.0],
+        'price_monthly' => [1.0, 100000.0],
+        'churn_monthly_pct' => [0.1, 100.0],
+        'growth_monthly_pct' => [0.0, 200.0],
+        'target_customers' => [0.0, 10000000.0],
+    ];
+
+    /**
+     * Subscription inputs that live under `saas.` in the profile.
+     *
+     * @var list<string>
+     */
+    protected const SAAS_OVERRIDES = ['price_monthly', 'churn_monthly_pct', 'growth_monthly_pct', 'target_customers'];
+
+    /**
+     * Packaging ladder around the list price: BASE undercuts it, PRO is it,
+     * PREMIUM carries the whole backlog. Overridden by researched tiers.
+     */
+    protected const TIER_MULTIPLIERS = ['base' => 0.6, 'pro' => 1.0, 'premium' => 2.2];
+
+    /**
+     * Revenue mix assumed when nobody researched one, in percent per tier.
+     */
+    protected const TIER_MIX = ['base' => 55.0, 'pro' => 35.0, 'premium' => 10.0];
+
+    /**
+     * Saved profile values behind the currently rendered controls, so each
+     * dropdown knows what "unchanged" means while a simulation is on screen.
+     *
+     * @var array<string, mixed>
+     */
+    protected array $savedControlValues = [];
+
     public function __construct(
         protected ConfigService $config,
         protected ChoicesService $choices,
@@ -42,6 +90,8 @@ class EconomicsService
         protected PrdService $prd,
         protected UsageService $usage,
         protected EconomicsQuoteWriter $quoteWriter,
+        protected EconomicsMarketService $market,
+        protected ReleaseService $releases,
     ) {}
 
     public function path(): string
@@ -166,6 +216,8 @@ class EconomicsService
             'billable_days_per_year' => 220,
             'hours_per_day' => 6.0,
             'margin_target_pct' => $account === 'COMPANY' ? 35.0 : 30.0,
+            'discount_pct' => 0.0,
+            'team_size' => 1.0,
             'maintenance_annual_pct' => 15.0,
             'overhead_monthly' => $account === 'COMPANY' ? 800.0 : 250.0,
             'vat_registered' => null,
@@ -313,6 +365,16 @@ class EconomicsService
             }
         }
 
+        // A discount above 100% would invert the price, and half a person is
+        // the smallest team that still means something on a calendar.
+        if (array_key_exists('discount_pct', $current)) {
+            $current['discount_pct'] = round(min(90.0, max(0.0, (float) $current['discount_pct'])), 2);
+        }
+
+        if (array_key_exists('team_size', $current)) {
+            $current['team_size'] = round(min(50.0, max(0.25, (float) $current['team_size'])), 2);
+        }
+
         if (array_key_exists('billable_days_per_year', $current)) {
             $current['billable_days_per_year'] = max(1, (int) $current['billable_days_per_year']);
         }
@@ -364,14 +426,39 @@ class EconomicsService
     /**
      * Full computed Economics snapshot for dashboard, API, and CLI.
      *
+     * `$overrides` is what the dashboard pricing tool sends: a what-if layered
+     * on the saved profile for this one computation. A simulated snapshot is
+     * never written to disk — the stored cost board keeps following the
+     * profile, so a dropdown someone played with cannot become the quote.
+     *
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
-    public function snapshot(): array
+    public function snapshot(array $overrides = []): array
     {
+        $overrides = $this->normalizeOverrides($overrides);
         $account = $this->accountMode();
         $profile = $this->read();
+        $research = $this->market->read();
+        $savedProfile = $profile;
+        $savedAccount = $account;
+
+        if ($overrides !== []) {
+            [$profile, $account] = $this->applyOverrides($profile, $account, $overrides);
+        }
+
         $inception = $this->inceptionContext();
         $effort = $this->effortModel($inception, $profile);
+        $maintenance = $this->maintenanceModel($inception, $profile);
+
+        // An untouched profile has no opinion on the retainer, so it follows
+        // the inception answers instead of a flat catalogue default.
+        if (empty($profile['configured']) && ! array_key_exists('maintenance_annual_pct', $overrides)) {
+            $profile['maintenance_annual_pct'] = $maintenance['recommended_pct'];
+            $maintenance['configured_pct'] = $maintenance['recommended_pct'];
+            $maintenance['follows_inception'] = true;
+            $maintenance['adopted'] = true;
+        }
 
         $payload = [
             'enabled' => $account !== 'NONE',
@@ -384,6 +471,12 @@ class EconomicsService
             'path' => $this->config->relativePath($this->path()),
             'countries' => $this->countryOptions(),
             'inputs' => $this->inputsFingerprint(),
+            'simulation' => [
+                'active' => $overrides !== [],
+                'overrides' => $overrides,
+                'command' => $this->persistCommand($profile, $account),
+            ],
+            'market' => $this->marketBlock($research),
         ];
 
         if ($account === 'NONE') {
@@ -394,9 +487,13 @@ class EconomicsService
                 'scenarios' => [],
                 'sales' => null,
                 'payback' => null,
+                'maintenance' => null,
                 'product' => ['model' => 'off'],
                 'saas' => null,
                 'forecast' => [],
+                'packaging' => null,
+                'business_plan' => null,
+                'controls' => [],
             ];
         }
 
@@ -424,7 +521,20 @@ class EconomicsService
         $scenarios = $this->taxScenarios($quote, $profile, $regime, $countryMeta, $account);
 
         $productModel = $this->resolveProductModel($profile, $inception);
-        $saas = $this->saasModel($quote, $profile, $inception, $tax);
+
+        // Packaging first: the selected tier is the price line the subscription
+        // maths and the whole forecast below it run on.
+        $packaging = $this->packaging($quote, $profile, $inception, $research, $overrides);
+        $profile['saas']['price_monthly'] = $packaging['selected']['price_monthly'];
+
+        // A derived annual price is a display figure, not a decision: writing
+        // it back would make the licence heuristic think a price was set.
+        if (($packaging['selected']['source'] ?? '') === 'research') {
+            $profile['saas']['price_annual'] = $packaging['selected']['price_annual'];
+        }
+
+        $scenarioId = (string) ($overrides['scenario'] ?? 'realistic');
+        $saas = $this->saasModel($quote, $profile, $inception, $tax, $research, $scenarioId, $overrides);
         $sales = $this->salesEstimates($quote, $profile, $inception, $tax, $productModel, $saas);
 
         $computedAt = (new \DateTimeImmutable('now'))->format(\DateTimeInterface::ATOM);
@@ -442,6 +552,11 @@ class EconomicsService
                 'options' => $this->regimeOptions($country, $account),
             ],
             'quote' => $quote,
+            'maintenance' => $maintenance + [
+                'annual' => (float) $quote['maintenance_year'],
+                'monthly' => (float) $quote['maintenance_monthly'],
+                'recommended_annual' => round(((float) $quote['gross']) * $maintenance['recommended_pct'] / 100, 2),
+            ],
             'tax' => $tax,
             'alternate' => $alternate,
             'scenarios' => $scenarios,
@@ -453,14 +568,203 @@ class EconomicsService
             ],
             'saas' => $saas,
             'forecast' => $saas['forecast'] ?? [],
+            'packaging' => $packaging,
+            'business_plan' => $this->businessPlan($quote, $profile, $inception, $tax, $research, $packaging, $scenarioId, $overrides),
+            'controls' => $this->controls(
+                $profile,
+                $account,
+                $country,
+                $effort,
+                $packaging,
+                $overrides,
+                $productModel,
+                $this->savedControls($savedProfile, $savedAccount, $inception),
+                (float) $maintenance['recommended_pct']
+            ),
             'quote_document' => $this->quoteMeta(),
             'snapshot_path' => $this->config->relativePath($this->snapshotPath()),
             'snapshot_saved_at' => $computedAt,
         ];
 
-        $this->writeSnapshot($result, $computedAt);
+        if ($overrides === []) {
+            $this->writeSnapshot($result, $computedAt);
+        }
 
         return $result;
+    }
+
+    /**
+     * Keep only the inputs the pricing tool is allowed to move, each inside the
+     * range the engine can actually compute with. Everything else is dropped —
+     * a query string never reaches the tax engine unfiltered.
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    public function normalizeOverrides(array $overrides): array
+    {
+        $clean = [];
+
+        foreach (self::NUMERIC_OVERRIDES as $key => [$min, $max]) {
+            $value = $overrides[$key] ?? null;
+
+            if ($value === null || $value === '' || ! is_numeric($value)) {
+                continue;
+            }
+
+            $number = (float) $value;
+
+            if ($number < $min || $number > $max) {
+                continue;
+            }
+
+            $clean[$key] = in_array($key, ['target_customers', 'billable_days_per_year'], true)
+                ? (int) round($number)
+                : round($number, 2);
+        }
+
+        $account = strtoupper(trim((string) ($overrides['account'] ?? '')));
+        if (in_array($account, ['FREELANCE', 'COMPANY'], true)) {
+            $clean['account'] = $account;
+        }
+
+        $country = trim((string) ($overrides['country'] ?? ''));
+        if ($country !== '') {
+            try {
+                $code = TaxCatalog::normalizeCountry($country);
+                TaxCatalog::country($code);
+                $clean['country'] = $code;
+            } catch (\InvalidArgumentException) {
+                // Unknown country: keep the saved one.
+            }
+        }
+
+        $regime = trim((string) ($overrides['regime'] ?? ''));
+        if ($regime !== '') {
+            $clean['regime'] = $regime;
+        }
+
+        $model = strtolower(trim((string) ($overrides['product_model'] ?? '')));
+        if (in_array($model, self::PRODUCT_MODELS, true)) {
+            $clean['product_model'] = $model;
+        }
+
+        $vatMode = strtolower(trim((string) ($overrides['vat_mode'] ?? '')));
+        if (in_array($vatMode, ['domestic', 'eu_b2b'], true)) {
+            $clean['vat_mode'] = $vatMode;
+        }
+
+        $extraction = strtolower(trim((string) ($overrides['extraction'] ?? '')));
+        if (in_array($extraction, ['auto', 'dividends', 'mixed'], true)) {
+            $clean['extraction'] = $extraction;
+        }
+
+        if (array_key_exists('owner_working', $overrides) && $overrides['owner_working'] !== '' && $overrides['owner_working'] !== null) {
+            $clean['owner_working'] = filter_var($overrides['owner_working'], FILTER_VALIDATE_BOOLEAN);
+        }
+
+        $tier = strtolower(trim((string) ($overrides['tier'] ?? '')));
+        if (in_array($tier, EconomicsMarketService::TIERS, true)) {
+            $clean['tier'] = $tier;
+        }
+
+        $scenario = strtolower(trim((string) ($overrides['scenario'] ?? '')));
+        if (in_array($scenario, EconomicsMarketService::SCENARIOS, true)) {
+            $clean['scenario'] = $scenario;
+        }
+
+        return $clean;
+    }
+
+    /**
+     * Layer the simulation on the profile. Moving the account or the country
+     * can strand the saved regime, so the regime falls back to the default for
+     * the pair unless the simulation named one that exists.
+     *
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $overrides
+     * @return array{0: array<string, mixed>, 1: string}
+     */
+    protected function applyOverrides(array $profile, string $account, array $overrides): array
+    {
+        if (isset($overrides['account'])) {
+            $account = (string) $overrides['account'];
+        }
+
+        if (isset($overrides['country'])) {
+            $profile['country'] = $overrides['country'];
+            $profile['currency'] = TaxCatalog::defaultCurrency((string) $overrides['country']);
+        }
+
+        foreach (self::NUMERIC_OVERRIDES as $key => $_range) {
+            if (! array_key_exists($key, $overrides)) {
+                continue;
+            }
+
+            if (in_array($key, self::SAAS_OVERRIDES, true)) {
+                $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+                $saas[$key] = $overrides[$key];
+                $profile['saas'] = $saas;
+
+                continue;
+            }
+
+            $profile[$key] = $overrides[$key];
+        }
+
+        foreach (['product_model', 'vat_mode', 'extraction', 'owner_working'] as $key) {
+            if (array_key_exists($key, $overrides)) {
+                $profile[$key] = $overrides[$key];
+            }
+        }
+
+        $country = (string) ($profile['country'] ?? TaxCatalog::defaultCountry());
+        $allowed = array_keys(TaxCatalog::regimesFor($country, $account));
+        $regime = (string) ($overrides['regime'] ?? $profile['regime'] ?? '');
+
+        $profile['regime'] = in_array($regime, $allowed, true)
+            ? $regime
+            : TaxCatalog::defaultRegime($country, $account);
+
+        return [$profile, $account];
+    }
+
+    /**
+     * The `economics-set` call that would make the current simulation the
+     * project profile. The dashboard never writes — it hands over the command.
+     *
+     * @param  array<string, mixed>  $profile
+     */
+    protected function persistCommand(array $profile, string $account): string
+    {
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+
+        $flags = [
+            '--country='.($profile['country'] ?? ''),
+            '--regime='.($profile['regime'] ?? ''),
+            '--hourly-rate='.$this->flagNumber($profile['hourly_rate'] ?? 0),
+            '--margin='.$this->flagNumber($profile['margin_target_pct'] ?? 0),
+            '--discount='.$this->flagNumber($profile['discount_pct'] ?? 0),
+            '--team-size='.$this->flagNumber($profile['team_size'] ?? 1),
+            '--overhead-monthly='.$this->flagNumber($profile['overhead_monthly'] ?? 0),
+            '--maintenance='.$this->flagNumber($profile['maintenance_annual_pct'] ?? 0),
+            '--product-model='.($profile['product_model'] ?? 'auto'),
+            '--price-monthly='.$this->flagNumber($saas['price_monthly'] ?? 0),
+            '--churn='.$this->flagNumber($saas['churn_monthly_pct'] ?? 0),
+        ];
+
+        $prefix = $account !== $this->accountMode()
+            ? 'php artisan larapilot:settings-set --account='.$account."\n"
+            : '';
+
+        return $prefix.'php artisan larapilot:economics-set '.implode(' ', $flags);
+    }
+
+    protected function flagNumber(mixed $value): string
+    {
+        $number = (float) $value;
+
+        return rtrim(rtrim(number_format($number, 2, '.', ''), '0'), '.') ?: '0';
     }
 
     /**
@@ -509,14 +813,21 @@ class EconomicsService
     /**
      * @return array<string, mixed>
      */
-    public function dashboard(): array
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    public function dashboard(array $overrides = []): array
     {
-        return $this->snapshot();
+        return $this->snapshot($overrides);
     }
 
-    public function reportMarkdown(): string
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
+    public function reportMarkdown(array $overrides = []): string
     {
-        $data = $this->snapshot();
+        $data = $this->snapshot($overrides);
         $currency = (string) ($data['country']['currency'] ?? $data['profile']['currency'] ?? 'EUR');
 
         $lines = [
@@ -758,15 +1069,23 @@ class EconomicsService
      * template (en/it/es/fr) renders the download when no one wrote one yet.
      * Internal tax figures stay in reportMarkdown().
      */
-    public function quoteMarkdown(): string
+    /**
+     * A simulation renders the built-in template with the simulated numbers:
+     * the stored document was written by hand for the saved profile, and
+     * Larapilot never silently rewrites a client document around a dropdown.
+     *
+     * @param  array<string, mixed>  $overrides
+     */
+    public function quoteMarkdown(array $overrides = []): string
     {
-        $stored = $this->readStoredQuote();
+        $overrides = $this->normalizeOverrides($overrides);
+        $stored = $overrides === [] ? $this->readStoredQuote() : null;
 
         if ($stored !== null) {
             return $stored['content'];
         }
 
-        return $this->quoteWriter->render($this->snapshot());
+        return $this->quoteWriter->render($this->snapshot($overrides));
     }
 
     /**
@@ -881,8 +1200,12 @@ class EconomicsService
             'project_kind' => $this->stringOrNull($choices['project_kind'] ?? null),
             'website_type' => $this->stringOrNull($choices['website_type'] ?? null),
             'delivery_target' => $this->stringOrNull($choices['delivery_target'] ?? null),
+            'business_model' => $this->stringOrNull($choices['business_model'] ?? null),
             'budget_sensitivity' => $this->stringOrNull($choices['budget_sensitivity'] ?? null),
             'deploy_platform' => $this->stringOrNull($choices['deploy_platform'] ?? null),
+            'server_management' => $this->stringOrNull($choices['server_management'] ?? null),
+            'ops_owner' => $this->stringOrNull($choices['ops_owner'] ?? null),
+            'support_window' => $this->stringOrNull($choices['support_window'] ?? null),
             'frontend_topology' => $this->stringOrNull($choices['frontend_topology'] ?? null),
             'prd_excerpt' => $prd,
         ];
@@ -972,6 +1295,8 @@ class EconomicsService
                     'from' => $from,
                     'hours' => round($hours, 1),
                     'done' => $row['done'],
+                    'epic' => $row['epic'],
+                    'release' => $row['release'],
                 ];
             }
         }
@@ -1009,6 +1334,14 @@ class EconomicsService
         $capacityYear = max(1.0, ((int) $profile['billable_days_per_year']) * $hoursPerDay);
         $personYears = round($adjusted / $capacityYear, 2);
 
+        // Team size compresses the calendar, not the work: the same hours
+        // delivered by two people take half the elapsed months. Person-months
+        // stay constant, which is why the price below does not move with it.
+        $teamSize = max(0.25, (float) ($profile['team_size'] ?? 1));
+        $personMonths = $adjusted / max(1.0, $hoursPerDay * 20);
+        $elapsedMonths = $personMonths / $teamSize;
+        $soloMonths = $personMonths;
+
         return [
             'source' => $source,
             'source_label' => $this->effortSourceLabel($source),
@@ -1033,12 +1366,17 @@ class EconomicsService
             'billable_hours' => round($adjusted, 1),
             'delivered_hours' => round($deliveredHours, 1),
             'remaining_hours' => round(max(0.0, $adjusted - $deliveredHours), 1),
-            'calendar_months' => round($adjusted / max(1.0, $hoursPerDay * 20), 1),
+            'calendar_months' => round($elapsedMonths, 1),
+            'solo_months' => round($soloMonths, 1),
+            'person_months' => round($personMonths, 1),
+            'team_size' => round($teamSize, 2),
             'capacity_hours_year' => round($capacityYear, 1),
             'person_years' => $personYears,
             'actual_hours' => round($actualHours, 1),
             'warnings' => $this->effortWarnings($source, $unsizedSpecs, $personYears, $calibratedHoursPerPoint, $settingHoursPerPoint),
             'breakdown' => $breakdown,
+            'by_epic' => $this->groupEffort($breakdown, 'epic', $scopeMultiplier * $buffer, (float) $profile['hourly_rate']),
+            'by_release' => $this->groupEffort($breakdown, 'release', $scopeMultiplier * $buffer, (float) $profile['hourly_rate']),
             'notes' => $this->effortNotes($source, $calibratedHoursPerPoint !== null),
         ];
     }
@@ -1046,11 +1384,12 @@ class EconomicsService
     /**
      * One row per backlog item with the estimate signals it carries.
      *
-     * @return list<array{code: string, title: string, status: string, points: int, tasks: int, plan_hours: float, done: bool}>
+     * @return list<array{code: string, title: string, status: string, points: int, tasks: int, plan_hours: float, done: bool, epic: string|null, release: string|null}>
      */
     protected function specEffortRows(): array
     {
         $rows = [];
+        $releases = $this->releaseIndex();
 
         foreach ($this->specs->allSpecs() as $spec) {
             if (! is_array($spec)) {
@@ -1076,6 +1415,8 @@ class EconomicsService
 
             $status = strtoupper(trim((string) ($spec['status'] ?? 'TODO')));
 
+            $epic = is_array($spec['epic'] ?? null) ? $spec['epic'] : [];
+
             $rows[] = [
                 'code' => $code !== '' ? $code : '—',
                 'title' => (string) ($spec['title'] ?? ($code !== '' ? $code : 'Untitled')),
@@ -1084,8 +1425,91 @@ class EconomicsService
                 'tasks' => $tasks,
                 'plan_hours' => round($planHours, 1),
                 'done' => $status === 'DONE',
+                'epic' => $this->stringOrNull($epic['title'] ?? null) ?? $this->stringOrNull($epic['code'] ?? null),
+                'release' => $releases[strtoupper($code)] ?? null,
             ];
         }
+
+        return $rows;
+    }
+
+    /**
+     * Spec code → release version, so the effort table can be read the way the
+     * project is actually delivered.
+     *
+     * @return array<string, string>
+     */
+    protected function releaseIndex(): array
+    {
+        $index = [];
+
+        foreach ($this->releases->read()['releases'] as $release) {
+            $version = $this->stringOrNull($release['version'] ?? null);
+
+            if ($version === null) {
+                continue;
+            }
+
+            foreach (is_array($release['specs'] ?? null) ? $release['specs'] : [] as $code) {
+                if (is_scalar($code)) {
+                    $index[strtoupper(trim((string) $code))] = $version;
+                }
+            }
+        }
+
+        return $index;
+    }
+
+    /**
+     * Totals per epic or per release. Hours are the raw estimates, so the
+     * buffer and any scope multiplier apply here exactly as they do to the
+     * headline figure — the group totals add up to the billable hours.
+     *
+     * @param  list<array<string, mixed>>  $breakdown
+     * @return list<array<string, mixed>>
+     */
+    protected function groupEffort(array $breakdown, string $key, float $factor, float $rate): array
+    {
+        $groups = [];
+
+        foreach ($breakdown as $row) {
+            $label = $this->stringOrNull($row[$key] ?? null);
+
+            if ($label === null) {
+                continue;
+            }
+
+            $groups[$label] ??= [
+                'label' => $label,
+                'specs' => 0,
+                'done' => 0,
+                'points' => 0,
+                'base_hours' => 0.0,
+            ];
+
+            $groups[$label]['specs']++;
+            $groups[$label]['done'] += ! empty($row['done']) ? 1 : 0;
+            $groups[$label]['points'] += (int) ($row['points'] ?? 0);
+            $groups[$label]['base_hours'] += (float) ($row['hours'] ?? 0);
+        }
+
+        $rows = [];
+
+        foreach ($groups as $group) {
+            $billable = $group['base_hours'] * $factor;
+
+            $rows[] = [
+                'label' => $group['label'],
+                'specs' => $group['specs'],
+                'done' => $group['done'],
+                'points' => $group['points'],
+                'base_hours' => round($group['base_hours'], 1),
+                'billable_hours' => round($billable, 1),
+                'labor' => round($billable * $rate, 2),
+            ];
+        }
+
+        usort($rows, static fn (array $a, array $b): int => $b['billable_hours'] <=> $a['billable_hours']);
 
         return $rows;
     }
@@ -1182,6 +1606,109 @@ class EconomicsService
     }
 
     /**
+     * What keeping this project alive is actually worth, built from the
+     * answers inception already has: how far the product goes, who runs the
+     * server, how it ships, how it is tested, and how fast support has to
+     * answer. A retainer that ignores those is a number pulled out of the air.
+     *
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>  $profile
+     * @return array<string, mixed>
+     */
+    protected function maintenanceModel(array $inception, array $profile): array
+    {
+        $settings = $this->config->settings();
+        $drivers = [];
+        $covers = [
+            'Security and dependency updates for the framework and the packages it ships with',
+            'Bugs reported after go-live, inside the agreed response window',
+        ];
+        $gaps = [];
+        $points = 12.0;
+
+        $add = static function (float $delta, string $reason) use (&$points, &$drivers): void {
+            $points += $delta;
+            $drivers[] = ['delta' => $delta, 'reason' => $reason];
+        };
+
+        $target = strtolower((string) ($inception['delivery_target'] ?? ''));
+        match (true) {
+            str_contains($target, 'enterprise') => $add(8.0, 'Enterprise delivery target: compliance evidence, integrations, and scale all have to keep working, not just the core journey.'),
+            str_contains($target, 'full') => $add(3.0, 'Full product: the whole surface stays supported, so more of it can break.'),
+            str_contains($target, 'mvp') => $add(-2.0, 'MVP: a small surface is cheap to keep alive — revisit the retainer when the scope grows.'),
+            $target !== '' => $add(0.0, 'V1 Complete: the shipped journey plus its essential secondary features.'),
+            default => $gaps[] = 'Delivery target was never recorded at inception, so the retainer assumes a V1-sized surface.',
+        };
+
+        // Who runs the machine after go-live is the single biggest driver.
+        $operations = strtolower(trim(($inception['server_management'] ?? '').' '.($inception['ops_owner'] ?? '').' '.($inception['deploy_platform'] ?? '')));
+        match (true) {
+            str_contains($operations, 'client') && ! str_contains($operations, 'client project') => $add(-3.0, "The client's own team operates the infrastructure: the retainer covers the application, not the machine."),
+            str_contains($operations, 'kubernetes') || str_contains($operations, 'k8s') || str_contains($operations, 'self') || str_contains($operations, 'vps') || str_contains($operations, 'bare') || str_contains($operations, 'hetzner') || str_contains($operations, 'digitalocean') => $add(4.0, 'You operate the server: patching, backups, certificates, and uptime are inside the retainer.'),
+            str_contains($operations, 'vapor') || str_contains($operations, 'forge') || str_contains($operations, 'cloud') || str_contains($operations, 'paas') || str_contains($operations, 'managed') || str_contains($operations, 'shared') => $add(-1.0, 'Managed platform: the host keeps the machine alive, the retainer keeps the application alive.'),
+            default => $gaps[] = 'Nobody said who runs the server after go-live, so the retainer is priced as application-only. Ask it at inception — it moves this figure more than anything else.',
+        };
+
+        if (str_contains($operations, 'kubernetes') || str_contains($operations, 'self') || str_contains($operations, 'vps') || str_contains($operations, 'bare')) {
+            $covers[] = 'Operating system patching, backup verification, certificate renewal, and uptime checks on the server';
+        }
+
+        $budget = strtolower((string) ($inception['budget_sensitivity'] ?? ''));
+        match (true) {
+            str_contains($budget, 'tracked') => $add(-2.0, 'Budget Sensitivity is Tracked: the retainer stays lean and itemised, and proactive work is quoted separately.'),
+            str_contains($budget, 'relaxed') => $add(0.0, 'Budget Sensitivity is Relaxed: the retainer can carry proactive work — upgrades, monitoring reviews, small improvements.'),
+            default => $gaps[] = 'Budget Sensitivity was never recorded, so the retainer assumes the middle of the two.',
+        };
+
+        if (strtoupper((string) ($settings['release_mode'] ?? '')) === 'YES' || ($settings['release_mode'] ?? false) === true) {
+            $add(2.0, 'Release mode is on: every change ships as a tagged release with a changelog and upgrade notes.');
+            $covers[] = 'Tagged releases with a changelog and upgrade notes';
+        }
+
+        if (strtoupper((string) ($settings['git_mode'] ?? '')) === 'GITFLOW') {
+            $add(1.0, 'Gitflow: release and hotfix branches are maintained, so an urgent fix does not wait for the next release.');
+            $covers[] = 'Hotfix branch for urgent production fixes';
+        }
+
+        $testing = strtoupper((string) ($settings['testing'] ?? 'NORMAL'));
+        match ($testing) {
+            'BEST' => $add(-1.0, 'Testing mode BEST: a well-covered application is cheaper to keep alive, and the retainer says so.'),
+            'NONE' => $add(3.0, 'Testing is off: every change is verified by hand after go-live, which is what makes maintenance expensive.'),
+            default => null,
+        };
+
+        if (($settings['security_scan'] ?? false) === true || strtoupper((string) ($settings['security_scan'] ?? '')) === 'YES') {
+            $add(1.0, 'Security scanning is in the pipeline: findings are triaged and fixed inside the retainer.');
+            $covers[] = 'Triage and remediation of security-scan findings';
+        }
+
+        $support = strtolower((string) ($inception['support_window'] ?? ''));
+        match (true) {
+            str_contains($support, '24') => $add(6.0, 'Round-the-clock support: someone has to be reachable outside working hours, and that is the expensive part.'),
+            str_contains($support, 'extended') => $add(3.0, 'Extended support hours beyond the working day.'),
+            str_contains($support, 'business') => $add(0.0, 'Support during business hours.'),
+            str_contains($support, 'best') => $add(-2.0, 'Best-effort support: no response commitment, so no standby cost.'),
+            default => $gaps[] = 'No support window was agreed at inception — the retainer assumes business hours, best effort.',
+        };
+
+        $recommended = round(min(40.0, max(5.0, $points)), 1);
+        $configured = (float) ($profile['maintenance_annual_pct'] ?? 15);
+
+        return [
+            'recommended_pct' => $recommended,
+            'configured_pct' => $configured,
+            'follows_inception' => abs($configured - $recommended) <= 2.0,
+            'drivers' => $drivers,
+            'covers' => $covers,
+            'gaps' => $gaps,
+            'support_window' => $inception['support_window'] ?? null,
+            'operations' => $this->stringOrNull($inception['server_management'] ?? null)
+                ?? $this->stringOrNull($inception['ops_owner'] ?? null)
+                ?? $this->stringOrNull($inception['deploy_platform'] ?? null),
+        ];
+    }
+
+    /**
      * @param  array<string, mixed>  $effort
      * @param  array<string, mixed>  $profile
      * @param  array<string, mixed>  $regime
@@ -1194,13 +1721,25 @@ class EconomicsService
         $rate = (float) $profile['hourly_rate'];
         $labor = $hours * $rate;
         $months = max(0.25, (float) $effort['calendar_months']);
-        $operatingOverhead = ((float) $profile['overhead_monthly']) * $months;
+
+        // Overhead follows person-months, not the calendar: putting two people
+        // on the project halves the timeline without halving what it costs.
+        $personMonths = max(0.25, (float) ($effort['person_months'] ?? $months));
+        $operatingOverhead = ((float) $profile['overhead_monthly']) * $personMonths;
         $complianceInQuote = ((float) ($regime['compliance_annual'] ?? 0) / 12) * $months;
         $overhead = $operatingOverhead;
         $direct = $labor + $overhead;
         $marginPct = (float) $profile['margin_target_pct'];
         $margin = $direct * ($marginPct / 100);
-        $gross = $direct + $margin;
+        $listPrice = $direct + $margin;
+
+        // The discount is a commercial decision taken off the list price, so it
+        // comes out of the margin — the cost underneath it does not move.
+        $discountPct = min(90.0, max(0.0, (float) ($profile['discount_pct'] ?? 0)));
+        $discount = $listPrice * ($discountPct / 100);
+        $gross = $listPrice - $discount;
+        $marginAfterDiscount = $gross - $direct;
+        $marginAfterDiscountPct = $direct > 0 ? ($marginAfterDiscount / $direct) * 100 : 0.0;
 
         $vatExempt = (bool) ($regime['vat_exempt'] ?? false);
         $vatRegistered = $profile['vat_registered'];
@@ -1228,6 +1767,12 @@ class EconomicsService
             'direct' => round($direct, 2),
             'margin' => round($margin, 2),
             'margin_pct' => $marginPct,
+            'list_price' => round($listPrice, 2),
+            'discount_pct' => round($discountPct, 2),
+            'discount' => round($discount, 2),
+            'margin_after_discount' => round($marginAfterDiscount, 2),
+            'margin_after_discount_pct' => round($marginAfterDiscountPct, 1),
+            'below_cost' => $gross < $direct,
             'gross' => round($gross, 2),
             'vat_rate' => $vatRate,
             'vat' => round($vat, 2),
@@ -1435,6 +1980,24 @@ class EconomicsService
             return $explicit;
         }
 
+        // Inception asked how this product makes money. A stated answer is a
+        // decision; reading the PRD for keywords is only the fallback.
+        $stated = strtolower((string) ($inception['business_model'] ?? ''));
+
+        if ($stated !== '') {
+            $model = match (true) {
+                str_contains($stated, 'saas') || str_contains($stated, 'subscription') || str_contains($stated, 'abbonamento') => 'saas',
+                str_contains($stated, 'commerce') || str_contains($stated, 'shop') || str_contains($stated, 'store') => 'ecommerce',
+                str_contains($stated, 'package') || str_contains($stated, 'licen') || str_contains($stated, 'librar') => 'package',
+                str_contains($stated, 'client') || str_contains($stated, 'one-off') || str_contains($stated, 'internal') || str_contains($stated, 'commessa') => 'fixed',
+                default => null,
+            };
+
+            if ($model !== null) {
+                return $model;
+            }
+        }
+
         $haystack = strtolower(implode(' ', array_filter([
             (string) ($inception['project_kind'] ?? ''),
             (string) ($inception['website_type'] ?? ''),
@@ -1556,9 +2119,11 @@ class EconomicsService
      * @param  array<string, mixed>  $profile
      * @param  array<string, mixed>  $inception
      * @param  array<string, mixed>  $tax
+     * @param  array<string, mixed>|null  $research
+     * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>
      */
-    protected function saasModel(array $quote, array $profile, array $inception, array $tax): array
+    protected function saasModel(array $quote, array $profile, array $inception, array $tax, ?array $research = null, string $scenarioId = 'realistic', array $overrides = []): array
     {
         $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
         $priceMonthly = max(1.0, (float) ($saas['price_monthly'] ?? 29));
@@ -1567,16 +2132,11 @@ class EconomicsService
             $priceAnnual = $priceMonthly * 10;
         }
 
-        $churn = max(0.5, (float) ($saas['churn_monthly_pct'] ?? 4)) / 100;
+        $demand = $this->scenarioParams($profile, $research, $scenarioId, $overrides);
+        $churn = max(0.5, $demand['churn_monthly_pct']) / 100;
+        [$contribution, $fixed, $infra] = $this->subscriptionEconomics($priceMonthly, $profile, $quote, $inception);
         $fee = max(0.0, (float) ($saas['payment_fee_pct'] ?? 2.9)) / 100;
         $support = max(0.0, (float) ($saas['support_cost_per_customer_monthly'] ?? 3));
-        $infra = (float) ($saas['infrastructure_monthly'] ?? 0);
-        if ($infra <= 0) {
-            $infra = $this->infraFromDeploy((string) ($inception['deploy_platform'] ?? ''));
-        }
-
-        $fixed = $infra + ((float) $quote['maintenance_monthly']) + ((float) $profile['overhead_monthly'] * 0.35);
-        $contribution = ($priceMonthly * (1 - $fee)) - $support;
         $breakEven = $contribution > 0 ? (int) ceil($fixed / $contribution) : 0;
 
         $investment = (float) $quote['gross'];
@@ -1584,8 +2144,10 @@ class EconomicsService
         $customers18 = $contribution > 0 ? (int) ceil(($investment / 18 + $fixed) / $contribution) : 0;
         $customers24 = $contribution > 0 ? (int) ceil(($investment / 24 + $fixed) / $contribution) : 0;
 
-        $target = (int) ($saas['target_customers'] ?? 0);
-        $planningCustomers = $target > 0 ? $target : max($breakEven, $customers12, 25);
+        $target = (int) $demand['customers'];
+        $planningCustomers = $target > 0
+            ? $target
+            : max(1, (int) round(max($breakEven, $customers12, 25) * $demand['ambition']));
 
         $ltv = $churn > 0 ? $priceMonthly / $churn : $priceMonthly * 24;
         $cac = (float) ($saas['cac'] ?? 0);
@@ -1600,7 +2162,7 @@ class EconomicsService
             ? (int) ceil($investment / $monthlyProfitAtTarget)
             : null;
 
-        $growth = max(0.0, (float) ($saas['growth_monthly_pct'] ?? 12)) / 100;
+        $growth = max(0.0, $demand['growth_monthly_pct']) / 100;
         $start = max(0, (int) ($saas['starting_customers'] ?? 0));
         $forecast = $this->forecastSaaS($start, $planningCustomers, $growth, $churn, $priceMonthly, $contribution, $fixed, $investment, $tax);
 
@@ -1609,6 +2171,7 @@ class EconomicsService
             'price_annual' => round($priceAnnual, 2),
             'annual_discount_pct' => $priceMonthly > 0 ? round((1 - ($priceAnnual / ($priceMonthly * 12))) * 100, 1) : 0,
             'churn_monthly_pct' => round($churn * 100, 2),
+            'growth_monthly_pct' => round($growth * 100, 2),
             'payment_fee_pct' => round($fee * 100, 2),
             'support_per_customer' => round($support, 2),
             'infrastructure_monthly' => round($infra, 2),
@@ -1632,10 +2195,13 @@ class EconomicsService
             'months_to_recover_at_break_even' => $breakEven > 0 && (($breakEven * $contribution) - $fixed) > 0
                 ? (int) ceil($investment / max(0.01, ($breakEven * $contribution) - $fixed))
                 : null,
-            'conversion_pct' => (float) ($saas['conversion_pct'] ?? 3),
+            'scenario' => $demand['id'],
+            'scenario_label' => $demand['label'],
+            'scenario_source' => $demand['source'],
+            'conversion_pct' => $demand['conversion_pct'],
             'trial_to_paid_pct' => (float) ($saas['trial_to_paid_pct'] ?? 20),
-            'leads_for_planning' => ((float) ($saas['conversion_pct'] ?? 3)) > 0
-                ? (int) ceil($planningCustomers / (((float) ($saas['conversion_pct'] ?? 3)) / 100))
+            'leads_for_planning' => $demand['conversion_pct'] > 0
+                ? (int) ceil($planningCustomers / ($demand['conversion_pct'] / 100))
                 : 0,
             'server_notes' => $this->serverNotes((string) ($inception['deploy_platform'] ?? ''), $infra, $planningCustomers),
             'forecast' => $forecast,
@@ -1692,6 +2258,659 @@ class EconomicsService
         }
 
         return $rows;
+    }
+
+    /**
+     * Per-customer contribution and the monthly bill the product carries,
+     * shared by the subscription model and every business-plan scenario so a
+     * price line changes both at once.
+     *
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $inception
+     * @return array{0: float, 1: float, 2: float}
+     */
+    protected function subscriptionEconomics(float $priceMonthly, array $profile, array $quote, array $inception): array
+    {
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $fee = max(0.0, (float) ($saas['payment_fee_pct'] ?? 2.9)) / 100;
+        $support = max(0.0, (float) ($saas['support_cost_per_customer_monthly'] ?? 3));
+        $infra = (float) ($saas['infrastructure_monthly'] ?? 0);
+
+        if ($infra <= 0) {
+            $infra = $this->infraFromDeploy((string) ($inception['deploy_platform'] ?? ''));
+        }
+
+        $fixed = $infra + ((float) $quote['maintenance_monthly']) + ((float) $profile['overhead_monthly'] * 0.35);
+        $contribution = ($priceMonthly * (1 - $fee)) - $support;
+
+        return [$contribution, $fixed, $infra];
+    }
+
+    /**
+     * Demand assumptions for one scenario. Researched numbers win when Jennifer
+     * put them in the market file; otherwise the optimistic and pessimistic
+     * lines are the realistic one bent by a fixed amount. A value the user
+     * picked in the pricing tool always wins over both — the dropdown is never
+     * quietly ignored.
+     *
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>|null  $research
+     * @param  array<string, mixed>  $overrides
+     * @return array{id: string, label: string, source: string, ambition: float, customers: int, growth_monthly_pct: float, churn_monthly_pct: float, conversion_pct: float, note: string|null}
+     */
+    protected function scenarioParams(array $profile, ?array $research, string $scenarioId, array $overrides = []): array
+    {
+        $id = in_array($scenarioId, EconomicsMarketService::SCENARIOS, true) ? $scenarioId : 'realistic';
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+
+        $baseCustomers = max(0, (int) ($saas['target_customers'] ?? 0));
+        $baseGrowth = max(0.0, (float) ($saas['growth_monthly_pct'] ?? 12));
+        $baseChurn = max(0.5, (float) ($saas['churn_monthly_pct'] ?? 4));
+        $baseConversion = max(0.1, (float) ($saas['conversion_pct'] ?? 3));
+
+        [$customerFactor, $growthFactor, $churnFactor, $conversionFactor] = match ($id) {
+            'pessimistic' => [0.4, 0.5, 1.6, 0.6],
+            'optimistic' => [2.0, 1.6, 0.6, 1.4],
+            default => [1.0, 1.0, 1.0, 1.0],
+        };
+
+        $params = [
+            'customers' => (int) round($baseCustomers * $customerFactor),
+            'growth_monthly_pct' => round($baseGrowth * $growthFactor, 2),
+            'churn_monthly_pct' => round(min(100.0, $baseChurn * $churnFactor), 2),
+            'conversion_pct' => round(min(100.0, $baseConversion * $conversionFactor), 2),
+            'note' => null,
+        ];
+
+        $source = 'derived';
+        $researched = is_array($research['demand'][$id] ?? null) ? $research['demand'][$id] : null;
+
+        if ($researched !== null) {
+            $source = 'research';
+
+            foreach (['customers', 'growth_monthly_pct', 'churn_monthly_pct', 'conversion_pct'] as $key) {
+                if (($researched[$key] ?? null) !== null) {
+                    $params[$key] = $key === 'customers' ? (int) $researched[$key] : (float) $researched[$key];
+                }
+            }
+
+            $params['note'] = $researched['note'] ?? null;
+        }
+
+        // The realistic line is what the dropdowns describe, so an explicit
+        // pick replaces the researched figure rather than sitting next to it.
+        foreach (['target_customers' => 'customers', 'growth_monthly_pct' => 'growth_monthly_pct', 'churn_monthly_pct' => 'churn_monthly_pct'] as $override => $key) {
+            if (! array_key_exists($override, $overrides)) {
+                continue;
+            }
+
+            $picked = (float) $overrides[$override];
+            $params[$key] = $key === 'customers'
+                ? (int) round($picked * $customerFactor)
+                : round($picked * ($key === 'growth_monthly_pct' ? $growthFactor : $churnFactor), 2);
+            $source = $source === 'research' ? 'research+picked' : 'picked';
+        }
+
+        return $params + [
+            'id' => $id,
+            'label' => ucfirst($id),
+            'source' => $source,
+            'ambition' => $customerFactor,
+        ];
+    }
+
+    /**
+     * BASE / PRO / PREMIUM around the list price. Researched tiers win; without
+     * them the ladder is derived from the monthly price and the backlog is cut
+     * into three cumulative feature sets, so there is always something to
+     * present and the dashboard says which of the two it is showing.
+     *
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>|null  $research
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    protected function packaging(array $quote, array $profile, array $inception, ?array $research, array $overrides): array
+    {
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $anchor = max(1.0, (float) ($saas['price_monthly'] ?? 29));
+        $researched = [];
+
+        foreach (is_array($research['tiers'] ?? null) ? $research['tiers'] : [] as $tier) {
+            $researched[(string) $tier['id']] = $tier;
+        }
+
+        $features = $this->tierFeatures();
+        $selectedId = (string) ($overrides['tier'] ?? 'pro');
+        $tiers = [];
+        $mixRevenue = 0.0;
+        $shareTotal = 0.0;
+        $cumulative = 0;
+
+        foreach (self::TIER_MULTIPLIERS as $id => $multiplier) {
+            $row = $researched[$id] ?? null;
+            $price = $row !== null && ($row['price_monthly'] ?? null) !== null
+                ? (float) $row['price_monthly']
+                : $this->listPriceFor($anchor * $multiplier);
+            $annual = $row !== null && ($row['price_annual'] ?? null) !== null
+                ? (float) $row['price_annual']
+                : round($price * 10, 2);
+            $share = $row !== null && ($row['share_pct'] ?? null) !== null
+                ? (float) $row['share_pct']
+                : self::TIER_MIX[$id];
+
+            [$contribution, $fixed] = $this->subscriptionEconomics($price, $profile, $quote, $inception);
+            $tierFeatures = $row !== null && $row['features'] !== [] ? $row['features'] : ($features[$id] ?? []);
+
+            $cumulative += count($tierFeatures);
+
+            $tiers[$id] = [
+                'id' => $id,
+                'name' => $row['name'] ?? strtoupper($id),
+                'price_monthly' => round($price, 2),
+                'price_annual' => round($annual, 2),
+                'annual_discount_pct' => $price > 0 ? round((1 - ($annual / ($price * 12))) * 100, 1) : 0.0,
+                'share_pct' => round($share, 1),
+                'contribution_per_customer' => round($contribution, 2),
+                'break_even_customers' => $contribution > 0 ? (int) ceil($fixed / $contribution) : 0,
+                'customers_to_recover_12m' => $contribution > 0
+                    ? (int) ceil((((float) $quote['gross']) / 12 + $fixed) / $contribution)
+                    : 0,
+                'features' => $tierFeatures,
+                'adds' => count($tierFeatures),
+                'includes' => $cumulative,
+                'note' => $row['note'] ?? $this->tierNote($id),
+                'source' => $row !== null ? 'research' : 'derived',
+                'selected' => $id === $selectedId,
+            ];
+
+            $mixRevenue += $price * $share;
+            $shareTotal += $share;
+        }
+
+        $blended = $shareTotal > 0 ? $mixRevenue / $shareTotal : $anchor;
+        $selected = $tiers[$selectedId] ?? $tiers['pro'];
+
+        return [
+            'source' => $researched !== [] ? 'research' : 'derived',
+            'anchor_price' => round($anchor, 2),
+            'selected_tier' => $selected['id'],
+            'selected' => $selected,
+            'tiers' => array_values($tiers),
+            'blended_arpu' => round($blended, 2),
+            'blended_arr_per_100' => round($blended * 100 * 12, 2),
+            'positioning' => $this->pricePositioning($research, $selected['price_monthly']),
+            'features_source' => $researched !== [] ? 'research' : 'backlog',
+        ];
+    }
+
+    /**
+     * Cut the backlog into three cumulative feature sets. Backlog order is the
+     * only priority signal Larapilot has, so BASE is what was specified first.
+     *
+     * @return array<string, list<string>>
+     */
+    protected function tierFeatures(): array
+    {
+        $titles = [];
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            if (! is_array($spec)) {
+                continue;
+            }
+
+            $title = trim((string) ($spec['title'] ?? ''));
+
+            if ($title !== '') {
+                $titles[] = $title;
+            }
+        }
+
+        if ($titles === []) {
+            return ['base' => [], 'pro' => [], 'premium' => []];
+        }
+
+        $total = count($titles);
+        $baseCount = max(1, (int) round($total * 0.45));
+        $proCount = max(1, (int) round($total * 0.35));
+
+        return [
+            'base' => array_slice($titles, 0, $baseCount),
+            'pro' => array_slice($titles, $baseCount, $proCount),
+            'premium' => array_slice($titles, $baseCount + $proCount),
+        ];
+    }
+
+    protected function tierNote(string $tier): string
+    {
+        return match ($tier) {
+            'base' => 'Entry plan: the core of the backlog, priced to be said yes to without a meeting.',
+            'premium' => 'Everything in the backlog plus the work only a large customer asks for. Anchors the other two.',
+            default => 'The plan you expect most customers on — the list price the quote is built around.',
+        };
+    }
+
+    /**
+     * A price a buyer recognises. Sitting between two shelf prices reads as
+     * arbitrary, so the ladder snaps to the nearest one below a thousand.
+     */
+    protected function listPriceFor(float $value): float
+    {
+        if ($value >= 1000) {
+            return round($value / 100) * 100 - 1;
+        }
+
+        $ladder = [9, 12, 15, 19, 24, 29, 39, 49, 59, 69, 79, 99, 129, 149, 179, 199, 249, 299, 349, 399, 499, 599, 699, 799, 899, 999];
+        $best = $ladder[0];
+
+        foreach ($ladder as $candidate) {
+            if (abs($candidate - $value) < abs($best - $value)) {
+                $best = $candidate;
+            }
+        }
+
+        return (float) $best;
+    }
+
+    /**
+     * Where the selected price sits in the researched competitor set.
+     *
+     * @param  array<string, mixed>|null  $research
+     * @return array<string, mixed>|null
+     */
+    protected function pricePositioning(?array $research, float $price): ?array
+    {
+        $prices = [];
+
+        foreach (is_array($research['competitors'] ?? null) ? $research['competitors'] : [] as $competitor) {
+            if (($competitor['price_monthly'] ?? null) !== null) {
+                $prices[] = (float) $competitor['price_monthly'];
+            }
+        }
+
+        if ($prices === []) {
+            return null;
+        }
+
+        sort($prices);
+        $cheaper = count(array_filter($prices, static fn (float $value): bool => $value < $price));
+        $median = $prices[(int) floor((count($prices) - 1) / 2)];
+
+        return [
+            'competitors' => count($prices),
+            'cheaper_than_us' => $cheaper,
+            'pricier_than_us' => count($prices) - $cheaper,
+            'percentile' => (int) round($cheaper / count($prices) * 100),
+            'min' => round($prices[0], 2),
+            'median' => round($median, 2),
+            'max' => round(end($prices), 2),
+            'average' => round(array_sum($prices) / count($prices), 2),
+            'delta_vs_median_pct' => $median > 0 ? round(($price / $median - 1) * 100, 1) : null,
+        ];
+    }
+
+    /**
+     * Pessimistic / realistic / optimistic on the selected price line: the same
+     * product, three readings of the market. Each line is a full 36-month
+     * forecast, so switching the price recomputes all three.
+     *
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>  $tax
+     * @param  array<string, mixed>|null  $research
+     * @param  array<string, mixed>  $packaging
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    protected function businessPlan(array $quote, array $profile, array $inception, array $tax, ?array $research, array $packaging, string $selectedScenario, array $overrides = []): array
+    {
+        $price = (float) $packaging['selected']['price_monthly'];
+        [$contribution, $fixed] = $this->subscriptionEconomics($price, $profile, $quote, $inception);
+        $investment = (float) $quote['gross'];
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $start = max(0, (int) ($saas['starting_customers'] ?? 0));
+        $lines = [];
+
+        foreach (EconomicsMarketService::SCENARIOS as $id) {
+            $demand = $this->scenarioParams($profile, $research, $id, $overrides);
+            $churn = max(0.5, $demand['churn_monthly_pct']) / 100;
+            $growth = max(0.0, $demand['growth_monthly_pct']) / 100;
+            // With no researched customer count, the three lines still have to
+            // differ in ambition, not only in growth and churn.
+            $target = $demand['customers'] > 0
+                ? $demand['customers']
+                : max(1, (int) round(($contribution > 0 ? ceil(($investment / 24 + $fixed) / $contribution) : 25) * $demand['ambition']));
+
+            $forecast = $this->forecastSaaS($start, $target, $growth, $churn, $price, $contribution, $fixed, $investment, $tax);
+            $lines[] = $this->planLine($id, $demand, $forecast, $price, $contribution, $fixed, $target) + [
+                'selected' => $id === $selectedScenario,
+                // Below this line the customer base cannot grow: the product
+                // loses accounts faster than it wins them, whatever the target.
+                'shrinking' => $growth <= $churn,
+            ];
+        }
+
+        return [
+            'selected' => $selectedScenario,
+            'tier' => $packaging['selected']['id'],
+            'tier_name' => $packaging['selected']['name'],
+            'price_monthly' => round($price, 2),
+            'contribution_per_customer' => round($contribution, 2),
+            'fixed_monthly' => round($fixed, 2),
+            'investment' => round($investment, 2),
+            'source' => is_array($research['demand'] ?? null) && $research['demand'] !== [] ? 'research' : 'derived',
+            'lines' => $lines,
+            'notes' => $this->businessPlanNotes($research),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $demand
+     * @param  list<array<string, mixed>>  $forecast
+     * @return array<string, mixed>
+     */
+    protected function planLine(string $id, array $demand, array $forecast, float $price, float $contribution, float $fixed, int $target): array
+    {
+        $at = static function (array $rows, int $month): ?array {
+            foreach ($rows as $row) {
+                if ((int) $row['month'] === $month) {
+                    return $row;
+                }
+            }
+
+            return null;
+        };
+
+        $recovered = null;
+        $profitable = null;
+
+        foreach ($forecast as $row) {
+            if ($profitable === null && (float) $row['profit'] > 0) {
+                $profitable = (int) $row['month'];
+            }
+
+            if ($recovered === null && ! empty($row['recovered'])) {
+                $recovered = (int) $row['month'];
+            }
+        }
+
+        $m12 = $at($forecast, 12);
+        $m24 = $at($forecast, 24);
+        $m36 = $at($forecast, 36);
+
+        return [
+            'id' => $id,
+            'label' => ucfirst($id),
+            'source' => $demand['source'],
+            'note' => $demand['note'],
+            'target_customers' => $target,
+            'growth_monthly_pct' => $demand['growth_monthly_pct'],
+            'churn_monthly_pct' => $demand['churn_monthly_pct'],
+            'conversion_pct' => $demand['conversion_pct'],
+            'leads_needed' => $demand['conversion_pct'] > 0 ? (int) ceil($target / ($demand['conversion_pct'] / 100)) : 0,
+            'break_even_customers' => $contribution > 0 ? (int) ceil($fixed / $contribution) : 0,
+            'customers_m12' => (int) ($m12['customers'] ?? 0),
+            'customers_m24' => (int) ($m24['customers'] ?? 0),
+            'customers_m36' => (int) ($m36['customers'] ?? 0),
+            'mrr_m12' => (float) ($m12['mrr'] ?? 0),
+            'mrr_m36' => (float) ($m36['mrr'] ?? 0),
+            'arr_m12' => (float) ($m12['arr'] ?? 0),
+            'arr_m24' => (float) ($m24['arr'] ?? 0),
+            'arr_m36' => (float) ($m36['arr'] ?? 0),
+            'cumulative_m36' => (float) ($m36['cumulative'] ?? 0),
+            'profitable_month' => $profitable,
+            'recovered_month' => $recovered,
+            'forecast' => $forecast,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $research
+     * @return list<string>
+     */
+    protected function businessPlanNotes(?array $research): array
+    {
+        if (is_array($research['demand'] ?? null) && $research['demand'] !== []) {
+            $notes = ['Demand figures come from the market research in '.($research['path'] ?? '.larapilot/economics.market.yaml').'.'];
+
+            if (($research['sector'] ?? null) !== null) {
+                $notes[] = 'Sector: '.$research['sector'].(($research['segment'] ?? null) !== null ? ' · '.$research['segment'] : '').'.';
+            }
+
+            return $notes;
+        }
+
+        return [
+            'Nobody researched this market yet, so the three lines are your own realistic inputs bent by a fixed amount: pessimistic halves growth and raises churn, optimistic does the opposite.',
+            'Run /larapilot-economics and let Jennifer and Benjamin research competitors and demand — the lines are then real numbers instead of arithmetic.',
+        ];
+    }
+
+    /**
+     * Market research as the dashboard consumes it: the sector, the competitor
+     * set with its price trend, and whether the file still matches the project.
+     *
+     * @param  array<string, mixed>|null  $research
+     * @return array<string, mixed>
+     */
+    protected function marketBlock(?array $research): array
+    {
+        if ($research === null) {
+            return [
+                'available' => false,
+                'path' => $this->config->relativePath($this->market->path()),
+                'hint' => 'No market research yet. Run /larapilot-economics — Jennifer (positioning) and Benjamin (market) research competitors, demand, and packaging, then persist it with larapilot:economics-market-write.',
+            ];
+        }
+
+        $competitors = is_array($research['competitors'] ?? null) ? $research['competitors'] : [];
+        $trend = ['up' => 0, 'flat' => 0, 'down' => 0];
+        $changes = [];
+
+        foreach ($competitors as $competitor) {
+            $direction = $competitor['trend'] ?? null;
+
+            if ($direction !== null && isset($trend[$direction])) {
+                $trend[$direction]++;
+            }
+
+            if (($competitor['change_pct'] ?? null) !== null) {
+                $changes[] = (float) $competitor['change_pct'];
+            }
+        }
+
+        $tracked = array_sum($trend);
+
+        return [
+            'available' => true,
+            'path' => $research['path'] ?? $this->config->relativePath($this->market->path()),
+            'sector' => $research['sector'] ?? null,
+            'segment' => $research['segment'] ?? null,
+            'summary' => $research['summary'] ?? null,
+            'researched_at' => $research['researched_at'] ?? null,
+            'stale' => ($research['inputs'] ?? null) !== null && $research['inputs'] !== $this->inputsFingerprint(),
+            'competitors' => $competitors,
+            'sources' => is_array($research['sources'] ?? null) ? $research['sources'] : [],
+            'risks' => is_array($research['risks'] ?? null) ? $research['risks'] : [],
+            'trend' => $trend + [
+                'tracked' => $tracked,
+                'direction' => $tracked === 0
+                    ? null
+                    : ($trend['up'] > $trend['down'] ? 'up' : ($trend['down'] > $trend['up'] ? 'down' : 'flat')),
+                'average_change_pct' => $changes === [] ? null : round(array_sum($changes) / count($changes), 1),
+            ],
+        ];
+    }
+
+    /**
+     * Every dropdown the pricing tool renders, with the values it may take.
+     * The current value is always in its own list, so a profile that sits
+     * between two suggestions still shows what it actually is.
+     *
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $effort
+     * @param  array<string, mixed>  $packaging
+     * @param  array<string, mixed>  $overrides
+     * @param  array<string, mixed>  $saved
+     * @return array<string, mixed>
+     */
+    protected function controls(array $profile, string $account, string $country, array $effort, array $packaging, array $overrides, string $productModel, array $saved = [], float $recommendedMaintenance = 15.0): array
+    {
+        $this->savedControlValues = $saved;
+
+        $currency = (string) ($profile['currency'] ?: TaxCatalog::defaultCurrency($country));
+        $catalogueRate = TaxCatalog::defaultHourlyRate($country, $account);
+        $rate = (float) $profile['hourly_rate'];
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $money = fn (float $value): string => $this->money($value, $currency);
+
+        $rateOptions = [];
+        foreach ([0.7, 0.85, 1.0, 1.25, 1.6] as $factor) {
+            $rateOptions[] = max(1.0, round($catalogueRate * $factor / 5) * 5);
+        }
+
+        $teamOptions = [1.0, 1.5, 2.0, 3.0, 4.0];
+        if ((float) ($effort['person_years'] ?? 0) > 1.0) {
+            $teamOptions[] = round((float) $effort['person_years'], 1);
+        }
+
+        $priceOptions = [9.0, 19.0, 29.0, 49.0, 79.0, 99.0, 149.0, 199.0];
+
+        return [
+            'currency' => $currency,
+            'overridden' => array_keys($overrides),
+            'groups' => [
+                'quote' => 'The quote',
+                'account' => 'Who is selling',
+                'saas' => 'Subscription',
+            ],
+            'controls' => [
+                $this->control('hourly_rate', 'Hourly rate', 'quote', $rate, $rateOptions, $overrides, fn (float $v): string => $money($v).'/h', 'What one billable hour costs the client. Everything in the quote scales with it.'),
+                $this->control('margin_target_pct', 'Target margin', 'quote', (float) $profile['margin_target_pct'], [20.0, 25.0, 30.0, 35.0, 45.0], $overrides, fn (float $v): string => $v.'%', 'Markup on labour and overhead: the buffer that absorbs scope creep and unpaid days.'),
+                $this->control('discount_pct', 'Commercial discount', 'quote', (float) ($profile['discount_pct'] ?? 0), [0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0], $overrides, fn (float $v): string => $v > 0 ? '−'.$v.'%' : 'No discount', 'Taken off the list price at the negotiating table. It comes straight out of your margin.'),
+                $this->control('team_size', 'Team size', 'quote', (float) ($profile['team_size'] ?? 1), $teamOptions, $overrides, fn (float $v): string => $v == 1.0 ? '1 person' : $v.' people', 'How many people work in parallel. It compresses the timeline, not the price: overhead follows person-months.'),
+                $this->control('overhead_monthly', 'Monthly overhead', 'quote', (float) $profile['overhead_monthly'], [0.0, 150.0, 250.0, 500.0, 800.0, 1500.0], $overrides, $money, 'Tools, workspace, accountant share — charged per person-month of the project.'),
+                $this->control('maintenance_annual_pct', 'Maintenance', 'quote', (float) $profile['maintenance_annual_pct'], [0.0, 10.0, 15.0, 20.0, 25.0, $recommendedMaintenance], $overrides, fn (float $v): string => $v.'% / year'.($v === $recommendedMaintenance ? ' · inception' : ''), 'Yearly retainer as a share of the build. The inception answers — delivery target, who runs the server, how it ships, support window — recommend '.$recommendedMaintenance.'%.'),
+                $this->choice('account', 'Account type', 'account', $account, [
+                    ['value' => 'FREELANCE', 'label' => 'Freelance / sole trader'],
+                    ['value' => 'COMPANY', 'label' => 'Company (SRL, Ltd, GmbH)'],
+                ], $overrides, 'Who invoices the client. It changes the regimes available and the tax on what you keep.'),
+                $this->choice('country', 'Country', 'account', $country, array_map(
+                    static fn (array $option): array => ['value' => $option['code'], 'label' => $option['name']],
+                    $this->countryOptions()
+                ), $overrides, 'Tax residency of the account. Brackets, VAT, and the accountant bill all follow it.'),
+                $this->choice('regime', 'Tax regime', 'account', (string) ($profile['regime'] ?? ''), array_map(
+                    static fn (array $option): array => ['value' => $option['id'], 'label' => $option['label']],
+                    $this->regimeOptions($country, $account)
+                ), $overrides, 'The regime the account is taxed under — forfettario, ordinario, corporate.'),
+                $this->choice('vat_mode', 'VAT', 'account', (string) ($profile['vat_mode'] ?? 'domestic'), [
+                    ['value' => 'domestic', 'label' => 'Domestic VAT'],
+                    ['value' => 'eu_b2b', 'label' => 'EU B2B reverse charge'],
+                ], $overrides, 'Whether VAT is invoiced or the client accounts for it.'),
+                $this->choice('product_model', 'Sold as', 'account', $productModel, [
+                    ['value' => 'fixed', 'label' => 'One shot — fixed price'],
+                    ['value' => 'saas', 'label' => 'SaaS — subscription'],
+                    ['value' => 'ecommerce', 'label' => 'E-commerce'],
+                    ['value' => 'package', 'label' => 'Licensed package'],
+                ], $overrides, 'How the project makes money. It decides which half of this page is the real one.'),
+                $this->control('price_monthly', 'List price / month', 'saas', (float) ($packaging['anchor_price'] ?? ($saas['price_monthly'] ?? 29)), $priceOptions, $overrides, $money, 'The PRO price. BASE and PREMIUM are derived from it unless the research sets them.'),
+                $this->choice('tier', 'Price line', 'saas', (string) ($packaging['selected_tier'] ?? 'pro'), array_map(
+                    static fn (array $tier): array => ['value' => $tier['id'], 'label' => $tier['name'].' · '.number_format((float) $tier['price_monthly'], 0, '.', ',')],
+                    is_array($packaging['tiers'] ?? null) ? $packaging['tiers'] : []
+                ), $overrides, 'Which plan the forecast below runs on. Switch it and every projection recomputes.'),
+                $this->choice('scenario', 'Market scenario', 'saas', (string) ($overrides['scenario'] ?? 'realistic'), [
+                    ['value' => 'pessimistic', 'label' => 'Pessimistic'],
+                    ['value' => 'realistic', 'label' => 'Realistic'],
+                    ['value' => 'optimistic', 'label' => 'Optimistic'],
+                ], $overrides, 'Which reading of the market drives the headline subscription numbers.'),
+                $this->control('churn_monthly_pct', 'Churn / month', 'saas', (float) ($saas['churn_monthly_pct'] ?? 4), [2.0, 3.0, 4.0, 6.0, 8.0], $overrides, fn (float $v): string => $v.'%', 'Share of paying customers lost every month.'),
+                $this->control('growth_monthly_pct', 'Growth / month', 'saas', (float) ($saas['growth_monthly_pct'] ?? 12), [4.0, 8.0, 12.0, 20.0, 30.0], $overrides, fn (float $v): string => $v.'%', 'How fast the customer base grows before churn.'),
+                $this->control('target_customers', 'Planning customers', 'saas', (float) ($saas['target_customers'] ?? 0), [0.0, 25.0, 50.0, 100.0, 250.0, 500.0], $overrides, static fn (float $v): string => $v > 0 ? (string) (int) $v : 'Compute it', 'The customer count the plan aims at. Zero lets the engine derive one from the build cost.'),
+            ],
+        ];
+    }
+
+    /**
+     * What each control would read with no simulation running.
+     *
+     * @param  array<string, mixed>  $profile
+     * @param  array<string, mixed>  $inception
+     * @return array<string, mixed>
+     */
+    protected function savedControls(array $profile, string $account, array $inception): array
+    {
+        $saas = is_array($profile['saas'] ?? null) ? $profile['saas'] : [];
+        $country = (string) ($profile['country'] ?? TaxCatalog::defaultCountry());
+
+        return [
+            'hourly_rate' => (float) $profile['hourly_rate'],
+            'margin_target_pct' => (float) $profile['margin_target_pct'],
+            'discount_pct' => (float) ($profile['discount_pct'] ?? 0),
+            'team_size' => (float) ($profile['team_size'] ?? 1),
+            'overhead_monthly' => (float) $profile['overhead_monthly'],
+            'maintenance_annual_pct' => (float) $profile['maintenance_annual_pct'],
+            'account' => $account,
+            'country' => $country,
+            'regime' => (string) ($profile['regime'] ?: TaxCatalog::defaultRegime($country, $account === 'NONE' ? 'FREELANCE' : $account)),
+            'vat_mode' => (string) ($profile['vat_mode'] ?? 'domestic'),
+            'product_model' => $this->resolveProductModel($profile, $inception),
+            'price_monthly' => (float) ($saas['price_monthly'] ?? 29),
+            'tier' => 'pro',
+            'scenario' => 'realistic',
+            'churn_monthly_pct' => (float) ($saas['churn_monthly_pct'] ?? 4),
+            'growth_monthly_pct' => (float) ($saas['growth_monthly_pct'] ?? 12),
+            'target_customers' => (float) ($saas['target_customers'] ?? 0),
+        ];
+    }
+
+    /**
+     * @param  list<float>  $options
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    protected function control(string $key, string $label, string $group, float $value, array $options, array $overrides, callable $format, string $hint): array
+    {
+        $values = $options;
+        $values[] = $value;
+        $values = array_values(array_unique(array_map(static fn (float $v): float => round($v, 2), $values)));
+        sort($values);
+
+        return [
+            'key' => $key,
+            'label' => $label,
+            'group' => $group,
+            'hint' => $hint,
+            'value' => round($value, 2),
+            'saved' => round((float) ($this->savedControlValues[$key] ?? $value), 2),
+            'overridden' => array_key_exists($key, $overrides),
+            'options' => array_map(static fn (float $option): array => [
+                'value' => $option,
+                'label' => $format($option),
+            ], $values),
+        ];
+    }
+
+    /**
+     * @param  list<array{value: string, label: string}>  $options
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    protected function choice(string $key, string $label, string $group, string $value, array $options, array $overrides, string $hint): array
+    {
+        return [
+            'key' => $key,
+            'label' => $label,
+            'group' => $group,
+            'hint' => $hint,
+            'value' => $value,
+            'saved' => (string) ($this->savedControlValues[$key] ?? $value),
+            'overridden' => array_key_exists($key, $overrides),
+            'options' => $options,
+        ];
     }
 
     protected function infraFromDeploy(string $platform): float

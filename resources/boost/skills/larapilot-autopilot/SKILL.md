@@ -9,7 +9,7 @@ Batch-run `larapilot-plan` and `larapilot-implement` across eligible specs. Opti
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` — especially **Project Settings** (`auto_approve`).
+Read `.larapilot/shared-runtime.md` — especially **Project Settings** (`auto_approve`) — and `.larapilot/runtime-dev-docs.md`: an unattended run still writes the developer domain docs for every spec it delivers, and runs the **First-change catch-up** once when `data.dev_docs.documented` is `false` before the first spec of the batch.
 
 ## Output Economy
 

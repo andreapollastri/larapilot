@@ -45,6 +45,7 @@ paths:
   security: .larapilot/docs/security/
   launch: .larapilot/docs/launch/
   support: .larapilot/docs/support/
+  dev_docs: .larapilot/docs/devs/
   client_materials: .larapilot/client-materials/
   legacy: .larapilot/legacy/
   research: .larapilot/research/
@@ -56,6 +57,7 @@ paths:
   economics: .larapilot/economics.yaml
   economics_snapshot: .larapilot/economics.snapshot.yaml
   economics_quote: .larapilot/docs/quote.md
+  economics_market: .larapilot/economics.market.yaml
 
 workflow:
   statuses:

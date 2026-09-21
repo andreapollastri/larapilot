@@ -132,11 +132,24 @@ class EconomicsQuoteWriter
             $lines[] = '';
         }
 
+        array_push($lines, ...$this->infrastructureChapter($inception, $snapshot, $t, $money));
+        array_push($lines, ...$this->assuranceChapter($prd, $t));
+
         $lines[] = '## '.$t['investment'];
         $lines[] = '';
         $lines[] = '| '.$t['item'].' | '.$t['amount'].' |';
         $lines[] = '| --- | ---: |';
-        $lines[] = '| '.$t['build'].' | '.$money($gross).' |';
+        // A discount the client was given belongs on the offer, not hidden in a
+        // lower number: list price, what came off, what is left.
+        $discount = (float) ($quote['discount'] ?? 0);
+
+        if ($discount > 0) {
+            $lines[] = '| '.$t['build'].' | '.$money((float) ($quote['list_price'] ?? $gross)).' |';
+            $lines[] = '| '.$t['discount'].' ('.$quote['discount_pct'].'%) | −'.$money($discount).' |';
+            $lines[] = '| '.$t['discounted'].' | '.$money($gross).' |';
+        } else {
+            $lines[] = '| '.$t['build'].' | '.$money($gross).' |';
+        }
 
         if ($vatMode === 'eu_b2b') {
             $lines[] = '| '.$t['vat_reverse'].' | '.$money(0).' |';
@@ -349,6 +362,209 @@ class EconomicsQuoteWriter
     }
 
     /**
+     * Where the software will run and who keeps it running — only when the
+     * project actually decided. A buyer signs for a system, not for a zip file,
+     * and hosting, backups, and who answers at 2am are part of what they buy.
+     *
+     * @param  array<string, mixed>  $inception
+     * @param  array<string, mixed>  $snapshot
+     * @param  array<string, mixed>  $t
+     * @return list<string>
+     */
+    protected function infrastructureChapter(array $inception, array $snapshot, array $t, callable $money): array
+    {
+        $strings = is_array($t['infrastructure'] ?? null) ? $t['infrastructure'] : [];
+
+        if ($strings === []) {
+            return [];
+        }
+
+        $choices = $this->choices->read();
+        $pick = static function (mixed ...$candidates): ?string {
+            foreach ($candidates as $candidate) {
+                if (is_string($candidate) && trim($candidate) !== '') {
+                    $value = trim($candidate);
+
+                    if (strcasecmp($value, 'Not decided') !== 0) {
+                        return $value;
+                    }
+                }
+            }
+
+            return null;
+        };
+
+        $platform = $pick($inception['deploy_platform'] ?? null, $choices['deploy_platform'] ?? null);
+        $management = $pick($inception['server_management'] ?? null, $choices['server_management'] ?? null);
+        $ops = $pick($inception['ops_owner'] ?? null, $choices['ops_owner'] ?? null);
+        $support = $pick($inception['support_window'] ?? null, $choices['support_window'] ?? null);
+
+        // Nothing was decided about hosting: the quote stays silent rather than
+        // promising an arrangement nobody agreed to.
+        if ($platform === null && $management === null && $ops === null) {
+            return [];
+        }
+
+        $operator = $this->infrastructureOperator($management, $ops, $platform);
+        $rows = [];
+
+        foreach ([
+            [$strings['platform'], $platform],
+            [$strings['management'], $management],
+            [$strings['ops'], $ops],
+        ] as [$label, $value]) {
+            if ($value !== null) {
+                $rows[] = [$label, $value];
+            }
+        }
+
+        if ($operator !== null) {
+            $rows[] = [$strings['backups'], $strings['backups_'.$operator]];
+            $rows[] = [$strings['monitoring'], $strings['monitoring_'.$operator]];
+            $rows[] = [$strings['tls'], $strings['tls_'.$operator]];
+        }
+
+        if ($support !== null) {
+            $rows[] = [$strings['support'], $support];
+        }
+
+        $running = (float) ($snapshot['saas']['infrastructure_monthly'] ?? 0);
+
+        if ($running > 0) {
+            $rows[] = [$strings['cost'], sprintf($strings['cost_value'], $money($running))];
+        }
+
+        $lines = ['## '.$strings['title'], '', $strings['intro'], '', '| | |', '| --- | --- |'];
+
+        foreach ($rows as [$label, $value]) {
+            $lines[] = '| **'.$label.'** | '.$value.' |';
+        }
+
+        $lines[] = '';
+
+        if ($running > 0) {
+            $lines[] = $strings['cost_note'];
+            $lines[] = '';
+        }
+
+        if ($operator === null) {
+            $lines[] = $strings['open'];
+            $lines[] = '';
+        }
+
+        $lines[] = $strings['ownership'];
+        $lines[] = '';
+
+        return $lines;
+    }
+
+    /**
+     * Who actually operates the machine: us on a server we manage, us on a
+     * managed platform, or the client's own IT. It decides which promises the
+     * quote is allowed to make about backups, monitoring, and certificates.
+     */
+    protected function infrastructureOperator(?string $management, ?string $ops, ?string $platform): ?string
+    {
+        $haystack = strtolower(trim(($management ?? '').' '.($ops ?? '').' '.($platform ?? '')));
+
+        if ($haystack === '') {
+            return null;
+        }
+
+        if (str_contains($haystack, 'client') || str_contains($haystack, 'cliente')) {
+            return 'client';
+        }
+
+        foreach (['self', 'vps', 'bare', 'kubernetes', 'k8s', 'hetzner', 'digitalocean', 'dedicated'] as $needle) {
+            if (str_contains($haystack, $needle)) {
+                return 'us';
+            }
+        }
+
+        foreach (['managed', 'forge', 'vapor', 'cloud', 'paas', 'heroku', 'shared', 'platform'] as $needle) {
+            if (str_contains($haystack, $needle)) {
+                return 'platform';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * The chapter that sells the part a demo cannot show. Every claim here is
+     * something this project's settings actually do — testing mode, security
+     * scan, git mode, release mode — so the document never promises a practice
+     * the delivery does not follow.
+     *
+     * @param  array<string, mixed>  $t
+     * @return list<string>
+     */
+    protected function assuranceChapter(string $prd, array $t): array
+    {
+        $strings = is_array($t['assurance'] ?? null) ? $t['assurance'] : [];
+
+        if ($strings === []) {
+            return [];
+        }
+
+        $settings = $this->config->settings();
+        $on = static fn (mixed $value): bool => $value === true || strtoupper((string) $value) === 'YES';
+
+        $items = [$strings['review'], $strings['criteria']];
+
+        $items[] = match (strtoupper((string) ($settings['testing'] ?? 'NORMAL'))) {
+            'BEST' => $strings['tests_best'],
+            'MINIMAL' => $strings['tests_light'],
+            default => $strings['tests_normal'],
+        };
+
+        if ($on($settings['security_scan'] ?? false)) {
+            $items[] = $strings['scan'];
+        }
+
+        $items[] = $strings['owasp'];
+        $items[] = $strings['secrets'];
+
+        if (strtoupper((string) ($settings['git_mode'] ?? '')) === 'GITFLOW') {
+            $items[] = $strings['gitflow'];
+        }
+
+        if ($on($settings['release_mode'] ?? false)) {
+            $items[] = $strings['releases'];
+        }
+
+        $items[] = $strings['updates'];
+
+        if ($this->handlesPersonalData($prd)) {
+            $items[] = $strings['privacy'];
+        }
+
+        $lines = ['## '.$strings['title'], '', $strings['intro'], ''];
+
+        foreach ($items as $item) {
+            $lines[] = '- '.$item;
+        }
+
+        $lines[] = '';
+        $lines[] = $strings['close'];
+        $lines[] = '';
+
+        return $lines;
+    }
+
+    /**
+     * The privacy claim is only made when the project document says personal
+     * data is in scope — a GDPR promise on a product that stores none is noise.
+     */
+    protected function handlesPersonalData(string $prd): bool
+    {
+        return preg_match(
+            '/\b(gdpr|rgpd|dsgvo|personal data|dati personali|datos personales|données personnelles|privacy|consenso|consentimiento|consentement)\b/i',
+            $prd
+        ) === 1;
+    }
+
+    /**
      * @param  array<string, string>  $sections
      * @param  array<string, mixed>  $t
      * @return array{included: list<string>, excluded: list<string>, client: list<string>}
@@ -488,6 +704,48 @@ class EconomicsQuoteWriter
     {
         return match ($lang) {
             'it' => [
+                'infrastructure' => [
+                    'title' => 'Infrastruttura e messa in esercizio',
+                    'intro' => 'Dove vive il software e chi lo tiene in piedi. Sono decisioni prese in fase di analisi e riportate qui per intero: nessuna sorpresa dopo la pubblicazione.',
+                    'platform' => 'Piattaforma di hosting',
+                    'management' => 'Gestione del server',
+                    'ops' => 'Presidio operativo',
+                    'backups' => 'Backup',
+                    'monitoring' => 'Monitoraggio',
+                    'tls' => 'Certificati e dominio',
+                    'support' => 'Finestra di assistenza',
+                    'cost' => 'Costo di esercizio stimato',
+                    'cost_value' => '%s al mese',
+                    'cost_note' => 'Il costo di esercizio è una stima: viene fatturato direttamente dal fornitore di hosting e non è compreso nell\'investimento di realizzazione.',
+                    'ownership' => 'L\'ambiente, il dominio e i dati restano intestati al cliente: in qualsiasi momento le credenziali possono essere trasferite a un altro fornitore senza riscrivere nulla.',
+                    'open' => 'La gestione del server non è ancora stata definita: va decisa prima della messa in esercizio, perché determina backup, monitoraggio e tempi di intervento.',
+                    'backups_us' => 'Backup automatici giornalieri con verifica periodica del ripristino',
+                    'backups_platform' => 'Backup gestiti dalla piattaforma, più esportazione periodica dei dati applicativi',
+                    'backups_client' => 'A carico del reparto IT del cliente',
+                    'monitoring_us' => 'Controllo di raggiungibilità e notifica degli errori applicativi',
+                    'monitoring_platform' => 'Controllo di raggiungibilità sulla piattaforma e notifica degli errori applicativi',
+                    'monitoring_client' => 'A carico del reparto IT del cliente',
+                    'tls_us' => 'Certificato TLS rinnovato automaticamente; dominio intestato al cliente',
+                    'tls_platform' => 'Certificato TLS gestito dalla piattaforma; dominio intestato al cliente',
+                    'tls_client' => 'A carico del reparto IT del cliente',
+                ],
+                'assurance' => [
+                    'title' => 'Sicurezza e qualità: cosa protegge questo investimento',
+                    'intro' => 'Un software si paga una volta e si mantiene per anni. Quello che decide quanto costerà mantenerlo — e se una mattina finirà nei guai — non si vede nella demo: si vede in come è stato costruito. Ecco cosa è compreso, senza voce separata a listino.',
+                    'close' => 'Nessun vincolo: codice, dati e infrastruttura sono del cliente. Se un domani il progetto passa ad altri, passa con la sua storia, i suoi test e la sua documentazione — non con un problema da decifrare.',
+                    'review' => '**Ogni modifica passa da una revisione indipendente** prima di arrivare nel vostro ambiente. Nessuno pubblica il proprio lavoro senza che sia stato letto da qualcun altro.',
+                    'criteria' => '**Ogni funzione ha criteri di accettazione scritti prima di essere sviluppata** e viene verificata contro quelli. "Funziona" non è un\'opinione: è una lista di condizioni spuntate.',
+                    'tests_best' => '**Suite di test automatici estesa, eseguita a ogni modifica.** È ciò che impedisce che una richiesta di oggi rompa una funzione che ieri andava: la verifica non dipende dalla memoria di nessuno.',
+                    'tests_normal' => '**Test automatici sui percorsi critici, eseguiti a ogni modifica.** Le parti che, rompendosi, vi fermerebbero il lavoro sono coperte da controlli che girano da soli.',
+                    'tests_light' => '**Test automatici sui percorsi critici** — accessi, pagamenti, funzioni portanti — più verifica funzionale di ogni consegna rispetto ai criteri di accettazione concordati.',
+                    'scan' => '**Scansione di sicurezza automatica a ogni modifica.** Le vulnerabilità note vengono intercettate prima della pubblicazione, non dopo una segnalazione.',
+                    'owasp' => '**Sicurezza applicativa secondo le pratiche OWASP**: gestione delle credenziali, protezione dei moduli, controllo degli accessi e delle autorizzazioni verificati prima del rilascio.',
+                    'secrets' => '**Nessuna credenziale dentro il codice.** Chiavi e password vivono nella configurazione dell\'ambiente, sotto il vostro controllo, e possono essere ruotate senza toccare il software.',
+                    'gitflow' => '**Storia tracciabile.** Ogni riga di codice è collegata alla richiesta che l\'ha generata: a distanza di mesi si può ricostruire cosa è cambiato, quando e perché.',
+                    'releases' => '**Rilasci numerati con elenco delle modifiche.** Se un aggiornamento crea un problema, si torna alla versione precedente in minuti, non in una giornata.',
+                    'updates' => '**Aggiornamenti di sicurezza del framework e delle librerie** inclusi nel canone di manutenzione, non rimandati fino alla prossima emergenza.',
+                    'privacy' => '**Trattamento dei dati personali conforme al GDPR**: base giuridica, tempi di conservazione, informative e diritti degli interessati previsti fin dalla progettazione.',
+                ],
                 'document_title' => 'Offerta commerciale',
                 'project' => 'Progetto',
                 'reference' => 'Riferimento',
@@ -506,6 +764,8 @@ class EconomicsQuoteWriter
                 'item' => 'Voce',
                 'amount' => 'Importo',
                 'build' => 'Realizzazione (imponibile)',
+                'discount' => 'Sconto commerciale',
+                'discounted' => 'Imponibile scontato',
                 'vat' => 'IVA',
                 'vat_exempt' => 'IVA non applicata',
                 'vat_reverse' => 'IVA — reverse charge UE B2B',
@@ -577,6 +837,48 @@ class EconomicsQuoteWriter
                 'disclaimer' => 'Offerta commerciale generata con Larapilot a partire dal documento di progetto e dalle stime di lavoro. Importi e date sono una pianificazione e diventano vincolanti con la sottoscrizione.',
             ],
             'es' => [
+                'infrastructure' => [
+                    'title' => 'Infraestructura y puesta en producción',
+                    'intro' => 'Dónde vive el software y quién lo mantiene en pie. Son decisiones tomadas en el análisis y recogidas aquí en su totalidad: sin sorpresas después de la publicación.',
+                    'platform' => 'Plataforma de hosting',
+                    'management' => 'Gestión del servidor',
+                    'ops' => 'Responsable de operación',
+                    'backups' => 'Copias de seguridad',
+                    'monitoring' => 'Monitorización',
+                    'tls' => 'Certificados y dominio',
+                    'support' => 'Ventana de soporte',
+                    'cost' => 'Coste de explotación estimado',
+                    'cost_value' => '%s al mes',
+                    'cost_note' => 'El coste de explotación es una estimación: lo factura directamente el proveedor de hosting y no está incluido en la inversión de desarrollo.',
+                    'ownership' => 'El entorno, el dominio y los datos quedan a nombre del cliente: las credenciales pueden trasladarse a otro proveedor en cualquier momento sin reescribir nada.',
+                    'open' => 'La gestión del servidor aún no está definida: debe decidirse antes de la puesta en producción, porque determina copias, monitorización y tiempos de intervención.',
+                    'backups_us' => 'Copias automáticas diarias con verificación periódica de la restauración',
+                    'backups_platform' => 'Copias gestionadas por la plataforma, más exportación periódica de los datos de la aplicación',
+                    'backups_client' => 'A cargo del departamento IT del cliente',
+                    'monitoring_us' => 'Control de disponibilidad y aviso de errores de la aplicación',
+                    'monitoring_platform' => 'Control de disponibilidad en la plataforma y aviso de errores de la aplicación',
+                    'monitoring_client' => 'A cargo del departamento IT del cliente',
+                    'tls_us' => 'Certificado TLS renovado automáticamente; dominio a nombre del cliente',
+                    'tls_platform' => 'Certificado TLS gestionado por la plataforma; dominio a nombre del cliente',
+                    'tls_client' => 'A cargo del departamento IT del cliente',
+                ],
+                'assurance' => [
+                    'title' => 'Seguridad y calidad: lo que protege esta inversión',
+                    'intro' => 'Un software se paga una vez y se mantiene durante años. Lo que decide cuánto costará mantenerlo — y si una mañana dará un disgusto — no se ve en la demo: se ve en cómo fue construido. Esto va incluido, sin línea aparte en el presupuesto.',
+                    'close' => 'Sin ataduras: el código, los datos y la infraestructura son del cliente. Si mañana el proyecto pasa a otro equipo, pasa con su historia, sus pruebas y su documentación — no como un problema por descifrar.',
+                    'review' => '**Cada cambio pasa por una revisión independiente** antes de llegar a su entorno. Nadie publica su propio trabajo sin que otra persona lo haya leído.',
+                    'criteria' => '**Cada funcionalidad tiene criterios de aceptación escritos antes de desarrollarse** y se verifica contra ellos. "Funciona" no es una opinión: es una lista de condiciones cumplidas.',
+                    'tests_best' => '**Suite de pruebas automáticas amplia, ejecutada en cada cambio.** Es lo que impide que una petición de hoy rompa algo que ayer funcionaba: la verificación no depende de la memoria de nadie.',
+                    'tests_normal' => '**Pruebas automáticas en los recorridos críticos, ejecutadas en cada cambio.** Lo que, al romperse, les pararía el trabajo está cubierto por controles que se ejecutan solos.',
+                    'tests_light' => '**Pruebas automáticas en los recorridos críticos** — accesos, pagos, funciones centrales — más verificación funcional de cada entrega frente a los criterios de aceptación acordados.',
+                    'scan' => '**Análisis de seguridad automático en cada cambio.** Las vulnerabilidades conocidas se detectan antes de publicar, no tras un incidente.',
+                    'owasp' => '**Seguridad de la aplicación según las prácticas OWASP**: gestión de credenciales, protección de formularios, control de accesos y permisos revisados antes de cada entrega.',
+                    'secrets' => '**Ninguna credencial dentro del código.** Claves y contraseñas viven en la configuración del entorno, bajo su control, y pueden rotarse sin tocar el software.',
+                    'gitflow' => '**Historia trazable.** Cada línea de código está unida a la petición que la originó: meses después se puede reconstruir qué cambió, cuándo y por qué.',
+                    'releases' => '**Versiones numeradas con listado de cambios.** Si una actualización da problemas, se vuelve a la anterior en minutos, no en una jornada.',
+                    'updates' => '**Actualizaciones de seguridad del framework y de las librerías** incluidas en el mantenimiento, no aplazadas hasta la próxima urgencia.',
+                    'privacy' => '**Tratamiento de datos personales conforme al RGPD**: base jurídica, plazos de conservación, avisos y derechos de los interesados previstos desde el diseño.',
+                ],
                 'document_title' => 'Oferta comercial',
                 'project' => 'Proyecto',
                 'reference' => 'Referencia',
@@ -595,6 +897,8 @@ class EconomicsQuoteWriter
                 'item' => 'Concepto',
                 'amount' => 'Importe',
                 'build' => 'Desarrollo (base imponible)',
+                'discount' => 'Descuento comercial',
+                'discounted' => 'Base imponible con descuento',
                 'vat' => 'IVA',
                 'vat_exempt' => 'IVA no aplicado',
                 'vat_reverse' => 'IVA — inversión del sujeto pasivo UE B2B',
@@ -666,6 +970,48 @@ class EconomicsQuoteWriter
                 'disclaimer' => 'Oferta comercial generada con Larapilot a partir del documento de proyecto y de las estimaciones de trabajo. Importes y fechas son una planificación y pasan a ser vinculantes con la firma.',
             ],
             'fr' => [
+                'infrastructure' => [
+                    'title' => 'Infrastructure et mise en production',
+                    'intro' => 'Où vit le logiciel et qui le maintient en état. Ce sont des décisions prises lors de l\'analyse et reprises ici intégralement : aucune surprise après la mise en ligne.',
+                    'platform' => 'Plateforme d\'hébergement',
+                    'management' => 'Gestion du serveur',
+                    'ops' => 'Responsable de l\'exploitation',
+                    'backups' => 'Sauvegardes',
+                    'monitoring' => 'Supervision',
+                    'tls' => 'Certificats et domaine',
+                    'support' => 'Plage de support',
+                    'cost' => 'Coût d\'exploitation estimé',
+                    'cost_value' => '%s par mois',
+                    'cost_note' => 'Le coût d\'exploitation est une estimation : il est facturé directement par l\'hébergeur et n\'est pas compris dans l\'investissement de réalisation.',
+                    'ownership' => 'L\'environnement, le domaine et les données restent au nom du client : les accès peuvent être transférés à un autre prestataire à tout moment, sans rien réécrire.',
+                    'open' => 'La gestion du serveur n\'est pas encore arrêtée : elle doit l\'être avant la mise en production, car elle détermine sauvegardes, supervision et délais d\'intervention.',
+                    'backups_us' => 'Sauvegardes automatiques quotidiennes avec test de restauration périodique',
+                    'backups_platform' => 'Sauvegardes assurées par la plateforme, plus export périodique des données applicatives',
+                    'backups_client' => 'À la charge de la DSI du client',
+                    'monitoring_us' => 'Contrôle de disponibilité et alerte sur les erreurs applicatives',
+                    'monitoring_platform' => 'Contrôle de disponibilité sur la plateforme et alerte sur les erreurs applicatives',
+                    'monitoring_client' => 'À la charge de la DSI du client',
+                    'tls_us' => 'Certificat TLS renouvelé automatiquement ; domaine au nom du client',
+                    'tls_platform' => 'Certificat TLS géré par la plateforme ; domaine au nom du client',
+                    'tls_client' => 'À la charge de la DSI du client',
+                ],
+                'assurance' => [
+                    'title' => 'Sécurité et qualité : ce qui protège cet investissement',
+                    'intro' => 'Un logiciel se paie une fois et se maintient pendant des années. Ce qui décide du coût de cette maintenance — et du risque qu\'un matin il devienne un problème — ne se voit pas dans la démonstration : cela se voit dans la façon dont il a été construit. Voici ce qui est compris, sans ligne séparée au devis.',
+                    'close' => 'Aucune dépendance : le code, les données et l\'infrastructure appartiennent au client. Si le projet passe un jour à une autre équipe, il passe avec son historique, ses tests et sa documentation — pas comme une énigme à déchiffrer.',
+                    'review' => '**Chaque modification passe par une relecture indépendante** avant d\'atteindre votre environnement. Personne ne publie son propre travail sans qu\'il ait été lu par quelqu\'un d\'autre.',
+                    'criteria' => '**Chaque fonctionnalité dispose de critères d\'acceptation écrits avant son développement** et est vérifiée par rapport à eux. « Ça marche » n\'est pas une opinion : c\'est une liste de conditions remplies.',
+                    'tests_best' => '**Suite de tests automatisés étendue, exécutée à chaque modification.** C\'est ce qui empêche une demande d\'aujourd\'hui de casser ce qui fonctionnait hier : la vérification ne repose sur la mémoire de personne.',
+                    'tests_normal' => '**Tests automatisés sur les parcours critiques, exécutés à chaque modification.** Ce qui, en cassant, vous arrêterait est couvert par des contrôles qui tournent seuls.',
+                    'tests_light' => '**Tests automatisés sur les parcours critiques** — connexion, paiements, fonctions centrales — et vérification fonctionnelle de chaque livraison au regard des critères d\'acceptation convenus.',
+                    'scan' => '**Analyse de sécurité automatique à chaque modification.** Les vulnérabilités connues sont interceptées avant la mise en ligne, pas après un incident.',
+                    'owasp' => '**Sécurité applicative selon les pratiques OWASP** : gestion des identifiants, protection des formulaires, contrôle des accès et des habilitations vérifiés avant livraison.',
+                    'secrets' => '**Aucun identifiant dans le code.** Clés et mots de passe vivent dans la configuration de l\'environnement, sous votre contrôle, et peuvent être renouvelés sans toucher au logiciel.',
+                    'gitflow' => '**Historique traçable.** Chaque ligne de code est reliée à la demande qui l\'a produite : des mois plus tard, on peut reconstituer ce qui a changé, quand et pourquoi.',
+                    'releases' => '**Versions numérotées avec liste des modifications.** Si une mise à jour pose problème, on revient à la précédente en quelques minutes, pas en une journée.',
+                    'updates' => '**Mises à jour de sécurité du framework et des bibliothèques** comprises dans la maintenance, et non reportées jusqu\'à la prochaine urgence.',
+                    'privacy' => '**Traitement des données personnelles conforme au RGPD** : base légale, durées de conservation, mentions d\'information et droits des personnes prévus dès la conception.',
+                ],
                 'document_title' => 'Offre commerciale',
                 'project' => 'Projet',
                 'reference' => 'Référence',
@@ -684,6 +1030,8 @@ class EconomicsQuoteWriter
                 'item' => 'Poste',
                 'amount' => 'Montant',
                 'build' => 'Réalisation (hors taxes)',
+                'discount' => 'Remise commerciale',
+                'discounted' => 'Montant remisé (HT)',
                 'vat' => 'TVA',
                 'vat_exempt' => 'TVA non applicable',
                 'vat_reverse' => 'TVA — autoliquidation UE B2B',
@@ -755,6 +1103,48 @@ class EconomicsQuoteWriter
                 'disclaimer' => 'Offre commerciale générée avec Larapilot à partir du document de projet et des estimations de charge. Les montants et les dates constituent une planification et deviennent contractuels à la signature.',
             ],
             default => [
+                'infrastructure' => [
+                    'title' => 'Infrastructure and hosting',
+                    'intro' => 'Where the software lives and who keeps it running. These were settled during analysis and are written out here in full, so nothing surfaces after go-live.',
+                    'platform' => 'Hosting platform',
+                    'management' => 'Server management',
+                    'ops' => 'Operational ownership',
+                    'backups' => 'Backups',
+                    'monitoring' => 'Monitoring',
+                    'tls' => 'Certificates and domain',
+                    'support' => 'Support window',
+                    'cost' => 'Estimated running cost',
+                    'cost_value' => '%s per month',
+                    'cost_note' => 'The running cost is an estimate: it is billed directly by the hosting provider and is not part of the build investment above.',
+                    'ownership' => 'The environment, the domain, and the data stay in the client\'s name: credentials can move to another supplier at any time without rewriting anything.',
+                    'open' => 'Server management has not been decided yet. It needs settling before go-live, because it determines backups, monitoring, and how fast someone can intervene.',
+                    'backups_us' => 'Automated daily backups with periodic restore testing',
+                    'backups_platform' => 'Backups handled by the platform, plus periodic export of the application data',
+                    'backups_client' => 'Owned by the client\'s IT team',
+                    'monitoring_us' => 'Uptime checks and alerting on application errors',
+                    'monitoring_platform' => 'Platform uptime checks and alerting on application errors',
+                    'monitoring_client' => 'Owned by the client\'s IT team',
+                    'tls_us' => 'TLS certificate renewed automatically; domain stays in the client\'s name',
+                    'tls_platform' => 'TLS certificate handled by the platform; domain stays in the client\'s name',
+                    'tls_client' => 'Owned by the client\'s IT team',
+                ],
+                'assurance' => [
+                    'title' => 'Security and quality: what protects this investment',
+                    'intro' => 'Software is paid for once and lived with for years. What decides how much those years cost — and whether one morning it becomes a problem — is invisible in a demo: it is in how the thing was built. All of the following is included, with no separate line on the price list.',
+                    'close' => 'No lock-in: the code, the data, and the infrastructure belong to the client. If the project ever moves to another team, it moves with its history, its tests, and its documentation — not as a puzzle to decipher.',
+                    'review' => '**Every change goes through an independent review** before it reaches your environment. Nobody ships their own work unread.',
+                    'criteria' => '**Every feature has acceptance criteria written before it is built**, and is checked against them. "It works" is not an opinion here: it is a list of conditions ticked off.',
+                    'tests_best' => '**A broad automated test suite, run on every change.** This is what stops today\'s request from breaking what worked yesterday: verification does not depend on anyone remembering.',
+                    'tests_normal' => '**Automated tests on the critical paths, run on every change.** The parts that would stop your work if they broke are covered by checks that run themselves.',
+                    'tests_light' => '**Automated tests on the critical paths** — sign-in, payments, the functions the business runs on — plus functional verification of every delivery against the agreed acceptance criteria.',
+                    'scan' => '**An automated security scan on every change.** Known vulnerabilities are caught before publication, not after someone reports them.',
+                    'owasp' => '**Application security to OWASP practice**: credential handling, form protection, access and permission control reviewed before each delivery.',
+                    'secrets' => '**No credentials inside the code.** Keys and passwords live in the environment configuration, under your control, and can be rotated without touching the software.',
+                    'gitflow' => '**A traceable history.** Every line of code is tied to the request that produced it: months later you can reconstruct what changed, when, and why.',
+                    'releases' => '**Numbered releases with a list of what changed.** If an update causes trouble, you go back to the previous version in minutes, not in a day.',
+                    'updates' => '**Security updates for the framework and its libraries** are part of the maintenance retainer, not deferred until the next emergency.',
+                    'privacy' => '**Personal data handled to GDPR**: legal basis, retention periods, notices, and data-subject rights designed in from the start.',
+                ],
                 'document_title' => 'Commercial proposal',
                 'project' => 'Project',
                 'reference' => 'Reference',
@@ -773,6 +1163,8 @@ class EconomicsQuoteWriter
                 'item' => 'Item',
                 'amount' => 'Amount',
                 'build' => 'Build (ex VAT)',
+                'discount' => 'Commercial discount',
+                'discounted' => 'Discounted build (ex VAT)',
                 'vat' => 'VAT',
                 'vat_exempt' => 'VAT not applied',
                 'vat_reverse' => 'VAT — EU B2B reverse charge',

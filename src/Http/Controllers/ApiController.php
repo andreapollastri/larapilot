@@ -78,11 +78,18 @@ class ApiController
         return $this->cacheable($request, $this->metrics->snapshot());
     }
 
+    /**
+     * Query-string what-ifs are accepted here too (`?hourly_rate=70&tier=premium`),
+     * so an agent can price a scenario without writing the profile. A simulated
+     * snapshot is computed and returned, never stored.
+     */
     public function economics(Request $request): JsonResponse
     {
         $this->guard();
 
-        return $this->cacheable($request, $this->economics->snapshot());
+        return $this->cacheable($request, $this->economics->snapshot(
+            $this->economics->normalizeOverrides($request->query())
+        ));
     }
 
     public function storeComment(Request $request, string $code): JsonResponse

@@ -1,6 +1,6 @@
 # Larapilot — Task body templates
 
-Copy these structures into `larapilot-plan` task bodies. Every **Impl** and **Fix** task MUST include **## Git Deliverables** when `settings.git_mode` is `GITFLOW` or `GITFLOW_PUSH`; every task that touches Eloquent models MUST include **## Test Data** (factory + seeder). Anne's test tasks omit Git/Test Data unless they add seed-only fixtures.
+Copy these structures into `larapilot-plan` task bodies. Every **Impl** and **Fix** task MUST include **## Git Deliverables** when `settings.git_mode` is `GITFLOW` or `GITFLOW_PUSH`; every task that touches Eloquent models MUST include **## Test Data** (factory + seeder); every task that changes a domain's behavior MUST include **## Domain Docs** (`.larapilot/runtime-dev-docs.md`) — at every effort level, `ECO` included. Anne's test tasks omit Git/Test Data unless they add seed-only fixtures.
 
 **Read `data.settings` from `config-show` before planning and honor it** — canonical matrices in `.larapilot/shared-runtime.md` → **Project Settings**; canonical Git/TASK-00 prose in `.larapilot/runtime-delivery.md` → **Git Workflow**. Template selection follows the settings: `NO_GITFLOW` omits TASK-00 and all Push/PR lines; `GITFLOW` includes TASK-00 without Push (PR prepared locally); `GITFLOW_PUSH` includes TASK-00 with push + remote PR; `testing` picks the matching Anne template depth; `effort: ECO` means fewer/shorter tasks and deferred docs except OpenAPI; `effort: MAX` adds verification/docs tasks and a deeper Test Strategy.
 
@@ -138,6 +138,11 @@ Add `{Model}` with migration, factory, and seeder entries so the demo dataset st
 - [ ] `DatabaseSeeder` (or dedicated seeder) calls `{Model}::factory()` with meaningful volumes/states
 - [ ] Factory updated in **this same task** as migration/model changes
 
+## Domain Docs
+- [ ] `{paths.dev_docs}/{domain}.md` updated (or created from `TEMPLATE.md`) — data model, invariants, and the schema choices that were rejected
+- [ ] Folder `README.md` index row updated
+- [ ] English, committed with this task
+
 ## Git Deliverables
 - Commit: `feat(US-XXX): TASK-NN add {Model} with factory and seeder`
 - Push: {`origin feature/…` only if `git_mode: GITFLOW_PUSH`; otherwise **skip**}
@@ -169,6 +174,11 @@ Use when the task does not add or change Eloquent models.
 
 ## Test Data
 - N/A — no model/schema changes in this task
+
+## Domain Docs
+- [ ] `{paths.dev_docs}/{domain}.md` updated (or created from `TEMPLATE.md`) — functional flow, technical design, architectural choices
+- [ ] Folder `README.md` index row updated
+- [ ] English, committed with this task
 
 ## Git Deliverables
 - Commit: `feat(US-XXX): TASK-NN {short summary}`
@@ -260,6 +270,10 @@ Fix: {one-line from rework feedback}
 
 ## Test Data
 - [ ] Factory/seeder updated when applicable; otherwise `N/A`
+
+## Domain Docs
+- [ ] `{paths.dev_docs}/{domain}.md` corrected when the fix changed how the domain behaves; otherwise `N/A`
+- [ ] English, committed with this task
 
 ## Git Deliverables
 - Commit: `fix(US-XXX): TASK-NN {short summary}`

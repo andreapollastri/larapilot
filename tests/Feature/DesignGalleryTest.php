@@ -21,7 +21,7 @@ it('serves the design gallery as one navigable index', function (): void {
         ->assertOk()
         ->assertSee('Design', false)
         ->assertSee('Presentation index', false)
-        ->assertSee('Start at the presentation index', false)
+        ->assertSee('Every mockup screen for', false)
         ->assertSee('Open index in new tab', false)
         ->assertSee('US-001', false)
         ->assertSee('Login', false)
@@ -29,11 +29,12 @@ it('serves the design gallery as one navigable index', function (): void {
         ->assertSee('/larapilot/design/package.zip', false)
         ->assertSee('/mockups/US-001', false)
         ->assertSee('/mockups/US-001/dark.html', false)
-        // prev / next walk, contextual flow gallery, collapsed full listing
+        // prev / next walk, contextual flow gallery, full preview grid
         ->assertSee('design-prev', false)
         ->assertSee('design-next', false)
         ->assertSee('design-counter', false)
         ->assertSee('flow-gallery', false)
+        ->assertSee('screen-grid', false)
         ->assertSee('All 2 screens, flow by flow', false);
 
     // The ordered walk starts at the index and leads with each flow's entry.
@@ -48,9 +49,16 @@ it('serves the design gallery as one navigable index', function (): void {
         ->and($indexPosition)->toBeLessThan($entryPosition)
         ->and($entryPosition)->toBeLessThan($darkPosition);
 
+    // The viewer opens on the first mockup, not on the cover sheet.
+    expect($html)->toContain('<iframe id="design-frame" class="design-frame" src="/mockups/US-001"');
+
+    // The dashboard frames the index itself, so that one route allows
+    // same-origin framing instead of the dashboard-wide DENY.
     $this->get('/larapilot/design/presentation')
         ->assertOk()
         ->assertHeader('Content-Type', 'text/html; charset=UTF-8')
+        ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+        ->assertHeader('Content-Security-Policy', "frame-ancestors 'self'")
         ->assertSee('Design presentation', false)
         ->assertSee('Contents', false)
         ->assertSee('Start at the first screen', false)
