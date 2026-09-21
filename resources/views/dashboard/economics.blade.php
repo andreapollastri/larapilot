@@ -322,6 +322,8 @@
 
     .eco-details { padding: 16px 20px; }
     .eco-details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .eco-models .defs dt { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .eco-models .defs dt .chip { margin: 0; }
 
     .banner {
         padding: 14px 16px;

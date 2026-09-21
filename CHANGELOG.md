@@ -2,6 +2,31 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.2.1] - 2026-09-21
+
+### Added
+
+- **`/larapilot/economics` speaks the PRD language** — the page now follows the detected PRD language the way the client quote already did: section headings, captions, banners, the glossary, and every sentence the engine writes into the snapshot (effort notes and warnings, maintenance drivers and gaps, tier notes, business-plan notes, hosting notes, the market hint) come from `Larapilot\Support\EconomicsStrings`, resolved once per `snapshot()` with `ArtifactLanguage::detect()`. The snapshot and `GET /larapilot/api/economics` carry the new `language` key. The **pricing console stays in English** on purpose — its dropdowns, field labels, and the `economics-set` command it prints are operator controls, not something the client reads. A language with no entry for a key falls back to English rather than rendering blank.
+- **The four ways a project is sold are explained where you choose them** — a collapsed block under the pricing console spells out what `One shot — fixed price`, `SaaS — subscription`, `E-commerce`, and `Licensed package` each turn on, marks the one in use, and states the thing that is easy to get wrong: the model never moves the hours or the build price, only the question the page answers about earning it back. The two model-specific payback figures the engine already computed but never rendered now have their own cards — **orders per month to repay** for e-commerce (with the assumed order value and take rate named as engine assumptions) and **licences to repay the build** for a licensed package (saying whether the price is the one on your profile or a suggested fraction of the build).
+- **Four more languages, end to end: German, Portuguese, Dutch, Polish** — `ArtifactLanguage::SUPPORTED` is now `en · it · es · fr · de · pt · nl · pl`. Each new language was added in all three places Larapilot writes prose, not just one: detection (function-word lists and heading hints per language), the Economics page and engine (`EconomicsStrings`, 318 keys each), the built-in client quote (`EconomicsQuoteWriter::strings()`, plus its month names, working-day and duration wording, and the filename suffix — `angebot`, `orcamento`, `offerte`, `oferta`), and the design presentation index (`MockupPackageService::copy()`). Agent-written documents were never limited to this set; the built-in templates now are not either.
+- **`ArtifactStringsCoverageTest` keeps the three vocabularies in step** — for every supported language it asserts the Economics table has each English key filled and non-empty, that `:name` and `%s` placeholders survive translation, that the quote and the design presentation have their own arm rather than falling through to English, and that a PRD written in each language is detected as that language. A language added to `SUPPORTED` and forgotten in one place now fails the build instead of silently rendering English there.
+
+### Changed
+
+- The Dutch quote filename suffix is `offerte` rather than `aanbieding`, matching the document's own title.
+- `EconomicsService::language()` reads the PRD directly instead of the per-snapshot cache, so it answers correctly before the first `snapshot()` of a request.
+
+### Fixed
+
+- **The "No competitor data" hint no longer sends you down a dead end** — on a one-off client delivery (`product_model: fixed`) `/larapilot-economics` skips the market-research step by default, so telling the user to re-run the skill produced nothing. The hint is now product-model aware and says to ask for the research explicitly.
+
+### Docs
+
+- Site / package version **v3.2.1**; `runtime-economics.md` gained a **Language** section covering the PRD-language
+  rule, the English pricing console, and the all-or-nothing contract for adding a language; the economics skill and
+  the README name the eight built-in template languages.
+- `docs/index.html` gained a rewritten **Economics** deep dive — how the skill runs round by round, what it writes and where (profile, snapshot, market research, client quote, internal report, JSON), and a new **Sold as** section comparing the four product models. The skill card and the README say the page follows the PRD language, and the deep dive states the all-or-nothing rule for adding one.
+
 ## [3.2.0] - 2026-09-21
 
 ### Added

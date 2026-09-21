@@ -1082,3 +1082,192 @@ it('sells security and quality from what the project actually does', function ()
         ->not->toContain('story point')
         ->and($full)->not->toContain('US-001');
 });
+
+it('renders the economics page and its warnings in the PRD language', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--regime' => 'forfettario_15',
+        '--hourly-rate' => '55',
+    ])->assertSuccessful();
+
+    addSpec(['title' => 'Anagrafica clienti']);
+    app(PrdService::class)->write(<<<'MD'
+# Gestionale Star Service
+
+## Panoramica
+Il gestionale serve a gestire clienti, interventi e fatturazione per l'azienda.
+
+## Obiettivi di business
+- Ridurre il tempo di inserimento degli interventi
+- Avere uno storico consultabile dei clienti
+
+## Funzionalità principali
+- Anagrafica clienti
+- Gestione interventi con allegati
+
+## Architettura
+Laravel 12, MySQL, deploy su VPS.
+MD);
+
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        // The narrative follows the PRD …
+        ->assertSee('Da dove vengono le ore', false)
+        ->assertSee('Prezzo al cliente', false)
+        ->assertSee('Cosa paga il cliente e cosa ti resta', false)
+        ->assertSee('Scarica il preventivo', false)
+        ->assertDontSee('Where the hours come from', false)
+        ->assertDontSee('Client price', false)
+        // … while the pricing console stays in English: those are operator controls.
+        ->assertSee('Hourly rate', false)
+        ->assertSee('Commercial discount', false);
+
+    $snapshot = app(EconomicsService::class)->snapshot();
+
+    expect($snapshot['language'])->toBe('it')
+        ->and($snapshot['effort']['notes'])->toContain('Direttamente dal backlog')
+        ->and($snapshot['effort']['source_label'])->toBe('Story point')
+        ->and($snapshot['product']['label'])->not->toContain('delivery');
+});
+
+it('keeps the page in English when the PRD is', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    app(PrdService::class)->write(validPrd());
+
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('Where the hours come from', false)
+        ->assertDontSee('Da dove vengono le ore', false);
+
+    expect(app(EconomicsService::class)->snapshot()['language'])->toBe('en');
+});
+
+it('says the market research is skipped by default on a one-off delivery', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'fixed'])->assertSuccessful();
+
+    $economics = app(EconomicsService::class);
+    $fixed = $economics->snapshot()['market'];
+
+    expect($fixed['available'])->toBeFalse()
+        ->and($fixed['hint'])->toContain('one-off client delivery')
+        ->and($fixed['hint'])->toContain('ask for the market research explicitly');
+
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'saas'])->assertSuccessful();
+
+    $saas = $economics->snapshot()['market'];
+
+    expect($saas['hint'])->toContain('Run /larapilot-economics')
+        ->and($saas['hint'])->not->toContain('one-off client delivery');
+});
+
+it('explains the four ways a project is sold and reads payback the right way for each', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['title' => 'Catalogue']);
+
+    // The explainer lists every option the dropdown carries and marks the live one.
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'fixed'])->assertSuccessful();
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('What “Sold as” changes', false)
+        ->assertSee('One shot — fixed price', false)
+        ->assertSee('SaaS — subscription', false)
+        ->assertSee('E-commerce', false)
+        ->assertSee('Licensed package', false)
+        ->assertSee('The client pays once for the build', false)
+        // A one-off delivery has neither of the two model-specific payback cards.
+        ->assertDontSee('Orders / month to repay', false)
+        ->assertDontSee('Licences to repay the build', false);
+
+    // E-commerce keeps the one-shot price but reads payback in orders.
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'ecommerce'])->assertSuccessful();
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('Orders / month to repay', false)
+        ->assertSee('order of magnitude', false);
+
+    // A licensed package reads it in licences, and says where the price came from.
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'package'])->assertSuccessful();
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('Licences to repay the build', false)
+        ->assertSee('No annual price is configured', false);
+
+    $payback = app(EconomicsService::class)->snapshot()['payback'];
+
+    expect($payback['model'])->toBe('package')
+        ->and($payback['licenses_to_recover'])->toBeGreaterThan(0)
+        ->and($payback['license_price_source'])->toBe('heuristic_build_fraction')
+        ->and($payback)->not->toHaveKey('orders_per_month_to_recover_12m');
+});
+
+it('keeps the build price identical whichever way the project is sold', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    addSpec(['title' => 'Catalogue']);
+    planSpec();
+
+    $economics = app(EconomicsService::class);
+    $prices = [];
+
+    foreach (['fixed', 'saas', 'ecommerce', 'package'] as $model) {
+        $this->artisan('larapilot:economics-set', ['--product-model' => $model])->assertSuccessful();
+        $snapshot = $economics->snapshot();
+        $prices[$model] = [$snapshot['quote']['gross'], $snapshot['effort']['billable_hours']];
+    }
+
+    expect(array_unique(array_map('serialize', $prices)))->toHaveCount(1);
+});
+
+it('renders the page and the quote in the same language for a German PRD', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'DE',
+        '--hourly-rate' => '85',
+    ])->assertSuccessful();
+
+    addSpec(['title' => 'Kundenstammdaten']);
+    app(PrdService::class)->write(<<<'MD'
+# Verwaltungssystem Star Service
+
+## Überblick
+Das System verwaltet Kunden, Einsätze und die Rechnungsstellung für das Unternehmen.
+Jeder Benutzer kann nur die Daten sehen, die ihm zugewiesen sind.
+
+## Geschäftsziele
+- Die Zeit für die Erfassung der Einsätze reduzieren
+- Eine durchsuchbare Historie der Kunden haben
+
+## Funktionen
+- Kundenstammdaten mit Filtern und Export
+- Verwaltung der Einsätze mit Anhängen
+
+## Architektur
+Laravel 12, MySQL, Deployment auf einem VPS. Requirements: PHP 8.3.
+MD);
+
+    $economics = app(EconomicsService::class);
+
+    // The page and the quote now agree: a language reaching one reaches both.
+    expect($economics->language())->toBe('de')
+        ->and($economics->quoteLanguage())->toBe('de')
+        ->and($economics->quoteFilename())->toBe('verwaltungssystem-star-service-angebot.md')
+        ->and($economics->quoteMarkdown())->toContain('# Angebot')
+        ->toContain('Zusammenfassung des Angebots')
+        ->toContain('Zahlungsbedingungen');
+
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('Woher die Stunden kommen', false)
+        ->assertSee('Was der Kunde zahlt und was Ihnen bleibt', false)
+        ->assertSee('Angebot herunterladen', false)
+        ->assertDontSee('Where the hours come from', false);
+
+    expect($economics->snapshot()['language'])->toBe('de');
+});

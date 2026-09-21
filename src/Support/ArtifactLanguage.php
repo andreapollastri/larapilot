@@ -8,8 +8,14 @@ class ArtifactLanguage
 {
     public const DEFAULT = 'en';
 
-    /** @var list<string> */
-    public const SUPPORTED = ['en', 'it', 'es', 'fr'];
+    /**
+     * Languages the built-in templates carry end to end: detection, the
+     * Economics page and engine, the client quote, and the design presentation.
+     * `ArtifactStringsCoverageTest` fails the build if one of those falls behind.
+     *
+     * @var list<string>
+     */
+    public const SUPPORTED = ['en', 'it', 'es', 'fr', 'de', 'pt', 'nl', 'pl'];
 
     /**
      * Minimum stopword hits before frequency scoring is trusted.
@@ -173,6 +179,38 @@ class ArtifactLanguage
                 'page', 'données', 'gestion', 'ainsi', 'donc', 'leur', 'notre', 'où', 'parce', 'même',
                 'sans', 'jusqu', 'déjà', 'afin', 'lors',
             ],
+            'de' => [
+                'der', 'die', 'das', 'und', 'ist', 'sind', 'für', 'mit', 'von', 'zu',
+                'den', 'dem', 'des', 'ein', 'eine', 'einen', 'auch', 'aber', 'nicht', 'oder',
+                'wenn', 'wird', 'werden', 'muss', 'soll', 'kann', 'sich', 'sie', 'als', 'bei',
+                'nach', 'über', 'unter', 'zwischen', 'jede', 'jeder', 'alle', 'benutzer', 'nutzer', 'seite',
+                'bildschirm', 'daten', 'außerdem', 'dann', 'nur', 'andere', 'auf', 'aus', 'im', 'diese',
+                'durch', 'damit', 'sowie', 'dass', 'keine',
+            ],
+            'pt' => [
+                'não', 'são', 'também', 'então', 'está', 'após', 'pelo', 'pela', 'dos', 'das',
+                'nos', 'nas', 'uma', 'com', 'para', 'que', 'do', 'da', 'em', 'os',
+                'as', 'no', 'na', 'ao', 'mais', 'como', 'ser', 'pode', 'deve', 'cada',
+                'este', 'esta', 'quando', 'onde', 'porque', 'usuário', 'usuários', 'página', 'tela', 'dados',
+                'além', 'todos', 'todas', 'sem', 'até', 'sobre', 'pelos', 'pelas', 'já', 'gestão',
+                'seu', 'sua', 'seus', 'suas', 'ou',
+            ],
+            'nl' => [
+                'het', 'een', 'van', 'zijn', 'wordt', 'worden', 'moet', 'kunnen', 'niet', 'ook',
+                'maar', 'voor', 'met', 'aan', 'door', 'naar', 'dat', 'deze', 'elke', 'alle',
+                'gebruiker', 'gebruikers', 'pagina', 'scherm', 'gegevens', 'daarnaast', 'dan', 'alleen', 'andere', 'tussen',
+                'bij', 'uit', 'over', 'waar', 'omdat', 'terwijl', 'zodat', 'wel', 'nog', 'hun',
+                'ons', 'onze', 'beheer', 'moeten', 'kan', 'heeft', 'hebben', 'waarbij', 'zoals', 'binnen',
+                'geen', 'wanneer', 'welke', 'tot', 'per',
+            ],
+            'pl' => [
+                'się', 'nie', 'jest', 'są', 'oraz', 'który', 'która', 'które', 'dla', 'przez',
+                'może', 'musi', 'każdy', 'wszystkie', 'strona', 'ekran', 'dane', 'także', 'ale', 'lub',
+                'na', 'do', 'od', 'po', 'przy', 'tym', 'tego', 'tej', 'jako', 'gdy',
+                'kiedy', 'gdzie', 'ponieważ', 'więc', 'już', 'tylko', 'między', 'bez', 'pod', 'nad',
+                'czy', 'być', 'mają', 'użytkownik', 'użytkownicy', 'zarządzanie', 'wymagania', 'powinien', 'należy', 'można',
+                'jeśli', 'albo', 'tych', 'aby', 'tak',
+            ],
         ];
     }
 
@@ -186,6 +224,10 @@ class ArtifactLanguage
             'it' => ['Sintesi', 'Visione', 'Requisiti funzionali', 'Ambito MVP', 'Architettura tecnica', 'Criteri di Accettazione', 'Storia Utente', 'Personas utente', 'Panoramica', 'Obiettivi', 'Obiettivi di business', 'Funzionalità', 'Funzionalità principali', 'Utenti e ruoli', 'Fuori ambito', 'Architettura'],
             'es' => ['Requisitos funcionales', 'Alcance MVP', 'Arquitectura técnica', 'Criterios de aceptación', 'Historia de usuario', 'Personas de usuario', 'Resumen', 'Objetivos', 'Funcionalidades', 'Fuera de alcance'],
             'fr' => ['Accroche', 'Exigences fonctionnelles', 'Périmètre MVP', 'Architecture technique', 'Critères d\'acceptation', 'Synthèse', 'Objectifs', 'Fonctionnalités', 'Hors périmètre'],
+            'de' => ['Kurzbeschreibung', 'Funktionale Anforderungen', 'MVP-Umfang', 'Technische Architektur', 'Abnahmekriterien', 'Benutzergeschichte', 'Überblick', 'Übersicht', 'Ziele', 'Geschäftsziele', 'Funktionen', 'Benutzer und Rollen', 'Nicht im Umfang', 'Architektur'],
+            'pt' => ['Resumo', 'Requisitos funcionais', 'Âmbito MVP', 'Escopo MVP', 'Arquitetura técnica', 'Critérios de aceitação', 'História de utilizador', 'História de usuário', 'Visão geral', 'Objetivos', 'Objetivos de negócio', 'Funcionalidades', 'Utilizadores e perfis', 'Fora de âmbito', 'Fora do escopo'],
+            'nl' => ['Samenvatting', 'Functionele eisen', 'Functionele vereisten', 'MVP-scope', 'Technische architectuur', 'Acceptatiecriteria', 'Gebruikersverhaal', 'Overzicht', 'Doelen', 'Bedrijfsdoelen', 'Functionaliteiten', 'Gebruikers en rollen', 'Buiten scope'],
+            'pl' => ['Streszczenie', 'Wymagania funkcjonalne', 'Zakres MVP', 'Architektura techniczna', 'Kryteria akceptacji', 'Historyjka użytkownika', 'Przegląd', 'Cele', 'Cele biznesowe', 'Funkcjonalności', 'Użytkownicy i role', 'Poza zakresem', 'Architektura'],
         ];
     }
 }

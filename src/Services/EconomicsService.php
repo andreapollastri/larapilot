@@ -6,6 +6,7 @@ namespace Larapilot\Services;
 
 use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\EconomicsStrings;
 use Larapilot\Support\TaxCatalog;
 use Larapilot\Support\TaxEngine;
 use Symfony\Component\Yaml\Yaml;
@@ -33,6 +34,12 @@ class EconomicsService
      * Per-spec effort rows kept in the snapshot.
      */
     protected const MAX_BREAKDOWN_ROWS = 200;
+
+    /**
+     * PRD language of the snapshot being computed. Set at the top of every
+     * `snapshot()` call; English until then.
+     */
+    protected string $language = ArtifactLanguage::DEFAULT;
 
     /**
      * Inputs the dashboard pricing tool may change without persisting anything.
@@ -437,6 +444,7 @@ class EconomicsService
     public function snapshot(array $overrides = []): array
     {
         $overrides = $this->normalizeOverrides($overrides);
+        $this->language = $this->quoteLanguage();
         $account = $this->accountMode();
         $profile = $this->read();
         $research = $this->market->read();
@@ -464,7 +472,8 @@ class EconomicsService
             'enabled' => $account !== 'NONE',
             'account' => $account,
             'fiscal_year' => TaxCatalog::YEAR,
-            'disclaimer' => 'Planning estimates from statutory '.$this->yearLabel().' rates. Not personalised tax advice.',
+            'language' => $this->language,
+            'disclaimer' => $this->t('svc.disclaimer', ['year' => $this->yearLabel()]),
             'profile' => $profile,
             'inception' => $inception,
             'effort' => $effort,
@@ -476,7 +485,7 @@ class EconomicsService
                 'overrides' => $overrides,
                 'command' => $this->persistCommand($profile, $account),
             ],
-            'market' => $this->marketBlock($research),
+            'market' => $this->marketBlock($research, $this->resolveProductModel($profile, $inception)),
         ];
 
         if ($account === 'NONE') {
@@ -1066,7 +1075,7 @@ class EconomicsService
 
     /**
      * Client-facing commercial proposal. The stored document wins; the built-in
-     * template (en/it/es/fr) renders the download when no one wrote one yet.
+     * template (see ArtifactLanguage::SUPPORTED) renders the download when no one wrote one yet.
      * Internal tax figures stay in reportMarkdown().
      */
     /**
@@ -1125,6 +1134,30 @@ class EconomicsService
     public function quoteLanguage(): string
     {
         return ArtifactLanguage::detect($this->prd->read());
+    }
+
+    /**
+     * Language of the prose this engine writes into the snapshot, and of the
+     * dashboard that renders it — the PRD's, like the client quote.
+     *
+     * Read straight from the PRD rather than from the cached property, so the
+     * answer is right before the first `snapshot()` of the request too. The
+     * property exists to keep detection off the hot path while one snapshot is
+     * being composed.
+     */
+    public function language(): string
+    {
+        return $this->quoteLanguage();
+    }
+
+    /**
+     * A sentence from the Economics vocabulary in the current language.
+     *
+     * @param  array<string, string|int|float>  $replace
+     */
+    protected function t(string $key, array $replace = []): string
+    {
+        return EconomicsStrings::line($this->language, $key, $replace);
     }
 
     public function quoteFilename(): string
@@ -1517,26 +1550,26 @@ class EconomicsService
     protected function effortSourceLabel(string $source): string
     {
         return match ($source) {
-            'plan_hours' => 'Plan task hours',
-            'story_points' => 'Story points',
-            'mixed' => 'Plan hours + story points',
-            default => 'Scope heuristic (nothing sized yet)',
+            'plan_hours' => $this->t('svc.effort.source.plan_hours'),
+            'story_points' => $this->t('svc.effort.source.story_points'),
+            'mixed' => $this->t('svc.effort.source.mixed'),
+            default => $this->t('svc.effort.source.heuristic'),
         };
     }
 
     protected function effortNotes(string $source, bool $calibrated): string
     {
         if ($source === 'heuristic') {
-            return 'No backlog yet — sized from the inception answers (kind, delivery target, type). Add specs and the quote follows them instead.';
+            return $this->t('svc.effort.notes.heuristic');
         }
 
-        $note = 'Straight from the backlog: '.($source === 'plan_hours'
-            ? 'planned task hours'
-            : ($source === 'mixed' ? 'planned task hours plus story points for specs without a plan' : 'story points per spec'))
-            .', plus the '.(int) round((self::PM_QA_BUFFER - 1) * 100).'% PM/QA buffer. No scope inflation.';
+        $note = $this->t('svc.effort.notes.backlog', [
+            'from' => $this->t('svc.effort.notes.from.'.($source === 'plan_hours' ? 'plan_hours' : ($source === 'mixed' ? 'mixed' : 'story_points'))),
+            'buffer' => (int) round((self::PM_QA_BUFFER - 1) * 100),
+        ]);
 
         if ($calibrated) {
-            $note .= ' Hours per point are calibrated on the specs that already have a plan.';
+            $note .= ' '.$this->t('svc.effort.notes.calibrated');
         }
 
         return $note;
@@ -1550,20 +1583,22 @@ class EconomicsService
         $warnings = [];
 
         if ($source === 'heuristic') {
-            $warnings[] = 'Nothing in the backlog is sized yet, so the hours are a scope heuristic — add story points or plans and the quote follows them.';
+            $warnings[] = $this->t('svc.effort.warn.heuristic');
         }
 
         if ($unsizedSpecs > 0) {
-            $warnings[] = $unsizedSpecs.' spec'.($unsizedSpecs === 1 ? '' : 's').' carry neither a plan nor story points — each counted as '
-                .self::DEFAULT_SPEC_POINTS.' points. Size them for a firmer quote.';
+            $warnings[] = $this->t('svc.effort.warn.unsized.'.($unsizedSpecs === 1 ? 'one' : 'many'), [
+                'count' => $unsizedSpecs,
+                'points' => self::DEFAULT_SPEC_POINTS,
+            ]);
         }
 
         if ($personYears > 1.0) {
-            $warnings[] = 'Scope is '.$personYears.' person-years at the configured capacity. Split it into releases, or re-check the story points: one person cannot bill this inside a year.';
+            $warnings[] = $this->t('svc.effort.warn.person_years', ['years' => $personYears]);
         }
 
         if ($calibrated !== null && abs($calibrated - $setting) >= 1.0) {
-            $warnings[] = 'Your plans imply '.$calibrated.'h per story point instead of the '.$setting.'h effort default — the quote uses the planned rate.';
+            $warnings[] = $this->t('svc.effort.warn.calibration', ['calibrated' => $calibrated, 'setting' => $setting]);
         }
 
         return $warnings;
@@ -1620,8 +1655,8 @@ class EconomicsService
         $settings = $this->config->settings();
         $drivers = [];
         $covers = [
-            'Security and dependency updates for the framework and the packages it ships with',
-            'Bugs reported after go-live, inside the agreed response window',
+            $this->t('svc.maint.covers.security'),
+            $this->t('svc.maint.covers.bugs'),
         ];
         $gaps = [];
         $points = 12.0;
@@ -1633,62 +1668,62 @@ class EconomicsService
 
         $target = strtolower((string) ($inception['delivery_target'] ?? ''));
         match (true) {
-            str_contains($target, 'enterprise') => $add(8.0, 'Enterprise delivery target: compliance evidence, integrations, and scale all have to keep working, not just the core journey.'),
-            str_contains($target, 'full') => $add(3.0, 'Full product: the whole surface stays supported, so more of it can break.'),
-            str_contains($target, 'mvp') => $add(-2.0, 'MVP: a small surface is cheap to keep alive — revisit the retainer when the scope grows.'),
-            $target !== '' => $add(0.0, 'V1 Complete: the shipped journey plus its essential secondary features.'),
-            default => $gaps[] = 'Delivery target was never recorded at inception, so the retainer assumes a V1-sized surface.',
+            str_contains($target, 'enterprise') => $add(8.0, $this->t('svc.maint.driver.target.enterprise')),
+            str_contains($target, 'full') => $add(3.0, $this->t('svc.maint.driver.target.full')),
+            str_contains($target, 'mvp') => $add(-2.0, $this->t('svc.maint.driver.target.mvp')),
+            $target !== '' => $add(0.0, $this->t('svc.maint.driver.target.v1')),
+            default => $gaps[] = $this->t('svc.maint.gap.target'),
         };
 
         // Who runs the machine after go-live is the single biggest driver.
         $operations = strtolower(trim(($inception['server_management'] ?? '').' '.($inception['ops_owner'] ?? '').' '.($inception['deploy_platform'] ?? '')));
         match (true) {
-            str_contains($operations, 'client') && ! str_contains($operations, 'client project') => $add(-3.0, "The client's own team operates the infrastructure: the retainer covers the application, not the machine."),
-            str_contains($operations, 'kubernetes') || str_contains($operations, 'k8s') || str_contains($operations, 'self') || str_contains($operations, 'vps') || str_contains($operations, 'bare') || str_contains($operations, 'hetzner') || str_contains($operations, 'digitalocean') => $add(4.0, 'You operate the server: patching, backups, certificates, and uptime are inside the retainer.'),
-            str_contains($operations, 'vapor') || str_contains($operations, 'forge') || str_contains($operations, 'cloud') || str_contains($operations, 'paas') || str_contains($operations, 'managed') || str_contains($operations, 'shared') => $add(-1.0, 'Managed platform: the host keeps the machine alive, the retainer keeps the application alive.'),
-            default => $gaps[] = 'Nobody said who runs the server after go-live, so the retainer is priced as application-only. Ask it at inception — it moves this figure more than anything else.',
+            str_contains($operations, 'client') && ! str_contains($operations, 'client project') => $add(-3.0, $this->t('svc.maint.driver.ops.client')),
+            str_contains($operations, 'kubernetes') || str_contains($operations, 'k8s') || str_contains($operations, 'self') || str_contains($operations, 'vps') || str_contains($operations, 'bare') || str_contains($operations, 'hetzner') || str_contains($operations, 'digitalocean') => $add(4.0, $this->t('svc.maint.driver.ops.self')),
+            str_contains($operations, 'vapor') || str_contains($operations, 'forge') || str_contains($operations, 'cloud') || str_contains($operations, 'paas') || str_contains($operations, 'managed') || str_contains($operations, 'shared') => $add(-1.0, $this->t('svc.maint.driver.ops.managed')),
+            default => $gaps[] = $this->t('svc.maint.gap.ops'),
         };
 
         if (str_contains($operations, 'kubernetes') || str_contains($operations, 'self') || str_contains($operations, 'vps') || str_contains($operations, 'bare')) {
-            $covers[] = 'Operating system patching, backup verification, certificate renewal, and uptime checks on the server';
+            $covers[] = $this->t('svc.maint.covers.ops');
         }
 
         $budget = strtolower((string) ($inception['budget_sensitivity'] ?? ''));
         match (true) {
-            str_contains($budget, 'tracked') => $add(-2.0, 'Budget Sensitivity is Tracked: the retainer stays lean and itemised, and proactive work is quoted separately.'),
-            str_contains($budget, 'relaxed') => $add(0.0, 'Budget Sensitivity is Relaxed: the retainer can carry proactive work — upgrades, monitoring reviews, small improvements.'),
-            default => $gaps[] = 'Budget Sensitivity was never recorded, so the retainer assumes the middle of the two.',
+            str_contains($budget, 'tracked') => $add(-2.0, $this->t('svc.maint.driver.budget.tracked')),
+            str_contains($budget, 'relaxed') => $add(0.0, $this->t('svc.maint.driver.budget.relaxed')),
+            default => $gaps[] = $this->t('svc.maint.gap.budget'),
         };
 
         if (strtoupper((string) ($settings['release_mode'] ?? '')) === 'YES' || ($settings['release_mode'] ?? false) === true) {
-            $add(2.0, 'Release mode is on: every change ships as a tagged release with a changelog and upgrade notes.');
-            $covers[] = 'Tagged releases with a changelog and upgrade notes';
+            $add(2.0, $this->t('svc.maint.driver.release_mode'));
+            $covers[] = $this->t('svc.maint.covers.releases');
         }
 
         if (strtoupper((string) ($settings['git_mode'] ?? '')) === 'GITFLOW') {
-            $add(1.0, 'Gitflow: release and hotfix branches are maintained, so an urgent fix does not wait for the next release.');
-            $covers[] = 'Hotfix branch for urgent production fixes';
+            $add(1.0, $this->t('svc.maint.driver.gitflow'));
+            $covers[] = $this->t('svc.maint.covers.hotfix');
         }
 
         $testing = strtoupper((string) ($settings['testing'] ?? 'NORMAL'));
         match ($testing) {
-            'BEST' => $add(-1.0, 'Testing mode BEST: a well-covered application is cheaper to keep alive, and the retainer says so.'),
-            'NONE' => $add(3.0, 'Testing is off: every change is verified by hand after go-live, which is what makes maintenance expensive.'),
+            'BEST' => $add(-1.0, $this->t('svc.maint.driver.testing.best')),
+            'NONE' => $add(3.0, $this->t('svc.maint.driver.testing.none')),
             default => null,
         };
 
         if (($settings['security_scan'] ?? false) === true || strtoupper((string) ($settings['security_scan'] ?? '')) === 'YES') {
-            $add(1.0, 'Security scanning is in the pipeline: findings are triaged and fixed inside the retainer.');
-            $covers[] = 'Triage and remediation of security-scan findings';
+            $add(1.0, $this->t('svc.maint.driver.scan'));
+            $covers[] = $this->t('svc.maint.covers.scan');
         }
 
         $support = strtolower((string) ($inception['support_window'] ?? ''));
         match (true) {
-            str_contains($support, '24') => $add(6.0, 'Round-the-clock support: someone has to be reachable outside working hours, and that is the expensive part.'),
-            str_contains($support, 'extended') => $add(3.0, 'Extended support hours beyond the working day.'),
-            str_contains($support, 'business') => $add(0.0, 'Support during business hours.'),
-            str_contains($support, 'best') => $add(-2.0, 'Best-effort support: no response commitment, so no standby cost.'),
-            default => $gaps[] = 'No support window was agreed at inception — the retainer assumes business hours, best effort.',
+            str_contains($support, '24') => $add(6.0, $this->t('svc.maint.driver.support.24')),
+            str_contains($support, 'extended') => $add(3.0, $this->t('svc.maint.driver.support.extended')),
+            str_contains($support, 'business') => $add(0.0, $this->t('svc.maint.driver.support.business')),
+            str_contains($support, 'best') => $add(-2.0, $this->t('svc.maint.driver.support.best_effort')),
+            default => $gaps[] = $this->t('svc.maint.gap.support'),
         };
 
         $recommended = round(min(40.0, max(5.0, $points)), 1);
@@ -2047,11 +2082,11 @@ class EconomicsService
     protected function productLabel(string $model): string
     {
         return match ($model) {
-            'saas' => 'SaaS / subscription',
-            'ecommerce' => 'E-commerce',
-            'package' => 'Package / licensed product',
-            'fixed' => 'Fixed-price delivery',
-            default => 'Not configured',
+            'saas' => $this->t('svc.product.saas'),
+            'ecommerce' => $this->t('svc.product.ecommerce'),
+            'package' => $this->t('svc.product.package'),
+            'fixed' => $this->t('svc.product.fixed'),
+            default => $this->t('svc.product.none'),
         };
     }
 
@@ -2354,7 +2389,7 @@ class EconomicsService
 
         return $params + [
             'id' => $id,
-            'label' => ucfirst($id),
+            'label' => $this->t('svc.plan.line.'.$id),
             'source' => $source,
             'ambition' => $customerFactor,
         ];
@@ -2487,9 +2522,9 @@ class EconomicsService
     protected function tierNote(string $tier): string
     {
         return match ($tier) {
-            'base' => 'Entry plan: the core of the backlog, priced to be said yes to without a meeting.',
-            'premium' => 'Everything in the backlog plus the work only a large customer asks for. Anchors the other two.',
-            default => 'The plan you expect most customers on — the list price the quote is built around.',
+            'base' => $this->t('svc.tier.note.base'),
+            'premium' => $this->t('svc.tier.note.premium'),
+            default => $this->t('svc.tier.note.pro'),
         };
     }
 
@@ -2644,7 +2679,7 @@ class EconomicsService
 
         return [
             'id' => $id,
-            'label' => ucfirst($id),
+            'label' => $this->t('svc.plan.line.'.$id),
             'source' => $demand['source'],
             'note' => $demand['note'],
             'target_customers' => $target,
@@ -2675,18 +2710,20 @@ class EconomicsService
     protected function businessPlanNotes(?array $research): array
     {
         if (is_array($research['demand'] ?? null) && $research['demand'] !== []) {
-            $notes = ['Demand figures come from the market research in '.($research['path'] ?? '.larapilot/economics.market.yaml').'.'];
+            $notes = [$this->t('svc.plan.notes.research', ['path' => $research['path'] ?? '.larapilot/economics.market.yaml'])];
 
             if (($research['sector'] ?? null) !== null) {
-                $notes[] = 'Sector: '.$research['sector'].(($research['segment'] ?? null) !== null ? ' · '.$research['segment'] : '').'.';
+                $notes[] = $this->t('svc.plan.notes.sector', [
+                    'sector' => $research['sector'].(($research['segment'] ?? null) !== null ? ' · '.$research['segment'] : ''),
+                ]);
             }
 
             return $notes;
         }
 
         return [
-            'Nobody researched this market yet, so the three lines are your own realistic inputs bent by a fixed amount: pessimistic halves growth and raises churn, optimistic does the opposite.',
-            'Run /larapilot-economics and let Jennifer and Benjamin research competitors and demand — the lines are then real numbers instead of arithmetic.',
+            $this->t('svc.plan.notes.derived'),
+            $this->t('svc.plan.notes.research_hint'),
         ];
     }
 
@@ -2697,13 +2734,16 @@ class EconomicsService
      * @param  array<string, mixed>|null  $research
      * @return array<string, mixed>
      */
-    protected function marketBlock(?array $research): array
+    protected function marketBlock(?array $research, string $productModel = 'fixed'): array
     {
         if ($research === null) {
+            // A one-off client delivery never reaches the research step of
+            // /larapilot-economics unless the user asks for it, so the hint
+            // says which of the two situations this is.
             return [
                 'available' => false,
                 'path' => $this->config->relativePath($this->market->path()),
-                'hint' => 'No market research yet. Run /larapilot-economics — Jennifer (positioning) and Benjamin (market) research competitors, demand, and packaging, then persist it with larapilot:economics-market-write.',
+                'hint' => $this->t($productModel === 'fixed' ? 'svc.market.hint.fixed' : 'svc.market.hint'),
             ];
         }
 
@@ -2934,14 +2974,14 @@ class EconomicsService
      */
     protected function serverNotes(string $platform, float $infra, int $customers): array
     {
-        $scale = $customers > 200 ? 'Plan a replica / queue worker and object storage once you pass ~200 paying accounts.' : 'A single app + managed DB is enough until ~200 paying accounts.';
-        $label = trim($platform) !== '' ? $platform : 'generic VPS / PaaS';
+        $scale = $this->t('svc.server.scale.'.($customers > 200 ? 'large' : 'small'));
+        $label = trim($platform) !== '' ? $platform : $this->t('svc.server.label.generic');
 
         return [
-            'Baseline hosting for '.$label.': ~'.number_format($infra, 0).'/mo (app + database + backups).',
+            $this->t('svc.server.baseline', ['label' => $label, 'infra' => number_format($infra, 0)]),
             $scale,
-            'Add ~€8–15/mo per extra 100k monthly page views, and a staging clone (~50% of prod) before public launch.',
-            'Payment fees (Stripe-like) are already in the contribution margin at the configured rate.',
+            $this->t('svc.server.traffic'),
+            $this->t('svc.server.fees'),
         ];
     }
 

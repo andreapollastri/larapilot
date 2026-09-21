@@ -94,6 +94,14 @@ When the product is sold as a subscription the page carries three price lines an
 - **Price line** — which tier the forecast runs on. Switching it recomputes every projection below.
 - **Pessimistic / realistic / optimistic** — a full 36-month forecast each. Researched demand wins; otherwise the realistic line is the profile's own churn, growth, and target, and the other two bend it by a fixed amount (pessimistic: half the growth, 1.6× the churn, 0.4× the ambition). A dropdown the user actually moved always wins over both.
 
+## Language
+
+The page follows the **PRD language** the client quote already follows — `ArtifactLanguage::detect()` over the PRD, resolved once per `snapshot()` and carried on the payload as `language`. Section headings, captions, banners, the glossary, and every sentence the engine writes into the snapshot (effort notes and warnings, maintenance drivers and gaps, tier notes, business-plan notes, hosting notes, the market hint) come from `Larapilot\Support\EconomicsStrings`, which ships `en` · `it` · `es` · `fr` · `de` · `pt` · `nl` · `pl` and falls back to English key by key.
+
+Larapilot writes prose in **three** places, each with its own vocabulary: this one, the client quote (`EconomicsQuoteWriter::strings()`), and the design presentation (`MockupPackageService::copy()`). A language belongs in `ArtifactLanguage::SUPPORTED` only once it is complete in all three — `ArtifactStringsCoverageTest` fails the build otherwise, because a half-translated language renders English in one artifact and not the others, which is worse than not offering it.
+
+The **pricing console is deliberately English**: its field labels, option labels, and the `economics-set` command it prints are operator controls. Never localize a control label into the strings table — the command a user copies has to match the CLI.
+
 ## Market research
 
 `.larapilot/economics.market.yaml` (`paths.economics_market`) holds what **Jennifer** (positioning) and **Benjamin** (market) researched during `/larapilot-economics`. Larapilot computes none of it and invents none of it; it normalizes and plots what they wrote.

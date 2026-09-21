@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -3190,6 +3190,30 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </thead>
               <tbody>
                 <tr>
+                  <td><strong>3.2.1</strong> <span class="chip">2026-09-21</span></td>
+                  <td>
+                    <strong>Added:</strong> <code>/larapilot/economics</code> now reads in the
+                    <strong>PRD's language</strong>, like the client quote already did — headings,
+                    captions, banners, glossary and every sentence the engine writes into the
+                    snapshot, which also carries a new <code>language</code> key. The pricing
+                    console stays in English on purpose: its labels and the
+                    <code>economics-set</code> command it prints are operator controls.
+                    <strong>Four more languages, end to end</strong> — German, Portuguese, Dutch
+                    and Polish join English, Italian, Spanish and French across detection, the
+                    Economics page, the built-in client quote and the design presentation, with a
+                    coverage test that fails the build if a supported language is missing from any
+                    one of them. The <strong>Sold as</strong> toggle is explained in place: what
+                    each of the four product models turns on, and the fact that none of them moves
+                    the hours or the build price. E-commerce and licensed-package projects finally
+                    show their own payback figures — orders per month, licences to repay the
+                    build — which the engine computed but the page never rendered.<br>
+                    <strong>Fixed:</strong> the <em>No competitor data</em> hint no longer points at
+                    a command that would do nothing — on a one-off client delivery
+                    <code>/larapilot-economics</code> skips the market research by default, and the
+                    page now says to ask for it explicitly.
+                  </td>
+                </tr>
+                <tr>
                   <td><strong>3.2.0</strong> <span class="chip">2026-09-21</span></td>
                   <td>
                     <strong>Added:</strong> <code>/larapilot/economics</code> is an
@@ -3757,16 +3781,29 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   CLI uses. Nothing is written from the browser: a simulation prints the <code>economics-set</code>
                   command that would make it real. A discount comes out of the margin and flags the project when it drops
                   below cost; team size compresses the timeline and never the price.</p>
+                <p><strong>Sold as</strong> decides which half of the page is the real one, without ever moving the
+                  hours or the build price: <code>fixed</code> (one shot — the client pays once, payback is read as
+                  capacity), <code>saas</code> (subscription — packaging, break-even customers, a 36-month business
+                  plan), <code>ecommerce</code> (one-shot price, payback read in orders per month), and
+                  <code>package</code> (one-shot price, payback read in licences). Left on <code>auto</code> it follows
+                  the Business Model answer from inception. Each one is explained in place on the page, and in full
+                  under <a href="#deep-dive-economics-models">Sold as</a>.</p>
                 <p>For a subscription product the page carries three price lines with the slice of the backlog each one
                   includes, and a <strong>business plan</strong> read three ways — pessimistic, realistic, optimistic,
                   36 months each. <strong>Jennifer</strong> and <strong>Benjamin</strong> research the market during the
                   skill (sector, named competitors with their price and trend, demand, packaging) and persist it with
                   <code>larapilot:economics-market-write</code>; the dashboard plots it and shows where your price sits
-                  against the researched set. Larapilot never invents a competitor or a price.</p>
+                  against the researched set. Larapilot never invents a competitor or a price. On a plain one-off client
+                  delivery that research step is <strong>skipped unless you ask for it</strong> — the page says so
+                  instead of pointing at a command that would do nothing.</p>
+                <p>The page itself reads in the <strong>PRD's language</strong>
+                  (<code>en</code> · <code>it</code> · <code>es</code> · <code>fr</code> · <code>de</code> · <code>pt</code> · <code>nl</code> · <code>pl</code>, English otherwise), like the client
+                  quote — headings, captions, warnings and glossary. The pricing console stays in English: its labels
+                  and the <code>economics-set</code> command it prints are operator controls.</p>
                 <p>Aurora also <strong>writes the client quote</strong> — a commercial document in the PRD's own
                   language, any language — to <code>.larapilot/docs/quote.md</code>, served at
                   <code>/larapilot/economics/quote.md</code> and by the dashboard's
-                  <strong>Download quote</strong> button. A built-in <code>en</code>/<code>it</code>/<code>es</code>/<code>fr</code>
+                  <strong>Download quote</strong> button. A built-in <code>en</code> · <code>it</code> · <code>es</code> · <code>fr</code> · <code>de</code> · <code>pt</code> · <code>nl</code> · <code>pl</code>
                   template covers projects where nobody wrote one yet. Internal tax report:
                   <code>/larapilot/economics/report.md</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:economics-set</code> ·
@@ -6596,21 +6633,184 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>index.html</code>, every mockup HTML file, local assets, and referenced design-system files
             so the pack can be opened offline.</p>
 
-          <h4>Economics</h4>
-          <p>When <code>settings.account</code> is FREELANCE or COMPANY, <code>/larapilot/economics</code> reads
-            top to bottom in six numbered sections: <strong>scope &amp; effort</strong> (per-spec breakdown of
-            where every hour comes from, plus warnings), <strong>what the client pays</strong>,
-            <strong>what you keep</strong> after tax, <strong>payback &amp; capacity</strong>,
-            <strong>recurring revenue</strong> (MRR, ARR, churn, LTV:CAC and break-even customers, each
-            explained in plain words), and <strong>inputs &amp; files</strong>. Every figure carries a
-            one-line explanation underneath, and the page recomputes on load — the stored snapshot also
-            refreshes itself whenever specs, plans, the PRD, or inception change.</p>
-          <p><strong>Download quote</strong> saves the client-facing commercial document
-            <code>/larapilot-economics</code> wrote in the PRD's language (<code>.larapilot/docs/quote.md</code>),
-            or the built-in <code>en</code>/<code>it</code>/<code>es</code>/<code>fr</code> template when no
-            document exists yet. Convert with <code>pandoc quote.md -o quote.pdf</code>. The internal tax
-            report — taxable base, contributions, extraction, scenarios — remains at
-            <code>/larapilot/economics/report.md</code>.</p>
+          <h4 id="deep-dive-economics">Economics</h4>
+          <p>Two things wear the same name. <code>/larapilot-economics</code> is the <strong>skill</strong> — a
+            conversation with Aurora that calibrates who is selling the work and then writes the client quote.
+            <code>/larapilot/economics</code> is the <strong>page</strong> — an interactive pricing tool that
+            recomputes that same maths live while you move dropdowns. The skill decides; the page explores.
+            Both read one engine (<code>EconomicsService::snapshot()</code>), so they can never disagree.
+            Everything below needs <code>settings.account</code> to be <code>FREELANCE</code> or
+            <code>COMPANY</code> — on <code>NONE</code> the page says so and stops.</p>
+
+          <p><strong>How the skill runs.</strong> Short rounds, at most three questions each, current value
+            always marked, skipped answers never re-asked:</p>
+          <ol>
+            <li><strong>Country &amp; regime</strong> — tax residency, then the regime from the FY-2026
+              catalogue (<code>forfettario</code>, <code>ordinario</code>, SRL, Ltd, GmbH, …). Aurora offers only
+              regimes the catalogue actually has; it never invents a rate or a bracket.</li>
+            <li><strong>Rate &amp; margin</strong> — hourly rate, target margin, monthly overhead, commercial
+              discount, team size. The discount comes out of the <em>margin</em>, not the cost, and Aurora says
+              once when it has priced the project under what it costs to deliver. Team size compresses the
+              calendar and never the price.</li>
+            <li><strong>Product model</strong> — how the project makes money, the four options in the table
+              below. If it lands on SaaS, the same round asks monthly list price, churn, planning customers, and
+              the hosting baseline.</li>
+            <li><strong>Market research</strong> — <strong>Jennifer</strong> (positioning) and
+              <strong>Benjamin</strong> (market) go and find named competitors with their real list prices, the
+              price trend, demand scenarios, and packaging tiers, and persist the result with
+              <code>larapilot:economics-market-write</code>. Offered by default for subscription and product
+              work; on a one-off client delivery it is <strong>skipped unless you ask</strong> — the page says
+              as much under <em>No competitor data</em>. Nothing here is invented: an unknown price is left out
+              rather than guessed, and every figure carries its source URL.</li>
+            <li><strong>Present</strong> — Aurora reads the snapshot back in a fixed order: quote, net to owner
+              with the effective tax rate, where the hours come from plus any warnings, and — for SaaS — the
+              three price lines and the three business-plan readings.</li>
+            <li><strong>Write the client quote</strong> — a commercial document, in the PRD's own language, any
+              language, through <code>larapilot:economics-quote-write</code>.</li>
+          </ol>
+          <p>The skill touches nothing else: not the PRD, not the backlog, not the code. It writes the economics
+            profile, the market research, and the quote document, always through the CLI — never by editing
+            <code>economics.yaml</code> by hand.</p>
+
+          <p><strong>What you end up with.</strong></p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Artifact</th>
+                  <th>Where</th>
+                  <th>What it holds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Account profile</strong></td>
+                  <td><code>.larapilot/economics.yaml</code></td>
+                  <td>Country, regime, rate, margin, discount, team size, overhead, maintenance %, product model,
+                    subscription inputs. Written only by <code>larapilot:economics-set</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Computed snapshot</strong></td>
+                  <td><code>.larapilot/economics.snapshot.yaml</code></td>
+                  <td>The whole quote as the engine computed it — effort per spec, tax, payback, packaging,
+                    business plan, market. <strong>Refreshes itself</strong> whenever specs, plans, the PRD, or
+                    inception change, so the cost board follows the backlog with no manual trigger.</td>
+                </tr>
+                <tr>
+                  <td><strong>Market research</strong></td>
+                  <td><code>.larapilot/economics.market.yaml</code></td>
+                  <td>Sector, segment, named competitors with price and trend, demand scenarios, tiers, risks,
+                    sources. Written by Jennifer and Benjamin, plotted by Larapilot, invented by nobody.</td>
+                </tr>
+                <tr>
+                  <td><strong>Client quote</strong></td>
+                  <td><code>.larapilot/docs/quote.md</code></td>
+                  <td>The commercial document you send: offer summary, objectives, what the client gets,
+                    infrastructure and hosting, security and quality, investment table, timeline, payment
+                    milestones, what is and is not included, signatures. No story points, no tax breakdown, no
+                    architecture. Download it at <code>/larapilot/economics/quote.md</code>; convert with
+                    <code>pandoc quote.md -o quote.pdf</code>. Until one is written, a built-in
+                    <code>en</code> · <code>it</code> · <code>es</code> · <code>fr</code> · <code>de</code> · <code>pt</code> · <code>nl</code> · <code>pl</code> template serves the download.</td>
+                </tr>
+                <tr>
+                  <td><strong>Internal report</strong></td>
+                  <td><code>/larapilot/economics/report.md</code></td>
+                  <td>The engineering-side read: taxable base, contributions, extraction, scenarios. Never shown
+                    to the client.</td>
+                </tr>
+                <tr>
+                  <td><strong>JSON</strong></td>
+                  <td><code>/larapilot/api/economics</code></td>
+                  <td>The same snapshot for an agent, and it accepts the same what-if parameters as the page
+                    (<code>?hourly_rate=70&amp;tier=premium&amp;discount_pct=10</code>).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p><strong>The page.</strong> A sticky console of dropdowns at the top, then the numbers that decide it ·
+            where the hours come from (per-release or per-epic totals, then every user story with the source of
+            its hours) · what the client pays and what you keep · packaging and the business plan when it is a
+            subscription · the market · and a collapsed block with the inputs, the files, and a glossary. Every
+            figure carries a one-line explanation underneath. The page reads in the <strong>PRD's
+            language</strong> (<code>en</code> · <code>it</code> · <code>es</code> · <code>fr</code> · <code>de</code> · <code>pt</code> · <code>nl</code> · <code>pl</code>, English
+            otherwise), like the client quote; the console stays in English on purpose, because its labels and
+            the <code>economics-set</code> command it prints are operator controls.</p>
+          <div class="cli-note"><strong>Eight languages, all or nothing.</strong> Detection
+            (<code>ArtifactLanguage</code>) and the three places Larapilot writes prose — the Economics page and
+            engine, the client quote, and the design presentation — are kept in step by a test: a language listed as
+            supported but missing from one of them fails the build. That is deliberate. A half-translated language
+            renders English in one artifact and not the others, which is worse than not offering it. Agent-written
+            documents are not limited to this set: <code>/larapilot-economics</code> writes the client quote in
+            whatever language the PRD uses, and the built-in template is only the fallback for projects where nobody
+            wrote one yet.
+          </div>
+
+          <div class="cli-note"><strong>Nothing is written from the browser.</strong> Moving a dropdown is a
+            simulation: the page recomputes server side through the same snapshot the CLI uses and prints the
+            exact <code>php artisan larapilot:economics-set …</code> command that would make it the real profile.
+            Out-of-range values are dropped rather than clamped, so an edited URL cannot push a figure the engine
+            would refuse.
+          </div>
+
+          <h4 id="deep-dive-economics-models">Sold as — the four ways a project makes money</h4>
+          <p>The <strong>Sold as</strong> toggle decides which half of the page is the real one. It never changes
+            the hours or the build price — those come from the backlog either way. It changes the question the
+            page answers about <em>getting the money back</em>.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sold as</th>
+                  <th>What it means</th>
+                  <th>What the page computes for it</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>One shot — fixed price</strong><br><code>fixed</code></td>
+                  <td>The client pays once for the build. After go-live only the maintenance retainer recurs.
+                    The classic agency or freelance commessa.</td>
+                  <td>Payback read as <strong>capacity</strong>: what share of your working year the project
+                    takes, how many projects like it fit in a year, and what a year filled with work priced this
+                    way would leave you after tax. No packaging, no subscription forecast. Market research is
+                    skipped unless you ask for it.</td>
+                </tr>
+                <tr>
+                  <td><strong>SaaS — subscription</strong><br><code>saas</code></td>
+                  <td>The build is money you put in and earn back from monthly subscriptions. The client is the
+                    market, not one buyer.</td>
+                  <td>The whole second half of the page turns on: <strong>BASE / PRO / PREMIUM</strong> plans cut
+                    out of the backlog, contribution per customer after payment fees and support, break-even
+                    customers, a <strong>36-month business plan</strong> read pessimistic / realistic /
+                    optimistic, hosting costs, LTV:CAC — plus the Subscription group in the console (list price,
+                    price line, scenario, churn, growth, planning customers). Market research is offered by
+                    default, and researched competitors are plotted against your price.</td>
+                </tr>
+                <tr>
+                  <td><strong>E-commerce</strong><br><code>ecommerce</code></td>
+                  <td>Priced like a one-off build — you invoice the shop, you do not sell subscriptions — but the
+                    shop earns its build back on order volume.</td>
+                  <td>The one-shot price, plus payback read in <strong>orders</strong>: how many orders a month
+                    the shop has to take to repay the build inside a year. The average order value and the take
+                    rate behind that figure are <strong>engine assumptions, not researched numbers</strong>, and
+                    the page says so — read it as an order of magnitude, not a forecast.</td>
+                </tr>
+                <tr>
+                  <td><strong>Licensed package</strong><br><code>package</code></td>
+                  <td>Priced like a one-off build, then repaid by many licences instead of one client — a
+                    product, a plugin, a licensed library.</td>
+                  <td>The one-shot price, plus a suggested <strong>annual licence price</strong> and how many
+                    licences repay the build. It uses the annual price on your profile when there is one;
+                    otherwise it suggests a fraction of the build and tells you that is what it did.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Left on its default (<code>auto</code>), the model is inferred from the <strong>Business Model</strong>
+            answer at inception, then from the PRD. The dropdown always wins over both, and the same four values
+            are accepted by <code>larapilot:economics-set --product-model=</code>. Every one of them is explained
+            in place on the page, under <em>What “Sold as” changes</em>.</p>
 
           <h4>Git</h4>
           <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The

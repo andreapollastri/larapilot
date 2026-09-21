@@ -114,7 +114,7 @@ Pass **only** answered keys. On success, parse the JSON envelope (`kind: "econom
 
 ### 3. Research the market (Jennifer + Benjamin) — subscription and product work
 
-Skip this for a plain one-off client delivery unless the user asks. For `saas`, `package`, or `ecommerce`, the packaging and the business plan are guesses until somebody researches the market — say so and offer to do it.
+Skip this for a plain one-off client delivery unless the user asks — the dashboard says as much under **No competitor data**, so a user who read it there and asks for the research is asking for this step. For `saas`, `package`, or `ecommerce`, the packaging and the business plan are guesses until somebody researches the market — say so and offer to do it.
 
 **Ask first (max 3, Benjamin):**
 
@@ -163,7 +163,7 @@ Re-run `economics-show`. Give Aurora's summary in this order (short):
 
 ### 5. Write the client quote (Aurora) — in the user's language
 
-The downloadable quote is a **document Aurora writes**, exactly like the PRD: same language the PRD is written in (any language — German, Portuguese, Dutch, Polish …), never a translation of a fixed template. Larapilot only ships an en/it/es/fr fallback for projects where nobody wrote one yet.
+The downloadable quote is a **document Aurora writes**, exactly like the PRD: same language the PRD is written in (any language — German, Portuguese, Dutch, Polish …), never a translation of a fixed template. Larapilot ships a fallback template in en · it · es · fr · de · pt · nl · pl for projects where nobody wrote one yet — any other language has to be written.
 
 Write it after every material change to the numbers or the scope:
 
