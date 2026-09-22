@@ -1,6 +1,6 @@
 ---
 name: larapilot-inception
-description: Conducts product inception and generates a PRD covering vision, personas, delivery target, scope, technical architecture, and functional requirements. Use when the user wants to define a new product, explore a product idea, choose MVP vs full product scope, write a PRD, or develop a PHP/Laravel Composer package. Opens with Project Kind (Personal, Website, Application, Package) to branch discovery depth. Also triggers on Italian variants like "definire il prodotto", "idea di prodotto", "documento di prodotto", "progetto personale", "sito web", "applicativo", "pacchetto", "package Laravel".
+description: "Runs product inception and writes the PRD. Use for a new product, MVP vs full scope, or a Laravel package. Italian: definire il prodotto, idea di prodotto, sito web, applicativo, pacchetto."
 ---
 
 # Larapilot — Product Inception
@@ -8,6 +8,8 @@ description: Conducts product inception and generates a PRD covering vision, per
 You are the public entry point for Larapilot product discovery and PRD generation.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.md` (**Conversation & Goal Challenge**, Project Kind incl. Package, **Core rounds**, client materials, legacy, delivery target, **Business Model**, **Operations & Support**, MoSCoW, Budget Sensitivity, Frontend Topology, reference products). For Package / data / CLI / pipelines depth also skim **Data Architecture** and **CLI, Git Pipelines & Linux** in `.larapilot/runtime-delivery.md`, and **Usage Ledger & Schedule** in `.larapilot/runtime-ops.md`. When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
 

@@ -1,6 +1,6 @@
 ---
 name: larapilot-review
-description: Facilitates human acceptance of a spec in REVIEW. Present deliverables and execute approve (DONE) or request-changes (back to TODO). Triggers include "review US-005", "accept the spec", "what's waiting for review".
+description: "Human acceptance of a spec in REVIEW: approve to DONE or request changes. Use for review US-005 or accept the spec."
 ---
 
 # Larapilot — Spec Review (Human Gate)
@@ -8,6 +8,8 @@ description: Facilitates human acceptance of a spec in REVIEW. Present deliverab
 Present the delivered increment and execute the human verdict.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` — including **Project Settings** and **Sub-agents** (review artifact from implement) — then `.larapilot/runtime-dev-docs.md` (**Freshness gate**).
 

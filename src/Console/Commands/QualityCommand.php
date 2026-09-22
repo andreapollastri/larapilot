@@ -36,28 +36,18 @@ class QualityCommand extends LarapilotCommand
             );
         }
 
-        $result = $quality->run((bool) $this->option('fix'));
+        $presented = $quality->present($quality->run((bool) $this->option('fix')), $this->output->isVerbose());
 
-        if (($result['pint']['output'] ?? '') !== '') {
-            $this->line('Pint:');
-            $this->line($result['pint']['output']);
-        }
-
-        if (($result['analyse']['output'] ?? '') !== '') {
-            $this->newLine();
-            $this->line('Larastan:');
-            $this->line($result['analyse']['output']);
-        }
-
-        if (($result['ok'] ?? false) !== true) {
+        if (($presented['ok'] ?? false) !== true) {
             return $this->failure(
                 'E_QUALITY',
                 'Code quality checks failed.',
                 self::FAILURE,
-                'Fix Pint/Larastan findings or run larapilot:quality --fix for formatting.'
+                'Fix Pint/Larastan findings or run larapilot:quality --fix for formatting.',
+                $presented
             );
         }
 
-        return $this->success('quality', $result);
+        return $this->success('quality', $presented);
     }
 }

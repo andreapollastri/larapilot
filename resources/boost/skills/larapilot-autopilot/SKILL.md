@@ -1,6 +1,6 @@
 ---
 name: larapilot-autopilot
-description: Runs planning and implementation across multiple eligible backlog specs with optional filters (status, epic, max count). Use for "run everything", "autopilot the backlog", "implement all ready specs". Honors settings.auto_approve for optional auto DONE.
+description: "Plans and implements eligible backlog specs, optionally auto-approving when that setting is on. Use for run everything or autopilot the backlog."
 ---
 
 # Larapilot — Autopilot
@@ -8,6 +8,8 @@ description: Runs planning and implementation across multiple eligible backlog s
 Batch-run `larapilot-plan` and `larapilot-implement` across eligible specs. Optionally auto-approve when `settings.auto_approve` is `YES`.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` — especially **Project Settings** (`auto_approve`) — and `.larapilot/runtime-dev-docs.md`: an unattended run still writes the developer domain docs for every spec it delivers, and runs the **First-change catch-up** once when `data.dev_docs.documented` is `false` before the first spec of the batch.
 

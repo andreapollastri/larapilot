@@ -1,6 +1,6 @@
 ---
 name: larapilot-ship
-description: Pre-deploy OWASP security gate and production release to any Laravel hosting target. Honors the deploy/edge/cloud choices recorded in the PRD; supports Cipi, Forge, Laravel Cloud, Ploi, AWS, Kubernetes, DigitalOcean, Hetzner/OVH, and custom VPS. Use when shipping to production, deploying releases, or setting up CI/CD. Italian triggers include "deploy", "metti in produzione", "rilascio", "ship".
+description: "OWASP gate and production deploy for the platform recorded in the PRD. Italian: deploy, metti in produzione, rilascio."
 ---
 
 # Larapilot — Ship & Deploy
@@ -8,6 +8,8 @@ description: Pre-deploy OWASP security gate and production release to any Larave
 Release accepted increments to production. **Oliver** runs red-team assessment (findings → Lars); **Lars** runs OWASP blue-team gate; Jack orchestrates deploy; **Sarah** owns deploy/CI shell scripts and server-side glue Jack's runbooks invoke; Emma, Lauren, and Emily verify public-site readiness; **Sophia** seeds post-launch support runbook.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), `.larapilot/runtime-ops.md` (support runbook / Sophia), and `.larapilot/runtime-dev-docs.md` (**Freshness gate** — no shipped feature leaves without a current domain doc). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs the **ship ceremony** (merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, `release-set --status=shipped`).
 

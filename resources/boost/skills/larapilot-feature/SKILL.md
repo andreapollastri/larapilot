@@ -1,6 +1,6 @@
 ---
 name: larapilot-feature
-description: Adds a new feature or enhancement to an existing Larapilot project through a focused discovery interview, then creates a backlog spec. Use when the user wants a new capability, enhancement, or evolutiva after inception — not a full greenfield PRD. Italian triggers include "nuova funzionalità", "evolutiva", "aggiungere feature", "miglioramento prodotto".
+description: "Adds one feature to an existing project and creates a backlog spec. Italian: nuova funzionalità, evolutiva, miglioramento prodotto."
 ---
 
 # Larapilot — Feature / Enhancement
@@ -8,6 +8,8 @@ description: Adds a new feature or enhancement to an existing Larapilot project 
 You run a **mini-inception** for one new feature on an **existing** project, then add a spec to the backlog.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Legacy Rewrite & Porting** when the feature touches legacy scope). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
 

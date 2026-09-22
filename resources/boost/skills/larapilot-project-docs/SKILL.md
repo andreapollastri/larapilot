@@ -1,6 +1,6 @@
 ---
 name: larapilot-project-docs
-description: Bootstrap or refresh living project documentation in _project_docs/ — technical and functional chapters with diagrams. Use when the user runs /larapilot-project-docs, enables project docs, or wants a maintained handbook. Requires settings.project_docs=YES (or enable via /larapilot-settings first). Italian triggers include "documentazione progetto", "project docs", "manuale tecnico", "handbook", "aggiorna documentazione".
+description: "Bootstraps the _project_docs/ handbook. Requires project_docs=YES. Italian: documentazione progetto, handbook."
 ---
 
 # Larapilot — Project Documentation
@@ -8,6 +8,8 @@ description: Bootstrap or refresh living project documentation in _project_docs/
 Maintain a **living handbook** under `_project_docs/` when `data.settings.project_docs` is `YES`. Albert leads structure and prose; John/Mike/Sarah/Joe contribute domain sections.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-project-docs.md` (full contract).
 

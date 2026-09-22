@@ -1,6 +1,6 @@
 ---
 name: larapilot-adopt
-description: Reverse-engineers a complete PRD from an existing production Laravel codebase that was built without Larapilot, so the project can continue under the Larapilot workflow (spec → plan → implement → review → ship). Use right after `larapilot:install` on a brownfield app when there is no PRD yet and the code — not an idea — is the source of truth. NOT for greenfield ideas (use `/larapilot-inception`) and NOT for rewriting/porting away from a legacy non-Laravel system (that is `/larapilot-inception` + `.larapilot/legacy/`). Italian triggers include "adotta progetto esistente", "progetto già in produzione", "generare il PRD dal codice", "reverse engineering del PRD", "onboard codebase".
+description: "Reverse-engineers a PRD from an existing Laravel app with no Larapilot PRD. Not for greenfield ideas or a non-Laravel rewrite. Italian: adotta progetto esistente, PRD dal codice."
 ---
 
 # Larapilot — Adopt (brownfield onboarding)
@@ -17,6 +17,8 @@ You bring an **existing, running Laravel project** under Larapilot. The codebase
 | A PRD already exists, product scope shifted | Edit the PRD per **PRD Living Document** (`runtime-ops.md`) |
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Decision Journal**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-dev-docs.md` (**Retroactive bootstrap**) — an adopted codebase gets one best-effort domain doc per domain under `{paths.dev_docs}`. Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
 

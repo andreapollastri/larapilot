@@ -1,6 +1,6 @@
 ---
 name: larapilot-usage
-description: Lucille's time & token interrogation skill. Analyze and query Larapilot usage ledger (minutes, tokens by category/user/skill/spec/date), schedule deadlines, drift, and Gantt. Export consolidated Markdown reports. Use when the user asks about effort spent, tempistiche, tracking tempo, costi sessione, resoconto ore, scadenze, ritardi, or runs /larapilot-usage. Italian triggers include "quanto tempo", "quanti token", "resoconto", "tempistiche", "tracking tempo", "scadenze", "gantt", "Lucille".
+description: "Queries Lucille's ledger of time, tokens, and deadlines. Use for /larapilot-usage. Italian: quanto tempo, quanti token, resoconto, scadenze."
 ---
 
 # Larapilot — Usage & Time Tracking (Lucille)
@@ -8,6 +8,8 @@ description: Lucille's time & token interrogation skill. Analyze and query Larap
 Interrogate the committed Lucille ledger and schedule. Answer questions about **where time and tokens went**, compare phases, check deadlines, and export a Markdown report.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core — Lucille cross-cutting), then `.larapilot/runtime-ops.md` → **Usage Ledger & Schedule**.
 

@@ -1,6 +1,6 @@
 ---
 name: larapilot-backstage
-description: Publishes this Laravel repo into a Backstage (backstage.io) developer portal — generates catalog-info.yaml (Component + API entities), TechDocs sources from the PRD and backlog, and wires the live delivery snapshot endpoint. Use when the user mentions Backstage, software catalog, developer portal, TechDocs, catalog-info, entity provider, or Italian triggers like "portale sviluppatori", "catalogo servizi", "registra su Backstage", "techdocs".
+description: "Publishes the repo to a Backstage catalog and TechDocs. Italian: portale sviluppatori, catalogo servizi."
 ---
 
 # Larapilot — Backstage Integration
@@ -8,6 +8,8 @@ description: Publishes this Laravel repo into a Backstage (backstage.io) develop
 You publish the `.larapilot/` workspace into an **organization-level developer portal**. Backstage renders; Larapilot remains the source of truth. You never move workflow state into the portal.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-ops.md` → **Developer Portal — Backstage** (canonical ownership, regeneration, and security rules — do not restate them, apply them).
 

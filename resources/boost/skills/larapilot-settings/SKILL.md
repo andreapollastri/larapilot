@@ -1,6 +1,6 @@
 ---
 name: larapilot-settings
-description: Configure persistent Larapilot project settings (effort, backlog granularity, git mode, testing, account/economics mode, auto-approve, lucille, decision journal, code change history, release mode, project docs, dashboard comments, dashboard auth, API auth, security scan, GitHub/GitLab/Bitbucket/Azure DevOps, notifications) via AskQuestion. Use when the user runs /larapilot-settings, wants to change token economy, backlog/spec granularity, Gitflow/push behavior, test depth, freelance/company account mode, auto-approve, Lucille, the decision journal / regression guard, per-task file+line history, internal feedback comments on the dashboard/API, dashboard login/password, the /larapilot/api token gate, the checkpoint security scan in review/ship, remote forge, or Slack/Discord/Telegram notifications. Italian triggers include "impostazioni larapilot", "settings", "modalità eco", "granularità backlog", "meno specs", "gitflow push", "autoapprove", "disattiva Lucille", "escludi Lucille", "traccia le decisioni", "storico decisioni", "evita regressioni", "storico modifiche codice", "file e righe modificate", "commenti dashboard", "disabilita commenti", "abilita commenti", "proteggi la dashboard", "password dashboard", "login dashboard", "utenti dashboard", "proteggi le api", "token api", "autenticazione api", "scan di sicurezza", "controlli di sicurezza", "checkpoint", "notifiche slack", "telegram", "discord", "github", "gitlab", "bitbucket", "azure devops", "modalità account", "partita iva", "freelance", "preventivi".
+description: "Sets project settings (effort, backlog, git, testing, account, auto-approve, Lucille, decision log, release mode, forges, notifications). Use for /larapilot-settings. Italian: impostazioni larapilot, modalità eco, gitflow."
 ---
 
 # Larapilot — Project Settings
@@ -8,6 +8,8 @@ description: Configure persistent Larapilot project settings (effort, backlog gr
 Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other skills read and honor them.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
 

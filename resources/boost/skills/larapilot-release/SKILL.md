@@ -1,6 +1,6 @@
 ---
 name: larapilot-release
-description: Manage semver releases — ledger, Gitflow release branches, parallel releases, spec assignment, and ship ceremony. Use when the user runs /larapilot-release, wants release planning, version roadmaps, release/x.y.z branches, or to ship a release. Requires settings.release_mode=YES. Italian triggers include "release", "rilascio", "versione", "roadmap release", "branch release", "semver", "tag v", "ship release".
+description: "Manages semver releases and Gitflow release branches. Requires release_mode=YES. Italian: release, versione, semver."
 ---
 
 # Larapilot — Release Management
@@ -8,6 +8,8 @@ description: Manage semver releases — ledger, Gitflow release branches, parall
 Manage the **release ledger** and Gitflow **release branches** when `data.settings.release_mode` is `YES`. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-release.md` (full contract). When shipping, also load `.larapilot/runtime-ship.md`.
 

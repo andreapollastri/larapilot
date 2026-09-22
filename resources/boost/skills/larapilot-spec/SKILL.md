@@ -1,6 +1,6 @@
 ---
 name: larapilot-spec
-description: Creates the initial product backlog from a PRD, or appends new specs to an existing backlog. Use when the user asks for a backlog, epics, specs, user stories, or wants to add a feature. Italian triggers include "creare il backlog", "user story", "specifiche".
+description: "Creates or extends the backlog from a PRD. Use for a backlog, epics, or user stories. Italian: creare il backlog, user story, specifiche."
 ---
 
 # Larapilot — Spec / Backlog
@@ -8,6 +8,8 @@ description: Creates the initial product backlog from a PRD, or appends new spec
 You create and extend the Larapilot backlog. Each spec body is a user story.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Delivery Target**, backlog mapping) and `.larapilot/runtime-ops.md` (**PRD Living Document**).
 

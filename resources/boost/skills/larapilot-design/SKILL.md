@@ -1,6 +1,6 @@
 ---
 name: larapilot-design
-description: Produces isolated HTML/CSS mockups stored in .larapilot/mockups/ and served via a dev-only /mockups route. Use for "make a mockup", "dashboard concept", "landing page", or when planning needs visual references. Runs a design-system gate (AskQuestion) when the stack is not already explicit — packaged systems, user-added folders under .larapilot/design-systems/, or a new custom aesthetic from scratch. Italian triggers include "mockup", "prototipo visivo", "design system", "sistema di design", "stile visivo", "palette", "look and feel".
+description: "Writes HTML/CSS mockups under .larapilot/mockups/. Use for a mockup, landing, or design-system choice. Italian: mockup, prototipo visivo, design system."
 ---
 
 # Larapilot — UX Design
@@ -8,6 +8,8 @@ description: Produces isolated HTML/CSS mockups stored in .larapilot/mockups/ an
 Create isolated frontend mockups as visual references for implementation.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core — **Output Economy** for `larapilot-design`), then `.larapilot/runtime-ux.md` (**UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**).
 

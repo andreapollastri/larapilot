@@ -12,9 +12,24 @@ use Larapilot\Support\LarapilotCommand;
 
 class ConfigShowCommand extends LarapilotCommand
 {
-    protected $signature = 'larapilot:config-show';
+    protected $signature = 'larapilot:config-show
+                            {--only= : Comma-separated slices: settings, paths, frontend, tracker, dev_docs, backstage, workflow, personas. Omit for every slice except personas}';
 
     protected $description = 'Show Larapilot project configuration and metadata';
+
+    /**
+     * @var list<string>
+     */
+    private const SLICES = [
+        'settings',
+        'paths',
+        'frontend',
+        'tracker',
+        'dev_docs',
+        'backstage',
+        'workflow',
+        'personas',
+    ];
 
     public function handle(
         ConfigService $config,
@@ -22,10 +37,45 @@ class ConfigShowCommand extends LarapilotCommand
         TrackerManager $tracker,
         TrackerLinkStore $links,
     ): int {
-        return $this->success('setup', $config->setupInfo() + [
+        $info = $config->setupInfo() + [
             'backstage' => $this->backstageInfo($config, $backstage),
             'tracker' => $this->trackerInfo($config, $tracker, $links),
-        ]);
+        ];
+
+        $only = $this->option('only');
+
+        if ($only === null || trim((string) $only) === '') {
+            unset($info['personas']);
+
+            return $this->success('setup', $info);
+        }
+
+        $requested = array_values(array_filter(array_map(
+            static fn (string $slice): string => trim($slice),
+            explode(',', (string) $only)
+        ), static fn (string $slice): bool => $slice !== ''));
+
+        $unknown = array_values(array_diff($requested, self::SLICES));
+
+        if ($unknown !== []) {
+            return $this->failure(
+                'E_INVALID_INPUT',
+                'Unknown config-show slice: '.implode(', ', $unknown).'.',
+                $this->exitForCode('E_INVALID_INPUT'),
+                'Slices: '.implode(', ', self::SLICES).'.'
+            );
+        }
+
+        $data = [
+            'project_root' => $info['project_root'],
+            'connector' => $info['connector'],
+        ];
+
+        foreach ($requested as $slice) {
+            $data[$slice] = $info[$slice] ?? null;
+        }
+
+        return $this->success('setup', $data);
     }
 
     /**

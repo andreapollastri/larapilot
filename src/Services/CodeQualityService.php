@@ -112,6 +112,77 @@ class CodeQualityService
     }
 
     /**
+     * Envelope view of a quality run. Findings only, unless `$verbose`
+     * keeps the raw tool stdout inside the JSON.
+     *
+     * @param  array{ok: bool, pint: array<string, mixed>, analyse: array<string, mixed>}  $run
+     * @return array{ok: bool, pint: array<string, mixed>, analyse: array<string, mixed>}
+     */
+    public function present(array $run, bool $verbose = false): array
+    {
+        $pint = $this->presentTool($run['pint'] ?? []);
+        $analyse = $this->presentTool($run['analyse'] ?? []);
+
+        if ($verbose) {
+            $pint['output'] = (string) ($run['pint']['output'] ?? '');
+            $analyse['output'] = (string) ($run['analyse']['output'] ?? '');
+        }
+
+        return [
+            'ok' => ($pint['ok'] ?? false) && ($analyse['ok'] ?? false),
+            'pint' => $pint,
+            'analyse' => $analyse,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $tool
+     * @return array{ok: bool, exit_code: int, summary: string, findings: list<string>}
+     */
+    public function presentTool(array $tool): array
+    {
+        $output = (string) ($tool['output'] ?? '');
+        $findings = $this->findings($output);
+        $ok = (bool) ($tool['ok'] ?? false);
+
+        return [
+            'ok' => $ok,
+            'exit_code' => (int) ($tool['exit_code'] ?? 1),
+            'summary' => $ok ? 'pass' : ($findings[0] ?? 'fail'),
+            'findings' => $findings,
+        ];
+    }
+
+    /**
+     * Drop Pint's progress matrix and other glyph-only lines.
+     *
+     * @return list<string>
+     */
+    public function findings(string $output): array
+    {
+        $findings = [];
+
+        foreach (preg_split("/\r\n|\n|\r/", $output) ?: [] as $line) {
+            $trim = trim($line);
+
+            if ($trim === '' || $this->isProgressLine($trim)) {
+                continue;
+            }
+
+            $findings[] = $trim;
+        }
+
+        return $findings;
+    }
+
+    protected function isProgressLine(string $line): bool
+    {
+        return preg_match('/^[.\s✓✔✕✖×E]+$/u', $line) === 1
+            || preg_match('/^[─━=\-\s]+$/u', $line) === 1
+            || preg_match('/^Laravel$/u', $line) === 1;
+    }
+
+    /**
      * @return array{merged: bool, scripts: list<string>, require_dev: list<string>}
      */
     protected function mergeComposerManifest(): array

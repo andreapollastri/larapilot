@@ -1,6 +1,6 @@
 ---
 name: larapilot-economics
-description: Configure the Economics account profile (country, tax regime, hourly rate, margins, discount, team size, SaaS prices), research the market with Jennifer and Benjamin (competitors, price trend, demand), decide the BASE/PRO/PREMIUM packaging, and present real quotes, payback, ARR, and a three-line business plan. Use when the user runs /larapilot-economics, wants a preventivo, stima costi, partita IVA, forfettario, SRL, tasse, ARR, break-even clienti, pricing, sconto, concorrenti, or sales estimate. Requires settings.account=FREELANCE or COMPANY (not NONE). Italian triggers include "economics", "preventivo", "stima costi", "partita iva", "forfettario", "tasse", "quanto chiedere", "rientro costi", "quanti clienti", "ARR", "sconto", "prezzi", "concorrenti", "business plan".
+description: "Builds the Economics quote: tax, rate, discount, market, packaging, payback. Requires account FREELANCE or COMPANY. Italian: preventivo, stima costi, partita IVA, ARR."
 ---
 
 # Larapilot — Economics (Aurora)
@@ -8,6 +8,8 @@ description: Configure the Economics account profile (country, tax regime, hourl
 Calibrate **who is selling the work** and produce a **real quote**: client price, tax, net to owner, maintenance, and — for SaaS — ARR, customers to break even, hosting, and a 36-month forecast.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `.larapilot/runtime-economics.md`.
 

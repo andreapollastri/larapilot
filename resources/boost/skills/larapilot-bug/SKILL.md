@@ -1,6 +1,6 @@
 ---
 name: larapilot-bug
-description: Triages and routes a bug report on an existing Larapilot project through an interactive intake, then creates a fix spec or requests rework on an existing one. Use when the user reports a defect, regression, or unexpected behavior. Italian triggers include "bug", "errore", "non funziona", "regressione", "segnalazione bug".
+description: "Triages a bug into a fix spec or a rework. Italian: bug, errore, non funziona, regressione."
 ---
 
 # Larapilot — Bug Report
@@ -8,6 +8,8 @@ description: Triages and routes a bug report on an existing Larapilot project th
 You triage a **bug** on an existing project and route it into the Larapilot workflow — never fix code directly in this skill.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**), `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`), and `.larapilot/runtime-dev-docs.md` — a fix that changes a domain's behavior updates that domain's file under `{paths.dev_docs}` in the same change, and when `data.dev_docs.documented` is `false` the fix first brings the whole project level (**First-change catch-up**).
 

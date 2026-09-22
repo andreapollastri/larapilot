@@ -171,6 +171,44 @@ class SpecService
     }
 
     /**
+     * Narrow a spec-show payload. `--task` keeps one task (null when that
+     * id is absent). `--fields` keeps those task keys; `id` is always kept.
+     *
+     * @param  array{spec: array<string, mixed>, tasks: array<int, array<string, mixed>>, workdir: string}  $data
+     * @return array{spec: array<string, mixed>, tasks: array<int, array<string, mixed>>, workdir: string}|null
+     */
+    public function slice(array $data, ?string $taskId, ?string $fields): ?array
+    {
+        $tasks = $data['tasks'];
+
+        if ($taskId !== null && $taskId !== '') {
+            $tasks = array_values(array_filter(
+                $tasks,
+                static fn (array $task): bool => (string) ($task['id'] ?? '') === $taskId
+            ));
+
+            if ($tasks === []) {
+                return null;
+            }
+        }
+
+        if ($fields !== null && trim($fields) !== '') {
+            $keys = array_values(array_unique(array_merge(
+                ['id'],
+                array_values(array_filter(array_map('trim', explode(',', $fields)), static fn (string $key): bool => $key !== ''))
+            )));
+
+            $tasks = array_map(static function (array $task) use ($keys): array {
+                return array_intersect_key($task, array_flip($keys));
+            }, $tasks);
+        }
+
+        $data['tasks'] = $tasks;
+
+        return $data;
+    }
+
+    /**
      * @return array<string, mixed>|null
      */
     public function find(string $code): ?array

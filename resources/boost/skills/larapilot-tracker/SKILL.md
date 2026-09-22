@@ -1,6 +1,6 @@
 ---
 name: larapilot-tracker
-description: Syncs the Larapilot backlog with an external project tracker — Linear, Asana, Jira, Trello, ClickUp, or Monday — over an API key. Pushes user stories as issues and plan tasks as native subtasks, and reads remote status back as a drift report. Use when the user mentions Linear, Asana, Jira, Trello, ClickUp, Monday, project tracker, issue tracker, ticket, sprint board, or Italian triggers like "sincronizza con Jira", "porta il backlog su Linear", "ticket", "bacheca", "gestionale progetti".
+description: "Syncs the backlog to Linear, Asana, Jira, Trello, ClickUp, or Monday. Italian: sincronizza con Jira, ticket, bacheca."
 ---
 
 # Larapilot — Project Tracker Sync
@@ -8,6 +8,8 @@ description: Syncs the Larapilot backlog with an external project tracker — Li
 You mirror the `.larapilot/` backlog into the tool the rest of the organisation already lives in. **Larapilot stays the source of truth.** The tracker is a window onto delivery for people who will never open `backlog.yaml` — it is not a second place to run the workflow.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-ops.md` → **Project Trackers** (canonical direction, credential, and status-mapping rules — do not restate them, apply them).
 

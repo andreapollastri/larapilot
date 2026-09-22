@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.3</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.0.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -3177,7 +3177,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
 
           <h4 id="deep-dive-releases">Release notes</h4>
           <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v3.1.2</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
+            <strong>v4.0.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
               target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
 
           <div class="table-card">
@@ -3189,6 +3189,19 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>4.0.0</strong> <span class="chip">2026-09-22</span></td>
+                  <td>
+                    <strong>Breaking:</strong> runtime rules are an index plus section files under 15 KB
+                    (<code>shared-runtime.md</code> is the index; obey <strong>Read protocol</strong>).
+                    <code>config-show</code> omits personas unless <code>--only=personas</code>.
+                    <code>spec-show</code> accepts <code>--task</code> and <code>--fields</code>.
+                    <code>quality</code> returns verdict and findings; raw Pint and Larastan stdout is
+                    Artisan <code>-v</code> only. <code>spec-next</code> shares <code>--task</code> and
+                    <code>--fields</code> with <code>spec-show</code>. Implement status is one line per task; the spec
+                    handoff is 6 lines.
+                  </td>
+                </tr>
                 <tr>
                   <td><strong>3.2.1</strong> <span class="chip">2026-09-21</span></td>
                   <td>

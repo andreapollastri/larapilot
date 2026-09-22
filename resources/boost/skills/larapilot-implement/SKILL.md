@@ -1,6 +1,6 @@
 ---
 name: larapilot-implement
-description: Implements a planned Larapilot spec by executing its technical plan. Use when the user wants to implement a PLANNED spec, start coding a backlog item, or execute sprint work. Do not use for discovery, backlog creation, or planning.
+description: "Implements a planned spec: code, tests, review, handoff. Use when the user wants to implement a PLANNED spec or start coding a backlog item. Not for discovery, backlog, or planning."
 ---
 
 # Larapilot — Spec Implementation
@@ -9,13 +9,19 @@ Execute a planned spec: code, tests, review, handoff to REVIEW.
 
 ## Shared Runtime
 
-Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture standards, Git discipline, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs) and `.larapilot/runtime-dev-docs.md` (developer domain docs — mandatory, English, every effort level).
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+
+Read `.larapilot/shared-runtime.md`, then every part of `.larapilot/runtime-delivery.md` and `.larapilot/runtime-dev-docs.md` (developer domain docs — mandatory, English, every effort level).
 
 Read `.larapilot/task-templates.md` — execute each task's **Git Deliverables** and **Test Data** sections per `data.settings`.
 
 ## Output Economy
 
-**High** — see `larapilot-implement` in the shared-runtime table. Status lines: task → action → result → next. Robert/Lars: bullet findings with severity. Handoff summary ~10 lines unless blockers need detail. Code, tests, and CLI output verbatim.
+**High.** After each task, one line and nothing else:
+
+`TASK-04 → Invoice policy → Pest 4 passed → TASK-05`
+
+No table. Do not repeat the diff, filenames already committed, or test output the command already returned. One extra line per blocker: `BLOCKED TASK-04 — reason`. Robert/Lars findings: one bullet per finding, severity first. Spec handoff before `spec-review`: **6 lines maximum**. A table is allowed only in that handoff.
 
 When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** except OpenAPI when public/partner API routes change **and the developer domain docs under `{paths.dev_docs}`, which are written every time** (terse prose, same sections); short inline Robert/Lars checklist only; one-line status. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
 
@@ -25,12 +31,12 @@ When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** 
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — **read `data.settings`** (`effort`, `git_mode`, `testing`), **`data.frontend`** when topology is external, and **`data.dev_docs`** (`documented`, `count`, `domains`); honor them for the whole run
-2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=PLANNED`
+1. `php artisan larapilot:config-show --only=settings,paths,frontend,dev_docs` — **read `data.settings`** (`effort`, `git_mode`, `testing`), **`data.paths`**, **`data.frontend`** when topology is external, and **`data.dev_docs`** (`documented`, `count`, `domains`); honor them for the whole run.
+2. `php artisan larapilot:spec-show {code} --fields=id,title,status,dependencies` for the task list, then `php artisan larapilot:spec-show {code} --task=TASK-NN` for the task you are about to execute. OR `php artisan larapilot:spec-next --status=PLANNED --fields=id,title,status,dependencies` when no code was given, then `--task=` for the active task.
 3. `php artisan larapilot:spec-start {code}`
 4. `php artisan larapilot:task-done {code} {taskId}` (after each task)
 5. `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — **only when `data.settings.code_history` is `YES`** (default OFF); run right after `task-done`, and once more after `spec-review`
-6. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; use `--fix` for formatting when needed
+6. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; use `--fix` for formatting when needed. The envelope is verdict and findings. Run with `-v` only when a finding line was cut.
 7. `php artisan larapilot:spec-review {code}`
 8. `php artisan larapilot:decision-log …` / `decision-check …` — when `data.settings.decision_log` is `YES` (default) and the user redirects scope or changes a preference mid-run; `decision-check` first when it reverses an earlier recorded choice
 
@@ -74,7 +80,7 @@ Skill-specific execution notes:
 
 ### Phase 0 — Load plan
 
-From `spec-show`: `data.spec`, `data.tasks`, `data.workdir`.
+From the field-filtered `spec-show`: `data.spec`, task ids and dependencies, `data.workdir`. Load `data.tasks[0].body` with `--task=` only for the task you are starting.
 
 **Developer domain docs catch-up gate.** When `data.dev_docs.documented` is `false` and the codebase already has domains to describe, Albert brings the **whole project** level before any task runs — one file per existing domain, not just the ones this spec touches — per **First-change catch-up** in `runtime-dev-docs.md`. Announce the scope in one line (no AskQuestion), commit it on its own as `docs({code}): bring developer domain docs level`, then start Phase 1. A greenfield project on its first spec has nothing to catch up on and skips straight to Phase 1. This gate runs at **every** effort level, `ECO` included.
 
@@ -139,4 +145,4 @@ Robert and Lars still speak in character when the **parent** summarizes merged f
 
 `php artisan larapilot:spec-review {code}` with a summary note.
 
-Report (concise): spec code, tasks completed, tests run, review outcome, developer domain docs written or updated — per the Output Economy handoff limit.
+Report in **6 lines maximum**: spec code, tasks completed, tests run, review outcome, developer domain docs written or updated. A table is allowed only in this handoff.

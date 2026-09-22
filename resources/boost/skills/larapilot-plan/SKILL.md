@@ -1,6 +1,6 @@
 ---
 name: larapilot-plan
-description: Creates a detailed technical implementation plan for a Larapilot spec. Use when the user wants to plan a spec, break down a feature, create tasks, or prepare development. Triggers include "plan US-005", "break this down", "how do we build this". Pass spec code (US-XXX) or auto-select the next TODO spec.
+description: "Writes the technical plan and tasks for one spec. Use for plan US-005, break this down, or the next TODO spec."
 ---
 
 # Larapilot — Spec Planning
@@ -8,6 +8,8 @@ description: Creates a detailed technical implementation plan for a Larapilot sp
 Produce a detailed implementation plan for one spec and persist it via the CLI.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture, Git/TASK-00, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs) and `.larapilot/runtime-dev-docs.md` (which tasks carry a `## Domain Docs` deliverable). When the spec has UI, also read `.larapilot/runtime-ux.md` (mobile-first, a11y, brand, SEO). When `data.settings.release_mode` is `YES` and the spec carries `**Release:** x.y.z`, also read `.larapilot/runtime-release.md` and use **TASK-00 — Release branch variant** in `task-templates.md`.
 

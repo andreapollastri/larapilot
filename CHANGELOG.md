@@ -2,6 +2,25 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.0.0] - 2026-09-22
+
+### Breaking
+
+- **Runtime packs are an index plus section files** — `.larapilot/shared-runtime.md` is a short index with a **Read protocol**: load files with the editor file-read tool, never `cat` / `head` / `sed`, and treat a truncated preview as a failed load. Rules moved into section files under 15 KB (`runtime-core-*.md`, and `runtime-delivery-N.md`, `runtime-discovery-N.md`, `runtime-ux-N.md`, `runtime-ship-N.md`, `runtime-ops-N.md`, `runtime-economics-N.md`). The old pack filename is the index for that pack. Read only the rows the active skill needs. `runtime-core-settings-2.md` (release mode, forges, notifications, and the other default-OFF toggles) is read only when `config-show` reports one of them as `YES`.
+- **`config-show` omits personas** — the default envelope no longer includes `data.personas`. Pass `--only=personas` for the roster, or `--only=settings,paths,frontend,dev_docs` (also `tracker`, `backstage`, `workflow`) for a slice. `project_root` and `connector` are always included.
+- **`quality` returns verdict and findings** — Pint's progress matrix and raw Larastan stdout are not printed and are not in the envelope. Artisan `-v` puts the raw stdout inside the JSON. Failures carry the same findings on `error.details`.
+
+### Added
+
+- **`spec-show` and `spec-next` accept `--task=TASK-NN` and `--fields=`** — one task, or a reduced task list (`id` is always kept). The default with no flags is still the full spec and every task. Implement loads the list with `--fields=id,title,status,dependencies`, then the task it is about to run with `--task=`.
+- **Implement status line is a measurable cap** — one line per task, `TASK-04 → Invoice policy → Pest 4 passed → TASK-05`. No table, no diff, no filenames already committed, no test output already returned. One `BLOCKED TASK-NN — reason` line per blocker. The spec handoff before `spec-review` is 6 lines maximum; a table is allowed only there.
+- **Output Economy covers CLI envelopes** — chat stays short, artifacts on disk stay complete, and commands are asked for the slice the skill needs.
+
+### Changed
+
+- **Boost skill descriptions are one sentence plus triggers** — the detail stays in the skill body.
+- **The Larapilot Boost guideline** is what Larapilot is, when to use which skill, and where artifacts live. The command catalog stays in the active skill.
+
 ## [3.2.3] - 2026-09-22
 
 ### Fixed

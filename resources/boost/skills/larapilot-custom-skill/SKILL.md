@@ -1,6 +1,6 @@
 ---
 name: larapilot-custom-skill
-description: Create one or more custom Larapilot/Boost skills under .larapilot/skills/ via a Zoey-guided interview. Use when the user runs /larapilot-custom-skill, wants custom workflows, team-specific procedures, or extensions on top of the standard Larapilot layer. Italian triggers include "skill custom", "skill personalizzata", "flusso custom", "procedura custom larapilot".
+description: "Authors a custom skill under .larapilot/skills/. Italian: skill personalizzata, flusso custom."
 ---
 
 # Larapilot — Custom Skills
@@ -8,6 +8,8 @@ description: Create one or more custom Larapilot/Boost skills under .larapilot/s
 Author **user-defined Boost skills** stored in `.larapilot/skills/`. Zoey interviews; Sarah persists files via `larapilot:custom-skill-add` (never hand-write `SKILL.md`). Packaged Larapilot skills remain the base layer.
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-custom-skills.md`.
 

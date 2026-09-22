@@ -1,6 +1,6 @@
 ---
 name: larapilot-frontend-companion
-description: Configures an external frontend repository from the Laravel Larapilot workspace. The backend is the only entry point for PRD, backlog, plans, and implementation. Use when PRD Frontend Topology is "API + external frontend", when linking the FE repo path, or Italian triggers like "repo frontend", "path frontend assoluto", "frontend esterno".
+description: "Links an external frontend repo from the Laravel workspace. Italian: repo frontend, frontend esterno."
 ---
 
 # Larapilot — External frontend repo
@@ -22,6 +22,8 @@ The FE repo holds application code only — no mirrored PRD, no Larapilot workfl
 - Before first plan on an existing FE codebase (`frontend-scan`)
 
 ## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
 Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-discovery.md` → **Frontend Topology**.
 

@@ -11,7 +11,9 @@ use Larapilot\Support\LarapilotCommand;
 class SpecNextCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-next
-                            {--status= : Status filter (defaults to TODO)}';
+                            {--status= : Status filter (defaults to TODO)}
+                            {--task= : Return only this task id, e.g. TASK-01}
+                            {--fields= : Comma-separated task keys to keep (id is always kept)}';
 
     protected $description = 'Auto-select the first eligible spec by priority and code';
 
@@ -29,6 +31,17 @@ class SpecNextCommand extends LarapilotCommand
             );
         }
 
-        return $this->success('spec_detail', $data);
+        $task = $this->option('task');
+        $sliced = $specs->slice($data, is_string($task) ? $task : null, $this->option('fields') !== null ? (string) $this->option('fields') : null);
+
+        if ($sliced === null) {
+            return $this->failure(
+                'E_NOT_FOUND',
+                "Task {$task} not found on ".($data['spec']['code'] ?? 'spec').'.',
+                $this->exitForCode('E_NOT_FOUND')
+            );
+        }
+
+        return $this->success('spec_detail', $sliced);
     }
 }

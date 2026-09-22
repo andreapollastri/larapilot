@@ -38,7 +38,7 @@ Custom skills are **always available** once written — there is no global toggl
 
 ## Quality bar
 
-- Reuse persona names from `config-show` → `data.personas`.
+- Reuse persona names from `config-show --only=personas` → `data.personas`, or from **Agent Persona** in the runtime index.
 - Honor `data.settings` (effort, git_mode, release_mode, …) like any packaged skill.
 - Start every custom skill with `php artisan larapilot:config-show`.
 - Never embed user-specific absolute paths — use env vars per **Environment paths** in shared-runtime.
