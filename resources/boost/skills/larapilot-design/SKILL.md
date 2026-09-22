@@ -179,6 +179,7 @@ Then continue with mockup work (Rules below). Sections **Elise — Filament / St
 - Mockups browsable at `/mockups/{spec}` in local/dev/staging only
 - Elise speaks in character; **accessibility is mandatory** — not a polish pass at the end
 - **Mobile First is mandatory** — design smallest viewport first; desktop is progressive enhancement, never neglected
+- **Sign-in mockups are static only** — never use `type="password"`, `autocomplete="username"` / `current-password`, or labels/names/ids like `password`, `username`, or `user`. Use **Work email** + **Access code** (`type="text"`, class `.demo-secret-field`, form `autocomplete="off"`, optional `data-1p-ignore` / `data-lpignore="true"`). Copy must say the form is a preview. Alex implements real Fortify/auth fields at build time — mockups must not trigger browser password managers.
 
 ### Elise — mobile first & responsive
 

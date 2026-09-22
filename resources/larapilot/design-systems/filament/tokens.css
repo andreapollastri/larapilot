@@ -1027,3 +1027,8 @@ body.fi-mockup {
     gap: 0.25rem;
   }
 }
+
+/* Static mockup auth — text field styled like a secret, without type=password (avoids password-manager autofill). */
+.demo-secret-field {
+  -webkit-text-security: disc;
+}

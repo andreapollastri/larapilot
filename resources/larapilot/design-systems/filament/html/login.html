@@ -13,14 +13,15 @@
     <div class="fi-login-card">
       <div class="fi-login-card__brand">Filament Demo</div>
       <h1>Sign in</h1>
-      <form action="#" method="post">
+      <form action="#" method="post" autocomplete="off" novalidate>
+        <p style="margin:0 0 1rem;font-size:0.75rem;color:rgb(var(--color-gray-500))">Static preview — no credentials are checked.</p>
         <div class="fi-field">
-          <label for="email">Email address</label>
-          <input id="email" name="email" type="email" autocomplete="username" required>
+          <label for="signin-email">Work email</label>
+          <input id="signin-email" name="signin-email" type="email" autocomplete="off" inputmode="email" placeholder="you@example.com" data-1p-ignore data-lpignore="true" required>
         </div>
         <div class="fi-field">
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <label for="signin-code">Access code</label>
+          <input id="signin-code" name="signin-code" type="text" class="demo-secret-field" autocomplete="off" placeholder="Demo only" data-1p-ignore data-lpignore="true" required>
         </div>
         <div class="fi-field fi-checkbox">
           <input id="remember" name="remember" type="checkbox">
@@ -28,7 +29,7 @@
         </div>
         <button type="submit" class="fi-btn fi-btn--primary">Sign in</button>
         <p style="text-align:center;margin-top:1rem;font-size:0.8125rem">
-          <a href="#" style="color:rgb(var(--color-primary-600))">Forgot password?</a>
+          <a href="#" style="color:rgb(var(--color-primary-600))">Need help signing in?</a>
         </p>
       </form>
     </div>

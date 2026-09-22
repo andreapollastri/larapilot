@@ -103,7 +103,7 @@
         padding-bottom: 2px;
     }
 
-    .milestone {
+    .milestone-card {
         flex: 0 0 auto;
         min-width: 180px;
         max-width: 260px;
@@ -114,7 +114,7 @@
         box-shadow: var(--shadow);
     }
 
-    .milestone .date {
+    .milestone-card .date {
         font-size: 0.75rem;
         font-weight: 650;
         letter-spacing: 0.02em;
@@ -122,13 +122,13 @@
         font-variant-numeric: tabular-nums;
     }
 
-    .milestone strong {
+    .milestone-card strong {
         display: block;
         margin-top: 4px;
         font-size: 0.92rem;
     }
 
-    .milestone .state {
+    .milestone-card .state {
         display: inline-block;
         margin-top: 8px;
         font-size: 0.7rem;
@@ -137,11 +137,11 @@
         text-transform: uppercase;
     }
 
-    .milestone.on_track .state { color: #047857; }
-    .milestone.at_risk .state { color: #b45309; }
-    .milestone.delayed .state { color: #b91c1c; }
-    .milestone.done .state { color: var(--muted); }
-    .milestone .note {
+    .milestone-card.on_track .state { color: #047857; }
+    .milestone-card.at_risk .state { color: #b45309; }
+    .milestone-card.delayed .state { color: #b91c1c; }
+    .milestone-card.done .state { color: var(--muted); }
+    .milestone-card .note {
         margin: 6px 0 0;
         color: var(--muted);
         font-size: 0.78rem;
@@ -357,6 +357,7 @@
     .track {
         position: relative;
         min-height: var(--row);
+        overflow: hidden;
     }
 
     .gridline,
@@ -389,32 +390,23 @@
     .bar.risk { background: color-mix(in srgb, #f59e0b 75%, transparent); }
 
     .bar.epic {
-        top: 12px;
-        height: 12px;
-        border-radius: 2px 2px 0 0;
-        background: transparent;
-        border-top: 3px solid var(--accent);
+        top: 10px;
+        height: 16px;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
         min-width: 10px;
     }
 
-    .bar.epic::before,
-    .bar.epic::after {
-        content: '';
-        position: absolute;
-        top: -3px;
-        width: 2px;
-        height: 12px;
-        background: var(--accent);
+    .bar.epic.risk {
+        background: color-mix(in srgb, #f59e0b 22%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, #d97706 55%, transparent);
     }
 
-    .bar.epic::before { left: 0; }
-    .bar.epic::after { right: 0; }
-    .bar.epic.risk { border-top-color: #d97706; }
-    .bar.epic.risk::before,
-    .bar.epic.risk::after { background: #d97706; }
-    .bar.epic.done { border-top-color: var(--status-done); }
-    .bar.epic.done::before,
-    .bar.epic.done::after { background: var(--status-done); }
+    .bar.epic.done {
+        background: color-mix(in srgb, var(--status-done) 22%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-done) 55%, transparent);
+    }
 
     .bar.task { top: 11px; height: 14px; }
     .bar.parallel { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #0ea5e9 85%, white); }
@@ -517,10 +509,8 @@
     .legend i.done { background: color-mix(in srgb, var(--status-done) 78%, transparent); }
     .legend i.risk { background: color-mix(in srgb, #f59e0b 75%, transparent); }
     .legend i.epic {
-        background: transparent;
-        border-top: 3px solid var(--accent);
-        height: 8px;
-        position: relative;
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
     }
     .legend i.parallel { box-shadow: inset 0 0 0 1.5px #0ea5e9; background: transparent; }
     .legend i.milestone {
@@ -971,7 +961,7 @@
         @if ($milestones !== [])
             <div class="milestones" aria-label="Milestones">
                 @foreach ($milestones as $milestone)
-                    <article @class(['milestone', $milestone['status'] ?? 'on_track'])>
+                    <article @class(['milestone-card', $milestone['status'] ?? 'on_track'])>
                         <div class="date">{{ $pretty($milestone['date'] ?? null) }}</div>
                         <strong>{{ $milestone['label'] ?? 'Deadline' }}</strong>
                         <span class="state">{{ $milestoneLabel((string) ($milestone['status'] ?? 'on_track')) }}</span>

@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.2.3] - 2026-09-22
+
+### Fixed
+
+- **Dashboard — Plan Gantt layout** — milestone cards and the legend swatch both used the `.milestone` class, so the legend icon inherited card sizing and rendered as a large rotated blue bar over the page. Cards are now `.milestone-card`; epic bars in the Gantt use a filled style instead of a bracket outline; `.track` clips absolutely positioned bars.
+
 ## [3.2.2] - 2026-09-22
 
 ### Added

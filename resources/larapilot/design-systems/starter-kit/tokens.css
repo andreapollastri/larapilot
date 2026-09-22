@@ -309,3 +309,8 @@ body.sk-mockup {
   .sk-sidebar { display: none; }
   .sk-sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); background: var(--background); cursor: pointer; }
 }
+
+/* Static mockup auth — text field styled like a secret, without type=password (avoids password-manager autofill). */
+.demo-secret-field {
+  -webkit-text-security: disc;
+}

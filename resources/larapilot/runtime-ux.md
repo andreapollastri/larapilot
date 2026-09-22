@@ -88,6 +88,8 @@ Accessibility is **not optional** for public-facing products. Elise designs for 
 
 Mockups annotate focus states, error states, and screen-reader-only text where non-obvious.
 
+**Sign-in / auth screens in static mockups** — HTML previews are not real login forms. Do **not** use `type="password"`, credential `autocomplete` tokens, or field labels/names/ids containing `password`, `username`, or `user`. Package templates use **Work email** + **Access code** (`type="text"`, `.demo-secret-field` for masked dots, form `autocomplete="off"`). State in copy that credentials are not checked. Implementation (Fortify, Filament panel login, etc.) uses real field names — that happens in Alex's pass, not in Elise's mockup HTML.
+
 **Emma — SEO overlap (accessible = discoverable):** semantic HTML and heading structure; descriptive link anchor text (never generic "click here" alone); image `alt` aligned with SEO keywords where natural (no stuffing); accessible page `<title>` and unique meta description; Lighthouse **Accessibility** score ≥ 90 on critical pages (ship gate); structured data must not replace visible accessible content.
 
 **Violet — regulations & compliance:**

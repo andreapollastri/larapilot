@@ -10,6 +10,7 @@
   <script>
     tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
   </script>
+  <style>.demo-secret-field { -webkit-text-security: disc; }</style>
 </head>
 <body class="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans text-slate-900 antialiased">
   <main class="w-full max-w-sm">
@@ -18,15 +19,15 @@
     </div>
     <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <h1 class="text-center text-xl font-semibold">Sign in</h1>
-      <p class="mt-1 text-center text-sm text-slate-600">Enter your credentials to continue.</p>
-      <form class="mt-6 space-y-4">
+      <p class="mt-1 text-center text-sm text-slate-600">Static sign-in preview — fields are placeholders only.</p>
+      <form class="mt-6 space-y-4" autocomplete="off" novalidate>
         <div>
-          <label for="email" class="mb-1 block text-sm font-medium">Email</label>
-          <input id="email" type="email" required placeholder="you@example.com" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <label for="signin-email" class="mb-1 block text-sm font-medium">Work email</label>
+          <input id="signin-email" name="signin-email" type="email" required placeholder="you@example.com" autocomplete="off" inputmode="email" data-1p-ignore data-lpignore="true" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
-          <label for="password" class="mb-1 block text-sm font-medium">Password</label>
-          <input id="password" type="password" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <label for="signin-code" class="mb-1 block text-sm font-medium">Access code</label>
+          <input id="signin-code" name="signin-code" type="text" required placeholder="Demo only" autocomplete="off" data-1p-ignore data-lpignore="true" class="demo-secret-field block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
         </div>
         <label class="flex items-center gap-2 text-sm text-slate-600">
           <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
@@ -35,7 +36,7 @@
         <button type="submit" class="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Log in</button>
       </form>
       <p class="mt-4 text-center text-sm text-slate-500">
-        <a href="#" class="text-indigo-600 hover:underline">Forgot password?</a>
+        <a href="#" class="text-indigo-600 hover:underline">Need help signing in?</a>
         · <a href="landing.html" class="text-indigo-600 hover:underline">Back to site</a>
       </p>
     </div>

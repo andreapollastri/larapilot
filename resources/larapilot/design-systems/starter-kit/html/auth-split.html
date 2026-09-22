@@ -17,15 +17,15 @@
     <div class="sk-auth-split__form">
       <div class="sk-auth-card">
         <h1>Log in to your account</h1>
-        <p class="sk-auth-card__desc">Enter your email and password below to log in</p>
-        <form action="#" method="post">
+        <p class="sk-auth-card__desc">Static sign-in preview — fields are placeholders only.</p>
+        <form action="#" method="post" autocomplete="off" novalidate>
           <div class="sk-field">
-            <label for="email">Email address</label>
-            <input id="email" name="email" type="email" class="sk-input" autocomplete="username" required>
+            <label for="signin-email">Work email</label>
+            <input id="signin-email" name="signin-email" type="email" class="sk-input" autocomplete="off" inputmode="email" placeholder="you@example.com" data-1p-ignore data-lpignore="true" required>
           </div>
           <div class="sk-field">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" class="sk-input" autocomplete="current-password" required>
+            <label for="signin-code">Access code</label>
+            <input id="signin-code" name="signin-code" type="text" class="sk-input demo-secret-field" autocomplete="off" placeholder="Demo only" data-1p-ignore data-lpignore="true" required>
           </div>
           <button type="submit" class="sk-btn sk-btn--primary sk-btn--block">Log in</button>
         </form>
