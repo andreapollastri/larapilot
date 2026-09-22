@@ -190,7 +190,7 @@ Ownership: **Matt** owns provider choice, status mapping, and link hygiene; **Ma
 
 ## Usage Ledger & Schedule _(Lucille owns)_
 
-**Lucille** enters every skill **quietly** by default (`settings.lucille: true` / `YES`): she records AI/session **tokens** and wall-clock **time**, categorized so the project always has committed metrics for the Larapilot dashboard (charts, Gantt, consolidated Markdown reports). **Exclusion is opt-out only** — when `settings.lucille` is explicitly `false` / `NO`, skills skip Lucille rounds and `usage-log` (historical ledger stays readable). Missing key → treat as ON.
+**Lucille** enters every skill **quietly** by default (`settings.lucille: true` / `YES`): she records AI/session **tokens** and wall-clock **time**, categorized so the project always has committed metrics for the Larapilot dashboard (token charts on Usage, Gantt on Plan, consolidated Markdown reports). **Exclusion is opt-out only** — when `settings.lucille` is explicitly `false` / `NO`, skills skip Lucille rounds and `usage-log` (historical ledger stays readable). Missing key → treat as ON.
 
 ### Paths
 
@@ -231,7 +231,7 @@ Map skills roughly: inception/discovery → `analysis`; plan → `planning`; imp
    ```
 
 2. During later skills, if the team is behind or blocked, Lucille updates schedule notes (`--status=at_risk|delayed|on_track`) and mentions drift briefly in chat — never blocks Mark/John decisions.
-3. Dashboard **Usage** page renders ledger aggregates + a **dependency-aware Gantt** (epics → tasks with `dependencies` / `assignee` / `estimate_hours`) + schedule milestones; `larapilot:usage-report` exports a consolidated Markdown report.
+3. Dashboard **Usage** renders the token and hour ledger; **Plan** (nav item before Design) renders the **dependency-aware Gantt** (epics → tasks with `dependencies` / `assignee` / `estimate_hours`) and schedule milestones; `larapilot:usage-report` exports a consolidated Markdown report.
 4. **Interrogation skill** — `/larapilot-usage` (Lucille) answers questions about tempistiche and token burn. Prefer `php artisan larapilot:usage-report --format=json --insights` with filters (`--category=`, `--user=`, `--skill=`, `--spec=`, `--from=`, `--to=`) over hand-reading `ledger.jsonl`.
 5. **Effort forecast** — Lucille compares remaining story points / task `estimate_hours` against project milestones and epic `deadline` fields, surfacing temporal criticality on the dashboard (`criticality` in `--insights`).
 6. **Zoey vs Lucille** — Zoey’s `context ≈ Nk` is loaded-context size; Lucille’s ledger is session spend (often `--estimated` from Zoey’s end line). The dashboard explains why the two figures diverge; do not force them equal.

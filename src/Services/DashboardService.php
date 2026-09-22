@@ -231,6 +231,22 @@ class DashboardService
     }
 
     /**
+     * Schedule, epics, and the dependency-aware Gantt — kept off the token ledger page.
+     *
+     * @return array<string, mixed>
+     */
+    public function plan(): array
+    {
+        $gantt = $this->usageService->gantt();
+
+        return [
+            'schedule' => $this->usageService->schedule(),
+            'gantt' => $gantt,
+            'criticality' => $this->usageService->criticality($gantt),
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function git(?string $authorEmail = null): array

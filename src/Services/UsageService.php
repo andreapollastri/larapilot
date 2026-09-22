@@ -880,7 +880,7 @@ class UsageService
             $specStart = $this->inferSpecStart($code, $entries, $dates);
             $plan = $this->plans->read($code);
             $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-            $scheduled = $this->schedulePlanTasks($tasks, $specStart, $points, $code, $status);
+            $scheduled = $this->schedulePlanTasks($tasks, $specStart, $points, $code, $status, (string) ($spec['title'] ?? ''));
 
             if ($scheduled === []) {
                 $estimatedDays = max(0.5, $points * 0.5 + ($usageMinutes / (60 * 6)));
@@ -1061,7 +1061,7 @@ class UsageService
      * @param  list<array<string, mixed>>  $tasks
      * @return list<array<string, mixed>>
      */
-    protected function schedulePlanTasks(array $tasks, string $specStart, int $points, string $specCode, string $specStatus): array
+    protected function schedulePlanTasks(array $tasks, string $specStart, int $points, string $specCode, string $specStatus, string $specTitle = ''): array
     {
         $normalized = [];
 
@@ -1132,6 +1132,7 @@ class UsageService
                 'parallel' => false,
                 'depends_on' => $deps,
                 'epic' => null,
+                'spec_title' => $specTitle !== '' ? $specTitle : null,
                 'estimate_hours' => round($hours, 1),
             ];
         }

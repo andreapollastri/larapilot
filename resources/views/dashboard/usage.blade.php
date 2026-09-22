@@ -7,15 +7,23 @@
     .usage-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         gap: 12px;
         flex-wrap: wrap;
         margin-bottom: 20px;
     }
 
     .usage-top h2 {
-        margin: 0;
+        margin: 0 0 6px;
         font-size: 1.15rem;
+    }
+
+    .usage-top .sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.875rem;
+        max-width: 72ch;
+        line-height: 1.5;
     }
 
     .btn {
@@ -29,6 +37,7 @@
         font-size: 0.875rem;
         font-weight: 600;
         text-decoration: none;
+        white-space: nowrap;
     }
 
     .btn:hover { text-decoration: none; }
@@ -97,159 +106,6 @@
         background: linear-gradient(90deg, var(--accent), #0ea5e9);
         border-radius: 999px;
     }
-
-    .gantt {
-        overflow-x: auto;
-        padding-bottom: 8px;
-    }
-
-    .gantt-row {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 10px;
-        min-width: 720px;
-        font-size: 0.8rem;
-    }
-
-    .gantt-row.is-epic .gantt-label { font-weight: 700; color: var(--text); }
-    .gantt-row.is-task .gantt-label { padding-left: 10px; }
-
-    .gantt-label {
-        color: var(--muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .gantt-meta {
-        display: block;
-        font-size: 0.7rem;
-        color: var(--muted);
-        opacity: 0.9;
-    }
-
-    .gantt-track {
-        position: relative;
-        height: 22px;
-        border-radius: 6px;
-        background: color-mix(in srgb, var(--border) 55%, transparent);
-    }
-
-    .gantt-bar {
-        position: absolute;
-        top: 3px;
-        bottom: 3px;
-        border-radius: 4px;
-        background: color-mix(in srgb, var(--status-progress) 55%, var(--accent));
-        min-width: 8px;
-    }
-
-    .gantt-bar.done { background: color-mix(in srgb, var(--status-done) 70%, transparent); }
-    .gantt-bar.review { background: color-mix(in srgb, var(--status-review) 70%, transparent); }
-    .gantt-bar.todo { background: color-mix(in srgb, var(--status-todo) 70%, transparent); }
-    .gantt-bar.planned { background: color-mix(in srgb, var(--status-planned) 70%, transparent); }
-    .gantt-bar.progress { background: color-mix(in srgb, var(--status-progress) 70%, var(--accent)); }
-    .gantt-bar.epic {
-        background: color-mix(in srgb, var(--accent) 35%, transparent);
-        border: 1px dashed var(--accent);
-        top: 1px;
-        bottom: 1px;
-    }
-    .gantt-bar.parallel::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 4px;
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, #0ea5e9 70%, transparent);
-    }
-
-    .gantt-progress {
-        position: absolute;
-        inset: 0 auto 0 0;
-        background: rgba(255,255,255,0.25);
-        border-radius: 4px;
-    }
-
-    .gantt-legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px 16px;
-        margin-top: 16px;
-        padding-top: 14px;
-        border-top: 1px solid var(--border);
-        font-size: 0.78rem;
-        color: var(--muted);
-    }
-
-    .legend-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .legend-swatch {
-        width: 18px;
-        height: 10px;
-        border-radius: 3px;
-        background: color-mix(in srgb, var(--status-progress) 55%, var(--accent));
-    }
-
-    .legend-swatch.done { background: color-mix(in srgb, var(--status-done) 70%, transparent); }
-    .legend-swatch.review { background: color-mix(in srgb, var(--status-review) 70%, transparent); }
-    .legend-swatch.todo { background: color-mix(in srgb, var(--status-todo) 70%, transparent); }
-    .legend-swatch.planned { background: color-mix(in srgb, var(--status-planned) 70%, transparent); }
-    .legend-swatch.progress { background: color-mix(in srgb, var(--status-progress) 70%, var(--accent)); }
-    .legend-swatch.epic {
-        background: color-mix(in srgb, var(--accent) 35%, transparent);
-        border: 1px dashed var(--accent);
-    }
-    .legend-swatch.parallel {
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, #0ea5e9 70%, transparent);
-    }
-    .legend-swatch.milestone {
-        width: 8px;
-        background: color-mix(in srgb, var(--status-done) 70%, transparent);
-    }
-
-    .milestone {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        margin: 0 8px 8px 0;
-        font-size: 0.8rem;
-    }
-
-    .milestone.at_risk { border-color: #f59e0b; color: #d97706; }
-    .milestone.delayed { border-color: #ef4444; color: #dc2626; }
-    .milestone.done { border-color: #10b981; color: #059669; }
-
-    .alert-list { display: grid; gap: 8px; }
-    .alert {
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        font-size: 0.85rem;
-    }
-    .alert.critical { border-color: #ef4444; background: color-mix(in srgb, #ef4444 8%, transparent); }
-    .alert.warning { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 8%, transparent); }
-
-    .epic-grid {
-        display: grid;
-        gap: 10px;
-    }
-    .epic-card {
-        padding: 12px 14px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        font-size: 0.85rem;
-    }
-    .epic-card strong { display: block; margin-bottom: 4px; }
-    .epic-card .muted { color: var(--muted); font-size: 0.8rem; }
 
     .filters {
         display: grid;
@@ -336,15 +192,7 @@
         $byCategory = $summary['by_category'] ?? [];
         $tokenValues = array_map(fn ($r) => (int) ($r['tokens'] ?? 0), $byCategory);
         $maxTokens = max(1, $tokenValues === [] ? 1 : max($tokenValues));
-        $gantt = $gantt ?? ['bars' => [], 'milestones' => [], 'project_start' => null, 'project_end' => null, 'epics' => [], 'legend' => []];
         $zoey = $zoey ?? [];
-        $criticality = $criticality ?? ['alerts' => [], 'on_track' => true];
-        $start = $gantt['project_start'] ?? null;
-        $end = $gantt['project_end'] ?? null;
-        $span = 1;
-        if ($start && $end) {
-            $span = max(1, (new \DateTimeImmutable($end))->diff(new \DateTimeImmutable($start))->days + 1);
-        }
         $formatTokens = function (int $tokens): string {
             if ($tokens < 1000) {
                 return (string) $tokens;
@@ -361,37 +209,12 @@
 
             return rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') ?: '0';
         };
-        $statusClass = function (string $status): string {
-            $s = strtolower($status);
-            return match (true) {
-                str_contains($s, 'done') => 'done',
-                str_contains($s, 'review') => 'review',
-                str_contains($s, 'progress') => 'progress',
-                str_contains($s, 'risk') => 'review',
-                str_contains($s, 'planned') => 'planned',
-                default => 'todo',
-            };
-        };
-        $offsetPct = function (?string $date) use ($start, $span): float {
-            if (! $date || ! $start) {
-                return 0;
-            }
-            $days = (new \DateTimeImmutable($date))->diff(new \DateTimeImmutable($start))->days;
-            return min(100, max(0, ($days / $span) * 100));
-        };
-        $widthPct = function (?string $from, ?string $to) use ($span): float {
-            if (! $from || ! $to) {
-                return 4;
-            }
-            $days = max(1, (new \DateTimeImmutable($to))->diff(new \DateTimeImmutable($from))->days + 1);
-            return min(100, max(2, ($days / $span) * 100));
-        };
     @endphp
 
     <div class="usage-top">
         <div>
-            <h2>Lucille · Project tracking</h2>
-            <p style="margin:4px 0 0;color:var(--muted);font-size:0.875rem;">Tokens, hours, deadlines, epics, and a dependency-aware project Gantt.</p>
+            <h2>Lucille · Token usage</h2>
+            <p class="sub">Tokens and hours logged by agents. Deadlines, epics, and the Gantt live on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a>.</p>
         </div>
         <a class="btn" href="{{ route('larapilot.dashboard.usage.report') }}">Download report.md</a>
     </div>
@@ -408,10 +231,6 @@
         <div class="card metric">
             <div class="metric-label">Hours</div>
             <div class="metric-value">{{ $summary['total_hours'] ?? 0 }}</div>
-        </div>
-        <div class="card metric">
-            <div class="metric-label">Forecast end</div>
-            <div class="metric-value" style="font-size:1.1rem;">{{ $criticality['forecast_end'] ?? '—' }}</div>
         </div>
     </div>
 
@@ -433,33 +252,6 @@
     </section>
 
     <section class="card panel">
-        <h3>Schedule criticality</h3>
-        @if (($criticality['on_track'] ?? true) && ($criticality['alerts'] ?? []) === [])
-            <p class="hint" style="margin:0;">
-                On track · remaining {{ $criticality['remaining_points'] ?? 0 }} SP
-                · ~{{ $criticality['remaining_hours'] ?? 0 }} h
-                · ~{{ $criticality['forecast_work_days'] ?? 0 }} work-days
-            </p>
-        @else
-            <p class="hint">
-                Remaining {{ $criticality['remaining_points'] ?? 0 }} SP · ~{{ $criticality['remaining_hours'] ?? 0 }} h
-                · forecast {{ $criticality['forecast_end'] ?? '—' }}
-            </p>
-            <div class="alert-list">
-                @foreach ($criticality['alerts'] as $alert)
-                    <div @class(['alert', $alert['level'] ?? 'warning'])>
-                        <strong>{{ $alert['label'] ?? 'Alert' }}</strong>
-                        @if (!empty($alert['date']))
-                            <span style="color:var(--muted);"> · {{ $alert['date'] }}</span>
-                        @endif
-                        <div>{{ $alert['message'] ?? '' }}</div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
-    <section class="card panel">
         <h3>By category</h3>
         @if (($summary['entry_count'] ?? 0) === 0)
             <div class="empty" style="padding:20px;">No ledger entries yet. Agents log with <code>larapilot:usage-log</code>.</div>
@@ -476,122 +268,6 @@
                         </div>
                     @endif
                 @endforeach
-            </div>
-        @endif
-    </section>
-
-    <section class="card panel">
-        <h3>Epics</h3>
-        @if (($gantt['epics'] ?? []) === [])
-            <div class="empty" style="padding:16px;">No epics yet. Specs should carry <code>epic: { code, title, objective, deadline }</code>.</div>
-        @else
-            <div class="epic-grid">
-                @foreach ($gantt['epics'] as $epic)
-                    <div class="epic-card">
-                        <strong>{{ $epic['code'] ?? '' }} — {{ $epic['title'] ?? '' }}</strong>
-                        <div class="muted">
-                            @if (!empty($epic['objective']))
-                                Objective: {{ $epic['objective'] }} ·
-                            @endif
-                            @if (!empty($epic['deadline']))
-                                Deadline: {{ $epic['deadline'] }} ·
-                            @endif
-                            Forecast: {{ $epic['forecast_end'] ?? '—' }} ·
-                            {{ $epic['points'] ?? 0 }} SP ·
-                            {{ count($epic['spec_codes'] ?? []) }} specs
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
-    <section class="card panel">
-        <h3>Milestones</h3>
-        @if (($gantt['milestones'] ?? []) === [])
-            <div class="empty" style="padding:16px;">No deadlines. Lucille records them with <code>larapilot:schedule-set</code>.</div>
-        @else
-            <div>
-                @foreach ($gantt['milestones'] as $milestone)
-                    <span @class(['milestone', $milestone['status'] ?? 'on_track'])>
-                        <strong>{{ $milestone['label'] ?? 'Deadline' }}</strong>
-                        <span>{{ $milestone['date'] ?? '' }}</span>
-                        <span>{{ $milestone['status'] ?? '' }}</span>
-                    </span>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
-    <section class="card panel">
-        <h3>Project Gantt</h3>
-        @if (($gantt['bars'] ?? []) === [] && ($gantt['milestones'] ?? []) === [])
-            <div class="empty" style="padding:20px;">Gantt appears when specs or deadlines exist.</div>
-        @else
-            <p class="hint">
-                Window: {{ $start ?? '—' }} → {{ $end ?? '—' }} · bars respect task <code>dependencies</code>, parallel work, and optional <code>assignee</code>
-            </p>
-            <div class="gantt">
-                @foreach ($gantt['bars'] as $bar)
-                    @php
-                        $type = (string) ($bar['type'] ?? 'spec');
-                        $barClasses = [$statusClass((string) ($bar['status'] ?? ''))];
-                        if ($type === 'epic') {
-                            $barClasses[] = 'epic';
-                        }
-                        if (!empty($bar['parallel'])) {
-                            $barClasses[] = 'parallel';
-                        }
-                    @endphp
-                    <div @class(['gantt-row', 'is-epic' => $type === 'epic', 'is-task' => $type === 'task'])>
-                        <div class="gantt-label" title="{{ $bar['label'] ?? '' }}">
-                            {{ $bar['label'] ?? '' }}
-                            @if (!empty($bar['assignee']) || !empty($bar['depends_on']) || !empty($bar['parallel']))
-                                <span class="gantt-meta">
-                                    @if (!empty($bar['assignee']))
-                                        {{ $bar['assignee'] }}
-                                    @endif
-                                    @if (!empty($bar['parallel']))
-                                        · parallel
-                                    @endif
-                                    @if (!empty($bar['depends_on']))
-                                        · after {{ implode(', ', $bar['depends_on']) }}
-                                    @endif
-                                </span>
-                            @elseif ($type === 'epic' && (!empty($bar['objective']) || !empty($bar['deadline'])))
-                                <span class="gantt-meta">
-                                    @if (!empty($bar['objective'])) {{ $bar['objective'] }} @endif
-                                    @if (!empty($bar['deadline'])) · due {{ $bar['deadline'] }} @endif
-                                </span>
-                            @endif
-                        </div>
-                        <div class="gantt-track">
-                            <div @class(array_merge(['gantt-bar'], $barClasses))
-                                 style="left: {{ $offsetPct($bar['start'] ?? null) }}%; width: {{ $widthPct($bar['start'] ?? null, $bar['end'] ?? null) }}%;">
-                                <div class="gantt-progress" style="width: {{ round(((float) ($bar['progress'] ?? 0)) * 100) }}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-                @foreach ($gantt['milestones'] as $milestone)
-                    <div class="gantt-row">
-                        <div class="gantt-label">◆ {{ $milestone['label'] ?? 'Deadline' }}</div>
-                        <div class="gantt-track">
-                            <div class="gantt-bar done" style="left: {{ $offsetPct($milestone['date'] ?? null) }}%; width: 2%;"></div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="gantt-legend">
-                <span class="legend-item"><span class="legend-swatch epic"></span> Epic</span>
-                <span class="legend-item"><span class="legend-swatch todo"></span> TODO</span>
-                <span class="legend-item"><span class="legend-swatch planned"></span> PLANNED</span>
-                <span class="legend-item"><span class="legend-swatch progress"></span> IN PROGRESS</span>
-                <span class="legend-item"><span class="legend-swatch review"></span> REVIEW</span>
-                <span class="legend-item"><span class="legend-swatch done"></span> DONE</span>
-                <span class="legend-item"><span class="legend-swatch parallel"></span> Parallelizable</span>
-                <span class="legend-item"><span class="legend-swatch milestone"></span> Milestone</span>
             </div>
         @endif
     </section>

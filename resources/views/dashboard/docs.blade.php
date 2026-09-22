@@ -252,7 +252,7 @@
                     <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td><code>_project_docs/</code> handbook</td><td>📝 Albert</td></tr>
                     <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
                     <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Client quote, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
-                    <tr><td><code>/larapilot-usage</code></td><td>Ledger query, Gantt, Markdown report</td><td>📒 Lucille · 🤖 Zoey</td></tr>
+                    <tr><td><code>/larapilot-usage</code></td><td>Ledger query and Markdown report — token charts on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>, schedule and Gantt on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a></td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
                     <tr><td><code>/larapilot-tracker</code></td><td>Linear/Jira/… mirror in <code>tracker.yaml</code></td><td>🔗 Matt · 💎 Mark</td></tr>
@@ -282,7 +282,7 @@
                     <tr><td>🔐 Lars</td><td>Security — OWASP, dashboard/API auth, checkpoint scan gate</td></tr>
                     <tr><td>🎨 Elise · ✨ Joe</td><td>UX &amp; Frontend — design systems, mockups, responsive/WCAG UI</td></tr>
                     <tr><td>📝 Albert</td><td>Tech Writer — OpenAPI, diagrams, <code>_project_docs/</code> when enabled</td></tr>
-                    <tr><td>📒 Lucille</td><td>Project tracking — token/hour ledger, deadlines, Usage dashboard (default ON)</td></tr>
+                    <tr><td>📒 Lucille</td><td>Project tracking — token/hour ledger on Usage, deadlines and Gantt on Plan (default ON)</td></tr>
                     <tr><td>🤖 Zoey</td><td>AI Guru — prompt sharpening, output economy, sub-agent orchestration (every skill)</td></tr>
                     <tr><td>🔄 Sabrine</td><td>Legacy porting — brownfield inventory, parity checks</td></tr>
                     <tr><td>🗄️ Mike</td><td>Database — schema, migrations, search, data architecture</td></tr>

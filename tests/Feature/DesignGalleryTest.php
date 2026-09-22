@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Larapilot\Services\PrdService;
+use Symfony\Component\Yaml\Yaml;
 
 it('serves the design gallery as one navigable index', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
@@ -97,6 +98,49 @@ it('downloads a zip of mockup html, assets, and the presentation index', functio
 
     $zip->close();
     unlink($tmp);
+});
+
+it('compares mockup style variants and records the chosen direction', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['title' => 'Login']);
+
+    addMockup('US-001', [
+        'styles.yaml' => <<<'YAML'
+styles:
+  - id: filament
+    label: Filament admin
+  - id: nordic-minimal
+    label: Nordic minimal
+YAML,
+        'styles/filament/index.html' => '<html><body>Filament login</body></html>',
+        'styles/nordic-minimal/index.html' => '<html><body>Nordic login</body></html>',
+    ]);
+
+    $html = $this->get('/larapilot/design')
+        ->assertOk()
+        ->assertSee('Compare styles', false)
+        ->assertSee('style-bar', false)
+        ->assertSee('Filament admin', false)
+        ->assertSee('Nordic minimal', false)
+        ->getContent();
+
+    expect($html)->toContain('nordic-minimal')
+        ->and($html)->toMatch('#mockups/US-001/styles/filament#');
+
+    $this->from('/larapilot/design')
+        ->post('/larapilot/design/mockups/US-001/style', ['style' => 'filament'])
+        ->assertRedirect('/larapilot/design')
+        ->assertSessionHas('larapilot_success');
+
+    $manifest = Yaml::parseFile(base_path('.larapilot/mockups/US-001/styles.yaml'));
+    expect($manifest['chosen'] ?? null)->toBe('filament');
+
+    $this->artisan('larapilot:mockup-choose-style', [
+        'spec' => 'US-001',
+        '--style' => 'nordic-minimal',
+    ])->assertSuccessful();
+
+    expect(Yaml::parseFile(base_path('.larapilot/mockups/US-001/styles.yaml'))['chosen'])->toBe('nordic-minimal');
 });
 
 it('shows an empty design gallery when no mockups exist', function (): void {

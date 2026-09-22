@@ -398,6 +398,11 @@ class OpenApiService
                                 'type' => 'array',
                                 'items' => ['$ref' => '#/components/schemas/MockupScreen'],
                             ],
+                            'styles' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/MockupStyleVersion'],
+                            ],
+                            'chosen_style' => ['type' => 'string', 'nullable' => true, 'example' => 'filament'],
                         ],
                         'required' => ['available', 'screen_count', 'screens'],
                     ],
@@ -409,6 +414,21 @@ class OpenApiService
                             'url' => ['type' => 'string', 'nullable' => true, 'example' => '/mockups/US-001'],
                         ],
                         'required' => ['file', 'label'],
+                    ],
+                    'MockupStyleVersion' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => ['type' => 'string', 'example' => 'filament'],
+                            'label' => ['type' => 'string', 'example' => 'Filament admin'],
+                            'chosen' => ['type' => 'boolean'],
+                            'entry' => ['type' => 'string', 'nullable' => true, 'example' => 'styles/filament/index.html'],
+                            'entry_url' => ['type' => 'string', 'nullable' => true, 'example' => '/mockups/US-001/styles/filament/index.html'],
+                            'screens' => [
+                                'type' => 'array',
+                                'items' => ['$ref' => '#/components/schemas/MockupScreen'],
+                            ],
+                        ],
+                        'required' => ['id', 'label', 'chosen', 'screens'],
                     ],
                     'MockupDetail' => [
                         'type' => 'object',

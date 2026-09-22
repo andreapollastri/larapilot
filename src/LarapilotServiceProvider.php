@@ -32,6 +32,7 @@ use Larapilot\Console\Commands\GithubStatusCommand;
 use Larapilot\Console\Commands\GitlabStatusCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
+use Larapilot\Console\Commands\MockupChooseStyleCommand;
 use Larapilot\Console\Commands\NotifyCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
@@ -109,7 +110,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '3.2.1';
+    public const VERSION = '3.2.2';
 
     public function register(): void
     {
@@ -188,6 +189,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecRequestChangesCommand::class,
                 TaskDoneCommand::class,
                 MetricsCommand::class,
+                MockupChooseStyleCommand::class,
                 UsageLogCommand::class,
                 UsageReportCommand::class,
                 ScheduleSetCommand::class,

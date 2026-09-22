@@ -11,8 +11,10 @@ use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\EconomicsService;
+use Larapilot\Services\DecisionService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupPackageService;
+use Larapilot\Services\MockupService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
 
@@ -25,6 +27,8 @@ class DashboardController
         protected InternalFeedbackService $feedback,
         protected EconomicsService $economics,
         protected MockupPackageService $mockupPackage,
+        protected MockupService $mockups,
+        protected DecisionService $decisions,
     ) {}
 
     public function index(): View
@@ -79,6 +83,13 @@ class DashboardController
         $this->guard();
 
         return view('larapilot::dashboard.usage', $this->dashboard->usage());
+    }
+
+    public function plan(): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.plan', $this->dashboard->plan());
     }
 
     public function economics(Request $request): View
@@ -145,6 +156,52 @@ class DashboardController
         return response($this->mockupPackage->presentationHtml(false), 200, [
             'Content-Type' => 'text/html; charset=UTF-8',
         ]);
+    }
+
+    public function chooseMockupStyle(Request $request, string $code): RedirectResponse
+    {
+        $this->guard();
+
+        if (! SpecCode::isValid($code)) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'style' => ['required', 'string', 'max:42', 'regex:/^[a-z0-9][a-z0-9-]{0,40}$/'],
+        ]);
+
+        try {
+            $manifest = $this->mockups->chooseStyle($code, $validated['style']);
+        } catch (\InvalidArgumentException $e) {
+            return redirect()
+                ->route('larapilot.dashboard.design')
+                ->with('larapilot_error', $e->getMessage());
+        }
+
+        $label = $validated['style'];
+
+        foreach ($manifest['styles'] as $row) {
+            if (($row['id'] ?? '') === $validated['style']) {
+                $label = (string) ($row['label'] ?? $label);
+                break;
+            }
+        }
+
+        if ($this->config->decisionLogEnabled()) {
+            $this->decisions->log([
+                'topic' => 'mockup style',
+                'value' => $validated['style'],
+                'label' => 'Mockup style for '.$code,
+                'rationale' => $label,
+                'source' => 'askquestion',
+                'skill' => 'larapilot-design',
+                'spec' => $code,
+            ]);
+        }
+
+        return redirect()
+            ->route('larapilot.dashboard.design')
+            ->with('larapilot_success', 'Style “'.$label.'” is now the direction for '.$code.'.');
     }
 
     public function designPackage(): Response

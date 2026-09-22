@@ -142,14 +142,25 @@ it('renders the usage dashboard with gantt and report download', function (): vo
     $this->get('/larapilot/usage')
         ->assertOk()
         ->assertSee('Lucille')
-        ->assertSee('Project tracking')
-        ->assertSee('Project Gantt')
+        ->assertSee('Token usage')
+        ->assertDontSee('Project Gantt')
+        ->assertDontSee('Schedule criticality')
         ->assertSee('US-001')
-        ->assertSee('Launch')
+        ->assertDontSee('Launch')
         ->assertSee('2.5K')
         ->assertSee('Zoey vs Lucille')
         ->assertSee('Ledger history')
         ->assertSee('Hours');
+
+    $this->get('/larapilot/plan')
+        ->assertOk()
+        ->assertSee('>Plan</a>', false)
+        ->assertSee('US-001')
+        ->assertSee('Launch')
+        ->assertSee('EP-001')
+        ->assertSee('Ship authentication')
+        ->assertDontSee('Zoey vs Lucille')
+        ->assertDontSee('Ledger history');
 
     $this->get('/larapilot/settings')
         ->assertOk()
@@ -224,6 +235,14 @@ it('builds dependency-aware gantt bars and formats tokens as K', function (): vo
         ->and(collect($gantt['bars'])->where('type', 'task')->count())->toBe(3)
         ->and(collect($gantt['bars'])->where('parallel', true)->count())->toBeGreaterThan(0)
         ->and($gantt['legend'])->not->toBeEmpty();
+
+    $this->get('/larapilot/plan')
+        ->assertOk()
+        ->assertSee('Bootstrap')
+        ->assertSee('US-001 — Login')
+        ->assertSee('parallel')
+        ->assertSee('EP-010')
+        ->assertSee('Invoices paid online');
 
     $criticality = $usage->criticality($gantt);
     $zoey = $usage->zoeyReconciliation();

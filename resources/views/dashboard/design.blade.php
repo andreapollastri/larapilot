@@ -326,6 +326,140 @@
     .empty-card { padding: 40px 28px; text-align: center; }
     .empty-card h2 { margin: 0 0 8px; }
     .empty-card p { margin: 0 auto 12px; max-width: 62ch; color: var(--muted); }
+
+    .design-flash {
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    .design-flash--success {
+        border: 1px solid color-mix(in srgb, var(--status-done) 45%, var(--border));
+        background: color-mix(in srgb, var(--status-done) 10%, var(--surface));
+        color: #047857;
+    }
+    .design-flash--error {
+        border: 1px solid color-mix(in srgb, #ef4444 45%, var(--border));
+        background: color-mix(in srgb, #ef4444 8%, var(--surface));
+        color: #b91c1c;
+    }
+
+    .style-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+    }
+    .style-bar[hidden] { display: none !important; }
+    .style-bar .lead {
+        font-size: 0.75rem;
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-right: 4px;
+    }
+    .style-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    .style-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .style-chip.is-active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+    .style-chip.is-chosen::after {
+        content: '✓';
+        font-size: 0.72rem;
+        color: var(--status-done);
+    }
+    .style-bar .compare-toggle {
+        margin-left: auto;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    .style-bar .compare-toggle[aria-pressed="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+    .style-choose {
+        display: inline;
+        margin: 0;
+    }
+    .style-choose .btn-mini {
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 650;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .compare-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: 12px;
+        padding: 14px;
+        border-top: 1px solid var(--border);
+        background: color-mix(in srgb, var(--border) 25%, var(--surface));
+    }
+    .compare-grid[hidden] { display: none !important; }
+    .compare-card {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--surface);
+    }
+    .compare-card.is-chosen { border-color: var(--status-done); box-shadow: 0 0 0 1px color-mix(in srgb, var(--status-done) 35%, transparent); }
+    .compare-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.78rem;
+        font-weight: 650;
+    }
+    .compare-head .tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--status-done);
+    }
+    .compare-frame {
+        width: 100%;
+        height: 220px;
+        border: 0;
+        background: #fff;
+    }
 </style>
 @endpush
 
@@ -342,10 +476,7 @@
         // order, entry screen first.
         $flows = [];
 
-        foreach ($items as $item) {
-            $entry = $item['entry'] ?? null;
-            $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
-
+        $normalizeScreens = static function (array $screens, ?string $entry): array {
             usort($screens, static function (array $a, array $b) use ($entry): int {
                 $aEntry = ($a['file'] ?? null) === $entry ? 0 : 1;
                 $bEntry = ($b['file'] ?? null) === $entry ? 0 : 1;
@@ -360,12 +491,24 @@
                     continue;
                 }
 
+                $file = (string) ($screen['file'] ?? '');
+
                 $normalized[] = [
                     'url' => (string) $screen['url'],
-                    'label' => (string) ($screen['label'] ?? $screen['file'] ?? ''),
-                    'entry' => ($screen['file'] ?? null) === $entry,
+                    'label' => (string) ($screen['label'] ?? $file),
+                    'file' => $file,
+                    'slug' => pathinfo($file, PATHINFO_FILENAME),
+                    'entry' => $file !== '' && $file === $entry,
                 ];
             }
+
+            return $normalized;
+        };
+
+        foreach ($items as $item) {
+            $entry = $item['entry'] ?? null;
+            $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
+            $normalized = $normalizeScreens($screens, is_string($entry) ? $entry : null);
 
             if ($normalized === []) {
                 continue;
@@ -373,6 +516,32 @@
 
             $code = (string) ($item['code'] ?? '');
             $title = (string) ($item['title'] ?? $code);
+            $rawStyles = is_array($item['styles'] ?? null) ? $item['styles'] : [];
+            $styleOptions = [];
+
+            foreach ($rawStyles as $style) {
+                if (! is_array($style) || empty($style['id']) || ($style['id'] ?? '') === 'current') {
+                    continue;
+                }
+
+                $styleEntry = $style['entry'] ?? null;
+                $styleScreens = $normalizeScreens(
+                    is_array($style['screens'] ?? null) ? $style['screens'] : [],
+                    is_string($styleEntry) ? $styleEntry : null
+                );
+
+                if ($styleScreens === []) {
+                    continue;
+                }
+
+                $styleOptions[] = [
+                    'id' => (string) $style['id'],
+                    'label' => (string) ($style['label'] ?? $style['id']),
+                    'chosen' => (bool) ($style['chosen'] ?? false),
+                    'entry_url' => (string) ($style['entry_url'] ?? $styleScreens[0]['url']),
+                    'screens' => $styleScreens,
+                ];
+            }
 
             $flows[] = [
                 'code' => $code,
@@ -380,6 +549,9 @@
                 'label' => $code.' — '.$title,
                 'entry_url' => (string) ($item['entry_url'] ?? $normalized[0]['url']),
                 'screens' => $normalized,
+                'styles' => $styleOptions,
+                'has_variants' => count($styleOptions) > 1,
+                'chosen_style' => $item['chosen_style'] ?? null,
             ];
         }
 
@@ -403,11 +575,21 @@
                 $stops[] = [
                     'url' => $screen['url'],
                     'flow' => $flow['label'],
+                    'flow_code' => $flow['code'],
                     'label' => $screen['label'],
+                    'slug' => $screen['slug'],
                     'entry' => $screen['entry'],
                 ];
 
                 $allScreens[] = $screen + ['code' => $flow['code'], 'flow_title' => $flow['title']];
+            }
+        }
+
+        $flowStyles = [];
+
+        foreach ($flows as $flow) {
+            if (($flow['has_variants'] ?? false) && ($flow['styles'] ?? []) !== []) {
+                $flowStyles[$flow['code']] = $flow['styles'];
             }
         }
 
@@ -426,6 +608,13 @@
     @endphp
 
     <div class="design-page">
+        @if (session('larapilot_success'))
+            <p class="design-flash design-flash--success">{{ session('larapilot_success') }}</p>
+        @endif
+        @if (session('larapilot_error'))
+            <p class="design-flash design-flash--error">{{ session('larapilot_error') }}</p>
+        @endif
+
         <div class="design-top">
             <div>
                 <h2>Design</h2>
@@ -435,7 +624,7 @@
                         — {{ $catalog['spec_count'] }} flow{{ $catalog['spec_count'] === 1 ? '' : 's' }},
                         {{ $catalog['screen_count'] }} screen{{ $catalog['screen_count'] === 1 ? '' : 's' }}
                     @endif
-                    . Pick one from the gallery, step through them with the arrows, or start at the presentation index.
+                    . Pick one from the gallery, step through them with the arrows, or compare style variants side by side and lock the one to implement.
                     Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
                 </p>
             </div>
@@ -512,7 +701,13 @@
                                 <a class="btn ghost" id="design-open" href="{{ $startStop['url'] ?? $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
                             </div>
                         </div>
+                        <div class="style-bar" id="style-bar" hidden>
+                            <span class="lead">Style</span>
+                            <div id="style-chips"></div>
+                            <button type="button" class="compare-toggle" id="compare-toggle" aria-pressed="false">Compare styles</button>
+                        </div>
                         <iframe id="design-frame" class="design-frame" src="{{ $startStop['url'] ?? $presentationUrl }}" title="Design viewer"></iframe>
+                        <div class="compare-grid" id="compare-grid" hidden></div>
                     </section>
 
                     <section class="card screen-section" id="flow-gallery" hidden>
@@ -561,6 +756,9 @@
         if (!frame) return;
 
         const stops = @json(array_values($stops));
+        const flowStyles = @json($flowStyles);
+        const styleChooseUrl = @json(route('larapilot.dashboard.design.style', ['code' => '__CODE__']));
+        const csrf = @json(csrf_token());
         const start = @json($start);
         const caption = document.getElementById('design-caption');
         const flowLabel = document.getElementById('design-flow');
@@ -571,7 +769,13 @@
         const gallery = document.getElementById('flow-gallery');
         const galleryTitle = document.getElementById('flow-gallery-title');
         const galleryGrid = document.getElementById('flow-gallery-grid');
+        const styleBar = document.getElementById('style-bar');
+        const styleChips = document.getElementById('style-chips');
+        const compareToggle = document.getElementById('compare-toggle');
+        const compareGrid = document.getElementById('compare-grid');
         let current = start;
+        let compareOpen = false;
+        let activeStyle = {};
 
         const indexOf = (src) => stops.findIndex((stop) => stop.url === src);
 
@@ -616,6 +820,108 @@
             return node;
         };
 
+        const urlForStyle = (styles, slug, fallback) => {
+            for (const style of styles) {
+                const match = (style.screens || []).find((screen) => screen.slug === slug);
+                if (match) return match.url;
+            }
+            return fallback;
+        };
+
+        const renderStyleBar = (stop) => {
+            if (!styleBar || !styleChips) return;
+
+            const styles = flowStyles[stop.flow_code] || [];
+
+            if (styles.length < 2 || stop.flow === 'Overview') {
+                styleBar.hidden = true;
+                styleChips.innerHTML = '';
+                if (compareGrid) compareGrid.hidden = true;
+                return;
+            }
+
+            styleBar.hidden = false;
+            const styleId = activeStyle[stop.flow_code] || styles.find((s) => s.chosen)?.id || styles[0].id;
+            activeStyle[stop.flow_code] = styleId;
+            styleChips.innerHTML = '';
+
+            styles.forEach((style) => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'style-chip' + (style.id === styleId ? ' is-active' : '') + (style.chosen ? ' is-chosen' : '');
+                chip.textContent = style.label;
+                chip.addEventListener('click', () => {
+                    activeStyle[stop.flow_code] = style.id;
+                    const url = urlForStyle([style], stop.slug, style.entry_url);
+                    frame.src = url;
+                    renderStyleBar(stop);
+                    if (compareOpen) renderCompare(stop);
+                });
+                styleChips.appendChild(chip);
+            });
+
+            if (compareOpen) renderCompare(stop);
+        };
+
+        const renderCompare = (stop) => {
+            if (!compareGrid) return;
+
+            const styles = flowStyles[stop.flow_code] || [];
+            compareGrid.innerHTML = '';
+
+            if (styles.length < 2) {
+                compareGrid.hidden = true;
+                return;
+            }
+
+            compareGrid.hidden = false;
+
+            styles.forEach((style) => {
+                const url = urlForStyle([style], stop.slug, style.entry_url);
+                const card = document.createElement('article');
+                card.className = 'compare-card' + (style.chosen ? ' is-chosen' : '');
+
+                const head = document.createElement('div');
+                head.className = 'compare-head';
+                head.innerHTML = '<span>' + style.label + '</span>';
+                if (style.chosen) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = 'Chosen';
+                    head.appendChild(tag);
+                } else {
+                    const form = document.createElement('form');
+                    form.className = 'style-choose';
+                    form.method = 'post';
+                    form.action = styleChooseUrl.replace('__CODE__', stop.flow_code);
+                    form.innerHTML = '<input type="hidden" name="_token" value="' + csrf + '">'
+                        + '<input type="hidden" name="style" value="' + style.id + '">'
+                        + '<button type="submit" class="btn-mini">Use this style</button>';
+                    head.appendChild(form);
+                }
+
+                const preview = document.createElement('iframe');
+                preview.className = 'compare-frame';
+                preview.src = url;
+                preview.loading = 'lazy';
+                preview.title = style.label;
+
+                card.appendChild(head);
+                card.appendChild(preview);
+                compareGrid.appendChild(card);
+            });
+        };
+
+        if (compareToggle) {
+            compareToggle.addEventListener('click', () => {
+                compareOpen = !compareOpen;
+                compareToggle.setAttribute('aria-pressed', compareOpen ? 'true' : 'false');
+                const stop = stops[current];
+                if (compareOpen && stop) renderCompare(stop);
+                else if (compareGrid) compareGrid.hidden = true;
+            });
+        }
+
         const renderGallery = (stop) => {
             if (!gallery || !galleryGrid) return;
 
@@ -650,6 +956,7 @@
             });
 
             renderGallery(stop);
+            renderStyleBar(stop);
         };
 
         const go = (position) => {

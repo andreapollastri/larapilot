@@ -52,13 +52,15 @@ it('serves the inception and docs dashboard pages', function (): void {
 
     $html = $this->get('/larapilot')
         ->assertOk()
+        ->assertSee('>Plan</a>', false)
         ->assertSee('>Usage</a>', false)
         ->assertSee('>Economics</a>', false)
         ->assertSee('>Design</a>', false)
         ->assertSee('>Docs</a>', false)
         ->getContent();
 
-    expect(strrpos($html, '>Docs</a>'))->toBeGreaterThan(strpos($html, '>Economics</a>'));
+    expect(strpos($html, '>Plan</a>'))->toBeLessThan(strpos($html, '>Design</a>'))
+        ->and(strrpos($html, '>Docs</a>'))->toBeGreaterThan(strpos($html, '>Economics</a>'));
 });
 
 it('serves the skills dashboard page with custom skill descriptions', function (): void {
@@ -95,6 +97,7 @@ it('hides the dashboard in production environment', function (): void {
     $this->get('/larapilot/skills')->assertNotFound();
     $this->get('/larapilot/git')->assertNotFound();
     $this->get('/larapilot/usage')->assertNotFound();
+    $this->get('/larapilot/plan')->assertNotFound();
     $this->get('/larapilot/economics')->assertNotFound();
     $this->get('/larapilot/economics/panel')->assertNotFound();
     $this->get('/larapilot/design')->assertNotFound();

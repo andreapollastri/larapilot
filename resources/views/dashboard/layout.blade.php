@@ -246,6 +246,7 @@
                 <a href="{{ route('larapilot.dashboard.index') }}" @class(['active' => request()->routeIs('larapilot.dashboard.index')])>Board</a>
                 <a href="{{ route('larapilot.dashboard.prd') }}" @class(['active' => request()->routeIs('larapilot.dashboard.prd')])>PRD</a>
                 <a href="{{ route('larapilot.dashboard.inception') }}" @class(['active' => request()->routeIs('larapilot.dashboard.inception')])>Inception</a>
+                <a href="{{ route('larapilot.dashboard.plan') }}" @class(['active' => request()->routeIs('larapilot.dashboard.plan')])>Plan</a>
                 <a href="{{ route('larapilot.dashboard.design') }}" @class(['active' => request()->routeIs('larapilot.dashboard.design*')])>Design</a>
                 <a href="{{ route('larapilot.dashboard.settings') }}" @class(['active' => request()->routeIs('larapilot.dashboard.settings')])>Settings</a>
                 <a href="{{ route('larapilot.dashboard.skills') }}" @class(['active' => request()->routeIs('larapilot.dashboard.skills')])>Skills</a>

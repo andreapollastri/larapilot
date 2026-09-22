@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.1</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v3.2.2</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -4801,7 +4801,8 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
           <h3>Usage &amp; Lucille</h3>
           <p class="lead"><strong>Lucille</strong> keeps a committed ledger of AI tokens and wall-clock time, plus
             delivery deadlines. Every skill may append an entry at session end; <code>/larapilot-usage</code>
-            interrogates the data. Dashboard <strong>Usage</strong> mirrors charts, Gantt, and a Markdown download.
+            interrogates the data. Dashboard <strong>Usage</strong> is the token and hour ledger;
+            <strong>Plan</strong> is the Gantt and the deadlines. Usage still offers the Markdown download.
           </p>
 
           <h4>Categories</h4>
@@ -4830,8 +4831,9 @@ php artisan larapilot:schedule-set --deadline=2026-09-15 --label="MVP go-live" -
             with <code>--effort=ECO</code>.
           </p>
 
-          <p>Dashboard: <code>/larapilot/usage</code> · download <code>/larapilot/usage/report.md</code> (dev/staging
-            only). MCP <code>RunArtisanTool</code> allows <code>larapilot:usage-report</code>.</p>
+          <p>Dashboard: <code>/larapilot/usage</code> for tokens · <code>/larapilot/plan</code> for the Gantt and
+            deadlines · download <code>/larapilot/usage/report.md</code> (dev/staging only). MCP
+            <code>RunArtisanTool</code> allows <code>larapilot:usage-report</code>.</p>
         </article>
 
         <!-- Integrations -->
@@ -6544,10 +6546,17 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Discovery choices snapshot from <code>.larapilot/choices.yaml</code></td>
                 </tr>
                 <tr>
+                  <td><strong>Plan</strong></td>
+                  <td><code>/larapilot/plan</code></td>
+                  <td>Dependency-aware Gantt grouped by epic (time axis, today marker, task filters), milestones, and schedule criticality</td>
+                </tr>
+                <tr>
                   <td><strong>Design</strong></td>
                   <td><code>/larapilot/design</code></td>
                   <td>One navigable index: presentation cover, ordered walk through every flow with
-                    prev/next, per-flow gallery, download
+                    prev/next, per-flow gallery, <strong>style variants</strong> under
+                    <code>mockups/{spec}/styles/{slug}/</code> with side-by-side compare and
+                    <strong>Use this style</strong>, download
                     <code>/larapilot/design/package.zip</code> (HTML + assets)</td>
                 </tr>
                 <tr>
@@ -6570,8 +6579,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Usage</strong></td>
                   <td><code>/larapilot/usage</code></td>
-                  <td>Lucille charts (tokens/time by category), living Gantt (specs + milestones), download
-                    <code>/larapilot/usage/report.md</code></td>
+                  <td>Lucille token and hour ledger by category, plus download
+                    <code>/larapilot/usage/report.md</code>. Schedule and Gantt are on Plan</td>
                 </tr>
                 <tr>
                   <td><strong>Economics</strong></td>

@@ -59,30 +59,54 @@ class MockupPackageService
             $code = (string) ($item['code'] ?? '');
             $safeCode = $this->escape($code);
             $itemTitle = $this->escape((string) ($item['title'] ?? $code));
+            $styleGroups = is_array($item['styles'] ?? null) ? $item['styles'] : [];
             $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
             $entry = $item['entry'] ?? null;
             $links = '';
+            $listed = 0;
 
-            foreach ($screens as $screen) {
-                if (! is_array($screen)) {
-                    continue;
+            $appendScreens = function (array $groupScreens, ?string $groupEntry) use (&$links, &$startHref, &$startLabel, &$listed, $code, $safeCode, $forZip): void {
+                foreach ($groupScreens as $screen) {
+                    if (! is_array($screen)) {
+                        continue;
+                    }
+
+                    $file = (string) ($screen['file'] ?? '');
+                    $label = $this->escape((string) ($screen['label'] ?? $file));
+                    $href = $this->screenHref($code, $screen, $forZip);
+                    $isEntry = $file !== '' && $file === $groupEntry;
+                    $listed++;
+
+                    $links .= '<a class="screen'.($isEntry ? ' is-entry' : '').'" href="'.$href.'">'.$label.'</a>';
+
+                    if ($startHref === null && $isEntry) {
+                        $startHref = $href;
+                        $startLabel = $safeCode.' · '.$label;
+                    }
                 }
+            };
 
-                $file = (string) ($screen['file'] ?? '');
-                $label = $this->escape((string) ($screen['label'] ?? $file));
-                $href = $this->screenHref($code, $screen, $forZip);
-                $isEntry = $file !== '' && $file === $entry;
+            if (count($styleGroups) > 1) {
+                foreach ($styleGroups as $style) {
+                    if (! is_array($style)) {
+                        continue;
+                    }
 
-                $links .= '<a class="screen'.($isEntry ? ' is-entry' : '').'" href="'.$href.'">'.$label.'</a>';
-
-                if ($startHref === null && $isEntry) {
-                    $startHref = $href;
-                    $startLabel = $safeCode.' · '.$label;
+                    $styleLabel = $this->escape((string) ($style['label'] ?? $style['id'] ?? ''));
+                    $badge = ! empty($style['chosen']) ? ' · '.$this->escape($copy['chosen']) : '';
+                    $links .= '<p class="count">'.$styleLabel.$badge.'</p><div class="screens">';
+                    $appendScreens(
+                        is_array($style['screens'] ?? null) ? $style['screens'] : [],
+                        is_string($style['entry'] ?? null) ? $style['entry'] : null
+                    );
+                    $links .= '</div>';
                 }
+            } else {
+                $appendScreens($screens, is_string($entry) ? $entry : null);
             }
 
             $number = str_pad((string) $index, 2, '0', STR_PAD_LEFT);
-            $count = $this->escape(sprintf($copy['screens'], count($screens)));
+            $count = $this->escape(sprintf($copy['screens'], $listed > 0 ? $listed : count($screens)));
             $cards .= <<<HTML
             <article class="card">
                 <div class="num">{$number}</div>
@@ -496,7 +520,7 @@ HTML;
     }
 
     /**
-     * @return array{kicker: string, contents: string, lead: string, meta: string, empty: string, start: string, start_hint: string, screens: string}
+     * @return array{kicker: string, contents: string, lead: string, meta: string, empty: string, start: string, start_hint: string, screens: string, chosen: string}
      */
     protected function copy(string $lang): array
     {
@@ -510,6 +534,7 @@ HTML;
                 'start' => 'Inizia dalla prima schermata',
                 'start_hint' => 'Parti da:',
                 'screens' => '%d schermate · la prima è il punto di ingresso',
+                'chosen' => 'scelta',
             ],
             'es' => [
                 'kicker' => 'Presentación de diseño',
@@ -520,6 +545,7 @@ HTML;
                 'start' => 'Empieza por la primera pantalla',
                 'start_hint' => 'Empieza en:',
                 'screens' => '%d pantallas · la primera es la de entrada',
+                'chosen' => 'elegida',
             ],
             'fr' => [
                 'kicker' => 'Présentation design',
@@ -530,6 +556,7 @@ HTML;
                 'start' => 'Commencer par le premier écran',
                 'start_hint' => 'Départ :',
                 'screens' => '%d écrans · le premier est l\'écran d\'entrée',
+                'chosen' => 'retenu',
             ],
             'de' => [
                 'kicker' => 'Design-Präsentation',
@@ -540,6 +567,7 @@ HTML;
                 'start' => 'Mit dem ersten Bildschirm beginnen',
                 'start_hint' => 'Beginn bei:',
                 'screens' => '%d Bildschirme · der erste ist der Einstieg',
+                'chosen' => 'gewählt',
             ],
             'pt' => [
                 'kicker' => 'Apresentação de design',
@@ -550,6 +578,7 @@ HTML;
                 'start' => 'Começar pelo primeiro ecrã',
                 'start_hint' => 'Início em:',
                 'screens' => '%d ecrãs · o primeiro é o ponto de entrada',
+                'chosen' => 'escolhido',
             ],
             'nl' => [
                 'kicker' => 'Designpresentatie',
@@ -560,6 +589,7 @@ HTML;
                 'start' => 'Begin bij het eerste scherm',
                 'start_hint' => 'Start bij:',
                 'screens' => '%d schermen · het eerste is het startpunt',
+                'chosen' => 'gekozen',
             ],
             'pl' => [
                 'kicker' => 'Prezentacja projektu',
@@ -570,6 +600,7 @@ HTML;
                 'start' => 'Zacznij od pierwszego ekranu',
                 'start_hint' => 'Start od:',
                 'screens' => '%d ekranów · pierwszy jest ekranem wejściowym',
+                'chosen' => 'wybrany',
             ],
             default => [
                 'kicker' => 'Design presentation',
@@ -580,6 +611,7 @@ HTML;
                 'start' => 'Start at the first screen',
                 'start_hint' => 'Starting at:',
                 'screens' => '%d screens · the first one is the entry point',
+                'chosen' => 'chosen',
             ],
         };
     }

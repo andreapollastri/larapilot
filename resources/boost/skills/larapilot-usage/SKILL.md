@@ -50,7 +50,7 @@ Filters on `usage-report`: `--category=` · `--user=` (substring) · `--skill=` 
 
 Categories: `analysis` · `planning` · `implementation` · `support` · `feature` · `review` · `ship` · `other`.
 
-Dashboard mirrors the same data at `/larapilot/usage` (dev/staging only).
+Dashboard: token and hour ledger at `/larapilot/usage`; deadlines, epics, and the Gantt at `/larapilot/plan` (dev/staging only).
 
 ## Workflow
 
@@ -97,7 +97,7 @@ Structure:
 2. **Breakdown** — top categories with share %; hot specs when relevant.
 3. **Schedule** — next deadline, days until, any `at_risk` / `delayed` / overdue; mention epic deadline slips from `insights.criticality` when present.
 4. **Zoey caveat** — if the user compares Zoey `context ≈ Nk` to Lucille totals, explain via `insights.zoey` (loaded context ≠ ledger spend). If `estimated_entry_count` is high, note that many rows are estimates.
-5. **Pointer** — dashboard `/larapilot/usage` and/or exported MD path when useful.
+5. **Pointer** — dashboard `/larapilot/usage` for tokens, `/larapilot/plan` for the Gantt and deadlines, and/or the exported MD path when useful.
 
 Keep chat under ~12 lines unless the user asked for a full dump. For full dumps, prefer `--format=md` + `--output=` and summarize.
 

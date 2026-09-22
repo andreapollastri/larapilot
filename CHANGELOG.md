@@ -2,6 +2,21 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [3.2.2] - 2026-09-22
+
+### Added
+
+- **Dashboard — Plan** — new `/larapilot/plan` nav item (before Design) for schedule and delivery planning: epics, milestones, schedule criticality, and a dependency-aware Gantt with a time axis, today marker, epic grouping, and filters for assignee, status, and task detail. Schedule notes from Lucille appear when present.
+- **Design — compare mockup styles before you commit** — `/larapilot-design` can AskQuestion with **`allow_multiple: true`** so Elise mocks several visual directions in parallel under `.larapilot/mockups/{spec}/styles/{slug}/` (same screen filenames in each folder). `/larapilot/design` adds a style switcher, **Compare styles** (side-by-side iframes), and **Use this style** (writes `styles.yaml`, logs `mockup style` when the journal is on). CLI: `php artisan larapilot:mockup-choose-style US-XXX --style=filament`. Single-style mockups at the folder root are unchanged.
+
+### Changed
+
+- **Dashboard — Usage is tokens only** — `/larapilot/usage` keeps the Lucille ledger (totals, Zoey reconciliation, category bars, history, Markdown report download). Epics, deadlines, Gantt, and schedule criticality moved to **Plan**. Usage and Plan cross-link from their page headers.
+
+### Docs
+
+- Site / package version **v3.2.2**; `docs/index.html` documents **Plan** and style-variant compare on **Design**; `larapilot-design` skill, `runtime-ux.md`, `runtime-ops.md`, and dashboard docs describe the Usage/Plan split and multi-style mockup workflow.
+
 ## [3.2.1] - 2026-09-21
 
 ### Added

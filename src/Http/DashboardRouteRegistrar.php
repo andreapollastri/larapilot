@@ -59,6 +59,9 @@ class DashboardRouteRegistrar
                 Route::get('/git', [DashboardController::class, 'git'])
                     ->name('larapilot.dashboard.git');
 
+                Route::get('/plan', [DashboardController::class, 'plan'])
+                    ->name('larapilot.dashboard.plan');
+
                 Route::get('/usage', [DashboardController::class, 'usage'])
                     ->name('larapilot.dashboard.usage');
 
@@ -82,6 +85,10 @@ class DashboardRouteRegistrar
 
                 Route::get('/design/package.zip', [DashboardController::class, 'designPackage'])
                     ->name('larapilot.dashboard.design.package');
+
+                Route::post('/design/mockups/{code}/style', [DashboardController::class, 'chooseMockupStyle'])
+                    ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
+                    ->name('larapilot.dashboard.design.style');
 
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')

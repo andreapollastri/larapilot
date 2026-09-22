@@ -38,6 +38,7 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 1. `php artisan larapilot:config-show` — read `paths.mockups`, `paths.client_materials`, `paths.research`, `paths.design_systems`
 2. Read PRD (`paths.prd`) — especially `## Technical Architecture` (admin panel, CSS framework, Starter Kit variant)
 3. When `data.settings.decision_log` is `YES` (default), run `php artisan larapilot:decision-check --topic="design system" --value="<candidate>"` before switching away from a logged choice; after the gate settles, `php artisan larapilot:decision-log --topic="design system" --value="…" --source=askquestion --skill=larapilot-design [--spec=US-XXX] [--rationale="…"]` (and separate entries for custom aesthetic: palette, typography, tone when created from scratch)
+4. After the user picks a winning style among variants: `php artisan larapilot:mockup-choose-style US-XXX --style=filament` (writes `styles.yaml`, logs `mockup style` when the journal is on). Dashboard: `/larapilot/design` → **Compare styles** → **Use this style**.
 
 ## Workflow
 
@@ -92,8 +93,9 @@ Build options **dynamically** from §0a:
 - Include **`CLIENT_BRAND`** when `{paths.client_materials}/` has brand guidelines but no system folder — “Follow client brand materials (no packaged system)”
 - **Always** include **`NEW_CUSTOM`** last — never omit the from-scratch path
 
-- **AskQuestion prompt:** `Design system (current: {VALUE or "not set"}) — which visual system should these mockups follow?`
-- **Chat framing (one line):** 🎨 Elise + ✨ Joe — locks tokens, components, and admin vs public language before any HTML.
+- **AskQuestion prompt:** `Design system (current: {VALUE or "not set"}) — which visual system(s) should these mockups explore? Pick one to lock a direction, or several to compare side by side on /larapilot/design.`
+- **AskQuestion:** set **`allow_multiple: true`** so the user can pick more than one packaged/custom system or aesthetic to mock in parallel.
+- **Chat framing (one line):** 🎨 Elise + ✨ Joe — locks tokens, components, and admin vs public language before any HTML; multiple picks become separate style folders you compare before choosing one to implement.
 
 | Option id | AskQuestion label (adapt `{name}` from folder scan) |
 | --- | --- |
@@ -109,11 +111,29 @@ Build options **dynamically** from §0a:
 
 Only list options that apply; **always** list `NEW_CUSTOM`. If the user picks a packaged/custom folder, read that folder’s `README.md` + `components.md` (+ `tokens.css`, `html/` catalog) before Stage 1.
 
+**Multi-style layout (when Round 1 returns more than one option, or the user asks to compare looks)**
+
+1. Create **one folder per style** under `.larapilot/mockups/{spec}/styles/{slug}/` — `{slug}` is lowercase kebab-case (`filament`, `nordic-minimal`, `warm-editorial`, …). Do **not** mix two aesthetics in one HTML tree.
+2. Write the **same screen set** in every chosen style (matching filenames: `index.html`, `desktop.html`, …) so `/larapilot/design` can compare them screen by screen.
+3. Seed `.larapilot/mockups/{spec}/styles.yaml`:
+
+```yaml
+styles:
+  - id: filament
+    label: Filament admin
+  - id: nordic-minimal
+    label: Nordic minimal
+# chosen: filament   # omit until the user picks on /larapilot/design or via CLI
+```
+
+4. After the user chooses, set `chosen:` to the winning slug (`php artisan larapilot:mockup-choose-style {spec} --style={slug}` or the dashboard **Use this style** button). Implementation follows **only** the chosen folder; the others stay as reference.
+
 **Round 2 — Custom aesthetic (required when `NEW_CUSTOM`, or when `CLIENT_BRAND` / `EXISTING_MOCKUPS` needs a named direction)**
 
-Propose concrete directions — user can pick one or combine via a follow-up chat message.
+Propose concrete directions — user can pick **one or several** (`allow_multiple: true`) to mock in parallel.
 
-- **AskQuestion prompt:** `Visual direction — what aesthetic should Elise apply? (mobile-first, light + dark unless you opt out)`
+- **AskQuestion prompt:** `Visual direction — which aesthetic(s) should Elise mock up? (mobile-first, light + dark unless you opt out)`
+- **AskQuestion:** set **`allow_multiple: true`** when comparing more than one look.
 - **Chat framing (one line):** 🎨 Elise — Nordic minimal is the Larapilot default for **public** UI only when you confirm it here or in the PRD; otherwise treat these as explicit proposals.
 
 | Option id | AskQuestion label |
@@ -144,8 +164,8 @@ When the user picks `DESCRIBE_OTHER` or adds detail in chat, ask **one** short c
 
 After the gate:
 
-1. Log the choice (`decision-log` when enabled) — topic `design system` (and `visual direction` when `NEW_CUSTOM`)
-2. Mockup **README.md** must record: chosen system path (or “custom from scratch”), aesthetic tokens, admin vs public scope, and link to `{paths.design_systems}/{folder}/` when applicable
+1. Log the choice (`decision-log` when enabled) — topic `design system` (and `visual direction` when `NEW_CUSTOM`). When several styles were mocked, log the **chosen** slug only after the user picks (`mockup style` topic).
+2. Mockup **README.md** must record: chosen system path (or “custom from scratch”), aesthetic tokens, admin vs public scope, link to `{paths.design_systems}/{folder}/` when applicable, and — when `styles/` exists — the list of style slugs and which one is `chosen` in `styles.yaml`
 3. For **user-added** folders, treat them like packaged systems: copy/link `tokens.css`, map screens to `html/` catalog if present
 4. For **NEW_CUSTOM**, define tokens in README (colors, type scale, radius, spacing, motion) before `index.html`
 

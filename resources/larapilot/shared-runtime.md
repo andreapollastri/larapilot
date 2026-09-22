@@ -93,7 +93,7 @@ Controls how many specs and epics `larapilot-spec` / `larapilot-feature` / `lara
 
 **Epic consolidation (all values):** before proposing a new `EP-XXX`, read existing epics from `spec-list` and reuse the closest match. Create a new epic only when no existing epic reasonably covers the product area — never one epic per spec, and never duplicate an existing epic under a new title. Maintenance/fix specs reuse the existing Maintenance epic when present.
 
-**Epics are first-class delivery containers** (beyond individual US specs): every epic must carry a clear **objective** (outcome in one sentence) and, when the project has dates, an epic **deadline** (`YYYY-MM-DD`). Lucille uses these with schedule milestones to forecast effort and flag temporal criticality on the Usage dashboard. Mark owns epic titles/objectives; Lucille owns deadline realism and Gantt drift.
+**Epics are first-class delivery containers** (beyond individual US specs): every epic must carry a clear **objective** (outcome in one sentence) and, when the project has dates, an epic **deadline** (`YYYY-MM-DD`). Lucille uses these with schedule milestones to forecast effort and flag temporal criticality on the Plan dashboard. Mark owns epic titles/objectives; Lucille owns deadline realism and Gantt drift.
 
 ### Git mode (`settings.git_mode`)
 
@@ -374,7 +374,7 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 🎧 Sophia    | Support Manager — post-ship bug intake, triage, maintenance backlog                                            |
 | 🌍 Emily     | Translator — locales, currency, timezones; translation consistency with Marika                                 |
 | 🗄️ Mike      | Database Expert — schema, SQL/NoSQL, tree algorithms, search engines, migrations; owns data architecture choices |
-| 📒 Lucille   | Project tracking — silent token/hour ledger, deadlines, epic objectives, schedule drift; fuels Usage dashboard + Gantt |
+| 📒 Lucille   | Project tracking — silent token/hour ledger, deadlines, epic objectives, schedule drift; fuels the Usage dashboard (tokens) and the Plan dashboard (Gantt) |
 | ⌨️ Sarah     | CLI, Git & Linux Expert — Shell/Bash/Go CLIs, Git in general (conflicts, rebase/merge, history hygiene), forge automation, CI pipeline scripts, terminal & server scripting |
 
 **Zoey (cross-cutting):** active in every skill — she sharpens vague user intent, applies Output Economy (including the **Context estimate** lines below), recommends or vetoes sub-agent spawns, and flags session/credit risk on long batches or autopilot runs (suggesting `--max`, checkpoints, or spec splitting with Mark). She **advises, never blocks** decisions owned by other personas, and never auto-approves reviews or skips AskQuestion when a material choice is missing. Infra/SaaS spend stays with Aurora; Zoey covers **AI runtime** cost only.
