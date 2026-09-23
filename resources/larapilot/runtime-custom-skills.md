@@ -34,7 +34,7 @@ Zoey drafts the `SKILL.md` body; Sarah saves it with `larapilot:custom-skill-add
 
 ## ON / OFF
 
-Custom skills are **always available** once written — there is no global toggle. Remove a skill by deleting its folder (then re-run `custom-skill-list` or `larapilot:update` so Boost drops the stale copy). Packaged Larapilot skills remain the default workflow; custom skills are opt-in via their slash command.
+Custom skills are **always available** once written — there is no global toggle. Remove a skill by deleting `.larapilot/skills/{name}/` **and** its mirrors in `.ai/skills/{name}/` and any agent skill folder it was copied to (`.claude/skills/`, `.cursor/skills/`, …), then run `php artisan boost:update`. Registration (`custom-skill-add`, `custom-skill-list`, `larapilot:update`, the Skills page) only adds and refreshes copies — it never deletes one. Packaged Larapilot skills remain the default workflow; custom skills are opt-in via their slash command.
 
 ## Quality bar
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, /larapilot-* skills, Package project kind, Lucille usage ledger, optional GitHub/GitLab/Bitbucket/Azure DevOps and chat notifications." />
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 20 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1323,16 +1323,19 @@
       <a class="sub" href="#example-tracker-sync">Tracker sync</a>
       <a class="sub" href="#example-team-server">Team on one server</a>
       <a class="sub" href="#example-ssh-tmux">SSH, VS Code &amp; tmux</a>
+      <a class="sub" href="#example-custom-skill">Your own skill</a>
 
       <div class="docs-nav-label">Core</div>
       <a href="#deep-dive">Deep Dive</a>
       <a class="sub" href="#deep-dive-how-it-works">How it works</a>
       <a class="sub" href="#deep-dive-update">Upgrade</a>
       <a class="sub" href="#deep-dive-skills">Skills</a>
+      <a class="sub" href="#deep-dive-custom-skills">Custom skills</a>
       <a class="sub" href="#deep-dive-settings">Settings</a>
       <a class="sub" href="#deep-dive-personas">Personas</a>
       <a class="sub" href="#deep-dive-workflow">Workflow</a>
       <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
+      <a class="sub" href="#deep-dive-dev-docs">Domain docs</a>
       <a class="sub" href="#deep-dive-usage">Usage &amp; Lucille</a>
 
       <div class="docs-nav-label">Integrations</div>
@@ -1410,6 +1413,22 @@
         <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick
           up new skills.</p>
 
+        <h3>Connect the MCP servers</h3>
+        <p><code>boost:install</code> usually registers them for you. If your editor does not list a
+          <code>larapilot</code> server, add both by hand — Boost brings Laravel context (docs search, schema,
+          Tinker), Larapilot brings the workflow (backlog, spec, diagnostics, read-only Artisan):</p>
+        <div class="code-block">
+          <div class="code-block-header">.mcp.json — or your editor's MCP settings</div>
+          <pre><code>{
+  "mcpServers": {
+    "laravel-boost": { "command": "php", "args": ["artisan", "boost:mcp"] },
+    "larapilot":     { "command": "php", "args": ["artisan", "mcp:start", "larapilot"] }
+  }
+}</code></pre>
+        </div>
+        <p>Check the install at any time with <code>php artisan larapilot:doctor</code> (add <code>--human</code>
+          for a table instead of JSON).</p>
+
         <h3>Upgrade</h3>
         <p>After a new Larapilot release — pull the package with Composer, then refresh project assets with Artisan.
           Details: <a href="#deep-dive-update">Upgrade</a>.</p>
@@ -1436,8 +1455,34 @@
         </p>
 
         <h3>First run</h3>
-        <p><code>/larapilot-inception "your idea"</code>. Full walkthrough: <a href="#example-new-product">new product
-            example</a>.</p>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Your project</th>
+                <th>Type in the editor</th>
+                <th>Walkthrough</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A new idea — app, site, or Laravel package</td>
+                <td><code>/larapilot-inception "your idea"</code></td>
+                <td><a href="#example-new-product">New product</a> · <a href="#example-package">Package</a></td>
+              </tr>
+              <tr>
+                <td>A Laravel app already in production, built without Larapilot</td>
+                <td><code>/larapilot-adopt</code></td>
+                <td><a href="#example-adopt">Adopt existing app</a></td>
+              </tr>
+              <tr>
+                <td>A legacy system you are rewriting in Laravel</td>
+                <td><code>/larapilot-inception</code> with a snapshot in <code>.larapilot/legacy/</code></td>
+                <td><a href="#example-legacy-porting">Legacy porting</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- How it works -->
@@ -1538,12 +1583,20 @@
                 <td>Interactive pricing tool: quote, tax, discount, packaging, business plan, competitors · client quote Markdown</td>
                 <td><code>/larapilot-economics</code></td>
               </tr>
+              <tr>
+                <td>Semver releases with Gitflow <code>release/x.y.z</code> branches (<code>release_mode=YES</code>)</td>
+                <td><code>/larapilot-release</code></td>
+              </tr>
+              <tr>
+                <td>A team ritual the packaged skills don't cover — deploy gate, compliance check, client release notes</td>
+                <td><code>/larapilot-custom-skill</code> — <a href="#example-custom-skill">walkthrough</a></td>
+              </tr>
             </tbody>
           </table>
         </div>
 
         <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow).
-          Walkthroughs: <a href="#examples">ten examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
+          Walkthroughs: <a href="#examples">eleven examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
       </section>
 
       <!-- Examples -->
@@ -1614,6 +1667,12 @@
             <span class="example-card-desc">Connect, resume a running Claude session after a laptop sleep, edit over Remote-SSH</span>
             <span class="example-card-cmd">ssh · tmux · Remote-SSH</span>
           </a>
+          <a class="example-card" href="#example-custom-skill">
+            <span class="example-card-num">11</span>
+            <span class="example-card-title">Your own skill</span>
+            <span class="example-card-desc">Turn the team's pre-deploy checklist into a slash command everyone runs the same way</span>
+            <span class="example-card-cmd">/larapilot-custom-skill</span>
+          </a>
         </nav>
 
         <!-- New product -->
@@ -1628,34 +1687,47 @@
             <pre><code>/larapilot-inception "I want a simple team task board: registration, projects, and assignable tasks."</code></pre>
           </div>
 
-          <p>Mark runs 3 AskQuestion rounds (max 3 questions each, skippable).</p>
+          <p>Inception is a <strong>conversation, not a questionnaire</strong>. The team challenges the goal in
+            prose first, then uses AskQuestion only for the fixed choices Larapilot persists (max 3 per round,
+            skippable). Four rounds always happen: <strong>Project Kind</strong>, <strong>Delivery Target</strong>,
+            <strong>Business Model</strong>, and <strong>Operations &amp; support</strong>.</p>
 
           <div class="chat-example">
-            <p><span class="speaker">💎 Mark:</span> Let's shape the MVP — who is this for and what kind of product is
-              it?</p>
+            <p><span class="speaker">💎 Mark:</span> Before scope — who has this problem today, and what do they use
+              instead?</p>
+            <p><em>You:</em> Small agencies, 2–10 people. They use Trello and lose track of who owns what.</p>
+            <p><span class="speaker">🧭 Jennifer:</span> Then "who owns what" is the product, not the board. How will
+              you know in 90 days that it worked?</p>
+            <p><em>You:</em> Three agencies using it daily, and no task without an assignee.</p>
+            <p><span class="speaker">🏢 Benjamin:</span> Riskiest assumption: that they'll leave Trello. A CSV import
+              from Trello lowers that cost — I'll propose it as a Should.</p>
             <div class="wizard">
-              <strong>AskQuestion — Round 1 (product kind)</strong>
+              <strong>AskQuestion — Round 1 (kind, target, money)</strong>
               <ol>
                 <li><strong>Project Kind:</strong> Application · Website · Personal · Package</li>
-                <li><strong>Audience:</strong> Small dev teams · Agencies · Solo founders</li>
-                <li><strong>Competitors in mind:</strong> Trello/Asana · Linear · None — greenfield</li>
+                <li><strong>Delivery Target:</strong> MVP · V1 Complete · Full Product · Enterprise</li>
+                <li><strong>Business Model:</strong> Client project · SaaS subscription · E-commerce · Licensed
+                  package · Internal tool</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Application</strong>, <strong>Small dev teams (2–10)</strong>,
-              <strong>Trello/Asana</strong>.
-            </p>
+            <p><em>You pick:</em> <strong>Application</strong>, <strong>MVP</strong>,
+              <strong>SaaS subscription</strong>.</p>
+            <p><span class="speaker">💎 Mark:</span> A SaaS that ships as an MVP — registration, projects and tasks
+              are Must; the Kanban view and notifications can wait.</p>
             <div class="wizard">
-              <strong>AskQuestion — Round 2 (MVP scope)</strong>
+              <strong>AskQuestion — Round 2 (operations &amp; support)</strong>
               <ol>
-                <li><strong>MVP features:</strong> Register + projects + tasks · + Kanban view · + Notifications</li>
-                <li><strong>Auth:</strong> Email + password · + Magic link · SSO later</li>
-                <li><strong>Delivery target:</strong> MVP · V1 Complete · Full Product</li>
+                <li><strong>Server Management:</strong> Managed platform · Self-managed VPS · Kubernetes / cloud ·
+                  Client infrastructure</li>
+                <li><strong>Ops Owner:</strong> Me / my team · Client team · Managed provider · Shared</li>
+                <li><strong>Support Window:</strong> Best effort · Business hours · Extended hours · 24/7</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Register + projects + tasks</strong>, <strong>Email + password</strong> (no
-              SSO for now), <strong>MVP</strong>.</p>
+            <p><em>You pick:</em> <strong>Managed platform</strong>, <strong>Me / my team</strong>,
+              <strong>Business hours</strong>. These three answers price the maintenance retainer in
+              <a href="#deep-dive-economics">Economics</a>.</p>
             <div class="wizard">
-              <strong>AskQuestion — Round 3 (topology, stack &amp; panel)</strong>
+              <strong>AskQuestion — Round 3 (topology, stack &amp; budget)</strong>
               <ol>
                 <li><strong>Frontend Topology:</strong> Laravel-coupled · SPA-in-Laravel · API + external frontend</li>
                 <li><strong>Authenticated UI (in this repo):</strong> Laravel Starter Kit · Filament · AdminLTE ·
@@ -1675,6 +1747,11 @@
             <div class="code-block-header">PRD.md (excerpt)</div>
             <pre><code>**Project Kind:** Application
 **Delivery Target:** MVP
+**Business Model:** SaaS subscription
+**Success signal:** three agencies using it daily; no task without an assignee
+**Server Management:** Managed platform
+**Ops Owner:** Me / my team
+**Support Window:** Business hours
 **Frontend Topology:** Laravel-coupled
 **Stack:** Laravel 13 · Laravel Starter Kit · Pest
 
@@ -1750,7 +1827,8 @@
                   <td><code>/larapilot-implement US-001</code></td>
                   <td><span class="status status-planned">PLANNED</span> → <span
                       class="status status-review">REVIEW</span></td>
-                  <td><code>User</code> model, <code>RegisterController</code>, Blade view, Pest tests</td>
+                  <td><code>User</code> model, <code>RegisterController</code>, Blade view, Pest tests, and the domain doc
+                    <code>.larapilot/docs/devs/user-registration.md</code></td>
                 </tr>
                 <tr>
                   <td><code>/larapilot-review US-001</code></td>
@@ -1770,7 +1848,8 @@ app/Http/Controllers/RegisterController.php
 app/Http/Requests/RegisterRequest.php
 resources/views/auth/register.blade.php
 routes/web.php
-tests/Feature/RegistrationTest.php</code></pre>
+tests/Feature/RegistrationTest.php
+.larapilot/docs/devs/user-registration.md   # why it is built this way — always English</code></pre>
           </div>
 
           <div class="table-card">
@@ -2908,7 +2987,8 @@ crm.dev.studio.example                   deploy branch      DB prj_crm
           </div>
 
           <p>Delivery is the normal loop, run inside each developer's <code>tmux</code> session with Claude:
-            <code>/larapilot-spec-start US-XXX</code> to claim a story, work on <code>feature/US-XXX-*</code>,
+            <code>/larapilot-plan US-XXX</code>, then <code>/larapilot-implement US-XXX</code> — implement claims the
+            story (<code>larapilot:spec-start</code>) and works on <code>feature/US-XXX-*</code> — then
             <code>prj-pr "US-XXX: …"</code> to open the PR. When the PR merges to the deploy branch the 60&nbsp;s timer
             builds and flips an <a href="#deep-dive-vps">atomic release</a> — <code>storefront.dev.studio.example</code>
             updates with no downtime.</p>
@@ -3047,6 +3127,240 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </dl>
         </article>
 
+        <!-- Your own skill -->
+        <article class="example-block" id="example-custom-skill">
+          <h2>Your own skill</h2>
+          <p class="example-tag"><code>/larapilot-custom-skill</code> → <code>/acme-predeploy-gate</code></p>
+          <p class="example-context">An agency runs a dozen Laravel apps. Before every production deploy the lead
+            goes through the same checks by hand: nothing half-done in the backlog, install healthy, Pint and
+            Larastan green, security scan clean — and every few weeks one gets skipped. You turn that checklist into
+            a slash command the whole team runs the same way, built on Larapilot's own CLI. Reference:
+            <a href="#deep-dive-custom-skills">Custom skills</a>.</p>
+
+          <h3>1 · Describe the ritual</h3>
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-custom-skill "A pre-deploy gate we run before every production release: nothing left in review, doctor healthy, quality green, security scan when it's on, then GO or NO-GO"</code></pre>
+          </div>
+          <p>Zoey interviews, Albert tightens the wording, Sarah persists. Before asking anything the skill reads the
+            project and checks for name clashes:</p>
+          <div class="code-block">
+            <div class="code-block-header">Agent</div>
+            <pre><code>php artisan larapilot:config-show --only=settings,paths
+php artisan larapilot:custom-skill-list      # existing custom skills — avoid duplicate names</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">🤖 Zoey:</span> No custom skills in <code>.larapilot/skills/</code> yet. Three
+              short rounds, then I show you the draft before anything is saved.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 1 (intent)</strong>
+              <ol>
+                <li><strong>What are we building:</strong> One new custom skill · Several related skills (shared
+                  prefix) · List existing custom skills only</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>One new custom skill</strong>.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 2 (trigger)</strong>
+              <ol>
+                <li><strong>Slash name:</strong> <code>acme-predeploy-gate</code> · <code>predeploy-gate</code> ·
+                  Other</li>
+                <li><strong>When should the agent reach for it?</strong> — becomes the YAML
+                  <code>description</code> Boost routes on</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>acme-predeploy-gate</strong>, and describe it: <em>"Before a production
+              release. Use when someone says deploy, go live, release to production, or asks whether main is safe to
+              ship."</em></p>
+            <p><span class="speaker">🤖 Zoey:</span> Good trigger — it names the words people actually type. The
+              <code>acme-</code> prefix keeps it clear of the packaged <code>larapilot-*</code> names.</p>
+            <div class="wizard">
+              <strong>AskQuestion — Round 3 (workflow)</strong>
+              <ol>
+                <li><strong>Personas:</strong> Jack + Lars + Anne · Jack only · Other</li>
+                <li><strong>Runtime packs:</strong> Every-skill core only · + <code>runtime-ship.md</code> ·
+                  Other</li>
+                <li><strong>CLI commands, in order:</strong> list them in chat after this round</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Jack + Lars + Anne</strong>, <strong>Every-skill core only</strong>, and
+              list the checks: backlog, doctor, quality, checkpoint when the scan is on, a scope line, notify.</p>
+            <p><span class="speaker">📝 Albert:</span> Numbered the steps, one line per check, and a hard stop on
+              the first NO-GO — a gate that keeps going after a failure gets ignored.</p>
+          </div>
+
+          <h3>2 · Review the draft</h3>
+          <p>Zoey shows the draft in chat. It has the same sections as a packaged skill — front matter, Shared
+            Runtime, Team, Config &amp; CLI, Workflow, Output Economy — so every agent reads it the same way.</p>
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/tmp-acme-predeploy-gate-SKILL.md (draft)</div>
+            <pre><code>---
+name: acme-predeploy-gate
+description: "Pre-deploy gate before a production release — GO or NO-GO. Use when someone says deploy, go live, release to production, or asks whether main is safe to ship."
+---
+
+# Acme — Pre-deploy gate
+
+Run before every production deploy. Read-only: it changes no workflow state and writes no code.
+
+## Shared Runtime
+
+Obey **Read protocol** in `.larapilot/shared-runtime.md`, then read its **Every skill** rows only.
+
+## The Team
+
+| Agent | Role |
+| --- | --- |
+| 🚀 **Jack** | Runs the gate, owns the verdict |
+| 🔐 **Lars** | Security scan and its waivers |
+| 🧪 **Anne** | Test evidence for what is about to ship |
+
+## Config & CLI
+
+1. `php artisan larapilot:config-show --only=settings`
+2. This skill uses: `spec-list`, `doctor`, `quality`, `metrics`, `decision-log`, `notify`.
+
+## Workflow
+
+1. **Nothing half-done ships** — `php artisan larapilot:spec-list --status=REVIEW`, then
+   `--status="IN PROGRESS"`. Any spec listed → **NO-GO**; name it.
+2. **Install healthy** — `php artisan larapilot:doctor`. `data.healthy` false → **NO-GO** with the failing checks.
+3. **Quality green** — `php artisan larapilot:quality`. An `E_QUALITY` error → **NO-GO** with the findings.
+4. **Security** — only when `data.settings.security_scan` is `YES`: `php artisan checkpoint:scan`.
+   A `FAIL` → **NO-GO**, unless the user grants a waiver; log it with
+   `php artisan larapilot:decision-log --topic="deploy waiver" --value="…" --source=chat --skill=acme-predeploy-gate`.
+5. **Scope** — `php artisan larapilot:metrics` → one line: stories DONE and still open.
+6. **Verdict** — `GO` or `NO-GO`, then the reasons. When `data.settings.notifications` is `YES`:
+   `php artisan larapilot:notify --event=custom --title="Pre-deploy: GO"`.
+
+Stop at the first NO-GO. Never deploy, push, tag, or merge from this skill.
+
+## Output Economy
+
+**Low** — one line per check (`✓ doctor` / `✗ quality — 2 Larastan errors`), then the verdict.</code></pre>
+          </div>
+
+          <h3>3 · Save and register — one command</h3>
+          <p>Sarah never writes the canonical file by hand. She saves the approved draft to a temp file and hands it
+            to Artisan:</p>
+          <div class="code-block">
+            <div class="code-block-header">Agent</div>
+            <pre><code>php artisan larapilot:custom-skill-add --name=acme-predeploy-gate --file=.larapilot/tmp-acme-predeploy-gate-SKILL.md</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">stdout — larapilot/v1 envelope</div>
+            <pre><code>{
+  "schema": "larapilot/v1",
+  "kind": "custom_skill",
+  "data": {
+    "skill": {
+      "name": "acme-predeploy-gate",
+      "path": "…/.larapilot/skills/acme-predeploy-gate/SKILL.md",
+      "relative_path": ".larapilot/skills/acme-predeploy-gate/SKILL.md",
+      "registered": [".ai/skills/acme-predeploy-gate", ".claude/skills/acme-predeploy-gate"]
+    },
+    "boost_published": true
+  }
+}</code></pre>
+          </div>
+          <p>That one call validates the skill (kebab-case name, non-empty <code>description</code>), writes the
+            canonical copy under <code>.larapilot/skills/</code>, mirrors the folder into <code>.ai/skills/</code> —
+            Laravel Boost's custom-skill source — and into every agent skill folder that already exists
+            (<code>.claude/skills/</code> here, because the project uses Claude Code), then runs
+            <code>boost:update</code>. The slash command is live; nobody has to run anything else. Sarah deletes the
+            temp file.</p>
+          <div class="file-tree">.larapilot/skills/
+├── .gitkeep
+└── acme-predeploy-gate/
+    └── SKILL.md                              <span class="comment"># canonical copy — commit this</span>
+.ai/skills/acme-predeploy-gate/SKILL.md       <span class="comment"># Boost source (mirror)</span>
+.claude/skills/acme-predeploy-gate/SKILL.md   <span class="comment"># agent folder (mirror — only because it existed)</span></div>
+
+          <h3>4 · Run it</h3>
+          <div class="code-block">
+            <div class="code-block-header">Your editor — before the deploy</div>
+            <pre><code>/acme-predeploy-gate</code></pre>
+          </div>
+          <div class="chat-example">
+            <p><span class="speaker">🚀 Jack:</span> Pre-deploy gate — <code>acme-shop</code>.</p>
+            <div class="code-block">
+              <div class="code-block-header">first run</div>
+              <pre><code>✓ backlog   — nothing in REVIEW or IN PROGRESS
+✓ doctor    — healthy
+✗ quality   — Larastan: 2 errors in app/Policies/InvoicePolicy.php
+NO-GO — fix the two Larastan errors, then run /acme-predeploy-gate again.</code></pre>
+            </div>
+            <p><em>After the fix:</em></p>
+            <div class="code-block">
+              <div class="code-block-header">second run</div>
+              <pre><code>✓ backlog · ✓ doctor · ✓ quality · ✓ checkpoint (0 FAIL, 2 WARN) · 14 stories DONE, 3 open
+GO — Slack notified.</code></pre>
+            </div>
+          </div>
+
+          <h3>5 · Share it with the team</h3>
+          <p>Commit <code>.larapilot/skills/</code>. On a teammate's machine, after <code>git pull</code>:</p>
+          <div class="code-block">
+            <div class="code-block-header">Teammate's terminal</div>
+            <pre><code>php artisan larapilot:custom-skill-list   # registers every skill found on disk</code></pre>
+          </div>
+          <p><code>custom-skill-list</code> — also run by <code>larapilot:update</code> and by opening the dashboard
+            <strong>Skills</strong> page — mirrors each skill into <code>.ai/skills/</code> and the agent folders that
+            exist. It does not call <code>boost:update</code>; run that once if your editor's skill folder was just
+            created. <code>/larapilot/skills</code> lists the skill with its trigger, its description, the file path,
+            and a <strong>Registered</strong> chip.</p>
+
+          <h3>6 · Change it, grow it, retire it</h3>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>You want to</th>
+                  <th>Do</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Change the steps</td>
+                  <td>Run <code>/larapilot-custom-skill</code> again and ask to overwrite, or edit a copy and re-save
+                    it with <code>larapilot:custom-skill-add --name=acme-predeploy-gate --file=… --force</code>.
+                    Without <code>--force</code> the command refuses to overwrite.</td>
+                </tr>
+                <tr>
+                  <td>Add related skills</td>
+                  <td>Round 1 → <em>Several related skills</em>: one <code>custom-skill-add</code> per skill under a
+                    shared prefix — <code>acme-predeploy-gate</code>, <code>acme-hotfix-gate</code>,
+                    <code>acme-release-notes</code>.</td>
+                </tr>
+                <tr>
+                  <td>Remove it</td>
+                  <td>Delete <code>.larapilot/skills/acme-predeploy-gate/</code> <strong>and</strong> its mirrors in
+                    <code>.ai/skills/</code> and the agent folders, then run <code>php artisan boost:update</code>.
+                    Registration only adds or refreshes copies; it never deletes one.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Describe the ritual, answer three rounds, approve the draft</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Drafts <code>SKILL.md</code> in the packaged-skill shape, saves it with
+                <code>custom-skill-add</code>, registers it with Boost</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd>Commit <code>.larapilot/skills/</code>; run <code>/acme-predeploy-gate</code> before every
+                deploy</dd>
+            </div>
+          </dl>
+        </article>
+
       </section>
 
       <!-- Deep Dive -->
@@ -3084,6 +3398,49 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               </p>
             </div>
           </div>
+
+          <h4>What the agent loads — and what it skips</h4>
+          <p>Rules ship as <strong>runtime packs</strong> copied into <code>.larapilot/</code> on install and refreshed on
+            every <code>larapilot:update</code>. <code>shared-runtime.md</code> is an <strong>index</strong>, not the
+            rules: it tells each skill which section files to read, and each section file stays under 15&nbsp;KB so one
+            file-read returns it whole.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Loaded by</th>
+                  <th>Files</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Every skill</td>
+                  <td><code>runtime-core-cli.md</code> (CLI contract, selective envelopes) ·
+                    <code>runtime-core-settings.md</code> · <code>runtime-core-economy.md</code> (Output Economy)</td>
+                </tr>
+                <tr>
+                  <td>Only when <code>config-show</code> reports a default-OFF toggle as <code>YES</code></td>
+                  <td><code>runtime-core-settings-2.md</code> — release mode, project docs, comments, auth, security
+                    scan, forges, notifications</td>
+                </tr>
+                <tr>
+                  <td>Only the skills that need them</td>
+                  <td><code>runtime-core-language.md</code> · <code>runtime-core-personas.md</code> ·
+                    <code>runtime-core-subagents.md</code> · phase indexes <code>runtime-discovery.md</code>,
+                    <code>runtime-delivery.md</code>, <code>runtime-ux.md</code>, <code>runtime-ship.md</code>,
+                    <code>runtime-ops.md</code>, <code>runtime-economics.md</code> (each pointing at its
+                    <code>-1</code>, <code>-2</code>, … parts) · <code>runtime-dev-docs.md</code> ·
+                    <code>runtime-release.md</code> · <code>runtime-project-docs.md</code> ·
+                    <code>runtime-custom-skills.md</code> · <code>task-templates.md</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The <strong>Read protocol</strong> at the top of the index is mandatory: runtime files are loaded with the
+            editor's file-read tool, never <code>cat</code>/<code>head</code>/<code>sed</code>, and a truncated preview
+            counts as a failed load. CLI output follows the same economy — skills ask for the slice they need
+            (<code>config-show --only=settings,paths</code>, <code>spec-show US-004 --task=TASK-02</code>) instead of
+            the whole envelope. Chat stays short; artifacts on disk stay complete.</p>
         </article>
 
         <!-- Upgrade -->
@@ -3132,14 +3489,17 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 </tr>
                 <tr>
                   <td><code>php artisan larapilot:update</code></td>
-                  <td><code>.larapilot/shared-runtime.md</code>, <code>.larapilot/task-templates.md</code>, packaged
-                    <code>.larapilot/design-systems/</code> references; missing <code>phpstan.neon.dist</code> /
+                  <td><code>.larapilot/shared-runtime.md</code> and every <code>runtime-*.md</code> pack,
+                    <code>task-templates.md</code>, <code>integrations.md</code>, packaged
+                    <code>.larapilot/design-systems/</code> references (skip with
+                    <code>--preserve-design-systems</code>); re-registers your
+                    <a href="#deep-dive-custom-skills">custom skills</a> with Boost; missing <code>phpstan.neon.dist</code> /
                     <code>pint.json</code> and Composer quality entries; <code>composer update laravel/boost</code>
                     (latest stable) then <code>boost:update</code> to republish guidelines and
                     <code>/larapilot-*</code> skills
                   </td>
-                  <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, and other project-owned
-                    files</td>
+                  <td><code>.larapilot/config.yaml</code>, PRD, backlog, specs, plans, mockups, domain docs, custom
+                    skills, and other project-owned files</td>
                 </tr>
               </tbody>
             </table>
@@ -3187,15 +3547,16 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             and three opt-in extras (<code>/larapilot-release</code>, <code>/larapilot-project-docs</code>,
             <code>/larapilot-custom-skill</code>). Each packaged skill is a <code>SKILL.md</code> under
             <code>resources/boost/skills/</code> with a name, description, persona roster, execution steps, and allowed
-            CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>; user-authored skills live
-            in <code>.larapilot/skills/</code> (created with <code>.gitkeep</code>; persisted with
-            <code>larapilot:custom-skill-add</code> and auto-registered into <code>.ai/skills/</code>).
-            Coding <strong>guidelines</strong> ship alongside (not a skill).
+            CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>. Your own skills live in
+            <code>.larapilot/skills/</code> and are registered with Boost the moment you save them — see
+            <a href="#deep-dive-custom-skills">Custom skills</a>. A short Boost <strong>guideline</strong> ships
+            alongside (not a skill): what Larapilot is, which skill to reach for, where artifacts live.
           </p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
           <ol>
-            <li>Loads the skill instructions and <code>.larapilot/shared-runtime.md</code></li>
+            <li>Loads the skill instructions, the <code>.larapilot/shared-runtime.md</code> index, and only the
+              runtime section files that index names for this skill</li>
             <li>Reads current artifacts (PRD, spec, backlog status)</li>
             <li>Runs the guided conversation with the right personas</li>
             <li>Persists output via Artisan commands defined in the skill — never inventing its own file writes</li>
@@ -3271,7 +3632,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">build</span>
               <div class="skill-body">
                 <h3><code>/larapilot-implement US-XXX</code></h3>
-                <p>Executes the plan: Laravel code, Pest tests, per-task commits. Runs <code>larapilot:quality</code>
+                <p>Executes the plan: Laravel code, Pest tests, per-task commits, and the
+                  <a href="#deep-dive-dev-docs">developer domain doc</a> for every domain the task touched (English,
+                  in the same commit). Runs <code>larapilot:quality</code>
                   (Pint + Larastan level 5+) on backend tasks before <code>task-done</code>. After the tasks, Robert
                   and Lars review the diff in parallel (inline under <code>ECO</code>). Status → <span
                     class="status status-review">REVIEW</span> when all tasks complete. Autopilot runs only Phase 1
@@ -3440,10 +3803,12 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                     default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
                   <li><strong>Delivery extras</strong> — <code>release_mode</code> (semver ledger + Gitflow release
                     branches, OFF), <code>project_docs</code> (living <code>_project_docs/</code> handbook, OFF)</li>
-                  <li><strong>Access</strong> — <code>comments</code> (dashboard + API internal feedback, ON by default),
-                    <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
-                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API) — auth OFF by
-                    default</li>
+                  <li><strong>Business</strong> — <code>account</code> (<code>NONE</code> · <code>FREELANCE</code> ·
+                    <code>COMPANY</code>; anything but <code>NONE</code> unlocks Economics)</li>
+                  <li><strong>Access &amp; security</strong> — <code>comments</code> (dashboard + API internal
+                    feedback), <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
+                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API),
+                    <code>security_scan</code> (checkpoint in review and pre-ship) — all OFF by default</li>
                   <li><strong>Integrations</strong> — GitHub / GitLab / Bitbucket / Azure DevOps forges,
                     Slack / Discord / Telegram channels</li>
                 </ul>
@@ -3563,44 +3928,19 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">extend</span>
               <div class="skill-body">
                 <h3><code>/larapilot-custom-skill</code></h3>
-                <p>Zoey interviews you; Sarah persists user-authored Boost skills under
-                  <code>.larapilot/skills/{name}/SKILL.md</code> via <code>larapilot:custom-skill-add</code>
-                  — team deploy checklists, compliance gates, internal
-                  runbooks on top of Larapilot. Registration with Boost is automatic
-                  (<code>.ai/skills/</code> + <code>boost:update</code>). Browse them on the dashboard
-                  <a href="#deep-dive-dashboard">Skills</a> page.</p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:custom-skill-add</code> ·
-                  <code>larapilot:custom-skill-list</code>.
+                <p>Turns a team ritual into your own slash command — a deploy gate, a compliance check, client
+                  release notes, an internal runbook. <strong>Zoey</strong> interviews you in three rounds (one skill
+                  or a family · slash name and trigger description · personas, runtime packs, and CLI calls),
+                  <strong>Albert</strong> tightens the steps, and <strong>Sarah</strong> saves the result with
+                  <code>larapilot:custom-skill-add</code>. The skill lands in
+                  <code>.larapilot/skills/{name}/SKILL.md</code>, is registered with Boost in the same call, and shows
+                  up on the dashboard <a href="#deep-dive-dashboard">Skills</a> page.</p>
+                <p>Walkthrough: <a href="#example-custom-skill">Your own skill</a> · Contract and lifecycle:
+                  <a href="#deep-dive-custom-skills">Custom skills</a>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:custom-skill-list</code> ·
+                  <code>larapilot:custom-skill-add</code> (<code>--name=</code>, <code>--file=</code> /
+                  <code>--content=</code> / stdin, <code>--force</code>).
                 </p>
-                <details class="skill-details">
-                  <summary>Full reference</summary>
-                  <ol>
-                    <li><strong>Zoey</strong> AskQuestion: one skill vs family · slash name + Boost
-                      <code>description</code> · personas and CLI calls.</li>
-                    <li><strong>Sarah</strong> writes a temp draft, then
-                      <code>larapilot:custom-skill-add --name={name} --file=…</code>. The command
-                      saves <code>.larapilot/skills/{name}/SKILL.md</code> (and a folder
-                      <code>.gitkeep</code>) and mirrors it into Boost.</li>
-                    <li><code>custom-skill-list</code> confirms discovery and re-registers any skills
-                      already on disk. The dashboard <code>/larapilot/skills</code> page lists
-                      triggers and descriptions.</li>
-                  </ol>
-                  <ul>
-                    <li>Every custom skill starts with <code>config-show</code> and honors
-                      <code>data.settings</code>.</li>
-                    <li>Persistence only via <code>larapilot:*</code> — no ad-hoc YAML for workflow artifacts,
-                      and no raw <code>SKILL.md</code> writes for custom skills.</li>
-                    <li>Custom skills <strong>extend</strong> inception → spec → plan → implement → review; they do not
-                      replace it.</li>
-                  </ul>
-                  <div class="file-tree">.larapilot/
-└── skills/
-    ├── .gitkeep
-    └── my-deploy-checklist/
-        └── SKILL.md
-                  </div>
-                  <p>Runtime pack: <code>.larapilot/runtime-custom-skills.md</code>.</p>
-                </details>
               </div>
             </div>
             <div class="skill-item">
@@ -3718,18 +4058,234 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </div>
         </article>
 
+        <!-- Custom skills -->
+        <article class="deep-dive-sub" id="deep-dive-custom-skills">
+          <h3>Custom skills</h3>
+          <p class="lead">The twenty packaged skills are the base layer. On top of them, every project can keep its
+            <strong>own</strong> Boost skills in <code>.larapilot/skills/</code> — committed with the code, registered
+            with Boost automatically, and built on the same CLI the packaged skills use. They extend the loop; they
+            never replace it. Walkthrough: <a href="#example-custom-skill">Your own skill</a>.</p>
+
+          <h4>Good candidates</h4>
+          <ul>
+            <li><strong>Gates</strong> — pre-deploy GO/NO-GO, a hotfix checklist, a "ready for client demo" check</li>
+            <li><strong>Compliance</strong> — GDPR data-map refresh, an accessibility pass, a licence audit of new
+              dependencies</li>
+            <li><strong>Communication</strong> — client release notes from the stories DONE since the last tag, a
+              weekly status digest from <code>metrics</code> and <code>usage-report</code></li>
+            <li><strong>House rules</strong> — how your team scaffolds a Filament resource, names queues, or wires a
+              webhook</li>
+          </ul>
+          <p>If it changes workflow state (a spec's status, the backlog, the PRD), it belongs in a packaged skill or
+            its CLI — a custom skill calls those commands, it does not reinvent them.</p>
+
+          <h4>Anatomy of a <code>SKILL.md</code></h4>
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/skills/{name}/SKILL.md</div>
+            <pre><code>---
+name: acme-release-notes                 # kebab-case, 1–63 chars — also the slash command
+description: "Client release notes from the stories DONE since the last tag. Use when someone asks
+  what shipped, for a changelog, or for notes to send the client."   # required — Boost routes on it
+---
+
+# Acme — Release notes                   # optional title, shown on the dashboard Skills page
+
+One paragraph on what it does — shown on the Skills page when there is no description.
+
+## Shared Runtime                        # which .larapilot/runtime-*.md files to read
+## The Team                              # personas who speak, from the 30-persona roster
+## Config &amp; CLI                          # always starts with larapilot:config-show
+## Workflow                              # numbered steps, each naming its larapilot:* command
+## Output Economy                        # how much goes in chat vs on disk</code></pre>
+          </div>
+
+          <h4>Three ways to save one</h4>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code># 1. Guided — Zoey interviews, Sarah saves (recommended)
+/larapilot-custom-skill
+
+# 2. From a file you wrote — name taken from --name, or from the front matter
+php artisan larapilot:custom-skill-add --file=path/to/SKILL.md
+php artisan larapilot:custom-skill-add --name=acme-release-notes --file=path/to/SKILL.md --force
+
+# 3. Piped from stdin (or inline with --content=)
+cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes</code></pre>
+          </div>
+
+          <h4>What <code>custom-skill-add</code> checks and does</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Name</td>
+                  <td><code>--name</code> wins over the front matter and is written back into it. Must match
+                    <code>^[a-z0-9][a-z0-9-]{0,62}$</code>, otherwise <code>E_INVALID_INPUT</code> (exit 2)</td>
+                </tr>
+                <tr>
+                  <td>Front matter</td>
+                  <td>Front matter with an empty or missing <code>description</code> is refused. A file with no front
+                    matter at all gets one, with a placeholder description (<code>Custom Larapilot skill.</code>) —
+                    replace it, since Boost routes on that line</td>
+                </tr>
+                <tr>
+                  <td>Overwrite</td>
+                  <td>An existing skill with the same name is refused unless you pass <code>--force</code></td>
+                </tr>
+                <tr>
+                  <td>Save</td>
+                  <td>Atomic write to <code>.larapilot/skills/{name}/SKILL.md</code> (path key
+                    <code>paths.custom_skills</code>)</td>
+                </tr>
+                <tr>
+                  <td>Register</td>
+                  <td>Mirrors the whole folder into <code>.ai/skills/{name}/</code> — always — and into each agent
+                    skill folder that <strong>already exists</strong>: <code>.claude/skills/</code>,
+                    <code>.cursor/skills/</code>, <code>.github/skills/</code>, <code>.agents/skills/</code>,
+                    <code>.codex/skills/</code>, <code>.gemini/skills/</code>, <code>.junie/skills/</code>,
+                    <code>.opencode/skills/</code>, <code>.windsurf/skills/</code></td>
+                </tr>
+                <tr>
+                  <td>Publish</td>
+                  <td>Runs <code>boost:update</code> when Boost is installed; the envelope reports
+                    <code>data.boost_published</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>A skill folder can carry more than <code>SKILL.md</code> — a template, a checklist, a script. Everything
+            in the folder is mirrored.</p>
+
+          <h4>Lifecycle</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Moment</th>
+                  <th>What happens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:install</code></td>
+                  <td>Creates <code>.larapilot/skills/</code> with a <code>.gitkeep</code>, so the empty folder is
+                    committed</td>
+                </tr>
+                <tr>
+                  <td><code>custom-skill-list</code> · <code>larapilot:update</code> · opening
+                    <code>/larapilot/skills</code></td>
+                  <td>Re-register every skill found on disk (copy into <code>.ai/skills/</code> and existing agent
+                    folders). This is how a teammate picks up skills after <code>git pull</code></td>
+                </tr>
+                <tr>
+                  <td>Edit</td>
+                  <td>Re-save with <code>custom-skill-add --force</code>, or re-run
+                    <code>/larapilot-custom-skill</code></td>
+                </tr>
+                <tr>
+                  <td>Remove</td>
+                  <td>Delete <code>.larapilot/skills/{name}/</code> and its mirrors in <code>.ai/skills/</code> and the
+                    agent folders, then <code>php artisan boost:update</code>. Registration adds and refreshes copies;
+                    it never deletes one</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Quality bar</h4>
+          <ul>
+            <li>Start with <code>php artisan larapilot:config-show</code> and honor <code>data.settings</code> (effort,
+              git mode, security scan, notifications…) like a packaged skill.</li>
+            <li>Persist only through <code>larapilot:*</code> commands. New files go under existing
+              <code>.larapilot/</code> paths — never ad-hoc YAML beside the workflow artifacts.</li>
+            <li>Reuse persona names from the <a href="#deep-dive-personas">roster</a>
+              (<code>config-show --only=personas</code>).</li>
+            <li>No machine-specific absolute paths — use env vars, as in
+              <a href="#deep-dive-env-paths">Environment paths</a>.</li>
+            <li>Prefix the name with your team or client (<code>acme-</code>) so it never collides with a packaged
+              <code>larapilot-*</code> skill.</li>
+          </ul>
+          <p>Runtime pack: <code>.larapilot/runtime-custom-skills.md</code>. There is no setting to turn custom skills
+            on — once saved, a skill is available through its slash command.</p>
+        </article>
+
         <!-- Project settings -->
         <article class="deep-dive-sub" id="deep-dive-settings">
           <h3>Project settings</h3>
-          <p class="lead">Persistent modes for effort, backlog granularity, Git, testing, account (Economics), auto-approve, Lucille,
-            optional release mode &amp; project docs, optional dashboard auth, and
-            optional GitHub / GitLab / Bitbucket / Azure DevOps + Slack / Discord / Telegram (dashboard auth, forges and chat OFF by default).
-            Configure with <code>/larapilot-settings</code> (AskQuestion). Values live under <code>settings:</code> in
-            <code>.larapilot/config.yaml</code>. Every skill reads and honors them via <code>config-show</code>.
+          <p class="lead">Persistent project modes — how much effort the agent spends, how the backlog is cut, how
+            Git and tests behave, and which opt-in extras are on. Configure with <code>/larapilot-settings</code>
+            (AskQuestion) or <code>larapilot:settings-set</code>. Values live under <code>settings:</code> in
+            <code>.larapilot/config.yaml</code>, which is committed, so the whole team works in the same mode. Every
+            skill reads them first via <code>config-show</code>.
           </p>
 
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Group</th>
+                  <th>Keys</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Process</td>
+                  <td><a href="#deep-dive-effort"><code>effort</code></a> ·
+                    <a href="#deep-dive-backlog"><code>backlog</code></a> ·
+                    <a href="#deep-dive-git-mode"><code>git_mode</code></a> ·
+                    <a href="#deep-dive-testing-mode"><code>testing</code></a> ·
+                    <a href="#deep-dive-auto-approve"><code>auto_approve</code></a></td>
+                  <td><code>STANDARD</code> · <code>STANDARD</code> · <code>GITFLOW</code> · <code>NORMAL</code> ·
+                    <code>NO</code></td>
+                </tr>
+                <tr>
+                  <td>Tracking</td>
+                  <td><a href="#deep-dive-lucille"><code>lucille</code></a> ·
+                    <a href="#deep-dive-decision-log"><code>decision_log</code></a> ·
+                    <a href="#deep-dive-code-history"><code>code_history</code></a></td>
+                  <td><code>YES</code> · <code>YES</code> · <code>NO</code></td>
+                </tr>
+                <tr>
+                  <td>Business</td>
+                  <td><a href="#deep-dive-account"><code>account</code></a></td>
+                  <td><code>NONE</code></td>
+                </tr>
+                <tr>
+                  <td>Delivery extras</td>
+                  <td><a href="#deep-dive-release-mode"><code>release_mode</code></a> ·
+                    <a href="#deep-dive-project-docs-setting"><code>project_docs</code></a></td>
+                  <td><code>NO</code> · <code>NO</code></td>
+                </tr>
+                <tr>
+                  <td>Access &amp; security</td>
+                  <td><a href="#deep-dive-comments"><code>comments</code></a> ·
+                    <a href="#deep-dive-dashboard-auth"><code>dashboard_auth</code></a> ·
+                    <a href="#deep-dive-api-auth"><code>api_auth</code></a> ·
+                    <a href="#deep-dive-security-scan"><code>security_scan</code></a></td>
+                  <td><code>NO</code> for all four</td>
+                </tr>
+                <tr>
+                  <td>Integrations</td>
+                  <td><a href="#deep-dive-github"><code>github</code> · <code>gitlab</code> · <code>bitbucket</code> ·
+                    <code>azure</code></a> · <a href="#deep-dive-notifications"><code>notifications</code> ·
+                    <code>notify_slack</code> · <code>notify_discord</code> · <code>notify_telegram</code></a></td>
+                  <td><code>NO</code> for all</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The <a href="#deep-dive-dev-docs">developer domain docs</a> have no setting on purpose: they are always
+            written.</p>
+
           <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=…</code>
+            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --security-scan=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=… --notify-discord=… --notify-telegram=…</code>
             persists one or more keys. <code>php artisan larapilot:config-show</code> returns
             <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
           </p>
@@ -3738,8 +4294,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <code>git_mode: GITFLOW</code> ·
             <code>testing: NORMAL</code> · <code>account: NONE</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
             <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>release_mode: NO</code> ·
-            <code>project_docs: NO</code> · <code>comments: YES</code> ·
-            <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> ·
+            <code>project_docs: NO</code> · <code>comments: NO</code> ·
+            <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> · <code>security_scan: NO</code> ·
             <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
           </p>
 
@@ -3758,7 +4314,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   <td>Token economy — <strong>never spawn sub-agents</strong>, including the autopilot spec worker
                     (plan and implement stay in the parent session); <strong>disables Lucille
                       automatically</strong> (re-enable via <code>settings-set --lucille=YES</code> without leaving ECO);
-                    defer docs theater (README/PDF/diagrams) but <strong>still update OpenAPI</strong> when APIs change;
+                    defer docs theater (README/PDF/diagrams) but <strong>still update OpenAPI</strong> when APIs change
+                    and <strong>still write the <a href="#deep-dive-dev-docs">developer domain docs</a></strong>;
                     skip deep reviews and E2E planning</td>
                 </tr>
                 <tr>
@@ -3912,12 +4469,48 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               and need no token — only the HTTP endpoint is gated.</li>
           </ul>
 
-          <h4 id="deep-dive-comments">Internal feedback / comments <span class="chip">on by default</span></h4>
-          <p><code>settings.comments</code> (default <code>YES</code>) gates dashboard comment UI on spec pages,
-            <code>POST /larapilot/api/specs/{code}/comments</code>, and <code>larapilot:spec-comment</code>. Persist with
-            <code>php artisan larapilot:settings-set --comments=YES|NO</code>. The env kill-switch
+          <h4 id="deep-dive-comments">Internal feedback / comments <span class="chip">opt-in</span></h4>
+          <p><code>settings.comments</code> (default <code>NO</code>) gates the comment form on dashboard spec pages,
+            <code>POST /larapilot/api/specs/{code}/comments</code>, and <code>larapilot:spec-comment</code>. Turn it on
+            with <code>php artisan larapilot:settings-set --comments=YES</code>. Comments land in
+            <code>.larapilot/internal-feedback/{code}.md</code>; a comment flagged <code>[blocks-merge]</code> stops
+            <code>spec-approve</code> until it is resolved (or <code>--force</code>). The env kill-switch
             <code>LARAPILOT_COMMENTS_ENABLED=false</code> still disables writes even when the project setting is ON.
+            Projects installed before v3.0.3 with an explicit <code>comments: true</code> keep it.
           </p>
+
+          <h4 id="deep-dive-account">Account <span class="chip">opt-in</span></h4>
+          <p><code>settings.account</code> is <code>NONE</code> (default), <code>FREELANCE</code>, or
+            <code>COMPANY</code>. Anything but <code>NONE</code> unlocks <code>/larapilot-economics</code> and the
+            <a href="#deep-dive-economics">Economics</a> page: <code>FREELANCE</code> prices with sole-trader regimes
+            (Italian forfettario, IRPEF, autónomo, …), <code>COMPANY</code> with corporate tax plus dividend
+            extraction (SRL, SPA, Ltd, GmbH, C-Corp, …). <code>OFF</code> is accepted as an alias of
+            <code>NONE</code>.</p>
+          <div class="code-block">
+            <div class="code-block-header">unlock Economics</div>
+            <pre><code>php artisan larapilot:settings-set --account=FREELANCE
+php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourly-rate=55</code></pre>
+          </div>
+
+          <h4 id="deep-dive-security-scan">Security scan <span class="chip">opt-in</span></h4>
+          <p><code>settings.security_scan</code> (default <code>NO</code>) folds a static Laravel security scan into
+            <code>/larapilot-review</code> and the pre-ship gate. It uses the optional dev package
+            <a href="https://github.com/andreapollastri/checkpoint" target="_blank" rel="noopener"><code>andreapollastri/checkpoint</code></a>
+            (<code>php artisan checkpoint:scan</code> — static checks plus <code>composer</code>/<code>npm</code>
+            audit). Larapilot never bundles the scanner and never runs it while the setting is off.</p>
+          <div class="code-block">
+            <div class="code-block-header">turn it on</div>
+            <pre><code>composer require --dev andreapollastri/checkpoint
+php artisan larapilot:settings-set --security-scan=YES</code></pre>
+          </div>
+          <ul>
+            <li><code>FAIL</code> findings are review blockers: fix them, or record a waiver with
+              <code>larapilot:decision-log</code>. <code>WARN</code> findings become review notes.</li>
+            <li>If the package is missing, the review skill stops and asks you to install it.</li>
+            <li>Owned by <strong>Lars</strong>, alongside <code>dashboard_auth</code> and <code>api_auth</code>. The client
+              quote only promises a security scan when this setting is <code>YES</code>. Setup:
+              <code>.larapilot/integrations.md</code> → <em>Security scan</em>.</li>
+          </ul>
 
           <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
           <p><code>settings.decision_log</code> (default <code>YES</code>) keeps an append-only, timestamped log of every
@@ -4087,11 +4680,17 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
   --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
+  --account=NONE \
   --auto-approve=NO \
   --lucille=YES \
   --decision-log=YES \
   --code-history=NO \
+  --release-mode=NO \
+  --project-docs=NO \
+  --comments=NO \
   --dashboard-auth=NO \
+  --api-auth=NO \
+  --security-scan=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
@@ -4249,7 +4848,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             <div class="team-card">
               <div class="team-avatar">📒</div>
               <div class="team-name">Lucille</div>
-              <div class="team-role">Account</div>
+              <div class="team-role">Project Tracking</div>
             </div>
             <div class="team-card">
               <div class="team-avatar">💰</div>
@@ -4490,38 +5089,44 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
           </p>
 
           <div class="file-tree">.larapilot/
-            ├── config.yaml <span class="comment"># connector, paths, settings (effort / git / release_mode / …)</span>
-            ├── integrations.md <span class="comment"># optional GitHub/GitLab/Bitbucket/Azure DevOps + Slack/Discord/Telegram</span>
-            ├── choices.yaml <span class="comment"># inception/settings snapshot (choices-set)</span>
-            ├── releases.yaml <span class="comment"># semver release ledger (when release_mode=YES)</span>
-            ├── shared-runtime.md <span class="comment"># rules every skill reads at activation</span>
-            ├── runtime-release.md <span class="comment"># release pack (copied on install/update)</span>
-            ├── runtime-project-docs.md <span class="comment"># project docs pack</span>
-            ├── runtime-custom-skills.md <span class="comment"># custom skills pack</span>
-            ├── task-templates.md <span class="comment"># plan/implement task body shapes (+ TASK-00 release variant)</span>
-            ├── skills/ <span class="comment"># user-authored custom Boost skills (.gitkeep)</span>
-            ├── backlog.yaml <span class="comment"># spec index + statuses</span>
-            ├── usage/ <span class="comment"># Lucille ledger + schedule (committed)</span>
-            │ ├── ledger.jsonl
-            │ └── schedule.yaml
-            ├── docs/
-            │ ├── PRD.md <span class="comment"># living product contract (includes Frontend Topology)</span>
-            │ ├── test-results/ <span class="comment"># per-spec test evidence</span>
-            │ ├── review/ <span class="comment"># Robert/Lars findings</span>
-            │ ├── security/ <span class="comment"># OWASP assessments</span>
-            │ ├── launch/ <span class="comment"># SEO/social launch checks</span>
-            │ └── support/ <span class="comment"># bug intake, triage notes</span>
-            ├── specs/US-XXX.yaml <span class="comment"># user story + acceptance criteria</span>
-            ├── plans/US-XXX-plan.yaml <span class="comment"># tasks, deliverables, test strategy</span>
-            ├── mockups/{spec}/ <span class="comment"># HTML mockups (optional)</span>
-            ├── internal-feedback/ <span class="comment"># PM/dev comments per spec (append-only)</span>
-            ├── client-materials/ <span class="comment"># drop client docs before inception</span>
-            ├── legacy/ <span class="comment"># legacy snapshot for rewrite/port</span>
-            ├── research/ <span class="comment"># deepsearch, parity matrices</span>
-            └── design-systems/ <span class="comment"># Filament / Starter Kit / Bootstrap / Tailwind / AdminLTE</span>
+├── config.yaml               <span class="comment"># connector, paths, settings — committed</span>
+├── choices.yaml              <span class="comment"># inception answers snapshot (choices-set)</span>
+├── decisions.yaml            <span class="comment"># decision journal — append-only (decision_log)</span>
+├── code-history.yaml         <span class="comment"># files + line ranges per spec/task (code_history)</span>
+├── releases.yaml             <span class="comment"># semver release ledger (release_mode)</span>
+├── tracker.yaml              <span class="comment"># spec → tracker id map — identifiers only, commit it</span>
+├── economics.yaml            <span class="comment"># Economics profile (account ≠ NONE)</span>
+├── economics.snapshot.yaml   <span class="comment"># last computed quote — refreshes itself</span>
+├── economics.market.yaml     <span class="comment"># competitor research (Jennifer + Benjamin)</span>
+├── auth.yaml                 <span class="comment"># dashboard users, hashed — git-ignored</span>
+├── shared-runtime.md         <span class="comment"># runtime index + Read protocol</span>
+├── runtime-*.md              <span class="comment"># runtime section files — refreshed on update</span>
+├── task-templates.md         <span class="comment"># plan/implement task shapes</span>
+├── integrations.md           <span class="comment"># setup guide: forges, chat, API, security scan</span>
+├── backlog.yaml              <span class="comment"># spec index + statuses</span>
+├── specs/US-XXX.yaml         <span class="comment"># story + acceptance criteria</span>
+├── plans/US-XXX-plan.yaml    <span class="comment"># tasks, deliverables, test strategy</span>
+├── docs/
+│   ├── PRD.md                <span class="comment"># living product contract</span>
+│   ├── quote.md              <span class="comment"># client quote, PRD language</span>
+│   ├── devs/                 <span class="comment"># developer domain docs — always English</span>
+│   ├── review/               <span class="comment"># Robert / Lars findings</span>
+│   ├── test-results/         <span class="comment"># per-spec test evidence</span>
+│   ├── security/             <span class="comment"># OWASP assessments</span>
+│   ├── launch/               <span class="comment"># launch checks</span>
+│   └── support/              <span class="comment"># bug intake, triage notes</span>
+├── mockups/{spec}/           <span class="comment"># HTML mockups; styles/{slug}/ for variants</span>
+├── internal-feedback/        <span class="comment"># PM/dev comments per spec</span>
+├── usage/                    <span class="comment"># Lucille ledger.jsonl + schedule.yaml</span>
+├── skills/{name}/SKILL.md    <span class="comment"># your custom Boost skills</span>
+├── client-materials/         <span class="comment"># drop client docs before inception</span>
+├── legacy/                   <span class="comment"># legacy snapshot for rewrite/port</span>
+├── research/                 <span class="comment"># codebase analysis, parity, reference products</span>
+├── brand/                    <span class="comment"># logo, favicon, OG image</span>
+├── design-systems/           <span class="comment"># Filament · Starter Kit · Bootstrap 5 · Tailwind · AdminLTE</span>
+└── techdocs/                 <span class="comment"># generated by backstage-export --write</span>
 
-_project_docs/ <span class="comment"># living handbook (when project_docs=YES) — at repo root, not under .larapilot/</span>
-          </div>
+_project_docs/                <span class="comment"># handbook at repo root (project_docs=YES)</span></div>
 
           <div class="table-card">
             <table>
@@ -4537,12 +5142,35 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
                   <td><code>config.yaml</code> → <code>settings</code></td>
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
-                    <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>, <code>code_history</code>,
-                    <code>release_mode</code>, <code>project_docs</code>,
-                    <code>dashboard_auth</code>, <code>api_auth</code>, <code>github</code>,
+                    <code>account</code>, <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>,
+                    <code>code_history</code>, <code>release_mode</code>, <code>project_docs</code>, <code>comments</code>,
+                    <code>dashboard_auth</code>, <code>api_auth</code>, <code>security_scan</code>, <code>github</code>,
                     <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
+                </tr>
+                <tr>
+                  <td><code>docs/devs/{domain}.md</code></td>
+                  <td><code>/larapilot-implement</code>, <code>/larapilot-adopt</code>, <code>/larapilot-bug</code>,
+                    autopilot</td>
+                  <td>Why the code is built the way it is — one file per domain, always English, always current.
+                    See <a href="#deep-dive-dev-docs">Developer domain docs</a></td>
+                </tr>
+                <tr>
+                  <td><code>decisions.yaml</code></td>
+                  <td><code>larapilot:decision-log</code> from any skill</td>
+                  <td>Append-only journal of your explicit choices + regression guard — see
+                    <a href="#deep-dive-decision-log">Decision journal</a></td>
+                </tr>
+                <tr>
+                  <td><code>code-history.yaml</code></td>
+                  <td><code>larapilot:code-log</code> after each <code>task-done</code></td>
+                  <td>Files and line ranges touched per spec/task (<code>code_history=YES</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>tracker.yaml</code></td>
+                  <td><code>larapilot:tracker-push</code></td>
+                  <td>Spec → remote issue ids per provider. Commit it, or every machine creates duplicates</td>
                 </tr>
                 <tr>
                   <td><code>releases.yaml</code></td>
@@ -4610,10 +5238,12 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
                     <a href="#deep-dive-usage">Usage</a></td>
                 </tr>
                 <tr>
-                  <td><code>economics.yaml</code> · <code>economics.snapshot.yaml</code></td>
-                  <td><code>/larapilot-economics</code> · <code>larapilot:economics-set</code></td>
-                  <td>Account profile (country, regime, rate) and the last computed quote. Client quote:
-                    <code>/larapilot/economics/quote.md</code></td>
+                  <td><code>economics.yaml</code> · <code>economics.snapshot.yaml</code> ·
+                    <code>economics.market.yaml</code> · <code>docs/quote.md</code></td>
+                  <td><code>/larapilot-economics</code> · <code>economics-set</code> ·
+                    <code>economics-market-write</code> · <code>economics-quote-write</code></td>
+                  <td>Account profile, the last computed quote, researched competitors, and the client quote — see
+                    <a href="#deep-dive-economics">Economics</a></td>
                 </tr>
                 <tr>
                   <td><code>choices.yaml</code></td>
@@ -4638,6 +5268,147 @@ _project_docs/ <span class="comment"># living handbook (when project_docs=YES) �
             confirm writes and status changes. Inspect artifacts visually via the <a
               href="#deep-dive-dashboard">dashboard</a> or programmatically via the <a href="#deep-dive-api">API</a>.
           </p>
+        </article>
+
+        <!-- Developer domain docs -->
+        <article class="deep-dive-sub" id="deep-dive-dev-docs">
+          <h3>Developer domain docs</h3>
+          <p class="lead">The code says <em>what</em>; the PRD says what the client wanted. Neither says <em>why it
+            is built this way</em>. <code>.larapilot/docs/devs/</code> is where that reasoning survives the session
+            that produced it: one Markdown file per domain, written for whoever maintains the code next. It is
+            <strong>always on</strong> — there is no setting for it.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">.larapilot/docs/devs/</div>
+            <pre><code>README.md                 # index — one row per domain, last spec that touched it
+TEMPLATE.md               # the skeleton every file follows
+billing.md
+user-authentication.md
+webhook-ingestion.md</code></pre>
+          </div>
+
+          <h4>The skeleton</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>What it carries</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Metadata table</td>
+                  <td><code>Status</code> · <code>Introduced by</code> · <code>Last updated by</code> ·
+                    <code>Owner persona</code></td>
+                </tr>
+                <tr>
+                  <td><code>Purpose</code></td>
+                  <td>What the domain is responsible for, in business terms, and what breaks for the user without
+                    it</td>
+                </tr>
+                <tr>
+                  <td><code>Functional flow</code></td>
+                  <td>Runtime behavior step by step, from the entry point to the outcome — failure paths
+                    included</td>
+                </tr>
+                <tr>
+                  <td><code>Technical design</code></td>
+                  <td>Models, services, actions, jobs, events, routes, commands, config keys, tests — and where they
+                    live</td>
+                </tr>
+                <tr>
+                  <td><code>Architectural choices</code></td>
+                  <td>What was chosen, <strong>what was rejected, and why</strong> — so nobody undoes a constraint
+                    by accident</td>
+                </tr>
+                <tr>
+                  <td><code>Key decisions &amp; invariants</code></td>
+                  <td>The rules that must stay true, and what breaks when they don't. References
+                    <code>decisions.yaml</code> ids</td>
+                </tr>
+                <tr>
+                  <td><code>Extension points &amp; gotchas</code></td>
+                  <td>Where new behavior plugs in, and the traps</td>
+                </tr>
+                <tr>
+                  <td><code>Related</code></td>
+                  <td>Specs, plans, review files, other domains</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Rules that keep them useful</h4>
+          <ul>
+            <li><strong>Always English</strong>, whatever language the PRD and the conversation use — the files
+              address whoever inherits the codebase, not the client.</li>
+            <li><strong>Updated in the same spec that changes the behavior</strong>, inside the task commit — code,
+              tests and doc together. A task is not <code>task-done</code> while its doc describes the old code.</li>
+            <li><strong>Never deferred.</strong> <code>effort: ECO</code> makes the prose terse; the file is still
+              written.</li>
+            <li><strong>One file per domain, not per class.</strong> An entity gets its own file only when it carries
+              behavior beyond CRUD.</li>
+            <li><strong>Rewrite, don't append.</strong> The folder is the current truth; history belongs to Git.</li>
+          </ul>
+
+          <h4>Who enforces it</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Skill</th>
+                  <th>What it does with domain docs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>/larapilot-plan</code></td>
+                  <td>Names, per task, the domain file it must leave current (<code>## Domain Docs</code> in the task
+                    template)</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-implement</code></td>
+                  <td>Writes or updates the file before each task commit. Robert flags a domain whose code moved
+                    without its doc as a <strong>High</strong> finding (<code>stale dev doc</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-review</code></td>
+                  <td>Blocks on a touched domain with no current file — under <code>ECO</code> too</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-ship</code></td>
+                  <td>Blocks the release checklist on a stale or missing doc for a shipped feature</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-bug</code></td>
+                  <td>Corrects the doc when a fix changes behavior</td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-adopt</code></td>
+                  <td>Writes a file for every domain the codebase analysis found, so a brownfield project reaches its
+                    first spec already documented</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>A project with no docs is brought level on the first change</h4>
+          <p><code>config-show</code> (and <code>doctor</code>) report the state under <code>data.dev_docs</code>:
+            <code>path</code>, <code>documented</code>, <code>count</code>, and the <code>domains</code> already
+            written. When <code>documented</code> is <code>false</code> and the codebase already has domains, the
+            first spec, fix, or hotfix inventories <strong>every</strong> existing domain, writes a file for each,
+            commits the backfill on its own — <code>docs(US-XXX): bring developer domain docs level</code> — and only
+            then runs its own work. No question asked, no partial pass, no <code>ECO</code> exemption. Where the
+            original reasoning can't be recovered from git history, the PRD, <code>decisions.yaml</code>, or the
+            plans, the file says <code>&lt;!-- TODO: verify --&gt;</code> instead of inventing a motive.</p>
+
+          <div class="cli-note"><strong>Not the same as <code>_project_docs/</code>.</strong> The
+            <a href="#skill-larapilot-project-docs">project handbook</a> is an opt-in manual for the whole project,
+            mixed technical and functional. <code>docs/devs/</code> is engineering-only, mandatory, and the only
+            place that records implementation rationale. Contract:
+            <code>.larapilot/runtime-dev-docs.md</code> · path key <code>paths.dev_docs</code>.
+          </div>
         </article>
 
         <!-- Usage & Lucille -->
@@ -4764,6 +5535,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               HTTPS on shared hosts.</li>
           </ul>
           <p>Settings table: <a href="#deep-dive-dashboard-auth">Dashboard auth</a>.</p>
+
+          <h4>Security scan</h4>
+          <p>Optional static scan with
+            <a href="https://github.com/andreapollastri/checkpoint" target="_blank" rel="noopener"><code>andreapollastri/checkpoint</code></a>
+            in <code>/larapilot-review</code> and before ship — <code>FAIL</code> blocks, <code>WARN</code> becomes a
+            note. Off until you install the package and set <code>security_scan=YES</code>. Details:
+            <a href="#deep-dive-security-scan">Project settings → Security scan</a>.</p>
         </article>
 
         <!-- Backstage portal -->
@@ -5674,7 +6452,7 @@ sudo prj-ai add
 #   auto-deploy yes/no, maintenance-mode-during-migrations yes/no, per-developer previews yes/no
 #   -> builds the first release and points 'current' at it
 
-# DNS: point  *.<base-domain>  A record at the VPS (covers project + preview hosts)
+# DNS: point  *.&lt;base-domain&gt;  A record at the VPS (covers project + preview hosts)
 
 # each developer, once, on first SSH login:
 prj-token
@@ -6152,15 +6930,60 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
           <h4>JSON envelope</h4>
           <div class="code-block">
             <div class="code-block-header">stdout — every command</div>
-            <pre><code>{
-  "schema": "larapilot/v1",
-  "kind": "plan_result",
-  "data": { "code": "US-001", "task_count": 4 }
-}</code></pre>
+            <pre><code>{ "schema": "larapilot/v1", "kind": "plan_result", "data": { "code": "US-001", "task_count": 4 } }
+
+{ "schema": "larapilot/v1", "kind": "error",
+  "error": { "code": "E_PRECONDITION", "message": "…", "hint": "…" } }</code></pre>
           </div>
-          <p>Errors return <code>"kind": "error"</code> with <code>code</code>, <code>message</code>, and optional
-            <code>hint</code>. Skills never invent persistence — they always go through these commands.
-          </p>
+          <p>Skills never invent persistence — they always go through these commands and parse the envelope. Errors
+            carry a stable <code>code</code> and a matching exit status:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Error code</th>
+                  <th>Exit</th>
+                  <th>Typical cause</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>E_INVALID_INPUT</code></td>
+                  <td><code>2</code></td>
+                  <td>Bad flag value, invalid payload, a custom skill name that is not kebab-case</td>
+                </tr>
+                <tr>
+                  <td><code>E_CONNECTOR</code></td>
+                  <td><code>3</code></td>
+                  <td>The persistence connector failed</td>
+                </tr>
+                <tr>
+                  <td><code>E_PRECONDITION</code> · <code>E_NOT_FOUND</code></td>
+                  <td><code>4</code></td>
+                  <td>A guarded transition (implement before plan, release command with <code>release_mode=NO</code>),
+                    an unknown spec or file</td>
+                </tr>
+                <tr>
+                  <td>anything else (e.g. <code>E_QUALITY</code>)</td>
+                  <td><code>1</code></td>
+                  <td>Pint or Larastan findings — carried on <code>error.details</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Ask for the slice you need</h4>
+          <p>Envelopes stay small on purpose, so an agent's context does not fill up with data it will not use:</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:config-show                                    # everything except personas
+php artisan larapilot:config-show --only=settings,paths               # also: frontend, tracker, dev_docs, backstage, workflow, personas
+php artisan larapilot:spec-show US-004 --fields=id,title,status,dependencies
+php artisan larapilot:spec-show US-004 --task=TASK-02                 # one task only
+php artisan larapilot:spec-next --status=PLANNED --fields=id,title
+php artisan larapilot:quality -v                                      # raw Pint/Larastan output inside the JSON
+php artisan larapilot:doctor --human                                  # a table instead of JSON (also metrics --human)</code></pre>
+          </div>
 
           <h4>Command reference</h4>
           <div class="table-card">
@@ -6175,15 +6998,28 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
               <tbody>
                 <tr>
                   <td>Setup</td>
-                  <td><code>larapilot:install</code> · <code>larapilot:update</code> · <code>larapilot:doctor</code> ·
-                    <code>larapilot:config-show</code> · <code>larapilot:settings-set</code> ·
-                    <code>larapilot:github-status</code> · <code>larapilot:gitlab-status</code> ·
-                    <code>larapilot:bitbucket-status</code> · <code>larapilot:azure-status</code> ·
-                    <code>larapilot:notify</code> ·
+                  <td><code>larapilot:install</code> (<code>--force</code>, <code>--skip-composer</code>) ·
+                    <code>larapilot:update</code> (<code>--skip-boost</code>,
+                    <code>--preserve-design-systems</code>) · <code>larapilot:doctor</code> ·
+                    <code>larapilot:config-show</code> (<code>--only=</code>) · <code>larapilot:settings-set</code> ·
                     <code>larapilot:quality</code> (<code>--fix</code>)
                   </td>
-                  <td>Install, upgrades, health check, <a href="#deep-dive-code-quality">code quality</a>, <a
-                      href="#deep-dive-settings">project settings</a>, optional forges/notifications</td>
+                  <td>Install, upgrades, health check, <a href="#deep-dive-code-quality">code quality</a>,
+                    <a href="#deep-dive-settings">project settings</a></td>
+                </tr>
+                <tr>
+                  <td>Access</td>
+                  <td><code>larapilot:dashboard-user</code> (<code>list</code> · <code>add &lt;user&gt;</code> ·
+                    <code>remove &lt;user&gt;</code>, <code>--password=</code>)</td>
+                  <td><a href="#deep-dive-dashboard-auth">Dashboard auth</a></td>
+                </tr>
+                <tr>
+                  <td>Forges &amp; notify</td>
+                  <td><code>larapilot:github-status</code> · <code>larapilot:gitlab-status</code> ·
+                    <code>larapilot:bitbucket-status</code> · <code>larapilot:azure-status</code> ·
+                    <code>larapilot:notify</code> (<code>--event=</code>, <code>--title=</code>, <code>--body=</code>,
+                    <code>--url=</code>)</td>
+                  <td><a href="#deep-dive-integrations">Forges &amp; notifications</a></td>
                 </tr>
                 <tr>
                   <td>Runtime</td>
@@ -6192,9 +7028,10 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                       href="#deep-dive-api-diagnostics">Diagnostics</a></td>
                 </tr>
                 <tr>
-                  <td>PRD</td>
+                  <td>PRD &amp; discovery</td>
                   <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
-                    <code>larapilot:choices-set</code> · <code>larapilot:frontend-set</code> ·
+                    <code>larapilot:choices-set</code> (<code>--from-prd</code>, <code>--business-model=</code>,
+                    <code>--server-management=</code>, …) · <code>larapilot:frontend-set</code> ·
                     <code>larapilot:frontend-scan</code>
                   </td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-adopt</code>,
@@ -6203,12 +7040,18 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                 </tr>
                 <tr>
                   <td>Backlog</td>
-                  <td><code>larapilot:spec-list</code> · <code>larapilot:spec-add</code> ·
+                  <td><code>larapilot:spec-list</code> (<code>--status=</code>) · <code>larapilot:spec-add</code> ·
                     <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> ·
                     <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> ·
-                    <code>larapilot:spec-comment</code>
+                    <code>larapilot:spec-comment</code> (<code>--blocks-merge</code>)
                   </td>
                   <td><code>/larapilot-spec</code>, shortcuts, dashboard comments</td>
+                </tr>
+                <tr>
+                  <td>Design</td>
+                  <td><code>larapilot:mockup-choose-style US-XXX --style=</code></td>
+                  <td><code>/larapilot-design</code> style variants — same as <strong>Use this style</strong> on the
+                    Design page</td>
                 </tr>
                 <tr>
                   <td>Planning</td>
@@ -6218,15 +7061,23 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                 <tr>
                   <td>Execution</td>
                   <td><code>larapilot:spec-start</code> · <code>larapilot:quality</code> (<code>--fix</code>) ·
-                    <code>larapilot:task-done</code> · <code>larapilot:spec-review</code>
+                    <code>larapilot:task-done</code> (<code>--commit=</code>) · <code>larapilot:spec-review</code>
                   </td>
                   <td><code>/larapilot-implement</code> — see <a href="#deep-dive-code-quality">Code quality</a></td>
                 </tr>
                 <tr>
                   <td>Review</td>
-                  <td><code>larapilot:spec-approve</code> · <code>larapilot:spec-request-changes</code>
-                    (<code>--include-feedback</code>)</td>
+                  <td><code>larapilot:spec-approve</code> (<code>--commit=</code>, <code>--force</code>) ·
+                    <code>larapilot:spec-request-changes</code> (<code>--include-feedback</code>)</td>
                   <td><code>/larapilot-review</code></td>
+                </tr>
+                <tr>
+                  <td>Traceability</td>
+                  <td><code>larapilot:decision-log</code> · <code>larapilot:decision-check</code> ·
+                    <code>larapilot:code-log</code> · <code>larapilot:code-history</code> (<code>--file=</code>,
+                    <code>--spec=</code>)</td>
+                  <td>Every skill — see <a href="#deep-dive-decision-log">Decision journal</a> and
+                    <a href="#deep-dive-code-history">Code history</a></td>
                 </tr>
                 <tr>
                   <td>Metrics</td>
@@ -6236,8 +7087,8 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                 <tr>
                   <td>Usage (Lucille)</td>
                   <td><code>larapilot:usage-log</code> · <code>larapilot:usage-report</code>
-                    (<code>--insights</code> · <code>larapilot:schedule-set</code> ·
-                    <code>larapilot:choices-set</code></td>
+                    (<code>--insights</code>, <code>--format=json|md|human</code>) ·
+                    <code>larapilot:schedule-set</code></td>
                   <td><code>/larapilot-usage</code>, inception deadlines — see
                     <a href="#deep-dive-usage">Usage</a></td>
                 </tr>
@@ -6245,9 +7096,31 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                   <td>Economics (Aurora)</td>
                   <td><code>larapilot:economics-set</code> ·
                     <code>larapilot:economics-show</code> (<code>--format=json|md|quote</code>) ·
-                    <code>larapilot:economics-quote-write</code></td>
-                  <td><code>/larapilot-economics</code> — client quote document in the PRD language at
-                    <code>/larapilot/economics/quote.md</code></td>
+                    <code>larapilot:economics-market-write</code> · <code>larapilot:economics-quote-write</code>
+                    (<code>--lang=</code>)</td>
+                  <td><code>/larapilot-economics</code> — see <a href="#deep-dive-economics">Economics</a></td>
+                </tr>
+                <tr>
+                  <td>Release ledger</td>
+                  <td><code>larapilot:release-list</code> · <code>larapilot:release-add</code>
+                    (<code>--semver=</code>, <code>--title=</code>, <code>--status=</code>, <code>--specs=</code>) ·
+                    <code>larapilot:release-set</code> (<code>--semver=</code>, <code>--status=</code>,
+                    <code>--add-spec=</code>, …) · <code>larapilot:release-cut</code> ·
+                    <code>larapilot:release-feature</code> (<code>--spec=</code>, <code>--slug=</code>) ·
+                    <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> (<code>--push</code>) ·
+                    <code>larapilot:release-import</code> (<code>--dry-run</code>)
+                  </td>
+                  <td><code>/larapilot-release</code>, inception/adopt/feature/ship when
+                    <code>release_mode=YES</code> — see <a href="#skill-larapilot-release">/larapilot-release</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Custom skills</td>
+                  <td><code>larapilot:custom-skill-list</code> ·
+                    <code>larapilot:custom-skill-add</code> (<code>--name=</code>,
+                    <code>--file=</code> / <code>--content=</code> / stdin, <code>--force</code>)</td>
+                  <td><code>/larapilot-custom-skill</code> — see <a href="#deep-dive-custom-skills">Custom skills</a>
+                  </td>
                 </tr>
                 <tr>
                   <td>Developer portal</td>
@@ -6274,38 +7147,47 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                   <td>Generate <code>provision.sh</code> for a team SSH server — see <a
                       href="#deep-dive-vps">Self-hosted VPS</a></td>
                 </tr>
-                <tr>
-                  <td>Release ledger</td>
-                  <td><code>larapilot:release-list</code> · <code>larapilot:release-add</code>
-                    (<code>--semver=</code>, <code>--title=</code>, <code>--status=</code>, <code>--specs=</code>) ·
-                    <code>larapilot:release-set</code> (<code>--semver=</code>, <code>--status=</code>,
-                    <code>--add-spec=</code>, …) · <code>larapilot:release-cut</code> ·
-                    <code>larapilot:release-feature</code> (<code>--spec=</code>, <code>--slug=</code>) ·
-                    <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> (<code>--push</code>) ·
-                    <code>larapilot:release-import</code> (<code>--dry-run</code>)
-                  </td>
-                  <td><code>/larapilot-release</code>, inception/adopt/feature/ship when
-                    <code>release_mode=YES</code> — see <a href="#skill-larapilot-release">/larapilot-release</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Custom skills</td>
-                  <td><code>larapilot:custom-skill-list</code> ·
-                    <code>larapilot:custom-skill-add</code> (<code>--name=</code>,
-                    <code>--file=</code> / <code>--content=</code>, <code>--force</code>)</td>
-                  <td><code>/larapilot-custom-skill</code> — see <a href="#skill-larapilot-custom-skill">/larapilot-custom-skill</a>
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
 
-          <p>MCP exposes backlog, spec, and <strong>diagnostics</strong> tools — <code>larapilot</code> server
-            alongside <code>laravel-boost</code>. Skills prefer CLI for writes; MCP is for read/query during
-            conversation (including <code>larapilot:diagnostics</code>, <code>larapilot:quality</code>,
-            <code>larapilot:usage-report</code>, and <code>larapilot:backstage-export</code> via
-            <code>RunArtisanTool</code>).
-          </p>
+          <h4>MCP server</h4>
+          <p>The <code>larapilot</code> MCP server runs beside <code>laravel-boost</code>. Skills write through the CLI;
+            MCP is for reading during the conversation.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tool</th>
+                  <th>Does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>BacklogListTool</code></td>
+                  <td>Specs with code, title, priority, status — optional status filter</td>
+                </tr>
+                <tr>
+                  <td><code>SpecShowTool</code></td>
+                  <td>One spec with its plan tasks and working directory</td>
+                </tr>
+                <tr>
+                  <td><code>DiagnosticsTool</code></td>
+                  <td>App status, health checks, redacted log tail — see <a
+                      href="#deep-dive-api-diagnostics">Diagnostics</a></td>
+                </tr>
+                <tr>
+                  <td><code>RunArtisanTool</code></td>
+                  <td>Read and validate commands only: <code>config-show</code>, <code>spec-list</code>,
+                    <code>spec-show</code>, <code>spec-next</code>, <code>metrics</code>, <code>usage-report</code>,
+                    <code>decision-check</code>, <code>code-history</code>, the four forge <code>*-status</code> probes,
+                    <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>doctor</code>,
+                    <code>diagnostics</code>, <code>quality</code>, <code>frontend-scan</code>,
+                    <code>backstage-export</code>, <code>tracker-status</code>. Anything else is refused</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
         <!-- Dashboard -->
@@ -6314,8 +7196,8 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
           <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
             the PRD, browse the <strong>Design</strong> gallery, inspect settings/choices, Lucille usage, and Economics
             quotes — then drill into spec detail between skill sessions.
-            You can also post <strong>internal feedback</strong> comments from the spec page (dev/staging only) —
-            workflow state still changes only via skills/CLI.</p>
+            With <code>comments=YES</code> you can also post <strong>internal feedback</strong> from the spec page
+            (dev/staging only) — workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes
@@ -6385,7 +7267,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>PRD</strong></td>
                   <td><code>/larapilot/prd</code></td>
-                  <td>Rendered <code>PRD.md</code> with a section table of contents</td>
+                  <td>Rendered <code>PRD.md</code> with a section table of contents, the decision journal, and a
+                    <strong>functional analysis summary</strong> download
+                    (<code>/larapilot/prd/functional-summary.md</code>)</td>
                 </tr>
                 <tr>
                   <td><strong>Inception</strong></td>
@@ -6432,9 +7316,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Economics</strong></td>
                   <td><code>/larapilot/economics</code></td>
-                  <td>Account-mode quote, tax, payback, SaaS forecast (when
-                    <code>account</code> is FREELANCE or COMPANY). Download the client quote at
-                    <code>/larapilot/economics/quote.md</code></td>
+                  <td>Pricing simulator (when <code>account</code> is FREELANCE or COMPANY): one plain-language
+                    answer, a four-step subscription calculator, then quote, tax, payback, packaging, business plan and
+                    competitors. Downloads: client quote <code>/larapilot/economics/quote.md</code>, internal report
+                    <code>/larapilot/economics/report.md</code></td>
                 </tr>
                 <tr>
                   <td><strong>API docs</strong></td>
@@ -6462,20 +7347,27 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
           <p>The living product document from <code>/larapilot-inception</code> (and later
             <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
+            <strong>Download functional summary</strong> produces one Markdown file in the PRD's language for someone
+            who will never read the full PRD: the one-sentence pitch, the personas, what is in and out of this
+            version, and every requirement as a numbered point — required first, then what matters, then what can
+            wait. The wording of each point stays the PRD's; only the frame is translated.
             Below the PRD, the <strong>decision journal</strong> from <code>.larapilot/decisions.yaml</code> is grouped
             (project / discovery vs per user story) with a timeline — see
             <a href="#deep-dive-decision-log">Decision journal</a>.
           </p>
 
-          <h4>Settings, Inception, Docs &amp; Skills</h4>
-          <p><strong>Settings</strong> shows the live project modes (effort, backlog, git, testing, auto-approve,
-            lucille, dashboard auth, forges, notifications). <strong>Inception</strong> is the discovery
-            choices snapshot. <strong>Design</strong> is the mockup gallery (presentation index, every screen,
-            zip package). <strong>Docs</strong> explains the delivery loop and packaged skills.
-            <strong>Skills</strong> lists every user-authored skill under <code>.larapilot/skills/</code>
-            with its slash command and description. <strong>Usage</strong> is Lucille's
-            surface — category breakdowns, schedule Gantt, and a one-click Markdown report. Same data as
-            <code>larapilot:usage-report --insights</code> / <code>/larapilot-usage</code>.
+          <h4>Settings, Inception, Plan, Usage, Docs &amp; Skills</h4>
+          <p><strong>Settings</strong> shows every project mode with its <code>config.yaml</code> key, current value,
+            and what each option does. <strong>Inception</strong> is the discovery choices snapshot
+            (<code>choices.yaml</code>) — Project Kind, Delivery Target, Business Model, operations and support.
+            <strong>Plan</strong> is the schedule: epics, milestones, schedule criticality, and a dependency-aware
+            Gantt with a today marker and filters for assignee, status, and task detail. <strong>Usage</strong> is
+            Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report (same
+            data as <code>larapilot:usage-report --insights</code>). <strong>Docs</strong> explains the delivery loop,
+            the packaged skills, and the persona roster. <strong>Skills</strong> lists every
+            <a href="#deep-dive-custom-skills">custom skill</a> under <code>.larapilot/skills/</code> — title, slash
+            trigger, description, file path, and a <em>Registered</em> / <em>Not registered</em> chip; opening the page
+            re-registers them with Boost.
             <strong>Economics</strong> (when <code>account</code> is FREELANCE or COMPANY) is Aurora's quote —
             scope and effort from the backlog, client price, take-home after tax, payback, recurring-revenue
             maths, and a downloadable commercial proposal.</p>
@@ -6586,7 +7478,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             </table>
           </div>
 
-          <p><strong>The page.</strong> A sticky console of dropdowns at the top, then the numbers that decide it ·
+          <p><strong>The page reads as a simulator.</strong> It opens on <strong>one plain-language answer</strong>
+            — for a one-off build: <em>the client pays this once, after costs and tax you keep this, the work takes
+            about this many months</em>. For a subscription it adds a <strong>four-step calculator</strong>: the
+            monthly price · what one customer leaves you after card fees and support · the customers needed to cover
+            the monthly bills · the customers needed to earn the build back in a year — and <em>when</em> that
+            happens on the selected scenario. Hour tables, tax, packaging, scenarios, the month table, and competitor
+            prices stay one click away.</p>
+          <p><strong>Under the answer.</strong> A sticky console of dropdowns at the top, then the numbers that decide it ·
             where the hours come from (per-release or per-epic totals, then every user story with the source of
             its hours) · what the client pays and what you keep · packaging and the business plan when it is a
             subscription · the market · and a collapsed block with the inputs, the files, and a glossary. Every
@@ -6803,8 +7702,10 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/economics</code></td>
-                  <td>Economics snapshot — quote, tax, payback, SaaS forecast
-                    (<code>enabled: false</code> when <code>account</code> is NONE)
+                  <td>Economics snapshot — quote, tax, payback, packaging, business plan, market
+                    (<code>enabled: false</code> when <code>account</code> is NONE). Accepts what-if query parameters
+                    (<code>?hourly_rate=70&amp;discount_pct=10&amp;tier=premium</code>) that are computed and returned,
+                    never stored
                   </td>
                 </tr>
                 <tr>
@@ -6970,10 +7871,11 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
 }</code></pre>
           </div>
-          <p>No authentication is built in — the API is intended for local/dev use behind your existing app middleware.
-            Do not expose it in production (routes are not registered there). Mockup preview URLs are absolute in API
-            responses when the mockup route is browsable. Comment writes honor <code>LARAPILOT_COMMENTS_ENABLED</code>
-            and reject DONE specs with <code>422</code>. Diagnostics honor
+          <p>The API is a development and staging tool: it is never registered in production, and on a shared host
+            it belongs behind <code>LARAPILOT_API_TOKEN</code> with <code>api_auth=YES</code>. Mockup preview URLs are
+            absolute in API
+            responses when the mockup route is browsable. Comment writes need <code>comments=YES</code>, honor
+            <code>LARAPILOT_COMMENTS_ENABLED</code>, and reject DONE specs with <code>422</code>. Diagnostics honor
             <code>LARAPILOT_DIAGNOSTICS_ENABLED</code> and redact secrets in log tails.
           </p>
         </article>
@@ -7142,6 +8044,16 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
             `<span class="ok">✓</span> status → REVIEW`,
             `<span class="prompt">$</span> /larapilot-review US-001`,
             `<span class="ok">✓</span> US-001 shipped — you approved`,
+          ],
+        },
+        {
+          type: "/larapilot-custom-skill \"pre-deploy gate\"",
+          lines: [
+            `<span class="dim">→ Zoey interviews · Sarah persists</span>`,
+            `<span class="ok">✓</span> .larapilot/skills/acme-predeploy-gate/SKILL.md`,
+            `<span class="ok">✓</span> registered → .ai/skills · boost:update`,
+            `<span class="prompt">$</span> /acme-predeploy-gate`,
+            `<span class="ok">✓</span> doctor · quality · checkpoint — GO`,
           ],
         },
         {
