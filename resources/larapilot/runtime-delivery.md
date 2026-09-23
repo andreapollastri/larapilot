@@ -1,6 +1,6 @@
 # Larapilot Runtime — Delivery
 
-Phase pack for **`larapilot-plan`**, **`larapilot-implement`**, **`larapilot-review`**, and **`larapilot-autopilot`**. Read `.larapilot/shared-runtime.md` first. Task **body templates** live only in `.larapilot/task-templates.md`. The parts below hold the canonical prose rules.
+Phase pack for **`larapilot-plan`**, **`larapilot-implement`**, **`larapilot-review`**, and **`larapilot-bug`**. **`larapilot-autopilot`** reads it only when plan and implement run inline in the parent. A delegating autopilot parent skips this index. Read `.larapilot/shared-runtime.md` first. Task **body templates** live only in `.larapilot/task-templates.md`. The parts below hold the canonical prose rules.
 
 This file is an index, not the rules. Read **every** part below with the editor file-read tool (never `cat`, `head`, or `sed`). A truncated preview or a temp-file pointer means the load failed — read the remainder before any other step. Obey **Read protocol** in `.larapilot/shared-runtime.md`.
 

@@ -136,3 +136,30 @@ it('strips the pint progress matrix from quality findings', function (): void {
         ->and($verbose['pint']['output'])->toContain('FAIL  app/Foo.php')
         ->and($verbose['pint']['findings'])->toContain('FAIL  app/Foo.php');
 });
+
+it('delegates autopilot plan and implement to one spec worker at a time', function (): void {
+    $root = dirname(__DIR__, 2);
+    $subagents = file_get_contents($root.'/resources/larapilot/runtime-core-subagents.md');
+    $autopilot = file_get_contents($root.'/resources/boost/skills/larapilot-autopilot/SKILL.md');
+    $guideline = file_get_contents($root.'/resources/boost/guidelines/core.blade.php');
+
+    expect($subagents)->toContain('### Spec worker (autopilot)')
+        ->and($subagents)->toContain('Never parallelize specs')
+        ->and($subagents)->toContain('no AskQuestion')
+        ->and($subagents)->not->toContain('does not fork implement/plan');
+
+    expect($autopilot)->toContain('One spec worker at a time')
+        ->and($autopilot)->toContain('`effort` is `ECO`')
+        ->and($autopilot)->not->toContain('Never spawn sub-agents in autopilot');
+
+    expect($guideline)->toContain('Spec worker')
+        ->and($guideline)->toContain('does not read `runtime-delivery`')
+        ->and($guideline)->not->toContain('Sub-agents are readonly and never run');
+
+    $index = file_get_contents($root.'/resources/larapilot/shared-runtime.md');
+
+    expect($index)->toContain('delegating autopilot parent does not read')
+        ->and($autopilot)->toContain('Do not read `runtime-delivery`')
+        ->and($subagents)->toContain('Do not return the diff')
+        ->and($subagents)->toContain('at most 8 bullets');
+});

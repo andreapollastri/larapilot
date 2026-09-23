@@ -53,6 +53,28 @@
     .prd-content {
         padding: 24px 28px;
     }
+
+    .prd-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn:hover { text-decoration: none; }
 </style>
 @endpush
 
@@ -62,6 +84,10 @@
             <p>No PRD found. Run <code>/larapilot-inception</code> to create <code>.larapilot/docs/PRD.md</code>.</p>
         </div>
     @else
+        <div class="prd-bar">
+            <a class="btn" href="{{ route('larapilot.dashboard.prd.summary') }}">{{ $summaryLabel }}</a>
+        </div>
+
         <div class="prd-layout">
             <aside class="card toc">
                 <h2>Sections</h2>

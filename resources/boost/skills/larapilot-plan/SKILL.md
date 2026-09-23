@@ -21,6 +21,10 @@ Read `.larapilot/task-templates.md` — copy task body structures gated by `data
 
 **Split** — see `larapilot-plan` in the shared-runtime table. Team brief: 1–3 sentences per agent. Chat between stages: status and blockers only. `plan_body` and task bodies stay detailed execution contracts.
 
+## Autopilot spec worker
+
+When the handoff says you are the autopilot spec worker, follow **Spec worker** in `.larapilot/runtime-core-subagents.md`. Explore inline (no nested explore). Write `.larapilot/tmp-payload-{code}-plan.json` and stop before `validate-plan` / `spec-plan`. Do not AskQuestion — return `BLOCKED`. The final message is `OK plan {code} | N tasks` or the two-line `BLOCKED` form. No team brief in that message. Standalone `/larapilot-plan` is unchanged.
+
 ## The Team
 
 🤖 Zoey · 📒 Lucille · 🔎 Tom · 📐 John · 🗄️ Mike · 💡 Sebastian · 🔗 Matt · 🌍 Emily · 💰 Aurora · ⚖️ Violet · 📈 Emma · 💬 Lauren · 🎨 Elise · ✨ Joe · 📱 Ricky · 📝 Albert · ✍️ Marika · 👾 Andrew · ⌨️ Sarah · 🔄 Sabrine · 🔧 Alex · 🧪 Anne — roles in the shared-runtime roster. Mike owns data/schema tasks; **Sarah** owns Git mechanics (conflicts/rebase), CLI, forge automation, CI pipeline scripts, and Linux/server scripting whenever those surfaces appear (partner Jack on gates/deploy).
@@ -54,7 +58,7 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 #### Sub-agent (optional — large or unfamiliar codebase)
 
-When `settings.effort` is **`ECO`**, **never spawn an explore sub-agent** — the parent explores inline only.
+When `settings.effort` is **`ECO`**, or this run is an autopilot spec worker, **never spawn an explore sub-agent** — explore inline only. A nested explore cannot start, and the worker's context is already fresh.
 
 Otherwise, when `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; see **Type mapping** in shared-runtime) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool (or `ECO`): the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
 
@@ -117,7 +121,7 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 **Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them and can distribute work across `assignee` values (developers / personas executing the step). Prefer realistic `estimate_hours` on **every** task — they drive Lucille’s Gantt bars and schedule criticality on the Usage page.
 
-Validate, then `spec-plan`. Delete the temp file after the CLI exits.
+Validate, then `spec-plan`. Delete the temp file after the CLI exits. An autopilot spec worker stops after writing the temp file — the parent validates and calls `spec-plan`.
 
 ## Task body templates
 
@@ -125,7 +129,7 @@ Use `.larapilot/task-templates.md` — do not invent ad-hoc task shapes.
 
 | Template            | When                                                                                                                                                                          |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **TASK-00**         | First task **only when `git_mode` is `GITFLOW` or `GITFLOW_PUSH`** — branch `feature/US-XXX-*` from `develop`; **push + internal PR only under `GITFLOW_PUSH`** (under `GITFLOW` prepare the PR locally, no push); **omit entirely under `NO_GITFLOW`** |
+| **TASK-00**         | First task **only when `git_mode` is `GITFLOW` or `GITFLOW_PUSH`**. Unassigned: branch `feature/US-XXX-*` from `develop`. Assigned (`**Release:** x.y.z`): the task is `larapilot:release-feature` (PR base `release/x.y.z`). **Push only under `GITFLOW_PUSH`** (`--push`). **Omit entirely under `NO_GITFLOW`** |
 | **Entity task**     | New/changed Eloquent model — migration + factory + seeder in the **same task**                                                                                                 |
 | **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A`                                                                                                                                  |
 | **Test task**       | Anne — reuse factories; `test(US-XXX): TASK-NN` commit; depth per `settings.testing`                                                                                           |

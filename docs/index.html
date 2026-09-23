@@ -1285,7 +1285,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.0.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.0.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1328,7 +1328,6 @@
       <a href="#deep-dive">Deep Dive</a>
       <a class="sub" href="#deep-dive-how-it-works">How it works</a>
       <a class="sub" href="#deep-dive-update">Upgrade</a>
-      <a class="sub" href="#deep-dive-releases">Release notes</a>
       <a class="sub" href="#deep-dive-skills">Skills</a>
       <a class="sub" href="#deep-dive-settings">Settings</a>
       <a class="sub" href="#deep-dive-personas">Personas</a>
@@ -1477,7 +1476,7 @@
             loop is identical. <a href="#example-adopt">Adoption walkthrough</a>.</p>
           <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
             <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
-            <code>/larapilot-autopilot</code> to batch plan+implement ·
+            <code>/larapilot-autopilot</code> to batch plan+implement, one fresh context per spec ·
             <code>/larapilot-settings</code> for project modes ·
             <code>/larapilot-usage</code> for Lucille time/token reports ·
             <code>/larapilot-economics</code> for quotes / SaaS ARR (when account is FREELANCE or COMPANY) —
@@ -1802,7 +1801,10 @@ tests/Feature/RegistrationTest.php</code></pre>
             <div class="code-block-header">Your editor — optional batch</div>
             <pre><code>/larapilot-autopilot US-002 US-003</code></pre>
           </div>
-          <p>Chains plan + implement — you still run <code>/larapilot-review</code> per spec.</p>
+          <p>Chains plan + implement, one spec at a time. Under <code>STANDARD</code> or <code>MAX</code>, plan and
+            implement Phase 1 each run in a fresh sub-agent; this session keeps CLI transitions, questions, and the
+            Robert/Lars review. <code>ECO</code> stays inline. You still run <code>/larapilot-review</code> per spec
+            unless <code>auto_approve</code> is <code>YES</code>.</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor — when all MVP stories are DONE</div>
@@ -3175,201 +3177,6 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             unless you intend to scaffold from scratch (<code>--force</code>). Use <code>larapilot:update</code> for
             routine upgrades.</div>
 
-          <h4 id="deep-dive-releases">Release notes</h4>
-          <p>Package version is declared in <code>LarapilotServiceProvider::VERSION</code> (currently
-            <strong>v4.0.0</strong>). Full history: <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md"
-              target="_blank" rel="noopener"><code>CHANGELOG.md</code></a>.</p>
-
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Version</th>
-                  <th>Highlights</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>4.0.0</strong> <span class="chip">2026-09-22</span></td>
-                  <td>
-                    <strong>Breaking:</strong> runtime rules are an index plus section files under 15 KB
-                    (<code>shared-runtime.md</code> is the index; obey <strong>Read protocol</strong>).
-                    <code>config-show</code> omits personas unless <code>--only=personas</code>.
-                    <code>spec-show</code> accepts <code>--task</code> and <code>--fields</code>.
-                    <code>quality</code> returns verdict and findings; raw Pint and Larastan stdout is
-                    Artisan <code>-v</code> only. <code>spec-next</code> shares <code>--task</code> and
-                    <code>--fields</code> with <code>spec-show</code>. Implement status is one line per task; the spec
-                    handoff is 6 lines.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.2.1</strong> <span class="chip">2026-09-21</span></td>
-                  <td>
-                    <strong>Added:</strong> <code>/larapilot/economics</code> now reads in the
-                    <strong>PRD's language</strong>, like the client quote already did — headings,
-                    captions, banners, glossary and every sentence the engine writes into the
-                    snapshot, which also carries a new <code>language</code> key. The pricing
-                    console stays in English on purpose: its labels and the
-                    <code>economics-set</code> command it prints are operator controls.
-                    <strong>Four more languages, end to end</strong> — German, Portuguese, Dutch
-                    and Polish join English, Italian, Spanish and French across detection, the
-                    Economics page, the built-in client quote and the design presentation, with a
-                    coverage test that fails the build if a supported language is missing from any
-                    one of them. The <strong>Sold as</strong> toggle is explained in place: what
-                    each of the four product models turns on, and the fact that none of them moves
-                    the hours or the build price. E-commerce and licensed-package projects finally
-                    show their own payback figures — orders per month, licences to repay the
-                    build — which the engine computed but the page never rendered.<br>
-                    <strong>Fixed:</strong> the <em>No competitor data</em> hint no longer points at
-                    a command that would do nothing — on a one-off client delivery
-                    <code>/larapilot-economics</code> skips the market research by default, and the
-                    page now says to ask for it explicitly.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.2.0</strong> <span class="chip">2026-09-21</span></td>
-                  <td>
-                    <strong>Added:</strong> <code>/larapilot/economics</code> is an
-                    <strong>interactive pricing tool</strong> — dropdowns for hourly rate,
-                    margin, <strong>commercial discount</strong>, <strong>team size</strong>,
-                    account type, country, regime, price line and market scenario recompute
-                    the whole page, the charts and the quote download live, server side
-                    through the same snapshot the CLI uses. Nothing is written from the
-                    browser: a simulation prints the <code>economics-set</code> command that
-                    would make it real. <strong>BASE / PRO / PREMIUM packaging</strong> with
-                    the backlog split across the plans, a <strong>three-line business
-                    plan</strong> (pessimistic / realistic / optimistic, 36 months each), and
-                    <strong>market research</strong> — competitors, price trend, demand and
-                    tiers — researched by Jennifer and Benjamin and persisted with
-                    <code>larapilot:economics-market-write</code>. Effort totals by epic and
-                    by release.<br>
-                    <strong>Also added:</strong> <strong>developer domain docs</strong> in
-                    <code>.larapilot/docs/devs/</code> — one always-English file per domain
-                    carrying the reasoning behind the code (including the alternatives that were
-                    rejected and why), updated in the same spec that changes the behavior, never
-                    deferred; review and ship block on a stale one, and a project with none is
-                    brought level on the first change. New runtime pack
-                    <code>runtime-dev-docs.md</code> and path key <code>paths.dev_docs</code>.<br>
-                    <strong>Changed:</strong> the Economics dashboard is rebuilt around the
-                    decision (console + five sections, glossary collapsed); overhead follows
-                    person-months, so team size moves the timeline and never the price;
-                    discovery is run as a conversation with a goal challenge before any
-                    requirement is written.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.1.2</strong> <span class="chip">2026-09-21</span></td>
-                  <td>
-                    <strong>Added:</strong> the <strong>client quote is a document Aurora writes</strong>
-                    in the PRD's own language — any language, not a fixed template set —
-                    persisted with <code>larapilot:economics-quote-write</code> to
-                    <code>.larapilot/docs/quote.md</code> and served by
-                    <code>/larapilot/economics/quote.md</code>. Per-spec
-                    <code>effort.breakdown</code> + warnings; the Economics snapshot
-                    refreshes itself whenever specs, plans, the PRD, or inception change.
-                    <code>/larapilot/design</code> is one navigable index (ordered walk,
-                    prev/next, per-flow gallery).<br>
-                    <strong>Changed:</strong> effort follows the backlog with hours-per-point
-                    calibrated on existing plans; Economics dashboard restructured into six
-                    explained sections (MRR / ARR / churn / LTV:CAC spelled out); built-in quote
-                    template is commercial, not technical.<br>
-                    <strong>Fixed:</strong> the delivery target was applied twice to heuristic
-                    estimates (1,777h → 644h for an unsized enterprise app); PRD language
-                    detection now reads function-word frequency, so an Italian PRD no longer
-                    produces an English quote; compliance costs are finally charged to the owner
-                    (<code>total_withheld</code>) and losses are no longer clamped to zero;
-                    <code>compliance_annual</code> is localised for every non-EUR country;
-                    Polish ZUS and Icelandic tryggingagjald were missing; contributions are
-                    dropped for a non-working shareholder; <code>economics-set</code> refuses
-                    non-numeric or out-of-range flags instead of storing zeros; capacity and
-                    licence-price figures no longer flatter oversized projects.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.1.1</strong> <span class="chip">2026-09-21</span></td>
-                  <td>
-                    <strong>Added:</strong> dashboard <strong>Design</strong> gallery
-                    (<code>/larapilot/design</code>) — presentation index of every mockup,
-                    viewer for all screens, zip of HTML + assets
-                    (<code>/larapilot/design/package.zip</code>). Economics
-                    <strong>client quote</strong> download
-                    (<code>/larapilot/economics/quote.md</code>,
-                    <code>economics-show --format=quote</code>) in the PRD language
-                    (totals, maintenance, included / not included / client-provided, Gantt).
-                    Snapshot persistence, sales estimates, tax scenarios, expanded FY-2026 catalogue.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.1.0</strong> <span class="chip">2026-09-21</span></td>
-                  <td>
-                    <strong>Added:</strong> <strong>Account</strong> mode
-                    (<code>NONE</code> / <code>FREELANCE</code> / <code>COMPANY</code>)
-                    unlocks the <strong>Economics</strong> dashboard
-                    (<code>/larapilot/economics</code>) — quote, country tax
-                    (forfettario, SRL, Ltd, …), payback, and SaaS ARR / break-even
-                    forecasts. Skill <code>/larapilot-economics</code>;
-                    CLI <code>economics-set</code> / <code>economics-show</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.0.4</strong> <span class="chip">2026-09-18</span></td>
-                  <td>
-                    <strong>Added:</strong> dashboard <strong>Skills</strong> page
-                    (<code>/larapilot/skills</code>) listing custom skills with descriptions;
-                    <code>larapilot:custom-skill-add</code> persists
-                    <code>.larapilot/skills/{name}/SKILL.md</code>.<br>
-                    <strong>Changed:</strong> custom skills auto-register into
-                    <code>.ai/skills/</code> (and existing agent skill folders);
-                    <code>.larapilot/skills/.gitkeep</code> on install;
-                    <code>/larapilot-custom-skill</code> saves via the Artisan command;
-                    Kanban shows the full column again (no Show more / newest-first);
-                    dashboard <strong>Docs</strong> is the last nav item.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>3.0.0</strong> <span class="chip">2026-09-18</span></td>
-                  <td>
-                    <strong>Added:</strong> <code>settings.release_mode</code> + <code>/larapilot-release</code>
-                    (ledger <code>.larapilot/releases.yaml</code>, Gitflow <code>release/x.y.z</code>, parallel releases,
-                    tag import); <code>settings.project_docs</code> + <code>/larapilot-project-docs</code>
-                    (<code>_project_docs/</code> handbook); <code>/larapilot-custom-skill</code> + <code>.larapilot/skills/</code>;
-                    <code>LARAPILOT_FRONTEND_REPO_PATH</code> in <code>.env</code> (no user paths in YAML).<br>
-                    <strong>CLI:</strong> <code>release-list</code>, <code>release-add</code>, <code>release-set</code>,
-                    <code>release-import</code>, <code>custom-skill-list</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>2.7.2</strong> <span class="chip">2026-09-17</span></td>
-                  <td>
-                    <strong>Changed:</strong> Git contribution heatmap fills the dashboard panel — week columns scale
-                    with the container, today anchors on the <strong>right</strong>, older weeks extend left; cells stay
-                    square and the view opens scrolled to the recent end.<br>
-                    <strong>Removed:</strong> delivery-hour estimates from the board, spec detail, and JSON API
-                    (<code>EffortEstimateService</code>, <code>larapilot.estimate</code> config). Story points and
-                    plan-task <code>estimate_hours</code> (Usage Gantt) are unchanged.
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>2.7.1</strong> <span class="chip">2026-09-17</span></td>
-                  <td>
-                    <strong>Fixed:</strong> CI green on PHP 8.1–8.5 × Laravel 10–13 (Composer advisory ignore on PHP 8.1,
-                    Laravel 10 <code>Artisan::output()</code> after <code>$this-&gt;artisan()</code>, API CSRF on Laravel
-                    10, mockup CSS <code>charset=UTF-8</code>). Calibrated delivery-hour estimates (removed in 2.7.2).
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>2.7.0</strong> <span class="chip">2026-09-17</span></td>
-                  <td>
-                    <strong>Added:</strong> decision journal on PRD + spec pages; Git page with 12-month local heatmap;
-                    <code>settings.comments</code>; design-system gate in <code>/larapilot-design</code>; delivery-hour
-                    estimates on board/spec/API (removed in 2.7.2).<br>
-                    <strong>Changed:</strong> PHP <strong>^8.1</strong>, Laravel <strong>10.49+ · 11.45.3+ · 12 ·
-                    13</strong>, Boost <strong>^1|^2</strong>; tracker DTOs PHP 8.1-safe; CI matrix 8.1–8.5.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </article>
 
         <!-- Skills -->
@@ -3452,7 +3259,9 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-plan US-XXX</code></h3>
                 <p>Technical plan with tasks, test strategy, Git deliverables → <code>plans/US-XXX-plan.yaml</code>.
-                  Status → <span class="status status-planned">PLANNED</span>.</p>
+                  Status → <span class="status status-planned">PLANNED</span>. On a large codebase, an optional
+                  read-only explore sub-agent maps the code first (never under <code>effort: ECO</code>). When
+                  autopilot runs this step, that mapping stays inside the spec worker — no nested sub-agent.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:validate-plan</code> ·
                   <code>larapilot:spec-plan</code> — validate then persist the plan.
                 </p>
@@ -3463,8 +3272,10 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-implement US-XXX</code></h3>
                 <p>Executes the plan: Laravel code, Pest tests, per-task commits. Runs <code>larapilot:quality</code>
-                  (Pint + Larastan level 5+) on backend tasks before <code>task-done</code>. Status → <span
-                    class="status status-review">REVIEW</span> when all tasks complete.</p>
+                  (Pint + Larastan level 5+) on backend tasks before <code>task-done</code>. After the tasks, Robert
+                  and Lars review the diff in parallel (inline under <code>ECO</code>). Status → <span
+                    class="status status-review">REVIEW</span> when all tasks complete. Autopilot runs only Phase 1
+                  in the worker; the parent session launches that review and calls <code>spec-review</code>.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-start</code> ·
                   <code>larapilot:quality</code> (<code>--fix</code>) · <code>larapilot:task-done</code> ·
                   <code>larapilot:spec-review</code>.
@@ -3582,7 +3393,16 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <span class="skill-badge">batch delivery</span>
               <div class="skill-body">
                 <h3><code>/larapilot-autopilot US-XXX …</code> <span class="skills-group-note" style="display:inline">— many stories at once</span></h3>
-                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs. By default you still run
+                <p>Chains <code>plan</code> + <code>implement</code> for multiple specs, one at a time, on the same
+                  working tree. Under <code>STANDARD</code> or <code>MAX</code> each spec gets two writing sub-agents
+                  in sequence — one for the plan, one for implement Phase 1 — and then this session takes over:
+                  <code>spec-plan</code>, <code>spec-start</code>, <code>task-done</code>, the Robert/Lars review, and
+                  <code>spec-review</code>. The worker cannot ask you a question and cannot change workflow state; a
+                  missing decision comes back as <code>BLOCKED</code> and this session asks. This session does not
+                  load the delivery packs, domain-doc rules, or the PRD; the delivery target is
+                  <code>choices.yaml</code>. Robert and Lars return at most 8 bullets, and the diff stays in the
+                  review file. <code>ECO</code>, and an
+                  editor with no sub-agent tool, run plan and implement inline. By default you still run
                   <code>/larapilot-review</code> per story; with <code>auto_approve: YES</code> it may
                   <code>spec-approve</code> after implement.
                 </p>
@@ -3641,8 +3461,10 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                   assign specs, switch active <code>release/*</code> branches, import history from Git tags, move status
                   toward ship. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:release-list</code> ·
-                  <code>larapilot:release-add --semver=… --title=…</code> ·
-                  <code>larapilot:release-set --semver=…</code> · <code>larapilot:release-import</code>.
+                  <code>larapilot:release-add</code> · <code>larapilot:release-set</code> ·
+                  <code>larapilot:release-cut</code> · <code>larapilot:release-feature</code> ·
+                  <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> ·
+                  <code>larapilot:release-import</code>.
                 </p>
                 <details class="skill-details">
                   <summary>Full reference</summary>
@@ -3688,10 +3510,14 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                       </tbody>
                     </table>
                   </div>
-                  <p><strong>Ship ceremony</strong> (Gitflow + release mode): merge <code>release/x.y.z</code> →
-                    <code>main</code>, tag <code>vX.Y.Z</code>, back-merge → <code>develop</code>, then
-                    <code>release-set --status=shipped</code>. Use <code>--semver=</code>, not
-                    <code>--version=</code> (Artisan reserves <code>--version</code>). Runtime pack:
+                  <p><strong>Ship ceremony</strong> (Gitflow + release mode): <code>php artisan larapilot:release-ship --semver=x.y.z</code>
+                    merges <code>release/x.y.z</code> into <code>main</code>, tags <code>vX.Y.Z</code>, back-merges into
+                    <code>develop</code>, and marks the ledger shipped. Feature work on that release is
+                    <code>larapilot:release-feature --spec=US-XXX</code>. <code>release-list</code> reports
+                    <code>git.needs_choice</code> so a branch is picked only when more than one release is in progress.
+                    Use <code>--semver=</code>, not
+                    <code>--version=</code> (Artisan reserves <code>--version</code>). Add <code>--push</code> only when
+                    pushing is intended. Runtime pack:
                     <code>.larapilot/runtime-release.md</code>.
                   </p>
                 </details>
@@ -3929,19 +3755,22 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
               <tbody>
                 <tr>
                   <td><code>ECO</code></td>
-                  <td>Token economy — <strong>never spawn sub-agents</strong>; <strong>disables Lucille
+                  <td>Token economy — <strong>never spawn sub-agents</strong>, including the autopilot spec worker
+                    (plan and implement stay in the parent session); <strong>disables Lucille
                       automatically</strong> (re-enable via <code>settings-set --lucille=YES</code> without leaving ECO);
                     defer docs theater (README/PDF/diagrams) but <strong>still update OpenAPI</strong> when APIs change;
                     skip deep reviews and E2E planning</td>
                 </tr>
                 <tr>
                   <td><code>STANDARD</code></td>
-                  <td>Normal Larapilot behavior (<strong>default</strong>)</td>
+                  <td>Normal Larapilot behavior (<strong>default</strong>). Autopilot delegates each spec to a writing
+                    worker, one at a time; explore during plan and the Robert/Lars review stay available</td>
                 </tr>
                 <tr>
                   <td><code>MAX</code></td>
                   <td><strong>Deep</strong> mode on every flow — fuller persona rounds, always run explore/review
-                    sub-agents when available, richer plans and residual-risk notes</td>
+                    sub-agents when available, the autopilot spec worker on every batched spec, richer plans and
+                    residual-risk notes</td>
                 </tr>
               </tbody>
             </table>
@@ -4310,6 +4139,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <strong>Alex</strong> plans FE/BE integration with Andrew, Joe, and Jack. <strong>Sarah</strong> plans
                 CLI, Git mechanics (conflicts/rebase), forge automation, CI pipeline scripts, and Linux/server shell
                 tasks when those surfaces appear. Optional sub-agents explore the codebase in readonly mode.
+                Autopilot does that mapping inside the spec worker, so the parent session does not keep the files.
               </p>
             </div>
             <div class="persona-phase">
@@ -4318,7 +4148,8 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
                 <strong>Mike</strong> guides migrations and data access. <strong>Anne</strong> ships Pest tests and
                 documents manual tests. <strong>Robert</strong> checks plan adherence, Gitflow, and the quality bar —
                 involves <strong>Sabrine</strong> on refactoring/porting. <strong>Joe</strong> enforces design-system
-                consistency. <strong>Lars</strong> runs OWASP-aligned security review. <strong>Sarah</strong> leads Git
+                consistency. <strong>Lars</strong> runs OWASP-aligned security review. Under autopilot those two
+                reviews start in the parent session, after the implement worker has returned. <strong>Sarah</strong> leads Git
                 conflict/rebase resolution and implements pipeline YAML, forge automation, and server shell scripts.
                 <strong>Ricky</strong>, <strong>Marika</strong>, <strong>Matt</strong>, and <strong>Albert</strong> join
                 when mobile, copy, integrations, or docs are in scope. <strong>Lucille</strong> logs the session
@@ -4525,7 +4356,7 @@ scp ./notes.md alex@box:~/work/storefront/       # move a file over</code></pre>
             </div>
             <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
               <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
-              <code>/larapilot-autopilot</code> to batch plan+implement · <code>/larapilot-settings</code> ·
+              <code>/larapilot-autopilot</code> to batch plan+implement, one fresh context per spec · <code>/larapilot-settings</code> ·
               <code>/larapilot-usage</code> · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on
               existing products · Package kind skips UI mockups unless the package ships UI.
             </p>
@@ -6448,7 +6279,10 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
                   <td><code>larapilot:release-list</code> · <code>larapilot:release-add</code>
                     (<code>--semver=</code>, <code>--title=</code>, <code>--status=</code>, <code>--specs=</code>) ·
                     <code>larapilot:release-set</code> (<code>--semver=</code>, <code>--status=</code>,
-                    <code>--add-spec=</code>, …) · <code>larapilot:release-import</code> (<code>--dry-run</code>)
+                    <code>--add-spec=</code>, …) · <code>larapilot:release-cut</code> ·
+                    <code>larapilot:release-feature</code> (<code>--spec=</code>, <code>--slug=</code>) ·
+                    <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> (<code>--push</code>) ·
+                    <code>larapilot:release-import</code> (<code>--dry-run</code>)
                   </td>
                   <td><code>/larapilot-release</code>, inception/adopt/feature/ship when
                     <code>release_mode=YES</code> — see <a href="#skill-larapilot-release">/larapilot-release</a>
@@ -6617,10 +6451,12 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
           </div>
 
           <h4>Board</h4>
-          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. Each workflow column lists
-            spec cards — code, title, epic, story points, priority, subtask progress bar, mockup indicator when HTML
-            exists, pill badges for comment and blocking counts when feedback exists, and merge-request link when the
-            story is <span class="status status-done">DONE</span>.</p>
+          <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. A search field and
+            priority, epic, and status filters narrow the columns; the counts follow whatever is still visible.
+            Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar,
+            mockup indicator when HTML exists, pill badges for comment and blocking counts when feedback exists, and
+            a merge-request link when the story is <span class="status status-done">DONE</span>. That link sits beside
+            the card target, so the board does not leave a blank card next to a merged story.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later

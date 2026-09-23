@@ -21,6 +21,50 @@
         flex-wrap: wrap;
     }
 
+    .eco-answer {
+        padding: 20px 22px;
+        border-color: var(--accent);
+        background: var(--accent-soft);
+    }
+    .eco-answer p {
+        margin: 0;
+        font-size: 1.08rem;
+        line-height: 1.55;
+        max-width: 68ch;
+    }
+    .eco-how {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.55;
+        max-width: 72ch;
+    }
+    .eco-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+    }
+    .eco-step { padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+    .eco-step-k {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent);
+    }
+    .eco-step .metric-value { margin-top: 0; }
+    .eco-step p { margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.45; }
+    .eco-fold { padding: 14px 18px; }
+    .eco-fold > summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
+    .eco-fold > .hint, .eco-fold > .panel, .eco-fold > .tiers, .eco-fold > .plan-lines, .eco-fold > .grid-2 { margin-top: 14px; }
+    .eco-console-hint {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+        max-width: 72ch;
+    }
+
     .eco-top h2 { margin: 0 0 6px; font-size: 1.15rem; }
     .eco-top .sub {
         margin: 0;

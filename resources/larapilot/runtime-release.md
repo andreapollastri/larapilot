@@ -33,7 +33,7 @@ Each release entry carries:
 | Status | Meaning | Transition |
 | --- | --- | --- |
 | `planned` | Release registered, scope negotiable, no branch yet | → `in_progress` when the first spec starts work (Sarah opens the branch when Gitflow is active) |
-| `in_progress` | Actively being built; assigned specs branch into its `release/x.y.z` when Gitflow is active | → `shipped` only via the ship ceremony below |
+| `in_progress` | Actively being built. `release-cut` opens `release/x.y.z`; assigned specs use `release-feature` | → `shipped` only via `release-ship` |
 | `shipped` | Merged to `main`, tagged `vX.Y.Z`, deployed or deploy-ready | Terminal — never reopen; a follow-up is a **new** release |
 
 Only `release-set` moves a release between statuses. Parallel releases are normal: several `planned`/`in_progress` entries may coexist.
@@ -45,17 +45,20 @@ Only `release-set` moves a release between statuses. Parallel releases are norma
 
 ## Gitflow Obligations _(Jack owns policy; Sarah owns Git mechanics)_
 
-When `release_mode` is `YES` **and** `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, classic Gitflow is **mandatory**:
+When `release_mode` is `YES` **and** `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, classic Gitflow is **mandatory**. Sarah does **not** assemble this by hand with `git checkout -b` / `git merge` / `git tag`. She runs the release commands. They create the refs, switch only when the working tree is clean, and never push unless the command includes `--push`.
 
-| Rule | Requirement |
+| Rule | Command |
 | --- | --- |
-| **Release branches** | Every `in_progress` release has its `release/x.y.z` branch, cut from `develop` (`git checkout -b release/x.y.z` at `release-add` / first assigned spec) |
-| **Assigned features** | A spec assigned to an `in_progress` release branches **from** `release/x.y.z` and merges **into** `release/x.y.z` — **not** `develop` (TASK-00 variant in `.larapilot/task-templates.md`) |
-| **Unassigned features** | Specs with no release keep the classic flow: branch from `develop`, merge into `develop` |
-| **Parallel releases** | Multiple open `release/*` branches coexist; each carries its own assigned features; keep them rebased on `develop` when it drifts (Sarah leads) |
-| **Ship ceremony** | Merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, then `php artisan larapilot:release-set --semver=x.y.z --status=shipped` |
+| **Start a release** | `php artisan larapilot:release-cut --semver=x.y.z` — creates `release/x.y.z` from `develop` (creates `develop` from `main` or `master` when it is missing), checks it out, sets `in_progress`. `release-add` / `release-set` already cut the branch **without** switching when the resulting status is `in_progress`. |
+| **Assigned features** | `php artisan larapilot:release-feature --semver=x.y.z --spec=US-XXX --slug=short-desc` — branches `feature/US-XXX-*` **from** `release/x.y.z`. The PR target is that release branch, not `develop`. Omit `--semver` when `release-list` → `git.active_release` is set. |
+| **Unassigned features** | Specs with no release keep the classic flow: branch from `develop`, merge into `develop`. |
+| **Develop moved** | `php artisan larapilot:release-sync --semver=x.y.z` merges `develop` into the release branch. Do this before new feature work when `develop` has commits the release does not. |
+| **Ship ceremony** | `php artisan larapilot:release-ship --semver=x.y.z` merges `release/x.y.z` → `main`, tags `vX.Y.Z`, back-merges → `develop`, then marks the ledger `shipped`. A conflict aborts the merge and leaves the release `in_progress`. |
+| **Push** | Add `--push` only under `GITFLOW_PUSH`, or when the user asked to push. `GITFLOW` prepares the PR locally and does not push. |
 
-When `release_mode` is `YES` **and** `git_mode` is `NO_GITFLOW`: releases are **tracked only** in `.larapilot/releases.yaml` — no branch ceremony; shipping means tagging `vX.Y.Z` on the main working branch and running `release-set --status=shipped`.
+`release-list` includes `git`: `current_branch`, `active_release`, `needs_choice`, `clean`. **Do not AskQuestion which release branch** when `needs_choice` is false, or when the spec already has `**Release:** x.y.z`. Ask only when `needs_choice` is true and the spec is unassigned. If `checked_out` is false, stop and surface `reason` (usually a dirty tree) — do not start editing on the wrong branch.
+
+When `release_mode` is `YES` **and** `git_mode` is `NO_GITFLOW`: releases are **tracked only** in `.larapilot/releases.yaml`. The same commands skip branch ceremony. `release-ship` tags `vX.Y.Z` on the current branch and sets `shipped`.
 
 ## Spec ↔ Release Assignment _(Mark owns scope)_
 
@@ -77,6 +80,6 @@ Inputs: backlog shape (epics, MoSCoW, points), product progress from `spec-list`
 ## Parallel releases & branch switching _(Sarah owns Git mechanics)_
 
 - Multiple `planned` / `in_progress` releases may coexist — each with its own `release/x.y.z` branch when Gitflow is active.
-- Before starting work on a spec, Sarah confirms the **active release branch** via AskQuestion when more than one `in_progress` release is open (options: each open release branch + **stay on current branch**).
-- Switching release context is a normal Git operation (`git checkout release/x.y.z` or the spec's `feature/US-XXX-*` branched from it) — Sarah leads; never mix commits across release branches without an explicit merge plan.
+- Before starting work on a spec, read `git` from `php artisan larapilot:release-list`. When `git.needs_choice` is false, use `git.active_release` (or the spec's `**Release:**` line) and run `release-feature`. AskQuestion only when `needs_choice` is true **and** the spec has no `**Release:**` line — options are the open release branches, not "stay on current branch" as a way to skip the command.
+- Switching release context is `release-cut --semver=x.y.z` or `release-feature` for that spec. Never mix commits across release branches.
 - `/larapilot-release` is the dedicated skill to list releases, register new ones, move statuses (`planned` → `in_progress` → `shipped`), assign specs, and prepare the ship ceremony with Jack.

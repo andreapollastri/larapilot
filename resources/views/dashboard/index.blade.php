@@ -105,7 +105,84 @@
         gap: 10px;
     }
 
+    .board-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 8px;
+        align-items: end;
+    }
+
+    .board-tools label {
+        display: grid;
+        gap: 4px;
+        flex: 1 1 150px;
+        min-width: 0;
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .board-tools label:first-child {
+        flex: 2 1 220px;
+    }
+
+    .board-tools input,
+    .board-tools select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-size: 0.875rem;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .board-tools-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 28px;
+        margin-bottom: 16px;
+    }
+
+    .board-filter-count {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
+
+    .board-filter-clear {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .board-filter-clear:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+        .board-tools label,
+        .board-tools label:first-child {
+            flex-basis: 100%;
+        }
+    }
+
     .spec-card {
+        position: relative;
         display: block;
         padding: 12px 14px;
         border-radius: 10px;
@@ -116,10 +193,39 @@
         transition: border-color 0.15s ease, transform 0.15s ease;
     }
 
+    .board-tools-bar[hidden],
+    .spec-card[hidden],
+    .column[hidden],
+    .points[hidden],
+    .column-empty[hidden],
+    .board-filter-count[hidden],
+    .board-filter-clear[hidden] {
+        display: none !important;
+    }
+
     .spec-card:hover {
         border-color: var(--accent);
         transform: translateY(-1px);
         text-decoration: none;
+    }
+
+    .spec-card-hit {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: inherit;
+        text-decoration: none;
+    }
+
+    .spec-card-hit:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    .merge-commit-link {
+        position: relative;
+        z-index: 2;
+        color: inherit;
     }
 
     .spec-card h3 {
@@ -253,22 +359,57 @@
 @endpush
 
 @section('content')
+    @php
+        $epics = [];
+        $prioritiesPresent = [];
+
+        foreach ($columns as $columnSpecs) {
+            foreach ($columnSpecs as $columnSpec) {
+                $epicCode = (string) ($columnSpec['epic']['code'] ?? '');
+
+                if ($epicCode !== '') {
+                    $epicTitle = trim((string) ($columnSpec['epic']['title'] ?? ''));
+                    $epics[$epicCode] = $epicTitle !== '' ? $epicTitle : $epicCode;
+                }
+
+                $priorityName = strtoupper(trim((string) ($columnSpec['priority'] ?? '')));
+
+                if ($priorityName !== '') {
+                    $prioritiesPresent[$priorityName] = true;
+                }
+            }
+        }
+
+        uasort($epics, static fn (string $left, string $right): int => strcasecmp($left, $right));
+
+        $priorityRank = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+        $extraPriorities = array_keys(array_diff_key($prioritiesPresent, array_flip($priorityRank)));
+        sort($extraPriorities, SORT_STRING);
+        $priorityOptions = array_merge(
+            array_values(array_filter($priorityRank, static fn (string $name): bool => isset($prioritiesPresent[$name]))),
+            $extraPriorities
+        );
+        $doneStatus = (string) ($workflow['done'] ?? 'DONE');
+        $wipStatuses = implode('|', $workflow['wip'] ?? ['IN PROGRESS', 'REVIEW']);
+        $specWord = static fn (int $count): string => $count === 1 ? 'spec' : 'specs';
+    @endphp
+
     <section class="metrics">
         <div class="card metric">
             <div class="metric-label">Total specs</div>
-            <div class="metric-value">{{ $metrics['total'] ?? 0 }}</div>
+            <div class="metric-value" data-metric="total" data-original="{{ $metrics['total'] ?? 0 }}">{{ $metrics['total'] ?? 0 }}</div>
         </div>
         <div class="card metric">
             <div class="metric-label">Done</div>
-            <div class="metric-value">{{ $metrics['done'] ?? 0 }}</div>
+            <div class="metric-value" data-metric="done" data-original="{{ $metrics['done'] ?? 0 }}">{{ $metrics['done'] ?? 0 }}</div>
         </div>
         <div class="card metric">
             <div class="metric-label">Completion</div>
-            <div class="metric-value">{{ $metrics['completion_rate'] ?? 0 }}%</div>
+            <div class="metric-value" data-metric="completion" data-original="{{ $metrics['completion_rate'] ?? 0 }}%">{{ $metrics['completion_rate'] ?? 0 }}%</div>
         </div>
         <div class="card metric">
             <div class="metric-label">WIP</div>
-            <div class="metric-value">{{ $metrics['wip'] ?? 0 }}</div>
+            <div class="metric-value" data-metric="wip" data-original="{{ $metrics['wip'] ?? 0 }}">{{ $metrics['wip'] ?? 0 }}</div>
         </div>
     </section>
 
@@ -277,8 +418,54 @@
             <p>No backlog specs yet. Run <code>/larapilot-spec</code> to create user stories.</p>
         </div>
     @else
+        <form class="board-tools" id="board-tools" role="search">
+            <label>
+                Search
+                <input type="search" id="board-q" placeholder="Code, title, epic, merge…" autocomplete="off">
+            </label>
+            <label>
+                Priority
+                <select id="board-priority">
+                    <option value="">All</option>
+                    @foreach ($priorityOptions as $priorityOption)
+                        <option value="{{ $priorityOption }}">{{ $priorityOption }}</option>
+                    @endforeach
+                </select>
+            </label>
+            @if ($epics !== [])
+                <label>
+                    Epic
+                    <select id="board-epic">
+                        <option value="">All</option>
+                        @foreach ($epics as $epicCode => $epicTitle)
+                            <option value="{{ $epicCode }}">{{ $epicTitle }}</option>
+                        @endforeach
+                    </select>
+                </label>
+            @endif
+            <label>
+                Status
+                <select id="board-status">
+                    <option value="">All</option>
+                    @foreach ($statusOrder as $status)
+                        <option value="{{ $status }}">{{ $status }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </form>
+        <div class="board-tools-bar" id="board-tools-bar" hidden>
+            <p class="board-filter-count" id="board-filter-count" hidden></p>
+            <button type="button" class="board-filter-clear" id="board-filter-clear" hidden>Clear</button>
+        </div>
+
         <div class="board-scroll">
-        <section class="board">
+        <section
+            class="board"
+            id="board"
+            data-done-status="{{ $doneStatus }}"
+            data-wip-statuses="{{ $wipStatuses }}"
+            data-total="{{ $metrics['total'] ?? 0 }}"
+        >
             @foreach ($statusOrder as $status)
                 @php
                     $items = $columns[$status] ?? [];
@@ -295,14 +482,12 @@
                         default => 'badge-todo',
                     };
                 @endphp
-                <article class="card column">
+                <article class="card column" data-status="{{ $status }}">
                     <div class="column-header">
                         <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                         <div class="column-stats">
-                            <span class="column-count">{{ count($items) }} specs</span>
-                            @if ($columnPoints > 0)
-                                <span class="points">{{ $columnPoints }} SP</span>
-                            @endif
+                            <span class="column-count" data-column-count data-original="{{ count($items) }}">{{ count($items) }} {{ $specWord(count($items)) }}</span>
+                            <span class="points" data-column-points data-original="{{ $columnPoints }}" @if ($columnPoints === 0) hidden @endif>{{ $columnPoints }} SP</span>
                         </div>
                     </div>
                     <div class="column-body">
@@ -311,6 +496,9 @@
                         @empty
                             <div class="column-empty">No specs</div>
                         @endforelse
+                        @if (count($items) > 0)
+                            <div class="column-empty" data-no-matches hidden>No matches</div>
+                        @endif
                     </div>
                 </article>
             @endforeach
@@ -318,3 +506,222 @@
         </div>
     @endif
 @endsection
+
+@push('scripts')
+<script>
+    (() => {
+        const form = document.getElementById('board-tools');
+        const board = document.getElementById('board');
+
+        if (!form || !board) {
+            return;
+        }
+
+        const query = document.getElementById('board-q');
+        const priority = document.getElementById('board-priority');
+        const epic = document.getElementById('board-epic');
+        const status = document.getElementById('board-status');
+        const count = document.getElementById('board-filter-count');
+        const clear = document.getElementById('board-filter-clear');
+        const bar = document.getElementById('board-tools-bar');
+        const cards = [...board.querySelectorAll('.spec-card')];
+        const columns = [...board.querySelectorAll('.column')];
+        const metrics = {
+            total: document.querySelector('[data-metric="total"]'),
+            done: document.querySelector('[data-metric="done"]'),
+            completion: document.querySelector('[data-metric="completion"]'),
+            wip: document.querySelector('[data-metric="wip"]'),
+        };
+        const doneStatus = board.dataset.doneStatus || 'DONE';
+        const wipStatuses = (board.dataset.wipStatuses || '').split('|').filter(Boolean);
+        const totalSpecs = Number(board.dataset.total || cards.length);
+
+        const specWord = (value) => `${value} ${value === 1 ? 'spec' : 'specs'}`;
+
+        const formatRate = (done, total) => {
+            if (!total) {
+                return '0%';
+            }
+
+            const rate = Math.round((done / total) * 1000) / 10;
+
+            return `${Number.isInteger(rate) ? rate : rate.toFixed(1)}%`;
+        };
+
+        const filtering = () => {
+            const needle = (query.value || '').trim();
+
+            return needle !== ''
+                || (priority && priority.value !== '')
+                || (epic && epic.value !== '')
+                || (status && status.value !== '');
+        };
+
+        const matches = (card) => {
+            const needle = (query.value || '').trim().toLowerCase();
+
+            if (needle !== '' && !(card.dataset.search || '').includes(needle)) {
+                return false;
+            }
+
+            if (priority && priority.value !== '' && card.dataset.priority !== priority.value) {
+                return false;
+            }
+
+            if (epic && epic.value !== '' && card.dataset.epic !== epic.value) {
+                return false;
+            }
+
+            return true;
+        };
+
+        const restore = () => {
+            cards.forEach((card) => {
+                card.hidden = false;
+            });
+
+            columns.forEach((column) => {
+                column.hidden = false;
+                const columnCount = column.querySelector('[data-column-count]');
+                const columnPoints = column.querySelector('[data-column-points]');
+                const noMatches = column.querySelector('[data-no-matches]');
+                const originalCount = Number(columnCount?.dataset.original || 0);
+                const originalPoints = Number(columnPoints?.dataset.original || 0);
+
+                if (columnCount) {
+                    columnCount.textContent = specWord(originalCount);
+                }
+
+                if (columnPoints) {
+                    columnPoints.hidden = originalPoints === 0;
+                    columnPoints.textContent = `${originalPoints} SP`;
+                }
+
+                if (noMatches) {
+                    noMatches.hidden = true;
+                }
+            });
+
+            Object.values(metrics).forEach((node) => {
+                if (node) {
+                    node.textContent = node.dataset.original || '';
+                }
+            });
+
+            if (bar) {
+                bar.hidden = true;
+            }
+
+            if (count) {
+                count.hidden = true;
+            }
+
+            if (clear) {
+                clear.hidden = true;
+            }
+        };
+
+        const apply = () => {
+            if (!filtering()) {
+                restore();
+                return;
+            }
+
+            const statusValue = status ? status.value : '';
+            let visibleTotal = 0;
+            let visibleDone = 0;
+            let visibleWip = 0;
+
+            columns.forEach((column) => {
+                const statusOk = statusValue === '' || column.dataset.status === statusValue;
+                column.hidden = !statusOk;
+
+                let visible = 0;
+                let points = 0;
+
+                column.querySelectorAll('.spec-card').forEach((card) => {
+                    const ok = statusOk && matches(card);
+                    card.hidden = !ok;
+
+                    if (!ok) {
+                        return;
+                    }
+
+                    visible += 1;
+                    points += Number(card.dataset.points || 0);
+                    visibleTotal += 1;
+
+                    if (card.dataset.status === doneStatus) {
+                        visibleDone += 1;
+                    }
+
+                    if (wipStatuses.includes(card.dataset.status || '')) {
+                        visibleWip += 1;
+                    }
+                });
+
+                const columnCount = column.querySelector('[data-column-count]');
+                const columnPoints = column.querySelector('[data-column-points]');
+                const noMatches = column.querySelector('[data-no-matches]');
+
+                if (columnCount) {
+                    columnCount.textContent = specWord(visible);
+                }
+
+                if (columnPoints) {
+                    columnPoints.hidden = points === 0;
+                    columnPoints.textContent = `${points} SP`;
+                }
+
+                if (noMatches) {
+                    noMatches.hidden = !statusOk || visible > 0;
+                }
+            });
+
+            if (metrics.total) {
+                metrics.total.textContent = String(visibleTotal);
+            }
+
+            if (metrics.done) {
+                metrics.done.textContent = String(visibleDone);
+            }
+
+            if (metrics.wip) {
+                metrics.wip.textContent = String(visibleWip);
+            }
+
+            if (metrics.completion) {
+                metrics.completion.textContent = formatRate(visibleDone, visibleTotal);
+            }
+
+            if (bar) {
+                bar.hidden = false;
+            }
+
+            if (count) {
+                count.hidden = false;
+                count.textContent = `Showing ${visibleTotal} of ${totalSpecs}`;
+            }
+
+            if (clear) {
+                clear.hidden = false;
+            }
+        };
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            apply();
+        });
+
+        [query, priority, epic, status].forEach((control) => {
+            control?.addEventListener('input', apply);
+            control?.addEventListener('change', apply);
+        });
+
+        clear?.addEventListener('click', () => {
+            form.reset();
+            apply();
+        });
+    })();
+</script>
+@endpush

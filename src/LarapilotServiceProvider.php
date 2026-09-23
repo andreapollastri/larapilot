@@ -37,9 +37,13 @@ use Larapilot\Console\Commands\NotifyCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
 use Larapilot\Console\Commands\ReleaseAddCommand;
+use Larapilot\Console\Commands\ReleaseCutCommand;
+use Larapilot\Console\Commands\ReleaseFeatureCommand;
 use Larapilot\Console\Commands\ReleaseImportCommand;
 use Larapilot\Console\Commands\ReleaseListCommand;
 use Larapilot\Console\Commands\ReleaseSetCommand;
+use Larapilot\Console\Commands\ReleaseShipCommand;
+use Larapilot\Console\Commands\ReleaseSyncCommand;
 use Larapilot\Console\Commands\ScheduleSetCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
@@ -97,6 +101,7 @@ use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
+use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
 use Larapilot\Services\SpecService;
 use Larapilot\Services\Tracker\TrackerLinkStore;
@@ -110,7 +115,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '4.0.0';
+    public const VERSION = '4.0.1';
 
     public function register(): void
     {
@@ -149,6 +154,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(TrackerLinkStore::class);
         $this->app->singleton(TrackerService::class);
         $this->app->singleton(ReleaseService::class);
+        $this->app->singleton(ReleaseFlowService::class);
         $this->app->singleton(CustomSkillService::class);
         $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
@@ -202,6 +208,10 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseAddCommand::class,
                 ReleaseSetCommand::class,
                 ReleaseImportCommand::class,
+                ReleaseCutCommand::class,
+                ReleaseFeatureCommand::class,
+                ReleaseSyncCommand::class,
+                ReleaseShipCommand::class,
                 CustomSkillListCommand::class,
                 CustomSkillAddCommand::class,
                 EconomicsMarketWriteCommand::class,

@@ -44,6 +44,9 @@ class DashboardRouteRegistrar
                 Route::get('/prd', [DashboardController::class, 'prd'])
                     ->name('larapilot.dashboard.prd');
 
+                Route::get('/prd/functional-summary.md', [DashboardController::class, 'functionalSummary'])
+                    ->name('larapilot.dashboard.prd.summary');
+
                 Route::get('/settings', [DashboardController::class, 'settings'])
                     ->name('larapilot.dashboard.settings');
 

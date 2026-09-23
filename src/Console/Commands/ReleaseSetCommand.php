@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
 use Larapilot\Support\LarapilotCommand;
 
@@ -21,7 +22,7 @@ class ReleaseSetCommand extends LarapilotCommand
 
     protected $description = 'Update an existing release in the ledger';
 
-    public function handle(ConfigService $config, ReleaseService $releases): int
+    public function handle(ConfigService $config, ReleaseService $releases, ReleaseFlowService $flow): int
     {
         if (! $config->releaseModeEnabled()) {
             return $this->failure(
@@ -88,9 +89,24 @@ class ReleaseSetCommand extends LarapilotCommand
             );
         }
 
+        $git = null;
+
+        if (($entry['status'] ?? '') === 'in_progress') {
+            try {
+                $git = $flow->cut((string) $entry['version'], false);
+            } catch (\InvalidArgumentException $exception) {
+                $git = ['ok' => false, 'error' => $exception->getMessage()];
+            }
+
+            if (is_array($git['release'] ?? null)) {
+                $entry = $git['release'];
+            }
+        }
+
         return $this->success('release', [
             'release' => $entry,
             'path' => $releases->path(),
+            'git' => $git,
         ]);
     }
 }

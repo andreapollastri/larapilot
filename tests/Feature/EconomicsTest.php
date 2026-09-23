@@ -921,7 +921,9 @@ it('recomputes the economics panel from the query string', function (): void {
         ->assertOk()
         ->assertSee('This is a simulation', false)
         ->assertSee('--hourly-rate=90', false)
-        ->assertSee('forecast runs on this', false);
+        ->assertSee('forecast runs on this', false)
+        ->assertSee('The subscription, one step at a time', false)
+        ->assertSee('Customers to cover the monthly bills', false);
 
     // The download follows the simulation, and the stored snapshot does not.
     $this->get('/larapilot/economics/quote.md?hourly_rate=90')

@@ -12,9 +12,11 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\EconomicsService;
+use Larapilot\Services\FunctionalSummaryWriter;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
+use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\SpecCode;
 
@@ -26,6 +28,8 @@ class DashboardController
         protected SpecService $specs,
         protected InternalFeedbackService $feedback,
         protected EconomicsService $economics,
+        protected FunctionalSummaryWriter $summary,
+        protected PrdService $prd,
         protected MockupPackageService $mockupPackage,
         protected MockupService $mockups,
         protected DecisionService $decisions,
@@ -47,6 +51,23 @@ class DashboardController
         return view('larapilot::dashboard.prd', [
             'prd' => $prd,
             'decisions' => $this->dashboard->decisions(),
+            'summaryLabel' => is_array($prd) ? $this->summary->label((string) $prd['content']) : null,
+        ]);
+    }
+
+    public function functionalSummary(): Response
+    {
+        $this->guard();
+
+        $content = $this->prd->read();
+
+        if ($content === null || trim($content) === '') {
+            abort(404);
+        }
+
+        return response($this->summary->render($content), 200, [
+            'Content-Type' => 'text/markdown; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$this->summary->filename($content).'"',
         ]);
     }
 

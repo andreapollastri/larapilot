@@ -11,7 +11,7 @@ Release accepted increments to production. **Oliver** runs red-team assessment (
 
 Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), `.larapilot/runtime-ops.md` (support runbook / Sophia), and `.larapilot/runtime-dev-docs.md` (**Freshness gate** — no shipped feature leaves without a current domain doc). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs the **ship ceremony** (merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, `release-set --status=shipped`).
+Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ship.md` (deploy runbooks, OWASP/security, launch checks), `.larapilot/runtime-ux.md` (SEO/launch-adjacent UX), `.larapilot/runtime-ops.md` (support runbook / Sophia), and `.larapilot/runtime-dev-docs.md` (**Freshness gate** — no shipped feature leaves without a current domain doc). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md` — Sarah runs `php artisan larapilot:release-ship --semver=x.y.z` (add `--push` only under `GITFLOW_PUSH` or when the user asked to push). Do not merge and tag by hand.
 
 ## Output Economy
 
@@ -222,7 +222,7 @@ Jack verifies the pipeline for the **detected target**; **Sarah** confirms or up
 Jack orchestrates (speaks in character):
 
 1. Ensure Lars verdict is **GO** (or waived)
-2. Commit and push release branch
+2. Commit outstanding release work, then `php artisan larapilot:release-ship --semver=x.y.z` when `release_mode=YES` (add `--push` only if `GITFLOW_PUSH` or the user asked to push)
 3. Execute target-specific deploy (see runbooks above)
 4. Post-deploy verification:
    - HTTP 200 on health/home route

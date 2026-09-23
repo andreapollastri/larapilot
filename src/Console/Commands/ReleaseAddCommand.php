@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
 use Larapilot\Support\LarapilotCommand;
 
@@ -19,7 +20,7 @@ class ReleaseAddCommand extends LarapilotCommand
 
     protected $description = 'Register a new release in the ledger';
 
-    public function handle(ConfigService $config, ReleaseService $releases): int
+    public function handle(ConfigService $config, ReleaseService $releases, ReleaseFlowService $flow): int
     {
         if (! $config->releaseModeEnabled()) {
             return $this->failure(
@@ -61,10 +62,30 @@ class ReleaseAddCommand extends LarapilotCommand
             );
         }
 
+        $git = $this->openBranch($flow, $entry);
+
         return $this->success('release', [
-            'release' => $entry,
+            'release' => is_array($git) && is_array($git['release'] ?? null) ? $git['release'] : $entry,
             'path' => $releases->path(),
+            'git' => $git,
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $entry
+     * @return array<string, mixed>|null
+     */
+    protected function openBranch(ReleaseFlowService $flow, array $entry): ?array
+    {
+        if (($entry['status'] ?? '') !== 'in_progress') {
+            return null;
+        }
+
+        try {
+            return $flow->cut((string) $entry['version'], false);
+        } catch (\InvalidArgumentException $exception) {
+            return ['ok' => false, 'error' => $exception->getMessage()];
+        }
     }
 
     /**

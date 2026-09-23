@@ -6,10 +6,12 @@ use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\MockupPackageService;
 use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\EconomicsStrings;
+use Larapilot\Support\FunctionalSummaryStrings;
 
 /**
- * Larapilot writes prose in three places — the Economics page and engine, the
- * client quote, and the design presentation — each with its own vocabulary.
+ * Larapilot writes prose in four places — the Economics page and engine, the
+ * client quote, the design presentation, and the functional-analysis summary —
+ * each with its own vocabulary.
  * A language added to `ArtifactLanguage::SUPPORTED` but forgotten in one of
  * them would silently render English there, which is worse than not offering
  * the language at all. These tests make that impossible to ship.
@@ -84,6 +86,25 @@ it('carries the whole Economics vocabulary in every supported language', functio
         $gaps = structureGaps($english, (array) $tables[$lang]);
 
         expect($gaps)->toBe([], "Economics strings for '{$lang}': ".implode(' · ', array_slice($gaps, 0, 8)));
+    }
+});
+
+it('carries the functional summary vocabulary in every supported language', function (): void {
+    $english = rawTable(FunctionalSummaryStrings::class, 'en');
+    $tables = rawTable(FunctionalSummaryStrings::class, 'table');
+
+    expect($english)->not->toBeEmpty();
+
+    foreach (ArtifactLanguage::SUPPORTED as $lang) {
+        if ($lang === ArtifactLanguage::DEFAULT) {
+            continue;
+        }
+
+        expect(array_key_exists($lang, $tables))->toBeTrue("no functional summary table for '{$lang}'");
+
+        $gaps = structureGaps($english, (array) $tables[$lang]);
+
+        expect($gaps)->toBe([], "Functional summary strings for '{$lang}': ".implode(' · ', array_slice($gaps, 0, 8)));
     }
 });
 

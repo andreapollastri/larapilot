@@ -161,7 +161,7 @@
             <div class="flow-steps">
                 <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
-                <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — batch implement/review</span></div>
+                <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — one spec at a time; plan and implement in a fresh worker when effort is not ECO</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
             </div>
         </section>
@@ -208,7 +208,7 @@
                     <strong>Code history = YES</strong> — after each <code>task-done</code>, append file+line touchpoints to <code>.larapilot/code-history.yaml</code>.
                 </li>
                 <li @class(['is-on' => $isYes($s['release_mode'] ?? 'NO')])>
-                    <strong>Release mode = YES</strong> — semver ledger in <code>releases.yaml</code>, <code>/larapilot-release</code>, Gitflow <code>release/x.y.z</code> branches.
+                    <strong>Release mode = YES</strong> — semver ledger in <code>releases.yaml</code>. Gitflow cuts <code>release/x.y.z</code>, opens feature branches from it, and ships with <code>release-ship</code>.
                 </li>
                 <li @class(['is-on' => $isYes($s['project_docs'] ?? 'NO')])>
                     <strong>Project docs = YES</strong> — Albert maintains living handbook in <code>_project_docs/</code> after material changes.

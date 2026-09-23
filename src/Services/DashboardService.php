@@ -87,6 +87,17 @@ class DashboardService
             );
         }
 
+        $statuses = $this->config->resolve()['workflow']['statuses'] ?? [];
+        $statuses = is_array($statuses) ? $statuses : [];
+
+        $board['workflow'] = [
+            'done' => (string) ($statuses['done'] ?? 'DONE'),
+            'wip' => [
+                (string) ($statuses['in_progress'] ?? 'IN PROGRESS'),
+                (string) ($statuses['review'] ?? 'REVIEW'),
+            ],
+        ];
+
         return $board;
     }
 

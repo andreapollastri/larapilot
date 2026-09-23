@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\PlanService;
+use Larapilot\Services\ReleaseFlowService;
+use Larapilot\Services\ReleaseService;
 use Larapilot\Tests\DisabledTestCase;
 use Larapilot\Tests\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -167,6 +169,58 @@ function withGitRemoteSandbox(callable $callback): void
         };
 
         $callback($sandbox, new GitService($sandboxConfig));
+    } finally {
+        shell_exec('rm -rf '.escapeshellarg($sandbox));
+    }
+}
+
+/**
+ * Isolated git repository with release mode and Gitflow enabled.
+ *
+ * @param  callable(string $root, ReleaseFlowService $flow, ReleaseService $releases, GitService $git, ConfigService $config): void  $callback
+ */
+function withReleaseFlowSandbox(callable $callback): void
+{
+    $sandbox = sys_get_temp_dir().'/larapilot-release-flow-'.bin2hex(random_bytes(8));
+
+    if (is_dir($sandbox)) {
+        shell_exec('rm -rf '.escapeshellarg($sandbox));
+    }
+
+    mkdir($sandbox, 0755, true);
+    shell_exec('git init -b main --template= '.escapeshellarg($sandbox));
+    file_put_contents($sandbox.'/README.md', "sandbox\n");
+    shell_exec('git -C '.escapeshellarg($sandbox).' config user.email test@example.com');
+    shell_exec('git -C '.escapeshellarg($sandbox).' config user.name "Test User"');
+    shell_exec('git -C '.escapeshellarg($sandbox).' add README.md');
+    shell_exec('git -C '.escapeshellarg($sandbox).' commit -m init');
+    shell_exec('git -C '.escapeshellarg($sandbox).' branch develop');
+
+    $config = new class($sandbox) extends ConfigService
+    {
+        public function __construct(private readonly string $root) {}
+
+        public function projectRoot(): string
+        {
+            return $this->root;
+        }
+
+        public function configPath(): string
+        {
+            return $this->root.'/.larapilot/config.yaml';
+        }
+    };
+
+    try {
+        $config->writeProjectConfig();
+        $config->updateSettings([
+            'release_mode' => true,
+            'git_mode' => 'GITFLOW',
+        ]);
+
+        $git = new GitService($config);
+        $releases = new ReleaseService($config);
+        $callback($sandbox, new ReleaseFlowService($config, $releases, $git), $releases, $git, $config);
     } finally {
         shell_exec('rm -rf '.escapeshellarg($sandbox));
     }

@@ -914,6 +914,74 @@ class GitService
         return array_values(array_unique($branches));
     }
 
+    public function currentBranch(): ?string
+    {
+        if (! $this->isRepository()) {
+            return null;
+        }
+
+        $result = $this->run('branch', '--show-current');
+        $branch = trim($result['output']);
+
+        return $result['ok'] && $branch !== '' ? $branch : null;
+    }
+
+    public function localBranchExists(string $branch): bool
+    {
+        if (! $this->isRepository() || $branch === '') {
+            return false;
+        }
+
+        return $this->run('show-ref', '--verify', '--quiet', 'refs/heads/'.$branch)['ok'];
+    }
+
+    public function workingTreeClean(): bool
+    {
+        if (! $this->isRepository()) {
+            return false;
+        }
+
+        // Untracked files ride along on checkout. Only staged or unstaged
+        // edits to tracked files block a branch switch or a merge.
+        $result = $this->run('status', '--porcelain', '--untracked-files=no');
+
+        return $result['ok'] && trim($result['output']) === '';
+    }
+
+    /**
+     * @return array{ok: bool, code: int, output: string}
+     */
+    public function run(string ...$args): array
+    {
+        $command = array_merge(['git', '-C', $this->config->projectRoot()], $args);
+        $process = proc_open($command, [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ], $pipes);
+
+        if (! is_resource($process)) {
+            return ['ok' => false, 'code' => 1, 'output' => 'Unable to run git.'];
+        }
+
+        fclose($pipes[0]);
+        $stdout = stream_get_contents($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $code = proc_close($process);
+        $output = trim(implode("\n", array_filter([
+            is_string($stdout) ? trim($stdout) : '',
+            is_string($stderr) ? trim($stderr) : '',
+        ], static fn (string $part): bool => $part !== '')));
+
+        return [
+            'ok' => $code === 0,
+            'code' => $code,
+            'output' => $output,
+        ];
+    }
+
     protected function git(string ...$args): ?string
     {
         $command = 'git -C '.escapeshellarg($this->config->projectRoot()).' ';

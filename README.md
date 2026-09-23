@@ -121,7 +121,7 @@ Published via Laravel Boost after `php artisan boost:install`:
 | `/larapilot-implement` | Code + tests on a feature branch, plus the developer domain docs in `.larapilot/docs/devs/` |
 | `/larapilot-review` | Human gate → **DONE** or rework |
 | `/larapilot-ship` | Release checklist when MVP is done |
-| `/larapilot-autopilot` | Batch plan + implement |
+| `/larapilot-autopilot` | Batch plan + implement, one fresh context per spec |
 | `/larapilot-settings` | Persist effort / backlog / git / testing / account / auto-approve / lucille / decision-log / code-history / comments / dashboard-auth / api-auth / GitHub·GitLab·Bitbucket·Azure / notification channels |
 | `/larapilot-economics` | **Aurora + Jennifer + Benjamin** — quote, country tax, payback, competitor research, BASE/PRO/PREMIUM packaging, three-line business plan, client quote Markdown (when `account` is FREELANCE or COMPANY) |
 | `/larapilot-usage` | **Lucille** — query time/token ledger, deadlines, export Markdown report |
@@ -138,7 +138,7 @@ During inception, **John + Joe** ask **Frontend Topology**: `Laravel-coupled`, `
 
 When the dashboard is browsable (never in production):
 
-- **`/larapilot`** — Kanban board, PRD reader (with decision journal timeline), Inception, **Design** (one navigable index: presentation cover, ordered walk through every flow with prev/next and a contextual flow gallery, plus a zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (**an interactive pricing console**: dropdowns for rate, discount, team size, regime, account type, price line and market scenario recompute the whole page and the downloadable quote live, over scope & effort from the backlog, take-home after tax, payback, packaging, business plan and competitors — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
+- **`/larapilot`** — Kanban board (search, plus priority, epic, and status filters), PRD reader (with decision journal timeline), Inception, **Design** (one navigable index: presentation cover, ordered walk through every flow with prev/next and a contextual flow gallery, plus a zip of HTML/assets), Settings, Skills (custom Boost skills), Git (full-width 12-month contribution heatmap — recent on the right — from local branch history, filterable by developer), Usage (Lucille metrics + Gantt + report download), Economics (**an interactive pricing console**: dropdowns for rate, discount, team size, regime, account type, price line and market scenario recompute the whole page and the downloadable quote live, over scope & effort from the backlog, take-home after tax, payback, packaging, business plan and competitors — when `account` is FREELANCE or COMPANY), spec detail with decision journal, mockup preview, internal feedback, and Docs last in the nav
 - **`/larapilot/api`** — JSON over the same artifacts (board, specs, PRD, Economics, OpenAPI at `/larapilot/api/docs`)
 - **`GET /larapilot/api/economics`** — quote, tax, payback, packaging, business plan, SaaS forecast (`enabled: false` when `account` is NONE). Accepts what-if query parameters (`?hourly_rate=70&discount_pct=10&tier=premium`) that are computed and returned, never stored
 - **`GET /larapilot/api/backstage`** — Backstage catalog entities + delivery snapshot (see [Developer portal](#developer-portal--backstage))
@@ -270,8 +270,12 @@ Or `/larapilot-frontend-companion` in the Laravel editor.
 | `larapilot:economics-show` | Quote, tax, payback, SaaS forecast (`--format=md` internal report, `--format=quote` client document) |
 | `larapilot:economics-quote-write` | Persist the client quote document written in the PRD language (`--file=`, `--content=`, `--lang=`) |
 | `larapilot:economics-market-write` | Persist the researched market: competitors, price trend, demand scenarios, packaging tiers (`--file=`, `--content=`) |
-| `larapilot:release-list` | List releases from `.larapilot/releases.yaml` (requires `release_mode=YES`) |
-| `larapilot:release-add` / `release-set` | Register or update a release |
+| `larapilot:release-list` | List releases from `.larapilot/releases.yaml`, including which release branch is already active |
+| `larapilot:release-add` / `release-set` | Register or update a release. Moving to `in_progress` cuts `release/x.y.z` without switching branches |
+| `larapilot:release-cut` | Check out the release branch (`--semver=`, optional `--push`) |
+| `larapilot:release-feature` | Open `feature/US-XXX-*` from that release (`--spec=`, optional `--slug=`) |
+| `larapilot:release-sync` | Merge `develop` into the release branch |
+| `larapilot:release-ship` | Merge to `main`, tag `vX.Y.Z`, back-merge `develop`, mark shipped |
 | `larapilot:release-import` | Rebuild shipped releases from Git semver tags |
 | `larapilot:custom-skill-list` | List skills under `.larapilot/skills/` and auto-register them with Boost |
 | `larapilot:custom-skill-add` | Persist a skill to `.larapilot/skills/{name}/SKILL.md` and register it (`.ai/skills/` + `boost:update`) |

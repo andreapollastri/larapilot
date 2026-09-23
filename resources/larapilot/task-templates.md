@@ -66,7 +66,7 @@ Bootstrap Gitflow for this spec: create the feature branch from `develop`, push 
 
 ## TASK-00 — Release branch variant (release_mode + Gitflow)
 
-Use when **`settings.release_mode` is `YES`**, `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, and the spec body carries **`Release: x.y.z`** (assigned to an `in_progress` release). Branch **from** `release/x.y.z`, merge **into** `release/x.y.z` — **not** `develop`. Sarah owns Git mechanics.
+Use when **`settings.release_mode` is `YES`**, `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, and the spec body carries **`Release: x.y.z`** (assigned to an `in_progress` release — `release-feature` opens the release branch if it is still `planned`). Branch **from** `release/x.y.z`, merge **into** `release/x.y.z` — **not** `develop`. One Artisan command; do not run the git steps by hand.
 
 Replace `{RELEASE}` with the semver (e.g. `1.2.0`).
 
@@ -80,25 +80,23 @@ Bootstrap Gitflow for this spec on release `{RELEASE}`: create `feature/US-XXX-*
 - (git only — no application files)
 
 ## Steps
-1. `git fetch` (when remotes exist)
-2. `git checkout release/{RELEASE}` (create from `develop` first if the release branch does not exist yet)
-3. `git checkout -b feature/US-XXX-short-desc`
-4. Draft internal PR title/body toward `release/{RELEASE}`
-5. Optional empty commit: `chore(US-XXX): TASK-00 bootstrap feature branch for release/{RELEASE}`
+1. `php artisan larapilot:release-feature --semver={RELEASE} --spec=US-XXX --slug=short-desc`
+2. Read `branch`, `base`, and `checked_out` from the JSON. Stop if `checked_out` is false and surface `reason`.
+3. Draft internal PR title/body toward `base` (`release/{RELEASE}`)
 
 ## Completion Criteria
-- [ ] Branch `feature/US-XXX-*` exists locally from `release/{RELEASE}`
+- [ ] `release-feature` returned `ok: true` and `checked_out: true`
 - [ ] PR title/body drafted toward `release/{RELEASE}` (not `develop`)
 
 ## Git Deliverables
-- Commit: `chore(US-XXX): TASK-00 bootstrap feature branch for release/{RELEASE}`
+- Commit: `chore(US-XXX): TASK-00 bootstrap feature branch for release/{RELEASE}` (only if the command did not already leave you on the new branch with a commit — an empty commit is optional)
 - Push: **skip** (`git_mode: GITFLOW`)
 - PR: prepare locally toward `release/{RELEASE}` — open remote only if user requests
 ```
 
 ### `GITFLOW_PUSH`
 
-Same as above, but push `feature/US-XXX-*` and open/update the PR toward **`release/{RELEASE}`** after TASK-00.
+Same as above, but pass `--push` on `release-feature` and open/update the PR toward **`release/{RELEASE}`** (`base` from the command).
 
 When the spec has **no** `Release:` line, use the standard **TASK-00 — Git bootstrap** templates toward `develop`.
 

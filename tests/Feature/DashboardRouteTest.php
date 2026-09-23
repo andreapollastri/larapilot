@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\PrdService;
+use Larapilot\Services\SpecService;
 
 it('serves the workflow dashboard in local environment', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
@@ -111,6 +112,88 @@ it('hides the dashboard when the route is disabled by config', function (): void
     config()->set('larapilot.dashboard_route.enabled', false);
 
     $this->get('/larapilot')->assertNotFound();
+});
+
+it('downloads a functional analysis summary from the PRD page', function (): void {
+    $config = app(ConfigService::class);
+    $config->writeProjectConfig();
+    $config->ensureDirectories();
+
+    app(PrdService::class)->write(<<<'MD'
+# Gestionale
+
+**Data:** 2026-09-23
+
+## Sintesi
+Un gestionale per le officine che tengono i lavori e le fatture.
+
+## Personas utente
+### Marco
+- **Ruolo:** Titolare
+
+## Requisiti funzionali
+### Accesso
+#### FR-002: Report
+**MoSCoW:** Could
+
+Il titolare esporta il mese.
+
+### FR-010: Magazzino
+**MoSCoW:** Won't
+
+Rimandato.
+
+### FR-001: Ingresso
+**MoSCoW:** Must
+
+L'operatore entra con email.
+- Recupero password
+
+## Ambito MVP
+### In ambito
+- Officina singola
+
+### Fuori ambito
+- Multi-sede
+MD);
+
+    $this->get('/larapilot/prd')
+        ->assertOk()
+        ->assertSee('Sintesi di analisi funzionale', false)
+        ->assertSee('href="'.route('larapilot.dashboard.prd.summary').'"', false);
+
+    $download = $this->get('/larapilot/prd/functional-summary.md')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8');
+
+    $body = $download->getContent();
+
+    expect($download->headers->get('Content-Disposition'))->toContain('gestionale-sintesi-funzionale.md')
+        ->and($body)->toContain('# Sintesi di analisi funzionale')
+        ->and($body)->toContain('## In una frase')
+        ->and($body)->toContain('**Marco** — Titolare')
+        ->and($body)->toContain('### Indispensabile')
+        ->and($body)->toContain('1. **FR-001 — Ingresso**')
+        ->and($body)->toContain('Recupero password')
+        ->and($body)->toContain('### Utile, non necessario')
+        ->and($body)->toContain('2. **Accesso — FR-002 — Report**')
+        ->and($body)->toContain('### Non in questa versione')
+        ->and($body)->toContain('3. **FR-010 — Magazzino**')
+        ->and($body)->toContain('## Dentro questa versione')
+        ->and($body)->toContain('- Officina singola')
+        ->and($body)->toContain('## Fuori da questa versione')
+        ->and($body)->not->toContain('**MoSCoW:**');
+
+    app(PrdService::class)->write(validPrd());
+
+    $this->get('/larapilot/prd')
+        ->assertOk()
+        ->assertSee('Functional analysis summary', false);
+
+    $this->get('/larapilot/prd/functional-summary.md')
+        ->assertOk()
+        ->assertSee('1. **Login**', false)
+        ->assertDontSee('Technical Architecture', false);
 });
 
 it('renders the PRD with section headings', function (): void {
@@ -252,6 +335,51 @@ it('links mockups to spec detail when HTML exists', function (): void {
         ->assertSee('/mockups/US-001', false)
         ->assertSee('/mockups/US-001/dark.html', false)
         ->assertSee('.larapilot/mockups/US-001/', false);
+});
+
+it('keeps the merge link outside the spec card and offers board filters', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec([
+        'epic' => ['code' => 'EP-01', 'title' => 'Foundations'],
+        'status' => 'DONE',
+    ]);
+
+    app(SpecService::class)->update('US-001', [
+        'merge_commit' => [
+            'sha' => '28c2b10dbf4c1a65c0c7d31f739c1e1a77549350',
+            'short_sha' => '28c2b10',
+            'subject' => 'docs(US-001): record the pass',
+            'committed_at' => '2026-09-23T08:00:00+00:00',
+            'url' => 'https://github.com/example/app/commit/28c2b10dbf4c1a65c0c7d31f739c1e1a77549350',
+        ],
+    ]);
+
+    $html = $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('id="board-q"', false)
+        ->assertSee('id="board-priority"', false)
+        ->assertSee('id="board-epic"', false)
+        ->assertSee('id="board-status"', false)
+        ->assertSee('Foundations', false)
+        ->assertSee('MR 28c2b10', false)
+        ->assertDontSee('<a class="spec-card"', false)
+        ->getContent();
+
+    expect($html)->toContain('class="spec-card-hit"')
+        ->and($html)->toContain('class="merge-commit-link"')
+        ->and($html)->not->toContain('<a class="spec-card"');
+
+    $start = strpos($html, 'class="spec-card"');
+    $end = strpos($html, '</article>', is_int($start) ? $start : 0);
+    $markup = is_int($start) && is_int($end) ? substr($html, $start, $end - $start) : '';
+    $hitClose = strpos($markup, '</a>');
+    $merge = strpos($markup, 'class="merge-commit-link"');
+
+    expect($markup)->toContain('MR 28c2b10')
+        ->and(substr_count($markup, '<a '))->toBe(2)
+        ->and($hitClose)->toBeInt()
+        ->and($merge)->toBeInt()
+        ->and($hitClose)->toBeLessThan($merge);
 });
 
 it('shows mockup indicator on board cards', function (): void {

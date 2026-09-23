@@ -2,6 +2,28 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.0.1] - 2026-09-23
+
+### Added
+
+- **Board search and filters** — `/larapilot` filters the columns by text (code, title, epic, merge), priority, epic, and status. Column counts and the summary metrics follow the cards still on screen.
+- **Release gitflow runs itself** — with `release_mode=YES` and Gitflow, `release-add` / `release-set` to `in_progress` cuts `release/x.y.z` from `develop` without switching branches. `release-cut` checks it out, `release-feature` opens `feature/US-XXX-*` from that release, `release-sync` merges `develop` in, and `release-ship` merges to `main`, tags `vX.Y.Z`, back-merges `develop`, and marks the ledger shipped. Nothing is pushed unless the command is given `--push`. `release-list` includes `git.needs_choice` so the agent asks which release only when more than one is in progress and the spec is unassigned.
+
+### Fixed
+
+- **Board merge links no longer leave a blank card** — the spec card was an anchor, and the merge-request link was a second anchor inside it. Browsers close the outer link early and paint an empty card beside the story (the `MR 28c2b10` shell). The card is a block; the story link and the merge link are separate.
+
+### Changed
+
+- **Autopilot delegates each spec to a fresh worker** — under `STANDARD` or `MAX`, `/larapilot-autopilot` runs plan, then implement Phase 1, in one writing sub-agent at a time. The parent keeps CLI transitions, AskQuestion, and the Robert/Lars review. The worker cannot nest sub-agents, cannot ask the user, and cannot call a Larapilot transition; it returns `OK` or `BLOCKED`. `ECO`, and editors with no sub-agent tool, stay inline. Specs stay sequential on the same working tree.
+- **A delegating autopilot parent skips the heavy packs** — it does not read `runtime-delivery` (or its parts), `runtime-dev-docs`, `runtime-ops`, `task-templates`, the PRD, or the implement skill. Delivery target comes from `choices.yaml`. Robert and Lars return at most 8 bullets and do not return the diff; the review file on disk stays complete. The inline path (`ECO`, or no sub-agent) still reads delivery, dev-docs, and task templates.
+- **Economics reads as a simulator** — one plain-language answer, then a four-step SaaS calculator (monthly price, what one customer leaves, customers to cover the monthly bills, customers to earn the build back in a year, and when). Hour tables, tax, packaging, scenarios, the month table, and competitor prices stay one click away. The page still speaks the PRD language.
+- **The PRD page downloads a functional analysis summary** — one Markdown file, in the PRD language. Each requirement is a numbered point, required first, then what matters, then what can wait. Personas, the one-sentence pitch, and what is in or out of this version sit around that list.
+
+### Docs
+
+- Site / package version **v4.0.1**. The docs site describes the autopilot spec worker on Skills, Effort, and the batch examples. The **Release notes** chapter is removed from the docs index; history stays in this file.
+
 ## [4.0.0] - 2026-09-22
 
 ### Breaking

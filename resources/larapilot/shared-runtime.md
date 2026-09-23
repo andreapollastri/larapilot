@@ -25,16 +25,16 @@ Read `.larapilot/runtime-core-settings-2.md` only when `config-show` reports `YE
 | `.larapilot/runtime-core-language.md` | Any skill that writes a PRD, spec, or user-facing copy |
 | `.larapilot/runtime-core-personas.md` | Inception, adopt, feature, spec, custom-skill. Other skills already name their cast |
 | `.larapilot/runtime-core-subagents.md` | Plan, implement, review, adopt, autopilot |
-| `.larapilot/runtime-delivery.md` | Plan, implement, review, autopilot, bug. Index — read every part it names |
+| `.larapilot/runtime-delivery.md` | Plan, implement, review, bug. Autopilot only when it runs plan and implement inline. A delegating autopilot parent does not read this index or its parts |
 | `.larapilot/runtime-discovery.md` | Inception, adopt, feature, spec, frontend-companion. Index — read every part |
 | `.larapilot/runtime-ux.md` | Design, plan when the spec has UI, ship. Index |
 | `.larapilot/runtime-ship.md` | Ship. Index |
-| `.larapilot/runtime-ops.md` | Feature, bug, ship, usage, tracker, backstage; every skill when `lucille` is `YES` (Usage Ledger). Index — read every part |
-| `.larapilot/runtime-dev-docs.md` | Implement, review, ship, adopt, bug, autopilot |
+| `.larapilot/runtime-ops.md` | Feature, bug, ship, usage, tracker, backstage; every skill when `lucille` is `YES`, except a delegating autopilot parent (one `usage-log` from Output Economy). Index — read every part |
+| `.larapilot/runtime-dev-docs.md` | Implement, review, ship, adopt, bug. Autopilot only when inline, same condition as delivery |
 | `.larapilot/runtime-economics.md` | Economics; settings when `account` is not `NONE`. Index |
 | `.larapilot/runtime-release.md` | Release, and any skill when `release_mode` is `YES` |
 | `.larapilot/runtime-project-docs.md` | Project-docs, and any skill when `project_docs` is `YES` |
 | `.larapilot/runtime-custom-skills.md` | Custom-skill |
-| `.larapilot/task-templates.md` | Plan and implement |
+| `.larapilot/task-templates.md` | Plan and implement. Autopilot only when inline |
 
 `larapilot-settings` and `larapilot-frontend-companion` use the every-skill rows plus the row above that names them. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the tables above that holds that heading.

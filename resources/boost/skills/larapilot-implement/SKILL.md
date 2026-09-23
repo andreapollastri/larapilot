@@ -25,6 +25,10 @@ No table. Do not repeat the diff, filenames already committed, or test output th
 
 When `settings.effort` is **`ECO`**: **never spawn sub-agents**; **defer docs** except OpenAPI when public/partner API routes change **and the developer domain docs under `{paths.dev_docs}`, which are written every time** (terse prose, same sections); short inline Robert/Lars checklist only; one-line status. When **`MAX`**: always run Robert + Lars as sub-agents when available (else inline deep), expand residual-risk notes.
 
+## Autopilot spec worker
+
+When the handoff says you are the autopilot spec worker, follow **Spec worker** in `.larapilot/runtime-core-subagents.md`. Run Phases 0–1 only. `spec-start` already ran — do not call it again, and do not call `task-done`, `spec-review`, `code-log`, `usage-log`, or `decision-log`. Do not spawn Robert, Lars, or any other sub-agent. Do not AskQuestion — return `BLOCKED` plus a `done:` line. The final message is `OK implement {code} | N tasks | pr: {url or —}` or the two-line `BLOCKED` form. Standalone `/larapilot-implement` still runs Phase 2 and Phase 3.
+
 ## The Team
 
 🤖 Zoey · 📒 Lucille · 🔧 Alex · 🗄️ Mike · 👾 Andrew · ⌨️ Sarah · ✨ Joe · 📱 Ricky · 📝 Albert · ✍️ Marika · 🔄 Sabrine · 🔗 Matt · 🌍 Emily · 🧪 Anne · 🛡️ Robert · 🔐 Lars — roles in the shared-runtime roster. Mike reviews schema/migration work; **Sarah** owns Git mechanics (conflicts, rebase/merge, history hygiene), CLIs, forge automation, CI pipeline YAML/scripts, and Linux/server shell whenever those surfaces appear; Lucille logs the session at the end.
@@ -55,7 +59,7 @@ Apply the canonical delivery rules from `runtime-delivery.md` — do not re-deri
 
 - **Architecture Standards** — SOLID Actions/Services, thin controllers, Form Requests + Policies at the edge, `DB::transaction` on multi-write paths, queues for slow I/O, eager loading + indexes on every relation-touching path (**no N+1** before `task-done`).
 - **Laravel Scaffolding Defaults** — Fortify 2FA on auth specs, `Password::defaults()`, UUID PKs (`HasUuids`), Argon2id hashing, Socialite for SSO; local dev per the PRD choice (Sail commands only when the PRD chose Sail; generic `php artisan` when undefined).
-- **Git Workflow / Git discipline** — honor `settings.git_mode`: `NO_GITFLOW` → current branch, commits only; `GITFLOW` → `feature/US-XXX-*` + atomic commits + PR prepared **without push**; `GITFLOW_PUSH` → same **plus** push and open/update the internal PR toward `develop` after each task. Never commit directly to `main`/`develop` in Gitflow modes.
+- **Git Workflow / Git discipline** — honor `settings.git_mode`: `NO_GITFLOW` → current branch, commits only; `GITFLOW` → `feature/US-XXX-*` + atomic commits + PR prepared **without push**; `GITFLOW_PUSH` → same **plus** push and open/update the internal PR. Unassigned specs target `develop`. A spec with `**Release:** x.y.z` starts with `php artisan larapilot:release-feature` and the PR targets `base` (`release/x.y.z`); catch `develop` up with `release-sync`. Never commit directly to `main`/`develop` in Gitflow modes. If `checked_out` is false, stop.
 - **Remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`, default OFF)** — orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: probe `larapilot:{github,gitlab,bitbucket,azure}-status`; after push open/update PR/MR via `gh` / `glab` / Bitbucket API / `az repos` (or Azure DevOps REST); **always print the PR/MR URL**; `larapilot:notify --event=pr_opened|pr_updated` when notifications are ON.
 - **Notifications** — when `settings.notifications` is `YES`, after handoff to REVIEW call `larapilot:notify --event=spec_review --title="…"`. `task-done` / hard hooks notify automatically.
 - **Test Data — Factories & Seeders** — factory + seeder updated in the **same task** as model/migration changes; `migrate:fresh --seed` verified before `task-done`.
@@ -92,7 +96,7 @@ Group tasks by dependencies. For each task:
 2. Anne writes/runs tests per `settings.testing` — `php artisan test` / Pest for Laravel; `npm test` / vitest / playwright from the FE root for `repo: frontend` tasks
 3. Albert updates the touched `{paths.dev_docs}/{domain}.md` files (create from `TEMPLATE.md` when the domain is new) — **a task is not done while its domain doc describes the old behavior**
 4. Alex commits (one atomic commit per task, code + tests + domain docs together). Push + remote PR **only** when `git_mode` is `GITFLOW_PUSH` (or the user explicitly asks). If a forge setting is `YES`, open/update via `gh` / `glab` / Bitbucket API / `az repos` (Azure DevOps), print the PR/MR URL, and notify `pr_opened` / `pr_updated` when notifications are on
-5. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria and may emit a `task_done` notification; never edit the plan YAML manually
+5. `task-done` when verified — the CLI also ticks the task's `- [ ]` completion criteria and may emit a `task_done` notification; never edit the plan YAML manually. An autopilot spec worker skips this call and step 6; the parent runs both after the worker returns
 6. When `data.settings.code_history` is `YES` (default OFF): `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — records the touched files + line ranges from the task commit into `.larapilot/code-history.yaml`
 
 ### Phase 2 — Review (sub-agents or inline)
@@ -114,21 +118,9 @@ Enable the editor's readonly flag when available; the handoff prompt forbids edi
 
 **Inline fallback** — `ECO`, or no sub-agent tool: the parent runs the same two passes itself, sequentially (Robert, then Lars), using the handoff prompt below as a checklist (`ECO`: keep findings to Critical/High bullets only). All later steps are identical.
 
-#### Handoff prompt (fill from `config-show` + `spec-show`)
+#### Handoff prompt
 
-```text
-Larapilot implement review — {code}
-
-workdir: {data.workdir absolute}
-project_root: {data.project_root absolute}
-branch: feature/{code}-* (or current branch in workdir)
-plan: {paths.planning}/{code}-plan.yaml (under project_root)
-spec body: {acceptance criteria + Demonstrates from data.spec.body}
-
-Robert (code review): plan adherence, Laravel conventions, Gitflow branch hygiene (no direct main/develop commits), **per-task commit + internal PR discipline**, **factory/seeder completeness** for touched models, **developer domain doc freshness** — any domain whose code changed in the diff while `{paths.dev_docs}/{domain}.md` did not is a High finding (`stale dev doc — {file}`). Return bullets: severity (Critical|High|Medium|Low) — file:line — finding. No edits.
-
-Lars (security review): OWASP Top 10 on branch diff; auth/access-control; composer audit implications; security.txt/SECURITY.md when in scope. Return same bullet format. No edits.
-```
+Use **Review handoff** in `.larapilot/runtime-core-subagents.md`. Fill the braces from `config-show` and `spec-show`. Do not paste a second copy of the prompt. The return cap is 8 bullets; the diff stays out of the parent session.
 
 #### Parent merge loop
 

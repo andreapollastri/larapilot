@@ -83,7 +83,7 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 - **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (see **Epic consolidation** in shared-runtime)
 - **Blocked by:** none | existing `US-XXX` (dependency)
 
-**Release assignment (when `release_mode=YES` and `release-list` shows open releases)** — AskQuestion: each open `planned`/`in_progress` release | **new release** (Sarah proposes next semver) | **none / backlog**. Persist after `spec-add` with `release-set --add-spec=`.
+**Release assignment (when `release_mode=YES` and `release-list` shows open releases)** — AskQuestion: each open `planned`/`in_progress` release | **new release** (Sarah proposes next semver) | **none / backlog**. Persist after `spec-add` with `release-set --add-spec=`. That question picks the release, not the git branch. Do not ask again which branch to check out: `release-list` → `git.needs_choice` is the only later branch question, and only when the spec stayed unassigned.
 
 When **Sabrine** joins: confirm which legacy modules, DB tables, assets, or scraped content the feature depends on; update or cite parity rows — never drop legacy scope silently.
 

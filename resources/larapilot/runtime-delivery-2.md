@@ -44,17 +44,17 @@ Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required 
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`NO_GITFLOW`**   | Commits on the current branch; Conventional Commits preferred; **no** TASK-00 bootstrap, feature-branch mandate, or internal PR. **No push** unless the user asks.    |
 | **`GITFLOW`**      | Branch + atomic commits + prepare PR body/title locally (**default**). **Never auto-push**; remote PR open/update only if the user asks in-session.                   |
-| **`GITFLOW_PUSH`** | Same as `GITFLOW` **plus** push after each task commit and open/update internal PR toward `develop`.                                                                  |
+| **`GITFLOW_PUSH`** | Same as `GITFLOW` **plus** push after each task commit and open/update the internal PR toward `develop`, or toward `release/x.y.z` when the spec is assigned to a release. |
 
 | Rule                   | Requirement (`GITFLOW` / `GITFLOW_PUSH`)                                                                                                                                                    |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **TASK-00 bootstrap**  | When the spec has no open `feature/US-XXX-*` branch, the plan's **first task is TASK-00**: create the branch from `develop`; **push + open the internal PR only when `GITFLOW_PUSH`** (under `GITFLOW` prepare the PR description locally, never push). **Omit TASK-00 entirely under `NO_GITFLOW`.** Body template in `.larapilot/task-templates.md` |
-| **Branch**             | One `feature/US-XXX-short-desc` per spec; branch from `develop`; never commit on `main`/`develop`                                                                                            |
+| **TASK-00 bootstrap**  | When the spec has no open `feature/US-XXX-*` branch, the plan's **first task is TASK-00**. Unassigned: create the branch from `develop`. Assigned (`**Release:** x.y.z`): one command, `php artisan larapilot:release-feature --semver=x.y.z --spec=US-XXX --slug=…` (add `--push` only under `GITFLOW_PUSH`). **Omit TASK-00 entirely under `NO_GITFLOW`.** Body template in `.larapilot/task-templates.md` |
+| **Branch**             | One `feature/US-XXX-short-desc` per spec. Unassigned specs branch from `develop`. A spec with `**Release:** x.y.z` uses `php artisan larapilot:release-feature` and merges into `release/x.y.z`. Never commit on `main`/`develop`. |
 | **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **enhancement** / `Fix` unit — never batch unrelated tasks in one commit                                    |
 | **Commit message**     | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched         |
-| **Internal PR**        | Prepare PR toward `develop` (title `US-XXX` + `TASK-NN`). **Push + open/update remote PR only when `git_mode` is `GITFLOW_PUSH`** (or the user explicitly requests push)                     |
-| **PR lifecycle**       | Keep one PR per spec; merge to `develop` only after human `larapilot-review` approval (or explicit waiver)                                                                                   |
-| **Hygiene**            | Rebase or merge `develop` when drifted (**Sarah** leads conflict resolution); run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes              |
+| **Internal PR**        | Unassigned specs: PR toward `develop`. Assigned specs: PR toward `release/x.y.z` (`release-feature` prints `base`). **Push + open/update remote PR only when `git_mode` is `GITFLOW_PUSH`** (pass `--push`) or the user explicitly requests push. |
+| **PR lifecycle**       | Keep one PR per spec; merge to the PR base (`develop`, or `release/x.y.z` when the spec is assigned) only after human `larapilot-review` approval (or explicit waiver) |
+| **Hygiene**            | Unassigned branches: merge `develop` when drifted. Assigned branches: `php artisan larapilot:release-sync --semver=x.y.z` (**Sarah** leads conflict resolution). Run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes |
 
 **Optional remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`, default OFF):** orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: use `gh` (GitHub), `glab` (GitLab MR), Bitbucket Cloud API, or `az repos` / Azure DevOps REST (Azure Repos PR); always print the PR/MR URL; run `larapilot:{github,gitlab,bitbucket,azure}-status` if unsure; notify `pr_opened` / `pr_updated` when notifications are enabled. When OFF, leave remote PR handling as today. Setup: `.larapilot/integrations.md`.
 
@@ -62,7 +62,7 @@ Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required 
 
 **Decision journal (`settings.decision_log`, default ON):** if the user redirects scope or changes a preference mid-implement, record it with `php artisan larapilot:decision-log --topic="…" --value="…" --source=chat --skill=larapilot-implement --spec=US-XXX`, and run `larapilot:decision-check` first when it reverses an earlier recorded choice (surface the conflict, then re-log with `--supersedes=<id>`).
 
-Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward `develop`. Under **`GITFLOW`**, a missing remote push/PR is **not** a reject reason.
+Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward its base (`develop`, or `release/x.y.z` when the spec is assigned). Under **`GITFLOW`**, a missing remote push/PR is **not** a reject reason.
 
 ## Code Review Gate _(Robert owns — Sabrine on refactoring/porting)_
 

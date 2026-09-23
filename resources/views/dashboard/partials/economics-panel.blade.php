@@ -38,7 +38,9 @@
     $query = http_build_query($overrides);
     $link = static fn (string $route): string => route($route).($query !== '' ? '?'.$query : '');
 
-    $isSaas = ($product['model'] ?? '') === 'saas';
+    $model = (string) ($product['model'] ?? 'fixed');
+    $isSaas = $model === 'saas';
+    $yearKeep = $isSaas && $saas ? (float) ($saas['contribution_per_customer'] ?? 0) * 12 : 0.0;
     $grouped = [];
     foreach (is_array($controls['controls'] ?? null) ? $controls['controls'] : [] as $control) {
         $grouped[$control['group']][] = $control;
@@ -56,6 +58,8 @@
             $selectedLine = $line;
         }
     }
+    $recoveredMonth = is_array($selectedLine) ? ($selectedLine['recovered_month'] ?? null) : null;
+    $scenarioName = (string) (is_array($selectedLine) ? ($selectedLine['label'] ?? '') : ($saas['scenario_label'] ?? ''));
     $forecast = is_array($selectedLine['forecast'] ?? null) ? $selectedLine['forecast'] : [];
     $maxArr = 1.0;
     foreach ($forecast as $row) {
@@ -97,6 +101,7 @@
 
     {{-- THE PRICING CONSOLE — operator controls, deliberately left in English --}}
     <form id="eco-controls" class="card eco-console" method="get" action="{{ route('larapilot.dashboard.economics') }}">
+        <p class="eco-console-hint">{{ $t('console.hint') }}</p>
         @if ($productControl)
             <div class="eco-console-row">
                 <span class="eco-console-title">Sold as</span>
@@ -125,9 +130,15 @@
         @foreach (['quote' => 'The quote', 'account' => 'Who is selling', 'saas' => 'Subscription'] as $group => $title)
             @php $fields = $grouped[$group] ?? []; @endphp
             @if ($fields !== [] && ($group !== 'saas' || $isSaas))
+                @if ($group === 'account')
+                <details class="eco-console-group eco-fold">
+                    <summary>{{ $title }} — country, tax, VAT</summary>
+                    <div class="eco-fields">
+                @else
                 <div class="eco-console-group">
                     <span class="eco-console-title">{{ $title }}</span>
                     <div class="eco-fields">
+                @endif
                         @foreach ($fields as $control)
                             <label class="eco-field" title="{{ $control['hint'] }}">
                                 <span class="eco-field-label">
@@ -142,7 +153,11 @@
                             </label>
                         @endforeach
                     </div>
+                @if ($group === 'account')
+                </details>
+                @else
                 </div>
+                @endif
             @endif
         @endforeach
     </form>
@@ -205,15 +220,93 @@
         </div>
     @endif
 
-    {{-- 1 · HEADLINE --}}
+    <section class="card eco-answer">
+        <p>
+            @if ($isSaas && $saas)
+                {{ $t('answer.lead.saas', [
+                    'price' => $money2($saas['price_monthly'] ?? 0),
+                    'keep' => $money2($saas['contribution_per_customer'] ?? 0),
+                    'bills' => $saas['break_even_customers'] ?? 0,
+                    'recover' => $saas['customers_to_recover_12m'] ?? 0,
+                    'build' => $money($quote['gross'] ?? 0),
+                ]) }}
+            @elseif ($model === 'ecommerce')
+                {{ $t('answer.lead.ecommerce', [
+                    'price' => $money($quote['gross'] ?? 0),
+                    'net' => $money($quote['net_to_owner'] ?? 0),
+                    'orders' => number_format((float) ($payback['orders_per_month_to_recover_12m'] ?? 0), 0, '.', ','),
+                ]) }}
+            @elseif ($model === 'package')
+                {{ $t('answer.lead.package', [
+                    'price' => $money($quote['gross'] ?? 0),
+                    'net' => $money($quote['net_to_owner'] ?? 0),
+                    'licences' => number_format((float) ($payback['licenses_to_recover'] ?? 0), 0, '.', ','),
+                    'each' => $money($payback['suggested_license_price'] ?? 0),
+                ]) }}
+            @else
+                {{ $t('answer.lead.fixed', [
+                    'price' => $money($quote['gross'] ?? 0),
+                    'net' => $money($quote['net_to_owner'] ?? 0),
+                    'months' => $effort['calendar_months'] ?? 0,
+                ]) }}
+            @endif
+        </p>
+    </section>
+
+    @if ($isSaas && $saas)
+        <section class="eco-section">
+            <div class="eco-section-head">
+                <span class="eco-section-num">1</span>
+                <div>
+                    <h3>{{ $t('saas.how.title') }}</h3>
+                    <p class="eco-how">{{ $t('saas.how.body') }}</p>
+                </div>
+            </div>
+            <div class="eco-steps">
+                <article class="card eco-step">
+                    <span class="eco-step-k">1 · {{ $t('saas.step.price') }}</span>
+                    <div class="metric-value">{{ $money2($saas['price_monthly'] ?? 0) }}</div>
+                    <p>{{ $t('saas.step.price.hint') }}</p>
+                </article>
+                <article class="card eco-step">
+                    <span class="eco-step-k">2 · {{ $t('saas.step.keep') }}</span>
+                    <div class="metric-value">{{ $money2($saas['contribution_per_customer'] ?? 0) }}</div>
+                    <p>{{ $t('saas.step.keep.hint', ['price' => $money2($saas['price_monthly'] ?? 0)]) }}</p>
+                </article>
+                <article class="card eco-step">
+                    <span class="eco-step-k">3 · {{ $t('saas.step.bills') }}</span>
+                    <div class="metric-value">{{ $saas['break_even_customers'] ?? 0 }}</div>
+                    <p>{{ $t('saas.step.bills.hint', [
+                        'fixed' => $money($saas['fixed_monthly'] ?? 0),
+                        'keep' => $money2($saas['contribution_per_customer'] ?? 0),
+                    ]) }}</p>
+                </article>
+                <article class="card eco-step">
+                    <span class="eco-step-k">4 · {{ $t('saas.step.build') }}</span>
+                    <div class="metric-value">{{ $saas['customers_to_recover_12m'] ?? 0 }}</div>
+                    <p>{{ $t('saas.step.build.hint', [
+                        'build' => $money($quote['gross'] ?? 0),
+                        'year' => $money($yearKeep),
+                    ]) }}</p>
+                </article>
+            </div>
+            <article class="card eco-step">
+                <span class="eco-step-k">{{ $t('saas.step.when') }}</span>
+                <div class="metric-value">{{ $recoveredMonth ? $t('plan.month', ['month' => $recoveredMonth]) : $t('plan.never') }}</div>
+                <p>{{ $recoveredMonth
+                    ? $t('saas.step.when.month', ['month' => $recoveredMonth, 'scenario' => $scenarioName])
+                    : $t('saas.step.when.never', ['scenario' => $scenarioName]) }}</p>
+            </article>
+        </section>
+    @endif
+
+    {{-- BUILD COST --}}
     <section class="eco-section">
         <div class="eco-section-head">
-            <span class="eco-section-num">1</span>
+            <span class="eco-section-num">{{ $isSaas ? 2 : 1 }}</span>
             <div>
                 <h3>{{ $t('s1.title') }}</h3>
-                <p>{{ $isSaas
-                    ? $t('s1.sub.saas', ['tier' => $plan['tier_name'] ?? 'PRO', 'price' => $money2($plan['price_monthly'] ?? 0)])
-                    : $t('s1.sub.fixed') }}</p>
+                <p>{{ $isSaas ? $t('s1.build.note') : $t('s1.sub.fixed') }}</p>
             </div>
         </div>
 
@@ -259,35 +352,22 @@
                         : $t('m.delivery.solo.many', ['months' => $effort['solo_months'] ?? 0]),
                 ]) }}</div>
             </article>
-            @if ($isSaas && $saas)
-                <article class="card metric">
-                    <div class="metric-label">{{ $t('m.breakeven.label') }}</div>
-                    <div class="metric-value">{{ $saas['break_even_customers'] }}</div>
-                    <div class="metric-sub">{{ $t('m.breakeven.sub', ['fixed' => $money($saas['fixed_monthly'])]) }}</div>
-                    <div class="metric-hint">{{ $t('m.breakeven.hint') }}</div>
-                </article>
-                <article class="card metric">
-                    <div class="metric-label">{{ $t('m.arr.label') }}</div>
-                    <div class="metric-value">{{ $money($selectedLine['arr_m36'] ?? ($saas['arr_at_planning'] ?? 0)) }}</div>
-                    <div class="metric-sub">{{ $t('m.arr.sub', ['customers' => $selectedLine['customers_m36'] ?? 0]) }}</div>
-                    <div class="metric-hint">{{ $t('m.arr.hint', [
-                        'line' => $selectedLine['label'] ?? ucfirst((string) ($plan['selected'] ?? 'realistic')),
-                        'when' => ($selectedLine['recovered_month'] ?? null)
-                            ? $t('m.arr.when.month', ['month' => $selectedLine['recovered_month']])
-                            : $t('m.arr.when.never'),
-                    ]) }}</div>
-                </article>
-            @endif
         </div>
     </section>
 
-    {{-- 2 · EFFORT --}}
+    {{-- HOURS --}}
     <section class="eco-section">
         <div class="eco-section-head">
-            <span class="eco-section-num">2</span>
+            <span class="eco-section-num">{{ $isSaas ? 3 : 2 }}</span>
             <div>
                 <h3>{{ $t('s2.title') }}</h3>
-                <p>{{ $t('s2.sub', [
+                <p>{{ $t('s2.lead', ['hours' => $hours($effort['billable_hours'] ?? 0)]) }}</p>
+            </div>
+        </div>
+
+        <details class="card eco-fold">
+            <summary>{{ $t('show.hours') }}</summary>
+            <p class="hint">{{ $t('s2.sub', [
                     'source' => $effort['source_label'] ?? 'Backlog',
                     'base' => $hours($effort['base_hours'] ?? 0),
                     'buffer' => (int) round(((float) ($effort['buffer'] ?? 1.15) - 1) * 100),
@@ -297,8 +377,6 @@
                         ? $t('s2.calibration.plans')
                         : $t('s2.calibration.settings'),
                 ]) }}</p>
-            </div>
-        </div>
 
         @php
             $byRelease = is_array($effort['by_release'] ?? null) && $effort['by_release'] !== [];
@@ -391,13 +469,14 @@
                     </table>
                 </div>
             @endif
-        </section>
+            </section>
+        </details>
     </section>
 
-    {{-- 3 · THE BUILD --}}
+    {{-- PRICE AND TAX --}}
     <section class="eco-section">
         <div class="eco-section-head">
-            <span class="eco-section-num">3</span>
+            <span class="eco-section-num">{{ $isSaas ? 4 : 3 }}</span>
             <div>
                 <h3>{{ $t('s3.title') }}</h3>
                 <p>{{ $t('s3.sub', [
@@ -432,7 +511,10 @@
                     @endforeach
                 </div>
             </section>
+        </div>
 
+        <details class="card eco-fold">
+            <summary>{{ $t('show.tax') }}</summary>
             <section class="card panel">
                 <h4>{{ $t('s3.tax.title') }}</h4>
                 <p class="hint">{{ $regime['notes'] ?? $t('s3.tax.fallback') }}</p>
@@ -478,7 +560,7 @@
                     ]) }}</p>
                 @endif
             </section>
-        </div>
+        </details>
 
         <div class="metrics">
             <article class="card metric">
@@ -494,20 +576,6 @@
                         {{ $t('m.maint.hint.inline', ['pct' => $maintenance['recommended_pct'] ?? 15]) }}
                     @endif
                 </div>
-            </article>
-            <article class="card metric">
-                <div class="metric-label">{{ $t('m.capacity.label') }}</div>
-                <div class="metric-value">{{ $payback['utilization_pct'] ?? 0 }}%</div>
-                <div class="metric-sub">{{ $t('m.capacity.sub', ['hours' => $hours($payback['capacity_hours_year'] ?? 0)]) }}</div>
-                <div class="metric-hint">{{ $t('m.capacity.hint') }}
-                    @if (! empty($payback['over_capacity']))<strong>{{ $t('m.capacity.over') }}</strong>@endif
-                </div>
-            </article>
-            <article class="card metric">
-                <div class="metric-label">{{ $t('m.annual.label') }}</div>
-                <div class="metric-value">{{ $money($payback['annual_net_at_capacity'] ?? 0) }}</div>
-                <div class="metric-sub">{{ $t('m.annual.sub', ['projects' => $payback['projects_per_year'] ?? 0, 'gross' => $money($payback['annual_gross_at_capacity'] ?? 0)]) }}</div>
-                <div class="metric-hint">{{ $t('m.annual.hint') }}</div>
             </article>
             @if (($payback['orders_per_month_to_recover_12m'] ?? null) !== null)
                 <article class="card metric">
@@ -531,6 +599,25 @@
                 </article>
             @endif
         </div>
+
+        <details class="card eco-fold">
+            <summary>{{ $t('show.more') }}</summary>
+            <div class="metrics" style="margin-top:14px">
+            <article class="card metric">
+                <div class="metric-label">{{ $t('m.capacity.label') }}</div>
+                <div class="metric-value">{{ $payback['utilization_pct'] ?? 0 }}%</div>
+                <div class="metric-sub">{{ $t('m.capacity.sub', ['hours' => $hours($payback['capacity_hours_year'] ?? 0)]) }}</div>
+                <div class="metric-hint">{{ $t('m.capacity.hint') }}
+                    @if (! empty($payback['over_capacity']))<strong>{{ $t('m.capacity.over') }}</strong>@endif
+                </div>
+            </article>
+            <article class="card metric">
+                <div class="metric-label">{{ $t('m.annual.label') }}</div>
+                <div class="metric-value">{{ $money($payback['annual_net_at_capacity'] ?? 0) }}</div>
+                <div class="metric-sub">{{ $t('m.annual.sub', ['projects' => $payback['projects_per_year'] ?? 0, 'gross' => $money($payback['annual_gross_at_capacity'] ?? 0)]) }}</div>
+                <div class="metric-hint">{{ $t('m.annual.hint') }}</div>
+            </article>
+            </div>
 
         @if ($maintenance)
             <section class="card panel">
@@ -587,13 +674,14 @@
                 </div>
             </section>
         @endif
+        </details>
     </section>
 
-    {{-- 4 · PACKAGING & BUSINESS PLAN --}}
+    {{-- PACKAGING & SCENARIOS — the working, after the calculator --}}
     @if ($isSaas && $packaging && $plan)
         <section class="eco-section">
             <div class="eco-section-head">
-                <span class="eco-section-num">4</span>
+                <span class="eco-section-num">5</span>
                 <div>
                     <h3>{{ $t('pack.title') }}</h3>
                     <p>{{ $t('pack.sub', [
@@ -605,6 +693,8 @@
                 </div>
             </div>
 
+            <details class="card eco-fold">
+                <summary>{{ $t('show.plans') }}</summary>
             <div class="tiers">
                 @foreach ($packaging['tiers'] as $tier)
                     <article @class(['card', 'tier', 'is-selected' => ! empty($tier['selected'])])>
@@ -648,23 +738,17 @@
                     'arr' => $money($packaging['blended_arr_per_100'] ?? 0),
                 ]) !!}</p>
             </section>
-        </section>
+            </details>
 
-        <section class="eco-section">
-            <div class="eco-section-head">
-                <span class="eco-section-num">5</span>
-                <div>
-                    <h3>{{ $t('plan.title') }}</h3>
-                    <p>{{ $t('plan.sub', [
+            <details class="card eco-fold">
+                <summary>{{ $t('show.scenarios') }}</summary>
+                <p class="hint">{{ $t('plan.sub', [
                         'tier' => $plan['tier_name'] ?? '',
                         'price' => $money2($plan['price_monthly'] ?? 0),
                         'contribution' => $money2($plan['contribution_per_customer'] ?? 0),
                         'fixed' => $money($plan['fixed_monthly'] ?? 0),
                         'investment' => $money($plan['investment'] ?? 0),
                     ]) }}</p>
-                </div>
-            </div>
-
             <div class="plan-lines">
                 @foreach ($plan['lines'] as $line)
                     <article @class(['card', 'plan-line', 'is-selected' => ! empty($line['selected'])])>
@@ -694,7 +778,10 @@
                     </article>
                 @endforeach
             </div>
+            </details>
 
+            <details class="card eco-fold">
+                <summary>{{ $t('show.months') }}</summary>
             @if ($forecast !== [])
                 <section class="card panel">
                     <h4>{{ $t('plan.forecast.title', ['line' => $selectedLine['label'] ?? ucfirst((string) ($plan['selected'] ?? ''))]) }}</h4>
@@ -753,13 +840,14 @@
                     ]) }}</p>
                 </section>
             @endif
+            </details>
         </section>
     @endif
 
     {{-- MARKET --}}
     <section class="eco-section">
         <div class="eco-section-head">
-            <span class="eco-section-num">{{ $isSaas && $packaging ? 6 : 4 }}</span>
+            <span class="eco-section-num">{{ $isSaas ? ($packaging && $plan ? 6 : 5) : 4 }}</span>
             <div>
                 <h3>{{ $t('mkt.title') }}</h3>
                 <p>{{ ! empty($market['available']) ? $t('mkt.sub.available') : $t('mkt.sub.missing') }}</p>
@@ -779,6 +867,8 @@
                 </div>
             @endif
 
+            <details class="card eco-fold">
+                <summary>{{ $t('show.market') }}</summary>
             <div class="grid-2">
                 <section class="card panel">
                     <h4>{{ $t('mkt.competitors.title') }}</h4>
@@ -863,6 +953,7 @@
                     @endif
                 </section>
             </div>
+            </details>
         @endif
     </section>
 

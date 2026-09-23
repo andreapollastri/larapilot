@@ -1,4 +1,33 @@
-<a class="spec-card" href="{{ route('larapilot.dashboard.spec', $spec['code']) }}">
+{{--
+    The card itself is not a link. A merge-request anchor nested inside the
+    card anchor makes the browser close the outer link early and paint a
+    blank card beside the story.
+--}}
+@php
+    $cardCode = (string) ($spec['code'] ?? '');
+    $cardTitle = trim((string) ($spec['title'] ?? ''));
+    $cardLabel = trim($cardCode.' '.($cardTitle !== '' ? $cardTitle : 'Untitled'));
+    $cardPriority = strtoupper(trim((string) ($spec['priority'] ?? '')));
+    $cardEpicCode = (string) ($spec['epic']['code'] ?? '');
+    $cardSearch = strtolower(trim(implode(' ', array_filter([
+        $cardCode,
+        $cardTitle,
+        $cardPriority,
+        $cardEpicCode,
+        (string) ($spec['epic']['title'] ?? ''),
+        (string) ($spec['merge_commit']['short_sha'] ?? ''),
+        (string) ($spec['merge_commit']['subject'] ?? ''),
+    ], static fn (string $value): bool => $value !== ''))));
+@endphp
+<article
+    class="spec-card"
+    data-search="{{ $cardSearch }}"
+    data-priority="{{ $cardPriority }}"
+    data-epic="{{ $cardEpicCode }}"
+    data-status="{{ (string) ($spec['status'] ?? '') }}"
+    data-points="{{ max(0, (int) ($spec['points'] ?? 0)) }}"
+>
+    <a class="spec-card-hit" href="{{ route('larapilot.dashboard.spec', $spec['code']) }}" aria-label="{{ $cardLabel }}"></a>
     <div class="spec-meta">
         <strong>{{ $spec['code'] }}</strong>
         <div class="spec-badges">
@@ -60,10 +89,10 @@
     @if (! empty($spec['merge_commit']['short_sha']) || ! empty($spec['merge_commit']['sha']))
         <div class="merge-commit" title="{{ $spec['merge_commit']['subject'] ?? 'Merge commit' }}">
             @if (! empty($spec['merge_commit']['url']))
-                <a href="{{ $spec['merge_commit']['url'] }}" onclick="event.stopPropagation();" target="_blank" rel="noopener noreferrer">MR {{ $spec['merge_commit']['short_sha'] ?? substr((string) $spec['merge_commit']['sha'], 0, 7) }}</a>
+                <a class="merge-commit-link" href="{{ $spec['merge_commit']['url'] }}" target="_blank" rel="noopener noreferrer">MR {{ $spec['merge_commit']['short_sha'] ?? substr((string) $spec['merge_commit']['sha'], 0, 7) }}</a>
             @else
                 MR {{ $spec['merge_commit']['short_sha'] ?? substr((string) $spec['merge_commit']['sha'], 0, 7) }}
             @endif
         </div>
     @endif
-</a>
+</article>

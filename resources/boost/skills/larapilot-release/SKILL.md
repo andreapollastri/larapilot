@@ -31,10 +31,14 @@ If `data.settings.release_mode` is `NO`, stop and suggest `/larapilot-settings` 
 
 1. `php artisan larapilot:config-show`
 2. `php artisan larapilot:release-list` `{--status=}`
-3. `php artisan larapilot:release-add` `{--semver=} {--title=} {--status=} {--specs=} {--branch=}`
-4. `php artisan larapilot:release-set` `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--shipped-at=}`
-5. `php artisan larapilot:release-import` `{--dry-run}` — rebuild shipped releases from Git semver tags
-6. `php artisan larapilot:spec-list` — assign specs, read progress
+3. `php artisan larapilot:release-add` `{--semver=} {--title=} {--status=} {--specs=} {--branch=}` — status `in_progress` also cuts `release/x.y.z` (no checkout)
+4. `php artisan larapilot:release-set` `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--shipped-at=}` — moving to `in_progress` cuts the branch (no checkout)
+5. `php artisan larapilot:release-cut` `{--semver=} {--no-checkout} {--push}` — create `release/x.y.z` from `develop` and check it out
+6. `php artisan larapilot:release-feature` `{--semver=} {--spec=} {--slug=} {--no-checkout} {--push}` — `feature/US-XXX-*` from that release
+7. `php artisan larapilot:release-sync` `{--semver=}` — merge `develop` into the release branch
+8. `php artisan larapilot:release-ship` `{--semver=} {--push}` — merge to `main`, tag `vX.Y.Z`, back-merge `develop`, mark shipped
+9. `php artisan larapilot:release-import` `{--dry-run}` — rebuild shipped releases from Git semver tags
+10. `php artisan larapilot:spec-list` — assign specs, read progress
 
 ## Workflow
 
@@ -51,7 +55,7 @@ Run `config-show` + `release-list`. Zoey posts the start **Context estimate** li
 | `roadmap` | Propose / refine release roadmap (Sarah table → confirm → `release-add`) |
 | `register` | Register one release (`release-add`) |
 | `assign` | Assign specs to a release (`release-set --add-spec=`) |
-| `switch` | Switch active Git release branch (Sarah — list `release/*` branches) |
+| `switch` | `release-cut --semver=` for the chosen release (Sarah). Skip the question when `release-list` → `git.needs_choice` is false |
 | `progress` | Move status (`planned` → `in_progress` → `shipped`) |
 | `import` | Import history from Git tags (`release-import`) |
 | `ship` | Ship ceremony for one `in_progress` release → hand off to `/larapilot-ship` steps |
@@ -64,12 +68,15 @@ Inputs: `spec-list`, backlog shape, `effort`, Lucille schedule when `lucille=YES
 
 ### 3. Gitflow (when `git_mode` is GITFLOW or GITFLOW_PUSH)
 
-Sarah executes per `runtime-release.md`:
+Sarah runs the commands in `runtime-release.md`. She does not type `git checkout -b`, `git merge`, or `git tag` for this flow.
 
-- Cut `release/x.y.z` from `develop` when a release moves to `in_progress`
-- Specs assigned to a release: TASK-00 branches **from** `release/x.y.z` (see `.larapilot/task-templates.md` → **TASK-00 — Release branch variant**)
-- Parallel releases: confirm active branch via AskQuestion before starting spec work
-- Ship: merge `release/x.y.z` → `main`, tag `vX.Y.Z`, back-merge → `develop`, then `release-set --status=shipped`
+- `release-add` / `release-set` to `in_progress` cuts `release/x.y.z` without switching
+- `release-cut` checks that branch out
+- `release-feature` is TASK-00 for an assigned spec (PR base is `release/x.y.z`)
+- `release-sync` when `develop` has moved
+- `release-ship` is the ship ceremony
+- `--push` only for `GITFLOW_PUSH` or an explicit user request
+- If `checked_out` is false, stop and report `reason`
 
 ### 4. Persist & confirm
 

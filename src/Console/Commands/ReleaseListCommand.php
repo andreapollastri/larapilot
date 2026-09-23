@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
 use Larapilot\Support\LarapilotCommand;
 
@@ -14,7 +15,7 @@ class ReleaseListCommand extends LarapilotCommand
 
     protected $description = 'List releases from the ledger (.larapilot/releases.yaml)';
 
-    public function handle(ConfigService $config, ReleaseService $releases): int
+    public function handle(ConfigService $config, ReleaseService $releases, ReleaseFlowService $flow): int
     {
         if (! $config->releaseModeEnabled()) {
             return $this->failure(
@@ -47,6 +48,7 @@ class ReleaseListCommand extends LarapilotCommand
             'count' => count($items),
             'path' => $releases->path(),
             'open_count' => count($releases->openReleases()),
+            'git' => $flow->context(),
         ]);
     }
 }
