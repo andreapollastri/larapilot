@@ -2,6 +2,12 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.0.2] - 2026-09-23
+
+### Docs
+
+- Site / package version **v4.0.2**.
+
 ## [4.0.1] - 2026-09-23
 
 ### Added
