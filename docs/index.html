@@ -1324,6 +1324,7 @@
       <a class="sub" href="#example-team-server">Team on one server</a>
       <a class="sub" href="#example-ssh-tmux">SSH, VS Code &amp; tmux</a>
       <a class="sub" href="#example-custom-skill">Your own skill</a>
+      <a class="sub" href="#examples-prd-living">PRD living document</a>
 
       <div class="docs-nav-label">Core</div>
       <a href="#deep-dive">Deep Dive</a>
@@ -1350,6 +1351,7 @@
       <a class="sub" href="#deep-dive-code-quality">Code quality</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
+      <a class="sub" href="#deep-dive-economics">Economics</a>
       <a class="sub" href="#deep-dive-api">API</a>
       <a class="sub" href="#deep-dive-api-hardening">API hardening</a>
       <a class="sub" href="#deep-dive-api-diagnostics">Diagnostics</a>
@@ -2525,105 +2527,6 @@ php artisan larapilot:frontend-scan</code></pre>
           </dl>
         </article>
 
-
-        <article class="example-appendix" id="examples-prd-living">
-          <h3>PRD living document</h3>
-          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they
-            reveal a requirement gap.</p>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Change type</th>
-                  <th>Update PRD?</th>
-                  <th>Where it lives</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
-                  <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
-                  <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
-                </tr>
-                <tr>
-                  <td>New feature (<code>/larapilot-feature</code>)</td>
-                  <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
-                  <td>PRD + spec + revision history</td>
-                </tr>
-                <tr>
-                  <td>Routine bug</td>
-                  <td><strong>No</strong></td>
-                  <td><code>support/intake.md</code> + fix spec or rework</td>
-                </tr>
-                <tr>
-                  <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
-                  <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
-                  <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
-                </tr>
-                <tr>
-                  <td>Review rework</td>
-                  <td><strong>No</strong></td>
-                  <td><code>/larapilot-review</code> feedback only</td>
-                </tr>
-                <tr>
-                  <td>Hotfix production</td>
-                  <td><strong>No</strong></td>
-                  <td>Spec + app <code>CHANGELOG.md</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="code-block">
-            <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
-            <pre><code>## PRD Revision History
-
-| Date | Trigger | Summary |
-| --- | --- | --- |
-| 2026-07-01 | larapilot-inception | Initial PRD |
-| 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
-| 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |
-| 2026-07-24 | larapilot-inception | Frontend Topology: API + external frontend (React companion) |</code></pre>
-          </div>
-          <p>Unclear? Default: spec only — safer than polluting the PRD.</p>
-
-          <h3>Feature vs bug — at a glance</h3>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Step</th>
-                  <th><code>/larapilot-feature</code></th>
-                  <th><code>/larapilot-bug</code></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1. Invoke</td>
-                  <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
-                  <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
-                </tr>
-                <tr>
-                  <td>2. Interview</td>
-                  <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
-                  <td>Sophia + Tom — severity, env, security, routing (3 rounds); diagnostics when
-                    prod/staging/logs</td>
-                </tr>
-                <tr>
-                  <td>3. Persist</td>
-                  <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
-                  <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
-                </tr>
-                <tr>
-                  <td>4. Implement</td>
-                  <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
-                    <code>/larapilot-review</code>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
-
         <!-- Tracker sync -->
         <article class="example-block" id="example-tracker-sync">
           <h2>Tracker sync</h2>
@@ -3359,6 +3262,104 @@ GO — Slack notified.</code></pre>
                 deploy</dd>
             </div>
           </dl>
+        </article>
+
+        <article class="example-appendix" id="examples-prd-living">
+          <h3>PRD living document</h3>
+          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they
+            reveal a requirement gap.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Change type</th>
+                  <th>Update PRD?</th>
+                  <th>Where it lives</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
+                  <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
+                  <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
+                </tr>
+                <tr>
+                  <td>New feature (<code>/larapilot-feature</code>)</td>
+                  <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
+                  <td>PRD + spec + revision history</td>
+                </tr>
+                <tr>
+                  <td>Routine bug</td>
+                  <td><strong>No</strong></td>
+                  <td><code>support/intake.md</code> + fix spec or rework</td>
+                </tr>
+                <tr>
+                  <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
+                  <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
+                  <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
+                </tr>
+                <tr>
+                  <td>Review rework</td>
+                  <td><strong>No</strong></td>
+                  <td><code>/larapilot-review</code> feedback only</td>
+                </tr>
+                <tr>
+                  <td>Hotfix production</td>
+                  <td><strong>No</strong></td>
+                  <td>Spec + app <code>CHANGELOG.md</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
+            <pre><code>## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| 2026-07-01 | larapilot-inception | Initial PRD |
+| 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
+| 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |
+| 2026-07-24 | larapilot-inception | Frontend Topology: API + external frontend (React companion) |</code></pre>
+          </div>
+          <p>Unclear? Default: spec only — safer than polluting the PRD.</p>
+
+          <h3>Feature vs bug — at a glance</h3>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th><code>/larapilot-feature</code></th>
+                  <th><code>/larapilot-bug</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1. Invoke</td>
+                  <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
+                  <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
+                </tr>
+                <tr>
+                  <td>2. Interview</td>
+                  <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
+                  <td>Sophia + Tom — severity, env, security, routing (3 rounds); diagnostics when
+                    prod/staging/logs</td>
+                </tr>
+                <tr>
+                  <td>3. Persist</td>
+                  <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
+                  <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
+                </tr>
+                <tr>
+                  <td>4. Implement</td>
+                  <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
+                    <code>/larapilot-review</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
       </section>
@@ -4398,194 +4399,6 @@ cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes<
           <p>Push is never implied by <code>GITFLOW</code> alone. See also <a href="#deep-dive-gitflow">Git
               workflow</a>.</p>
 
-          <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
-          <p><code>settings.github</code>, <code>gitlab</code>, <code>bitbucket</code>, and <code>azure</code> (all default
-            <code>NO</code>) are <strong>orthogonal</strong> to <code>git_mode</code>. Enable the forge matching
-            <code>origin</code>:
-          </p>
-          <ul>
-            <li><strong>GitHub</strong> — <code>gh</code> CLI; probe <code>larapilot:github-status</code></li>
-            <li><strong>GitLab</strong> — <code>glab</code> CLI (MR); probe <code>larapilot:gitlab-status</code></li>
-            <li><strong>Bitbucket Cloud</strong> — REST API with access token or app password; probe
-              <code>larapilot:bitbucket-status</code></li>
-            <li><strong>Azure DevOps</strong> — <code>az repos</code> (<code>azure-devops</code> extension) or REST API with a
-              PAT; probe <code>larapilot:azure-status</code></li>
-          </ul>
-          <p>When ON, skills open/update the PR/MR, always print the URL, and can notify
-            <code>pr_opened</code> / <code>pr_updated</code>. Full setup:
-            <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
-            <code>.larapilot/integrations.md</code>.
-          </p>
-
-          <h4 id="deep-dive-notifications">Notifications <span class="chip">opt-in</span></h4>
-          <p>Master switch <code>settings.notifications</code> plus <code>notify_slack</code> /
-            <code>notify_discord</code> / <code>notify_telegram</code> (all default <code>NO</code>). Secrets stay in
-            <code>.env</code>. Fan-out via <code>php artisan larapilot:notify</code>. Hard hooks:
-            <code>task-done</code> → <code>task_done</code>, <code>spec-approve</code> → <code>spec_done</code>.
-            Full event list: <a href="#deep-dive-integrations">Forges &amp; notifications</a>.
-          </p>
-
-          <h4 id="deep-dive-dashboard-auth">Dashboard auth <span class="chip">opt-in</span></h4>
-          <p><code>settings.dashboard_auth</code> (default <code>NO</code>) puts <strong>HTTP Basic Auth</strong> in front
-            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only. It never gates
-            <code>/larapilot/api/*</code> (that stays <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the
-            dashboard is still never served in <code>production</code>.
-          </p>
-          <ul>
-            <li>Credentials are argon2id/bcrypt <strong>hashes</strong> in <code>.larapilot/auth.yaml</code> — no
-              database, no <code>User</code> model, never cleartext. The file is added to <code>.gitignore</code>
-              automatically the first time a user is written.</li>
-            <li>Manage users with <code>php artisan larapilot:dashboard-user {list|add &lt;username&gt;|remove
-              &lt;username&gt;}</code> — <code>add</code> prompts for the password (or takes <code>--password=</code>).</li>
-            <li>Failed sign-ins are rate-limited per IP
-              (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 30/min). With the setting ON and
-              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 500</code>.</li>
-            <li>Enable with <code>php artisan larapilot:settings-set --dashboard-auth=YES</code>. Serve over HTTPS on
-              shared hosts — Basic Auth sends credentials on every request. Setup:
-              <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
-              <code>.larapilot/integrations.md</code>.</li>
-          </ul>
-
-          <h4 id="deep-dive-api-auth">API auth <span class="chip">opt-in</span></h4>
-          <p><code>settings.api_auth</code> (default <code>NO</code>) makes <code>LARAPILOT_API_TOKEN</code>
-            <strong>mandatory</strong> on every <code>/larapilot/api/*</code> request — the JSON API <strong>only</strong>.
-            It never gates the <a href="#deep-dive-dashboard">dashboard</a> UI (<code>dashboard_auth</code>) or the MCP
-            server, and the API is still never served in <code>production</code>.
-          </p>
-          <ul>
-            <li>With <code>api_auth=NO</code> (default): the token is enforced on every endpoint <em>when it is set</em>;
-              when it is not, read endpoints stay open in the allowed environments and writes are refused outside
-              <code>local</code>/<code>development</code>/<code>testing</code>.</li>
-            <li>With <code>api_auth=YES</code>: every request — reads <strong>and</strong> writes, including
-              <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> — must carry the token as
-              <code>Authorization: Bearer &lt;token&gt;</code> or <code>X-Larapilot-Token: &lt;token&gt;</code>. With the
-              setting ON and <strong>no</strong> <code>LARAPILOT_API_TOKEN</code> configured the API fails closed with
-              <code>HTTP 503</code>; a wrong or missing token is <code>HTTP 401</code>.</li>
-            <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Enable with
-              <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup + <code>curl</code> /
-              Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> →
-              <em>API access</em>.</li>
-            <li>The <code>php artisan larapilot:diagnostics</code> CLI and the MCP <code>diagnostics</code> tool are local
-              and need no token — only the HTTP endpoint is gated.</li>
-          </ul>
-
-          <h4 id="deep-dive-comments">Internal feedback / comments <span class="chip">opt-in</span></h4>
-          <p><code>settings.comments</code> (default <code>NO</code>) gates the comment form on dashboard spec pages,
-            <code>POST /larapilot/api/specs/{code}/comments</code>, and <code>larapilot:spec-comment</code>. Turn it on
-            with <code>php artisan larapilot:settings-set --comments=YES</code>. Comments land in
-            <code>.larapilot/internal-feedback/{code}.md</code>; a comment flagged <code>[blocks-merge]</code> stops
-            <code>spec-approve</code> until it is resolved (or <code>--force</code>). The env kill-switch
-            <code>LARAPILOT_COMMENTS_ENABLED=false</code> still disables writes even when the project setting is ON.
-            Projects installed before v3.0.3 with an explicit <code>comments: true</code> keep it.
-          </p>
-
-          <h4 id="deep-dive-account">Account <span class="chip">opt-in</span></h4>
-          <p><code>settings.account</code> is <code>NONE</code> (default), <code>FREELANCE</code>, or
-            <code>COMPANY</code>. Anything but <code>NONE</code> unlocks <code>/larapilot-economics</code> and the
-            <a href="#deep-dive-economics">Economics</a> page: <code>FREELANCE</code> prices with sole-trader regimes
-            (Italian forfettario, IRPEF, autónomo, …), <code>COMPANY</code> with corporate tax plus dividend
-            extraction (SRL, SPA, Ltd, GmbH, C-Corp, …). <code>OFF</code> is accepted as an alias of
-            <code>NONE</code>.</p>
-          <div class="code-block">
-            <div class="code-block-header">unlock Economics</div>
-            <pre><code>php artisan larapilot:settings-set --account=FREELANCE
-php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourly-rate=55</code></pre>
-          </div>
-
-          <h4 id="deep-dive-security-scan">Security scan <span class="chip">opt-in</span></h4>
-          <p><code>settings.security_scan</code> (default <code>NO</code>) folds a static Laravel security scan into
-            <code>/larapilot-review</code> and the pre-ship gate. It uses the optional dev package
-            <a href="https://github.com/andreapollastri/checkpoint" target="_blank" rel="noopener"><code>andreapollastri/checkpoint</code></a>
-            (<code>php artisan checkpoint:scan</code> — static checks plus <code>composer</code>/<code>npm</code>
-            audit). Larapilot never bundles the scanner and never runs it while the setting is off.</p>
-          <div class="code-block">
-            <div class="code-block-header">turn it on</div>
-            <pre><code>composer require --dev andreapollastri/checkpoint
-php artisan larapilot:settings-set --security-scan=YES</code></pre>
-          </div>
-          <ul>
-            <li><code>FAIL</code> findings are review blockers: fix them, or record a waiver with
-              <code>larapilot:decision-log</code>. <code>WARN</code> findings become review notes.</li>
-            <li>If the package is missing, the review skill stops and asks you to install it.</li>
-            <li>Owned by <strong>Lars</strong>, alongside <code>dashboard_auth</code> and <code>api_auth</code>. The client
-              quote only promises a security scan when this setting is <code>YES</code>. Setup:
-              <code>.larapilot/integrations.md</code> → <em>Security scan</em>.</li>
-          </ul>
-
-          <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
-          <p><code>settings.decision_log</code> (default <code>YES</code>) keeps an append-only, timestamped log of every
-            explicit user choice — fixed-choice answers <strong>and</strong> free-text directives like
-            <em>“the background must be orange”</em> — in <code>.larapilot/decisions.yaml</code>.
-          </p>
-          <ul>
-            <li>After a choice is settled a skill runs
-              <code>php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=…</code>.</li>
-            <li>Before recording a value for a topic that already has a decision it runs
-              <code>php artisan larapilot:decision-check --topic="…" --value="…"</code>. When today’s value differs from an
-              earlier non-superseded one the check returns that decision (with its date) so the skill can ask you to
-              confirm — <em>“on 2026-05-01 you chose <strong>orange</strong>; confirm <strong>red</strong> supersedes
-              it”</em> — then re-logs with <code>--supersedes=&lt;id&gt;</code>.</li>
-            <li>The file is never rewritten in place; a reversal is a new entry. Read-only
-              <code>larapilot:decision-check</code> is also on the MCP allowlist.</li>
-            <li>Turn it off with <code>php artisan larapilot:settings-set --decision-log=NO</code>.</li>
-            <li>The <a href="#deep-dive-dashboard">dashboard</a> renders the journal on the <strong>PRD</strong> page
-              (project / discovery vs per-story groups, timeline) and on each <strong>spec detail</strong> page (entries
-              for that story only).</li>
-          </ul>
-
-          <h4 id="deep-dive-code-history">Code change history <span class="chip">opt-in</span></h4>
-          <p><code>settings.code_history</code> (default <code>NO</code>) records, per spec/task, which files and line
-            ranges were touched — read straight from the task’s git commit — into
-            <code>.larapilot/code-history.yaml</code>.
-          </p>
-          <ul>
-            <li>Enable with <code>php artisan larapilot:settings-set --code-history=YES</code>; then
-              <code>larapilot-implement</code> runs
-              <code>php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN --skill=larapilot-implement</code> after
-              each <code>task-done</code> (<code>--commit=</code> / <code>--range=</code> override; falls back to the
-              working-tree diff).</li>
-            <li><code>php artisan larapilot:code-history --file=app/Models/Post.php</code> (read-only, also on the MCP
-              allowlist) reports every touchpoint for a path.</li>
-          </ul>
-
-          <h4 id="deep-dive-release-mode">Release mode <span class="chip">opt-in</span></h4>
-          <p><code>settings.release_mode</code> (default <code>NO</code>) turns on semver release tracking in
-            <code>.larapilot/releases.yaml</code>, the <code>/larapilot-release</code> skill, release AskQuestion rounds
-            in inception/adopt/feature, Gitflow <code>release/x.y.z</code> branches when
-            <code>git_mode</code> is Gitflow, and the release ship ceremony in <code>/larapilot-ship</code>. Enable with
-            <code>php artisan larapilot:settings-set --release-mode=YES</code>. Skill:
-            <a href="#skill-larapilot-release">/larapilot-release</a>.</p>
-
-          <h4 id="deep-dive-project-docs-setting">Project docs <span class="chip">opt-in</span></h4>
-          <p><code>settings.project_docs</code> (default <code>NO</code>) obligates Albert to maintain
-            <code>_project_docs/</code> — bootstrap + incremental chapter updates after material product changes. Enable
-            with <code>php artisan larapilot:settings-set --project-docs=YES</code>. Skill:
-            <a href="#skill-larapilot-project-docs">/larapilot-project-docs</a>.</p>
-
-          <h4 id="deep-dive-env-paths">Environment paths</h4>
-          <p>Machine-specific absolute paths <strong>must not</strong> appear in committed YAML or skill examples. Store
-            them in <code>.env</code> and resolve via <code>config-show</code>:</p>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Concern</th>
-                  <th>Env key</th>
-                  <th>Set via</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>External frontend repo</td>
-                  <td><code>LARAPILOT_FRONTEND_REPO_PATH</code></td>
-                  <td><code>larapilot:frontend-set --path=…</code> or <code>/larapilot-frontend-companion</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>When a skill needs a path that is missing from env, it keeps asking until you provide it, then persists
-            with the matching CLI command. The PRD records the <strong>stack</strong>, not the absolute path.</p>
-
           <h4 id="deep-dive-testing-mode">Testing</h4>
           <div class="table-card">
             <table>
@@ -4672,6 +4485,194 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
           </div>
           <p>Re-enable anytime with <code>php artisan larapilot:settings-set --lucille=YES</code> without leaving ECO.
             Details: <a href="#deep-dive-usage">Usage &amp; Lucille</a>.</p>
+
+          <h4 id="deep-dive-decision-log">Decision journal &amp; regression guard <span class="chip">on by default</span></h4>
+          <p><code>settings.decision_log</code> (default <code>YES</code>) keeps an append-only, timestamped log of every
+            explicit user choice — fixed-choice answers <strong>and</strong> free-text directives like
+            <em>“the background must be orange”</em> — in <code>.larapilot/decisions.yaml</code>.
+          </p>
+          <ul>
+            <li>After a choice is settled a skill runs
+              <code>php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=…</code>.</li>
+            <li>Before recording a value for a topic that already has a decision it runs
+              <code>php artisan larapilot:decision-check --topic="…" --value="…"</code>. When today’s value differs from an
+              earlier non-superseded one the check returns that decision (with its date) so the skill can ask you to
+              confirm — <em>“on 2026-05-01 you chose <strong>orange</strong>; confirm <strong>red</strong> supersedes
+              it”</em> — then re-logs with <code>--supersedes=&lt;id&gt;</code>.</li>
+            <li>The file is never rewritten in place; a reversal is a new entry. Read-only
+              <code>larapilot:decision-check</code> is also on the MCP allowlist.</li>
+            <li>Turn it off with <code>php artisan larapilot:settings-set --decision-log=NO</code>.</li>
+            <li>The <a href="#deep-dive-dashboard">dashboard</a> renders the journal on the <strong>PRD</strong> page
+              (project / discovery vs per-story groups, timeline) and on each <strong>spec detail</strong> page (entries
+              for that story only).</li>
+          </ul>
+
+          <h4 id="deep-dive-code-history">Code change history <span class="chip">opt-in</span></h4>
+          <p><code>settings.code_history</code> (default <code>NO</code>) records, per spec/task, which files and line
+            ranges were touched — read straight from the task’s git commit — into
+            <code>.larapilot/code-history.yaml</code>.
+          </p>
+          <ul>
+            <li>Enable with <code>php artisan larapilot:settings-set --code-history=YES</code>; then
+              <code>larapilot-implement</code> runs
+              <code>php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN --skill=larapilot-implement</code> after
+              each <code>task-done</code> (<code>--commit=</code> / <code>--range=</code> override; falls back to the
+              working-tree diff).</li>
+            <li><code>php artisan larapilot:code-history --file=app/Models/Post.php</code> (read-only, also on the MCP
+              allowlist) reports every touchpoint for a path.</li>
+          </ul>
+
+          <h4 id="deep-dive-account">Account <span class="chip">opt-in</span></h4>
+          <p><code>settings.account</code> is <code>NONE</code> (default), <code>FREELANCE</code>, or
+            <code>COMPANY</code>. Anything but <code>NONE</code> unlocks <code>/larapilot-economics</code> and the
+            <a href="#deep-dive-economics">Economics</a> page: <code>FREELANCE</code> prices with sole-trader regimes
+            (Italian forfettario, IRPEF, autónomo, …), <code>COMPANY</code> with corporate tax plus dividend
+            extraction (SRL, SPA, Ltd, GmbH, C-Corp, …). <code>OFF</code> is accepted as an alias of
+            <code>NONE</code>.</p>
+          <div class="code-block">
+            <div class="code-block-header">unlock Economics</div>
+            <pre><code>php artisan larapilot:settings-set --account=FREELANCE
+php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourly-rate=55</code></pre>
+          </div>
+
+          <h4 id="deep-dive-release-mode">Release mode <span class="chip">opt-in</span></h4>
+          <p><code>settings.release_mode</code> (default <code>NO</code>) turns on semver release tracking in
+            <code>.larapilot/releases.yaml</code>, the <code>/larapilot-release</code> skill, release AskQuestion rounds
+            in inception/adopt/feature, Gitflow <code>release/x.y.z</code> branches when
+            <code>git_mode</code> is Gitflow, and the release ship ceremony in <code>/larapilot-ship</code>. Enable with
+            <code>php artisan larapilot:settings-set --release-mode=YES</code>. Skill:
+            <a href="#skill-larapilot-release">/larapilot-release</a>.</p>
+
+          <h4 id="deep-dive-project-docs-setting">Project docs <span class="chip">opt-in</span></h4>
+          <p><code>settings.project_docs</code> (default <code>NO</code>) obligates Albert to maintain
+            <code>_project_docs/</code> — bootstrap + incremental chapter updates after material product changes. Enable
+            with <code>php artisan larapilot:settings-set --project-docs=YES</code>. Skill:
+            <a href="#skill-larapilot-project-docs">/larapilot-project-docs</a>.</p>
+
+          <h4 id="deep-dive-comments">Internal feedback / comments <span class="chip">opt-in</span></h4>
+          <p><code>settings.comments</code> (default <code>NO</code>) gates the comment form on dashboard spec pages,
+            <code>POST /larapilot/api/specs/{code}/comments</code>, and <code>larapilot:spec-comment</code>. Turn it on
+            with <code>php artisan larapilot:settings-set --comments=YES</code>. Comments land in
+            <code>.larapilot/internal-feedback/{code}.md</code>; a comment flagged <code>[blocks-merge]</code> stops
+            <code>spec-approve</code> until it is resolved (or <code>--force</code>). The env kill-switch
+            <code>LARAPILOT_COMMENTS_ENABLED=false</code> still disables writes even when the project setting is ON.
+            Projects installed before v3.0.3 with an explicit <code>comments: true</code> keep it.
+          </p>
+
+          <h4 id="deep-dive-dashboard-auth">Dashboard auth <span class="chip">opt-in</span></h4>
+          <p><code>settings.dashboard_auth</code> (default <code>NO</code>) puts <strong>HTTP Basic Auth</strong> in front
+            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only. It never gates
+            <code>/larapilot/api/*</code> (that stays <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the
+            dashboard is still never served in <code>production</code>.
+          </p>
+          <ul>
+            <li>Credentials are argon2id/bcrypt <strong>hashes</strong> in <code>.larapilot/auth.yaml</code> — no
+              database, no <code>User</code> model, never cleartext. The file is added to <code>.gitignore</code>
+              automatically the first time a user is written.</li>
+            <li>Manage users with <code>php artisan larapilot:dashboard-user {list|add &lt;username&gt;|remove
+              &lt;username&gt;}</code> — <code>add</code> prompts for the password (or takes <code>--password=</code>).</li>
+            <li>Failed sign-ins are rate-limited per IP
+              (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 30/min). With the setting ON and
+              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 500</code>.</li>
+            <li>Enable with <code>php artisan larapilot:settings-set --dashboard-auth=YES</code>. Serve over HTTPS on
+              shared hosts — Basic Auth sends credentials on every request. Setup:
+              <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
+              <code>.larapilot/integrations.md</code>.</li>
+          </ul>
+
+          <h4 id="deep-dive-api-auth">API auth <span class="chip">opt-in</span></h4>
+          <p><code>settings.api_auth</code> (default <code>NO</code>) makes <code>LARAPILOT_API_TOKEN</code>
+            <strong>mandatory</strong> on every <code>/larapilot/api/*</code> request — the JSON API <strong>only</strong>.
+            It never gates the <a href="#deep-dive-dashboard">dashboard</a> UI (<code>dashboard_auth</code>) or the MCP
+            server, and the API is still never served in <code>production</code>.
+          </p>
+          <ul>
+            <li>With <code>api_auth=NO</code> (default): the token is enforced on every endpoint <em>when it is set</em>;
+              when it is not, read endpoints stay open in the allowed environments and writes are refused outside
+              <code>local</code>/<code>development</code>/<code>testing</code>.</li>
+            <li>With <code>api_auth=YES</code>: every request — reads <strong>and</strong> writes, including
+              <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> — must carry the token as
+              <code>Authorization: Bearer &lt;token&gt;</code> or <code>X-Larapilot-Token: &lt;token&gt;</code>. With the
+              setting ON and <strong>no</strong> <code>LARAPILOT_API_TOKEN</code> configured the API fails closed with
+              <code>HTTP 503</code>; a wrong or missing token is <code>HTTP 401</code>.</li>
+            <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Enable with
+              <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup + <code>curl</code> /
+              Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> →
+              <em>API access</em>.</li>
+            <li>The <code>php artisan larapilot:diagnostics</code> CLI and the MCP <code>diagnostics</code> tool are local
+              and need no token — only the HTTP endpoint is gated.</li>
+          </ul>
+
+          <h4 id="deep-dive-security-scan">Security scan <span class="chip">opt-in</span></h4>
+          <p><code>settings.security_scan</code> (default <code>NO</code>) folds a static Laravel security scan into
+            <code>/larapilot-review</code> and the pre-ship gate. It uses the optional dev package
+            <a href="https://github.com/andreapollastri/checkpoint" target="_blank" rel="noopener"><code>andreapollastri/checkpoint</code></a>
+            (<code>php artisan checkpoint:scan</code> — static checks plus <code>composer</code>/<code>npm</code>
+            audit). Larapilot never bundles the scanner and never runs it while the setting is off.</p>
+          <div class="code-block">
+            <div class="code-block-header">turn it on</div>
+            <pre><code>composer require --dev andreapollastri/checkpoint
+php artisan larapilot:settings-set --security-scan=YES</code></pre>
+          </div>
+          <ul>
+            <li><code>FAIL</code> findings are review blockers: fix them, or record a waiver with
+              <code>larapilot:decision-log</code>. <code>WARN</code> findings become review notes.</li>
+            <li>If the package is missing, the review skill stops and asks you to install it.</li>
+            <li>Owned by <strong>Lars</strong>, alongside <code>dashboard_auth</code> and <code>api_auth</code>. The client
+              quote only promises a security scan when this setting is <code>YES</code>. Setup:
+              <code>.larapilot/integrations.md</code> → <em>Security scan</em>.</li>
+          </ul>
+
+          <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
+          <p><code>settings.github</code>, <code>gitlab</code>, <code>bitbucket</code>, and <code>azure</code> (all default
+            <code>NO</code>) are <strong>orthogonal</strong> to <code>git_mode</code>. Enable the forge matching
+            <code>origin</code>:
+          </p>
+          <ul>
+            <li><strong>GitHub</strong> — <code>gh</code> CLI; probe <code>larapilot:github-status</code></li>
+            <li><strong>GitLab</strong> — <code>glab</code> CLI (MR); probe <code>larapilot:gitlab-status</code></li>
+            <li><strong>Bitbucket Cloud</strong> — REST API with access token or app password; probe
+              <code>larapilot:bitbucket-status</code></li>
+            <li><strong>Azure DevOps</strong> — <code>az repos</code> (<code>azure-devops</code> extension) or REST API with a
+              PAT; probe <code>larapilot:azure-status</code></li>
+          </ul>
+          <p>When ON, skills open/update the PR/MR, always print the URL, and can notify
+            <code>pr_opened</code> / <code>pr_updated</code>. Full setup:
+            <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
+            <code>.larapilot/integrations.md</code>.
+          </p>
+
+          <h4 id="deep-dive-notifications">Notifications <span class="chip">opt-in</span></h4>
+          <p>Master switch <code>settings.notifications</code> plus <code>notify_slack</code> /
+            <code>notify_discord</code> / <code>notify_telegram</code> (all default <code>NO</code>). Secrets stay in
+            <code>.env</code>. Fan-out via <code>php artisan larapilot:notify</code>. Hard hooks:
+            <code>task-done</code> → <code>task_done</code>, <code>spec-approve</code> → <code>spec_done</code>.
+            Full event list: <a href="#deep-dive-integrations">Forges &amp; notifications</a>.
+          </p>
+
+          <h4 id="deep-dive-env-paths">Environment paths</h4>
+          <p>Machine-specific absolute paths <strong>must not</strong> appear in committed YAML or skill examples. Store
+            them in <code>.env</code> and resolve via <code>config-show</code>:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Concern</th>
+                  <th>Env key</th>
+                  <th>Set via</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>External frontend repo</td>
+                  <td><code>LARAPILOT_FRONTEND_REPO_PATH</code></td>
+                  <td><code>larapilot:frontend-set --path=…</code> or <code>/larapilot-frontend-companion</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>When a skill needs a path that is missing from env, it keeps asking until you provide it, then persists
+            with the matching CLI command. The PRD records the <strong>stack</strong>, not the absolute path.</p>
 
           <div class="code-block">
             <div class="code-block-header">CLI — persist settings</div>
@@ -7356,21 +7357,15 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <a href="#deep-dive-decision-log">Decision journal</a>.
           </p>
 
-          <h4>Settings, Inception, Plan, Usage, Docs &amp; Skills</h4>
-          <p><strong>Settings</strong> shows every project mode with its <code>config.yaml</code> key, current value,
-            and what each option does. <strong>Inception</strong> is the discovery choices snapshot
-            (<code>choices.yaml</code>) — Project Kind, Delivery Target, Business Model, operations and support.
-            <strong>Plan</strong> is the schedule: epics, milestones, schedule criticality, and a dependency-aware
-            Gantt with a today marker and filters for assignee, status, and task detail. <strong>Usage</strong> is
-            Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report (same
-            data as <code>larapilot:usage-report --insights</code>). <strong>Docs</strong> explains the delivery loop,
-            the packaged skills, and the persona roster. <strong>Skills</strong> lists every
-            <a href="#deep-dive-custom-skills">custom skill</a> under <code>.larapilot/skills/</code> — title, slash
-            trigger, description, file path, and a <em>Registered</em> / <em>Not registered</em> chip; opening the page
-            re-registers them with Boost.
-            <strong>Economics</strong> (when <code>account</code> is FREELANCE or COMPANY) is Aurora's quote —
-            scope and effort from the backlog, client price, take-home after tax, payback, recurring-revenue
-            maths, and a downloadable commercial proposal.</p>
+          <h4>Inception</h4>
+          <p>The discovery choices snapshot from <code>.larapilot/choices.yaml</code> — Project Kind, Delivery
+            Target, Business Model, operations and support, topology, data store, and the other fixed choices
+            inception persisted.</p>
+
+          <h4>Plan</h4>
+          <p>The schedule: epics, milestones, schedule criticality, and a dependency-aware Gantt with a time axis, a
+            today marker, epic grouping, and filters for assignee, status, and task detail. Lucille's schedule notes
+            appear when present.</p>
 
           <h4>Design</h4>
           <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
@@ -7381,9 +7376,72 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             Under the viewer, a gallery shows only the flow you are in; the full screen list stays collapsed
             until you ask for it. Top-right <strong>Download zip</strong> packages the presentation
             <code>index.html</code>, every mockup HTML file, local assets, and referenced design-system files
-            so the pack can be opened offline.</p>
+            so the pack can be opened offline. When <code>/larapilot-design</code> mocked several visual directions
+            (<code>mockups/{spec}/styles/{slug}/</code>), a style switcher, <strong>Compare styles</strong>
+            (side-by-side), and <strong>Use this style</strong> appear — the choice is written to
+            <code>styles.yaml</code> and logged in the decision journal, same as
+            <code>larapilot:mockup-choose-style</code>.</p>
 
-          <h4 id="deep-dive-economics">Economics</h4>
+          <h4>Settings</h4>
+          <p>Every project mode with its <code>config.yaml</code> key, current value, and what each option does —
+            the same keys as <a href="#deep-dive-settings">Project settings</a>. Read-only: change them with
+            <code>/larapilot-settings</code> or <code>larapilot:settings-set</code>.</p>
+
+          <h4>Skills</h4>
+          <p>Every <a href="#deep-dive-custom-skills">custom skill</a> under <code>.larapilot/skills/</code> — title,
+            slash trigger, description, file path, and a <em>Registered</em> / <em>Not registered</em> chip. Opening
+            the page re-registers them with Boost.</p>
+
+          <h4>Git</h4>
+          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The
+            grid fills the panel width: week columns scale with the viewport, cells stay square, <strong>today sits on
+              the right</strong> and older weeks extend left (the view opens scrolled to the recent end). Pick a developer
+            from the dropdown to see only that author's squares. The page reads the repo with <code>git log --all</code>
+            — it does not call GitHub, GitLab, or any remote API.</p>
+
+          <h4>Usage</h4>
+          <p>Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report at
+            <code>/larapilot/usage/report.md</code> (same data as <code>larapilot:usage-report --insights</code>).
+            Deadlines and the Gantt live on <strong>Plan</strong>. Reference: <a href="#deep-dive-usage">Usage &amp;
+            Lucille</a>.</p>
+
+          <h4>Economics</h4>
+          <p>The pricing simulator, when <code>account</code> is <code>FREELANCE</code> or <code>COMPANY</code>. Full
+            chapter: <a href="#deep-dive-economics">Economics</a>.</p>
+
+          <h4>Docs</h4>
+          <p>The delivery loop, optional branches keyed off the current settings, every packaged skill with its
+            primary output and lead personas, and the persona roster.</p>
+
+          <h4>Spec detail</h4>
+          <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
+          <ul>
+            <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
+            <li><strong>Decision journal</strong> — entries for this spec from <code>.larapilot/decisions.yaml</code>
+              (superseded context and regression guard)</li>
+            <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
+              <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
+              <code>/mockups/{code}</code> in dev/staging). All mockups also live in the
+              <strong>Design</strong> gallery at <code>/larapilot/design</code>
+            </li>
+            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
+              blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
+              compact footer (blocking checkbox, log path) until the story is <span
+                class="status status-done">DONE</span>. Toggle with <code>settings.comments</code> /
+              <code>larapilot:settings-set --comments=YES|NO</code>; <code>LARAPILOT_COMMENTS_ENABLED=false</code> is a
+              deployment kill-switch — see <a href="#deep-dive-comments">Comments</a>.
+            </li>
+            <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
+            <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done
+            </li>
+          </ul>
+          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state —
+            skills remain the only way to change it.</p>
+        </article>
+
+        <!-- Economics -->
+        <article class="deep-dive-sub" id="deep-dive-economics">
+          <h3>Economics</h3>
           <p>Two things wear the same name. <code>/larapilot-economics</code> is the <strong>skill</strong> — a
             conversation with Aurora that calibrates who is selling the work and then writes the client quote.
             <code>/larapilot/economics</code> is the <strong>page</strong> — an interactive pricing tool that
@@ -7568,38 +7626,6 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             answer at inception, then from the PRD. The dropdown always wins over both, and the same four values
             are accepted by <code>larapilot:economics-set --product-model=</code>. Every one of them is explained
             in place on the page, under <em>What “Sold as” changes</em>.</p>
-
-          <h4>Git</h4>
-          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The
-            grid fills the panel width: week columns scale with the viewport, cells stay square, <strong>today sits on
-              the right</strong> and older weeks extend left (the view opens scrolled to the recent end). Pick a developer
-            from the dropdown to see only that author's squares. The page reads the repo with <code>git log --all</code>
-            — it does not call GitHub, GitLab, or any remote API.</p>
-
-          <h4>Spec detail</h4>
-          <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
-          <ul>
-            <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
-            <li><strong>Decision journal</strong> — entries for this spec from <code>.larapilot/decisions.yaml</code>
-              (superseded context and regression guard)</li>
-            <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
-              <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
-              <code>/mockups/{code}</code> in dev/staging). All mockups also live in the
-              <strong>Design</strong> gallery at <code>/larapilot/design</code>
-            </li>
-            <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
-              blocking items show a <strong>Needs rework</strong> badge. Post new comments with a Markdown toolbar and
-              compact footer (blocking checkbox, log path) until the story is <span
-                class="status status-done">DONE</span>. Toggle with <code>settings.comments</code> /
-              <code>larapilot:settings-set --comments=YES|NO</code>; <code>LARAPILOT_COMMENTS_ENABLED=false</code> is a
-              deployment kill-switch — see <a href="#deep-dive-comments">Comments</a>.
-            </li>
-            <li><strong>Technical plan</strong> — plan Markdown once <code>/larapilot-plan</code> has run</li>
-            <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done
-            </li>
-          </ul>
-          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state —
-            skills remain the only way to change it.</p>
         </article>
 
         <!-- API -->
@@ -7743,7 +7769,62 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
             </table>
           </div>
 
-          <h4 id="deep-dive-api-hardening">Rate limit, audit &amp; caching</h4>
+          <h4>Response shape</h4>
+          <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from
+            <code>/larapilot/api/board</code>:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header">GET /larapilot/api/board</div>
+            <pre><code>{
+  "metrics": { "total": 3, "done": 1, "completion_rate": 33.3, "wip": 1 },
+  "status_order": ["TODO", "PLANNED", "IN PROGRESS", "REVIEW", "DONE"],
+  "columns": {
+    "TODO": [{
+      "code": "US-002",
+      "title": "Project Management",
+      "task_progress": { "total": 0, "done": 0 },
+      "mockups": { "available": false, "screen_count": 0, "screens": [] },
+      "feedback": { "enabled": true, "available": false, "entry_count": 0, "blocking_count": 0, "writable": true, "entries": [] }
+    }],
+    "DONE": [{
+      "code": "US-001",
+      "title": "User Registration",
+      "task_progress": { "total": 4, "done": 4 },
+      "mockups": {
+        "available": true,
+        "screen_count": 2,
+        "entry_url": "https://app.test/mockups/US-001",
+        "screens": [
+          { "file": "index.html", "label": "Index", "url": "https://app.test/mockups/US-001" },
+          { "file": "desktop.html", "label": "Desktop", "url": "https://app.test/mockups/US-001/desktop.html" }
+        ]
+      },
+      "feedback": {
+        "enabled": true,
+        "entry_count": 1,
+        "blocking_count": 0,
+        "writable": true,
+        "entries": [
+          { "at": "2026-07-15 17:00", "author": "PM", "status": "REVIEW", "body": "Looks good.", "blocks_merge": false }
+        ]
+      }
+    }]
+  },
+  "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
+}</code></pre>
+          </div>
+          <p>The API is a development and staging tool: it is never registered in production, and on a shared host
+            it belongs behind <code>LARAPILOT_API_TOKEN</code> with <code>api_auth=YES</code>. Mockup preview URLs are
+            absolute in API
+            responses when the mockup route is browsable. Comment writes need <code>comments=YES</code>, honor
+            <code>LARAPILOT_COMMENTS_ENABLED</code>, and reject DONE specs with <code>422</code>. Diagnostics honor
+            <code>LARAPILOT_DIAGNOSTICS_ENABLED</code> and redact secrets in log tails.
+          </p>
+        </article>
+
+        <!-- API hardening -->
+        <article class="deep-dive-sub" id="deep-dive-api-hardening">
+          <h3>API hardening</h3>
           <p>Independent of <code>api_auth</code> — always on for <code>/larapilot/api/*</code>:</p>
           <ul>
             <li><strong>Rate limit</strong> — per IP, from <code>larapilot.api.rate_limit</code>
@@ -7760,8 +7841,11 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
               <code>X-Content-Type-Options: nosniff</code> and <code>Referrer-Policy: no-referrer</code>; dashboard
               pages also send <code>X-Frame-Options: DENY</code>.</li>
           </ul>
+        </article>
 
-          <h4 id="deep-dive-api-diagnostics">Diagnostics</h4>
+        <!-- Diagnostics -->
+        <article class="deep-dive-sub" id="deep-dive-api-diagnostics">
+          <h3>Diagnostics</h3>
           <p>Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
             of the API (never in production). Disable with <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> (returns
             <code>404</code>).
@@ -7826,58 +7910,6 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   "healthy": true
 }</code></pre>
           </div>
-
-          <h4>Response shape</h4>
-          <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from
-            <code>/larapilot/api/board</code>:
-          </p>
-          <div class="code-block">
-            <div class="code-block-header">GET /larapilot/api/board</div>
-            <pre><code>{
-  "metrics": { "total": 3, "done": 1, "completion_rate": 33.3, "wip": 1 },
-  "status_order": ["TODO", "PLANNED", "IN PROGRESS", "REVIEW", "DONE"],
-  "columns": {
-    "TODO": [{
-      "code": "US-002",
-      "title": "Project Management",
-      "task_progress": { "total": 0, "done": 0 },
-      "mockups": { "available": false, "screen_count": 0, "screens": [] },
-      "feedback": { "enabled": true, "available": false, "entry_count": 0, "blocking_count": 0, "writable": true, "entries": [] }
-    }],
-    "DONE": [{
-      "code": "US-001",
-      "title": "User Registration",
-      "task_progress": { "total": 4, "done": 4 },
-      "mockups": {
-        "available": true,
-        "screen_count": 2,
-        "entry_url": "https://app.test/mockups/US-001",
-        "screens": [
-          { "file": "index.html", "label": "Index", "url": "https://app.test/mockups/US-001" },
-          { "file": "desktop.html", "label": "Desktop", "url": "https://app.test/mockups/US-001/desktop.html" }
-        ]
-      },
-      "feedback": {
-        "enabled": true,
-        "entry_count": 1,
-        "blocking_count": 0,
-        "writable": true,
-        "entries": [
-          { "at": "2026-07-15 17:00", "author": "PM", "status": "REVIEW", "body": "Looks good.", "blocks_merge": false }
-        ]
-      }
-    }]
-  },
-  "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
-}</code></pre>
-          </div>
-          <p>The API is a development and staging tool: it is never registered in production, and on a shared host
-            it belongs behind <code>LARAPILOT_API_TOKEN</code> with <code>api_auth=YES</code>. Mockup preview URLs are
-            absolute in API
-            responses when the mockup route is browsable. Comment writes need <code>comments=YES</code>, honor
-            <code>LARAPILOT_COMMENTS_ENABLED</code>, and reject DONE specs with <code>422</code>. Diagnostics honor
-            <code>LARAPILOT_DIAGNOSTICS_ENABLED</code> and redact secrets in log tails.
-          </p>
         </article>
 
         <div class="cta-band">
