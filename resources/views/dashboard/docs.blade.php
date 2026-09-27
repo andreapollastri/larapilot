@@ -211,6 +211,8 @@
                 <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
                 <div class="flow-step"><strong>Triage</strong><span><code>/larapilot-triage</code> — bug or feature? classifies the request and hands off</span></div>
+                <div class="flow-step"><strong>Aikido</strong><span><code>/larapilot-aikido</code> — downloads the security findings and hands each one to triage</span></div>
+                <div class="flow-step"><strong>Boogle</strong><span><code>/larapilot-boogle</code> — downloads the errors thrown in production and hands each bug to triage</span></div>
                 <div class="flow-step"><strong>PRD revision</strong><span><code>/larapilot-prd</code> — change the PRD when it is neither: sharpen, re-scope, re-decide, upgrade</span></div>
                 <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — one spec at a time; plan and implement in a fresh worker when effort is not ECO</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
@@ -270,6 +272,12 @@
                 <li @class(['is-on' => $isYes($s['security_scan'] ?? 'NO')])>
                     <strong>Security scan = YES</strong> — <code>/larapilot-review</code> runs <code>checkpoint:scan</code>; FAIL findings block until fixed or waived.
                 </li>
+                <li @class(['is-on' => $isYes($s['aikido'] ?? 'NO')])>
+                    <strong>Aikido = YES</strong> — <code>/larapilot-aikido</code> hands the findings of Aikido to triage; <code>/larapilot-ship</code> stops on the ones that are open and not waived.
+                </li>
+                <li @class(['is-on' => $isYes($s['boogle'] ?? 'NO')])>
+                    <strong>Boogle = YES</strong> — <code>/larapilot-boogle</code> hands the errors the running application throws to triage, one request for each bug; the Errors page shows them.
+                </li>
                 <li @class(['is-on' => $isYes($s['notifications'] ?? 'NO')])>
                     <strong>Notifications = YES</strong> — Slack/Discord/Telegram fan-out when channels are configured in <code>.env</code>.
                 </li>
@@ -309,6 +317,8 @@
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query and Markdown report — token charts on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>, schedule and Gantt on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a></td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-aikido</code></td><td>Findings of Aikido in <code>docs/security/aikido.md</code>, decisions in <code>aikido.yaml</code>, handoff to <code>/larapilot-triage</code></td><td>🔐 Lars · 🎧 Sophia · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-boogle</code></td><td>Errors of Boogle in <code>docs/support/boogle.md</code>, decisions in <code>boogle.yaml</code>, handoff to <code>/larapilot-triage</code></td><td>🎧 Sophia · 🧪 Anne · 🔗 Matt</td></tr>
                     <tr><td><code>/larapilot-tracker</code></td><td>Linear/Jira/… mirror in <code>tracker.yaml</code></td><td>🔗 Matt · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-backstage</code></td><td>Backstage catalog + TechDocs</td><td>📝 Albert · 🚀 Jack</td></tr>
                     <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code> — listed on the <a href="{{ route('larapilot.dashboard.skills') }}">Skills</a> page</td><td>🤖 Zoey · ⌨️ Sarah</td></tr>
@@ -351,7 +361,7 @@
                     <tr><td>🛡️ Robert</td><td>Code Reviewer — quality gate, plan adherence, Git hygiene</td></tr>
                     <tr><td>🚀 Jack</td><td>DevOps — git_mode, CI/CD, deploy platform, forge integrations</td></tr>
                     <tr><td>⌨️ Sarah</td><td>CLI &amp; Git expert — conflicts, release branches, forge CLIs, pipeline scripts</td></tr>
-                    <tr><td>🔐 Lars</td><td>Security — OWASP, dashboard/API auth, checkpoint scan gate</td></tr>
+                    <tr><td>🔐 Lars</td><td>Security — OWASP, dashboard/API auth, checkpoint scan gate, Aikido findings and waivers</td></tr>
                     <tr><td>🎨 Elise · ✨ Joe</td><td>UX &amp; Frontend — design systems, mockups, responsive/WCAG UI</td></tr>
                     <tr><td>📝 Albert</td><td>Tech Writer — OpenAPI, diagrams, <code>_project_docs/</code> when enabled</td></tr>
                     <tr><td>📒 Lucille</td><td>Project tracking — token/hour ledger on Usage, deadlines and Gantt on Plan (default ON)</td></tr>

@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use InvalidArgumentException;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
@@ -48,9 +49,22 @@ class FileManagerController
         ]));
     }
 
-    public function raw(Request $request, string $root, string $path): BinaryFileResponse
+    public function raw(Request $request, string $root, string $path): BinaryFileResponse|Response
     {
         $this->guard();
+
+        // A file that holds credentials goes out the way it is shown: the
+        // names of its keys, and asterisks where the values are.
+        $masked = $this->files->masked($root, $path);
+
+        if ($masked !== null) {
+            return response($masked, 200, [
+                'Content-Type' => 'text/plain; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="'.$this->downloadName($path).'"',
+                'Content-Security-Policy' => "default-src 'none'; sandbox",
+                'Cache-Control' => 'no-store',
+            ]);
+        }
 
         $absolute = $this->files->file($root, $path);
 
@@ -286,7 +300,9 @@ class FileManagerController
     {
         $this->guard();
 
-        if ($this->files->root((string) $request->route('root')) === null) {
+        $root = $this->files->root((string) $request->route('root'));
+
+        if ($root === null || $root['read_only']) {
             abort(404);
         }
     }

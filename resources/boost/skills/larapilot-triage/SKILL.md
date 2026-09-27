@@ -90,6 +90,14 @@ settled by: evidence | user
 
 The target skill takes the block as answers already given. Zoey's start line is posted here; her end line and the single `usage-log` come from the target skill and cover this triage.
 
+## Handoff from `larapilot-aikido`
+
+A request with an **Aikido finding** block is measured like any other, with one rule: a known vulnerability in shipped code is a **Bug** when an FR or an NFR names security for that area, a **Bug — requirement gap** otherwise. Do not ask about the verdict. Put the block under `evidence` in the **Triage handoff**, unchanged.
+
+## Handoff from `larapilot-boogle`
+
+A **Boogle error** block is an exception the running application threw: evidence that something broke, not the verdict. Apply the promise test to what the user was doing (`request`, `where`). Do not ask about the verdict. Put the block under `evidence`, unchanged.
+
 ## Other exits
 
 No handoff. Say where the request belongs in one line and stop.

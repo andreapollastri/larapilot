@@ -416,6 +416,19 @@
         font-size: 0.78rem;
     }
 
+    .preview-note.is-masked {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 0;
+        border-top: 0;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--warn-fill) 10%, var(--surface));
+        color: var(--text-2);
+    }
+
+    .preview-note.is-masked .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--warn); }
+
     /* ---- dialogs ---- */
     .modal {
         width: min(calc(100vw - 32px), 440px);
@@ -441,7 +454,9 @@
 @section('content')
     @php
         $rootKey = $root['key'];
+        $readOnly = (bool) $root['read_only'];
         $icons = [
+            'secret' => 'lock',
             'directory' => 'folder',
             'image' => 'image',
             'markdown' => 'prd',
@@ -474,7 +489,7 @@
         </ol>
     </nav>
 
-    <nav class="root-tabs" aria-label="Material folders">
+    <nav class="root-tabs" aria-label="Folders">
         @foreach ($folders as $folder)
             <a href="{{ route('larapilot.dashboard.files.browse', ['root' => $folder['key']]) }}" @class(['is-active' => $folder['key'] === $rootKey]) title="{{ $folder['description'] }}">@include('larapilot::dashboard.partials.icon', ['name' => 'folder']){{ $folder['label'] }}</a>
         @endforeach
@@ -482,9 +497,9 @@
 
     <header class="page-head files-head">
         <div>
-            <h2>{{ $name }}</h2>
+            <h2>{{ $name }}@if ($readOnly) <span class="entry-tag">Read only</span>@endif</h2>
             @if ($path === '')
-                <p class="sub">{{ $root['description'] }}</p>
+                <p class="sub">{{ $root['description'] }}@if ($readOnly) You can look and download; the code is changed in your editor. A file that holds credentials — <code>.env</code>, <code>auth.json</code>, a key — shows the names of its keys with every value hidden.@endif</p>
             @endif
             <code class="folder-path">{{ $display_path }}</code>
             @unless ($is_directory)
@@ -495,12 +510,21 @@
             @endunless
         </div>
         <div class="page-actions">
-            @if ($is_directory)
+            @if ($readOnly)
+                @if (! $is_directory && ! $file['sealed'])
+                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? 'Download, values hidden' : 'Download' }}</a>
+                    @if (in_array($preview['kind'], ['image', 'pdf'], true))
+                        <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open</a>
+                    @endif
+                @endif
+            @elseif ($is_directory)
                 <button type="button" class="btn" data-upload-pick="files">@include('larapilot::dashboard.partials.icon', ['name' => 'upload'])Upload files</button>
                 <button type="button" class="btn ghost" data-upload-pick="folder">@include('larapilot::dashboard.partials.icon', ['name' => 'folder-open'])Upload folder</button>
                 <button type="button" class="btn ghost" data-dialog="folder-dialog">@include('larapilot::dashboard.partials.icon', ['name' => 'folder-plus'])New folder</button>
             @else
-                <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download</a>
+                @unless ($file['sealed'])
+                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? 'Download, values hidden' : 'Download' }}</a>
+                @endunless
                 @if (in_array($preview['kind'], ['image', 'pdf'], true))
                     <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open</a>
                 @endif
@@ -533,6 +557,7 @@
             @if ($is_directory)
                 <div id="upload-result" hidden></div>
 
+                @unless ($readOnly)
                 <form
                     class="dropzone"
                     method="post"
@@ -569,11 +594,12 @@
                         <p class="upload-status" data-upload-status role="status"></p>
                     </div>
                 </form>
+                @endunless
 
                 <section class="card listing" aria-label="Contents of {{ $name }}">
                     @if ($entries === [])
                         <div class="listing-empty">
-                            <p>This folder is empty. Drop something in to get started.</p>
+                            <p>{{ $readOnly ? 'This folder is empty.' : 'This folder is empty. Drop something in to get started.' }}</p>
                         </div>
                     @else
                         <div class="listing-head" aria-hidden="true">
@@ -603,16 +629,23 @@
                                         @if ($entry['packaged'])
                                             <span class="entry-tag" title="Shipped with Larapilot. larapilot:update rewrites it — keep your own system in a folder beside it.">Packaged</span>
                                         @endif
+                                        @if ($entry['masked'])
+                                            <span class="entry-tag" title="Holds credentials: the names of its keys are shown, every value is hidden.">Values hidden</span>
+                                        @elseif ($entry['sealed'])
+                                            <span class="entry-tag" title="A database: listed, neither shown nor downloaded from here.">Not shown</span>
+                                        @endif
                                     </a>
                                 @endif
                                 <span class="entry-size">{{ $isFolder ? $detail : $entry['size_label'] }}</span>
                                 <span class="entry-date">{{ $when($entry['modified']) }}</span>
                                 <span class="entry-actions">
-                                    @if (! $isFolder && ! $entry['link'])
-                                        <a class="row-btn" href="{{ $raw($entry['path'], true) }}" title="Download" aria-label="Download {{ $entry['name'] }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])</a>
+                                    @if (! $isFolder && ! $entry['link'] && ! $entry['sealed'])
+                                        <a class="row-btn" href="{{ $raw($entry['path'], true) }}" title="{{ $entry['masked'] ? 'Download, values hidden' : 'Download' }}" aria-label="Download {{ $entry['name'] }}{{ $entry['masked'] ? ', values hidden' : '' }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])</a>
                                     @endif
+                                    @unless ($readOnly)
                                     <button type="button" class="row-btn" data-dialog="rename-dialog" data-path="{{ $entry['path'] }}" data-name="{{ $entry['name'] }}" title="Rename" aria-label="Rename {{ $entry['name'] }}">@include('larapilot::dashboard.partials.icon', ['name' => 'pencil'])</button>
                                     <button type="button" class="row-btn is-danger" data-dialog="delete-dialog" data-path="{{ $entry['path'] }}" data-name="{{ $entry['name'] }}" data-kind="{{ $isFolder ? 'folder' : 'file' }}" data-items="{{ $entry['items'] }}" title="Delete" aria-label="Delete {{ $entry['name'] }}">@include('larapilot::dashboard.partials.icon', ['name' => 'trash'])</button>
+                                    @endunless
                                 </span>
                             </div>
                         @endforeach
@@ -624,13 +657,26 @@
                 </section>
             @else
                 <section class="card preview" aria-label="Preview of {{ $name }}">
-                    @if ($preview['kind'] === 'image')
+                    @if ($preview['kind'] === 'sealed')
+                        <div class="preview-none">
+                            <p><strong>{{ $name }}</strong> is a database, so it is neither shown nor downloaded from the dashboard.</p>
+                        </div>
+                    @elseif ($preview['kind'] === 'pdf')
+                        @include('larapilot::dashboard.partials.pdf-reader', [
+                            'src' => $raw($path),
+                            'download' => $raw($path, true),
+                            'name' => $name,
+                        ])
+                    @elseif ($preview['kind'] === 'image')
                         <div class="preview-image">
                             <img src="{{ $raw($path) }}" alt="{{ $name }}">
                         </div>
                     @elseif ($preview['kind'] === 'markdown')
                         <div class="preview-markdown markdown">{!! $preview['html'] !!}</div>
                     @elseif ($preview['kind'] === 'text')
+                        @if ($preview['masked'])
+                            <p class="preview-note is-masked">@include('larapilot::dashboard.partials.icon', ['name' => 'lock'])<span>This file holds credentials. The names of its keys are shown; every value is replaced by <code>{{ \Larapilot\Services\FileManagerService::MASK }}</code>, here and in the download.</span></p>
+                        @endif
                         @if ($preview['text'] === '')
                             <div class="preview-none"><p>This file is empty.</p></div>
                         @else
@@ -641,12 +687,8 @@
                         @endif
                     @else
                         <div class="preview-none">
-                            <p>{{ $preview['kind'] === 'pdf' ? 'A PDF opens in its own tab.' : 'There is no preview for this kind of file.' }}</p>
-                            @if ($preview['kind'] === 'pdf')
-                                <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">Open the PDF</a>
-                            @else
-                                <a class="btn ghost" href="{{ $raw($path, true) }}">Download</a>
-                            @endif
+                            <p>There is no preview for this kind of file.</p>
+                            <a class="btn ghost" href="{{ $raw($path, true) }}">Download</a>
                         </div>
                     @endif
                 </section>
@@ -654,6 +696,7 @@
         </div>
     </div>
 
+    @unless ($readOnly)
     <dialog class="modal" id="folder-dialog" aria-labelledby="folder-dialog-title">
         <form method="post" action="{{ route('larapilot.dashboard.files.folder', ['root' => $rootKey]) }}">
             @csrf
@@ -699,6 +742,7 @@
             </div>
         </form>
     </dialog>
+    @endunless
 @endsection
 
 @push('scripts')

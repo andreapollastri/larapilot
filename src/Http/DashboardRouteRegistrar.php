@@ -42,8 +42,14 @@ class DashboardRouteRegistrar
                 Route::get('/', [DashboardController::class, 'index'])
                     ->name('larapilot.dashboard.index');
 
+                Route::get('/board.md', [DashboardController::class, 'boardDownload'])
+                    ->name('larapilot.dashboard.board.download');
+
                 Route::get('/prd', [DashboardController::class, 'prd'])
                     ->name('larapilot.dashboard.prd');
+
+                Route::get('/prd/prd.md', [DashboardController::class, 'prdDownload'])
+                    ->name('larapilot.dashboard.prd.download');
 
                 Route::get('/prd/functional-summary.md', [DashboardController::class, 'functionalSummary'])
                     ->name('larapilot.dashboard.prd.summary');
@@ -59,6 +65,18 @@ class DashboardRouteRegistrar
 
                 Route::get('/skills', [DashboardController::class, 'skills'])
                     ->name('larapilot.dashboard.skills');
+
+                Route::get('/skills/guidelines/{id}', [DashboardController::class, 'guideline'])
+                    ->where('id', '[a-z0-9][a-z0-9-]*')
+                    ->name('larapilot.dashboard.skills.guideline');
+
+                Route::get('/skills/{name}', [DashboardController::class, 'skill'])
+                    ->where('name', '[A-Za-z0-9][A-Za-z0-9._-]*')
+                    ->name('larapilot.dashboard.skill');
+
+                Route::get('/skills/{name}/SKILL.md', [DashboardController::class, 'skillDownload'])
+                    ->where('name', '[A-Za-z0-9][A-Za-z0-9._-]*')
+                    ->name('larapilot.dashboard.skill.download');
 
                 Route::get('/git', [DashboardController::class, 'git'])
                     ->name('larapilot.dashboard.git');
@@ -84,6 +102,18 @@ class DashboardRouteRegistrar
                 Route::get('/economics/report.md', [DashboardController::class, 'economicsReport'])
                     ->name('larapilot.dashboard.economics.report');
 
+                Route::get('/security', [DashboardController::class, 'security'])
+                    ->name('larapilot.dashboard.security');
+
+                Route::get('/security/aikido.md', [DashboardController::class, 'securityReport'])
+                    ->name('larapilot.dashboard.security.report');
+
+                Route::get('/errors', [DashboardController::class, 'errors'])
+                    ->name('larapilot.dashboard.errors');
+
+                Route::get('/errors/boogle.md', [DashboardController::class, 'errorsReport'])
+                    ->name('larapilot.dashboard.errors.report');
+
                 Route::get('/design', [DashboardController::class, 'design'])
                     ->name('larapilot.dashboard.design');
 
@@ -97,6 +127,10 @@ class DashboardRouteRegistrar
                 Route::get('/specs/{code}', [DashboardController::class, 'spec'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec');
+
+                Route::get('/specs/{code}/spec.md', [DashboardController::class, 'specDownload'])
+                    ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
+                    ->name('larapilot.dashboard.spec.download');
 
                 Route::post('/specs/{code}/comments', [DashboardController::class, 'storeComment'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
@@ -114,18 +148,21 @@ class DashboardRouteRegistrar
     }
 
     /**
-     * The material folders under `.larapilot/`. Only the five known roots
-     * match, so `raw` and the action names can never be read as a folder.
+     * The material folders under `.larapilot/`, and the project itself.
+     * Only the known roots match, so `raw` and the action names can never
+     * be read as a folder. The project is read only: the routes that write
+     * do not know it.
      */
     protected static function registerFileManager(): void
     {
         $roots = 'brand|client-materials|design-systems|legacy|skills';
+        $readable = $roots.'|project';
 
         Route::get('/files', [FileManagerController::class, 'index'])
             ->name('larapilot.dashboard.files');
 
         Route::get('/files/raw/{root}/{path}', [FileManagerController::class, 'raw'])
-            ->where('root', $roots)
+            ->where('root', $readable)
             ->where('path', '.*')
             ->name('larapilot.dashboard.files.raw');
 
@@ -146,7 +183,7 @@ class DashboardRouteRegistrar
             ->name('larapilot.dashboard.files.delete');
 
         Route::get('/files/{root}/{path?}', [FileManagerController::class, 'browse'])
-            ->where('root', $roots)
+            ->where('root', $readable)
             ->where('path', '.*')
             ->name('larapilot.dashboard.files.browse');
     }

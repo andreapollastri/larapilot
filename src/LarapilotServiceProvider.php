@@ -8,9 +8,17 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Larapilot\Console\Commands\AikidoIssuesCommand;
+use Larapilot\Console\Commands\AikidoLinkCommand;
+use Larapilot\Console\Commands\AikidoScanCommand;
+use Larapilot\Console\Commands\AikidoStatusCommand;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
 use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\BitbucketStatusCommand;
+use Larapilot\Console\Commands\BoogleErrorsCommand;
+use Larapilot\Console\Commands\BoogleLinkCommand;
+use Larapilot\Console\Commands\BoogleResolveCommand;
+use Larapilot\Console\Commands\BoogleStatusCommand;
 use Larapilot\Console\Commands\ChoicesSetCommand;
 use Larapilot\Console\Commands\CodeHistoryLogCommand;
 use Larapilot\Console\Commands\CodeHistoryShowCommand;
@@ -74,16 +82,24 @@ use Larapilot\Http\DashboardRouteRegistrar;
 use Larapilot\Http\MockupAssetsRouteRegistrar;
 use Larapilot\Http\MockupRouteRegistrar;
 use Larapilot\Mcp\LarapilotServer;
+use Larapilot\Services\AgentGuidelineService;
+use Larapilot\Services\Aikido\AikidoClient;
+use Larapilot\Services\Aikido\AikidoLedger;
+use Larapilot\Services\AikidoService;
 use Larapilot\Services\ApiAuditService;
 use Larapilot\Services\ApiService;
 use Larapilot\Services\AzureDevopsService;
 use Larapilot\Services\BackstageService;
 use Larapilot\Services\BitbucketService;
+use Larapilot\Services\Boogle\BoogleClient;
+use Larapilot\Services\Boogle\BoogleLedger;
+use Larapilot\Services\BoogleService;
 use Larapilot\Services\CodeHistoryService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
+use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
@@ -92,6 +108,7 @@ use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\FileManagerService;
 use Larapilot\Services\FrontendService;
+use Larapilot\Services\GitGraphService;
 use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
@@ -105,6 +122,7 @@ use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
+use Larapilot\Services\SkillLibraryService;
 use Larapilot\Services\SpecService;
 use Larapilot\Services\Tracker\TrackerLinkStore;
 use Larapilot\Services\Tracker\TrackerManager;
@@ -117,7 +135,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '4.0.2';
+    public const VERSION = '4.1.1';
 
     public function register(): void
     {
@@ -132,10 +150,19 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
+        $this->app->singleton(GitGraphService::class);
+        $this->app->singleton(SkillLibraryService::class);
+        $this->app->singleton(AgentGuidelineService::class);
         $this->app->singleton(GithubService::class);
         $this->app->singleton(GitlabService::class);
         $this->app->singleton(BitbucketService::class);
         $this->app->singleton(AzureDevopsService::class);
+        $this->app->singleton(AikidoClient::class);
+        $this->app->singleton(AikidoLedger::class);
+        $this->app->singleton(AikidoService::class);
+        $this->app->singleton(BoogleClient::class);
+        $this->app->singleton(BoogleLedger::class);
+        $this->app->singleton(BoogleService::class);
         $this->app->singleton(NotifyService::class);
         $this->app->singleton(PrdService::class);
         $this->app->singleton(SpecService::class);
@@ -147,6 +174,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(MockupPackageService::class);
         $this->app->singleton(InternalFeedbackService::class);
         $this->app->singleton(DashboardService::class);
+        $this->app->singleton(DashboardExportService::class);
         $this->app->singleton(ApiService::class);
         $this->app->singleton(ApiAuditService::class);
         $this->app->singleton(MetricsService::class);
@@ -185,6 +213,14 @@ class LarapilotServiceProvider extends ServiceProvider
                 GitlabStatusCommand::class,
                 BitbucketStatusCommand::class,
                 AzureDevopsStatusCommand::class,
+                AikidoStatusCommand::class,
+                AikidoIssuesCommand::class,
+                AikidoLinkCommand::class,
+                AikidoScanCommand::class,
+                BoogleStatusCommand::class,
+                BoogleErrorsCommand::class,
+                BoogleLinkCommand::class,
+                BoogleResolveCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
                 PrdImpactCommand::class,

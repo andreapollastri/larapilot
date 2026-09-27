@@ -46,7 +46,7 @@ HTML skeleton:
 | --- | --- |
 | Landing | Blade layout + Bootstrap grid + utility classes |
 | Dashboard | Sidebar shell + `.card` stat widgets + `.table` |
-| Login | Centered `.card` on tertiary background |
+| Login | Centered `.card` on tertiary background — credential fields **drawn** as `<div class="form-control mock-field" role="img">`, never `<input>` (see `html/login.html`) |
 | Settings | Form sections in cards inside app shell |
 | Modal confirm | Bootstrap modal component |
 

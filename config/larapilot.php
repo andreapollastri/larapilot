@@ -53,6 +53,18 @@ return [
         // blockers; when the package is absent it points the user at `composer require --dev
         // andreapollastri/checkpoint`. Never runs the scanner automatically on its own.
         'security_scan' => false,
+        // Read the findings of Aikido (https://www.aikido.dev) for this repository — OFF by
+        // default. When true, /larapilot-aikido downloads the open findings and hands each
+        // one to /larapilot-triage, the ship gate stops on what nobody decided about, and
+        // /larapilot/security shows them. Aikido scans the repository on its side; Larapilot
+        // only reads the result, with the credentials under `aikido` below.
+        'aikido' => false,
+        // Read the errors Boogle (https://boogle.web.ap.it) recorded for the running
+        // application — OFF by default. When true, /larapilot-boogle downloads the open
+        // errors, groups the ones that are one bug, and hands each group to
+        // /larapilot-triage; /larapilot/errors shows them with what was decided. Boogle
+        // is self-hosted: its address and a token are under `boogle` below.
+        'boogle' => false,
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
         'gitlab' => false,
@@ -76,6 +88,46 @@ return [
         'bitbucket_access_token' => env('LARAPILOT_BITBUCKET_ACCESS_TOKEN', env('BITBUCKET_ACCESS_TOKEN')),
         // Azure DevOps (optional; also accepted as AZURE_DEVOPS_EXT_PAT / AZURE_DEVOPS_PAT).
         'azure_devops_pat' => env('LARAPILOT_AZURE_DEVOPS_PAT', env('AZURE_DEVOPS_EXT_PAT', env('AZURE_DEVOPS_PAT'))),
+    ],
+
+    // Aikido (https://www.aikido.dev) — application security findings for this
+    // repository, read through the public REST API. Create the credentials in
+    // Aikido under Settings → Integrations → Public REST API and keep them in
+    // .env. Reading needs the `issues:read` and `repositories:read` scopes;
+    // asking for a new scan needs `repositories:write`.
+    'aikido' => [
+        'client_id' => env('LARAPILOT_AIKIDO_CLIENT_ID', env('AIKIDO_CLIENT_ID')),
+        'client_secret' => env('LARAPILOT_AIKIDO_CLIENT_SECRET', env('AIKIDO_CLIENT_SECRET')),
+        // Where the workspace lives: eu (default), us, au, or me.
+        'region' => env('LARAPILOT_AIKIDO_REGION', 'eu'),
+        // Overrides the address the region gives, for a proxy or a private instance.
+        'base_url' => env('LARAPILOT_AIKIDO_BASE_URL'),
+        // The repository in Aikido, by id or by name. Empty: found from the git remote.
+        'repository' => env('LARAPILOT_AIKIDO_REPOSITORY'),
+        // Lowest severity that stops the ship gate: critical, high, medium, low, or none.
+        'fail_on' => env('LARAPILOT_AIKIDO_FAIL_ON', 'high'),
+        'timeout' => (int) env('LARAPILOT_AIKIDO_TIMEOUT', 15),
+        // Seconds the dashboard keeps the findings before it asks Aikido again.
+        'cache_seconds' => (int) env('LARAPILOT_AIKIDO_CACHE', 300),
+    ],
+
+    // Boogle (https://boogle.web.ap.it) — the self-hosted exception tracker and
+    // uptime monitor. Larapilot reads the errors of this project through the
+    // admin API, with the token of an admin user of that Boogle (its profile →
+    // API tokens). The token reads every project of that Boogle: keep it in .env.
+    'boogle' => [
+        // Where Boogle is reached, such as https://boogle.example.com. Empty: taken
+        // from BOOGLE_SERVER, which the client package uses to send the exceptions.
+        'url' => env('LARAPILOT_BOOGLE_URL'),
+        'server' => env('BOOGLE_SERVER'),
+        'token' => env('LARAPILOT_BOOGLE_TOKEN'),
+        // The project in Boogle, by id or by title. Empty: the one whose key is
+        // BOOGLE_PROJECT_KEY, then the one whose address is APP_URL.
+        'project' => env('LARAPILOT_BOOGLE_PROJECT'),
+        'project_key' => env('BOOGLE_PROJECT_KEY'),
+        'timeout' => (int) env('LARAPILOT_BOOGLE_TIMEOUT', 15),
+        // Seconds the dashboard keeps the errors before it asks Boogle again.
+        'cache_seconds' => (int) env('LARAPILOT_BOOGLE_CACHE', 300),
     ],
 
     // External frontend repository (when PRD topology is API + external frontend).

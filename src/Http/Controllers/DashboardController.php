@@ -9,10 +9,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\FunctionalSummaryWriter;
+use Larapilot\Services\GitGraphService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
@@ -33,6 +35,7 @@ class DashboardController
         protected MockupPackageService $mockupPackage,
         protected MockupService $mockups,
         protected DecisionService $decisions,
+        protected DashboardExportService $exports,
     ) {}
 
     public function index(): View
@@ -40,6 +43,13 @@ class DashboardController
         $this->guard();
 
         return view('larapilot::dashboard.index', $this->dashboard->board());
+    }
+
+    public function boardDownload(Request $request): Response
+    {
+        $this->guard();
+
+        return $this->markdown($this->exports->board($request->query()), $this->exports->boardFilename());
     }
 
     public function prd(): View
@@ -53,6 +63,19 @@ class DashboardController
             'decisions' => $this->dashboard->decisions(),
             'summaryLabel' => is_array($prd) ? $this->summary->label((string) $prd['content']) : null,
         ]);
+    }
+
+    public function prdDownload(): Response
+    {
+        $this->guard();
+
+        $content = $this->exports->prd();
+
+        if ($content === null) {
+            abort(404);
+        }
+
+        return $this->markdown($content, $this->exports->prdFilename());
     }
 
     public function functionalSummary(): Response
@@ -97,6 +120,55 @@ class DashboardController
         $this->guard();
 
         return view('larapilot::dashboard.skills', $this->dashboard->skills());
+    }
+
+    public function skill(Request $request, string $name): View
+    {
+        $this->guard();
+
+        $skill = $this->dashboard->skill($name, $this->from($request));
+
+        if ($skill === null) {
+            abort(404);
+        }
+
+        return view('larapilot::dashboard.skill', ['skill' => $skill]);
+    }
+
+    public function skillDownload(Request $request, string $name): Response
+    {
+        $this->guard();
+
+        $skill = $this->dashboard->skill($name, $this->from($request));
+
+        if ($skill === null) {
+            abort(404);
+        }
+
+        return $this->markdown($skill['content'], $skill['folder'].'-SKILL.md');
+    }
+
+    public function guideline(string $id): View
+    {
+        $this->guard();
+
+        $guideline = $this->dashboard->guideline($id);
+
+        if ($guideline === null) {
+            abort(404);
+        }
+
+        return view('larapilot::dashboard.guideline', ['guideline' => $guideline]);
+    }
+
+    /**
+     * Which skill is meant, among the ones that carry one name.
+     */
+    protected function from(Request $request): ?string
+    {
+        $from = $request->query('from');
+
+        return is_string($from) && $from !== '' ? $from : null;
     }
 
     public function usage(): View
@@ -161,6 +233,46 @@ class DashboardController
     protected function pricingOverrides(Request $request): array
     {
         return $this->economics->normalizeOverrides($request->query());
+    }
+
+    public function security(Request $request): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.security', $this->dashboard->security($request->boolean('refresh')));
+    }
+
+    public function securityReport(): Response
+    {
+        $this->guard();
+
+        $report = $this->dashboard->securityReport();
+
+        if ($report === null) {
+            abort(404);
+        }
+
+        return $this->markdown($report, 'aikido-findings-'.now()->format('Y-m-d').'.md');
+    }
+
+    public function errors(Request $request): View
+    {
+        $this->guard();
+
+        return view('larapilot::dashboard.errors', $this->dashboard->errors($request->boolean('refresh')));
+    }
+
+    public function errorsReport(): Response
+    {
+        $this->guard();
+
+        $report = $this->dashboard->errorsReport();
+
+        if ($report === null) {
+            abort(404);
+        }
+
+        return $this->markdown($report, 'boogle-errors-'.now()->format('Y-m-d').'.md');
     }
 
     public function design(): View
@@ -247,9 +359,14 @@ class DashboardController
     {
         $this->guard();
 
-        $author = trim((string) $request->query('author', ''));
+        $author = $request->query('author', '');
+        $author = is_string($author) ? trim($author) : '';
+        $commits = $request->query('commits');
 
-        return view('larapilot::dashboard.git', $this->dashboard->git($author !== '' ? $author : null));
+        return view('larapilot::dashboard.git', $this->dashboard->git(
+            $author !== '' ? $author : null,
+            is_numeric($commits) ? (int) $commits : GitGraphService::DEFAULT_LIMIT
+        ));
     }
 
     public function usageReport(): Response
@@ -279,6 +396,23 @@ class DashboardController
         }
 
         return view('larapilot::dashboard.spec', $data);
+    }
+
+    public function specDownload(string $code): Response
+    {
+        $this->guard();
+
+        if (! SpecCode::isValid($code)) {
+            abort(404);
+        }
+
+        $content = $this->exports->spec($code);
+
+        if ($content === null) {
+            abort(404);
+        }
+
+        return $this->markdown($content, $this->exports->specFilename($code));
     }
 
     public function storeComment(Request $request, string $code): RedirectResponse
@@ -322,6 +456,14 @@ class DashboardController
         return redirect()
             ->route('larapilot.dashboard.spec', $code)
             ->with('larapilot_success', 'Comment added.');
+    }
+
+    protected function markdown(string $content, string $filename): Response
+    {
+        return response($content, 200, [
+            'Content-Type' => 'text/markdown; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 
     protected function guard(): void

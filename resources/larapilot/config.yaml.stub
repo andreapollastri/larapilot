@@ -26,6 +26,8 @@ settings:
   api_auth: false
   # Run andreapollastri/checkpoint (static security scan) in /larapilot-review + pre-ship — OFF by default.
   security_scan: false
+  aikido: false
+  boogle: false
   github: false
   gitlab: false
   bitbucket: false

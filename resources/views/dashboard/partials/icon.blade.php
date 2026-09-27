@@ -104,6 +104,45 @@
     @case('check')
         <path d="m5 12.5 4.5 4.5L19 7.5"/>
         @break
+    @case('chevron-left')
+        <path d="m15 6-6 6 6 6"/>
+        @break
+    @case('plus')
+        <path d="M12 5v14M5 12h14"/>
+        @break
+    @case('minus')
+        <path d="M5 12h14"/>
+        @break
+    @case('expand')
+        <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+        @break
+    @case('page-single')
+        <rect x="6" y="3" width="12" height="18" rx="1.5"/><path d="M9.5 8h5M9.5 12h5M9.5 16h3"/>
+        @break
+    @case('page-dual')
+        <rect x="2.5" y="4" width="8.5" height="16" rx="1.5"/><rect x="13" y="4" width="8.5" height="16" rx="1.5"/>
+        @break
+    @case('grid')
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>
+        @break
+    @case('tag')
+        <path d="M3 12V4.5A1.5 1.5 0 0 1 4.5 3H12l9 9-8 8z"/><circle cx="7.8" cy="7.8" r="1.3"/>
+        @break
+    @case('merge')
+        <circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10"/><path d="M6 7c0 4 4 5 10 5"/>
+        @break
+    @case('shield')
+        <path d="M12 3 4.5 6v5.5c0 4.6 3 8.2 7.5 9.5 4.5-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.2 10"/>
+        @break
+    @case('bug')
+        <rect x="8" y="7" width="8" height="12" rx="4"/><path d="M12 11v8M9.5 4.5 11 7M14.5 4.5 13 7M8 11H4.5M8 15H4M16 11h3.5M16 15h4"/>
+        @break
+    @case('refresh')
+        <path d="M20 11a8 8 0 0 0-14.5-4.2M4 4.5V8h3.5"/><path d="M4 13a8 8 0 0 0 14.5 4.2M20 19.5V16h-3.5"/>
+        @break
+    @case('info')
+        <circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.2"/>
+        @break
     @default
         <circle cx="12" cy="12" r="9"/>
 @endswitch

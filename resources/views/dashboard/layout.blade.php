@@ -9,13 +9,15 @@
         ],
         'Workspace' => [
             ['route' => 'larapilot.dashboard.settings', 'active' => ['larapilot.dashboard.settings'], 'label' => 'Settings', 'icon' => 'settings'],
-            ['route' => 'larapilot.dashboard.skills', 'active' => ['larapilot.dashboard.skills'], 'label' => 'Skills', 'icon' => 'skills'],
+            ['route' => 'larapilot.dashboard.skills', 'active' => ['larapilot.dashboard.skill*'], 'label' => 'Skills', 'icon' => 'skills'],
             ['route' => 'larapilot.dashboard.files', 'active' => ['larapilot.dashboard.files*'], 'label' => 'File manager', 'icon' => 'files', 'when' => app(\Larapilot\Services\ConfigService::class)->fileManagerBrowsable()],
             ['route' => 'larapilot.dashboard.git', 'active' => ['larapilot.dashboard.git'], 'label' => 'Git', 'icon' => 'git'],
         ],
         'Insights' => [
             ['route' => 'larapilot.dashboard.usage', 'active' => ['larapilot.dashboard.usage'], 'label' => 'Usage', 'icon' => 'usage'],
             ['route' => 'larapilot.dashboard.economics', 'active' => ['larapilot.dashboard.economics*'], 'label' => 'Economics', 'icon' => 'economics'],
+            ['route' => 'larapilot.dashboard.security', 'active' => ['larapilot.dashboard.security*'], 'label' => 'Security', 'icon' => 'shield', 'when' => app(\Larapilot\Services\ConfigService::class)->aikidoEnabled()],
+            ['route' => 'larapilot.dashboard.errors', 'active' => ['larapilot.dashboard.errors*'], 'label' => 'Errors', 'icon' => 'bug', 'when' => app(\Larapilot\Services\ConfigService::class)->boogleEnabled()],
         ],
         'Reference' => [
             ['route' => 'larapilot.api.docs', 'active' => ['larapilot.api.*'], 'label' => 'API', 'icon' => 'api'],
@@ -864,6 +866,11 @@
         }
 
         .markdown th { background: var(--surface-2); font-weight: 600; }
+
+        /* a table scrolls inside its own frame before a word is cut in two */
+        .markdown th, .markdown td { overflow-wrap: normal; word-break: normal; }
+        .markdown td { min-width: 6.5rem; }
+        .markdown :is(th, td) code { white-space: nowrap; }
 
         .markdown .checklist { list-style: none; padding-left: 0; }
         .markdown .checklist label { display: flex; align-items: flex-start; gap: 8px; }

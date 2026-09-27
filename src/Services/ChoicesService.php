@@ -105,6 +105,8 @@ class ChoicesService
             'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
             'api_auth' => $this->config->allowedApiAuthModes(),
             'security_scan' => $this->config->allowedSecurityScanModes(),
+            'aikido' => $this->config->allowedAikidoModes(),
+            'boogle' => $this->config->allowedBoogleModes(),
             'github' => $this->config->allowedGithubModes(),
             'gitlab' => $this->config->allowedGitlabModes(),
             'bitbucket' => $this->config->allowedBitbucketModes(),

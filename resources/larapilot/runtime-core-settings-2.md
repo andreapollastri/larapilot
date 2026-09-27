@@ -80,6 +80,46 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 
 Owned by **Lars** (Security Expert), alongside `dashboard_auth` and `api_auth`. Enable with `php artisan larapilot:settings-set --security-scan=YES`. Setup notes: `.larapilot/integrations.md`.
 
+### Aikido (`settings.aikido`) — opt-in, default OFF
+
+Reads the findings of [Aikido](https://www.aikido.dev/) for this repository. **Aikido scans on its side**, through its connection to the git provider; Larapilot runs no scanner and only reads the result over the public REST API, with `LARAPILOT_AIKIDO_CLIENT_ID` and `LARAPILOT_AIKIDO_CLIENT_SECRET` from `.env`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** Aikido is never called. |
+| **`true` / `YES`** | **`/larapilot-aikido`** downloads the open findings and hands each one to `/larapilot-triage`. **`/larapilot-ship`** runs `larapilot:aikido-issues --gate`: `FAIL` when a finding at `LARAPILOT_AIKIDO_FAIL_ON` (default `high`) or above is open and not waived, `WARN` when only lower ones are. `/larapilot/security` shows them. |
+
+| Command | What it does |
+| --- | --- |
+| `larapilot:aikido-status` | Setting, credentials, repository, last scan, `hints` |
+| `larapilot:aikido-issues [--new] [--severity=] [--report] [--gate]` | The open findings with `state` `new` · `in_backlog` · `waived`, and `gate.verdict` |
+| `larapilot:aikido-link {ids} --spec=US-XXX` · `--waive --reason="…"` · `--forget` | What was decided, kept in `.larapilot/aikido.yaml` (committed: ids and decisions, never a credential) |
+| `larapilot:aikido-scan` | Asks Aikido for a new scan (`repositories:write`) |
+
+A finding `in_backlog` is **not fixed**: it stops the gate until Aikido no longer reports it. Only the user waives a finding, with a reason. Owned by **Lars**. Setup notes: `.larapilot/integrations.md` → **Aikido**.
+
+### Boogle (`settings.boogle`) — opt-in, default OFF
+
+Reads the errors [Boogle](https://boogle.web.ap.it/) recorded for the running application. Boogle is self-hosted: Larapilot reads its admin API with `LARAPILOT_BOOGLE_URL` and `LARAPILOT_BOOGLE_TOKEN` (the token of an admin user) from `.env`.
+
+Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
+
+| Value | Behavior |
+| --- | --- |
+| **`false` / `NO`** | **Default.** Boogle is never called. |
+| **`true` / `YES`** | **`/larapilot-boogle`** downloads the open errors, one entry for each bug, and hands each one to `/larapilot-triage`. **`/larapilot-ship`** names the errors with no decision as a note. `/larapilot/errors` shows them. |
+
+| Command | What it does |
+| --- | --- |
+| `larapilot:boogle-status` | Setting, address, token, project, `hints` |
+| `larapilot:boogle-errors [--new] [--kind=error\|outage] [--limit=] [--report]` | The open errors with `state` `new` · `in_backlog` · `ignored`, and `returned` when one came back after its fix |
+| `larapilot:boogle-link {codes} --spec=US-XXX` · `--ignore --reason="…"` · `--forget` | What was decided, kept in `.larapilot/boogle.yaml` (committed: class, place in the code, decision) |
+| `larapilot:boogle-resolve {codes}` | **Writes to Boogle:** closes the error there. Only when the fix is released and the user says so |
+
+**Personal data stays in Boogle.** The user, the query string, and the payload of a request are never read into a file, a report, or the chat; an address in a message is masked. Never ask for them. Owned by **Sophia**. Setup notes: `.larapilot/integrations.md` → **Boogle**.
+
 ### Remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`) — opt-in, default OFF
 
 Optional remote forge integrations. **Orthogonal to `git_mode`**: when all are OFF, Gitflow push/PR rules behave exactly as before. Enable the forge that matches `origin`.

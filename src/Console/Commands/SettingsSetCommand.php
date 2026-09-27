@@ -26,6 +26,8 @@ class SettingsSetCommand extends LarapilotCommand
                             {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
                             {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
                             {--security-scan= : Run andreapollastri/checkpoint in /larapilot-review + pre-ship: YES or NO (default NO)}
+                            {--aikido= : Read the findings of Aikido for this repository: YES or NO (default NO)}
+                            {--boogle= : Read the errors Boogle recorded for the running application: YES or NO (default NO)}
                             {--github= : GitHub remote via gh CLI: YES or NO (default NO)}
                             {--gitlab= : GitLab remote via glab CLI: YES or NO (default NO)}
                             {--bitbucket= : Bitbucket Cloud remote via API tokens: YES or NO (default NO)}
@@ -127,6 +129,8 @@ class SettingsSetCommand extends LarapilotCommand
             'dashboard-auth' => ['dashboard_auth', $config->allowedDashboardAuthModes()],
             'api-auth' => ['api_auth', $config->allowedApiAuthModes()],
             'security-scan' => ['security_scan', $config->allowedSecurityScanModes()],
+            'aikido' => ['aikido', $config->allowedAikidoModes()],
+            'boogle' => ['boogle', $config->allowedBoogleModes()],
             'github' => ['github', $config->allowedGithubModes()],
             'gitlab' => ['gitlab', $config->allowedGitlabModes()],
             'bitbucket' => ['bitbucket', $config->allowedBitbucketModes()],
@@ -156,7 +160,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --comments, --dashboard-auth, --api-auth, --security-scan, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

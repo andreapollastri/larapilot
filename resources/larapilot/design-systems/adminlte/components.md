@@ -96,6 +96,8 @@ HTML skeleton:
 
 No `app-wrapper` on login — standalone centered card.
 
+Credential fields are **drawn, never built**: no `<input>` and no `<form>` for email, username, or password in a mockup (password managers fire on every preview). Use `<div class="form-control mock-field" role="img" aria-label="…">` with sample text inside the `input-group`, and `<a class="btn btn-primary" role="button">` for the button — see packaged `html/login.html`.
+
 ## Mobile
 
 - Sidebar collapses via PushMenu (`data-lte-toggle="sidebar"`)

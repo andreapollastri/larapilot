@@ -13,25 +13,25 @@
     <div class="fi-login-card">
       <div class="fi-login-card__brand">Filament Demo</div>
       <h1>Sign in</h1>
-      <form action="#" method="post" autocomplete="off" novalidate>
-        <p style="margin:0 0 1rem;font-size:0.75rem;color:rgb(var(--color-gray-500))">Static preview — no credentials are checked.</p>
+      <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
+      <div class="mock-form">
         <div class="fi-field">
-          <label for="signin-email">Work email</label>
-          <input id="signin-email" name="signin-email" type="email" autocomplete="off" inputmode="email" placeholder="you@example.com" data-1p-ignore data-lpignore="true" required>
+          <span class="mock-label">Email</span>
+          <div class="mock-field" role="img" aria-label="Email field, filled in">anna@example.com</div>
         </div>
         <div class="fi-field">
-          <label for="signin-code">Access code</label>
-          <input id="signin-code" name="signin-code" type="text" class="demo-secret-field" autocomplete="off" placeholder="Demo only" data-1p-ignore data-lpignore="true" required>
+          <span class="mock-label">Password</span>
+          <div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
         </div>
         <div class="fi-field fi-checkbox">
-          <input id="remember" name="remember" type="checkbox">
+          <input id="remember" type="checkbox">
           <label for="remember">Remember me</label>
         </div>
-        <button type="submit" class="fi-btn fi-btn--primary">Sign in</button>
+        <a href="dashboard.html" class="fi-btn fi-btn--primary" role="button">Sign in</a>
         <p style="text-align:center;margin-top:1rem;font-size:0.8125rem">
-          <a href="#" style="color:rgb(var(--color-primary-600))">Need help signing in?</a>
+          <a href="#" style="color:rgb(var(--color-primary-600))">Forgot your password?</a>
         </p>
-      </form>
+      </div>
     </div>
   </main>
 </body>

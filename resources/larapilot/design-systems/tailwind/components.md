@@ -46,7 +46,7 @@ Tailwind skeleton:
 | --- | --- |
 | Landing | Blade layout + utility classes |
 | Dashboard | Sidebar + stat grid + responsive table |
-| Login | `min-h-screen grid place-items-center` + card |
+| Login | `min-h-screen grid place-items-center` + card — credential fields **drawn** as a bordered `<div role="img">`, never `<input>` (see `html/login.html`) |
 | Settings | Form sections in stacked cards inside app shell |
 | Modal | Fixed overlay + centered panel (`fixed inset-0 z-50`) |
 

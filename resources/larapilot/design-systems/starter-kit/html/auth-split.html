@@ -17,18 +17,19 @@
     <div class="sk-auth-split__form">
       <div class="sk-auth-card">
         <h1>Log in to your account</h1>
-        <p class="sk-auth-card__desc">Static sign-in preview — fields are placeholders only.</p>
-        <form action="#" method="post" autocomplete="off" novalidate>
+        <p class="sk-auth-card__desc">Enter your email and password below to log in</p>
+        <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
+        <div class="mock-form">
           <div class="sk-field">
-            <label for="signin-email">Work email</label>
-            <input id="signin-email" name="signin-email" type="email" class="sk-input" autocomplete="off" inputmode="email" placeholder="you@example.com" data-1p-ignore data-lpignore="true" required>
+            <span class="mock-label">Email address</span>
+            <div class="sk-input mock-field" role="img" aria-label="Email field, filled in">jane@example.com</div>
           </div>
           <div class="sk-field">
-            <label for="signin-code">Access code</label>
-            <input id="signin-code" name="signin-code" type="text" class="sk-input demo-secret-field" autocomplete="off" placeholder="Demo only" data-1p-ignore data-lpignore="true" required>
+            <span class="mock-label">Password</span>
+            <div class="sk-input mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
           </div>
-          <button type="submit" class="sk-btn sk-btn--primary sk-btn--block">Log in</button>
-        </form>
+          <a href="dashboard.html" class="sk-btn sk-btn--primary sk-btn--block" role="button">Log in</a>
+        </div>
       </div>
     </div>
   </div>

@@ -181,7 +181,20 @@ Then continue with mockup work (Rules below). Sections **Elise — Filament / St
 - Mockups browsable at `/mockups/{spec}` in local/dev/staging only
 - Elise speaks in character; **accessibility is mandatory** — not a polish pass at the end
 - **Mobile First is mandatory** — design smallest viewport first; desktop is progressive enhancement, never neglected
-- **Sign-in mockups are static only** — never use `type="password"`, `autocomplete="username"` / `current-password`, or labels/names/ids like `password`, `username`, or `user`. Use **Work email** + **Access code** (`type="text"`, class `.demo-secret-field`, form `autocomplete="off"`, optional `data-1p-ignore` / `data-lpignore="true"`). Copy must say the form is a preview. Alex implements real Fortify/auth fields at build time — mockups must not trigger browser password managers.
+- **No credential fields, ever** — see **Sign-in screens** below. A mockup never contains an `<input>` for a username, a login email, or a password.
+
+### Sign-in screens — draw the fields, never build them (hard rule)
+
+A mockup is a **picture** of the screen, not a working form. Password managers (1Password, Bitwarden, iCloud Keychain, the browser's own) scan every `<input>` they find, and `/larapilot/design` renders the same screen several times at once (gallery thumbnail, viewer, style comparison): one real sign-in field makes them pop up, autofill, and offer to save on every preview.
+
+1. **Never write an `<input>`, `<textarea>`, or `<form>` for credentials**: username, login email, password, confirm password, PIN, one-time code, access code. This covers login, register, forgot / reset password, two-factor, lock screen, the change-password block in settings, and the password fields of a "create user" admin form.
+2. **No workaround counts.** `type="text"` masked with dots, `autocomplete="off"`, `data-1p-ignore`, `data-lpignore`, a renamed `id` or label ("Access code", "Work email") — password managers guess from the layout and ignore all of them. Do not use them and do not rely on them.
+3. **Draw the field instead**: a `<div>` styled like the design system's input, holding sample text (`jane@example.com`, `••••••••••`), with `role="img"` and `aria-label="Password field, filled in"`. Its visible label is a `<span>`, never `<label for>`.
+4. **The button is a link** to the next screen — `<a href="dashboard.html" role="button" class="…primary button…">Sign in</a>` — so the flow stays clickable in the viewer.
+5. **States are drawn too**: error, empty, and focus are separate screens (`login-error.html`) or blocks side by side, never scripted.
+6. Every other control stays real: search, name, amount, select, the "Remember me" checkbox.
+
+Copy the packaged sample, `{paths.design_systems}/{folder}/html/login.html`. Filament and Starter Kit ship the classes in `tokens.css`: `.mock-label`, `.mock-field`, `.mock-field--secret`, `.mock-field--empty`. Record in the mockup README that credential fields are drawn; Alex builds the real Fortify / Filament fields at implementation time.
 
 ### Elise — mobile first & responsive
 

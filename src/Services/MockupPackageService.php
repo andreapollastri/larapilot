@@ -58,7 +58,9 @@ class MockupPackageService
 
             $code = (string) ($item['code'] ?? '');
             $safeCode = $this->escape($code);
-            $itemTitle = $this->escape((string) ($item['title'] ?? $code));
+            $itemTitle = trim((string) ($item['title'] ?? ''));
+            // A folder that is not a spec has no title of its own: say its name once.
+            $heading = $safeCode.($itemTitle !== '' && $itemTitle !== $code ? ' — '.$this->escape($itemTitle) : '');
             $styleGroups = is_array($item['styles'] ?? null) ? $item['styles'] : [];
             $screens = is_array($item['screens'] ?? null) ? $item['screens'] : [];
             $entry = $item['entry'] ?? null;
@@ -111,7 +113,7 @@ class MockupPackageService
             <article class="card">
                 <div class="num">{$number}</div>
                 <div class="body">
-                    <h2>{$safeCode} — {$itemTitle}</h2>
+                    <h2>{$heading}</h2>
                     <p class="count">{$count}</p>
                     <div class="screens">{$links}</div>
                 </div>

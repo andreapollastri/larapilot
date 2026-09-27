@@ -83,7 +83,8 @@ Icon-only actions need `aria-label` in mockup HTML and README.
 
 - Centered card (~24rem wide) on full-viewport gray background.
 - Logo + "Sign in" heading.
-- Email + password fields; "Remember me" checkbox; primary **Sign in** full-width button.
+- Email + password fields, **drawn, never built** — no `<input>` and no `<form>` for credentials in a mockup (password managers fire on every preview): `<span class="mock-label">` + `<div class="mock-field" role="img" aria-label="…">` with sample text, `.mock-field--secret` for the password. See packaged `html/login.html`.
+- "Remember me" checkbox; primary **Sign in** full-width button written as `<a role="button">` to the next screen.
 - Optional: forgot password link below form.
 
 ## Responsive (admin)

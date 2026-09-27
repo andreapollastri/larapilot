@@ -440,6 +440,8 @@ it('persists project settings via settings-set', function (): void {
         'dashboard_auth' => 'NO',
         'api_auth' => 'YES',
         'security_scan' => 'YES',
+        'aikido' => 'NO',
+        'boogle' => 'NO',
         'github' => 'YES',
         'gitlab' => 'YES',
         'bitbucket' => 'NO',

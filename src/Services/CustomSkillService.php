@@ -330,7 +330,7 @@ class CustomSkillService
     /**
      * @return array<string, string>
      */
-    protected function parseFrontMatter(string $content): array
+    public function parseFrontMatter(string $content): array
     {
         if (! str_starts_with(trim($content), '---')) {
             return [];
@@ -353,7 +353,7 @@ class CustomSkillService
         return $meta;
     }
 
-    protected function parseSummary(string $content): ?string
+    public function parseSummary(string $content): ?string
     {
         $body = $this->body($content);
 
@@ -386,7 +386,7 @@ class CustomSkillService
         return $summary !== '' ? $summary : null;
     }
 
-    protected function parseTitle(string $content): ?string
+    public function parseTitle(string $content): ?string
     {
         $body = $this->body($content);
 
@@ -399,7 +399,7 @@ class CustomSkillService
         return $title !== '' ? $title : null;
     }
 
-    protected function body(string $content): string
+    public function body(string $content): string
     {
         if (preg_match('/^---\s*\r?\n.*?\r?\n---\s*\r?\n(.*)$/s', ltrim($content), $matches) === 1) {
             return $matches[1];

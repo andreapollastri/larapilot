@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Markdown;
 use Larapilot\Support\MimeTypes;
+use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -17,6 +18,13 @@ use SplFileInfo;
 /**
  * Browse and manage the material folders the skills read from `.larapilot/`:
  * brand, client materials, design systems, legacy snapshots, custom skills.
+ * A sixth root, `project`, shows the application itself: read only, and
+ * without the folders whose name starts with a dot (`.git`, `.larapilot`,
+ * `.github`, the editor's own). Files that start with a dot are shown.
+ *
+ * A file that holds credentials — `.env`, `auth.json`, a key — is shown in
+ * every root with its values replaced by asterisks: the names of the keys
+ * can be read, what they hold cannot, on screen or in a download.
  *
  * Every path is relative to one of those roots. The parent directory is
  * resolved with realpath and checked against the root before anything is
@@ -50,6 +58,51 @@ class FileManagerService
     protected const PACKAGED_DESIGN_SYSTEMS = ['filament', 'starter-kit', 'bootstrap-5', 'tailwind', 'adminlte'];
 
     /**
+     * Listed in the project root but never walked: too large to count or
+     * to unfold in the tree. Opening one lists what is inside.
+     *
+     * @var list<string>
+     */
+    protected const PROJECT_HEAVY = ['vendor', 'node_modules'];
+
+    /**
+     * What stands in for every value of a file that holds credentials.
+     */
+    public const MASK = '*****************';
+
+    /**
+     * Files of `name value` pairs that hold credentials, by the way each
+     * one writes its pairs.
+     *
+     * @var array<string, string>
+     */
+    protected const SECRET_NAMES = [
+        'auth.json' => 'json',
+        '.npmrc' => 'pairs',
+        '.yarnrc' => 'pairs',
+        '.netrc' => 'netrc',
+        '.pgpass' => 'pgpass',
+        'id_rsa' => 'key',
+        'id_dsa' => 'key',
+        'id_ecdsa' => 'key',
+        'id_ed25519' => 'key',
+    ];
+
+    /**
+     * Keys and certificates carrying their key: one secret, no names in it.
+     *
+     * @var list<string>
+     */
+    protected const KEY_EXTENSIONS = ['pem', 'key', 'p12', 'pfx', 'jks', 'keystore'];
+
+    /**
+     * Databases: the data of the application, neither shown nor served.
+     *
+     * @var list<string>
+     */
+    protected const DATA_EXTENSIONS = ['sqlite', 'sqlite3', 'db'];
+
+    /**
      * @var list<string>
      */
     protected const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico', 'bmp'];
@@ -68,6 +121,8 @@ class FileManagerService
         'sh', 'bash', 'zsh', 'env', 'ini', 'conf', 'toml', 'lock', 'gitignore', 'editorconfig', 'htaccess',
     ];
 
+    public const PROJECT = 'project';
+
     protected const TREE_LIMIT = 400;
 
     protected const TREE_DEPTH = 12;
@@ -83,7 +138,7 @@ class FileManagerService
     ) {}
 
     /**
-     * @return array<string, array{key: string, label: string, description: string, used_by: string, path: string, absolute: string}>
+     * @return array<string, array{key: string, label: string, description: string, used_by: string, path: string, absolute: string, read_only: bool}>
      */
     public function roots(): array
     {
@@ -135,8 +190,19 @@ class FileManagerService
                 'used_by' => $definition['used_by'],
                 'path' => rtrim(str_replace('\\', '/', $this->config->relativePath($absolute)), '/').'/',
                 'absolute' => $absolute,
+                'read_only' => false,
             ];
         }
+
+        $roots[self::PROJECT] = [
+            'key' => self::PROJECT,
+            'label' => 'Project',
+            'description' => 'The Laravel application itself: code, config, routes, and tests. Folders that start with a dot (.git, .larapilot) are left out.',
+            'used_by' => 'Plan, implement, and review',
+            'path' => './',
+            'absolute' => rtrim($this->config->projectRoot(), '/\\'),
+            'read_only' => true,
+        ];
 
         return $roots;
     }
@@ -150,7 +216,17 @@ class FileManagerService
     }
 
     /**
-     * @return array{key: string, label: string, description: string, used_by: string, path: string, absolute: string}|null
+     * The roots that take uploads, new folders, renames, and deletes.
+     *
+     * @return list<string>
+     */
+    public function writableRootKeys(): array
+    {
+        return array_keys(array_filter($this->roots(), static fn (array $root): bool => ! $root['read_only']));
+    }
+
+    /**
+     * @return array{key: string, label: string, description: string, used_by: string, path: string, absolute: string, read_only: bool}|null
      */
     public function root(string $key): ?array
     {
@@ -158,7 +234,7 @@ class FileManagerService
     }
 
     /**
-     * The five folders with what they hold, for the landing page.
+     * The folders with what they hold, for the landing page.
      *
      * @return list<array<string, mixed>>
      */
@@ -167,7 +243,11 @@ class FileManagerService
         $summary = [];
 
         foreach ($this->roots() as $root) {
-            $summary[] = array_merge($root, $this->measure($root['absolute']));
+            $isProject = $root['key'] === self::PROJECT;
+
+            $summary[] = array_merge($root, $this->measure($root['absolute'], $isProject), [
+                'note' => $isProject ? 'Counted without '.implode('/, ', self::PROJECT_HEAVY).'/' : null,
+            ]);
         }
 
         return $summary;
@@ -260,7 +340,41 @@ class FileManagerService
 
         $absolute = $this->locate($root, $relative);
 
-        return $absolute !== null && is_file($absolute) ? $absolute : null;
+        // The bytes of a file that holds secrets never leave as they are:
+        // masked() is the only way its content goes out.
+        if ($absolute === null || ! is_file($absolute) || $this->secretKind(basename($relative)) !== null) {
+            return null;
+        }
+
+        return $absolute;
+    }
+
+    /**
+     * The content of a file that holds credentials, every value replaced
+     * by asterisks. Null when the file is not one of those, or cannot be
+     * shown even so (a database).
+     */
+    public function masked(string $rootKey, string $path): ?string
+    {
+        $root = $this->root($rootKey);
+
+        if ($root === null) {
+            return null;
+        }
+
+        try {
+            $relative = $this->normalize($path);
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+
+        $absolute = $relative === '' ? null : $this->locate($root, $relative);
+
+        if ($absolute === null || ! is_file($absolute)) {
+            return null;
+        }
+
+        return $this->mask($absolute);
     }
 
     /**
@@ -636,7 +750,10 @@ class FileManagerService
     }
 
     /**
-     * @return array{key: string, label: string, description: string, used_by: string, path: string, absolute: string}
+     * The root of a write. A read-only root refuses here, so no write can
+     * reach it whatever route or caller asked.
+     *
+     * @return array{key: string, label: string, description: string, used_by: string, path: string, absolute: string, read_only: bool}
      */
     protected function requireRoot(string $key): array
     {
@@ -644,6 +761,10 @@ class FileManagerService
 
         if ($root === null) {
             throw new InvalidArgumentException('Unknown folder.');
+        }
+
+        if ($root['read_only']) {
+            throw new InvalidArgumentException('“'.$root['label'].'” is read only here. Change the code in your editor.');
         }
 
         $this->ensureRoot($root);
@@ -656,7 +777,7 @@ class FileManagerService
      * confined to the root; the leaf keeps its own name so a link is seen as
      * a link.
      *
-     * @param  array{absolute: string}  $root
+     * @param  array{key?: string, absolute: string}  $root
      */
     protected function locate(array $root, string $relative): ?string
     {
@@ -670,9 +791,20 @@ class FileManagerService
             return $base;
         }
 
+        if ($this->isExcluded($root, $relative)) {
+            return null;
+        }
+
         $parent = realpath($base.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $this->parentOf($relative)));
 
         if ($parent === false || ! $this->inside($base, $parent)) {
+            return null;
+        }
+
+        // A folder linked from elsewhere in the project may resolve into
+        // what is left out: the resolved place is tested as well, and every
+        // part of it is a folder.
+        if ($parent !== $base && $this->isExcluded($root, str_replace(DIRECTORY_SEPARATOR, '/', substr($parent, strlen($base) + 1)).'/-')) {
             return null;
         }
 
@@ -684,6 +816,10 @@ class FileManagerService
 
         if (is_link($entry)) {
             // A link is listed but never opened: its target may sit anywhere.
+            return null;
+        }
+
+        if ($this->isDotFolder($root, $entry)) {
             return null;
         }
 
@@ -736,6 +872,181 @@ class FileManagerService
     }
 
     /**
+     * @param  array{key?: string}  $root
+     */
+    protected function isProject(array $root): bool
+    {
+        return ($root['key'] ?? '') === self::PROJECT;
+    }
+
+    /**
+     * Whether a path of the project root runs through a folder whose name
+     * starts with a dot. The last segment is left to isDotFolder(): only
+     * the disk says whether `.env` is a file or a folder.
+     *
+     * @param  array{key?: string}  $root
+     */
+    protected function isExcluded(array $root, string $relative): bool
+    {
+        if (! $this->isProject($root) || $relative === '') {
+            return false;
+        }
+
+        $folders = explode('/', $relative);
+        array_pop($folders);
+
+        foreach ($folders as $folder) {
+            if (str_starts_with($folder, '.')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * A folder of the project root whose name starts with a dot: the
+     * repository, Larapilot's own state, the settings of an editor. A file
+     * that starts with a dot is a project file like any other.
+     *
+     * @param  array{key?: string}  $root
+     */
+    protected function isDotFolder(array $root, string $absolute): bool
+    {
+        return $this->isProject($root)
+            && str_starts_with(basename($absolute), '.')
+            && is_dir($absolute);
+    }
+
+    /**
+     * Whether an entry of a directory is left out of its listing.
+     *
+     * @param  array{key?: string}  $root
+     */
+    protected function isSkipped(array $root, string $directory, string $name): bool
+    {
+        return $name === '.'
+            || $name === '..'
+            || in_array($name, self::HIDDEN, true)
+            || $this->isDotFolder($root, $directory.DIRECTORY_SEPARATOR.$name);
+    }
+
+    /**
+     * How a file holds its secrets, going by its name: `env`, `json`,
+     * `pairs`, `netrc`, `pgpass` for named values, `key` for a key, `data`
+     * for a database. Null for every other file. A template of an env file
+     * (`.env.example`) holds no secret.
+     */
+    protected function secretKind(string $name): ?string
+    {
+        $name = strtolower($name);
+
+        if (preg_match('/^\.env(\..+)?$/', $name) === 1) {
+            return preg_match('/\.(example|sample|dist|template)$/', $name) === 1 ? null : 'env';
+        }
+
+        if (isset(self::SECRET_NAMES[$name])) {
+            return self::SECRET_NAMES[$name];
+        }
+
+        $extension = pathinfo($name, PATHINFO_EXTENSION);
+
+        return match (true) {
+            in_array($extension, self::KEY_EXTENSIONS, true) => 'key',
+            in_array($extension, self::DATA_EXTENSIONS, true) => 'data',
+            default => null,
+        };
+    }
+
+    /**
+     * The content of a file that holds credentials with every value
+     * replaced by the mask. Whatever is not recognised as the name of a
+     * value is masked too: a line is shown only when it is known to be
+     * harmless.
+     */
+    protected function mask(string $absolute): ?string
+    {
+        $kind = $this->secretKind(basename($absolute));
+
+        if ($kind === null || $kind === 'data') {
+            return null;
+        }
+
+        if ($kind === 'key') {
+            return self::MASK."\n";
+        }
+
+        $handle = @fopen($absolute, 'rb');
+
+        if ($handle === false) {
+            return null;
+        }
+
+        $content = (string) fread($handle, self::PREVIEW_BYTES);
+        fclose($handle);
+
+        if (str_contains($content, "\0") || ! mb_check_encoding($content, 'UTF-8')) {
+            return self::MASK."\n";
+        }
+
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+        if ($kind === 'json') {
+            $decoded = json_decode($content, true);
+
+            if (is_array($decoded)) {
+                return json_encode($this->maskValues($decoded), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n";
+            }
+        }
+
+        $lines = array_map(fn (string $line): string => $this->maskLine($line, $kind), explode("\n", $content));
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $values
+     * @return array<array-key, mixed>
+     */
+    protected function maskValues(array $values): array
+    {
+        foreach ($values as $key => $value) {
+            $values[$key] = is_array($value) && $value !== [] ? $this->maskValues($value) : self::MASK;
+        }
+
+        return $values;
+    }
+
+    protected function maskLine(string $line, string $kind): string
+    {
+        $trimmed = trim($line);
+
+        if ($trimmed === '') {
+            return $line;
+        }
+
+        // A comment says what a value is for; a value may hide in one that
+        // comments a line out, so what follows a `=` is masked there too.
+        if (preg_match('/^\s*[#;]/', $line) === 1) {
+            return (string) preg_replace('/^(\s*[#;]\s*[^=\s]+\s*=).*$/', '$1'.self::MASK, $line);
+        }
+
+        return match ($kind) {
+            'netrc' => (string) preg_replace('/\b(login|password|account)\s+\S+/i', '$1 '.self::MASK, preg_match('/\b(machine|default|login|password|account)\b/i', $line) === 1 ? $line : self::MASK),
+            'pgpass' => preg_match('/^((?:[^:\\\\]|\\\\.)*:(?:[^:\\\\]|\\\\.)*:(?:[^:\\\\]|\\\\.)*:)/', $line, $matches) === 1
+                ? $matches[1].self::MASK
+                : self::MASK,
+            'json' => preg_match('/^(\s*"(?:[^"\\\\]|\\\\.)*"\s*:\s*)(.*?)(,?)\s*$/', $line, $matches) === 1
+                ? $matches[1].(in_array(trim($matches[2]), ['{', '['], true) ? $matches[2] : '"'.self::MASK.'"'.$matches[3])
+                : (preg_match('/^\s*[\[\]{}],?\s*$/', $line) === 1 ? $line : self::MASK),
+            default => preg_match('/^(\s*(?:export\s+)?[^=\s]+\s*=)/', $line, $matches) === 1
+                ? $matches[1].self::MASK
+                // the rest of a value written over several lines
+                : self::MASK,
+        };
+    }
+
+    /**
      * @param  array{key: string, absolute: string}  $root
      * @return list<array<string, mixed>>
      */
@@ -750,7 +1061,7 @@ class FileManagerService
         $entries = [];
 
         foreach (scandir($directory) ?: [] as $name) {
-            if ($name === '.' || $name === '..' || in_array($name, self::HIDDEN, true)) {
+            if ($this->isSkipped($root, $directory, $name)) {
                 continue;
             }
 
@@ -780,16 +1091,21 @@ class FileManagerService
         $extension = $isDirectory ? '' : strtolower(pathinfo($name, PATHINFO_EXTENSION));
         $modified = @filemtime($absolute);
 
+        $secret = $isDirectory || $isLink ? null : $this->secretKind($name);
+
         return [
             'name' => $name,
             'path' => $relative,
             'type' => $isDirectory ? 'directory' : 'file',
             'link' => $isLink,
+            // masked: shown with its values hidden. sealed: not shown at all.
+            'masked' => $secret !== null && $secret !== 'data',
+            'sealed' => $secret === 'data',
             'extension' => $extension,
-            'kind' => $isLink ? 'link' : ($isDirectory ? 'directory' : $this->kind($name)),
+            'kind' => $isLink ? 'link' : ($isDirectory ? 'directory' : ($secret !== null ? 'secret' : $this->kind($name))),
             'size' => $isDirectory || $isLink ? 0 : (int) @filesize($absolute),
             'size_label' => $isDirectory || $isLink ? '' : $this->formatBytes((int) @filesize($absolute)),
-            'items' => $isDirectory ? $this->countChildren($absolute) : 0,
+            'items' => $isDirectory ? $this->countChildren($root, $absolute) : 0,
             'modified' => $modified === false ? null : $modified,
             'packaged' => $root['key'] === 'design-systems'
                 && ! str_contains($relative, '/')
@@ -798,12 +1114,15 @@ class FileManagerService
         ];
     }
 
-    protected function countChildren(string $directory): int
+    /**
+     * @param  array{key?: string}  $root
+     */
+    protected function countChildren(array $root, string $directory): int
     {
         $count = 0;
 
         foreach (scandir($directory) ?: [] as $name) {
-            if ($name !== '.' && $name !== '..' && ! in_array($name, self::HIDDEN, true)) {
+            if (! $this->isSkipped($root, $directory, $name)) {
                 $count++;
             }
         }
@@ -826,12 +1145,22 @@ class FileManagerService
     }
 
     /**
-     * @return array{kind: string, html: string|null, text: string|null, truncated: bool}
+     * @return array{kind: string, html: string|null, text: string|null, truncated: bool, masked: bool}
      */
     protected function preview(string $absolute): array
     {
+        $secret = $this->secretKind(basename($absolute));
+
+        if ($secret !== null) {
+            $masked = $this->mask($absolute);
+
+            return $masked === null
+                ? ['kind' => 'sealed', 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false]
+                : ['kind' => 'text', 'html' => null, 'text' => $masked, 'truncated' => (int) @filesize($absolute) > self::PREVIEW_BYTES, 'masked' => true];
+        }
+
         $kind = $this->kind(basename($absolute));
-        $empty = ['kind' => $kind, 'html' => null, 'text' => null, 'truncated' => false];
+        $empty = ['kind' => $kind, 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false];
 
         if (in_array($kind, ['image', 'pdf', 'archive'], true)) {
             return $empty;
@@ -859,10 +1188,10 @@ class FileManagerService
         }
 
         if ($kind === 'markdown' && ! $truncated) {
-            return ['kind' => 'markdown', 'html' => Markdown::toHtml($content), 'text' => $content, 'truncated' => false];
+            return ['kind' => 'markdown', 'html' => Markdown::toHtml($content), 'text' => $content, 'truncated' => false, 'masked' => false];
         }
 
-        return ['kind' => 'text', 'html' => null, 'text' => $content, 'truncated' => $truncated];
+        return ['kind' => 'text', 'html' => null, 'text' => $content, 'truncated' => $truncated, 'masked' => false];
     }
 
     /**
@@ -885,7 +1214,11 @@ class FileManagerService
      * Folder tree of a root: directories only, with the branch leading to
      * the open folder marked so the page can unfold it.
      *
-     * @param  array{absolute: string}  $root
+     * A material folder is unfolded whole. The project is not: a whole
+     * application would spend the tree on `vendor/`, so only the folders
+     * leading to the open one are unfolded there.
+     *
+     * @param  array{key?: string, absolute: string}  $root
      * @return array{nodes: list<array<string, mixed>>, truncated: bool}
      */
     protected function tree(array $root, string $active): array
@@ -897,17 +1230,19 @@ class FileManagerService
         }
 
         $budget = self::TREE_LIMIT;
-        $nodes = $this->branch($base, '', $active, 1, $budget);
+        $nodes = $this->branch($root, $base, '', $active, 1, $budget);
 
         return ['nodes' => $nodes, 'truncated' => $budget <= 0];
     }
 
     /**
+     * @param  array{key?: string, absolute: string}  $root
      * @return list<array<string, mixed>>
      */
-    protected function branch(string $directory, string $relative, string $active, int $depth, int &$budget): array
+    protected function branch(array $root, string $directory, string $relative, string $active, int $depth, int &$budget): array
     {
         $names = [];
+        $trailOnly = $this->isProject($root);
 
         foreach (scandir($directory) ?: [] as $name) {
             if ($name === '.' || $name === '..') {
@@ -916,7 +1251,7 @@ class FileManagerService
 
             $path = $directory.DIRECTORY_SEPARATOR.$name;
 
-            if (is_dir($path) && ! is_link($path)) {
+            if (is_dir($path) && ! is_link($path) && ! $this->isDotFolder($root, $path)) {
                 $names[] = $name;
             }
         }
@@ -932,14 +1267,15 @@ class FileManagerService
             $budget--;
             $path = $this->join($relative, $name);
             $onTrail = $active === $path || str_starts_with($active.'/', $path.'/');
+            $unfold = $depth < self::TREE_DEPTH && (! $trailOnly || $onTrail);
 
             $nodes[] = [
                 'name' => $name,
                 'path' => $path,
                 'active' => $active === $path,
                 'open' => $onTrail,
-                'children' => $depth < self::TREE_DEPTH
-                    ? $this->branch($directory.DIRECTORY_SEPARATOR.$name, $path, $active, $depth + 1, $budget)
+                'children' => $unfold
+                    ? $this->branch($root, $directory.DIRECTORY_SEPARATOR.$name, $path, $active, $depth + 1, $budget)
                     : [],
             ];
         }
@@ -950,7 +1286,7 @@ class FileManagerService
     /**
      * @return array{exists: bool, files: int, folders: int, bytes: int, size_label: string, truncated: bool}
      */
-    protected function measure(string $directory): array
+    protected function measure(string $directory, bool $project = false): array
     {
         $result = ['exists' => is_dir($directory), 'files' => 0, 'folders' => 0, 'bytes' => 0, 'size_label' => '0 B', 'truncated' => false];
 
@@ -958,8 +1294,23 @@ class FileManagerService
             return $result;
         }
 
+        $walk = new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS);
+
+        if ($project) {
+            // Skipped before they are entered, so their size costs nothing.
+            $walk = new RecursiveCallbackFilterIterator($walk, static function (SplFileInfo $item): bool {
+                $name = $item->getFilename();
+
+                if (! $item->isDir() || $item->isLink()) {
+                    return true;
+                }
+
+                return ! str_starts_with($name, '.') && ! in_array($name, self::PROJECT_HEAVY, true);
+            });
+        }
+
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+            $walk,
             RecursiveIteratorIterator::SELF_FIRST,
             RecursiveIteratorIterator::CATCH_GET_CHILD
         );

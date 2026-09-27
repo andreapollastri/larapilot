@@ -397,6 +397,89 @@ Independent of `api_auth`, always on:
 - **Pagination** — `GET /specs` takes `?page` (1-based) and `?per_page` (1-200, default 50); the body carries `total`, `page`, `per_page`, `total_pages`.
 - **Security headers** — every dashboard and API response carries `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`; dashboard pages also send `X-Frame-Options: DENY`.
 
+## Aikido (`settings.aikido`)
+
+Brings the findings of [Aikido](https://www.aikido.dev/) into the workflow. OFF by default. **Aikido scans the repository on its side**; Larapilot runs no scanner and installs nothing: it reads what Aikido found, over the public REST API.
+
+### Setup
+
+1. Connect the repository in Aikido, through the git provider (GitHub, GitLab, Bitbucket, Azure DevOps). Larapilot cannot do this step.
+2. In Aikido, **Settings → Integrations → Public REST API**, create a client. Reading needs the `issues:read` and `repositories:read` scopes; asking for a scan needs `repositories:write`.
+3. Put the credentials in `.env` — never in `.larapilot/`, which is committed:
+
+```dotenv
+LARAPILOT_AIKIDO_CLIENT_ID=
+LARAPILOT_AIKIDO_CLIENT_SECRET=
+LARAPILOT_AIKIDO_REGION=eu            # eu (default) · us · au · me
+LARAPILOT_AIKIDO_REPOSITORY=          # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_FAIL_ON=high         # critical · high · medium · low · none
+```
+
+4. Turn it on and check:
+
+```bash
+php artisan larapilot:settings-set --aikido=YES
+php artisan larapilot:aikido-status
+```
+
+### When ON
+
+- `/larapilot-aikido` downloads the open findings, shows the new ones, and hands each one the user picks to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:aikido-link`.
+- `/larapilot-ship` runs `php artisan larapilot:aikido-issues --gate --report`: `FAIL` is a release blocker, `WARN` a note.
+- `/larapilot/security` shows the findings, what was decided about each, and the verdict of the gate.
+- `{paths.security}/aikido.md` is the report: every open finding with its decision.
+- `.larapilot/aikido.yaml` keeps the decisions. Commit it, so a finding handed to the backlog on one machine is not handed over again on another.
+
+### What it never does
+
+- It never calls Aikido while the setting is `NO`.
+- It never writes a credential or an access token to a file of the project: the token lives in the cache for as long as Aikido says it lasts.
+- It never marks a finding as fixed. A finding leaves the list when Aikido no longer reports it — after the fix is merged and scanned.
+- It never waives a finding. Only the user does, with a reason of at least a sentence.
+
+The address of the token endpoint is derived from the region (`https://app.{region}.aikido.dev/api/oauth/token`). Set `LARAPILOT_AIKIDO_BASE_URL` when the workspace is reached through another address.
+
+## Boogle (`settings.boogle`)
+
+Brings the errors of [Boogle](https://boogle.web.ap.it/) into the workflow. OFF by default. Boogle is the exception tracker and uptime monitor the team hosts; the application sends its exceptions there with `andreapollastri/boogle-client`. Larapilot reads them back over the admin API.
+
+### Setup
+
+1. Have the application send its exceptions to Boogle: `composer require andreapollastri/boogle-client`, then `php artisan boogle:install`. Larapilot does not do this step.
+2. In Boogle, as an **admin** user, create a token in the profile under **API tokens**. The admin API answers to admin users only.
+3. Put the address and the token in `.env` — never in `.larapilot/`, which is committed:
+
+```dotenv
+LARAPILOT_BOOGLE_URL=https://boogle.example.com   # empty = taken from BOOGLE_SERVER
+LARAPILOT_BOOGLE_TOKEN=
+LARAPILOT_BOOGLE_PROJECT=                          # id or title in Boogle; empty = found from BOOGLE_PROJECT_KEY, then APP_URL
+```
+
+4. Turn it on and check:
+
+```bash
+php artisan larapilot:settings-set --boogle=YES
+php artisan larapilot:boogle-status
+```
+
+### When ON
+
+- `/larapilot-boogle` downloads the open errors (`OPEN` and `READ` in Boogle), puts together the ones that are one bug — the same exception at the same line — and hands each bug the user picks to `/larapilot-triage`. The spec that fixes it is recorded with `larapilot:boogle-link`.
+- `/larapilot/errors` shows the bugs, how many times each was thrown, day by day, and what was decided.
+- `{paths.support}/boogle.md` is the report: every open error with its decision.
+- `.larapilot/boogle.yaml` keeps the decisions, under what the occurrences of one bug share. Commit it, so a bug handed to the backlog on one machine is not handed over again on another, nor the next time it is thrown.
+- `larapilot:boogle-resolve` closes an error in Boogle as `FIXED`, with the spec that fixed it in the history. An error closed this way and thrown again is shown as **back after the fix**.
+
+### What it never does
+
+- It never calls Boogle while the setting is `NO`.
+- It never reads the user, the query string, or the payload of a request into a file, a report, the cache, or the chat. It keeps the exception, the message with addresses masked, the file and line, the method and the path.
+- It never keeps the key and the token of a project, which Boogle sends with the list of projects: they are compared with `BOOGLE_PROJECT_KEY` and dropped.
+- It never writes to Boogle by itself: `boogle-resolve` runs when the user asks, and is not allowed through the MCP tool.
+- It never leaves an error as it is. Only the user does, with a reason of at least a sentence.
+
+The token reads **every project** of that Boogle, because Boogle gives tokens to users and not to projects. Keep it in `.env` and in the secrets of the CI.
+
 ## Security scan (`settings.security_scan`)
 
 Folds a **static Laravel security scan** into `/larapilot-review` and the pre-ship gate. OFF by default. Larapilot does **not** bundle a scanner and never runs one on its own — the scan happens only when this setting is `YES` **and** the optional dev package is installed.

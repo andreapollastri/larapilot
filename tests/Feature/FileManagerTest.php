@@ -49,7 +49,12 @@ it('lists the five material folders with what each one is for', function (): voi
         ->assertSee('.larapilot/legacy/', false)
         ->assertSee('Snapshots of the old system to port or migrate.', false)
         ->assertSee('.larapilot/skills/', false)
-        ->assertSee('Your custom skills, one folder per slash command.', false);
+        ->assertSee('Your custom skills, one folder per slash command.', false)
+        // and the project itself, to read
+        ->assertSee('/larapilot/files/project', false)
+        ->assertSee('The Laravel application itself: code, config, routes, and tests. Folders that start with a dot (.git, .larapilot) are left out.', false)
+        ->assertSee('Read only', false)
+        ->assertSee('Counted without vendor/, node_modules/', false);
 
     $this->get('/larapilot')
         ->assertOk()
@@ -490,4 +495,496 @@ it('shows a folder that does not exist yet as empty, without creating it', funct
     ], ['Accept' => 'application/json'])->assertOk();
 
     expect($brand.'/logo.svg')->toBeFile();
+});
+
+/**
+ * A scratch folder at the top of the project, gone when the test ends: the
+ * application the tests run in is shared and lives under vendor/.
+ *
+ * @param  callable(string $probe): void  $callback
+ */
+function withProjectProbe(callable $callback): void
+{
+    $probe = base_path('lp-probe');
+
+    if (is_dir($probe)) {
+        shell_exec('rm -rf '.escapeshellarg($probe));
+    }
+
+    mkdir($probe.'/deep/deeper', 0755, true);
+
+    try {
+        $callback($probe);
+    } finally {
+        shell_exec('rm -rf '.escapeshellarg($probe));
+    }
+}
+
+it('browses the project without the folders that start with a dot', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        file_put_contents($probe.'/notes.md', "# Notes\n\nFrom the project.");
+        file_put_contents($probe.'/.editorconfig', "root = true\n");
+        file_put_contents($probe.'/.gitignore', "/vendor\n");
+
+        foreach (['.git', '.github/workflows', '.idea', '.cache/deep'] as $folder) {
+            mkdir($probe.'/'.$folder, 0755, true);
+            file_put_contents($probe.'/'.$folder.'/inside.txt', 'hidden with its folder');
+        }
+
+        expect(is_dir(base_path('.larapilot')))->toBeTrue()
+            ->and(is_dir(base_path('.git')))->toBeTrue();
+
+        $top = $this->get('/larapilot/files/project')
+            ->assertOk()
+            ->assertSee('Project', false)
+            ->assertSee('Read only', false)
+            ->assertSee('/larapilot/files/project/lp-probe', false)
+            ->assertSee('/larapilot/files/project/artisan', false)
+            // a file that starts with a dot is a project file like any other
+            ->assertSee('/larapilot/files/project/.env.example', false)
+            ->assertSee('/larapilot/files/project/.gitignore', false)
+            // nothing on the page writes
+            ->assertDontSee('data-upload-pick="files"', false)
+            ->assertDontSee('class="dropzone"', false)
+            ->assertDontSee('enctype="multipart/form-data"', false)
+            ->assertDontSee('id="rename-dialog"', false)
+            ->assertDontSee('id="delete-dialog"', false)
+            ->assertDontSee('id="folder-dialog"', false)
+            ->assertDontSee('data-dialog="rename-dialog"', false)
+            ->assertDontSee('data-dialog="delete-dialog"', false)
+            ->getContent();
+
+        // No folder that starts with a dot is listed, whatever it is called.
+        expect(preg_match('#/larapilot/files/project/\.(larapilot|git|github|idea|ai)(["/])#', $top))->toBe(0);
+
+        // The same page of a material folder does write.
+        $this->get('/larapilot/files/brand')
+            ->assertOk()
+            ->assertSee('data-upload-pick="files"', false)
+            ->assertSee('id="folder-dialog"', false);
+
+        $listing = $this->get('/larapilot/files/project/lp-probe')
+            ->assertOk()
+            ->assertSee('notes.md', false)
+            ->assertSee('deep', false)
+            ->assertSee('/larapilot/files/project/lp-probe/.editorconfig', false)
+            ->assertSee('/larapilot/files/project/lp-probe/.gitignore', false)
+            ->getContent();
+
+        expect(preg_match('#/larapilot/files/project/lp-probe/\.(git|github|idea|cache)(["/])#', $listing))->toBe(0)
+            ->and($listing)->toContain('1 folder');
+
+        $this->get('/larapilot/files/project/lp-probe/notes.md')
+            ->assertOk()
+            ->assertSee('From the project.', false)
+            ->assertSee('Download', false)
+            ->assertDontSee('data-dialog="rename-dialog"', false)
+            ->assertDontSee('data-dialog="delete-dialog"', false);
+
+        $this->get('/larapilot/files/project/lp-probe/.editorconfig')
+            ->assertOk()
+            ->assertSee('root = true', false);
+
+        $this->get('/larapilot/files/raw/project/lp-probe/notes.md')
+            ->assertOk()
+            ->assertHeader('X-Content-Type-Options', 'nosniff');
+
+        foreach ([
+            '/larapilot/files/project/.larapilot',
+            '/larapilot/files/project/.larapilot/config.yaml',
+            '/larapilot/files/raw/project/.larapilot/config.yaml',
+            '/larapilot/files/project/.git',
+            '/larapilot/files/raw/project/.git/HEAD',
+            '/larapilot/files/project/lp-probe/.git',
+            '/larapilot/files/raw/project/lp-probe/.git/inside.txt',
+            '/larapilot/files/project/lp-probe/.github',
+            '/larapilot/files/project/lp-probe/.github/workflows',
+            '/larapilot/files/raw/project/lp-probe/.github/workflows/inside.txt',
+            '/larapilot/files/project/lp-probe/.idea/inside.txt',
+            '/larapilot/files/raw/project/lp-probe/.cache/deep/inside.txt',
+            '/larapilot/files/project/lp-probe/../.larapilot/config.yaml',
+            '/larapilot/files/project/lp-probe/%2e%2e/.larapilot/config.yaml',
+        ] as $url) {
+            expect($this->get($url)->getStatusCode())->toBe(404, $url);
+        }
+
+        // A material folder keeps the folders it was given, dot or not.
+        material('legacy/old/.well-known/security.txt', 'Contact: mailto:a@example.test');
+        $this->get('/larapilot/files/legacy/old')->assertOk()->assertSee('.well-known', false);
+        $this->get('/larapilot/files/legacy/old/.well-known/security.txt')->assertOk()->assertSee('Contact:', false);
+    });
+});
+
+it('shows a file that holds credentials with every value hidden', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        $mask = FileManagerService::MASK;
+
+        expect($mask)->toBe('*****************');
+
+        file_put_contents($probe.'/.env', implode("\n", [
+            '# Application',
+            'APP_NAME="Fjord Invoices"',
+            'APP_KEY=base64:do-not-leak-1',
+            'export STRIPE_SECRET=sk_live_do-not-leak-2',
+            'EMPTY_ONE=',
+            'MULTI="first do-not-leak-3',
+            'second do-not-leak-4"',
+            '#OLD_KEY=do-not-leak-5',
+            '',
+            'DB_PASSWORD = do-not-leak-6',
+        ]));
+        file_put_contents($probe.'/.env.production', 'DB_PASSWORD=do-not-leak');
+        file_put_contents($probe.'/.env.example', 'APP_KEY=');
+        file_put_contents($probe.'/auth.json', json_encode([
+            'http-basic' => ['repo.example.test' => ['username' => 'do-not-leak-user', 'password' => 'do-not-leak-pass']],
+            'github-oauth' => ['github.com' => 'do-not-leak-token'],
+            'bearer' => [],
+        ]));
+        file_put_contents($probe.'/.npmrc', "registry=https://registry.example.test/\n//registry.example.test/:_authToken=do-not-leak\n");
+        file_put_contents($probe.'/.netrc', "machine example.test login do-not-leak-user password do-not-leak-pass\n");
+        file_put_contents($probe.'/.pgpass', "db.example.test:5432:app:do-not-leak-user:do-not-leak-pass\n");
+        file_put_contents($probe.'/oauth-private.key', "-----BEGIN PRIVATE KEY-----\ndo-not-leak\n-----END PRIVATE KEY-----\n");
+        file_put_contents($probe.'/database.sqlite', 'do-not-leak');
+
+        $this->get('/larapilot/files/project/lp-probe')
+            ->assertOk()
+            ->assertSee('.env.production', false)
+            ->assertSee('oauth-private.key', false)
+            ->assertSee('Values hidden', false)
+            ->assertSee('Not shown', false)
+            ->assertDontSee('do-not-leak', false);
+
+        $env = $this->get('/larapilot/files/project/lp-probe/.env')
+            ->assertOk()
+            ->assertSee('This file holds credentials.', false)
+            ->assertSee('Download, values hidden', false)
+            ->assertDontSee('do-not-leak', false)
+            ->assertDontSee('Fjord Invoices', false)
+            ->getContent();
+
+        // The names of the keys are there, and so are the comments.
+        foreach (['# Application', 'APP_NAME='.$mask, 'APP_KEY='.$mask, 'export STRIPE_SECRET='.$mask, 'EMPTY_ONE='.$mask, 'MULTI='.$mask, '#OLD_KEY='.$mask, 'DB_PASSWORD ='.$mask] as $line) {
+            expect($env)->toContain(e($line));
+        }
+
+        $download = $this->get('/larapilot/files/raw/project/lp-probe/.env?download=1')->assertOk();
+
+        expect($download->headers->get('Content-Disposition'))->toBe('attachment; filename=".env"')
+            ->and($download->headers->get('Content-Type'))->toBe('text/plain; charset=UTF-8')
+            ->and($download->getContent())->toContain('APP_KEY='.$mask)
+            ->and($download->getContent())->not->toContain('do-not-leak')
+            // eight lines carry a value; the second line of the value written
+            // over two is masked whole
+            ->and(substr_count($download->getContent(), $mask))->toBe(8)
+            ->and($download->getContent())->toContain("MULTI={$mask}\n{$mask}\n");
+
+        // Without ?download the answer is the same: never the bytes on disk.
+        expect($this->get('/larapilot/files/raw/project/lp-probe/.env')->getContent())->not->toContain('do-not-leak');
+
+        $auth = json_decode($this->get('/larapilot/files/raw/project/lp-probe/auth.json')->assertOk()->getContent(), true);
+
+        expect($auth)->toBe([
+            'http-basic' => ['repo.example.test' => ['username' => $mask, 'password' => $mask]],
+            'github-oauth' => ['github.com' => $mask],
+            'bearer' => $mask,
+        ]);
+
+        $this->get('/larapilot/files/project/lp-probe/auth.json')
+            ->assertOk()
+            ->assertSee('http-basic', false)
+            ->assertSee('username', false)
+            ->assertDontSee('do-not-leak', false);
+
+        $files = app(FileManagerService::class);
+
+        expect($files->masked('project', 'lp-probe/.npmrc'))->toBe("registry={$mask}\n//registry.example.test/:_authToken={$mask}\n")
+            ->and($files->masked('project', 'lp-probe/.netrc'))->toBe("machine example.test login {$mask} password {$mask}\n")
+            ->and($files->masked('project', 'lp-probe/.pgpass'))->toBe("db.example.test:5432:app:{$mask}\n")
+            ->and($files->masked('project', 'lp-probe/oauth-private.key'))->toBe($mask."\n")
+            ->and($files->masked('project', 'lp-probe/.env.production'))->toBe('DB_PASSWORD='.$mask)
+            // a template and an ordinary file are not masked
+            ->and($files->masked('project', 'lp-probe/.env.example'))->toBeNull()
+            ->and($files->masked('project', 'lp-probe/missing'))->toBeNull();
+
+        foreach (['.env', '.env.production', 'auth.json', '.npmrc', '.netrc', '.pgpass', 'oauth-private.key', 'database.sqlite'] as $name) {
+            // The path of the real bytes is never handed out.
+            expect($files->file('project', 'lp-probe/'.$name))->toBeNull($name)
+                ->and($this->get('/larapilot/files/project/lp-probe/'.$name)->assertOk()->getContent())->not->toContain('do-not-leak');
+        }
+
+        // A database is neither shown nor served.
+        $this->get('/larapilot/files/project/lp-probe/database.sqlite')
+            ->assertOk()
+            ->assertSee('is a database, so it is neither shown nor downloaded from the dashboard.', false)
+            ->assertDontSee('/larapilot/files/raw/', false);
+
+        expect($this->get('/larapilot/files/raw/project/lp-probe/database.sqlite')->getStatusCode())->toBe(404);
+
+        $this->get('/larapilot/files/project/lp-probe/.env.example')
+            ->assertOk()
+            ->assertSee('APP_KEY=', false)
+            ->assertDontSee('This file holds credentials.', false);
+
+        // The application's own env file, at the top of the project.
+        expect($this->get('/larapilot/files/raw/project/.env')->assertOk()->getContent())
+            ->toContain('APP_KEY='.$mask);
+
+        // The material folders mask the same files.
+        material('legacy/old/.env', 'LEGACY_TOKEN=do-not-leak');
+
+        $this->get('/larapilot/files/legacy/old/.env')
+            ->assertOk()
+            ->assertSee('LEGACY_TOKEN='.$mask, false)
+            ->assertDontSee('do-not-leak', false);
+
+        expect($this->get('/larapilot/files/raw/legacy/old/.env?download=1')->getContent())->toBe('LEGACY_TOKEN='.$mask);
+    });
+});
+
+it('refuses every write to the project', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        file_put_contents($probe.'/keep.txt', 'kept');
+
+        $writes = [
+            ['/larapilot/files/project/upload', ['path' => 'lp-probe', 'files' => [UploadedFile::fake()->createWithContent('shell.php', '<?php')]]],
+            ['/larapilot/files/project/folder', ['path' => 'lp-probe', 'name' => 'made']],
+            ['/larapilot/files/project/rename', ['path' => 'lp-probe/keep.txt', 'name' => 'moved.txt']],
+            ['/larapilot/files/project/delete', ['path' => 'lp-probe/keep.txt']],
+        ];
+
+        foreach ($writes as [$url, $data]) {
+            expect($this->post($url, signed($data))->getStatusCode())->toBeIn([404, 405], $url);
+        }
+
+        $files = app(FileManagerService::class);
+
+        expect(fn () => $files->upload('project', 'lp-probe', [UploadedFile::fake()->createWithContent('shell.php', '<?php')]))
+            ->toThrow(InvalidArgumentException::class, 'read only')
+            ->and(fn () => $files->createFolder('project', 'lp-probe', 'made'))
+            ->toThrow(InvalidArgumentException::class, 'read only')
+            ->and(fn () => $files->rename('project', 'lp-probe/keep.txt', 'moved.txt'))
+            ->toThrow(InvalidArgumentException::class, 'read only')
+            ->and(fn () => $files->delete('project', 'lp-probe/keep.txt'))
+            ->toThrow(InvalidArgumentException::class, 'read only');
+
+        expect(file_get_contents($probe.'/keep.txt'))->toBe('kept')
+            ->and(is_file($probe.'/shell.php'))->toBeFalse()
+            ->and(is_dir($probe.'/made'))->toBeFalse()
+            ->and($files->writableRootKeys())->toBe(['brand', 'client-materials', 'design-systems', 'legacy', 'skills']);
+    });
+});
+
+it('does not reach .larapilot through a link inside the project', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        symlink(base_path('.larapilot'), $probe.'/state');
+
+        $this->get('/larapilot/files/project/lp-probe')
+            ->assertOk()
+            ->assertSee('state', false);
+
+        foreach ([
+            '/larapilot/files/project/lp-probe/state',
+            '/larapilot/files/project/lp-probe/state/config.yaml',
+            '/larapilot/files/raw/project/lp-probe/state/config.yaml',
+        ] as $url) {
+            expect($this->get($url)->getStatusCode())->toBe(404, $url);
+        }
+    });
+});
+
+it('unfolds the project tree along the open folder only', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        mkdir($probe.'/sibling/inside', 0755, true);
+
+        $data = app(FileManagerService::class)->browse('project', 'lp-probe/deep');
+        $top = collect($data['tree']['nodes'])->keyBy('name');
+
+        expect($top->has('lp-probe'))->toBeTrue()
+            ->and($top->has('app'))->toBeTrue()
+            ->and($top->has('.larapilot'))->toBeFalse()
+            ->and($top->has('.git'))->toBeFalse()
+            ->and($top->keys()->filter(fn (string $name): bool => str_starts_with($name, '.'))->all())->toBe([])
+            // a folder off the path stays folded, whatever it holds
+            ->and($top['app']['children'])->toBe([])
+            ->and($top['lp-probe']['open'])->toBeTrue();
+
+        $probeChildren = collect($top['lp-probe']['children'])->keyBy('name');
+
+        expect($probeChildren->keys()->all())->toBe(['deep', 'sibling'])
+            ->and($probeChildren['deep']['active'])->toBeTrue()
+            ->and(collect($probeChildren['deep']['children'])->pluck('name')->all())->toBe(['deeper'])
+            ->and($probeChildren['sibling']['children'])->toBe([]);
+
+        // A material folder is still unfolded whole.
+        material('brand/logos/dark/mark.svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+        $brand = app(FileManagerService::class)->browse('brand');
+
+        expect($brand['tree']['nodes'][0]['name'])->toBe('logos')
+            ->and($brand['tree']['nodes'][0]['children'][0]['name'])->toBe('dark');
+    });
+});
+
+it('counts the project without vendor, node_modules, and the folders that start with a dot', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        mkdir($probe.'/vendor/pkg', 0755, true);
+        mkdir($probe.'/node_modules/pkg', 0755, true);
+        file_put_contents($probe.'/vendor/pkg/big.bin', str_repeat('v', 4096));
+        file_put_contents($probe.'/node_modules/pkg/big.bin', str_repeat('n', 4096));
+        mkdir($probe.'/.git/objects', 0755, true);
+        file_put_contents($probe.'/.git/objects/pack.bin', str_repeat('g', 4096));
+        file_put_contents($probe.'/.hidden-file', 'dot');
+        file_put_contents($probe.'/counted.txt', 'counted');
+
+        $measure = (new ReflectionClass(FileManagerService::class))->getMethod('measure');
+        $measure->setAccessible(true);
+
+        $whole = $measure->invoke(app(FileManagerService::class), $probe, false);
+        $project = $measure->invoke(app(FileManagerService::class), $probe, true);
+
+        expect($whole['bytes'])->toBe(4096 * 3 + 3 + 7)
+            // the file that starts with a dot counts, the folder does not
+            ->and($project['bytes'])->toBe(3 + 7)
+            ->and($project['files'])->toBe(2)
+            // deep/ and deep/deeper/ — vendor/, node_modules/ and .git/ are not walked
+            ->and($project['folders'])->toBe(2);
+
+        $top = $measure->invoke(app(FileManagerService::class), base_path(), true);
+        $state = $measure->invoke(app(FileManagerService::class), base_path('.larapilot'), false);
+
+        expect($state['files'])->toBeGreaterThan(10)
+            ->and($top['truncated'])->toBeFalse();
+    });
+});
+
+it('reads a PDF in the page instead of sending it to its own tab', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    material('client-materials/brief.pdf', "%PDF-1.4\n%%EOF");
+    material('client-materials/notes.md', '# Notes');
+
+    $html = $this->get('/larapilot/files/client-materials/brief.pdf')
+        ->assertOk()
+        ->assertSee('id="pdf-reader"', false)
+        ->assertSee('data-src="'.url('/larapilot/files/raw/client-materials/brief.pdf').'"', false)
+        ->assertSee('role="toolbar"', false)
+        ->assertSee('Two pages side by side', false)
+        ->assertSee('Zoom in', false)
+        ->assertSee('Previous page', false)
+        ->assertSee('Full screen', false)
+        ->assertSee('Download brief.pdf', false)
+        // without scripts, or without the library, the file still opens
+        ->assertSee('<noscript>', false)
+        ->assertSee('The reader could not start here, so the PDF opens in its own tab.', false)
+        ->getContent();
+
+    // The library is pinned to a version and checked against its hash.
+    expect($html)->toMatch('#<script src="https://cdnjs\.cloudflare\.com/ajax/libs/pdf\.js/3\.11\.174/pdf\.min\.js" integrity="sha384-[A-Za-z0-9+/=]+" crossorigin="anonymous"#')
+        ->toContain('data-worker="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"');
+
+    // The bytes the reader asks for are served inline, as a PDF.
+    $raw = $this->get('/larapilot/files/raw/client-materials/brief.pdf')->assertOk();
+
+    expect($raw->headers->get('Content-Type'))->toBe('application/pdf')
+        ->and($raw->headers->get('Content-Disposition'))->toStartWith('inline');
+
+    // Any other file has no reader on its page.
+    $this->get('/larapilot/files/client-materials/notes.md')
+        ->assertOk()
+        ->assertDontSee('id="pdf-reader"', false)
+        ->assertDontSee('pdf.min.js', false);
+});
+
+it('adds, renames, and deletes in the five material folders and nowhere else', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $files = app(FileManagerService::class);
+
+    expect($files->writableRootKeys())->toBe(['brand', 'client-materials', 'design-systems', 'legacy', 'skills'])
+        ->and(array_keys(array_filter($files->roots(), fn (array $root): bool => $root['read_only'])))->toBe(['project']);
+
+    $folders = [
+        'brand' => '.larapilot/brand',
+        'client-materials' => '.larapilot/client-materials',
+        'design-systems' => '.larapilot/design-systems',
+        'legacy' => '.larapilot/legacy',
+        'skills' => '.larapilot/skills',
+    ];
+
+    foreach ($folders as $root => $path) {
+        $base = base_path($path);
+
+        // a folder is added
+        $this->post('/larapilot/files/'.$root.'/folder', signed(['path' => '', 'name' => 'probe']))
+            ->assertRedirect()
+            ->assertSessionHas('larapilot_success');
+        expect(is_dir($base.'/probe'))->toBeTrue($root.': folder');
+
+        // a file is added
+        $this->post('/larapilot/files/'.$root.'/upload', signed([
+            'path' => 'probe',
+            'files' => [UploadedFile::fake()->createWithContent('note.txt', 'kept')],
+        ]))->assertRedirect()->assertSessionHas('larapilot_success');
+        expect(is_file($base.'/probe/note.txt'))->toBeTrue($root.': upload');
+
+        // a file and a folder are renamed
+        $this->post('/larapilot/files/'.$root.'/rename', signed(['path' => 'probe/note.txt', 'name' => 'renamed.txt']))
+            ->assertRedirect()
+            ->assertSessionHas('larapilot_success');
+        $this->post('/larapilot/files/'.$root.'/rename', signed(['path' => 'probe', 'name' => 'moved']))
+            ->assertRedirect()
+            ->assertSessionHas('larapilot_success');
+        expect(is_file($base.'/moved/renamed.txt'))->toBeTrue($root.': rename')
+            ->and(is_dir($base.'/probe'))->toBeFalse($root.': rename');
+
+        // a file and a folder are deleted
+        $this->post('/larapilot/files/'.$root.'/delete', signed(['path' => 'moved/renamed.txt']))
+            ->assertRedirect()
+            ->assertSessionHas('larapilot_success');
+        $this->post('/larapilot/files/'.$root.'/delete', signed(['path' => 'moved']))
+            ->assertRedirect()
+            ->assertSessionHas('larapilot_success');
+        expect(file_exists($base.'/moved'))->toBeFalse($root.': delete');
+
+        // and the page offers all of it
+        $this->get('/larapilot/files/'.$root)
+            ->assertOk()
+            ->assertSee('data-upload-pick="files"', false)
+            ->assertSee('data-upload-pick="folder"', false)
+            ->assertSee('id="folder-dialog"', false)
+            ->assertSee('id="rename-dialog"', false)
+            ->assertSee('id="delete-dialog"', false);
+    }
+
+    // The project is read: the same requests change nothing there.
+    withProjectProbe(function (string $probe): void {
+        file_put_contents($probe.'/keep.txt', 'kept');
+        $before = scandir($probe);
+
+        foreach ([
+            ['folder', ['path' => 'lp-probe', 'name' => 'made']],
+            ['upload', ['path' => 'lp-probe', 'files' => [UploadedFile::fake()->createWithContent('added.txt', 'x')]]],
+            ['rename', ['path' => 'lp-probe/keep.txt', 'name' => 'moved.txt']],
+            ['rename', ['path' => 'lp-probe', 'name' => 'lp-moved']],
+            ['delete', ['path' => 'lp-probe/keep.txt']],
+            ['delete', ['path' => 'lp-probe']],
+        ] as [$action, $data]) {
+            expect($this->post('/larapilot/files/project/'.$action, signed($data))->getStatusCode())->toBeIn([404, 405], $action);
+            expect($this->postJson('/larapilot/files/project/'.$action, signed($data))->getStatusCode())->toBeIn([404, 405], $action.' (json)');
+        }
+
+        expect(scandir($probe))->toBe($before)
+            ->and(file_get_contents($probe.'/keep.txt'))->toBe('kept')
+            ->and(is_dir(base_path('lp-moved')))->toBeFalse();
+    });
 });

@@ -304,6 +304,22 @@
                     'YES' => 'checkpoint:scan in review; FAIL = blocker, WARN = review note.',
                 ],
             ],
+            'aikido' => [
+                'label' => 'Aikido',
+                'description' => 'Reads the findings of Aikido for this repository. Needs LARAPILOT_AIKIDO_CLIENT_ID and LARAPILOT_AIKIDO_CLIENT_SECRET in .env; Aikido scans the repository on its side.',
+                'options' => [
+                    'NO' => 'Aikido is not read (default).',
+                    'YES' => '/larapilot-aikido hands the open findings to triage; the ship gate stops on what nobody decided about; /larapilot/security shows them.',
+                ],
+            ],
+            'boogle' => [
+                'label' => 'Boogle',
+                'description' => 'Reads the errors Boogle recorded for the running application. Needs LARAPILOT_BOOGLE_TOKEN in .env, and LARAPILOT_BOOGLE_URL when BOOGLE_SERVER is not set.',
+                'options' => [
+                    'NO' => 'Boogle is not read (default).',
+                    'YES' => '/larapilot-boogle hands the open errors to triage, one request for each bug; /larapilot/errors shows them with what was decided.',
+                ],
+            ],
             'github' => [
                 'label' => 'GitHub',
                 'description' => 'Use gh CLI for remote pull requests. Orthogonal to git_mode; OFF by default.',
@@ -376,7 +392,8 @@
             'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve'],
             'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'project_docs', 'comments'],
             'Business' => ['account'],
-            'Security' => ['dashboard_auth', 'api_auth', 'security_scan'],
+            'Security' => ['dashboard_auth', 'api_auth', 'security_scan', 'aikido'],
+            'Monitoring' => ['boogle'],
             'Forges' => ['github', 'gitlab', 'bitbucket', 'azure'],
             'Notifications' => ['notifications', 'notify_slack', 'notify_discord', 'notify_telegram'],
         ];

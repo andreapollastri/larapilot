@@ -61,7 +61,7 @@ Official kits ship three auth layout styles:
 | **Card** | Card with subtle border/shadow on `muted` canvas |
 | **Split** | Brand/illustration panel + form column — `html/auth-split.html` |
 
-- **Work email** + **Access code** fields with `Label` above `Input` — static mockups only: never `type="password"`, never `name`/`id`/`label` containing `password` or `username`, form `autocomplete="off"`, access code is `type="text"` with `.demo-secret-field` (see packaged `login.html`). Real Fortify pages use email + password at implementation time.
+- **Email address** + **Password**, label above field — **drawn, never built**: no `<input>` and no `<form>` for credentials in a mockup (password managers fire on every preview). Use `<span class="mock-label">` and `<div class="sk-input mock-field" role="img" aria-label="…">` with sample text; the secret adds `.mock-field--secret` and shows `••••••••••`; the button is `<a role="button">` to the next screen (see packaged `login.html`). Real Fortify pages use email + password inputs at implementation time.
 - Primary **Log in** button full width (`sk-btn--primary`).
 - **Remember me** checkbox row.
 - Secondary links: Need help signing in, Sign up (when registration enabled).

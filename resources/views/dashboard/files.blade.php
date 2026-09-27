@@ -52,8 +52,23 @@
     .folder-icon .icon { width: 20px; height: 20px; }
 
     .folder-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
         margin: 0;
         font-size: 1.04rem;
+    }
+
+    .folder-tag {
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: var(--surface-3);
+        color: var(--muted);
+        font-size: 0.64rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
 
     .folder-card .folder-path {
@@ -104,7 +119,7 @@
     <header class="page-head">
         <div>
             <h2>File manager</h2>
-            <p class="sub">The material the skills read before they start. Browse, upload, rename, and delete inside five folders of <code>.larapilot/</code>.</p>
+            <p class="sub">The material the skills read before they start. Browse, upload, rename, and delete inside five folders of <code>.larapilot/</code> — and read the project itself, without changing it.</p>
         </div>
     </header>
 
@@ -114,12 +129,12 @@
                 <div class="folder-card-head">
                     <span class="folder-icon">@include('larapilot::dashboard.partials.icon', ['name' => 'folder'])</span>
                     <div>
-                        <h3>{{ $folder['label'] }}</h3>
+                        <h3>{{ $folder['label'] }}@if ($folder['read_only']) <span class="folder-tag">Read only</span>@endif</h3>
                         <code class="folder-path">{{ $folder['path'] }}</code>
                     </div>
                 </div>
                 <p>{{ $folder['description'] }}</p>
-                <span class="folder-used">Read by: {{ $folder['used_by'] }}</span>
+                <span class="folder-used">Read by: {{ $folder['used_by'] }}@if ($folder['note']) · {{ $folder['note'] }}@endif</span>
                 <div class="folder-stats">
                     <span>
                         @if ($folder['files'] === 0 && $folder['folders'] === 0)

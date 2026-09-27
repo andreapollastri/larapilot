@@ -292,6 +292,8 @@ class ConfigService
      *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
+     *     aikido: string,
+     *     boogle: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
@@ -342,6 +344,8 @@ class ConfigService
      *     dashboard_auth: bool,
      *     api_auth: bool,
      *     security_scan: bool,
+     *     aikido: bool,
+     *     boogle: bool,
      *     github: bool,
      *     gitlab: bool,
      *     bitbucket: bool,
@@ -391,6 +395,8 @@ class ConfigService
             'dashboard_auth' => false,
             'api_auth' => false,
             'security_scan' => false,
+            'aikido' => false,
+            'boogle' => false,
             'github' => false,
             'gitlab' => false,
             'bitbucket' => false,
@@ -423,6 +429,8 @@ class ConfigService
      *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
+     *     aikido: string,
+     *     boogle: string,
      *     github: string,
      *     gitlab: string,
      *     bitbucket: string,
@@ -603,6 +611,26 @@ class ConfigService
     public function securityScanEnabled(): bool
     {
         return $this->settings()['security_scan'] === 'YES';
+    }
+
+    /**
+     * Read the findings of Aikido for this repository — OFF by default. When
+     * ON, `/larapilot-aikido` downloads the open findings and hands them to
+     * triage, and the ship gate stops on the ones nobody decided about.
+     */
+    public function aikidoEnabled(): bool
+    {
+        return $this->settings()['aikido'] === 'YES';
+    }
+
+    /**
+     * Read the errors Boogle recorded for the running application — OFF by
+     * default. When ON, `/larapilot-boogle` downloads the open errors and
+     * hands them to triage, and `/larapilot/errors` shows them.
+     */
+    public function boogleEnabled(): bool
+    {
+        return $this->settings()['boogle'] === 'YES';
     }
 
     /**
@@ -892,6 +920,22 @@ class ConfigService
      * @return list<string>
      */
     public function allowedSecurityScanModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedAikidoModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedBoogleModes(): array
     {
         return $this->allowedYesNoModes();
     }

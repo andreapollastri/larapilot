@@ -4,11 +4,19 @@
 
 @push('styles')
 <style>
+    .spec-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
     .back-link {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 16px;
         color: var(--muted);
         font-size: 0.86rem;
         font-weight: 500;
@@ -505,7 +513,10 @@
 @endpush
 
 @section('content')
-    <a class="back-link" href="{{ route('larapilot.dashboard.index') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'back'])Back to board</a>
+    <div class="spec-topbar">
+        <a class="back-link" href="{{ route('larapilot.dashboard.index') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'back'])Back to board</a>
+        <a class="btn ghost" href="{{ route('larapilot.dashboard.spec.download', $spec['code']) }}" title="The story, the plan, every task, the decisions and the comments in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download spec (.md)</a>
+    </div>
 
     <article>
         <header class="spec-header">

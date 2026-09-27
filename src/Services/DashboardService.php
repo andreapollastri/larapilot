@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Services\Aikido\AikidoException;
+use Larapilot\Services\Boogle\BoogleException;
 use Larapilot\Support\Markdown;
 
 class DashboardService
@@ -19,7 +21,12 @@ class DashboardService
         protected UsageService $usageService,
         protected DecisionService $decisions,
         protected GitService $git,
+        protected GitGraphService $gitGraph,
         protected CustomSkillService $customSkills,
+        protected SkillLibraryService $skillLibrary,
+        protected AgentGuidelineService $guidelines,
+        protected AikidoService $aikido,
+        protected BoogleService $boogle,
         protected EconomicsService $economicsService,
     ) {}
 
@@ -226,11 +233,136 @@ class DashboardService
     public function skills(): array
     {
         $this->customSkills->registerAll();
+        $library = $this->skillLibrary->all();
 
         return [
-            'skills' => $this->customSkills->list(),
+            'skills' => $library['custom'],
+            'packaged' => $library['packaged'],
+            'project' => $library['project'],
+            'packages' => $library['packages'],
+            'boost' => $library['boost'],
+            'agent' => $library['agent'],
+            'agents' => $library['agents'],
+            'boostState' => $library['boost_state'],
+            'guidelines' => $this->guidelines->all(),
             'directory' => $this->customSkills->directory(),
         ];
+    }
+
+    /**
+     * The findings of Aikido, or why they cannot be read. The page never
+     * fails on a provider that is down: it says what is wrong.
+     *
+     * @return array<string, mixed>
+     */
+    public function security(bool $refresh = false): array
+    {
+        $enabled = $this->config->aikidoEnabled();
+        $data = ['enabled' => $enabled, 'status' => null, 'findings' => null, 'error' => null, 'hint' => null];
+
+        if (! $enabled) {
+            return $data;
+        }
+
+        try {
+            $data['findings'] = $this->aikido->findings([], $refresh);
+
+            foreach ($data['findings']['issues'] as $index => $issue) {
+                $data['findings']['issues'][$index]['spec_url'] = $issue['spec'] !== null
+                    ? route('larapilot.dashboard.spec', $issue['spec'])
+                    : null;
+            }
+        } catch (AikidoException $e) {
+            $data['error'] = $e->getMessage();
+            $data['hint'] = $e->hint();
+            $data['status'] = $this->aikido->status();
+        }
+
+        return $data;
+    }
+
+    public function securityReport(): ?string
+    {
+        if (! $this->config->aikidoEnabled()) {
+            return null;
+        }
+
+        try {
+            return $this->aikido->report($this->aikido->findings([], false));
+        } catch (AikidoException) {
+            return null;
+        }
+    }
+
+    /**
+     * The errors Boogle recorded, or why they cannot be read. The page
+     * never fails on a Boogle that is down: it says what is wrong.
+     *
+     * @return array<string, mixed>
+     */
+    public function errors(bool $refresh = false): array
+    {
+        $enabled = $this->config->boogleEnabled();
+        // Not `errors`: a view has a variable of that name already, the
+        // validation errors of the request.
+        $data = ['enabled' => $enabled, 'status' => null, 'boogle' => null, 'error' => null, 'hint' => null];
+
+        if (! $enabled) {
+            return $data;
+        }
+
+        try {
+            $data['boogle'] = $this->boogle->errors([], $refresh);
+
+            foreach ($data['boogle']['errors'] as $index => $error) {
+                $data['boogle']['errors'][$index]['spec_url'] = $error['spec'] !== null
+                    ? route('larapilot.dashboard.spec', $error['spec'])
+                    : null;
+            }
+        } catch (BoogleException $e) {
+            $data['error'] = $e->getMessage();
+            $data['hint'] = $e->hint();
+            $data['status'] = $this->boogle->status();
+        }
+
+        return $data;
+    }
+
+    public function errorsReport(): ?string
+    {
+        if (! $this->config->boogleEnabled()) {
+            return null;
+        }
+
+        try {
+            return $this->boogle->report($this->boogle->errors([], false));
+        } catch (BoogleException) {
+            return null;
+        }
+    }
+
+    /**
+     * One skill to read, by the name of its slash command. When several
+     * skills carry the name, `$from` says which one is meant.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function skill(string $name, ?string $from = null): ?array
+    {
+        $this->customSkills->registerAll();
+
+        return $this->skillLibrary->find($name, $from);
+    }
+
+    /**
+     * One file the agents are told from, cut into what each package put
+     * there.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function guideline(string $id): ?array
+    {
+        return $this->guidelines->find($id);
     }
 
     /**
@@ -260,14 +392,34 @@ class DashboardService
     /**
      * @return array<string, mixed>
      */
-    public function git(?string $authorEmail = null): array
+    public function git(?string $authorEmail = null, int $commits = GitGraphService::DEFAULT_LIMIT): array
     {
-        return $this->git->contributionActivity($authorEmail);
+        $activity = $this->git->contributionActivity($authorEmail);
+        $graph = $this->gitGraph->graph($commits, $activity['selected_author']);
+
+        // A branch or a commit that names a spec leads to it, when the
+        // backlog knows that spec.
+        $known = [];
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            $known[strtoupper((string) ($spec['code'] ?? ''))] = (string) ($spec['code'] ?? '');
+        }
+
+        $link = static function (array $item) use ($known): array {
+            $code = $known[strtoupper((string) ($item['spec'] ?? ''))] ?? null;
+            $item['spec'] = $code;
+            $item['spec_url'] = $code !== null ? route('larapilot.dashboard.spec', $code) : null;
+
+            return $item;
+        };
+
+        foreach (['branches', 'remote_branches', 'commits'] as $list) {
+            $graph[$list] = array_map($link, $graph[$list]);
+        }
+
+        return array_merge($activity, ['graph' => $graph]);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     /**
      * @param  array<string, mixed>  $overrides
      * @return array<string, mixed>

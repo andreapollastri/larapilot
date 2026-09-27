@@ -138,6 +138,8 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-feature` | Mini-inception for one enhancement |
 | `/larapilot-bug` | Bug triage → fix spec or rework, with redacted diagnostics |
 | `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
+| `/larapilot-aikido` | Downloads the open security findings of **Aikido** for the repository and hands each one to `/larapilot-triage` to be resolved (`aikido=YES`) |
+| `/larapilot-boogle` | Downloads the open errors **Boogle** recorded for the running application, puts together the ones that are one bug, and hands each bug to `/larapilot-triage` (`boogle=YES`) |
 | `/larapilot-prd` | Revises the PRD when it is neither — sharpen, re-scope, re-model, re-decide, upgrade — and aligns the stories that cite what changed |
 | `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
@@ -356,18 +358,20 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 
 | Page | URL | What you see |
 | --- | --- | --- |
-| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen |
-| PRD | `/larapilot/prd` | Rendered PRD, decision journal timeline, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
+| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included |
+| PRD | `/larapilot/prd` | Rendered PRD with a **search** that looks in the PRD and nowhere else, decision journal timeline, **Download PRD (.md)**, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
 | Inception | `/larapilot/inception` | Discovery choices snapshot |
 | Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, dependency-aware Gantt |
-| Design | `/larapilot/design` | One navigable mockup index: cover, ordered walk through every flow, style compare with **Use this style**, zip download |
+| Design | `/larapilot/design` | Every screen first, as a card. A click opens that mockup as a site you browse, with **All screens** to come back; prev / next through every flow, style compare with **Use this style**, zip download |
 | Settings | `/larapilot/settings` | Every project mode with its options explained |
-| Skills | `/larapilot/skills` | Your custom skills — trigger, description, registration status |
-| File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, download, upload files or a whole folder (structure kept), rename, delete |
-| Git | `/larapilot/git` | 12-month contribution heatmap from local history, filterable by developer |
+| Skills | `/larapilot/skills` | Every skill the agents of the project can run, whoever brought it — the project, Larapilot, another package, Laravel Boost, a hand that dropped it into the folder of an agent — with which agent has it. Click one to **read it**. Under them, **what the agents are told**: `CLAUDE.md`, `AGENTS.md`, and the rules around them, one part for each author |
+| File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
+| Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
-| Economics | `/larapilot/economics` | Pricing simulator (`account` ≠ NONE) |
-| Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback |
+| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate (`aikido=YES`) |
+| Errors | `/larapilot/errors` | What the running application threw, as Boogle recorded it: one row for each bug, how many times it was thrown day by day, and what was decided about it (`boogle=YES`) |
+| Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
+| Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
 | Docs | `/larapilot/docs` | Delivery loop, packaged skills, persona roster |
 
@@ -384,10 +388,15 @@ The dashboard follows the system theme; pin **light** or **dark** from the sideb
 | `design-systems/` | Visual references and tokens the mockups are built on |
 | `legacy/` | Snapshots of the old system to port or migrate |
 | `skills/` | Your custom skills, one folder per slash command |
+| `./` — **Project** | The Laravel application itself: code, config, routes, tests. **Read only** |
 
+- **Adding, renaming, and deleting** files and folders work in the five material folders. **Project is read only**: you browse, preview, and download; the routes that write do not know the folder and the service refuses a write to it.
+- **Folders that start with a dot are left out of Project** — `.git`, `.larapilot`, `.github`, `.idea`, at any depth. Files that start with a dot are shown. `vendor/` and `node_modules/` can be opened and are left out of the count.
+- **Credentials show their keys, never their values.** `.env`, `.env.*`, `auth.json`, `.npmrc`, `.netrc`, `.pgpass` are shown with every value replaced by `*****************`, on screen and in the download; a template such as `.env.example` is shown as it is. A key or certificate is one line of asterisks; a database (`.sqlite`, `.db`) is listed and neither shown nor downloaded.
+- **A PDF is read in the page**: one page or two side by side, zoom, page jump, full screen. The reader is PDF.js from cdnjs, checked against its hash; where it cannot load, the file opens in its own tab.
 - **Upload a folder** and it keeps its structure; an existing file is kept unless **Replace existing files** is on. One file is limited by `LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB` (default 50 MB) and by PHP's `upload_max_filesize` / `post_max_size`, whichever is lower.
 - **Local by default.** The file manager is open in `local`, `development`, and `testing`. On any other environment (`staging`) it is served only when `dashboard_auth` is `YES` — client documents and legacy snapshots stay behind a sign-in.
-- Nothing outside the five folders can be reached, a symlink is never followed, and an uploaded `.html`, `.js`, or `.svg` is never run in the dashboard. `LARAPILOT_FILE_MANAGER=false` removes the page.
+- Nothing outside the six folders can be reached, a symlink is never followed, and an uploaded `.html`, `.js`, or `.svg` is never run in the dashboard. `LARAPILOT_FILE_MANAGER=false` removes the page.
 
 ### JSON API
 
@@ -417,7 +426,11 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
 php artisan larapilot:economics-set --product-model=saas --price-monthly=29 --churn=4
 ```
 
-- **The page reads as a simulator.** It opens on one plain-language answer — what the client pays, what you keep after costs and tax, how long it takes. For a subscription it adds a four-step calculator: monthly price · what one customer leaves you · customers to cover the monthly bills · customers to earn the build back in a year, and when. Hour tables, tax, packaging, scenarios, and competitor prices stay one click away.
+- **The page is written for someone who has never read a balance sheet.** The answer comes before the detail, no figure appears without the sum that produced it, and a word of finance appears only in the glossary.
+  - **The short answer** — one sentence and four figures: what the client pays, what you keep (and how much of every 100 of the price that is), the time to deliver, the upkeep each year.
+  - **Two receipts, each under a bar drawn to scale** — *how the price is built* (work + running costs + margin − discount = client price, + VAT = what the client pays) and *where the money goes* (client price − running costs − tax and contributions − accountant = what you keep).
+  - **A subscription, one step at a time** — what one customer leaves, what the product costs every month, how many customers it takes with the division written out, and a chart of **when the money comes back** that reads any month by pointer or keyboard and tells the same story in sentences. Three forecasts side by side, each with a verdict in words.
+  - **Words used here** — VAT, margin, net, fixed costs, churn, break-even, and the rest, each with the figure it has in this project.
 - **A console of dropdowns** (rate, margin, discount, team size, regime, how it is sold, price line, scenario, …) recomputes everything server side. Nothing is written from the browser: a simulation prints the `economics-set` command that would make it real.
 - **Hours come from the backlog** — planned task hours per spec, story points where no plan exists — and the snapshot refreshes itself whenever specs, plans, the PRD, or inception change.
 - **Sold as** `fixed` · `saas` · `ecommerce` · `package` changes how payback is read, never the hours or the build price. On `auto` it follows the Business Model answer from inception.
@@ -460,11 +473,67 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 | **API token** — bearer token or `X-Larapilot-Token` on `/larapilot/api/*` | enforced when `LARAPILOT_API_TOKEN` is set | set the env var |
 | **API auth** — token mandatory; fails closed (`503`) with no token configured | OFF | `--api-auth=YES` |
 | **Security scan** — [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) in review and pre-ship | OFF | `composer require --dev andreapollastri/checkpoint` then `--security-scan=YES` |
+| **Aikido** — the findings of [Aikido](https://www.aikido.dev/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--aikido=YES` |
+| **Boogle** — the errors [Boogle](https://boogle.web.ap.it/) recorded for the running application, in triage and on the dashboard | OFF | address and token in `.env`, then `--boogle=YES` |
 
 - Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
 - Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
 - The dashboard **file manager** is stricter than the rest of the UI: outside local/development/testing it answers `404` — reads and writes alike — until `dashboard_auth` is `YES`.
 - With `security_scan=YES`, `checkpoint:scan` `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles or runs the scanner while the setting is off.
+
+### Aikido
+
+[Aikido](https://www.aikido.dev/) scans the repository on its side — dependencies, code, secrets, infrastructure. Larapilot runs no scanner and installs nothing: it **reads what Aikido found** over the public REST API and brings it into the workflow.
+
+```dotenv
+LARAPILOT_AIKIDO_CLIENT_ID=
+LARAPILOT_AIKIDO_CLIENT_SECRET=
+LARAPILOT_AIKIDO_REGION=eu        # eu · us · au · me
+LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
+```
+
+```bash
+php artisan larapilot:settings-set --aikido=YES
+php artisan larapilot:aikido-status                  # setting, credentials, repository, last scan
+php artisan larapilot:aikido-issues --new --report   # what nobody decided about; writes docs/security/aikido.md
+php artisan larapilot:aikido-link 24 --spec=US-012   # the spec that fixes it
+php artisan larapilot:aikido-link 40 --waive --reason="Internal tool, never distributed."
+php artisan larapilot:aikido-issues --gate           # exit 1 when the gate fails — for CI
+php artisan larapilot:aikido-scan                    # ask Aikido to scan again
+```
+
+- **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes (`repositories:write` to ask for a scan). The repository has to be connected in Aikido, through the git provider.
+- **`/larapilot-aikido`** downloads the open findings, shows the new ones, and hands each one you pick to **`/larapilot-triage`** with an *Aikido finding* block. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
+- **The ship gate** stops on an open finding at `LARAPILOT_AIKIDO_FAIL_ON` or above that was not waived. A finding in the backlog is not fixed: it counts until Aikido no longer reports it, after the fix is merged and scanned.
+- **A waiver needs a reason**, in a sentence, and only the user gives it.
+- **What is kept**: `.larapilot/aikido.yaml` holds the decisions — ids, the spec, the reason — and is meant to be committed. The credentials stay in `.env`; the access token lives in the cache and is never written to a file of the project.
+
+### Boogle
+
+[Boogle](https://boogle.web.ap.it/) is a self-hosted exception tracker and uptime monitor: the application sends what it throws there, with [`andreapollastri/boogle-client`](https://github.com/andreapollastri/boogle). Larapilot **reads the open errors back** over the admin API and brings each bug into the workflow.
+
+```dotenv
+LARAPILOT_BOOGLE_URL=https://boogle.example.com   # empty = taken from BOOGLE_SERVER
+LARAPILOT_BOOGLE_TOKEN=                            # the token of an admin user of Boogle
+LARAPILOT_BOOGLE_PROJECT=                          # id or title; empty = found from BOOGLE_PROJECT_KEY, then APP_URL
+```
+
+```bash
+php artisan larapilot:settings-set --boogle=YES
+php artisan larapilot:boogle-status                           # setting, address, token, project
+php artisan larapilot:boogle-errors --new --report            # what nobody decided about; writes docs/support/boogle.md
+php artisan larapilot:boogle-link BUG12 --spec=US-012         # the spec that fixes the bug that code belongs to
+php artisan larapilot:boogle-link BUG21 --ignore --reason="The mail provider was down on its side."
+php artisan larapilot:boogle-resolve BUG12                    # once the fix is released: closes it in Boogle
+```
+
+- **One entry for each bug.** Boogle keeps a row for each time an exception is thrown. Larapilot puts together the rows that share the exception, the file, and the line, and says how many times and on how many routes. A file of the server (`/home/forge/…/releases/…/app/Services/X.php`) is read as the file of the repository it is.
+- **`/larapilot-boogle`** downloads the open errors, shows the ones nobody decided about, and hands each bug you pick to **`/larapilot-triage`** with a *Boogle error* block. `/larapilot-bug` then writes the fix spec, with a test that throws the same exception before the fix.
+- **A decision is about the bug**, not about one time it was thrown: the next time it happens, under a code nobody has seen, it is not handed over again. `.larapilot/boogle.yaml` holds the decisions and is meant to be committed.
+- **Back after the fix.** An error closed with `boogle-resolve` and thrown again is shown as such, first in the list: the fix did not hold.
+- **Personal data stays in Boogle.** The user, the query string, and the payload of a request are never read into a file, a report, the cache, or the chat. Larapilot keeps the exception, the message with addresses masked, the file and line, the method and the path — with ids and tokens in the path replaced by `{id}` and `{token}`.
+- **Writing to Boogle is asked for.** `boogle-resolve` is the only command that writes there; it runs when you say so and is not allowed through the MCP tool. The token reads every project of that Boogle — Boogle gives tokens to users, not to projects — so it lives in `.env`.
 
 ### Diagnostics (bug triage)
 
@@ -572,6 +641,8 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
 | Releases | `release-list` · `release-add` · `release-set` · `release-cut` · `release-feature` · `release-sync` · `release-ship` (`--push`) · `release-import` |
 | Custom skills | `custom-skill-list` · `custom-skill-add` (`--name=`, `--file=` / `--content=` / stdin, `--force`) |
+| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`) · `aikido-scan` |
+| Errors | `boogle-status` · `boogle-errors` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `boogle-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `boogle-resolve` (`--status=FIXED\|DONE`, `--comment=`) |
 | Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` · `vps-provision` |
 | Runtime | `diagnostics` (`--lines=`, `--no-logs`) |
 

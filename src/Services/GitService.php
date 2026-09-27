@@ -949,6 +949,19 @@ class GitService
     }
 
     /**
+     * What a read-only git command prints, or null when it could not run.
+     * Errors are dropped: the caller parses the output.
+     */
+    public function read(string ...$args): ?string
+    {
+        if (! $this->isRepository()) {
+            return null;
+        }
+
+        return $this->git(...$args);
+    }
+
+    /**
      * @return array{ok: bool, code: int, output: string}
      */
     public function run(string ...$args): array

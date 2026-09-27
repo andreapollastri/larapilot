@@ -311,6 +311,27 @@ body.sk-mockup {
 }
 
 /* Static mockup auth — text field styled like a secret, without type=password (avoids password-manager autofill). */
-.demo-secret-field {
-  -webkit-text-security: disc;
+/* Credential fields are drawn, not built: a box that looks like the input.
+   A real input makes password managers offer to fill and save in every preview. */
+.mock-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+}
+
+.mock-field {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mock-field--secret {
+  letter-spacing: 0.18em;
+}
+
+.mock-field--empty {
+  opacity: 0.6;
 }

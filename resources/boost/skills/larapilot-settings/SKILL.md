@@ -11,7 +11,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, prior_art, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, prior_art, comments, dashboard_auth, api_auth, security_scan, aikido, boogle, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
 
 ## Output Economy
 
@@ -28,7 +28,7 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 | 🧪 **Anne** | Test Architect — owns testing mode implications |
 | 🛡️ **Robert** | Code Reviewer — owns auto_approve risk framing |
 | 📒 **Lucille** | Project tracking — owns the lucille on/exclude setting; default is always ON |
-| 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle + dashboard users (`larapilot:dashboard-user`), the `api_auth` toggle (`LARAPILOT_API_TOKEN` on `/larapilot/api/*`) **and** the `security_scan` toggle (`andreapollastri/checkpoint` in review/ship) |
+| 🔐 **Lars** | Security Expert — owns the `dashboard_auth` toggle + dashboard users (`larapilot:dashboard-user`), the `api_auth` toggle (`LARAPILOT_API_TOKEN` on `/larapilot/api/*`) the `aikido` toggle (findings read from Aikido), the `boogle` toggle (errors read from Boogle) **and** the `security_scan` toggle (`andreapollastri/checkpoint` in review/ship) |
 | 🔗 **Matt** | Integration Manager — owns Slack/Discord/Telegram notification toggles (secrets stay in `.env`) |
 | 💰 **Aurora** | FinOps — owns `account` (NONE / FREELANCE / COMPANY) and the Economics follow-up |
 
@@ -48,7 +48,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · aikido={…} · boogle={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -225,6 +225,30 @@ When the user picks `YES`, remind once: set `LARAPILOT_API_TOKEN` in `.env` (dev
 
 When the user picks `YES`, remind once: the scanner is not bundled — run `composer require --dev andreapollastri/checkpoint` in the target app (if missing, `/larapilot-review` will stop and ask for it). Setup notes: `.larapilot/integrations.md` → **Security scan**.
 
+**7e. Aikido** — read the findings of Aikido for this repository (default OFF)
+
+- **AskQuestion prompt:** `Aikido (current: {VALUE}) — read the security findings Aikido has for this repository?`
+- **Chat framing (one line):** 🔐 Lars — Aikido scans on its side; Larapilot reads the result with credentials kept in `.env`, and `/larapilot-aikido` hands the findings to triage.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NO` | `NO — Aikido is not read (default)` |
+| `YES` | `YES — /larapilot-aikido downloads the findings; the ship gate stops on what nobody decided about` |
+
+When the user picks `YES`, remind once: set `LARAPILOT_AIKIDO_CLIENT_ID` and `LARAPILOT_AIKIDO_CLIENT_SECRET` in `.env` — never collect them through AskQuestion — then run `/larapilot-aikido`. Setup notes: `.larapilot/integrations.md` → **Aikido**.
+
+**7f. Boogle** — read the errors Boogle recorded for the running application (default OFF)
+
+- **AskQuestion prompt:** `Boogle (current: {VALUE}) — read the errors the running application throws?`
+- **Chat framing (one line):** 🎧 Sophia — Boogle is the exception tracker the team hosts; Larapilot reads the open errors with a token kept in `.env`, and `/larapilot-boogle` hands each bug to triage.
+
+| Option id | AskQuestion label |
+| --- | --- |
+| `NO` | `NO — Boogle is not read (default)` |
+| `YES` | `YES — /larapilot-boogle downloads the errors; /larapilot/errors shows them` |
+
+When the user picks `YES`, remind once: set `LARAPILOT_BOOGLE_URL` and `LARAPILOT_BOOGLE_TOKEN` in `.env` — never collect the token through AskQuestion — then run `/larapilot-boogle`. Setup notes: `.larapilot/integrations.md` → **Boogle**.
+
 **8. Notifications** — master switch (default OFF)
 
 - **AskQuestion prompt:** `Notifications (current: {VALUE}) — enable chat alerts (Slack/Discord/Telegram)?`
@@ -248,7 +272,7 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
 Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (prior_art)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / `aikido` / `boogle` / forge / notifications → NO.)
 
 ### 2. Persist
 
@@ -270,6 +294,8 @@ php artisan larapilot:settings-set \
   --dashboard-auth=NO \
   --api-auth=NO \
   --security-scan=NO \
+  --aikido=NO \
+  --boogle=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
@@ -282,7 +308,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · aikido=… · boogle=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.

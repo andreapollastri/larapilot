@@ -340,6 +340,11 @@
             <h2>Board</h2>
             <p class="sub">Every user story in the backlog, grouped by workflow status.</p>
         </div>
+        @if (($metrics['total'] ?? 0) > 0)
+            <div class="page-actions">
+                <a class="btn ghost" id="board-download" href="{{ route('larapilot.dashboard.board.download') }}" data-base="{{ route('larapilot.dashboard.board.download') }}" title="The board as it is now, status by status, in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download status (.md)</span></a>
+            </div>
+        @endif
     </header>
 
     <section class="metrics" aria-label="Backlog summary">
@@ -472,6 +477,7 @@
         const count = document.getElementById('board-filter-count');
         const clear = document.getElementById('board-filter-clear');
         const bar = document.getElementById('board-tools-bar');
+        const download = document.getElementById('board-download');
         const cards = [...board.querySelectorAll('.spec-card')];
         const columns = [...board.querySelectorAll('.column')];
         const metrics = {
@@ -523,6 +529,36 @@
             return true;
         };
 
+        // The download follows the filters: what is on screen is what is saved.
+        const syncDownload = () => {
+            if (!download) {
+                return;
+            }
+
+            const params = new URLSearchParams();
+            const values = {
+                q: (query.value || '').trim(),
+                priority: priority ? priority.value : '',
+                epic: epic ? epic.value : '',
+                status: status ? status.value : '',
+            };
+
+            Object.entries(values).forEach(([name, value]) => {
+                if (value !== '') {
+                    params.set(name, value);
+                }
+            });
+
+            const search = params.toString();
+            const label = download.querySelector('[data-label]');
+
+            download.href = download.dataset.base + (search ? '?' + search : '');
+
+            if (label) {
+                label.textContent = search ? 'Download filtered status (.md)' : 'Download status (.md)';
+            }
+        };
+
         const restore = () => {
             cards.forEach((card) => {
                 card.hidden = false;
@@ -570,6 +606,8 @@
         };
 
         const apply = () => {
+            syncDownload();
+
             if (!filtering()) {
                 restore();
                 return;

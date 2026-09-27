@@ -1545,7 +1545,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.0</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.1</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1606,6 +1606,8 @@
       <a class="sub" href="#deep-dive-integrations">Forges &amp; notify</a>
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
+      <a class="sub" href="#deep-dive-aikido">Aikido</a>
+      <a class="sub" href="#deep-dive-boogle">Boogle</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
       <a class="sub" href="#deep-dive-vps">Self-hosted VPS</a>
 
@@ -2020,6 +2022,14 @@
               <tr>
                 <td>A client or PM who follows work in Linear, Jira, Asana, Trello, ClickUp, or Monday</td>
                 <td><code>/larapilot-tracker</code> — <a href="#example-tracker-sync">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>Vulnerabilities Aikido found in the repository</td>
+                <td><code>/larapilot-aikido</code> — see <a href="#deep-dive-aikido">Aikido</a></td>
+              </tr>
+              <tr>
+                <td>Errors the application throws in production</td>
+                <td><code>/larapilot-boogle</code> — see <a href="#deep-dive-boogle">Boogle</a></td>
               </tr>
               <tr>
                 <td>A Backstage developer portal</td>
@@ -4733,8 +4743,10 @@ GO — Slack notified.</code></pre>
                 <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
                   Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
                   (non-production), on the spec page, and in the <a href="#deep-dive-dashboard">dashboard</a>
-                  <strong>Design</strong> gallery (<code>/larapilot/design</code>) — presentation index, all screens,
-                  zip download of HTML + assets.
+                  <strong>Design</strong> gallery (<code>/larapilot/design</code>) — every screen as a card you
+                  click to browse the mockup like a site, zip download of HTML + assets. A mockup
+                  <a href="#deep-dive-mockup-credentials">never contains a field for a username or a password</a>:
+                  it draws them.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:config-show</code> — resolve
                   <code>paths.mockups</code> and <code>paths.design_systems</code>.
@@ -5043,6 +5055,39 @@ GO — Slack notified.</code></pre>
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:tracker-status</code> ·
                   <code>larapilot:tracker-push</code> · <code>larapilot:tracker-pull</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">security findings</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-aikido</code></h3>
+                <p>Downloads the open findings <strong>Aikido</strong> has for the repository, shows the ones
+                  nobody decided about, and hands each one you pick to
+                  <code>/larapilot-triage</code>, which routes it to <code>/larapilot-bug</code> or
+                  <code>/larapilot-feature</code>. It runs no scanner and writes no spec itself. Needs
+                  <code>aikido=YES</code>. Full reference: <a href="#deep-dive-aikido">Aikido</a>.
+                </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:aikido-status</code> ·
+                  <code>larapilot:aikido-issues</code> · <code>larapilot:aikido-link</code> ·
+                  <code>larapilot:aikido-scan</code>.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">production errors</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-boogle</code></h3>
+                <p>Downloads the open errors <strong>Boogle</strong> recorded for the running application,
+                  puts together the times one bug was thrown, and hands each bug you pick to
+                  <code>/larapilot-triage</code>, which routes it to <code>/larapilot-bug</code> or
+                  <code>/larapilot-feature</code>. It writes no spec itself, and it never reads who the user
+                  of a request was. Needs <code>boogle=YES</code>. Full reference:
+                  <a href="#deep-dive-boogle">Boogle</a>.
+                </p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:boogle-status</code> ·
+                  <code>larapilot:boogle-errors</code> · <code>larapilot:boogle-link</code> ·
+                  <code>larapilot:boogle-resolve</code>.
                 </p>
               </div>
             </div>
@@ -5633,6 +5678,32 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
               <code>.larapilot/integrations.md</code> → <em>Security scan</em>.</li>
           </ul>
 
+          <h4 id="deep-dive-aikido-setting">Aikido <span class="chip">opt-in</span></h4>
+          <p><code>settings.aikido</code> (default <code>NO</code>) reads the findings of
+            <a href="https://www.aikido.dev/" target="_blank" rel="noopener">Aikido</a> for the repository.
+            Aikido scans on its side; Larapilot runs no scanner and only reads the result, with credentials kept in
+            <code>.env</code>. While the setting is off, Aikido is never called.</p>
+          <div class="code-block">
+            <div class="code-block-header">turn it on</div>
+            <pre><code>php artisan larapilot:settings-set --aikido=YES
+php artisan larapilot:aikido-status</code></pre>
+          </div>
+          <p>Owned by <strong>Lars</strong>. Everything else — the credentials, the skill, the gate — is in
+            <a href="#deep-dive-aikido">Aikido</a>.</p>
+
+          <h4 id="deep-dive-boogle-setting">Boogle <span class="chip">opt-in</span></h4>
+          <p><code>settings.boogle</code> (default <code>NO</code>) reads the errors
+            <a href="https://boogle.web.ap.it/" target="_blank" rel="noopener">Boogle</a> recorded for the
+            running application, with the address of Boogle and a token kept in <code>.env</code>. While the
+            setting is off, Boogle is never called.</p>
+          <div class="code-block">
+            <div class="code-block-header">turn it on</div>
+            <pre><code>php artisan larapilot:settings-set --boogle=YES
+php artisan larapilot:boogle-status</code></pre>
+          </div>
+          <p>Owned by <strong>Sophia</strong>. Everything else — the token, the skill, what is kept — is in
+            <a href="#deep-dive-boogle">Boogle</a>.</p>
+
           <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
           <p><code>settings.github</code>, <code>gitlab</code>, <code>bitbucket</code>, and <code>azure</code> (all default
             <code>NO</code>) are <strong>orthogonal</strong> to <code>git_mode</code>. Enable the forge matching
@@ -5704,6 +5775,8 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
   --dashboard-auth=NO \
   --api-auth=NO \
   --security-scan=NO \
+  --aikido=NO \
+  --boogle=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
@@ -7493,6 +7566,492 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
           </div>
         </article>
 
+        <!-- Aikido -->
+        <article class="deep-dive-sub" id="deep-dive-aikido">
+          <h3>Aikido</h3>
+          <p class="lead">Optional. <a href="https://www.aikido.dev/" target="_blank" rel="noopener">Aikido</a>
+            scans the repository on its side — dependencies, code, leaked secrets, infrastructure, licenses —
+            through its connection to the git provider. Larapilot runs no scanner and installs nothing: it
+            <strong>reads what Aikido found</strong> over the public REST API, says what was already decided about
+            each finding, and brings the rest into the workflow through <code>/larapilot-triage</code>.</p>
+
+          <h4 id="deep-dive-aikido-setup">Setup</h4>
+          <ol>
+            <li><strong>Connect the repository in Aikido</strong>, through the git provider (GitHub, GitLab,
+              Bitbucket, Azure DevOps). Larapilot cannot do this step.</li>
+            <li><strong>Create the credentials</strong> in Aikido under <em>Settings → Integrations → Public REST
+              API</em>. Reading needs the <code>issues:read</code> and <code>repositories:read</code> scopes;
+              asking for a scan needs <code>repositories:write</code>.</li>
+            <li><strong>Put them in <code>.env</code></strong> — never in <code>.larapilot/</code>, which is
+              committed.</li>
+            <li><strong>Turn the setting on</strong> and check the connection.</li>
+          </ol>
+          <div class="code-block">
+            <div class="code-block-header">.env</div>
+            <pre><code>LARAPILOT_AIKIDO_CLIENT_ID=
+LARAPILOT_AIKIDO_CLIENT_SECRET=
+LARAPILOT_AIKIDO_REGION=eu        # eu (default) · us · au · me
+LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
+LARAPILOT_AIKIDO_CACHE=300        # seconds the dashboard keeps what it read
+LARAPILOT_AIKIDO_BASE_URL=        # only when the workspace is reached through another address</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --aikido=YES
+php artisan larapilot:aikido-status</code></pre>
+          </div>
+          <p><code>aikido-status</code> answers with <code>enabled</code>, <code>configured</code>,
+            <code>authenticated</code>, the <code>repository</code> it matched (id, name, branch, last scan), and
+            <code>hints</code>: one line for each thing that is missing, with what to do about it. The repository is
+            found from the git remote, by its address or by its name; when Aikido calls it something else, name it
+            with <code>LARAPILOT_AIKIDO_REPOSITORY</code>.</p>
+
+          <h4 id="deep-dive-aikido-skill">The skill</h4>
+          <div class="code-block">
+            <div class="code-block-header">in the editor</div>
+            <pre><code>/larapilot-aikido</code></pre>
+          </div>
+          <ol>
+            <li><strong>Status</strong> — one line: repository, branch, last scan, the severity the gate fails
+              on. With something missing, the hints are printed and the skill stops.</li>
+            <li><strong>Download</strong> — <code>aikido-issues --new --report</code>. The findings nobody decided
+              about are shown in a table, the most severe first, 15 rows at most; the detail of all of them goes
+              to <code>.larapilot/docs/security/aikido.md</code>.</li>
+            <li><strong>Choose</strong> — one question: the findings that stop the ship gate, every new finding,
+              the ones you name, or none.</li>
+            <li><strong>Group by fix</strong> — one request per fix, not per finding: several CVEs of one
+              package closed by one upgrade go together.</li>
+            <li><strong>Hand off to triage</strong> — each group goes to <code>/larapilot-triage</code> in the
+              same turn, with the block below. Triage measures it against the PRD like any request: a known
+              vulnerability in shipped code is a <strong>bug</strong> when a requirement names security for that
+              area, a <strong>bug with a requirement gap</strong> otherwise, and the verdict is not asked.
+              <code>/larapilot-bug</code> then writes the fix spec, with a criterion that Aikido no longer
+              reports the finding.</li>
+            <li><strong>Record</strong> — <code>aikido-link 24 --spec=US-012</code>, so the finding is not handed
+              over again, on this machine or another.</li>
+          </ol>
+          <div class="code-block">
+            <div class="code-block-header">what triage receives</div>
+            <pre><code>Aikido finding
+ids: 24, 25
+severity: critical (95/100)
+kind: Vulnerable dependency
+title: guzzlehttp/psr7
+where: fjord-invoices
+cves: CVE-2026-1111
+fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
+          </div>
+
+          <h4 id="deep-dive-aikido-states">What a finding can be</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Meaning</th>
+                  <th>At the ship gate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>new</code></td>
+                  <td>Open in Aikido, and nobody decided about it</td>
+                  <td>Counts</td>
+                </tr>
+                <tr>
+                  <td><code>in_backlog</code></td>
+                  <td>A spec of the backlog fixes it. <strong>Not fixed yet</strong></td>
+                  <td>Counts, until Aikido no longer reports it</td>
+                </tr>
+                <tr>
+                  <td><code>waived</code></td>
+                  <td>Accepted as it is, with a reason of at least a sentence, given by the user</td>
+                  <td>Does not count</td>
+                </tr>
+                <tr>
+                  <td>no longer open</td>
+                  <td>Decided about here, and Aikido reports it no more: fixed, or closed there</td>
+                  <td>Does not count</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The verdict of the gate is <code>FAIL</code> when a finding at
+            <code>LARAPILOT_AIKIDO_FAIL_ON</code> (default <code>high</code>) or above counts,
+            <code>WARN</code> when only lower ones do, <code>PASS</code> otherwise. <code>/larapilot-ship</code>
+            runs <code>larapilot:aikido-issues --gate --report</code>: <code>FAIL</code> is a release blocker,
+            <code>WARN</code> a note in the assessment. The same command exits <code>1</code> on
+            <code>FAIL</code>, so a pipeline can use it.</p>
+
+          <h4 id="deep-dive-aikido-cli">Commands</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:aikido-status</code></td>
+                  <td>Setting, credentials, repository, last scan, hints. Read-only</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-issues</code></td>
+                  <td>The open findings with their state and the verdict of the gate.
+                    <code>--new</code> only the ones with no decision · <code>--severity=high</code> that
+                    severity and above · <code>--type=open_source</code> one kind ·
+                    <code>--limit=</code> · <code>--report</code> writes
+                    <code>{paths.security}/aikido.md</code> · <code>--gate</code> exits <code>1</code> on
+                    <code>FAIL</code></td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-link 24,25 --spec=US-012</code></td>
+                  <td>The spec that fixes the findings. A number Aikido does not report is refused</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-link 40 --waive --reason="…"</code></td>
+                  <td>Accepts a finding as it is, and keeps why</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-link 40 --forget</code></td>
+                  <td>Drops what was decided: the finding is <code>new</code> again</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-scan</code></td>
+                  <td>Asks Aikido to scan the repository again. The scan runs there and takes minutes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>aikido-status</code> and <code>aikido-issues</code> are allowed through the MCP
+            <code>RunArtisanTool</code>; the two that write are not.</p>
+
+          <h4 id="deep-dive-aikido-dashboard">On the dashboard</h4>
+          <p><code>/larapilot/security</code> appears in the menu when the setting is on. It opens on the verdict
+            of the gate, in a sentence — <em>A release is stopped: 3 open findings are high or above, 2 with no
+            decision yet</em> — then the open findings by severity, then every finding, the most severe first.
+            A row opens on what the finding is, how to fix it, where it is, its CVE, when it was first seen, and
+            what was decided: the spec it is in the backlog as, with its status, or the reason it was waived.
+            Findings filter by decision and by text. What was read is kept for five minutes; <strong>Read
+            again</strong> asks Aikido anew, and <strong>Download report (.md)</strong> saves the same document
+            the skill writes. With the setting off the page explains the setup; when Aikido cannot be read it
+            says what to check, and the rest of the dashboard is untouched.</p>
+
+          <h4 id="deep-dive-aikido-kept">What is kept, and where</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>What</th>
+                  <th>Where</th>
+                  <th>Committed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Client id and secret</td>
+                  <td><code>.env</code></td>
+                  <td>Never</td>
+                </tr>
+                <tr>
+                  <td>Access token</td>
+                  <td>The cache, for as long as Aikido says it lasts, less a minute</td>
+                  <td>Never written to a file</td>
+                </tr>
+                <tr>
+                  <td>Decisions: finding id, spec, reason of a waiver</td>
+                  <td><code>.larapilot/aikido.yaml</code></td>
+                  <td>Yes — the team shares one set of decisions</td>
+                </tr>
+                <tr>
+                  <td>The report: every open finding with its decision</td>
+                  <td><code>.larapilot/docs/security/aikido.md</code></td>
+                  <td>Your call: it names vulnerabilities that are still open</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cli-note"><strong>What Larapilot never does.</strong> It never marks a finding as fixed: a
+            finding leaves the list when Aikido no longer reports it, after the fix is merged and scanned. It
+            never waives a finding: only the user does, with a reason. It never rates a finding again: the
+            severity is Aikido's. The address of the token endpoint is taken from the region
+            (<code>https://app.{region}.aikido.dev/api/oauth/token</code>, and
+            <code>https://app.aikido.dev</code> for <code>eu</code>).
+          </div>
+        </article>
+
+        <!-- Boogle -->
+        <article class="deep-dive-sub" id="deep-dive-boogle">
+          <h3>Boogle</h3>
+          <p class="lead">Optional. <a href="https://boogle.web.ap.it/" target="_blank" rel="noopener">Boogle</a>
+            is a self-hosted exception tracker and uptime monitor for Laravel: the application sends what it
+            throws there, with <code>andreapollastri/boogle-client</code>. Larapilot
+            <strong>reads the open errors back</strong> over the admin API, puts together the ones that are one
+            bug, says what was already decided about each, and brings the rest into the workflow through
+            <code>/larapilot-triage</code>.</p>
+
+          <h4 id="deep-dive-boogle-setup">Setup</h4>
+          <ol>
+            <li><strong>Have the application send its exceptions to Boogle</strong>:
+              <code>composer require andreapollastri/boogle-client</code>, then
+              <code>php artisan boogle:install</code>. Larapilot does not do this step.</li>
+            <li><strong>Create a token</strong> in Boogle, as an <strong>admin</strong> user, in the profile
+              under <em>API tokens</em>. The admin API answers to admin users only.</li>
+            <li><strong>Put the address and the token in <code>.env</code></strong> — never in
+              <code>.larapilot/</code>, which is committed.</li>
+            <li><strong>Turn the setting on</strong> and check the connection.</li>
+          </ol>
+          <div class="code-block">
+            <div class="code-block-header">.env</div>
+            <pre><code>LARAPILOT_BOOGLE_URL=https://boogle.example.com   # empty = taken from BOOGLE_SERVER
+LARAPILOT_BOOGLE_TOKEN=                            # the token of an admin user of Boogle
+LARAPILOT_BOOGLE_PROJECT=                          # id or title in Boogle; empty = found by itself
+LARAPILOT_BOOGLE_CACHE=300                         # seconds the dashboard keeps what it read</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --boogle=YES
+php artisan larapilot:boogle-status</code></pre>
+          </div>
+          <p><code>boogle-status</code> answers with <code>enabled</code>, <code>configured</code>,
+            <code>authenticated</code>, the <code>project</code> it matched (id, title, address, group, whether
+            the uptime is watched), and <code>hints</code>: one line for each thing that is missing. The project
+            is the one named in <code>LARAPILOT_BOOGLE_PROJECT</code>; with nothing named, the one whose key is
+            <code>BOOGLE_PROJECT_KEY</code> — what the client package sends with — and then the one whose
+            address is <code>APP_URL</code>.</p>
+
+          <h4 id="deep-dive-boogle-bug">One entry for each bug</h4>
+          <p>Boogle keeps one row for each time an exception is thrown, and gives each a code
+            (<code>#BUG12</code>, <code>#OUT3</code>). Fourteen rows of one exception at one line are one bug
+            thrown fourteen times, and that is how Larapilot shows them:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>What</th>
+                  <th>How it is read</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>One bug</td>
+                  <td>The rows that share the exception, the file, and the line. <code>OPEN</code> and
+                    <code>READ</code> in Boogle are both open: seen is not fixed</td>
+                </tr>
+                <tr>
+                  <td>Where</td>
+                  <td>A file of the server
+                    (<code>/home/forge/…/releases/20260920/app/Services/CustomerImporter.php</code>) is read as
+                    the file of the repository it is (<code>app/Services/CustomerImporter.php:88</code>): the
+                    longest end of the path that exists in the checkout. A line in <code>vendor/</code> is
+                    said to be in a package</td>
+                </tr>
+                <tr>
+                  <td>Request</td>
+                  <td>The method and the path the bug was thrown on the most, and on how many other routes.
+                    An id, a token, or an address in the path becomes <code>{id}</code>,
+                    <code>{token}</code>, <code>{address}</code></td>
+                </tr>
+                <tr>
+                  <td>Thrown</td>
+                  <td>How many times, the first, the last, and how many nobody opened in Boogle yet</td>
+                </tr>
+                <tr>
+                  <td>Outage</td>
+                  <td>What the uptime monitor recorded (<code>#OUT…</code>). Listed apart: an outage is not a
+                    bug of the code by itself</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 id="deep-dive-boogle-skill">The skill</h4>
+          <div class="code-block">
+            <div class="code-block-header">in the editor</div>
+            <pre><code>/larapilot-boogle</code></pre>
+          </div>
+          <ol>
+            <li><strong>Status</strong> — one line: project, address, whether the uptime is watched. With
+              something missing, the hints are printed and the skill stops.</li>
+            <li><strong>Download</strong> — <code>boogle-errors --new --kind=error --report</code>. The bugs
+              nobody decided about are shown in a table, the ones thrown the most first, 15 rows at most; the
+              detail of all of them goes to <code>.larapilot/docs/support/boogle.md</code>. A bug that came
+              back after its fix is said first.</li>
+            <li><strong>Choose</strong> — one question: the three thrown the most, every one, the ones you
+              name, or none.</li>
+            <li><strong>Read the code first</strong> — the line is opened in the repository before the
+              handoff. When it is in a package, the call of the application that leads there is found.</li>
+            <li><strong>Hand off to triage</strong> — each bug goes to <code>/larapilot-triage</code> in the
+              same turn, with the block below. An exception is evidence that something broke, not the
+              verdict: triage applies the promise test to what the user was doing.
+              <code>/larapilot-bug</code> then writes the fix spec, with a test that throws the same exception
+              before the fix.</li>
+            <li><strong>Record</strong> — <code>boogle-link BUG12 --spec=US-012</code>. One code is enough:
+              the decision is about the bug.</li>
+            <li><strong>Close in Boogle</strong> — only when the fix is released and you say so:
+              <code>boogle-resolve BUG12</code>.</li>
+          </ol>
+          <div class="code-block">
+            <div class="code-block-header">what triage receives</div>
+            <pre><code>Boogle error
+codes: #BUG12, #BUG15
+class: Illuminate\Database\QueryException
+message: SQLSTATE[23000]: Integrity constraint violation
+where: app/Services/CustomerImporter.php:88
+request: POST /admin/customers/import
+thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
+          </div>
+
+          <h4 id="deep-dive-boogle-states">What a bug can be</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>new</code></td>
+                  <td>Open in Boogle, and nobody decided about it</td>
+                </tr>
+                <tr>
+                  <td><code>in_backlog</code></td>
+                  <td>A spec of the backlog fixes it. <strong>Not fixed yet</strong>: it stays in the list
+                    until Boogle holds it as fixed</td>
+                </tr>
+                <tr>
+                  <td><code>ignored</code></td>
+                  <td>Left as it is, with a reason of at least a sentence, given by the user</td>
+                </tr>
+                <tr>
+                  <td>back after the fix</td>
+                  <td>Closed in Boogle with <code>boogle-resolve</code>, then thrown again. The fix did not
+                    hold: it is shown first, and <code>--new</code> lists it again</td>
+                </tr>
+                <tr>
+                  <td>no longer open</td>
+                  <td>Decided about here, and Boogle holds it no more as open</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>A decision is kept under what the occurrences of a bug share — the exception, the file, the line —
+            and not under a code. The next time the bug is thrown, under a code nobody has seen, it is known
+            and not handed over again.</p>
+
+          <h4 id="deep-dive-boogle-cli">Commands</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:boogle-status</code></td>
+                  <td>Setting, address, token, project, hints. Read-only</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:boogle-errors</code></td>
+                  <td>The open errors, one entry for each bug, with their state.
+                    <code>--new</code> only the ones with no decision and the ones that came back ·
+                    <code>--kind=error</code> or <code>outage</code> · <code>--limit=</code> ·
+                    <code>--report</code> writes <code>{paths.support}/boogle.md</code></td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:boogle-link BUG12 --spec=US-012</code></td>
+                  <td>The spec that fixes the bug that code belongs to. A code Boogle does not hold is
+                    refused</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:boogle-link BUG21 --ignore --reason="…"</code></td>
+                  <td>Leaves a bug as it is, and keeps why</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:boogle-link BUG21 --forget</code></td>
+                  <td>Drops what was decided: the bug is <code>new</code> again. Takes the key of the bug
+                    too, which is all that is left of one Boogle closed</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:boogle-resolve BUG12</code></td>
+                  <td><strong>Writes to Boogle.</strong> Closes every open occurrence of the bug as
+                    <code>FIXED</code> (<code>--status=DONE</code> for the other word Boogle has), with
+                    <em>Fixed by US-012.</em> in its history, or the line given with <code>--comment=</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>boogle-status</code> and <code>boogle-errors</code> are allowed through the MCP
+            <code>RunArtisanTool</code>; the two that write are not.</p>
+
+          <h4 id="deep-dive-boogle-dashboard">On the dashboard</h4>
+          <p><code>/larapilot/errors</code> appears under Insights when the setting is on. It opens on what is
+            open, in a sentence — <em>5 open errors, thrown 33 times: 2 with no decision yet. 1 came back after
+            its fix</em> — then four figures, then the errors thrown <strong>day by day</strong> over the last
+            two weeks, with the same numbers as a table. Every bug is a row: how many times it was thrown, the
+            exception and what it said, the codes of Boogle, the file and the line, how long ago it last
+            happened, and the decision. A row opens on the whole message, the route, the first and the last
+            time, and what to do next. Bugs filter by decision and by text. What was read is kept for five
+            minutes; <strong>Read again</strong> asks Boogle anew, and
+            <strong>Download report (.md)</strong> saves the same document the skill writes. With the setting
+            off the page explains the setup; when Boogle cannot be read it says what to check, and the rest of
+            the dashboard is untouched.</p>
+
+          <h4 id="deep-dive-boogle-kept">What is kept, and where</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>What</th>
+                  <th>Where</th>
+                  <th>Committed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Address and token of Boogle</td>
+                  <td><code>.env</code></td>
+                  <td>Never</td>
+                </tr>
+                <tr>
+                  <td>Decisions: exception, file and line, codes, spec, reason</td>
+                  <td><code>.larapilot/boogle.yaml</code></td>
+                  <td>Yes — the team shares one set of decisions</td>
+                </tr>
+                <tr>
+                  <td>The report: every open bug with its decision</td>
+                  <td><code>.larapilot/docs/support/boogle.md</code></td>
+                  <td>Your call: it quotes what the application said when it failed</td>
+                </tr>
+                <tr>
+                  <td>The user, the query string, the payload of a request</td>
+                  <td>Boogle, and nowhere else</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>The key and the token of the project</td>
+                  <td>Compared with <code>BOOGLE_PROJECT_KEY</code> in memory, and dropped</td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cli-note"><strong>Personal data stays in Boogle.</strong> An exception is recorded with
+            the user who met it and the request that caused it. None of it is needed to fix a bug, so none of
+            it is read: not into a file, not into the report, not into the cache, not into the chat. An
+            address or a long secret quoted in a message is masked. The token reads
+            <strong>every project</strong> of that Boogle, because Boogle gives tokens to users and not to
+            projects: it lives in <code>.env</code> and in the secrets of the CI.
+          </div>
+        </article>
+
         <!-- External frontend repo -->
         <article class="deep-dive-sub" id="deep-dive-frontend-companion">
           <h3>External frontend repo</h3>
@@ -8265,6 +8824,32 @@ git add .larapilot/ &amp;&amp; git rebase --continue</code></pre>
             <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
           </p>
 
+          <h4 id="deep-dive-mockup-credentials">Sign-in screens: the fields are drawn, never built</h4>
+          <p>A mockup is a <strong>picture</strong> of the screen, not a working form. Password managers
+            (1Password, Bitwarden, iCloud Keychain, the browser's own) scan every <code>&lt;input&gt;</code> they
+            find, and the Design gallery renders the same screen several times at once — the card, the viewer, the
+            style comparison. One real sign-in field makes them pop up, fill in, and offer to save on every
+            preview. So <code>/larapilot-design</code> follows one hard rule, and the five packaged systems ship a
+            <code>login.html</code> that shows how:</p>
+          <ul>
+            <li><strong>No <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, or <code>&lt;form&gt;</code>
+              for credentials</strong> — username, login email, password, confirm password, PIN, one-time code —
+              on login, register, reset, two-factor, change-password, and create-user screens.</li>
+            <li><strong>No workaround counts.</strong> A masked <code>type="text"</code>,
+              <code>autocomplete="off"</code>, <code>data-1p-ignore</code>, or a renamed label are all ignored by
+              password managers, which guess from the layout.</li>
+            <li><strong>The field is drawn</strong>: a <code>&lt;div&gt;</code> styled like the input of the design
+              system, holding sample text (<code>jane@example.com</code>, <code>••••••••••</code>), with
+              <code>role="img"</code> and an <code>aria-label</code>. Its label is a <code>&lt;span&gt;</code>.</li>
+            <li><strong>The button is a link</strong> to the next screen
+              (<code>&lt;a role="button" href="dashboard.html"&gt;</code>), so the flow stays clickable in the
+              viewer. Error, empty, and focus states are separate screens.</li>
+            <li>Every other control stays real: search, name, amount, select, the <em>Remember me</em> checkbox.</li>
+          </ul>
+          <p>Filament and Starter Kit carry the classes in <code>tokens.css</code> — <code>.mock-label</code>,
+            <code>.mock-field</code>, <code>.mock-field--secret</code>, <code>.mock-field--empty</code>. The real
+            Fortify or Filament fields are built by Alex at implementation time.</p>
+
           <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
           <p>You can add <strong>your own</strong> design system or UI template under
             <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
@@ -8584,6 +9169,30 @@ php artisan larapilot:doctor --human                                  # a table 
                       href="#deep-dive-tracker">Project trackers</a></td>
                 </tr>
                 <tr>
+                  <td>Aikido</td>
+                  <td><code>larapilot:aikido-status</code> · <code>larapilot:aikido-issues</code>
+                    (<code>--new</code>, <code>--severity=</code>, <code>--type=</code>,
+                    <code>--limit=</code>, <code>--report</code>, <code>--gate</code>) ·
+                    <code>larapilot:aikido-link</code> (<code>--spec=</code>,
+                    <code>--waive --reason=</code>, <code>--forget</code>) ·
+                    <code>larapilot:aikido-scan</code>
+                  </td>
+                  <td><code>/larapilot-aikido</code>, <code>/larapilot-ship</code>, CI gate — see <a
+                      href="#deep-dive-aikido">Aikido</a></td>
+                </tr>
+                <tr>
+                  <td>Boogle</td>
+                  <td><code>larapilot:boogle-status</code> · <code>larapilot:boogle-errors</code>
+                    (<code>--new</code>, <code>--kind=</code>, <code>--limit=</code>,
+                    <code>--report</code>) · <code>larapilot:boogle-link</code> (<code>--spec=</code>,
+                    <code>--ignore --reason=</code>, <code>--forget</code>) ·
+                    <code>larapilot:boogle-resolve</code> (<code>--status=</code>,
+                    <code>--comment=</code>)
+                  </td>
+                  <td><code>/larapilot-boogle</code>, <code>/larapilot-ship</code> — see <a
+                      href="#deep-dive-boogle">Boogle</a></td>
+                </tr>
+                <tr>
                   <td>Self-hosted VPS</td>
                   <td><code>larapilot:vps-provision</code> (<code>--output=</code>, <code>--with-readme</code>,
                     <code>--stdout</code>, <code>--force</code>)
@@ -8707,14 +9316,16 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><strong>Board</strong></td>
                   <td><code>/larapilot</code></td>
                   <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> →
-                    <span class="status status-done">DONE</span>)
+                    <span class="status status-done">DONE</span>), and the status as it stands in one Markdown file
+                    (<code>/larapilot/board.md</code>)
                   </td>
                 </tr>
                 <tr>
                   <td><strong>PRD</strong></td>
                   <td><code>/larapilot/prd</code></td>
-                  <td>Rendered <code>PRD.md</code> with a section table of contents, the decision journal, and a
-                    <strong>functional analysis summary</strong> download
+                  <td>Rendered <code>PRD.md</code> with a section table of contents, a <strong>search</strong> that
+                    looks in the PRD and nowhere else, the decision journal, and two downloads: the whole PRD
+                    (<code>/larapilot/prd/prd.md</code>) and the <strong>functional analysis summary</strong>
                     (<code>/larapilot/prd/functional-summary.md</code>)</td>
                 </tr>
                 <tr>
@@ -8730,10 +9341,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Design</strong></td>
                   <td><code>/larapilot/design</code></td>
-                  <td>One navigable index: presentation cover, ordered walk through every flow with
-                    prev/next, per-flow gallery, <strong>style variants</strong> under
-                    <code>mockups/{spec}/styles/{slug}/</code> with side-by-side compare and
-                    <strong>Use this style</strong>, download
+                  <td>Every screen first, as a card; a click opens that mockup as a site you browse, with
+                    <strong>All screens</strong> to come back. Prev/next through every flow,
+                    <strong>style variants</strong> under <code>mockups/{spec}/styles/{slug}/</code> with
+                    side-by-side compare and <strong>Use this style</strong>, download
                     <code>/larapilot/design/package.zip</code> (HTML + assets)</td>
                 </tr>
                 <tr>
@@ -8744,20 +9355,25 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Skills</strong></td>
                   <td><code>/larapilot/skills</code></td>
-                  <td>Custom skills from <code>.larapilot/skills/</code> — slash trigger plus YAML
-                    <code>description</code></td>
+                  <td>Every skill the agents of the project can run, whoever brought it: the project,
+                    Larapilot, another package, Laravel Boost, the folder of an agent. Click one to
+                    <strong>read it</strong>. Under them, the files the agents are told from, one part for
+                    each author</td>
                 </tr>
                 <tr>
                   <td><strong>File manager</strong></td>
                   <td><code>/larapilot/files</code></td>
-                  <td>The five material folders, each with what it is for. Browse the folder tree, preview and
-                    download files, upload files or a whole folder with its structure, rename, delete</td>
+                  <td>The five material folders, each with what it is for: browse the folder tree, preview and
+                    download files, read a PDF in the page, upload files or a whole folder with its structure,
+                    rename, delete. A sixth folder, <strong>Project</strong>, shows the application itself,
+                    <strong>read only</strong></td>
                 </tr>
                 <tr>
                   <td><strong>Git</strong></td>
                   <td><code>/larapilot/git</code></td>
-                  <td>Last-12-month contribution heatmap from local git history (all branches), full-width and
-                    responsive — recent on the right — filterable by developer</td>
+                  <td>Last-12-month contribution heatmap, every branch measured against the branch it is heading
+                    for, and the history drawn as a graph — one lane per line of work, each commit on the branch
+                    it was made on. Filterable by developer</td>
                 </tr>
                 <tr>
                   <td><strong>Usage</strong></td>
@@ -8766,11 +9382,26 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     <code>/larapilot/usage/report.md</code>. Schedule and Gantt are on Plan</td>
                 </tr>
                 <tr>
+                  <td><strong>Security</strong></td>
+                  <td><code>/larapilot/security</code></td>
+                  <td>What Aikido found in the repository, with what was decided about each finding and the
+                    verdict of the ship gate (when <code>aikido</code> is <code>YES</code>). Download
+                    <code>/larapilot/security/aikido.md</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Errors</strong></td>
+                  <td><code>/larapilot/errors</code></td>
+                  <td>What the running application threw, as Boogle recorded it: one row for each bug, how many
+                    times day by day, and what was decided (when <code>boogle</code> is <code>YES</code>).
+                    Download <code>/larapilot/errors/boogle.md</code></td>
+                </tr>
+                <tr>
                   <td><strong>Economics</strong></td>
                   <td><code>/larapilot/economics</code></td>
-                  <td>Pricing simulator (when <code>account</code> is FREELANCE or COMPANY): one plain-language
-                    answer, a four-step subscription calculator, then quote, tax, payback, packaging, business plan and
-                    competitors. Downloads: client quote <code>/larapilot/economics/quote.md</code>, internal report
+                  <td>What the project costs, what the client pays, and what is left (when <code>account</code> is
+                    FREELANCE or COMPANY): the short answer, every sum written as a receipt, where the money goes,
+                    and — for a subscription — when it comes back. Downloads: client quote
+                    <code>/larapilot/economics/quote.md</code>, internal report
                     <code>/larapilot/economics/report.md</code></td>
                 </tr>
                 <tr>
@@ -8793,7 +9424,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
 
           <h4>File manager</h4>
           <p><code>/larapilot/files</code> manages what you hand the skills before they start. It opens on five
-            folders:</p>
+            folders you can change, and on the project itself, which you can only read:</p>
           <div class="table-card">
             <table>
               <thead>
@@ -8829,6 +9460,44 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Your custom skills, one folder per slash command</td>
                   <td>Boost slash commands</td>
                 </tr>
+                <tr>
+                  <td><code>./</code> — <strong>Project</strong> <span class="chip">read only</span></td>
+                  <td>The Laravel application itself: code, config, routes, and tests</td>
+                  <td>Plan, implement, and review</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Brand · Client materials · Design systems · Legacy · Skills</th>
+                  <th>Project</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Browse, preview, download</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td>Upload files or a folder, create a folder</td>
+                  <td>Yes</td>
+                  <td><strong>No</strong></td>
+                </tr>
+                <tr>
+                  <td>Rename a file or a folder</td>
+                  <td>Yes</td>
+                  <td><strong>No</strong></td>
+                </tr>
+                <tr>
+                  <td>Delete a file or a folder</td>
+                  <td>Yes</td>
+                  <td><strong>No</strong></td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -8839,6 +9508,32 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             is listed with the reason. The five folders themselves cannot be renamed or deleted, and the packaged
             design systems are marked, because <code>larapilot:update</code> rewrites them.</p>
           <ul>
+            <li><strong>A PDF is read in the page.</strong> One page or two side by side (the first stands alone,
+              like a cover), zoom with the buttons, <kbd>+</kbd> <kbd>−</kbd> <kbd>0</kbd> or
+              <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + wheel, page jump, arrow keys, drag to move around an enlarged page,
+              and full screen with <kbd>F</kbd>. The reader is PDF.js 3.11 from cdnjs, checked against its hash;
+              where it cannot load — offline, or scripts off — the file opens in its own tab as before.</li>
+            <li><strong>Project is read only.</strong> The routes that upload, create, rename, and delete do not
+              know the folder, and the service refuses a write to it whoever asks. The code is changed in your
+              editor and by the skills, never from a web page: an upload into <code>public/</code> on a shared
+              host would be code anyone signed in could run.</li>
+            <li><strong>Folders that start with a dot are left out of Project</strong> — <code>.git</code>,
+              <code>.larapilot</code>, <code>.github</code>, <code>.idea</code>, at any depth. They are not
+              listed, not counted, and answer <code>404</code> by address, a link that resolves into one
+              included. <strong>Files that start with a dot are shown</strong>: <code>.env.example</code>,
+              <code>.gitignore</code>, <code>.editorconfig</code>. <code>vendor/</code> and
+              <code>node_modules/</code> are listed and can be opened; they are left out of the count and the
+              tree unfolds only along the folder you are in.</li>
+            <li><strong>Credentials show their keys, never their values.</strong> In every folder, a file that
+              holds credentials is shown with each value replaced by <code>*****************</code> — on screen
+              and in the download, so the real bytes never leave the server. That covers <code>.env</code> and
+              <code>.env.*</code> (a template such as <code>.env.example</code> is shown as it is),
+              <code>auth.json</code>, <code>.npmrc</code>, <code>.yarnrc</code>, <code>.netrc</code>,
+              <code>.pgpass</code>. Comments stay readable; a commented-out value and the later lines of a value
+              written over several lines are masked too. A key or a certificate (<code>.pem</code>,
+              <code>.key</code>, <code>.p12</code>, <code>.pfx</code>, <code>id_rsa</code>, …) is one line of
+              asterisks. A database (<code>.sqlite</code>, <code>.db</code>) is listed, and neither shown nor
+              downloaded.</li>
             <li><strong>Local by default.</strong> The file manager is open in <code>local</code>,
               <code>development</code>, and <code>testing</code>. On any other environment
               (<code>staging</code>) it is served only when
@@ -8848,7 +9543,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB</code> (default <code>51200</code>, 50 MB) and by PHP's
               <code>upload_max_filesize</code> and <code>post_max_size</code>, whichever is lower. The page shows the
               limit in force.</li>
-            <li><strong>Nothing leaves the folder.</strong> A path outside the five folders returns <code>404</code>,
+            <li><strong>Nothing leaves the folder.</strong> A path outside the six folders returns <code>404</code>,
               a symlink is listed and never followed, and an uploaded <code>.html</code>, <code>.js</code>, or
               <code>.svg</code> is never run in the dashboard.</li>
             <li><strong>Custom skills stay in step.</strong> A change under <code>.larapilot/skills/{name}/</code>
@@ -8863,12 +9558,22 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar,
             mockup indicator when HTML exists, pill badges for comment and blocking counts when feedback exists, and
             a merge-request link when the story is <span class="status status-done">DONE</span>. That link sits beside
-            the card target, so the board does not leave a blank card next to a merged story.</p>
+            the card target, so the board does not leave a blank card next to a merged story.
+            <strong>Download status (.md)</strong> saves the board as it stands — a summary, specs and story points
+            by status, then every spec with its priority, points, epic, task progress, and merge commit. With a
+            filter on, the file holds what is on screen and says which filter produced it.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later
             <code>/larapilot-feature</code>, <code>/larapilot-bug</code>, or <code>/larapilot-prd</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
+            The <strong>search</strong> field finds a requirement, a persona, or a word as you type, in the PRD
+            and nowhere else: the index is built in the browser from the headings of the document and the text
+            under each, so the menu and the decision journal are never found. <kbd>/</kbd> or
+            <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> focuses it, the arrows and <kbd>Enter</kbd> move and open,
+            a result lands on the first match of its section with every match highlighted, accents are ignored
+            (<em>perche</em> finds <em>perché</em>), and <code>?q=</code> in the address opens the page on a
+            query. <strong>Download PRD (.md)</strong> saves the whole document exactly as it is on disk.
             <strong>Download functional summary</strong> produces one Markdown file in the PRD's language for someone
             who will never read the full PRD: the one-sentence pitch, the personas, what is in and out of this
             version, and every requirement as a numbered point — required first, then what matters, then what can
@@ -8890,14 +9595,18 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
 
           <h4>Design</h4>
           <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
-            <code>/larapilot-design</code>. It is <strong>one navigable index</strong>, not a pile of files: the
-            viewer opens on the presentation cover (same language as the PRD, with a <em>start at the first
-            screen</em> call to action), the left index groups screens by flow and marks each flow's entry
-            point, and the arrows — or the ← → keys — walk the whole package in order with a position counter.
-            Under the viewer, a gallery shows only the flow you are in; the full screen list stays collapsed
-            until you ask for it. Top-right <strong>Download zip</strong> packages the presentation
-            <code>index.html</code>, every mockup HTML file, local assets, and referenced design-system files
-            so the pack can be opened offline. When <code>/larapilot-design</code> mocked several visual directions
+            <code>/larapilot-design</code>. The page opens on <strong>every screen</strong>, flow by flow, each one
+            a card with a live preview, its name, and its file; the entry screen of a flow is marked. A field
+            narrows the cards by screen or flow name. <strong>Click a card</strong> and that mockup opens as wide as
+            the window, as a site you browse: links inside it work, and the caption, the counter, and the address
+            follow you from screen to screen. <strong>All screens</strong> — or the browser's back button, or
+            <kbd>Esc</kbd> — returns to the gallery where you left it; the arrows and the ← → keys walk the whole
+            package in order, and the other screens of the same flow sit under the viewer. The address carries
+            the open screen (<code>?screen=</code>), so a link to one screen can be shared. A mockup folder that
+            is not a spec is named once, by its folder. Top-right <strong>Download zip</strong> packages the
+            presentation <code>index.html</code>, every mockup HTML file, local assets, and referenced
+            design-system files so the pack can be opened offline; <strong>Open index in new tab</strong> shows
+            that cover page. When <code>/larapilot-design</code> mocked several visual directions
             (<code>mockups/{spec}/styles/{slug}/</code>), a style switcher, <strong>Compare styles</strong>
             (side-by-side), and <strong>Use this style</strong> appear — the choice is written to
             <code>styles.yaml</code> and logged in the decision journal, same as
@@ -8908,17 +9617,172 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             the same keys as <a href="#deep-dive-settings">Project settings</a>. Read-only: change them with
             <code>/larapilot-settings</code> or <code>larapilot:settings-set</code>.</p>
 
-          <h4>Skills</h4>
-          <p>Every <a href="#deep-dive-custom-skills">custom skill</a> under <code>.larapilot/skills/</code> — title,
-            slash trigger, description, file path, and a <em>Registered</em> / <em>Not registered</em> chip. Opening
-            the page re-registers them with Boost.</p>
+          <h4 id="deep-dive-dashboard-skills">Skills</h4>
+          <p>Every skill the agents of the project can run, <strong>whoever brought it</strong>. The page
+            opens on who reads them here — the folder of each agent found in the project, with how many
+            skills it holds — and then lists the skills by where they come from. A field finds one by its
+            name, its package, or a word of what it does. Opening the page re-registers the
+            <a href="#deep-dive-custom-skills">custom skills</a> with Boost.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Group</th>
+                  <th>Read from</th>
+                  <th>What the page adds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Custom skills</strong></td>
+                  <td><code>.larapilot/skills/</code></td>
+                  <td><em>Registered</em> / <em>Not registered</em></td>
+                </tr>
+                <tr>
+                  <td><strong>Packaged with Larapilot</strong></td>
+                  <td>The package itself</td>
+                  <td>What is on screen is what the agent runs</td>
+                </tr>
+                <tr>
+                  <td><strong>Written for Boost in <code>.ai/</code></strong></td>
+                  <td><code>.ai/skills/</code>, <code>.ai/{package}/skill/</code></td>
+                  <td>The copy Larapilot registered of a custom skill is not listed as a second skill</td>
+                </tr>
+                <tr>
+                  <td><strong>From other packages</strong></td>
+                  <td><code>resources/boost/skills/</code> of every package in <code>vendor/</code> and
+                    <code>node_modules/</code></td>
+                  <td>A package that came with another one says so: Boost publishes the skills of a package
+                    only when the project requires it itself</td>
+                </tr>
+                <tr>
+                  <td><strong>From Laravel Boost</strong></td>
+                  <td><code>vendor/laravel/boost/.ai/</code></td>
+                  <td>The ones an agent has come first; the ones Boost ships for packages the project does
+                    not use are folded. Of two versions under one name, the published one is read</td>
+                </tr>
+                <tr>
+                  <td><strong>Only in the folder of an agent</strong></td>
+                  <td><code>.claude/skills/</code>, <code>.cursor/skills/</code>,
+                    <code>.github/skills/</code>, <code>.agents/skills/</code>, and the others</td>
+                  <td>No package and no folder of the project accounts for it: added by hand, or by another
+                    tool</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Under every skill, <strong>which agent has it</strong>: the folder of an agent holds a copy, and
+            the page says whether that copy is the text of the source, was made by Boost from a template, or
+            is <em>not the same text</em> — an old copy, which <code>php artisan boost:update</code> publishes
+            again. A version of a package skill the project keeps in <code>.ai/skills/</code> is named, because
+            that is the one Boost publishes.</p>
+          <p><strong>Click a skill to read it</strong> (<code>/larapilot/skills/{name}</code>). The page shows
+            the skill as a document, not as a file: the title, the slash command, and the description on top;
+            the front matter as facts instead of text; the Markdown rendered — headings, tables, task lists,
+            code — with a list of its sections that marks the one being read; the files that sit beside
+            <code>SKILL.md</code>; and <strong>Download SKILL.md</strong> for the file as it is on disk. A
+            packaged skill is read from the package itself, so what is on screen is what the agent runs. Raw
+            HTML in a skill is shown as text, never run.</p>
+          <p>When several skills carry one name, the address says which one is meant
+            (<code>/larapilot/skills/{name}?from=boost.tailwindcss-4</code>) and the page lists the others.
+            A skill written as a Blade template (<code>SKILL.blade.php</code>) is
+            <strong>never run by the dashboard</strong>: it is shown as Boost published it in the folder of an
+            agent, or as it is written when no agent has it. The name and the source are looked up in what is
+            on disk, never turned into a path, and a link that leads out of the project is not followed.</p>
+
+          <h4 id="deep-dive-dashboard-guidelines">What the agents are told</h4>
+          <p>A skill runs when it is called. Under the skills, the page lists what is read
+            <strong>before any request</strong>: <code>CLAUDE.md</code>, <code>AGENTS.md</code>,
+            <code>GEMINI.md</code>, <code>.github/copilot-instructions.md</code>,
+            <code>.junie/guidelines.md</code>, the rules in <code>.cursor/rules/</code>, and what the team
+            wrote for Boost in <code>.ai/guidelines/</code> and <code>.ai/rules/</code>. Each card says which
+            agent reads the file and how many parts of it each author wrote.</p>
+          <p>A click opens <code>/larapilot/skills/guidelines/{id}</code>. Boost writes the guidelines of
+            every package into those files between two markers, one part for each; the page cuts the file
+            where Boost cut it and says who wrote each part:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Author</th>
+                  <th>How it is known</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Boost</strong></td>
+                  <td>A part Boost names itself: <code>foundation</code>, <code>boost</code>,
+                    <code>php</code>, <code>laravel/core</code>, <code>pest/core</code>, …</td>
+                </tr>
+                <tr>
+                  <td><strong>Larapilot</strong></td>
+                  <td><code>andreapollastri/larapilot/core</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Package</strong></td>
+                  <td>A part named after a package that is installed and brings
+                    <code>resources/boost/guidelines/</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Project</strong></td>
+                  <td>A part named <code>.ai/…</code>: the guidelines of the team</td>
+                </tr>
+                <tr>
+                  <td><strong>By hand</strong></td>
+                  <td>What is before and after the markers. Boost keeps it; what is between them is written
+                    again at every <code>boost:update</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>A file Boost did not write is read as one document, with the list of its sections and its front
+            matter as facts.</p>
+
+          <h4>Security</h4>
+          <p>The findings of Aikido for this repository, when <code>aikido</code> is <code>YES</code>. Full
+            chapter: <a href="#deep-dive-aikido">Aikido</a>.</p>
+
+          <h4>Errors</h4>
+          <p>What the running application threw, as Boogle recorded it, when <code>boogle</code> is
+            <code>YES</code>. Full chapter: <a href="#deep-dive-boogle">Boogle</a>.</p>
 
           <h4>Git</h4>
-          <p>A GitHub-style contribution calendar of every commit on every local branch for the last 12 months. The
-            grid fills the panel width: week columns scale with the viewport, cells stay square, <strong>today sits on
-              the right</strong> and older weeks extend left (the view opens scrolled to the recent end). Pick a developer
-            from the dropdown to see only that author's squares. The page reads the repo with <code>git log --all</code>
-            — it does not call GitHub, GitLab, or any remote API.</p>
+          <p>Three views of the local repository. None of them calls GitHub, GitLab, or any remote API.</p>
+          <ul>
+            <li><strong>Contribution calendar</strong> — every commit on every local branch for the last 12
+              months. The grid fills the panel width, <strong>today sits on the right</strong>, and the developer
+              dropdown shows one author's squares.</li>
+            <li><strong>Branches</strong> — every local branch with its type (<code>main</code>,
+              <code>develop</code>, <code>feature</code>, <code>bugfix</code>, <code>release</code>,
+              <code>hotfix</code>), its last commit, and where it stands <strong>against the branch it is heading
+              for</strong>: work goes into the integration branch, what ships goes into the main line. The state
+              is a sentence — <em>3 commits to merge into develop</em>, <em>3 commits to merge, 8 behind
+              develop</em>, <em>Merged into main</em> — beside a bar of commits behind and ahead. The branch
+              checked out is marked <em>You are here</em>; a branch that names a spec
+              (<code>feature/US-004-invoice</code>) links to it. <em>On the remote</em> says whether a branch
+              was never pushed, has commits to push or pull, or was deleted upstream. Merged branches fold into
+              one line, because their work is already where it was going; branches that exist on the remote only
+              are listed apart.</li>
+            <li><strong>History</strong> — the last 150 commits (300 or 600 on request) drawn as a graph, newest
+              at the top. The main line keeps the first lane and the integration branch the second, so the
+              picture reads the same from one repository to the next. A filled dot is a commit, a hollow one a
+              merge; a curve leaving a dot shows where a branch came from or what it merged. Labels mark the
+              head of each branch and every tag; each row names the branch the commit was made on, its author,
+              its date, and its hash, linked to the forge when the remote is known. With a developer selected,
+              the commits of the others fade.</li>
+          </ul>
+          <p>Git does not record which branch a commit was made on, so the page works it out the way a person
+            reads a history: a branch owns what its head reaches through first parents — the main line first, then
+            the integration branch, then releases and hotfixes, then the rest — and a branch that was
+            <strong>merged and deleted</strong> is named from the message of the merge that closed it
+            (<code>Merge branch 'feature/US-002-reset' into develop</code>, <code>Merge pull request #12 from
+            team/feature-x</code>). The main line is <code>main</code>, <code>master</code>, <code>trunk</code>, or
+            the default branch of <code>origin</code>; the integration branch is <code>develop</code>,
+            <code>development</code>, or <code>dev</code>. A repository with neither is still drawn, read against
+            the branch that is checked out.</p>
+          <p>The graph uses four colours and a grey — main line, integration, work branches, releases and
+            hotfixes, other — checked for colour-blind separation on both themes. Colour is never the only sign:
+            every row names its branch.</p>
 
           <h4>Usage</h4>
           <p>Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report at
@@ -8927,8 +9791,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             Lucille</a>.</p>
 
           <h4>Economics</h4>
-          <p>The pricing simulator, when <code>account</code> is <code>FREELANCE</code> or <code>COMPANY</code>. Full
-            chapter: <a href="#deep-dive-economics">Economics</a>.</p>
+          <p>What the project costs, what the client pays, and what is left for you, written for someone who has
+            never read a balance sheet — when <code>account</code> is <code>FREELANCE</code> or
+            <code>COMPANY</code>. Full chapter: <a href="#deep-dive-economics">Economics</a>.</p>
 
           <h4>Docs</h4>
           <p>The delivery loop, optional branches keyed off the current settings, every packaged skill with its
@@ -8956,8 +9821,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <li><strong>Tasks</strong> — expandable subtasks with status, type, body, and commit SHA when marked done
             </li>
           </ul>
-          <p>Status badge, story points, and merge commit appear in the header. The dashboard mirrors repo state —
-            skills remain the only way to change it.</p>
+          <p>Status badge, story points, and merge commit appear in the header. <strong>Download spec (.md)</strong>
+            (<code>/larapilot/specs/{code}/spec.md</code>) saves the whole spec in one file: the facts of the
+            header, the user story, the technical plan, <strong>every task</strong> with its status, type,
+            estimate, dependencies, commit, and body, the decision journal, and the internal feedback, oldest
+            first, under a note to remove it before the file goes to a client. Headings inside a story, a plan,
+            or a task are moved under the heading of the file, so the outline stays in order. The dashboard
+            mirrors repo state — skills remain the only way to change it.</p>
         </article>
 
         <!-- Economics -->
@@ -9057,18 +9927,102 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             </table>
           </div>
 
-          <p><strong>The page reads as a simulator.</strong> It opens on <strong>one plain-language answer</strong>
-            — for a one-off build: <em>the client pays this once, after costs and tax you keep this, the work takes
-            about this many months</em>. For a subscription it adds a <strong>four-step calculator</strong>: the
-            monthly price · what one customer leaves you after card fees and support · the customers needed to cover
-            the monthly bills · the customers needed to earn the build back in a year — and <em>when</em> that
-            happens on the selected scenario. Hour tables, tax, packaging, scenarios, the month table, and competitor
-            prices stay one click away.</p>
-          <p><strong>Under the answer.</strong> A sticky console of dropdowns at the top, then the numbers that decide it ·
-            where the hours come from (per-release or per-epic totals, then every user story with the source of
-            its hours) · what the client pays and what you keep · packaging and the business plan when it is a
-            subscription · the market · and a collapsed block with the inputs, the files, and a glossary. Every
-            figure carries a one-line explanation underneath. The page reads in the <strong>PRD's
+          <p><strong>The page is written for someone who has never read a balance sheet.</strong> Three rules
+            hold from top to bottom: the answer comes before the detail, no figure appears without the sum that
+            produced it, and a word of finance appears only in the glossary, next to the plain words the rest of
+            the page uses for it.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Block</th>
+                  <th>What it answers</th>
+                  <th>How it shows it</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>The short answer</strong></td>
+                  <td>What happens, in one sentence</td>
+                  <td>The sentence, then four figures. A one-off build: what the client pays, what you keep (and
+                    how much of every 100 of the price that is), the time to deliver, the upkeep each year. A
+                    subscription: the cost to build, what one customer leaves, the customers that cover the
+                    monthly bills, and the month the build is paid back — or <em>not within 3 years</em></td>
+                </tr>
+                <tr>
+                  <td><strong>Try other numbers</strong></td>
+                  <td>What if the rate, the margin, the price were different</td>
+                  <td>The console of dropdowns. Pointing at a control, or reaching it with <kbd>Tab</kbd>, writes
+                    what it changes under the console. A fold you opened stays open when a control redraws the
+                    page</td>
+                </tr>
+                <tr>
+                  <td><strong>The subscription, one step at a time</strong><br><span class="chip">SaaS</span></td>
+                  <td>Is a subscription worth it</td>
+                  <td>Five numbered steps: <em>one customer, one month</em> (price − card fees − support = what
+                    one customer leaves), <em>what the product costs every month</em> (hosting + keeping the code
+                    healthy + the share of your running costs), <em>how many customers it takes</em> with both
+                    divisions written out, <em>when the money comes back</em>, and the three forecasts side by
+                    side</td>
+                </tr>
+                <tr>
+                  <td><strong>What the client pays and what you keep</strong></td>
+                  <td>How the price is built, and where it ends up</td>
+                  <td>Two receipts, each under a bar drawn to scale. <em>How the price is built</em>: work +
+                    running costs + margin (− discount) = client price, + VAT = what the client pays.
+                    <em>Where the money goes</em>: client price − running costs − tax and contributions −
+                    accountant (− what the law keeps in a company) = what you keep. Then the same thing in one
+                    sentence: <em>out of every EUR 100 of the price, EUR 71 stay with you…</em>, and what that
+                    makes for each hour of work</td>
+                </tr>
+                <tr>
+                  <td><strong>After delivery</strong></td>
+                  <td>What recurs once the build is paid</td>
+                  <td>The maintenance retainer and what it is priced on, the share of your working year the
+                    project takes, and — by model — the orders or the licences that repay the build</td>
+                </tr>
+                <tr>
+                  <td><strong>Packaging</strong> <span class="chip">SaaS</span></td>
+                  <td>What three prices would do</td>
+                  <td>BASE, PRO, and PREMIUM side by side, each with what one customer leaves and the customers
+                    it takes at that price</td>
+                </tr>
+                <tr>
+                  <td><strong>Where the hours come from</strong></td>
+                  <td>What the price rests on</td>
+                  <td>Hours by release or by epic as bars, then every user story with the source of its
+                    hours</td>
+                </tr>
+                <tr>
+                  <td><strong>The market</strong></td>
+                  <td>Where the price sits</td>
+                  <td>Researched competitors, the price trend, and your position against the median</td>
+                </tr>
+                <tr>
+                  <td><strong>Words used here</strong></td>
+                  <td>What the terms mean</td>
+                  <td>VAT, margin, net, fixed costs, MRR / ARR, churn, contribution, break-even, LTV : CAC,
+                    person-months — each defined in one or two sentences, with the figure it has in this
+                    project</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>When the money comes back</strong> is a chart of what the product has earned so far,
+            everything counted. The line starts below zero by the cost of the build, each month adds what the
+            subscriptions leave after the bills and tax, and where it crosses zero the product has paid for
+            itself. The forecast in use is the coloured line; the other two are grey. Moving over the chart — or
+            the arrow keys, <kbd>Home</kbd>, <kbd>End</kbd>, <kbd>Page Up</kbd>, <kbd>Page Down</kbd> once it
+            has the focus — reads any month: customers, what they paid, what was left, the total so far. Under
+            the chart the same story is told in sentences: <em>Launch — you are EUR 5,129 down</em>,
+            <em>Month 20 — the subscriptions cover the monthly bills</em>, <em>After 3 years — there are still
+            EUR 4,218 to earn back</em>. <em>Month by month</em> holds the table. Each forecast carries a
+            verdict in words: <em>pays for itself in month 24</em>, <em>covers its bills from month 20, not
+            the build yet</em>, or <em>loses money every month</em>.</p>
+          <p>The bars use two sets of three colours — what a price is made of (work, costs, margin) and where
+            it ends up (kept, tax, costs) — checked for colour-blind separation on both themes, with costs the
+            same colour in both. A figure is always written beside its colour, and a verdict is an icon and a
+            sentence, never a colour alone. The page reads in the <strong>PRD's
             language</strong> (<code>en</code> · <code>it</code> · <code>es</code> · <code>fr</code> · <code>de</code> · <code>pt</code> · <code>nl</code> · <code>pl</code>, English
             otherwise), like the client quote; the console stays in English on purpose, because its labels and
             the <code>economics-set</code> command it prints are operator controls.</p>
@@ -9445,7 +10399,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v4.1.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v4.1.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -88,6 +88,8 @@ it('exposes default project settings and updates them', function (): void {
         'dashboard_auth' => 'NO',
         'api_auth' => 'NO',
         'security_scan' => 'NO',
+        'aikido' => 'NO',
+        'boogle' => 'NO',
         'github' => 'NO',
         'gitlab' => 'NO',
         'bitbucket' => 'NO',
@@ -107,6 +109,8 @@ it('exposes default project settings and updates them', function (): void {
         ->and($config->commentsEnabled())->toBeFalse()
         ->and($config->apiAuthEnabled())->toBeFalse()
         ->and($config->securityScanEnabled())->toBeFalse()
+        ->and($config->aikidoEnabled())->toBeFalse()
+        ->and($config->boogleEnabled())->toBeFalse()
         ->and($config->githubEnabled())->toBeFalse()
         ->and($config->gitlabEnabled())->toBeFalse()
         ->and($config->bitbucketEnabled())->toBeFalse()

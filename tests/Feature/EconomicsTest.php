@@ -1273,3 +1273,228 @@ MD);
 
     expect($economics->snapshot()['language'])->toBe('de');
 });
+
+it('leads with the short answer and writes every sum as a receipt', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--regime' => 'ordinario',
+        '--hourly-rate' => '50',
+        '--discount' => '10',
+        '--product-model' => 'fixed',
+    ])->assertSuccessful();
+    addSpec(['title' => 'Catalogue', 'points' => 8]);
+
+    $snapshot = app(EconomicsService::class)->snapshot();
+    $quote = $snapshot['quote'];
+    $tax = $snapshot['tax'];
+    $money = static fn (float $amount): string => 'EUR '.number_format($amount, 0, '.', ',');
+
+    $html = $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('The short answer', false)
+        ->assertSee('The client pays', false)
+        ->assertSee('You keep', false)
+        ->assertSee('Time to deliver', false)
+        ->assertSee('Upkeep, every year', false)
+        ->assertSee('Try other numbers', false)
+        ->assertSee('On this page', false)
+        ->assertSee('How the price is built', false)
+        ->assertSee('Where the money goes', false)
+        ->assertSee('After delivery', false)
+        ->assertSee('Words used here', false)
+        ->assertSee('<table class="receipt">', false)
+        ->assertSee('class="split"', false)
+        // the sums, line by line
+        ->assertSee('List price', false)
+        ->assertSee('10% off the list price', false)
+        ->assertSee('Never yours: you collect it and hand it to the tax office', false)
+        ->assertSee('The figure at the bottom of the invoice', false)
+        ->assertSee('Tax and contributions', false)
+        ->assertSee('Accountant and filings', false)
+        ->assertSee('What reaches your pocket', false)
+        ->assertSee('Out of every EUR 100 of the price', false)
+        ->assertSee('for each hour of work', false)
+        // a one-off delivery has no subscription to explain
+        ->assertDontSee('One customer, one month', false)
+        ->assertDontSee('When the money comes back', false)
+        ->getContent();
+
+    // The answer comes before the controls, and the controls before the detail.
+    expect(strpos($html, 'class="card eco-answer"'))->toBeLessThan(strpos($html, 'id="eco-controls"'))
+        ->and(strpos($html, 'id="eco-controls"'))->toBeLessThan(strpos($html, 'id="eco-price"'));
+
+    // Every figure of the two receipts is the figure of the engine.
+    foreach ([$quote['labor'], $quote['margin'], $quote['list_price'], $quote['discount'], $quote['gross'], $quote['vat'], $quote['client_total'], $tax['total_tax'], $tax['compliance'], $quote['net_to_owner']] as $amount) {
+        expect($html)->toContain($money((float) $amount));
+    }
+
+    // What leaves the price and what stays add up to the price.
+    $running = $quote['gross'] - $quote['net_to_owner'] - $tax['total_tax'] - $tax['compliance'] - $tax['legal_reserve'];
+
+    expect(round($running, 2))->toBe(round((float) $tax['costs'], 2))
+        ->and($html)->toContain($money($running));
+
+    $keep = (int) round($quote['net_to_owner'] / $quote['gross'] * 100);
+
+    expect($html)->toContain('EUR '.$keep.' stay with you')
+        ->toContain('EUR '.$keep.' out of every EUR 100 of the price');
+});
+
+it('shows what the law keeps in a company and the taxes on taking the money out', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'COMPANY'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', ['--country' => 'IT', '--product-model' => 'fixed'])->assertSuccessful();
+    addSpec(['title' => 'Catalogue', 'points' => 8]);
+
+    $tax = app(EconomicsService::class)->snapshot()['tax'];
+
+    expect($tax['legal_reserve'])->toBeGreaterThan(0)
+        ->and($tax['dividend_tax'])->toBeGreaterThan(0);
+
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('Set aside by law', false)
+        ->assertSee('yours, but not to withdraw', false)
+        ->assertSee('other taxes EUR', false);
+});
+
+it('walks through a subscription one sum at a time', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', [
+        '--country' => 'IT',
+        '--hourly-rate' => '55',
+        '--product-model' => 'saas',
+        '--price-monthly' => '29',
+    ])->assertSuccessful();
+    addSpec(['title' => 'Invoices', 'points' => 13]);
+
+    $snapshot = app(EconomicsService::class)->snapshot();
+    $saas = $snapshot['saas'];
+
+    $response = $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('The subscription, one step at a time', false)
+        ->assertSee('One customer, one month', false)
+        ->assertSee('Card fees', false)
+        ->assertSee('What the product costs every month', false)
+        ->assertSee('Keeping the code healthy', false)
+        ->assertSee('How many customers it takes', false)
+        ->assertSee('What the forecast expects against what it takes', false)
+        ->assertSee('When the money comes back', false)
+        ->assertSee('Move over the chart, or use the arrow keys, to read any month.', false)
+        ->assertSee('If it goes badly, as expected, or well', false)
+        ->assertSee('Is a customer worth what it costs to win one?', false)
+        ->assertSee('Cost to build', false)
+        ->assertSee('Build paid back', false)
+        // the words of finance stay in the glossary
+        ->assertDontSee('ARR at month 36', false)
+        ->assertDontSee('Break-even customers</th>', false)
+        ->assertDontSee('>MRR<', false);
+
+    $html = $response->getContent();
+
+    // The sum of one customer and the sum of the bills use the figures of the engine.
+    expect($html)->toContain('EUR '.number_format($saas['price_monthly'], 2))
+        ->toContain('EUR '.number_format($saas['contribution_per_customer'], 2))
+        ->toContain('EUR '.number_format($saas['fixed_monthly'], 2))
+        ->toContain('EUR '.number_format($saas['infrastructure_monthly'], 2));
+
+    // The chart carries the launch and thirty-six months, each one readable.
+    expect(preg_match('/data-months="([^"]+)"/', $html, $matches))->toBe(1);
+
+    $months = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true);
+
+    expect($months)->toHaveCount(37)
+        ->and($months[0]['month'])->toBe(0)
+        ->and($months[0]['x'])->toBe(0)
+        ->and($months[36]['month'])->toBe(36)
+        ->and((float) $months[36]['x'])->toBe(100.0)
+        ->and($months[12])->toHaveKeys(['customers', 'income', 'left', 'total', 'x', 'y']);
+
+    foreach ($months as $month) {
+        expect($month['y'])->toBeGreaterThanOrEqual(0)->toBeLessThanOrEqual(100);
+    }
+
+    // One line for each forecast, and the legend names all three.
+    expect(substr_count($html, 'class="cash-line is-other"'))->toBe(2)
+        ->and(substr_count($html, 'class="cash-line"'))->toBe(1)
+        ->and($html)->toContain('Realistic — the forecast in use')
+        ->toContain('Pessimistic')
+        ->toContain('Optimistic');
+});
+
+it('says in one sentence whether each forecast pays for itself', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'saas', '--price-monthly' => '29'])->assertSuccessful();
+    addSpec(['title' => 'Invoices', 'points' => 13]);
+
+    $lines = collect(app(EconomicsService::class)->snapshot()['business_plan']['lines'])->keyBy('id');
+    $html = $this->get('/larapilot/economics')->assertOk()->getContent();
+
+    foreach ($lines as $line) {
+        $sentence = match (true) {
+            ! empty($line['recovered_month']) => 'Pays for itself in month '.$line['recovered_month'],
+            ! empty($line['profitable_month']) => 'Covers its bills from month '.$line['profitable_month'].', not the build yet',
+            default => 'Loses money every month',
+        };
+
+        expect($html)->toContain($sentence);
+    }
+
+    // Picking another forecast moves the chart, the tiles, and the story with it.
+    $optimistic = $this->get('/larapilot/economics/panel?scenario=optimistic')
+        ->assertOk()
+        ->assertSee('Optimistic — the forecast in use', false)
+        ->assertSee('On the Optimistic forecast', false)
+        ->getContent();
+
+    if (! empty($lines['optimistic']['recovered_month'])) {
+        expect($optimistic)->toContain('Month '.$lines['optimistic']['recovered_month'])
+            ->toContain('The build is paid back. What comes after is profit.');
+    }
+});
+
+it('tells the story of the money in the language of the PRD', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
+    $this->artisan('larapilot:economics-set', ['--product-model' => 'saas', '--price-monthly' => '29'])->assertSuccessful();
+    addSpec(['title' => 'Fatture', 'points' => 13]);
+    app(PrdService::class)->write(<<<'MD'
+# Gestionale fatture
+
+## Panoramica
+Il gestionale serve a emettere fatture e a seguire i pagamenti dei clienti dell'azienda.
+
+## Obiettivi di business
+- Ridurre il tempo per emettere una fattura
+- Sapere chi deve ancora pagare
+
+## Funzionalità principali
+- Anagrafica clienti
+- Emissione delle fatture
+
+## Architettura
+Laravel 12, MySQL, deploy su VPS.
+MD);
+
+    $this->get('/larapilot/economics')
+        ->assertOk()
+        ->assertSee('La risposta in breve', false)
+        ->assertSee('Prova altri numeri', false)
+        ->assertSee('Un cliente, un mese', false)
+        ->assertSee('Quanti clienti servono', false)
+        ->assertSee('Quando tornano i soldi', false)
+        ->assertSee('Se va male, come previsto, o bene', false)
+        ->assertSee('Come è costruito il prezzo', false)
+        ->assertSee('Dove vanno i soldi', false)
+        ->assertSee('Dopo la consegna', false)
+        ->assertSee('A te resta', false)
+        ->assertDontSee('The short answer', false)
+        ->assertDontSee('Where the money goes', false)
+        // the controls stay in English
+        ->assertSee('Hourly rate', false);
+});

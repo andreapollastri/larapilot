@@ -9,230 +9,60 @@
     .design-page { display: flex; flex-direction: column; gap: 18px; }
     .design-page .page-head { margin-bottom: 0; }
 
-    .design-stage {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
-        align-items: start;
-    }
+    /* two views of the same page: every screen, or one of them opened */
+    .design-page[data-view="viewer"] .design-gallery,
+    .design-page[data-view="viewer"] .page-head,
+    .design-page[data-view="gallery"] .design-viewer { display: none; }
 
-    /* index: one list, ordered, with the entry screen of each flow marked.
-       Stacked above the viewer it stays scrollable, so it never pushes the
-       screen itself below the fold. */
-    .design-toc {
-        padding: 14px 10px 16px;
-        overflow: auto;
-        max-height: 44vh;
-        scrollbar-width: thin;
-    }
+    .design-gallery { display: flex; flex-direction: column; gap: 18px; }
 
-    @media (min-width: 1100px) {
-        .design-stage { grid-template-columns: 280px minmax(0, 1fr); }
-
-        .design-toc {
-            position: sticky;
-            top: 24px;
-            max-height: calc(100vh - 48px);
-        }
-    }
-
-    .design-toc h3 {
-        margin: 0 0 4px;
-        padding: 0 8px;
-        color: var(--muted);
-        font-size: 0.7rem;
-        font-weight: 650;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-    }
-
-    .design-toc .toc-lead {
-        margin: 0 8px 12px;
-        color: var(--muted);
-        font-size: 0.76rem;
-        line-height: 1.45;
-    }
-
-    .toc-list { list-style: none; margin: 0; padding: 0; }
-
-    .toc-item,
-    .toc-flow {
+    .gallery-tools {
         display: flex;
-        align-items: center;
-        gap: 8px;
-        width: 100%;
-        min-height: 36px;
-        padding: 6px 10px;
-        border: 0;
-        border-radius: var(--radius-xs);
-        background: transparent;
-        color: var(--text-2);
-        font: inherit;
-        font-size: 0.85rem;
-        text-align: left;
-        cursor: pointer;
-    }
-
-    .toc-item.is-overview {
-        margin-bottom: 10px;
-        border: 1px solid var(--border);
-        color: var(--text);
-        font-weight: 600;
-    }
-
-    .toc-flow {
-        gap: 10px;
-        font-size: 0.84rem;
-        font-weight: 600;
-    }
-
-    .toc-flow .toc-code {
-        flex: none;
-        color: var(--muted);
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        font-weight: 600;
-    }
-
-    .toc-flow.is-active .toc-code { color: inherit; }
-
-    .toc-flow .toc-name {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .toc-flow .toc-count {
-        flex: none;
-        margin-left: auto;
-        color: var(--muted);
-        font-size: 0.7rem;
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-    }
-
-    .toc-screens {
-        list-style: none;
-        margin: 0 0 4px 12px;
-        padding: 0 0 0 8px;
-        border-left: 1px solid var(--border);
-    }
-
-    .toc-screen { font-size: 0.82rem; }
-
-    .toc-item:hover,
-    .toc-flow:hover { background: var(--surface-3); color: var(--text); }
-
-    .toc-item.is-active,
-    .toc-flow.is-active {
-        background: var(--accent-soft);
-        color: var(--accent-strong);
-    }
-
-    .toc-badge {
-        flex: none;
-        padding: 1px 7px;
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--ok-fill) 14%, transparent);
-        color: var(--ok);
-        font-size: 0.62rem;
-        font-weight: 650;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .toc-item .toc-badge { margin-left: auto; }
-
-    .design-viewer { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-
-    .design-frame-wrap { display: flex; flex-direction: column; overflow: hidden; }
-
-    .design-frame-bar {
-        display: flex;
+        align-items: end;
         justify-content: space-between;
-        align-items: center;
-        gap: 10px 12px;
-        padding: 10px 14px;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.84rem;
+        gap: 10px 16px;
         flex-wrap: wrap;
     }
 
-    .design-crumb { display: flex; flex-direction: column; min-width: 0; flex: 1 1 180px; }
+    .gallery-tools .field { flex: 1 1 260px; max-width: 420px; }
+    .gallery-count { margin: 0; color: var(--muted); font-size: 0.84rem; font-variant-numeric: tabular-nums; }
 
-    .design-crumb .flow {
-        color: var(--muted);
-        font-size: 0.72rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .design-crumb .screen { font-weight: 600; }
-
-    .design-nav { display: flex; align-items: center; gap: 6px; }
-
-    .design-nav .counter {
-        margin-right: 4px;
-        color: var(--muted);
-        font-size: 0.78rem;
-        font-variant-numeric: tabular-nums;
-    }
-
-    .design-nav .step {
-        width: 36px;
-        height: 36px;
-        padding: 0;
-        border: 1px solid var(--border-strong);
-        border-radius: var(--radius-sm);
-        background: var(--surface);
-        color: var(--text);
-        font-size: 0.95rem;
-        line-height: 1;
-        cursor: pointer;
-    }
-
-    .design-nav .step:hover { border-color: var(--accent); color: var(--accent); }
-    .design-nav .step:disabled { opacity: 0.4; cursor: default; border-color: var(--border); color: var(--muted); }
-
-    .design-frame {
-        width: 100%;
-        height: clamp(420px, 76vh, 900px);
-        border: 0;
-        background: #fff;
-    }
-
-    /* screen galleries: live previews, as many per row as the width allows */
     .screen-section { padding: 18px 16px 20px; }
 
     @media (min-width: 640px) {
         .screen-section { padding: 20px 22px 24px; }
     }
 
+    .screen-section[hidden] { display: none; }
+
     .screen-section > header {
         display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 6px 14px;
+        align-items: center;
+        gap: 8px 12px;
         flex-wrap: wrap;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
     }
 
-    .screen-section h3 { margin: 0; font-size: 1rem; }
-    .screen-section .hint { margin: -8px 0 14px; }
-    .screen-section > header .hint { margin: 0; }
+    .screen-section h3 { margin: 0; font-size: 1.02rem; overflow-wrap: anywhere; }
+    .screen-section .hint { margin: 0; }
+    .screen-section > header .hint { margin-left: auto; }
+
+    .flow-code {
+        flex: none;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
 
     .screen-grid {
-        --thumb-zoom: 0.32;
+        --thumb-zoom: 0.27;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-        gap: 14px;
-    }
-
-    @media (min-width: 1600px) {
-        .screen-grid { --thumb-zoom: 0.28; }
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+        gap: 16px;
     }
 
     .screen-card {
@@ -252,6 +82,8 @@
         transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
     }
 
+    .screen-card[hidden] { display: none; }
+
     .screen-card:hover {
         text-decoration: none;
         border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
@@ -266,7 +98,7 @@
 
     .screen-thumb {
         position: relative;
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 16 / 10;
         overflow: hidden;
         background: #fff;
         border-bottom: 1px solid var(--border);
@@ -291,50 +123,133 @@
         inset: 0;
     }
 
-    .screen-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        padding: 11px 13px 13px;
-        min-width: 0;
+    .screen-open {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--accent-contrast);
+        font-size: 0.74rem;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 0.15s ease, transform 0.15s ease;
     }
 
-    .screen-meta .row {
+    .screen-open .icon { width: 13px; height: 13px; }
+
+    .screen-card:hover .screen-open,
+    .screen-card:focus-visible .screen-open { opacity: 1; transform: none; }
+
+    .screen-meta {
         display: flex;
         align-items: center;
         gap: 8px;
+        padding: 11px 13px 12px;
         min-width: 0;
     }
 
-    .screen-code {
-        flex: none;
-        color: var(--accent);
-        font-family: var(--mono);
-        font-size: 0.7rem;
-        font-weight: 600;
-    }
-
     .screen-name {
-        font-size: 0.86rem;
+        min-width: 0;
+        font-size: 0.88rem;
         font-weight: 600;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    .screen-flow {
+    .screen-file {
+        flex: none;
+        margin-left: auto;
         color: var(--muted);
-        font-size: 0.76rem;
-        line-height: 1.35;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        font-family: var(--mono);
+        font-size: 0.7rem;
     }
+
+    .toc-badge {
+        flex: none;
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--ok-fill) 14%, transparent);
+        color: var(--ok);
+        font-size: 0.62rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .gallery-empty { padding: 36px 20px; text-align: center; color: var(--muted); }
+    .gallery-empty[hidden] { display: none; }
 
     .empty-card { padding: 48px 24px; text-align: center; }
     .empty-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
     .empty-card p { margin: 0 auto; max-width: 62ch; color: var(--muted); }
+
+    /* ---- one screen, opened: the mockup itself, as wide as the window ---- */
+    .design-viewer { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .design-frame-wrap { display: flex; flex-direction: column; overflow: hidden; }
+
+    .design-frame-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px 14px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.84rem;
+        flex-wrap: wrap;
+    }
+
+    .design-crumb { display: flex; flex-direction: column; min-width: 0; flex: 1 1 180px; }
+
+    .design-crumb .flow {
+        color: var(--muted);
+        font-size: 0.72rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .design-crumb .screen { font-weight: 600; overflow-wrap: anywhere; }
+
+    .design-nav { display: flex; align-items: center; gap: 6px; }
+
+    .design-nav .counter {
+        margin-right: 4px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .design-nav .step {
+        display: inline-grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+    }
+
+    .design-nav .step .icon { width: 16px; height: 16px; }
+    .design-nav .step:hover { border-color: var(--accent); color: var(--accent); }
+    .design-nav .step:disabled { opacity: 0.4; cursor: default; border-color: var(--border); color: var(--muted); }
+
+    .design-frame {
+        width: 100%;
+        height: max(480px, calc(100vh - 190px));
+        border: 0;
+        background: #fff;
+    }
 
     .style-bar {
         display: flex;
@@ -465,6 +380,12 @@
         border: 0;
         background: #fff;
     }
+
+    #flow-gallery .screen-grid {
+        --thumb-zoom: 0.2;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+        gap: 12px;
+    }
 </style>
 @endpush
 
@@ -520,7 +441,9 @@
             }
 
             $code = (string) ($item['code'] ?? '');
-            $title = (string) ($item['title'] ?? $code);
+            $title = trim((string) ($item['title'] ?? ''));
+            // A folder that is not a spec has no title of its own: say its name once.
+            $title = $title === $code ? '' : $title;
             $rawStyles = is_array($item['styles'] ?? null) ? $item['styles'] : [];
             $styleOptions = [];
 
@@ -551,7 +474,7 @@
             $flows[] = [
                 'code' => $code,
                 'title' => $title,
-                'label' => $code.' — '.$title,
+                'label' => $title !== '' ? $code.' — '.$title : $code,
                 'entry_url' => (string) ($item['entry_url'] ?? $normalized[0]['url']),
                 'screens' => $normalized,
                 'styles' => $styleOptions,
@@ -560,20 +483,9 @@
             ];
         }
 
-        // One ordered walk through the whole package: the index first, then
-        // every flow, entry screen leading. Prev / next follow this order.
+        // One ordered walk through every screen, flow by flow, entry screen
+        // leading. The arrows of the viewer follow this order.
         $stops = [];
-
-        if ($presentationUrl !== '') {
-            $stops[] = [
-                'url' => $presentationUrl,
-                'flow' => 'Overview',
-                'label' => 'Presentation index',
-                'entry' => true,
-            ];
-        }
-
-        $allScreens = [];
 
         foreach ($flows as $flow) {
             foreach ($flow['screens'] as $screen) {
@@ -585,8 +497,6 @@
                     'slug' => $screen['slug'],
                     'entry' => $screen['entry'],
                 ];
-
-                $allScreens[] = $screen + ['code' => $flow['code'], 'flow_title' => $flow['title']];
             }
         }
 
@@ -598,39 +508,23 @@
             }
         }
 
-        // Open on the first real mockup rather than the cover sheet — the
-        // index stays reachable as stop one of the walk.
-        $start = 0;
-
-        foreach ($stops as $position => $stop) {
-            if ($stop['flow'] !== 'Overview') {
-                $start = $position;
-                break;
-            }
-        }
-
-        $startStop = $stops[$start] ?? null;
+        $screenTotal = count($stops);
+        $plural = static fn (int $count, string $word): string => $count.' '.$word.($count === 1 ? '' : 's');
     @endphp
 
-    <div class="design-page">
+    <div class="design-page" id="design-page" data-view="gallery">
         <header class="page-head">
             <div>
                 <h2>Design</h2>
-                @php
-                    $designCount = $available
-                        ? ' — '.$catalog['spec_count'].' flow'.($catalog['spec_count'] === 1 ? '' : 's')
-                            .', '.$catalog['screen_count'].' screen'.($catalog['screen_count'] === 1 ? '' : 's')
-                        : '';
-                @endphp
                 <p class="sub">
-                    Every mockup screen for <strong>{{ $projectTitle }}</strong>, flow by flow{{ $designCount }}.
-                    Pick one from the gallery, step through them with the arrows, or compare style variants side by side and lock the one to implement.
+                    Every mockup screen for <strong>{{ $projectTitle }}</strong>@if ($available) — {{ $plural((int) $catalog['spec_count'], 'flow') }}, {{ $plural((int) $catalog['screen_count'], 'screen') }}@endif.
+                    Click a screen to open it as a site you can browse, then come back here.
                     Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
                 </p>
             </div>
             <div class="page-actions design-actions">
                 @if ($presentationUrl && $available)
-                    <a class="btn ghost" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open index in new tab</a>
+                    <a class="btn ghost" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer" title="Presentation index — the cover page that ships in the zip">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open index in new tab</a>
                 @endif
                 @if ($packageUrl && $available)
                     <a class="btn" href="{{ $packageUrl }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download zip</a>
@@ -643,108 +537,93 @@
         @if (! $available)
             <section class="card empty-card">
                 <h2>No designs yet</h2>
-                <p>Run <code>/larapilot-design</code> to produce HTML mockups. They appear here as one navigable index: a presentation cover, then every screen of every flow in order.</p>
+                <p>Run <code>/larapilot-design</code> to produce HTML mockups. Every screen appears here as a preview you can click to browse the mockup like a site.</p>
             </section>
         @else
-            <div class="design-stage">
-                <aside class="card design-toc" aria-label="Design index">
-                    <h3>Index</h3>
-                    <p class="toc-lead">Click a flow to open its first screen, or step through everything with the arrows in the viewer.</p>
-
-                    @if ($presentationUrl)
-                        <button type="button" class="toc-item is-overview" data-src="{{ $presentationUrl }}">
-                            Presentation index
-                            <span class="toc-badge">start</span>
-                        </button>
-                    @endif
-
-                    <ul class="toc-list">
-                        @foreach ($flows as $flow)
-                            <li>
-                                <button type="button" class="toc-flow" data-src="{{ $flow['entry_url'] }}" title="{{ $flow['label'] }}">
-                                    <span class="toc-code">{{ $flow['code'] }}</span>
-                                    <span class="toc-name">{{ $flow['title'] }}</span>
-                                    @if (count($flow['screens']) > 1)
-                                        <span class="toc-count">{{ count($flow['screens']) }}</span>
-                                    @endif
-                                </button>
-                                @if (count($flow['screens']) > 1)
-                                    <ul class="toc-screens">
-                                        @foreach ($flow['screens'] as $screen)
-                                            <li>
-                                                <button type="button" class="toc-item toc-screen" data-src="{{ $screen['url'] }}">
-                                                    {{ $screen['label'] }}
-                                                    @if ($screen['entry'])
-                                                        <span class="toc-badge">entry</span>
-                                                    @endif
-                                                </button>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
-                </aside>
-
-                <div class="design-viewer">
-                    <section class="card design-frame-wrap">
-                        <div class="design-frame-bar">
-                            <div class="design-crumb">
-                                <span class="flow" id="design-flow">{{ $startStop['flow'] ?? 'Overview' }}</span>
-                                <span class="screen" id="design-caption">{{ $startStop['label'] ?? 'Presentation index' }}</span>
-                            </div>
-                            <div class="design-nav">
-                                <span class="counter" id="design-counter"></span>
-                                <button type="button" class="step" id="design-prev" title="Previous screen" aria-label="Previous screen">←</button>
-                                <button type="button" class="step" id="design-next" title="Next screen" aria-label="Next screen">→</button>
-                                <a class="btn ghost small" id="design-open" href="{{ $startStop['url'] ?? $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
-                            </div>
-                        </div>
-                        <div class="style-bar" id="style-bar" hidden>
-                            <span class="lead">Style</span>
-                            <div id="style-chips"></div>
-                            <button type="button" class="compare-toggle" id="compare-toggle" aria-pressed="false">Compare styles</button>
-                        </div>
-                        <iframe id="design-frame" class="design-frame" src="{{ $startStop['url'] ?? $presentationUrl }}" title="Design viewer"></iframe>
-                        <div class="compare-grid" id="compare-grid" hidden></div>
-                    </section>
-
-                    <section class="card screen-section" id="flow-gallery" hidden>
-                        <header>
-                            <h3 id="flow-gallery-title"></h3>
-                        </header>
-                        <p class="hint">Screens in this flow. Click one to open it in the viewer above.</p>
-                        <div class="screen-grid" id="flow-gallery-grid"></div>
-                    </section>
+            {{-- FIRST: every screen, clickable --}}
+            <div class="design-gallery" id="design-gallery">
+                <div class="gallery-tools">
+                    <label class="field">
+                        Find a screen
+                        <input type="search" id="gallery-filter" placeholder="Screen or flow name…" autocomplete="off">
+                    </label>
+                    <p class="gallery-count" id="gallery-count" data-total="{{ $screenTotal }}">All {{ $plural($screenTotal, 'screen') }}, flow by flow</p>
                 </div>
+
+                @foreach ($flows as $flow)
+                    <section class="card screen-section" data-flow="{{ $flow['code'] }}" aria-label="{{ $flow['label'] }}">
+                        <header>
+                            <span class="flow-code">{{ $flow['code'] }}</span>
+                            @if ($flow['title'] !== '')
+                                <h3>{{ $flow['title'] }}</h3>
+                            @endif
+                            @if ($flow['has_variants'])
+                                <span class="chip">{{ count($flow['styles']) }} styles</span>
+                            @endif
+                            <span class="hint">{{ $plural(count($flow['screens']), 'screen') }}</span>
+                        </header>
+                        <div class="screen-grid">
+                            @foreach ($flow['screens'] as $screen)
+                                <a
+                                    class="screen-card"
+                                    href="{{ $screen['url'] }}"
+                                    data-src="{{ $screen['url'] }}"
+                                    data-find="{{ strtolower($flow['label'].' '.$screen['label'].' '.$screen['file']) }}"
+                                    title="Open {{ $screen['label'] }}"
+                                >
+                                    <span class="screen-thumb">
+                                        <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $flow['code'] }} — {{ $screen['label'] }}" tabindex="-1" aria-hidden="true" scrolling="no"></iframe>
+                                        <span class="screen-open">Open @include('larapilot::dashboard.partials.icon', ['name' => 'chevron'])</span>
+                                    </span>
+                                    <span class="screen-meta">
+                                        <span class="screen-name">{{ $screen['label'] }}</span>
+                                        @if ($screen['entry'])
+                                            <span class="toc-badge">entry</span>
+                                        @endif
+                                        <span class="screen-file">{{ $screen['file'] }}</span>
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </section>
+                @endforeach
+
+                <p class="card gallery-empty" id="gallery-empty" hidden>No screen matches. Try part of its name, or the code of its flow.</p>
             </div>
 
-            <section class="card screen-section all-screens">
-                <header>
-                    <h3>All {{ $catalog['screen_count'] }} screens, flow by flow</h3>
-                    <span class="hint">Live previews — click one to open it in the viewer above.</span>
-                </header>
-                <div class="screen-grid">
-                    @foreach ($allScreens as $screen)
-                        <a class="screen-card" href="{{ $screen['url'] }}" data-src="{{ $screen['url'] }}">
-                            <span class="screen-thumb">
-                                <iframe src="{{ $screen['url'] }}" loading="lazy" title="{{ $screen['code'] }} — {{ $screen['label'] }}" tabindex="-1" aria-hidden="true" scrolling="no"></iframe>
-                            </span>
-                            <span class="screen-meta">
-                                <span class="row">
-                                    <span class="screen-code">{{ $screen['code'] }}</span>
-                                    <span class="screen-name">{{ $screen['label'] }}</span>
-                                    @if ($screen['entry'])
-                                        <span class="toc-badge" style="margin-left: auto;">entry</span>
-                                    @endif
-                                </span>
-                                <span class="screen-flow">{{ $screen['flow_title'] }}</span>
-                            </span>
-                        </a>
-                    @endforeach
-                </div>
-            </section>
+            {{-- THEN: the screen that was clicked, as a site to browse --}}
+            <div class="design-viewer" id="design-viewer">
+                <section class="card design-frame-wrap">
+                    <div class="design-frame-bar">
+                        <button type="button" class="btn ghost" id="design-back">@include('larapilot::dashboard.partials.icon', ['name' => 'back'])All screens</button>
+                        <div class="design-crumb">
+                            <span class="flow" id="design-flow"></span>
+                            <span class="screen" id="design-caption"></span>
+                        </div>
+                        <div class="design-nav">
+                            <span class="counter" id="design-counter"></span>
+                            <button type="button" class="step" id="design-prev" title="Previous screen (←)" aria-label="Previous screen">@include('larapilot::dashboard.partials.icon', ['name' => 'chevron-left'])</button>
+                            <button type="button" class="step" id="design-next" title="Next screen (→)" aria-label="Next screen">@include('larapilot::dashboard.partials.icon', ['name' => 'chevron'])</button>
+                            <a class="btn ghost small" id="design-open" href="#" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])New tab</a>
+                        </div>
+                    </div>
+                    <div class="style-bar" id="style-bar" hidden>
+                        <span class="lead">Style</span>
+                        <div id="style-chips"></div>
+                        <button type="button" class="compare-toggle" id="compare-toggle" aria-pressed="false">Compare styles</button>
+                    </div>
+                    <iframe id="design-frame" class="design-frame" title="Design viewer"></iframe>
+                    <div class="compare-grid" id="compare-grid" hidden></div>
+                </section>
+
+                <section class="card screen-section" id="flow-gallery" hidden>
+                    <header>
+                        <h3 id="flow-gallery-title"></h3>
+                        <span class="hint">The other screens of this flow</span>
+                    </header>
+                    <div class="screen-grid" id="flow-gallery-grid"></div>
+                </section>
+            </div>
         @endif
     </div>
 @endsection
@@ -752,18 +631,19 @@
 @push('scripts')
 <script>
     (function () {
+        const page = document.getElementById('design-page');
         const frame = document.getElementById('design-frame');
-        if (!frame) return;
+        if (!page || !frame) return;
 
         const stops = @json(array_values($stops));
         const flowStyles = @json($flowStyles);
         const styleChooseUrl = @json(route('larapilot.dashboard.design.style', ['code' => '__CODE__']));
         const csrf = @json(csrf_token());
-        const start = @json($start);
         const caption = document.getElementById('design-caption');
         const flowLabel = document.getElementById('design-flow');
         const counter = document.getElementById('design-counter');
         const openLink = document.getElementById('design-open');
+        const back = document.getElementById('design-back');
         const prev = document.getElementById('design-prev');
         const next = document.getElementById('design-next');
         const gallery = document.getElementById('flow-gallery');
@@ -773,17 +653,27 @@
         const styleChips = document.getElementById('style-chips');
         const compareToggle = document.getElementById('compare-toggle');
         const compareGrid = document.getElementById('compare-grid');
-        let current = start;
+        const filter = document.getElementById('gallery-filter');
+        const count = document.getElementById('gallery-count');
+        const noMatch = document.getElementById('gallery-empty');
+        const PARAM = 'screen';
+        let current = -1;
         let compareOpen = false;
         let activeStyle = {};
+        let galleryScroll = 0;
+        // True once this page pushed a history entry: the back button can then
+        // simply go back. Landing straight on a screen has nothing behind it.
+        let pushed = false;
 
         const indexOf = (src) => stops.findIndex((stop) => stop.url === src);
+        const viewing = () => page.dataset.view === 'viewer';
 
         const card = (item, active) => {
             const node = document.createElement('a');
             node.className = 'screen-card' + (active ? ' is-active' : '');
             node.href = item.url;
             node.dataset.src = item.url;
+            node.title = 'Open ' + item.label;
 
             const thumb = document.createElement('span');
             thumb.className = 'screen-thumb';
@@ -798,22 +688,18 @@
 
             const meta = document.createElement('span');
             meta.className = 'screen-meta';
-            const row = document.createElement('span');
-            row.className = 'row';
             const name = document.createElement('span');
             name.className = 'screen-name';
             name.textContent = item.label;
-            row.appendChild(name);
+            meta.appendChild(name);
 
             if (item.entry) {
                 const badge = document.createElement('span');
                 badge.className = 'toc-badge';
-                badge.style.marginLeft = 'auto';
                 badge.textContent = 'entry';
-                row.appendChild(badge);
+                meta.appendChild(badge);
             }
 
-            meta.appendChild(row);
             node.appendChild(thumb);
             node.appendChild(meta);
 
@@ -833,7 +719,7 @@
 
             const styles = flowStyles[stop.flow_code] || [];
 
-            if (styles.length < 2 || stop.flow === 'Overview') {
+            if (styles.length < 2) {
                 styleBar.hidden = true;
                 styleChips.innerHTML = '';
                 if (compareGrid) compareGrid.hidden = true;
@@ -883,7 +769,10 @@
 
                 const head = document.createElement('div');
                 head.className = 'compare-head';
-                head.innerHTML = '<span>' + style.label + '</span>';
+                const label = document.createElement('span');
+                label.textContent = style.label;
+                head.appendChild(label);
+
                 if (style.chosen) {
                     const tag = document.createElement('span');
                     tag.className = 'tag';
@@ -922,12 +811,12 @@
             });
         }
 
-        const renderGallery = (stop) => {
+        const renderFlowGallery = (stop) => {
             if (!gallery || !galleryGrid) return;
 
-            const siblings = stops.filter((item) => item.flow === stop.flow && item.flow !== 'Overview');
+            const siblings = stops.filter((item) => item.flow_code === stop.flow_code);
 
-            if (stop.flow === 'Overview' || siblings.length < 2) {
+            if (siblings.length < 2) {
                 gallery.hidden = true;
                 galleryGrid.innerHTML = '';
                 return;
@@ -951,23 +840,77 @@
             if (prev) prev.disabled = position === 0;
             if (next) next.disabled = position === stops.length - 1;
 
-            document.querySelectorAll('.toc-item, .toc-flow, .all-screens .screen-card').forEach((el) => {
-                el.classList.toggle('is-active', el.dataset.src === stop.url);
-            });
-
-            renderGallery(stop);
+            renderFlowGallery(stop);
             renderStyleBar(stop);
         };
 
-        const go = (position) => {
-            if (position < 0 || position >= stops.length) return;
-            frame.src = stops[position].url;
-            paint(position);
-            frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const address = (position) => {
+            const url = new URL(window.location.href);
+
+            if (position >= 0 && stops[position]) {
+                url.searchParams.set(PARAM, stops[position].url);
+            } else {
+                url.searchParams.delete(PARAM);
+            }
+
+            return url.pathname + url.search;
         };
 
-        // One delegated handler covers the index, the full gallery, and the
-        // flow gallery cards built on the fly.
+        const showViewer = (position) => {
+            if (!viewing()) galleryScroll = window.scrollY;
+
+            page.dataset.view = 'viewer';
+            frame.src = stops[position].url;
+            paint(position);
+            window.scrollTo(0, 0);
+        };
+
+        const showGallery = () => {
+            page.dataset.view = 'gallery';
+            current = -1;
+            // Drop the mockup so nothing keeps running behind the gallery.
+            frame.removeAttribute('src');
+            window.scrollTo(0, galleryScroll);
+        };
+
+        // A click opens the screen and leaves a step in the history, so the
+        // browser's own back button returns to the gallery too.
+        const open = (position) => {
+            if (position < 0 || position >= stops.length) return;
+
+            if (viewing()) {
+                window.history.replaceState({ design: position }, '', address(position));
+            } else {
+                window.history.pushState({ design: position }, '', address(position));
+                pushed = true;
+            }
+
+            showViewer(position);
+        };
+
+        const close = () => {
+            if (pushed) {
+                window.history.back();
+                return;
+            }
+
+            window.history.replaceState(null, '', address(-1));
+            showGallery();
+        };
+
+        window.addEventListener('popstate', () => {
+            const position = indexOf(new URL(window.location.href).searchParams.get(PARAM) || '');
+
+            if (position >= 0) {
+                showViewer(position);
+            } else {
+                pushed = false;
+                showGallery();
+            }
+        });
+
+        // One delegated handler covers the gallery and the cards of the flow
+        // built on the fly under the viewer.
         document.addEventListener('click', (event) => {
             const target = event.target instanceof Element ? event.target.closest('[data-src]') : null;
             if (!target) return;
@@ -975,22 +918,30 @@
             const position = indexOf(target.dataset.src);
             if (position < 0) return;
 
+            // Leave modified clicks alone: a new tab is a fair way to open one.
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+
             event.preventDefault();
-            go(position);
+            open(position);
         });
 
-        if (prev) prev.addEventListener('click', () => go(current - 1));
-        if (next) next.addEventListener('click', () => go(current + 1));
+        if (back) back.addEventListener('click', close);
+        if (prev) prev.addEventListener('click', () => open(current - 1));
+        if (next) next.addEventListener('click', () => open(current + 1));
 
         document.addEventListener('keydown', (event) => {
+            if (!viewing()) return;
             if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
-            if (event.key === 'ArrowLeft') go(current - 1);
-            if (event.key === 'ArrowRight') go(current + 1);
+            if (event.key === 'ArrowLeft') open(current - 1);
+            if (event.key === 'ArrowRight') open(current + 1);
+            if (event.key === 'Escape') close();
         });
 
-        // Links inside the index (and inside the mockups) navigate the iframe
-        // itself — keep the breadcrumb, index, and arrows in step with it.
+        // Links inside the mockup navigate the frame itself — keep the
+        // caption, the counter and the address in step with it.
         frame.addEventListener('load', () => {
+            if (!viewing()) return;
+
             let path = null;
 
             try {
@@ -1000,10 +951,51 @@
             }
 
             const position = stops.findIndex((stop) => stop.url === path || stop.url === decodeURIComponent(path));
-            if (position >= 0 && position !== current) paint(position);
+
+            if (position >= 0 && position !== current) {
+                window.history.replaceState({ design: position }, '', address(position));
+                paint(position);
+            }
         });
 
-        paint(start);
+        // Narrow the gallery by name; a flow with nothing left steps aside.
+        if (filter) {
+            const cards = [...document.querySelectorAll('#design-gallery .screen-card')];
+            const sections = [...document.querySelectorAll('#design-gallery .screen-section')];
+            const total = Number(count?.dataset.total || cards.length);
+            const word = (value) => value + ' ' + (value === 1 ? 'screen' : 'screens');
+
+            filter.addEventListener('input', () => {
+                const needle = filter.value.trim().toLowerCase();
+                let shown = 0;
+
+                cards.forEach((item) => {
+                    const ok = needle === '' || (item.dataset.find || '').includes(needle);
+                    item.hidden = !ok;
+                    if (ok) shown += 1;
+                });
+
+                sections.forEach((section) => {
+                    section.hidden = section.querySelector('.screen-card:not([hidden])') === null;
+                });
+
+                if (count) {
+                    count.textContent = needle === ''
+                        ? 'All ' + word(total) + ', flow by flow'
+                        : 'Showing ' + shown + ' of ' + word(total);
+                }
+
+                if (noMatch) noMatch.hidden = shown > 0;
+            });
+        }
+
+        // A shared address opens straight on its screen.
+        const asked = indexOf(new URL(window.location.href).searchParams.get(PARAM) || '');
+
+        if (asked >= 0) {
+            window.history.replaceState({ design: asked }, '', address(asked));
+            showViewer(asked);
+        }
     })();
 </script>
 @endpush

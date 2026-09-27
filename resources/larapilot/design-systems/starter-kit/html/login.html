@@ -12,28 +12,29 @@
   <main class="sk-auth-page">
     <div class="sk-auth-card">
       <h1>Log in to your account</h1>
-      <p class="sk-auth-card__desc">Static sign-in preview — fields are placeholders only.</p>
-      <form action="#" method="post" autocomplete="off" novalidate>
+      <p class="sk-auth-card__desc">Enter your email and password below to log in</p>
+      <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
+      <div class="mock-form">
         <div class="sk-field">
-          <label for="signin-email">Work email</label>
-          <input id="signin-email" name="signin-email" type="email" class="sk-input" autocomplete="off" inputmode="email" placeholder="you@example.com" data-1p-ignore data-lpignore="true" required>
+          <span class="mock-label">Email address</span>
+          <div class="sk-input mock-field" role="img" aria-label="Email field, filled in">jane@example.com</div>
         </div>
         <div class="sk-field">
-          <label for="signin-code">Access code</label>
-          <input id="signin-code" name="signin-code" type="text" class="sk-input demo-secret-field" autocomplete="off" placeholder="Demo only" data-1p-ignore data-lpignore="true" required>
+          <span class="mock-label">Password</span>
+          <div class="sk-input mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
         </div>
         <div class="sk-field sk-checkbox">
-          <input id="remember" name="remember" type="checkbox">
+          <input id="remember" type="checkbox">
           <label for="remember">Remember me</label>
         </div>
-        <button type="submit" class="sk-btn sk-btn--primary sk-btn--block">Log in</button>
+        <a href="dashboard.html" class="sk-btn sk-btn--primary sk-btn--block" role="button">Log in</a>
         <p style="text-align:center;margin-top:1rem;font-size:0.8125rem" class="sk-muted">
-          <a href="#" class="sk-btn--link" style="padding:0">Need help signing in?</a>
+          <a href="#" class="sk-btn--link" style="padding:0">Forgot your password?</a>
         </p>
         <p style="text-align:center;margin-top:0.75rem;font-size:0.8125rem" class="sk-muted">
           Don't have an account? <a href="#" class="sk-btn--link" style="padding:0">Sign up</a>
         </p>
-      </form>
+      </div>
     </div>
   </main>
 </body>
