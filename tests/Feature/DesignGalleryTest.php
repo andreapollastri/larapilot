@@ -127,7 +127,7 @@ it('downloads a zip of mockup html, assets, and the presentation index', functio
     unlink($tmp);
 });
 
-it('compares mockup style variants and records the chosen direction', function (): void {
+it('lists mockup style variants and records the chosen direction', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec(['title' => 'Login']);
 
@@ -145,7 +145,7 @@ YAML,
 
     $html = $this->get('/larapilot/design')
         ->assertOk()
-        ->assertSee('Compare styles', false)
+        ->assertDontSee('Compare styles', false)
         ->assertSee('style-bar', false)
         ->assertSee('Filament admin', false)
         ->assertSee('Nordic minimal', false)
@@ -212,6 +212,66 @@ MD);
         ->assertSee('Sommario', false)
         ->assertSee('Inizia dalla prima schermata', false)
         ->assertSee('Negozio', false);
+});
+
+it('shows every style and links a feature folder to the stories in its readme', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['title' => 'Home']);
+    addSpec(['code' => 'US-002', 'title' => 'Access']);
+
+    addMockup('public-site', [
+        'index.html' => '<html><body>Showcase</body></html>',
+        'styles.yaml' => <<<'YAML'
+styles:
+  - id: nordic-minimal
+    label: Nordic minimal
+  - id: playful-brand
+    label: Playful brand
+YAML,
+        'styles/nordic-minimal/index.html' => '<html><body>Nordic home</body></html>',
+        'styles/playful-brand/index.html' => '<html><body>Playful home</body></html>',
+        'README.md' => <<<'MD'
+# Public site
+
+**Traccia a:** US-001, US-002 (FR-003)
+
+| File | Schermata | Spec |
+| --- | --- | --- |
+| `index.html` | Home | US-001 |
+| `accesso.html` | Accesso | US-002 |
+MD,
+    ]);
+
+    $flow = base_path('.larapilot/mockups/public-site/styles');
+    file_put_contents($flow.'/nordic-minimal/accesso.html', '<html><body>Nordic access</body></html>');
+    file_put_contents($flow.'/playful-brand/accesso.html', '<html><body>Playful access</body></html>');
+
+    $html = $this->get('/larapilot/design')
+        ->assertOk()
+        ->assertSee('Playful brand', false)
+        ->assertSee('Nordic minimal', false)
+        ->assertSee('data-src="/mockups/public-site/styles/playful-brand/accesso.html"', false)
+        ->assertSee('data-src="/mockups/public-site/styles/nordic-minimal/index.html"', false)
+        ->assertSee('data-src="/mockups/public-site"', false)
+        ->assertSee('href="/larapilot/specs/US-001"', false)
+        ->assertSee('href="/larapilot/specs/US-002"', false)
+        ->assertSee('All 5 screens, flow by flow', false)
+        ->getContent();
+
+    expect($html)->toContain('playful-brand')
+        ->and($html)->not->toContain('FR-003');
+
+    $this->get('/larapilot/specs/US-002')
+        ->assertOk()
+        ->assertSee('Mockups', false)
+        ->assertSee('/mockups/public-site/styles/playful-brand/accesso.html', false)
+        ->assertSee('/mockups/public-site/styles/nordic-minimal/accesso.html', false)
+        ->assertSee('Playful brand', false)
+        ->assertDontSee('/mockups/public-site/styles/playful-brand/index.html', false);
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('Mockup', false);
 });
 
 it('ships sign-in samples that draw the credential fields', function (): void {

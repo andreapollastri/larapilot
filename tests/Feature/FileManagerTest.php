@@ -729,9 +729,23 @@ it('shows a file that holds credentials with every value hidden', function (): v
             ->assertSee('APP_KEY=', false)
             ->assertDontSee('This file holds credentials.', false);
 
-        // The application's own env file, at the top of the project.
-        expect($this->get('/larapilot/files/raw/project/.env')->assertOk()->getContent())
-            ->toContain('APP_KEY='.$mask);
+        // The env file at the top of the project. The testbench app does not
+        // ship one, so the test places it and puts back whatever was there.
+        $rootEnv = base_path('.env');
+        $previous = is_file($rootEnv) ? file_get_contents($rootEnv) : false;
+        file_put_contents($rootEnv, "APP_NAME=Fjord\nAPP_KEY=base64:do-not-leak-root\n");
+
+        try {
+            expect($this->get('/larapilot/files/raw/project/.env')->assertOk()->getContent())
+                ->toContain('APP_KEY='.$mask)
+                ->not->toContain('do-not-leak');
+        } finally {
+            if ($previous === false) {
+                @unlink($rootEnv);
+            } else {
+                file_put_contents($rootEnv, $previous);
+            }
+        }
 
         // The material folders mask the same files.
         material('legacy/old/.env', 'LEGACY_TOKEN=do-not-leak');

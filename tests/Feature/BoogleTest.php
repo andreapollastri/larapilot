@@ -679,14 +679,18 @@ it('lets an agent read Boogle over MCP and nothing more', function (): void {
 it('shows the errors on the dashboard, with what was decided', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    // off: the page says how to turn it on, and the menu does not name it
+    // off: the page stays in the menu, says what Boogle is, and invites the project to use it
     $this->get('/larapilot/errors')
         ->assertOk()
-        ->assertSee('Boogle is off for this project', false)
+        ->assertSee('Boogle records the exceptions the running application throws', false)
+        ->assertSee('https://boogle.web.ap.it/', false)
+        ->assertSee('Use <a href="https://boogle.web.ap.it/">Boogle</a> for this project', false)
+        ->assertSee('andreapollastri/boogle-client', false)
         ->assertSee('php artisan larapilot:settings-set --boogle=YES', false)
+        ->assertDontSee('Boogle is off for this project', false)
         ->assertDontSee('Read again', false);
 
-    $this->get('/larapilot')->assertOk()->assertDontSee('href="'.url('/larapilot/errors').'"', false);
+    $this->get('/larapilot')->assertOk()->assertSee('href="'.url('/larapilot/errors').'"', false);
     $this->get('/larapilot/errors/boogle.md')->assertNotFound();
 
     enableBoogle();

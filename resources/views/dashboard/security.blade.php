@@ -171,13 +171,6 @@
     .none { padding: 30px 20px; text-align: center; color: var(--muted); }
     .none[hidden] { display: none; }
 
-    .setup { padding: 26px 24px; }
-    .setup h3 { margin: 0 0 6px; font-size: 1.1rem; }
-    .setup > p { margin: 0 0 16px; color: var(--text-2); max-width: 78ch; }
-    .setup ol { margin: 0; padding-left: 1.2rem; color: var(--text-2); font-size: 0.92rem; line-height: 1.7; }
-    .setup li { margin: 6px 0; }
-    .setup pre { margin: 8px 0; padding: 10px 12px; border-radius: var(--radius-xs); background: var(--surface-3); font-size: 0.8rem; overflow-x: auto; }
-
     .closed-list { margin: 0; padding: 0; list-style: none; font-size: 0.88rem; }
     .closed-list li { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 0; border-top: 1px solid var(--border); }
     .closed-list li:first-child { border-top: 0; }
@@ -206,7 +199,12 @@
         <header class="page-head">
             <div>
                 <h2>Security</h2>
-                <p class="sub">What Aikido found in this repository, and what was decided about each finding. Aikido scans on its side; this page reads the result.</p>
+                @if ($enabled)
+                    <p class="sub">What Aikido found in this repository, and what was decided about each finding. Aikido scans on its side; this page reads the result.</p>
+                @else
+                    <p class="sub">Aikido scans this repository for vulnerable dependencies, weaknesses in the code, leaked secrets, and risky configuration. Larapilot reads what it found; it runs no scanner of its own.</p>
+                    <p class="sub">Connect the repository in <a href="https://www.aikido.dev/">Aikido</a>, put the API client in <code>.env</code>, then turn the link on: <code>php artisan larapilot:settings-set --aikido=YES</code>.</p>
+                @endif
                 @if ($repository)
                     <div class="chips" style="margin-top: 12px">
                         <span class="chip current">{{ $repository['name'] }}</span>
@@ -228,23 +226,7 @@
             @endif
         </header>
 
-        @if (! $enabled)
-            <section class="card setup">
-                <h3>Aikido is off for this project</h3>
-                <p>Aikido looks for vulnerable dependencies, weaknesses in the code, leaked secrets, and risky configuration. Larapilot runs no scanner of its own: it reads what Aikido found and brings it into the workflow.</p>
-                <ol>
-                    <li>Connect the repository in Aikido, through the git provider.</li>
-                    <li>In Aikido, <strong>Settings → Integrations → Public REST API</strong>, create a client with the <code>issues:read</code> and <code>repositories:read</code> scopes.</li>
-                    <li>Put the credentials in <code>.env</code>:
-                        <pre><code>LARAPILOT_AIKIDO_CLIENT_ID=
-LARAPILOT_AIKIDO_CLIENT_SECRET=
-LARAPILOT_AIKIDO_REGION=eu</code></pre>
-                    </li>
-                    <li>Turn it on: <code>php artisan larapilot:settings-set --aikido=YES</code></li>
-                    <li>Run <code>/larapilot-aikido</code> to hand the findings to triage.</li>
-                </ol>
-            </section>
-        @elseif ($error)
+        @if ($enabled && $error)
             <div class="flash flash--error" role="alert">
                 <strong>{{ $error }}</strong>
                 @if ($hint)
@@ -262,7 +244,7 @@ LARAPILOT_AIKIDO_REGION=eu</code></pre>
                     <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>php artisan larapilot:aikido-status</code></p>
                 </section>
             @endif
-        @else
+        @elseif ($enabled)
             <div @class(['verdict', 'is-'.strtolower($gate['verdict'])]) role="status">
                 @include('larapilot::dashboard.partials.icon', ['name' => $verdictIcon[$gate['verdict']] ?? 'info'])
                 <div>

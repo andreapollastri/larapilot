@@ -50,6 +50,7 @@ class MockupPackageService
         $index = 1;
         $startHref = null;
         $startLabel = null;
+        $totalListed = 0;
 
         foreach ($items as $item) {
             if (! is_array($item)) {
@@ -107,6 +108,7 @@ class MockupPackageService
                 $appendScreens($screens, is_string($entry) ? $entry : null);
             }
 
+            $totalListed += $listed > 0 ? $listed : count($screens);
             $number = str_pad((string) $index, 2, '0', STR_PAD_LEFT);
             $count = $this->escape(sprintf($copy['screens'], $listed > 0 ? $listed : count($screens)));
             $cards .= <<<HTML
@@ -138,7 +140,7 @@ HTML;
         $contents = $this->escape($copy['contents']);
         $lead = $this->escape($copy['lead']);
         $meta = $this->escape(
-            sprintf($copy['meta'], (int) ($catalog['spec_count'] ?? 0), (int) ($catalog['screen_count'] ?? 0))
+            sprintf($copy['meta'], (int) ($catalog['spec_count'] ?? 0), $totalListed > 0 ? $totalListed : (int) ($catalog['screen_count'] ?? 0))
         );
 
         return <<<HTML

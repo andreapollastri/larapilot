@@ -1545,7 +1545,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.1</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.2</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -7730,15 +7730,16 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
             <code>RunArtisanTool</code>; the two that write are not.</p>
 
           <h4 id="deep-dive-aikido-dashboard">On the dashboard</h4>
-          <p><code>/larapilot/security</code> appears in the menu when the setting is on. It opens on the verdict
+          <p><code>/larapilot/security</code> is always in the menu. With the setting off it is two lines: what
+            Aikido scans, and how to turn the link on. With the setting on it opens on the verdict
             of the gate, in a sentence — <em>A release is stopped: 3 open findings are high or above, 2 with no
             decision yet</em> — then the open findings by severity, then every finding, the most severe first.
             A row opens on what the finding is, how to fix it, where it is, its CVE, when it was first seen, and
             what was decided: the spec it is in the backlog as, with its status, or the reason it was waived.
             Findings filter by decision and by text. What was read is kept for five minutes; <strong>Read
             again</strong> asks Aikido anew, and <strong>Download report (.md)</strong> saves the same document
-            the skill writes. With the setting off the page explains the setup; when Aikido cannot be read it
-            says what to check, and the rest of the dashboard is untouched.</p>
+            the skill writes. When Aikido cannot be read the page says what to check, and the rest of the
+            dashboard is untouched.</p>
 
           <h4 id="deep-dive-aikido-kept">What is kept, and where</h4>
           <div class="table-card">
@@ -7992,7 +7993,7 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
             <code>RunArtisanTool</code>; the two that write are not.</p>
 
           <h4 id="deep-dive-boogle-dashboard">On the dashboard</h4>
-          <p><code>/larapilot/errors</code> appears under Insights when the setting is on. It opens on what is
+          <p><code>/larapilot/errors</code> is always under Insights. With the setting off it is two lines: what Boogle records, and an invitation to use it, with how to turn the link on. With the setting on it opens on what is
             open, in a sentence — <em>5 open errors, thrown 33 times: 2 with no decision yet. 1 came back after
             its fix</em> — then four figures, then the errors thrown <strong>day by day</strong> over the last
             two weeks, with the same numbers as a table. Every bug is a row: how many times it was thrown, the
@@ -8000,8 +8001,7 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
             happened, and the decision. A row opens on the whole message, the route, the first and the last
             time, and what to do next. Bugs filter by decision and by text. What was read is kept for five
             minutes; <strong>Read again</strong> asks Boogle anew, and
-            <strong>Download report (.md)</strong> saves the same document the skill writes. With the setting
-            off the page explains the setup; when Boogle cannot be read it says what to check, and the rest of
+            <strong>Download report (.md)</strong> saves the same document the skill writes. When Boogle cannot be read the page says what to check, and the rest of
             the dashboard is untouched.</p>
 
           <h4 id="deep-dive-boogle-kept">What is kept, and where</h4>
@@ -9343,8 +9343,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><code>/larapilot/design</code></td>
                   <td>Every screen first, as a card; a click opens that mockup as a site you browse, with
                     <strong>All screens</strong> to come back. Prev/next through every flow,
-                    <strong>style variants</strong> under <code>mockups/{spec}/styles/{slug}/</code> with
-                    side-by-side compare and <strong>Use this style</strong>, download
+                    <strong>style variants</strong> under <code>mockups/{spec}/styles/{slug}/</code>, each
+                    listed on its own, and <strong>Use this style</strong> on the open screen, download
                     <code>/larapilot/design/package.zip</code> (HTML + assets)</td>
                 </tr>
                 <tr>
@@ -9385,15 +9385,17 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><strong>Security</strong></td>
                   <td><code>/larapilot/security</code></td>
                   <td>What Aikido found in the repository, with what was decided about each finding and the
-                    verdict of the ship gate (when <code>aikido</code> is <code>YES</code>). Download
+                    verdict of the ship gate. Always listed; with <code>aikido</code> off, two lines on what
+                    Aikido is and how to connect it. Download
                     <code>/larapilot/security/aikido.md</code></td>
                 </tr>
                 <tr>
                   <td><strong>Errors</strong></td>
                   <td><code>/larapilot/errors</code></td>
                   <td>What the running application threw, as Boogle recorded it: one row for each bug, how many
-                    times day by day, and what was decided (when <code>boogle</code> is <code>YES</code>).
-                    Download <code>/larapilot/errors/boogle.md</code></td>
+                    times day by day, and what was decided. Always listed; with <code>boogle</code> off, two
+                    lines on what Boogle is, how to connect it, and an invitation to use it. Download
+                    <code>/larapilot/errors/boogle.md</code></td>
                 </tr>
                 <tr>
                   <td><strong>Economics</strong></td>
@@ -9607,8 +9609,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             presentation <code>index.html</code>, every mockup HTML file, local assets, and referenced
             design-system files so the pack can be opened offline; <strong>Open index in new tab</strong> shows
             that cover page. When <code>/larapilot-design</code> mocked several visual directions
-            (<code>mockups/{spec}/styles/{slug}/</code>), a style switcher, <strong>Compare styles</strong>
-            (side-by-side), and <strong>Use this style</strong> appear — the choice is written to
+            (<code>mockups/{spec}/styles/{slug}/</code>), each style is listed on its own. Opening a screen
+            shows a style switcher and <strong>Use this style</strong> — the choice is written to
             <code>styles.yaml</code> and logged in the decision journal, same as
             <code>larapilot:mockup-choose-style</code>.</p>
 
@@ -9739,12 +9741,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             matter as facts.</p>
 
           <h4>Security</h4>
-          <p>The findings of Aikido for this repository, when <code>aikido</code> is <code>YES</code>. Full
+          <p>The findings of Aikido for this repository. The page is always in the menu; with
+            <code>aikido</code> off it says what Aikido is and how to connect it. Full
             chapter: <a href="#deep-dive-aikido">Aikido</a>.</p>
 
           <h4>Errors</h4>
-          <p>What the running application threw, as Boogle recorded it, when <code>boogle</code> is
-            <code>YES</code>. Full chapter: <a href="#deep-dive-boogle">Boogle</a>.</p>
+          <p>What the running application threw, as Boogle recorded it. The page is always in the menu; with
+            <code>boogle</code> off it says what Boogle is, how to connect it, and invites the project to use
+            it. Full chapter: <a href="#deep-dive-boogle">Boogle</a>.</p>
 
           <h4>Git</h4>
           <p>Three views of the local repository. None of them calls GitHub, GitLab, or any remote API.</p>
@@ -10399,7 +10403,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v4.1.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v4.1.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

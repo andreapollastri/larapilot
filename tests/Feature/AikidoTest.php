@@ -572,13 +572,17 @@ it('lets an agent read Aikido over MCP and nothing more', function (): void {
 it('shows the findings on the dashboard, with what was decided', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    // Off: the page explains how to turn it on, and the menu does not list it.
+    // Off: the page stays in the menu and says what Aikido is and how to connect it.
     Http::fake();
     $this->get('/larapilot/security')
         ->assertOk()
-        ->assertSee('Aikido is off for this project', false)
+        ->assertSee('Aikido scans this repository for vulnerable dependencies', false)
+        ->assertSee('https://www.aikido.dev/', false)
         ->assertSee('larapilot:settings-set --aikido=YES', false)
-        ->assertDontSee('>Security</a>', false);
+        ->assertSee('>Security</a>', false)
+        ->assertDontSee('Aikido is off for this project', false)
+        ->assertDontSee('Read again', false);
+    $this->get('/larapilot')->assertOk()->assertSee('href="'.url('/larapilot/security').'"', false);
     $this->get('/larapilot/security/aikido.md')->assertNotFound();
     Http::assertNothingSent();
 

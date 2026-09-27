@@ -16,8 +16,8 @@
         'Insights' => [
             ['route' => 'larapilot.dashboard.usage', 'active' => ['larapilot.dashboard.usage'], 'label' => 'Usage', 'icon' => 'usage'],
             ['route' => 'larapilot.dashboard.economics', 'active' => ['larapilot.dashboard.economics*'], 'label' => 'Economics', 'icon' => 'economics'],
-            ['route' => 'larapilot.dashboard.security', 'active' => ['larapilot.dashboard.security*'], 'label' => 'Security', 'icon' => 'shield', 'when' => app(\Larapilot\Services\ConfigService::class)->aikidoEnabled()],
-            ['route' => 'larapilot.dashboard.errors', 'active' => ['larapilot.dashboard.errors*'], 'label' => 'Errors', 'icon' => 'bug', 'when' => app(\Larapilot\Services\ConfigService::class)->boogleEnabled()],
+            ['route' => 'larapilot.dashboard.security', 'active' => ['larapilot.dashboard.security*'], 'label' => 'Security', 'icon' => 'shield'],
+            ['route' => 'larapilot.dashboard.errors', 'active' => ['larapilot.dashboard.errors*'], 'label' => 'Errors', 'icon' => 'bug'],
         ],
         'Reference' => [
             ['route' => 'larapilot.api.docs', 'active' => ['larapilot.api.*'], 'label' => 'API', 'icon' => 'api'],
@@ -484,6 +484,8 @@
             line-height: 1.55;
             max-width: 74ch;
         }
+
+        .page-head .sub + .sub { margin-top: 8px; }
 
         .hint { font-size: 0.82rem; line-height: 1.5; }
 

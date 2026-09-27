@@ -40,7 +40,7 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 1. `php artisan larapilot:config-show` — read `paths.mockups`, `paths.client_materials`, `paths.research`, `paths.design_systems`
 2. Read PRD (`paths.prd`) — especially `## Technical Architecture` (admin panel, CSS framework, Starter Kit variant)
 3. When `data.settings.decision_log` is `YES` (default), run `php artisan larapilot:decision-check --topic="design system" --value="<candidate>"` before switching away from a logged choice; after the gate settles, `php artisan larapilot:decision-log --topic="design system" --value="…" --source=askquestion --skill=larapilot-design [--spec=US-XXX] [--rationale="…"]` (and separate entries for custom aesthetic: palette, typography, tone when created from scratch)
-4. After the user picks a winning style among variants: `php artisan larapilot:mockup-choose-style US-XXX --style=filament` (writes `styles.yaml`, logs `mockup style` when the journal is on). Dashboard: `/larapilot/design` → **Compare styles** → **Use this style**.
+4. After the user picks a winning style among variants: `php artisan larapilot:mockup-choose-style US-XXX --style=filament` (writes `styles.yaml`, logs `mockup style` when the journal is on). Dashboard: `/larapilot/design` → open a screen → **Use this style**.
 
 ## Workflow
 
@@ -95,7 +95,7 @@ Build options **dynamically** from §0a:
 - Include **`CLIENT_BRAND`** when `{paths.client_materials}/` has brand guidelines but no system folder — “Follow client brand materials (no packaged system)”
 - **Always** include **`NEW_CUSTOM`** last — never omit the from-scratch path
 
-- **AskQuestion prompt:** `Design system (current: {VALUE or "not set"}) — which visual system(s) should these mockups explore? Pick one to lock a direction, or several to compare side by side on /larapilot/design.`
+- **AskQuestion prompt:** `Design system (current: {VALUE or "not set"}) — which visual system(s) should these mockups explore? Pick one to lock a direction, or several so /larapilot/design lists each style.`
 - **AskQuestion:** set **`allow_multiple: true`** so the user can pick more than one packaged/custom system or aesthetic to mock in parallel.
 - **Chat framing (one line):** 🎨 Elise + ✨ Joe — locks tokens, components, and admin vs public language before any HTML; multiple picks become separate style folders you compare before choosing one to implement.
 
@@ -116,7 +116,7 @@ Only list options that apply; **always** list `NEW_CUSTOM`. If the user picks a 
 **Multi-style layout (when Round 1 returns more than one option, or the user asks to compare looks)**
 
 1. Create **one folder per style** under `.larapilot/mockups/{spec}/styles/{slug}/` — `{slug}` is lowercase kebab-case (`filament`, `nordic-minimal`, `warm-editorial`, …). Do **not** mix two aesthetics in one HTML tree.
-2. Write the **same screen set** in every chosen style (matching filenames: `index.html`, `desktop.html`, …) so `/larapilot/design` can compare them screen by screen.
+2. Write the **same screen set** in every chosen style (matching filenames: `index.html`, `desktop.html`, …) so `/larapilot/design` lists each style and the style switcher can open the same screen in another look.
 3. Seed `.larapilot/mockups/{spec}/styles.yaml`:
 
 ```yaml
@@ -167,7 +167,7 @@ When the user picks `DESCRIBE_OTHER` or adds detail in chat, ask **one** short c
 After the gate:
 
 1. Log the choice (`decision-log` when enabled) — topic `design system` (and `visual direction` when `NEW_CUSTOM`). When several styles were mocked, log the **chosen** slug only after the user picks (`mockup style` topic).
-2. Mockup **README.md** must record: chosen system path (or “custom from scratch”), aesthetic tokens, admin vs public scope, link to `{paths.design_systems}/{folder}/` when applicable, and — when `styles/` exists — the list of style slugs and which one is `chosen` in `styles.yaml`
+2. Mockup **README.md** must record: chosen system path (or “custom from scratch”), aesthetic tokens, admin vs public scope, link to `{paths.design_systems}/{folder}/` when applicable, and — when `styles/` exists — the list of style slugs and which one is `chosen` in `styles.yaml`. It must also link the folder to user stories so `/larapilot/specs/US-XXX` shows the screens: a line `**Traces to:** US-001, US-002` (Italian `**Traccia a:**` is read the same way) and a screen table that names each HTML file in backticks (`index.html`) beside the stories that screen covers. A story named only on the traces line still shows the entry screen of each style.
 3. For **user-added** folders, treat them like packaged systems: copy/link `tokens.css`, map screens to `html/` catalog if present
 4. For **NEW_CUSTOM**, define tokens in README (colors, type scale, radius, spacing, motion) before `index.html`
 

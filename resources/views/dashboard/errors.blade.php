@@ -250,13 +250,6 @@
     .none { padding: 30px 20px; text-align: center; color: var(--muted); }
     .none[hidden] { display: none; }
 
-    .setup { padding: 26px 24px; }
-    .setup h3 { margin: 0 0 6px; font-size: 1.1rem; }
-    .setup > p { margin: 0 0 16px; color: var(--text-2); max-width: 78ch; }
-    .setup ol { margin: 0; padding-left: 1.2rem; color: var(--text-2); font-size: 0.92rem; line-height: 1.7; }
-    .setup li { margin: 6px 0; }
-    .setup pre { margin: 8px 0; padding: 10px 12px; border-radius: var(--radius-xs); background: var(--surface-3); font-size: 0.8rem; overflow-x: auto; }
-
     .closed-list { margin: 0; padding: 0; list-style: none; font-size: 0.88rem; }
     .closed-list li { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 0; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
     .closed-list li:first-child { border-top: 0; }
@@ -302,7 +295,12 @@
         <header class="page-head">
             <div>
                 <h2>Errors</h2>
-                <p class="sub">What the running application threw, as Boogle recorded it: one row for each bug, however many times it happened, with what was decided about it.</p>
+                @if ($enabled)
+                    <p class="sub">What the running application threw, as Boogle recorded it: one row for each bug, however many times it happened, with what was decided about it.</p>
+                @else
+                    <p class="sub">Boogle records the exceptions the running application throws, and whether it answers. Larapilot reads those errors and brings each bug into the workflow.</p>
+                    <p class="sub">Use <a href="https://boogle.web.ap.it/">Boogle</a> for this project: send the exceptions with <code>andreapollastri/boogle-client</code>, put the address and token in <code>.env</code>, then turn the link on with <code>php artisan larapilot:settings-set --boogle=YES</code>.</p>
+                @endif
                 @if ($project)
                     <div class="chips" style="margin-top: 12px">
                         <span class="chip current">{{ $project['title'] }}</span>
@@ -324,22 +322,7 @@
             @endif
         </header>
 
-        @if (! $enabled)
-            <section class="card setup">
-                <h3>Boogle is off for this project</h3>
-                <p>Boogle is the exception tracker and uptime monitor the team hosts. It records what the running application throws. Larapilot reads the open errors, puts together the ones that are one bug, and brings each bug into the workflow.</p>
-                <ol>
-                    <li>Have the application send its exceptions to Boogle, with the client package: <code>composer require andreapollastri/boogle-client</code>.</li>
-                    <li>In Boogle, as an admin user, create a token in the profile under <strong>API tokens</strong>.</li>
-                    <li>Put it in <code>.env</code>, with the address of Boogle:
-                        <pre><code>LARAPILOT_BOOGLE_URL=https://boogle.example.com
-LARAPILOT_BOOGLE_TOKEN=</code></pre>
-                    </li>
-                    <li>Turn it on: <code>php artisan larapilot:settings-set --boogle=YES</code></li>
-                    <li>Run <code>/larapilot-boogle</code> to hand the errors to triage.</li>
-                </ol>
-            </section>
-        @elseif ($error)
+        @if ($enabled && $error)
             <div class="flash flash--error" role="alert">
                 <strong>{{ $error }}</strong>
                 @if ($hint)
@@ -357,7 +340,7 @@ LARAPILOT_BOOGLE_TOKEN=</code></pre>
                     <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>php artisan larapilot:boogle-status</code></p>
                 </section>
             @endif
-        @else
+        @elseif ($enabled)
             <div @class(['verdict', 'is-'.$tone]) role="status">
                 @include('larapilot::dashboard.partials.icon', ['name' => $tone === 'pass' ? 'check' : 'info'])
                 <div>

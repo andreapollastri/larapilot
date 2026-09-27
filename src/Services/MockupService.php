@@ -11,6 +11,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class MockupService
 {
+    /**
+     * One scan of the mockup tree per request. The board asks for every
+     * spec, and each of those questions reads the same folders.
+     *
+     * @var array<string, array<string, mixed>>|null
+     */
+    private ?array $flowIndex = null;
+
     public function __construct(
         protected ConfigService $config,
         protected SpecService $specs,
@@ -26,52 +34,23 @@ class MockupService
     {
         $items = [];
         $screenCount = 0;
-        $root = $this->mockupsRoot();
 
-        if ($root !== null) {
-            $specsByCode = [];
+        foreach ($this->flowIndex() as $entry => $flow) {
+            $packed = $flow['packed'];
+            $spec = $flow['spec'];
+            $screenCount += count($packed['screens']);
 
-            foreach ($this->specs->allSpecs() as $spec) {
-                if (! is_array($spec)) {
-                    continue;
-                }
-
-                $code = (string) ($spec['code'] ?? '');
-
-                if ($code !== '') {
-                    $specsByCode[$code] = $spec;
-                }
-            }
-
-            foreach (scandir($root) ?: [] as $entry) {
-                if ($entry === '.' || $entry === '..' || ! SpecCode::isValid($entry)) {
-                    continue;
-                }
-
-                if (! is_dir($root.DIRECTORY_SEPARATOR.$entry)) {
-                    continue;
-                }
-
-                $packed = $this->pack($entry);
-
-                if ($packed['screens'] === []) {
-                    continue;
-                }
-
-                $screenCount += count($packed['screens']);
-                $spec = $specsByCode[$entry] ?? null;
-
-                $items[] = array_merge($packed, [
-                    'code' => $entry,
-                    'title' => is_array($spec) ? (string) ($spec['title'] ?? $entry) : $entry,
-                    'priority' => is_array($spec) ? (string) ($spec['priority'] ?? '') : '',
-                    'status' => is_array($spec) ? (string) ($spec['status'] ?? '') : '',
-                    'points' => is_array($spec) ? (int) ($spec['points'] ?? 0) : 0,
-                    'has_spec' => is_array($spec),
-                    'path' => $this->relativeMockupPath($entry),
-                    'browsable' => $this->config->mockupsBrowsable(),
-                ]);
-            }
+            $items[] = array_merge($packed, [
+                'code' => $entry,
+                'title' => is_array($spec) ? (string) ($spec['title'] ?? $entry) : $entry,
+                'priority' => is_array($spec) ? (string) ($spec['priority'] ?? '') : '',
+                'status' => is_array($spec) ? (string) ($spec['status'] ?? '') : '',
+                'points' => is_array($spec) ? (int) ($spec['points'] ?? 0) : 0,
+                'has_spec' => is_array($spec),
+                'path' => $this->relativeMockupPath($entry),
+                'browsable' => $this->config->mockupsBrowsable(),
+                'specs' => $flow['spec_links'],
+            ]);
         }
 
         return [
@@ -91,18 +70,32 @@ class MockupService
     {
         SpecCode::ensure($code);
 
-        $packed = $this->pack($code);
+        $detail = $this->forSpec($code);
+
+        if ($detail === null) {
+            return [
+                'available' => false,
+                'path' => $this->relativeMockupPath($code),
+                'screen_count' => 0,
+                'entry' => null,
+                'entry_url' => null,
+                'browsable' => $this->config->mockupsBrowsable(),
+                'screens' => [],
+                'styles' => [],
+                'chosen_style' => null,
+            ];
+        }
 
         return [
-            'available' => $packed['screens'] !== [],
-            'path' => $this->relativeMockupPath($code),
-            'screen_count' => count($packed['screens']),
-            'entry' => $packed['entry'],
-            'entry_url' => $packed['entry_url'],
-            'browsable' => $this->config->mockupsBrowsable(),
-            'screens' => $packed['screens'],
-            'styles' => $packed['styles'],
-            'chosen_style' => $packed['chosen_style'],
+            'available' => true,
+            'path' => $detail['path'],
+            'screen_count' => count($detail['screens']),
+            'entry' => $detail['entry'],
+            'entry_url' => $detail['entry_url'],
+            'browsable' => $detail['browsable'],
+            'screens' => $detail['screens'],
+            'styles' => $detail['styles'],
+            'chosen_style' => $detail['chosen_style'],
         ];
     }
 
@@ -113,20 +106,62 @@ class MockupService
     {
         SpecCode::ensure($code);
 
-        $packed = $this->pack($code);
+        $index = $this->flowIndex();
+        $own = is_array($index[$code]['packed'] ?? null) ? $index[$code]['packed'] : $this->emptyPack();
+        $ownScreens = is_array($own['screens'] ?? null) ? $own['screens'] : [];
+        $linked = $this->linkedScreens($code);
 
-        if ($packed['screens'] === []) {
+        if ($ownScreens === [] && $linked === []) {
             return null;
         }
 
+        $screens = $ownScreens;
+        $seen = [];
+
+        foreach ($screens as $screen) {
+            if (! is_array($screen)) {
+                continue;
+            }
+
+            $seen[$this->screenKey($screen)] = true;
+        }
+
+        foreach ($linked as $screen) {
+            $key = $this->screenKey($screen);
+
+            if (isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+            $screens[] = $screen;
+        }
+
+        $paths = [];
+
+        if ($ownScreens !== []) {
+            $paths[$code] = $this->relativeMockupPath($code);
+        }
+
+        foreach ($linked as $screen) {
+            $flow = (string) ($screen['flow'] ?? '');
+
+            if ($flow !== '') {
+                $paths[$flow] = $this->relativeMockupPath($flow);
+            }
+        }
+
+        $entry = $ownScreens !== [] ? ($own['entry'] ?? null) : ($screens[0]['file'] ?? null);
+        $entryUrl = $ownScreens !== [] ? ($own['entry_url'] ?? null) : ($screens[0]['url'] ?? null);
+
         return [
-            'path' => $this->relativeMockupPath($code),
-            'entry' => $packed['entry'],
-            'entry_url' => $packed['entry_url'],
+            'path' => implode(', ', array_values($paths)),
+            'entry' => is_string($entry) ? $entry : null,
+            'entry_url' => is_string($entryUrl) ? $entryUrl : null,
             'browsable' => $this->config->mockupsBrowsable(),
-            'screens' => $packed['screens'],
-            'styles' => $packed['styles'],
-            'chosen_style' => $packed['chosen_style'],
+            'screens' => array_values(array_filter($screens, 'is_array')),
+            'styles' => is_array($own['styles'] ?? null) ? $own['styles'] : [],
+            'chosen_style' => $own['chosen_style'] ?? null,
         ];
     }
 
@@ -185,6 +220,8 @@ class MockupService
             $directory.DIRECTORY_SEPARATOR.'styles.yaml',
             Yaml::dump($payload, 4, 2)
         );
+
+        $this->flowIndex = null;
 
         return $payload;
     }
@@ -457,6 +494,480 @@ class MockupService
         $label = str_replace(['-', '_'], ' ', $basename);
 
         return ucwords($label);
+    }
+
+    /**
+     * Every mockup folder, packed once, with the stories its README names.
+     *
+     * A folder named after a spec still belongs to that spec. A feature
+     * folder (public-site, admin-filament) belongs to the stories listed in
+     * README as `Traces to` / `Traccia a`, and to the rows of a screen table
+     * that name an HTML file beside those codes.
+     *
+     * @return array<string, array{packed: array<string, mixed>, coverage: array{specs: list<string>, screens: array<string, list<string>>}, spec_links: list<array{code: string, title: string, url: ?string}>, spec: ?array<string, mixed>}>
+     */
+    protected function flowIndex(): array
+    {
+        if ($this->flowIndex !== null) {
+            return $this->flowIndex;
+        }
+
+        $index = [];
+        $root = $this->mockupsRoot();
+
+        if ($root === null) {
+            return $this->flowIndex = [];
+        }
+
+        $known = [];
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            if (! is_array($spec)) {
+                continue;
+            }
+
+            $code = (string) ($spec['code'] ?? '');
+
+            if ($code !== '') {
+                $known[$code] = $spec;
+            }
+        }
+
+        foreach (scandir($root) ?: [] as $entry) {
+            if ($entry === '.' || $entry === '..' || ! SpecCode::isValid($entry)) {
+                continue;
+            }
+
+            if (! is_dir($root.DIRECTORY_SEPARATOR.$entry)) {
+                continue;
+            }
+
+            $packed = $this->pack($entry);
+
+            if ($packed['screens'] === []) {
+                continue;
+            }
+
+            $directory = $this->absoluteMockupDirectory($entry);
+            $coverage = $directory !== null
+                ? $this->filterCoverage($this->readmeCoverage($directory), $known)
+                : ['specs' => [], 'screens' => []];
+            $packed = $this->tagPacked($packed, $coverage);
+
+            $links = [];
+
+            foreach ($coverage['specs'] as $specCode) {
+                $links[] = [
+                    'code' => $specCode,
+                    'title' => (string) ($known[$specCode]['title'] ?? $specCode),
+                    'url' => $this->specUrl($specCode),
+                ];
+            }
+
+            $index[$entry] = [
+                'packed' => $packed,
+                'coverage' => $coverage,
+                'spec_links' => $links,
+                'spec' => $known[$entry] ?? null,
+            ];
+        }
+
+        return $this->flowIndex = $index;
+    }
+
+    /**
+     * Screens in other folders whose README points at this spec.
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function linkedScreens(string $spec): array
+    {
+        $found = [];
+
+        foreach ($this->flowIndex() as $flowCode => $flow) {
+            if ($flowCode === $spec) {
+                continue;
+            }
+
+            $links = array_column($flow['spec_links'], 'code');
+
+            if (! in_array($spec, $links, true)) {
+                continue;
+            }
+
+            foreach ($this->screensCoveringSpec($flow['packed'], $spec, $flow['coverage'], $flowCode) as $screen) {
+                $found[] = $screen;
+            }
+        }
+
+        return $found;
+    }
+
+    /**
+     * @param  array<string, mixed>  $packed
+     * @param  array{specs: list<string>, screens: array<string, list<string>>}  $coverage
+     * @return list<array<string, mixed>>
+     */
+    protected function screensCoveringSpec(array $packed, string $spec, array $coverage, string $flowCode): array
+    {
+        $pool = $this->flattenScreens($packed, $flowCode);
+        $inRows = false;
+
+        foreach ($coverage['screens'] as $codes) {
+            if (in_array($spec, $codes, true)) {
+                $inRows = true;
+                break;
+            }
+        }
+
+        if ($inRows) {
+            return array_values(array_filter(
+                $pool,
+                fn (array $screen): bool => $this->fileListedFor((string) ($screen['file'] ?? ''), $spec, $coverage)
+            ));
+        }
+
+        if (! in_array($spec, $coverage['specs'], true)) {
+            return [];
+        }
+
+        $byStyle = [];
+
+        foreach ($pool as $screen) {
+            $byStyle[(string) ($screen['style_id'] ?? '')][] = $screen;
+        }
+
+        $entries = [];
+
+        foreach ($byStyle as $screens) {
+            $entry = null;
+
+            foreach ($screens as $screen) {
+                if (strtolower(basename((string) ($screen['file'] ?? ''))) === 'index.html') {
+                    $entry = $screen;
+                    break;
+                }
+            }
+
+            $entries[] = $entry ?? $screens[0];
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Every screen of every style, so a story sees playful-brand as well as
+     * the files sitting at the folder root.
+     *
+     * @param  array<string, mixed>  $packed
+     * @return list<array<string, mixed>>
+     */
+    protected function flattenScreens(array $packed, string $flowCode): array
+    {
+        $styles = is_array($packed['styles'] ?? null) ? $packed['styles'] : [];
+        $rows = [];
+
+        $push = function (array $screen, ?string $styleId, ?string $styleLabel) use (&$rows, $flowCode): void {
+            $screen['flow'] = $flowCode;
+
+            if (is_string($styleId) && $styleId !== '' && $styleId !== 'current') {
+                $screen['style'] = $styleLabel !== null && $styleLabel !== '' ? $styleLabel : $styleId;
+                $screen['style_id'] = $styleId;
+            } elseif ($styleId === 'current') {
+                $screen['style'] = $styleLabel !== null && $styleLabel !== '' ? $styleLabel : 'Current';
+                $screen['style_id'] = 'current';
+            }
+
+            $rows[] = $screen;
+        };
+
+        $named = array_values(array_filter(
+            $styles,
+            static fn (mixed $style): bool => is_array($style) && ($style['id'] ?? '') !== 'current'
+        ));
+
+        if ($named !== [] || count($styles) > 1) {
+            foreach ($styles as $style) {
+                if (! is_array($style)) {
+                    continue;
+                }
+
+                $id = (string) ($style['id'] ?? '');
+                $label = (string) ($style['label'] ?? $id);
+
+                foreach (is_array($style['screens'] ?? null) ? $style['screens'] : [] as $screen) {
+                    if (! is_array($screen)) {
+                        continue;
+                    }
+
+                    $push($screen, $id, $label);
+                }
+            }
+
+            return $rows;
+        }
+
+        foreach (is_array($packed['screens'] ?? null) ? $packed['screens'] : [] as $screen) {
+            if (! is_array($screen)) {
+                continue;
+            }
+
+            $push($screen, null, null);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @return array{specs: list<string>, screens: array<string, list<string>>}
+     */
+    protected function readmeCoverage(string $directory): array
+    {
+        $empty = ['specs' => [], 'screens' => []];
+        $path = $directory.DIRECTORY_SEPARATOR.'README.md';
+
+        if (! is_file($path)) {
+            return $empty;
+        }
+
+        $content = (string) file_get_contents($path);
+
+        if ($content === '') {
+            return $empty;
+        }
+
+        $screens = [];
+
+        foreach (preg_split("/\R/", $content) ?: [] as $line) {
+            if (! str_starts_with(ltrim($line), '|')) {
+                continue;
+            }
+
+            $rowSpecs = $this->specCodesIn($line);
+
+            if ($rowSpecs === []) {
+                continue;
+            }
+
+            foreach ($this->htmlFilesIn($line) as $file) {
+                $screens[$file] = array_values(array_unique(array_merge($screens[$file] ?? [], $rowSpecs)));
+            }
+        }
+
+        return [
+            'specs' => $this->specCodesIn($content),
+            'screens' => $screens,
+        ];
+    }
+
+    /**
+     * @param  array{specs: list<string>, screens: array<string, list<string>>}  $coverage
+     * @param  array<string, array<string, mixed>>  $known
+     * @return array{specs: list<string>, screens: array<string, list<string>>}
+     */
+    protected function filterCoverage(array $coverage, array $known): array
+    {
+        $specs = array_values(array_filter(
+            $coverage['specs'],
+            static fn (string $code): bool => isset($known[$code])
+        ));
+
+        $screens = [];
+
+        foreach ($coverage['screens'] as $file => $codes) {
+            $kept = array_values(array_filter(
+                $codes,
+                static fn (string $code): bool => isset($known[$code])
+            ));
+
+            if ($kept !== []) {
+                $screens[$file] = $kept;
+            }
+        }
+
+        return ['specs' => $specs, 'screens' => $screens];
+    }
+
+    /**
+     * @param  array<string, mixed>  $packed
+     * @param  array{specs: list<string>, screens: array<string, list<string>>}  $coverage
+     * @return array<string, mixed>
+     */
+    protected function tagPacked(array $packed, array $coverage): array
+    {
+        $packed['screens'] = $this->tagScreens(
+            is_array($packed['screens'] ?? null) ? $packed['screens'] : [],
+            $coverage
+        );
+
+        $styles = [];
+
+        foreach (is_array($packed['styles'] ?? null) ? $packed['styles'] : [] as $style) {
+            if (! is_array($style)) {
+                continue;
+            }
+
+            $style['screens'] = $this->tagScreens(
+                is_array($style['screens'] ?? null) ? $style['screens'] : [],
+                $coverage
+            );
+            $styles[] = $style;
+        }
+
+        $packed['styles'] = $styles;
+
+        return $packed;
+    }
+
+    /**
+     * @param  list<mixed>  $screens
+     * @param  array{specs: list<string>, screens: array<string, list<string>>}  $coverage
+     * @return list<array<string, mixed>>
+     */
+    protected function tagScreens(array $screens, array $coverage): array
+    {
+        $tagged = [];
+
+        foreach ($screens as $screen) {
+            if (! is_array($screen)) {
+                continue;
+            }
+
+            $codes = [];
+
+            foreach ($coverage['screens'] as $mapped => $mappedCodes) {
+                if (! $this->sameScreen((string) ($screen['file'] ?? ''), (string) $mapped)) {
+                    continue;
+                }
+
+                foreach ($mappedCodes as $mappedCode) {
+                    if (! in_array($mappedCode, $codes, true)) {
+                        $codes[] = $mappedCode;
+                    }
+                }
+            }
+
+            $screen['specs'] = $codes;
+            $tagged[] = $screen;
+        }
+
+        return $tagged;
+    }
+
+    /**
+     * @param  array{specs: list<string>, screens: array<string, list<string>>}  $coverage
+     */
+    protected function fileListedFor(string $file, string $spec, array $coverage): bool
+    {
+        foreach ($coverage['screens'] as $mapped => $codes) {
+            if (! in_array($spec, $codes, true)) {
+                continue;
+            }
+
+            if ($this->sameScreen($file, (string) $mapped)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function sameScreen(string $file, string $mapped): bool
+    {
+        $file = str_replace('\\', '/', $file);
+        $mapped = str_replace('\\', '/', ltrim($mapped, '/'));
+
+        if ($mapped === '') {
+            return false;
+        }
+
+        if ($file === $mapped || str_ends_with($file, '/'.$mapped)) {
+            return true;
+        }
+
+        return ! str_contains($mapped, '/') && basename($file) === $mapped;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function specCodesIn(string $text): array
+    {
+        if (preg_match_all('/\b([A-Z][A-Z0-9]{0,9}-\d+)\b/', $text, $matches) < 1) {
+            return [];
+        }
+
+        $codes = [];
+
+        foreach ($matches[1] as $code) {
+            if (! in_array($code, $codes, true)) {
+                $codes[] = $code;
+            }
+        }
+
+        return $codes;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function htmlFilesIn(string $line): array
+    {
+        if (preg_match_all('/`([^`\s]+\.html?)`|(?<![A-Za-z0-9_.\/-])((?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+\.html?)\b/i', $line, $matches, PREG_SET_ORDER) < 1) {
+            return [];
+        }
+
+        $files = [];
+
+        foreach ($matches as $match) {
+            $file = ($match[1] ?? '') !== '' ? $match[1] : ($match[2] ?? '');
+            $file = str_replace('\\', '/', $file);
+
+            if ($file === '' || in_array($file, $files, true)) {
+                continue;
+            }
+
+            $files[] = $file;
+        }
+
+        return $files;
+    }
+
+    /**
+     * @param  array<string, mixed>  $screen
+     */
+    protected function screenKey(array $screen): string
+    {
+        $url = $screen['url'] ?? null;
+
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+
+        return (string) ($screen['flow'] ?? '').'|'.(string) ($screen['file'] ?? '');
+    }
+
+    protected function specUrl(string $code): ?string
+    {
+        if (! app('router')->has('larapilot.dashboard.spec')) {
+            return null;
+        }
+
+        return route('larapilot.dashboard.spec', ['code' => $code], absolute: false);
+    }
+
+    /**
+     * @return array{entry: null, entry_url: null, screens: list<empty>, styles: list<empty>, chosen_style: null}
+     */
+    protected function emptyPack(): array
+    {
+        return [
+            'entry' => null,
+            'entry_url' => null,
+            'screens' => [],
+            'styles' => [],
+            'chosen_style' => null,
+        ];
     }
 
     protected function relativeMockupPath(string $code): string

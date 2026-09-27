@@ -2,6 +2,21 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.1.2] - 2026-09-28
+
+### Changed
+
+- **Security and Errors stay in the menu** — `/larapilot/security` and `/larapilot/errors` are listed under Insights whether or not the connection is on. With `aikido` off, Security is two lines: what Aikido scans, and how to turn the link on. With `boogle` off, Errors is the same for Boogle, and invites the project to use it.
+- **Design no longer compares styles side by side** — the **Compare styles** button is gone. Each style is already its own set of screens in the gallery. Opening a screen still switches style, and **Use this style** on that bar writes `styles.yaml`.
+
+### Fixed
+
+- **Design shows every style, and stories find their mockups again** — `/larapilot/design` lists each style folder (`nordic-minimal`, `playful-brand`, …) as its own set of screens, including when the flow root only holds a showcase `index.html` and no style has been chosen yet. A feature folder such as `public-site` links to the user stories named in its README (`**Traces to:**` or `**Traccia a:**`, and the screen table). Opening one of those stories shows the screens that table assigns to it, in every style, and the board marks the story with Mockup.
+
+### Docs
+
+- Site / package version **v4.1.2**. Security and Errors are described as always in the menu, including the page you see when the connection is off.
+
 ## [4.1.1] - 2026-09-28
 
 ### Added

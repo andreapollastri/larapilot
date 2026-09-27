@@ -368,8 +368,8 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
-| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate (`aikido=YES`) |
-| Errors | `/larapilot/errors` | What the running application threw, as Boogle recorded it: one row for each bug, how many times it was thrown day by day, and what was decided about it (`boogle=YES`) |
+| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. Always in the menu; with `aikido` off it says what Aikido is and how to connect it |
+| Errors | `/larapilot/errors` | What the running application threw, as Boogle recorded it: one row for each bug, how many times it was thrown day by day, and what was decided about it. Always in the menu; with `boogle` off it says what Boogle is, how to connect it, and invites the project to use it |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |

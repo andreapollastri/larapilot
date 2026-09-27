@@ -27,7 +27,7 @@ When the PRD `## Technical Architecture` records a UI framework — **Filament**
 
 When no design system is chosen, **`larapilot-design` runs the design-system gate** (AskQuestion, **`allow_multiple: true`** when comparing looks): packaged folders under `.larapilot/design-systems/`, any **user-added** system folders there, or a **new custom aesthetic from scratch** — before writing HTML. When the PRD or decision journal already locks the stack (e.g. Filament admin), the gate is skipped. Otherwise design in the agreed visual language — mockups inform the panel-route decision downstream (per **Vendor & Package Policy** in `runtime-delivery.md`), not the other way around.
 
-**Multiple style variants:** when the user picks more than one system or aesthetic, Elise writes parallel trees under `.larapilot/mockups/{spec}/styles/{slug}/` (same screen filenames in each) and lists them in `styles.yaml`. `/larapilot/design` compares them side by side; the user locks the winner with **Use this style** or `larapilot:mockup-choose-style`. Alex implements only the chosen slug.
+**Multiple style variants:** when the user picks more than one system or aesthetic, Elise writes parallel trees under `.larapilot/mockups/{spec}/styles/{slug}/` (same screen filenames in each) and lists them in `styles.yaml`. `/larapilot/design` lists every style; the user locks the winner with **Use this style** on the open screen, or `larapilot:mockup-choose-style`. Alex implements only the chosen slug.
 
 ### Default visual language
 

@@ -293,6 +293,14 @@
         text-decoration: none;
     }
 
+    .mockup-screen-meta {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 500;
+    }
+
+    a.mockup-screen-link:hover .mockup-screen-meta { color: var(--accent); }
+
     .mockup-path {
         margin: 12px 0 0;
         color: var(--muted);
@@ -588,12 +596,26 @@
                     @if (! empty($mockups['screens']))
                         <div class="mockup-screens">
                             @foreach ($mockups['screens'] as $screen)
+                                @php
+                                    $screenWhere = trim(implode(' · ', array_filter([
+                                        (string) ($screen['flow'] ?? ''),
+                                        (string) ($screen['style'] ?? ''),
+                                    ], static fn (string $part): bool => $part !== '')));
+                                @endphp
                                 @if (! empty($screen['url']))
-                                    <a class="mockup-screen-link" href="{{ $screen['url'] }}" target="_blank" rel="noopener noreferrer">
+                                    <a class="mockup-screen-link" href="{{ $screen['url'] }}" target="_blank" rel="noopener noreferrer" title="{{ $screen['file'] ?? '' }}">
                                         {{ $screen['label'] ?? $screen['file'] }}
+                                        @if ($screenWhere !== '')
+                                            <span class="mockup-screen-meta">{{ $screenWhere }}</span>
+                                        @endif
                                     </a>
                                 @else
-                                    <span class="mockup-screen-link">{{ $screen['label'] ?? $screen['file'] }}</span>
+                                    <span class="mockup-screen-link" title="{{ $screen['file'] ?? '' }}">
+                                        {{ $screen['label'] ?? $screen['file'] }}
+                                        @if ($screenWhere !== '')
+                                            <span class="mockup-screen-meta">{{ $screenWhere }}</span>
+                                        @endif
+                                    </span>
                                 @endif
                             @endforeach
                         </div>
