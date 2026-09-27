@@ -29,7 +29,7 @@ Read `.larapilot/runtime-core-settings-2.md` only when `config-show` reports `YE
 | `.larapilot/runtime-discovery.md` | Inception, adopt, feature, spec, frontend-companion. Index — read every part |
 | `.larapilot/runtime-ux.md` | Design, plan when the spec has UI, ship. Index |
 | `.larapilot/runtime-ship.md` | Ship. Index |
-| `.larapilot/runtime-ops.md` | Feature, bug, ship, usage, tracker, backstage; every skill when `lucille` is `YES`, except a delegating autopilot parent (one `usage-log` from Output Economy). Index — read every part |
+| `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, tracker, backstage; every skill when `lucille` is `YES`, except a delegating autopilot parent (one `usage-log` from Output Economy) and triage (the skill it hands off to logs). Index — read every part |
 | `.larapilot/runtime-dev-docs.md` | Implement, review, ship, adopt, bug. Autopilot only when inline, same condition as delivery |
 | `.larapilot/runtime-economics.md` | Economics; settings when `account` is not `NONE`. Index |
 | `.larapilot/runtime-release.md` | Release, and any skill when `release_mode` is `YES` |
@@ -37,4 +37,4 @@ Read `.larapilot/runtime-core-settings-2.md` only when `config-show` reports `YE
 | `.larapilot/runtime-custom-skills.md` | Custom-skill |
 | `.larapilot/task-templates.md` | Plan and implement. Autopilot only when inline |
 
-`larapilot-settings` and `larapilot-frontend-companion` use the every-skill rows plus the row above that names them. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the tables above that holds that heading.
+`larapilot-settings` and `larapilot-frontend-companion` use the every-skill rows plus the row above that names them. `larapilot-triage` uses the every-skill rows only: the skill it hands off to reads its own rows. `larapilot-prd` and `larapilot-bug` read single `runtime-discovery-N.md` parts, named in the skill, instead of the discovery index. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the tables above that holds that heading.

@@ -4,99 +4,38 @@
 
 @push('styles')
 <style>
-    .git-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
+    .git-filter { min-width: min(100%, 280px); }
+
+    .git-panel { margin-bottom: 18px; }
+
+    .git-panel h3 {
+        margin: 0 0 4px;
+        font-size: 1rem;
     }
 
-    .git-top h2 {
-        margin: 0;
-        font-size: 1.15rem;
-    }
-
-    .git-top .hint {
-        margin: 6px 0 0;
-        color: var(--muted);
-        font-size: 0.8rem;
-    }
-
-    .git-filter {
-        display: grid;
-        gap: 4px;
-        font-size: 0.75rem;
-        color: var(--muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        min-width: min(100%, 280px);
-    }
-
-    .git-filter select {
-        padding: 8px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 400;
-        text-transform: none;
-        letter-spacing: normal;
-    }
-
-    .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 14px;
-        margin-bottom: 22px;
-    }
-
-    .metric { padding: 16px 18px; }
-    .metric-label {
-        color: var(--muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-weight: 600;
-    }
-    .metric-value {
-        margin-top: 6px;
-        font-size: 1.6rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .panel {
-        padding: 18px 20px;
-        margin-bottom: 20px;
-    }
-
-    .panel h3 {
-        margin: 0 0 6px;
-        font-size: 0.95rem;
-    }
-
-    .panel .hint {
-        margin: 0 0 16px;
-        color: var(--muted);
-        font-size: 0.8rem;
-    }
+    .git-panel .hint { margin: 0 0 18px; max-width: 80ch; }
 
     .heatmap {
         --week-count: {{ count($weeks) }};
         --gap: 3px;
-        --dow-width: 24px;
+        --dow-width: 26px;
         width: 100%;
+    }
+
+    .heatmap-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: thin;
+        padding-bottom: 4px;
     }
 
     .heatmap-grid {
         display: grid;
         grid-template-columns: var(--dow-width) minmax(0, 1fr);
-        gap: 8px;
+        gap: 6px 8px;
         align-items: start;
+        /* a day stays at least 11px wide; the year scrolls on a phone */
+        min-width: calc(var(--dow-width) + var(--week-count) * 14px);
     }
 
     .heatmap-months {
@@ -104,7 +43,6 @@
         display: grid;
         grid-template-columns: repeat(var(--week-count), minmax(0, 1fr));
         gap: var(--gap);
-        margin-bottom: 6px;
         color: var(--muted);
         font-size: 0.7rem;
         line-height: 1.2;
@@ -117,37 +55,42 @@
         text-overflow: ellipsis;
     }
 
+    /* The labels are laid over the rows instead of sizing them: on a phone
+       a day is shorter than a line of text. The column stays in view while
+       the year scrolls under it. */
     .heatmap-dow {
         grid-row: 2;
-        display: grid;
-        grid-template-rows: repeat(7, minmax(0, 1fr));
-        gap: var(--gap);
-        color: var(--muted);
-        font-size: 0.65rem;
+        position: sticky;
+        left: 0;
+        z-index: 1;
         align-self: stretch;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 0.64rem;
     }
 
     .heatmap-dow span {
+        position: absolute;
+        left: 0;
+        right: 0;
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        padding-right: 2px;
+        height: calc((100% - 6 * var(--gap)) / 7);
+        padding-right: 3px;
+        line-height: 1;
     }
 
-    .heatmap-scroll {
-        grid-row: 2;
-        min-width: 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: thin;
-    }
+    .heatmap-dow span:nth-child(2) { top: calc((100% + var(--gap)) / 7); }
+    .heatmap-dow span:nth-child(4) { top: calc((100% + var(--gap)) / 7 * 3); }
+    .heatmap-dow span:nth-child(6) { top: calc((100% + var(--gap)) / 7 * 5); }
 
     .heatmap-weeks {
+        grid-row: 2;
         display: grid;
-        grid-template-columns: repeat(var(--week-count), minmax(9px, 1fr));
+        grid-template-columns: repeat(var(--week-count), minmax(0, 1fr));
         gap: var(--gap);
-        width: 100%;
-        min-width: min(100%, calc(var(--week-count) * 12px));
+        min-width: 0;
     }
 
     .heatmap-week {
@@ -160,19 +103,16 @@
     .heatmap-cell {
         width: 100%;
         aspect-ratio: 1;
-        border-radius: 2px;
-        background: #ebedf0;
         min-height: 0;
+        border-radius: 3px;
+        background: var(--heat-0);
     }
 
-    .heatmap-cell.out {
-        opacity: 0.35;
-    }
-
-    .heatmap-cell.level-1 { background: #9be9a8; }
-    .heatmap-cell.level-2 { background: #40c463; }
-    .heatmap-cell.level-3 { background: #30a14e; }
-    .heatmap-cell.level-4 { background: #216e39; }
+    .heatmap-cell.out { opacity: 0.35; }
+    .heatmap-cell.level-1 { background: var(--heat-1); }
+    .heatmap-cell.level-2 { background: var(--heat-2); }
+    .heatmap-cell.level-3 { background: var(--heat-3); }
+    .heatmap-cell.level-4 { background: var(--heat-4); }
 
     .heatmap-legend {
         display: flex;
@@ -193,35 +133,30 @@
     .branch-list {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
     }
 
     .branch-pill {
         display: inline-flex;
         align-items: center;
-        padding: 4px 10px;
-        border-radius: 999px;
+        gap: 6px;
+        padding: 4px 11px;
         border: 1px solid var(--border);
-        background: var(--bg);
-        font-size: 0.78rem;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .heatmap-cell { background: #161b22; }
-        .heatmap-cell.level-1 { background: #0e4429; }
-        .heatmap-cell.level-2 { background: #006d32; }
-        .heatmap-cell.level-3 { background: #26a641; }
-        .heatmap-cell.level-4 { background: #39d353; }
+        border-radius: 999px;
+        background: var(--surface-2);
+        color: var(--text-2);
+        font-family: var(--mono);
+        font-size: 0.77rem;
+        overflow-wrap: anywhere;
     }
 </style>
 @endpush
 
 @section('content')
-    <div class="git-top">
+    <header class="page-head">
         <div>
             <h2>Git history</h2>
-            <p class="hint">
+            <p class="sub">
                 Commits on every local branch for the last 12 months
                 ({{ \Illuminate\Support\Carbon::parse($range_start)->format('M j, Y') }}
                 – {{ \Illuminate\Support\Carbon::parse($range_end)->format('M j, Y') }}).
@@ -232,7 +167,7 @@
         </div>
         @if ($is_repository && $authors !== [])
             <form method="get" action="{{ route('larapilot.dashboard.git') }}">
-                <label class="git-filter">
+                <label class="field git-filter">
                     Developer
                     <select name="author" onchange="this.form.submit()" aria-label="Filter by developer">
                         <option value="" @selected($selected_author === null)>All developers</option>
@@ -243,10 +178,10 @@
                         @endforeach
                     </select>
                 </label>
-                <noscript><button type="submit">Show</button></noscript>
+                <noscript><button class="btn small" type="submit">Show</button></noscript>
             </form>
         @endif
-    </div>
+    </header>
 
     @if (! $is_repository)
         <div class="card empty">This project is not a git repository yet.</div>
@@ -266,11 +201,12 @@
             </div>
         </div>
 
-        <section class="card panel" aria-label="Contribution graph">
+        <section class="card panel git-panel" aria-label="Contribution graph">
             <h3>{{ number_format($total) }} {{ $total === 1 ? 'contribution' : 'contributions' }} in the last year</h3>
             <p class="hint">Each square is a day — recent on the right, older to the left. Darker green means more commits by {{ $selected_author ? collect($authors)->firstWhere('email', $selected_author)['name'] ?? $selected_author : 'all developers' }}.</p>
 
             <div class="heatmap">
+                <div class="heatmap-scroll" data-heatmap-scroll>
                 <div class="heatmap-grid">
                     <div class="heatmap-months" aria-hidden="true">
                         @foreach ($months as $month)
@@ -293,7 +229,6 @@
                         <span>Fri</span>
                         <span></span>
                     </div>
-                    <div class="heatmap-scroll" data-heatmap-scroll>
                         <div class="heatmap-weeks" role="img" aria-label="{{ number_format($total) }} contributions in the last year">
                             @foreach ($weeks as $week)
                                 <div class="heatmap-week">
@@ -306,7 +241,7 @@
                                 </div>
                             @endforeach
                         </div>
-                    </div>
+                </div>
                 </div>
                 <div class="heatmap-legend">
                     Less
@@ -321,7 +256,7 @@
         </section>
 
         @if ($branches !== [])
-            <section class="card panel">
+            <section class="card panel git-panel">
                 <h3>Local branches</h3>
                 <p class="hint">Read from <code>git for-each-ref refs/heads</code>. The graph above includes commits from all of them.</p>
                 <div class="branch-list">

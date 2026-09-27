@@ -21,7 +21,11 @@ The PRD is the **product contract** — what the product promises. It is **not**
 | **Architecture commitment**    | `## Technical Architecture`                                  | New required integration, tenancy pattern          |
 | **Legacy parity change**       | PRD + `{paths.research}/legacy-parity.md`                    | New module in port scope                           |
 | **Bug reveals requirement gap** | Clarify **parent FR** or NFR — **not** a "fix FR"           | Under `FR-003`: SSO must work on Safari 17+        |
-| **Vision pivot**               | `/larapilot-inception` or major PRD revision                 | New product direction                              |
+| **New journey, entity, or state** | `## User Journeys` / `## Domain Model` row                  | Refund flow adds `Credit note` entity              |
+| **Quality target changes**     | `## Non-Functional Requirements` row (target + verifier)     | p95 tightened to 200 ms for J-001                  |
+| **Open question answered**     | Resolve the `Q-XXX` row in `## Risks & Assumptions`; cite the decision id | Tax regimes at launch: IT + DE (D-014)  |
+| **Revision — no new capability, no defect** | `/larapilot-prd` — sharpen, re-scope, re-model, re-decide, upgrade (**PRD Revision**) | `Should` → `Won't`; "fast" → p95 < 300 ms |
+| **Vision pivot**               | `/larapilot-inception` with the current PRD as input         | New product direction                              |
 
 ### When **not** to update the PRD
 
@@ -81,7 +85,7 @@ After specs reach **DONE** and the product is live, **Sophia** owns the support 
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Bug intake**        | Collect user/stakeholder reports; normalize into `{paths.support}/intake.md` (default `.larapilot/docs/support/`; dated files allowed)                                        |
 | **Triage**            | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature — severity maps to backlog priority: Critical → `CRITICAL`, High → `HIGH`, Medium → `MEDIUM`, Low → `LOW` |
-| **Routing**           | Critical security → **Lars** + **Oliver** re-test; functional bugs → **`larapilot-bug`** (preferred) or `larapilot-spec` maintenance mode → `spec-add` / `spec-request-changes` rework |
+| **Routing**           | Critical security → **Lars** + **Oliver** re-test; functional bugs → **`larapilot-bug`** (preferred) or `larapilot-spec` maintenance mode → `spec-add` / `spec-request-changes` rework; a report that may be a bug or a change request → **`larapilot-triage`** first |
 | **Documentation**     | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release                                                                                     |
 | **Software updates**  | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs                        |
 | **Long-term hygiene** | Scheduled reviews: stale integrations (**Matt**), locale drift (**Emily**), test debt (**Anne**)                                                                              |

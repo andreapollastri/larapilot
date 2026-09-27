@@ -17,6 +17,8 @@ settings:
   release_mode: false
   # Living project documentation (_project_docs/) — OFF by default.
   project_docs: false
+  # Prior-art search for existing open-source / packaged solutions at inception — ON by default.
+  prior_art: true
   # Internal feedback on dashboard/API/spec-comment — OFF by default.
   comments: false
   dashboard_auth: false

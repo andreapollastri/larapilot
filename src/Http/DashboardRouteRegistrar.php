@@ -6,6 +6,7 @@ namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\DashboardController;
+use Larapilot\Http\Controllers\FileManagerController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
 use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
@@ -100,6 +101,8 @@ class DashboardRouteRegistrar
                 Route::post('/specs/{code}/comments', [DashboardController::class, 'storeComment'])
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.dashboard.spec.comments.store');
+
+                self::registerFileManager();
             });
 
         Route::middleware($embedded)
@@ -108,5 +111,43 @@ class DashboardRouteRegistrar
                 Route::get('/design/presentation', [DashboardController::class, 'designPresentation'])
                     ->name('larapilot.dashboard.design.presentation');
             });
+    }
+
+    /**
+     * The material folders under `.larapilot/`. Only the five known roots
+     * match, so `raw` and the action names can never be read as a folder.
+     */
+    protected static function registerFileManager(): void
+    {
+        $roots = 'brand|client-materials|design-systems|legacy|skills';
+
+        Route::get('/files', [FileManagerController::class, 'index'])
+            ->name('larapilot.dashboard.files');
+
+        Route::get('/files/raw/{root}/{path}', [FileManagerController::class, 'raw'])
+            ->where('root', $roots)
+            ->where('path', '.*')
+            ->name('larapilot.dashboard.files.raw');
+
+        Route::post('/files/{root}/upload', [FileManagerController::class, 'upload'])
+            ->where('root', $roots)
+            ->name('larapilot.dashboard.files.upload');
+
+        Route::post('/files/{root}/folder', [FileManagerController::class, 'folder'])
+            ->where('root', $roots)
+            ->name('larapilot.dashboard.files.folder');
+
+        Route::post('/files/{root}/rename', [FileManagerController::class, 'rename'])
+            ->where('root', $roots)
+            ->name('larapilot.dashboard.files.rename');
+
+        Route::post('/files/{root}/delete', [FileManagerController::class, 'destroy'])
+            ->where('root', $roots)
+            ->name('larapilot.dashboard.files.delete');
+
+        Route::get('/files/{root}/{path?}', [FileManagerController::class, 'browse'])
+            ->where('root', $roots)
+            ->where('path', '.*')
+            ->name('larapilot.dashboard.files.browse');
     }
 }

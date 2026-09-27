@@ -421,6 +421,7 @@ it('persists project settings via settings-set', function (): void {
         '--notify-slack' => 'YES',
         '--notify-discord' => 'NO',
         '--notify-telegram' => 'YES',
+        '--prior-art' => 'NO',
     ])->assertSuccessful();
 
     $settings = app(ConfigService::class)->settings();
@@ -449,8 +450,10 @@ it('persists project settings via settings-set', function (): void {
         'notify_telegram' => 'YES',
         'release_mode' => 'NO',
         'project_docs' => 'NO',
+        'prior_art' => 'NO',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
+        ->and(app(ConfigService::class)->priorArtEnabled())->toBeFalse()
         ->and(app(ConfigService::class)->autoApproveEnabled())->toBeTrue()
         ->and(app(ConfigService::class)->lucilleEnabled())->toBeFalse()
         ->and(app(ConfigService::class)->githubEnabled())->toBeTrue()

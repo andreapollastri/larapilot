@@ -6,21 +6,28 @@ namespace Larapilot\Support;
 
 use Illuminate\Support\Str;
 use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\GithubFlavoredMarkdownConverter;
 
 class Markdown
 {
     public static function toHtml(string $markdown): string
     {
-        if (class_exists(CommonMarkConverter::class)) {
-            try {
-                $converter = new CommonMarkConverter([
-                    'html_input' => 'strip',
-                    'allow_unsafe_links' => false,
-                ]);
+        $options = [
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
+        ];
 
-                return self::withHeadingIds((string) $converter->convert($markdown));
+        // GitHub flavour first: a PRD leans on tables and task lists, which
+        // plain CommonMark prints as raw pipes and brackets.
+        foreach ([GithubFlavoredMarkdownConverter::class, CommonMarkConverter::class] as $converter) {
+            if (! class_exists($converter)) {
+                continue;
+            }
+
+            try {
+                return self::withHeadingIds((string) (new $converter($options))->convert($markdown));
             } catch (\Throwable) {
-                // fall through to the dependency-free renderer
+                // fall through to the next renderer
             }
         }
 

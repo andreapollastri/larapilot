@@ -61,7 +61,7 @@ class CustomSkillService
      */
     public function list(): array
     {
-        $root = $this->directory();
+        $root = rtrim($this->directory(), '/\\');
 
         if (! is_dir($root)) {
             return [];
@@ -197,6 +197,52 @@ class CustomSkillService
         }
 
         return $written;
+    }
+
+    /**
+     * Remove the mirrored copies of one custom skill from `.ai/skills/` and
+     * the agent skill folders. Call it while the source folder still exists:
+     * a mirror goes only when its `SKILL.md` is the source's, byte for byte,
+     * so a skill of the same name that came from somewhere else is kept.
+     *
+     * @return array{removed: list<string>, kept: list<string>}
+     */
+    public function unregister(string $name): array
+    {
+        $result = ['removed' => [], 'kept' => []];
+        $name = trim($name);
+
+        if ($name === '' || str_contains($name, '/') || str_contains($name, '\\') || str_contains($name, '..')) {
+            return $result;
+        }
+
+        $source = rtrim($this->directory(), '/\\').DIRECTORY_SEPARATOR.$name.DIRECTORY_SEPARATOR.'SKILL.md';
+
+        if (! is_file($source)) {
+            return $result;
+        }
+
+        $fingerprint = hash_file('sha256', $source);
+
+        foreach ($this->registrationTargets() as $targetRoot) {
+            $destination = rtrim($targetRoot, '/\\').DIRECTORY_SEPARATOR.$name;
+            $mirror = $destination.DIRECTORY_SEPARATOR.'SKILL.md';
+
+            if (is_link($destination) || ! is_file($mirror)) {
+                continue;
+            }
+
+            if (hash_file('sha256', $mirror) !== $fingerprint) {
+                $result['kept'][] = $this->relativePath($destination);
+
+                continue;
+            }
+
+            $this->removeMirror($destination);
+            $result['removed'][] = $this->relativePath($destination);
+        }
+
+        return $result;
     }
 
     public function isRegistered(string $name): bool
@@ -371,6 +417,27 @@ class CustomSkillService
         }
 
         return str_replace('\\', '/', $absolute);
+    }
+
+    protected function removeMirror(string $directory): void
+    {
+        foreach (scandir($directory) ?: [] as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+
+            $path = $directory.DIRECTORY_SEPARATOR.$entry;
+
+            if (is_dir($path) && ! is_link($path)) {
+                $this->removeMirror($path);
+
+                continue;
+            }
+
+            @unlink($path);
+        }
+
+        @rmdir($directory);
     }
 
     protected function mirrorDirectory(string $source, string $destination): void

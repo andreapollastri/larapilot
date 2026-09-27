@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 20 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 22 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1247,6 +1247,246 @@
       .hero-version { display: none; }
     }
 
+    .command-flow-note + .command-flow-label { margin-top: 1.1rem; }
+
+    /* Search */
+    .nav-search {
+      flex: 1 1 14rem;
+      max-width: 22rem;
+      min-width: 0;
+    }
+
+    .nav-search-field { position: relative; }
+
+    .nav-search-field svg {
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      width: 1rem;
+      height: 1rem;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .nav-search-field input {
+      width: 100%;
+      min-width: 0;
+      font: inherit;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 0;
+      padding: 0.45rem 2.4rem 0.45rem 2.1rem;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .nav-search-field input::placeholder { color: var(--muted); }
+    .nav-search-field input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+    .nav-search-field input:focus {
+      border-color: var(--signal);
+      box-shadow: 0 0 0 3px rgba(224, 58, 45, 0.14);
+    }
+
+    .nav-search-field kbd {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .nav-search-field input:focus ~ kbd { display: none; }
+
+    kbd {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      padding: 0.05rem 0.35rem;
+    }
+
+    .search-panel {
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(46rem, calc(100vw - 2rem));
+      max-height: min(70vh, 38rem);
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-top: 2px solid var(--signal);
+      box-shadow: 0 18px 50px rgba(28, 20, 18, 0.18);
+      z-index: 60;
+    }
+
+    .search-panel[hidden] { display: none; }
+
+    .search-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .search-status kbd { margin: 0 0.1rem; }
+
+    .search-results {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .search-results li + li { border-top: 1px solid var(--line); }
+
+    .search-results a {
+      display: block;
+      padding: 0.6rem 0.9rem;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+
+    .search-results li[aria-selected="true"] a,
+    .search-results a:hover {
+      background: rgba(224, 58, 45, 0.07);
+      border-left-color: var(--signal);
+    }
+
+    .search-crumb {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--signal-deep);
+    }
+
+    .search-title {
+      display: block;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--ink);
+    }
+
+    .search-snippet {
+      display: block;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--muted);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .search-results mark,
+    .search-empty mark {
+      background: rgba(224, 58, 45, 0.18);
+      color: inherit;
+      padding: 0 0.1em;
+    }
+
+    .search-empty {
+      padding: 1rem 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+    }
+
+    .search-empty ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .search-empty button {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .search-empty button:hover { border-color: var(--signal); color: var(--signal-deep); }
+
+    .search-hit { animation: search-hit 2.2s ease-out 1; }
+
+    @keyframes search-hit {
+      0%, 35% { background: rgba(224, 58, 45, 0.2); box-shadow: 0 0 0 6px rgba(224, 58, 45, 0.2); }
+      100% { background: transparent; box-shadow: 0 0 0 6px transparent; }
+    }
+
+    /* Definitions, callouts, collapsible notes */
+    .docs-main details.more {
+      margin: 0.85rem 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .docs-main details.more > summary {
+      cursor: pointer;
+      padding: 0.6rem 0.85rem;
+      font-weight: 600;
+      color: var(--ink);
+      list-style: none;
+    }
+
+    .docs-main details.more > summary::-webkit-details-marker { display: none; }
+    .docs-main details.more > summary::before { content: "▸ "; color: var(--signal); }
+    .docs-main details.more[open] > summary::before { content: "▾ "; }
+    .docs-main details.more > :not(summary) { margin: 0 0.85rem 0.75rem; }
+
+    .docs-main td.group-row {
+      font-family: var(--display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    @media (max-width: 880px) {
+      .nav-search { max-width: none; }
+    }
+
+    @media (max-width: 720px) {
+      .nav { gap: 0.6rem; padding-left: 1rem; padding-right: 1rem; }
+      .nav-search-field kbd { display: none; }
+      .nav-search-field input { padding-right: 0.6rem; }
+      .search-panel {
+        left: 0.5rem;
+        right: 0.5rem;
+        width: auto;
+        transform: none;
+        max-height: 72vh;
+      }
+      .search-status span:last-child { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .search-hit { animation: none; outline: 2px solid var(--signal); }
+    }
+
   </style>
 </head>
 <body>
@@ -1270,6 +1510,26 @@
       </svg>
       larapilot
     </a>
+    <div class="nav-search" role="search">
+      <div class="nav-search-field">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input type="search" id="docs-search" placeholder="Search the docs" autocomplete="off" spellcheck="false"
+          role="combobox" aria-label="Search the documentation" aria-expanded="false"
+          aria-controls="docs-search-results" aria-autocomplete="list" />
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <div class="search-panel" id="docs-search-panel" hidden>
+        <div class="search-status">
+          <span id="docs-search-status" aria-live="polite"></span>
+          <span aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> move · <kbd>↵</kbd> open · <kbd>esc</kbd> close</span>
+        </div>
+        <ul class="search-results" id="docs-search-results" role="listbox" aria-label="Search results"></ul>
+      </div>
+    </div>
     <div class="nav-links" id="nav-links">
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
@@ -1285,13 +1545,13 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.0.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.0</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
         <a href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a>.
-        Thirty personas, twenty skills, apps and packages — install, enable MCP, run
-        <code>/larapilot-*</code> in your editor.
+        You describe the product; a squad of thirty personas turns it into a PRD, a backlog, plans, code, and
+        tests — one story at a time, through twenty-two <code>/larapilot-*</code> skills you run in your editor.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#quickstart">Install Larapilot</a>
@@ -1309,6 +1569,7 @@
     <aside class="docs-nav" aria-label="Documentation">
       <div class="docs-nav-label">Start</div>
       <a href="#quickstart">Quickstart</a>
+      <a href="#concepts">Concepts</a>
       <a href="#how-it-works">How to use</a>
 
       <div class="docs-nav-label">Examples</div>
@@ -1319,12 +1580,13 @@
       <a class="sub" href="#example-legacy-porting">Legacy porting</a>
       <a class="sub" href="#example-new-feature">New feature</a>
       <a class="sub" href="#example-bug-fix">Bug resolution</a>
+      <a class="sub" href="#example-triage">Bug or feature?</a>
+      <a class="sub" href="#example-prd-revision">PRD revision</a>
       <a class="sub" href="#example-frontend-companion">Frontend companion</a>
       <a class="sub" href="#example-tracker-sync">Tracker sync</a>
       <a class="sub" href="#example-team-server">Team on one server</a>
       <a class="sub" href="#example-ssh-tmux">SSH, VS Code &amp; tmux</a>
       <a class="sub" href="#example-custom-skill">Your own skill</a>
-      <a class="sub" href="#examples-prd-living">PRD living document</a>
 
       <div class="docs-nav-label">Core</div>
       <a href="#deep-dive">Deep Dive</a>
@@ -1335,6 +1597,7 @@
       <a class="sub" href="#deep-dive-settings">Settings</a>
       <a class="sub" href="#deep-dive-personas">Personas</a>
       <a class="sub" href="#deep-dive-workflow">Workflow</a>
+      <a class="sub" href="#deep-dive-prd">The PRD</a>
       <a class="sub" href="#deep-dive-artifacts">Artifacts</a>
       <a class="sub" href="#deep-dive-dev-docs">Domain docs</a>
       <a class="sub" href="#deep-dive-usage">Usage &amp; Lucille</a>
@@ -1392,25 +1655,31 @@
           </ol>
         </div>
         <div class="install-commands" style="margin-top:1rem">
-          <div class="install-commands-header">After install — code quality gate (v2.3.1+)</div>
+          <div class="install-commands-header">Check that it worked</div>
           <ol class="install-commands-list">
             <li class="install-command">
               <span class="install-command-num" aria-hidden="true">✓</span>
-              <code class="install-command-text">php artisan larapilot:quality</code>
-              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:quality"
+              <code class="install-command-text">php artisan larapilot:doctor --human</code>
+              <button type="button" class="install-copy-btn" data-copy="php artisan larapilot:doctor --human"
                 title="Copy command">Copy</button>
             </li>
           </ol>
         </div>
+        <p>Then open your editor in the project and type <code>/larapilot-</code>: the skills are listed. Pick the
+          one for your situation from <a href="#first-run">First run</a>.</p>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
             href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Composer picks the latest compatible release) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
+        <details class="more">
+          <summary>Still on Laravel 10 or 11?</summary>
         <p>On Laravel 10/11 the MCP stack uses <code>illuminate/json-schema</code> — stay on a recent framework patch (Laravel <strong>11.47+</strong> recommended on 11.x).</p>
         <p>Laravel <strong>10</strong> and <strong>11</strong> are past their security-fix window. Composer 2.9+ refuses every <code>laravel/framework</code> 10.x/11.x release because open advisories have no patched line (fixes shipped in Laravel <strong>12.60+</strong> / <strong>13</strong>). Larapilot CI still runs those majors by ignoring only <code>laravel/framework</code> advisories on the 10/11 jobs. Apps still on 10/11 that fail <code>composer update</code> with <em>affected by security advisories</em> need the same ignore (<code>composer config --json policy.advisories.ignore '["laravel/framework"]'</code>) or should upgrade to Laravel 12+.</p>
+        </details>
         <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
             rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
             target="_blank" rel="noopener">Laravel Pint</a> — <code>phpstan.neon.dist</code>, <code>pint.json</code>,
-          Composer scripts, and dev dependencies. Run <code>php artisan larapilot:quality</code> before merge; see
+          Composer scripts, and dev dependencies. <code>php artisan larapilot:quality</code> runs both; the agent runs
+          it before every task is marked done, and you run it in CI. See
           <a href="#deep-dive-code-quality">Code quality</a>.</p>
         <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick
           up new skills.</p>
@@ -1456,7 +1725,8 @@
           <code>php artisan larapilot:update --skip-boost</code>.
         </p>
 
-        <h3>First run</h3>
+        <h3 id="first-run">First run</h3>
+        <p>One command starts the project. Which one depends on what already exists.</p>
         <div class="table-card">
           <table>
             <thead>
@@ -1482,9 +1752,111 @@
                 <td><code>/larapilot-inception</code> with a snapshot in <code>.larapilot/legacy/</code></td>
                 <td><a href="#example-legacy-porting">Legacy porting</a></td>
               </tr>
+              <tr>
+                <td>A product Larapilot already knows — it has a PRD and a backlog</td>
+                <td><code>/larapilot-triage "the request"</code></td>
+                <td><a href="#example-triage">Bug or feature?</a> · <a href="#how-it-works">every other entry
+                    point</a></td>
+              </tr>
             </tbody>
           </table>
         </div>
+        <p>Each of the first three ends with a PRD in <code>.larapilot/docs/PRD.md</code>. From there the loop is
+          always the same: <code>/larapilot-spec</code> builds the backlog, then
+          <code>plan</code> → <code>implement</code> → <code>review</code> for each story.</p>
+      </section>
+
+      <!-- Concepts -->
+      <section class="doc-section" id="concepts">
+        <div class="section-header">
+          <span class="section-label">Concepts</span>
+          <h2>Ten words, one loop</h2>
+          <p>Larapilot turns a conversation into files in your repository, and those files into reviewed code.
+            These are the words the rest of this page uses.</p>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Word</th>
+                <th>What it is</th>
+                <th>Where it lives</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Skill</strong></td>
+                <td>A slash command you type in the editor, such as <code>/larapilot-plan US-001</code>. It runs a
+                  guided conversation and saves the result. <a href="#deep-dive-skills">All skills</a></td>
+                <td>Published into your editor by Laravel Boost</td>
+              </tr>
+              <tr>
+                <td><strong>Persona</strong></td>
+                <td>A named point of view inside a skill: 💎 Mark on scope, 🔎 Tom on requirements, 🔐 Lars on
+                  security. Lenses on the same work, not separate agents. <a href="#deep-dive-personas">The
+                    squad</a></td>
+                <td>They speak in chat as <code>💎 Mark:</code></td>
+              </tr>
+              <tr>
+                <td><strong>PRD</strong></td>
+                <td>Product Requirements Document — what the product <em>promises</em>: users, journeys,
+                  requirements, quality targets, scope, decisions. One per project.
+                  <a href="#deep-dive-prd">The PRD</a></td>
+                <td><code>.larapilot/docs/PRD.md</code></td>
+              </tr>
+              <tr>
+                <td><strong>Journey</strong> <code>J-001</code></td>
+                <td>One way a user gets value from the product, from the trigger to the result. Stories are cut
+                  from journeys</td>
+                <td>Inside the PRD</td>
+              </tr>
+              <tr>
+                <td><strong>Requirement</strong> <code>FR-001</code></td>
+                <td>One promise, with a named actor and <strong>Done means</strong> bullets a tester can verify.
+                  Tagged <code>Must</code>, <code>Should</code>, <code>Could</code>, or <code>Won't</code> (MoSCoW)
+                </td>
+                <td>Inside the PRD</td>
+              </tr>
+              <tr>
+                <td><strong>Quality target</strong> <code>NFR-001</code></td>
+                <td>A non-functional requirement: a number and the way to verify it, such as
+                  <em>p95 under 300 ms, checked by k6 in CI</em></td>
+                <td>Inside the PRD</td>
+              </tr>
+              <tr>
+                <td><strong>Story</strong> <code>US-001</code></td>
+                <td>A spec: one demonstrable piece of the product, with acceptance criteria. It names the journey
+                  and requirements it delivers</td>
+                <td><code>.larapilot/specs/US-001.yaml</code>, listed in <code>backlog.yaml</code></td>
+              </tr>
+              <tr>
+                <td><strong>Plan &amp; tasks</strong></td>
+                <td>The technical plan of one story, cut into <code>TASK-01</code>, <code>TASK-02</code>… Each task
+                  ends in one commit</td>
+                <td><code>.larapilot/plans/US-001-plan.yaml</code></td>
+              </tr>
+              <tr>
+                <td><strong>Status</strong></td>
+                <td><span class="status status-todo">TODO</span> → <span class="status status-planned">PLANNED</span>
+                  → <span class="status status-progress">IN PROGRESS</span> →
+                  <span class="status status-review">REVIEW</span> →
+                  <span class="status status-done">DONE</span>. Only skills move a story forward; only you move it
+                  to DONE. <a href="#deep-dive-workflow">Workflow</a></td>
+                <td><code>backlog.yaml</code></td>
+              </tr>
+              <tr>
+                <td><strong>Runtime packs</strong></td>
+                <td>The rule files skills read before they act. You never edit them;
+                  <code>larapilot:update</code> refreshes them</td>
+                <td><code>.larapilot/runtime-*.md</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Everything lives in <code>.larapilot/</code> and is committed with the code. The next session — yours, a
+          colleague's, or another agent's — starts from the same truth. <a href="#deep-dive-artifacts">Every file,
+            explained</a>.</p>
       </section>
 
       <!-- How it works -->
@@ -1492,12 +1864,13 @@
         <div class="section-header">
           <span class="section-label">Usage</span>
           <h2>How to use</h2>
-          <p>Run <code>/larapilot-*</code> skills in your editor. Each skill orchestrates the conversation; artifacts
-            land in <code>.larapilot/</code> and status transitions are enforced automatically.</p>
+          <p>You type a <code>/larapilot-*</code> skill in your editor and answer its questions. The skill writes
+            its result to <code>.larapilot/</code> and moves the story to its next status. You never edit those
+            files by hand, and nothing ships without your review.</p>
         </div>
 
         <div class="command-flow">
-          <div class="command-flow-label">Greenfield — repeat steps 3–5 per story</div>
+          <div class="command-flow-label">A new product — the last three repeat for every story</div>
           <div class="command-flow-row">
             <code class="cmd-primary">/larapilot-inception "…"</code>
             <span class="command-flow-arrow">→</span>
@@ -1509,7 +1882,9 @@
             <span class="command-flow-arrow">→</span>
             <code>/larapilot-review US-XXX</code>
           </div>
-          <div class="command-flow-label">Brownfield — an app already in production, built without Larapilot</div>
+          <p class="command-flow-note">Inception writes the PRD, spec cuts it into stories, and each story is
+            planned, built, and reviewed. <a href="#example-new-product">Walkthrough</a>.</p>
+          <div class="command-flow-label">An app already in production, built without Larapilot</div>
           <div class="command-flow-row">
             <code>php artisan larapilot:install</code>
             <span class="command-flow-arrow">→</span>
@@ -1517,88 +1892,198 @@
             <span class="command-flow-arrow">→</span>
             <code>/larapilot-spec</code>
             <span class="command-flow-arrow">→</span>
-            <span>per-story loop</span>
+            <span>the same loop</span>
           </div>
-          <p class="command-flow-note"><code>/larapilot-adopt</code> reverse-engineers the PRD from the code, then the
-            loop is identical. <a href="#example-adopt">Adoption walkthrough</a>.</p>
-          <p class="command-flow-note">Optional: <code>/larapilot-design</code> before plan ·
-            <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
-            <code>/larapilot-autopilot</code> to batch plan+implement, one fresh context per spec ·
-            <code>/larapilot-settings</code> for project modes ·
-            <code>/larapilot-usage</code> for Lucille time/token reports ·
-            <code>/larapilot-economics</code> for quotes / SaaS ARR (when account is FREELANCE or COMPANY) —
-            client quote at <code>/larapilot/economics/quote.md</code> ·
-            <code>/larapilot-backstage</code> to publish into a <a href="#deep-dive-backstage">developer portal</a> ·
-            <code>/larapilot-tracker</code> to mirror the backlog into a
-            <a href="#deep-dive-tracker">project tracker</a>. More opt-in skills in
-            <a href="#deep-dive-skills">Skills</a> (release mode, project docs, custom skills).
-          </p>
+          <p class="command-flow-note"><code>/larapilot-adopt</code> reverse-engineers the PRD from the code.
+            <a href="#example-adopt">Walkthrough</a>.</p>
+          <div class="command-flow-label">A product that has a PRD — a request arrives</div>
+          <div class="command-flow-row">
+            <code class="cmd-primary">/larapilot-triage "…"</code>
+            <span class="command-flow-arrow">→</span>
+            <span><code>/larapilot-bug</code> or <code>/larapilot-feature</code>, run for you</span>
+            <span class="command-flow-arrow">→</span>
+            <span>the same loop</span>
+          </div>
+          <p class="command-flow-note">Triage checks the request against what the PRD and the backlog promised,
+            states the verdict in one line, and runs the right skill in the same turn.
+            <a href="#example-triage">Walkthrough</a>.</p>
         </div>
 
-        <p>Project modes via <code>/larapilot-settings</code>: <strong>effort</strong>, <strong>backlog</strong>,
-          <strong>git mode</strong>, <strong>testing</strong>, optional <strong>account</strong> (freelance / company Economics),
-          <strong>auto-approve</strong>,
-          <strong>lucille</strong>, <strong>decision journal</strong>, <strong>code history</strong>,
-          optional <strong>release mode</strong>, optional <strong>project docs</strong>,
-          optional <strong>dashboard auth / api auth / github / gitlab / bitbucket / azure</strong> and
-          <strong>notifications</strong> — persisted in <code>.larapilot/config.yaml</code>. Machine-specific paths
-          (external frontend repo) live in <code>.env</code> — see
-          <a href="#deep-dive-frontend-companion">Frontend companion</a>.
-          Default Gitflow is <strong>without</strong> auto-push; Playwright/E2E only when testing is
-          <code>BEST</code>. Lucille is <strong>ON</strong> by default (OFF automatically on
-          <code>ECO</code>). <a href="#deep-dive-settings">Settings</a> ·
-          <a href="#deep-dive-usage">Usage</a> ·
-          <a href="#deep-dive-integrations">Integrations</a> ·
-          <a href="#deep-dive-gitflow">Branch conventions</a>.
-        </p>
-
+        <h3 id="which-skill">Which skill, when</h3>
         <div class="table-card">
           <table>
             <thead>
               <tr>
-                <th>When</th>
-                <th>Start with</th>
+                <th>You have</th>
+                <th>Type</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>New product, site, app, PHP/Laravel package, pivot, or legacy rewrite</td>
-                <td><code>/larapilot-inception</code></td>
+                <td class="group-row" colspan="2">Starting a project</td>
               </tr>
               <tr>
-                <td>Existing Laravel app in production, built without Larapilot, no PRD yet</td>
+                <td>A new product, site, app, or PHP/Laravel package — or a legacy system to rewrite</td>
+                <td><code>/larapilot-inception "…"</code></td>
+              </tr>
+              <tr>
+                <td>A Laravel app in production, built without Larapilot, no PRD yet</td>
                 <td><code>/larapilot-adopt</code></td>
               </tr>
               <tr>
-                <td>One new capability on existing product</td>
-                <td><code>/larapilot-feature "…"</code></td>
+                <td class="group-row" colspan="2">Building, story by story</td>
               </tr>
               <tr>
-                <td>Defect or regression</td>
-                <td><code>/larapilot-bug "…"</code></td>
+                <td>A PRD and no backlog, or requirements no story covers yet</td>
+                <td><code>/larapilot-spec</code></td>
               </tr>
               <tr>
-                <td>Time/token spend, deadlines, Gantt</td>
+                <td>A story that needs mockups before it is planned <span class="chip">optional</span></td>
+                <td><code>/larapilot-design US-XXX</code></td>
+              </tr>
+              <tr>
+                <td>A story in <span class="status status-todo">TODO</span></td>
+                <td><code>/larapilot-plan US-XXX</code></td>
+              </tr>
+              <tr>
+                <td>A story in <span class="status status-planned">PLANNED</span></td>
+                <td><code>/larapilot-implement US-XXX</code></td>
+              </tr>
+              <tr>
+                <td>A story in <span class="status status-review">REVIEW</span></td>
+                <td><code>/larapilot-review US-XXX</code></td>
+              </tr>
+              <tr>
+                <td>Several stories to plan and build in one run</td>
+                <td><code>/larapilot-autopilot US-004 US-005 …</code></td>
+              </tr>
+              <tr>
+                <td>Every story of the release <span class="status status-done">DONE</span></td>
+                <td><code>/larapilot-ship</code></td>
+              </tr>
+              <tr>
+                <td class="group-row" colspan="2">Changing a product that has a PRD</td>
+              </tr>
+              <tr>
+                <td>One new capability, or a shipped one that must now behave differently</td>
+                <td><code>/larapilot-feature "…"</code> — <a href="#example-new-feature">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>A defect or a regression</td>
+                <td><code>/larapilot-bug "…"</code> — <a href="#example-bug-fix">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>A request that may be either — a ticket, a client email</td>
+                <td><code>/larapilot-triage "…"</code> — <a href="#example-triage">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>A change to the PRD that is neither — priorities, scope, a sharper requirement, a decision
+                  reversed, an older PRD brought up to date</td>
+                <td><code>/larapilot-prd "…"</code> — <a href="#example-prd-revision">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td class="group-row" colspan="2">Around the loop</td>
+              </tr>
+              <tr>
+                <td>How the project works: effort, Git, tests, opt-in extras</td>
+                <td><code>/larapilot-settings</code></td>
+              </tr>
+              <tr>
+                <td>Time and token spend, deadlines, the Gantt</td>
                 <td><code>/larapilot-usage</code></td>
               </tr>
               <tr>
-                <td>Interactive pricing tool: quote, tax, discount, packaging, business plan, competitors · client quote Markdown</td>
+                <td>A quote, tax, payback, pricing tiers, a business plan
+                  (<code>account</code> <code>FREELANCE</code> or <code>COMPANY</code>)</td>
                 <td><code>/larapilot-economics</code></td>
               </tr>
               <tr>
-                <td>Semver releases with Gitflow <code>release/x.y.z</code> branches (<code>release_mode=YES</code>)</td>
+                <td>Semver releases on <code>release/x.y.z</code> branches (<code>release_mode=YES</code>)</td>
                 <td><code>/larapilot-release</code></td>
               </tr>
               <tr>
-                <td>A team ritual the packaged skills don't cover — deploy gate, compliance check, client release notes</td>
+                <td>A living project handbook (<code>project_docs=YES</code>)</td>
+                <td><code>/larapilot-project-docs</code></td>
+              </tr>
+              <tr>
+                <td>A team ritual the packaged skills do not cover — a deploy gate, a compliance check</td>
                 <td><code>/larapilot-custom-skill</code> — <a href="#example-custom-skill">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td class="group-row" colspan="2">Connecting other tools</td>
+              </tr>
+              <tr>
+                <td>The frontend in another repository</td>
+                <td><code>/larapilot-frontend-companion</code> —
+                  <a href="#example-frontend-companion">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>A client or PM who follows work in Linear, Jira, Asana, Trello, ClickUp, or Monday</td>
+                <td><code>/larapilot-tracker</code> — <a href="#example-tracker-sync">walkthrough</a></td>
+              </tr>
+              <tr>
+                <td>A Backstage developer portal</td>
+                <td><code>/larapilot-backstage</code></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <p>MCP: <strong>Laravel Boost</strong> (docs, schema, Tinker) + <strong>Larapilot</strong> (workflow).
-          Walkthroughs: <a href="#examples">eleven examples</a>. Squad: <a href="#deep-dive-personas">30 personas</a>.</p>
+        <h3 id="defaults">What happens by default</h3>
+        <p>A fresh install works without any configuration. These are the behaviors you get, and the setting that
+          changes each one.</p>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>By default</th>
+                <th>Change it with</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>One <code>feature/US-XXX-*</code> branch per story, one commit per task.
+                  <strong>Nothing is pushed</strong></td>
+                <td><a href="#deep-dive-git-mode"><code>git_mode</code></a> — <code>GITFLOW_PUSH</code> pushes and
+                  opens the PR</td>
+              </tr>
+              <tr>
+                <td>A story reaches <span class="status status-done">DONE</span> only when you approve it</td>
+                <td><a href="#deep-dive-auto-approve"><code>auto_approve</code></a></td>
+              </tr>
+              <tr>
+                <td>Feature, unit, policy, and API tests with Pest. No browser tests</td>
+                <td><a href="#deep-dive-testing-mode"><code>testing</code></a> — <code>BEST</code> adds
+                  Playwright or Dusk</td>
+              </tr>
+              <tr>
+                <td>Tokens, hours, and your explicit decisions are recorded</td>
+                <td><a href="#deep-dive-lucille"><code>lucille</code></a> ·
+                  <a href="#deep-dive-decision-log"><code>decision_log</code></a></td>
+              </tr>
+              <tr>
+                <td>Before scope is written, inception asks your consent and searches for products that already
+                  do it</td>
+                <td><a href="#deep-dive-prior-art"><code>prior_art</code></a></td>
+              </tr>
+              <tr>
+                <td>Developer domain docs are written with every task, in English</td>
+                <td>Nothing — <a href="#deep-dive-dev-docs">always on</a></td>
+              </tr>
+              <tr>
+                <td>Release mode, project handbook, comments, dashboard and API auth, security scan, forges,
+                  trackers, notifications are <strong>off</strong></td>
+                <td><a href="#deep-dive-settings"><code>/larapilot-settings</code></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Settings are stored in <code>.larapilot/config.yaml</code> and committed, so the whole team works in the
+          same mode. Secrets and machine-specific paths stay in <code>.env</code>.</p>
+
+        <p>Two MCP servers run beside the skills: <strong>Laravel Boost</strong> gives the agent Laravel context
+          (docs search, schema, Tinker) and <strong>Larapilot</strong> gives it the workflow (backlog, specs,
+          diagnostics, read-only Artisan). See <a href="#deep-dive-cli">Artisan CLI → MCP server</a>.</p>
       </section>
 
       <!-- Examples -->
@@ -1645,32 +2130,44 @@
             <span class="example-card-desc">Triage a production defect and route to fix or rework</span>
             <span class="example-card-cmd">/larapilot-bug</span>
           </a>
-          <a class="example-card" href="#example-frontend-companion">
+          <a class="example-card" href="#example-triage">
             <span class="example-card-num">7</span>
+            <span class="example-card-title">Bug or feature?</span>
+            <span class="example-card-desc">A ticket you cannot place — classified against the PRD, then routed for you</span>
+            <span class="example-card-cmd">/larapilot-triage</span>
+          </a>
+          <a class="example-card" href="#example-prd-revision">
+            <span class="example-card-num">8</span>
+            <span class="example-card-title">PRD revision</span>
+            <span class="example-card-desc">Change the PRD when nothing is broken and nothing is new — and keep the backlog honest</span>
+            <span class="example-card-cmd">/larapilot-prd</span>
+          </a>
+          <a class="example-card" href="#example-frontend-companion">
+            <span class="example-card-num">9</span>
             <span class="example-card-title">Frontend companion</span>
             <span class="example-card-desc">Laravel API + React repo — one cockpit, linked FE write target</span>
             <span class="example-card-cmd">/larapilot-frontend-companion</span>
           </a>
           <a class="example-card" href="#example-tracker-sync">
-            <span class="example-card-num">8</span>
+            <span class="example-card-num">10</span>
             <span class="example-card-title">Tracker sync</span>
             <span class="example-card-desc">Client PM lives in Linear — mirror the backlog, read drift back</span>
             <span class="example-card-cmd">/larapilot-tracker</span>
           </a>
           <a class="example-card" href="#example-team-server">
-            <span class="example-card-num">9</span>
+            <span class="example-card-num">11</span>
             <span class="example-card-title">Team on one server</span>
             <span class="example-card-desc">5 developers, 3 projects — SSH workbench, per-dev preview URLs, no code on laptops</span>
             <span class="example-card-cmd">prj-ai · prj-token</span>
           </a>
           <a class="example-card" href="#example-ssh-tmux">
-            <span class="example-card-num">10</span>
+            <span class="example-card-num">12</span>
             <span class="example-card-title">SSH, VS Code &amp; tmux</span>
             <span class="example-card-desc">Connect, resume a running Claude session after a laptop sleep, edit over Remote-SSH</span>
             <span class="example-card-cmd">ssh · tmux · Remote-SSH</span>
           </a>
           <a class="example-card" href="#example-custom-skill">
-            <span class="example-card-num">11</span>
+            <span class="example-card-num">13</span>
             <span class="example-card-title">Your own skill</span>
             <span class="example-card-desc">Turn the team's pre-deploy checklist into a slash command everyone runs the same way</span>
             <span class="example-card-cmd">/larapilot-custom-skill</span>
@@ -1689,10 +2186,21 @@
             <pre><code>/larapilot-inception "I want a simple team task board: registration, projects, and assignable tasks."</code></pre>
           </div>
 
-          <p>Inception is a <strong>conversation, not a questionnaire</strong>. The team challenges the goal in
-            prose first, then uses AskQuestion only for the fixed choices Larapilot persists (max 3 per round,
-            skippable). Four rounds always happen: <strong>Project Kind</strong>, <strong>Delivery Target</strong>,
-            <strong>Business Model</strong>, and <strong>Operations &amp; support</strong>.</p>
+          <p>Inception is a <strong>conversation, not a questionnaire</strong>. It goes through five moments, in
+            this order:</p>
+          <ol>
+            <li><strong>The goal is challenged</strong> in plain prose — who has the problem, what changes if it
+              works, how you will know in 90 days, what would make you stop.</li>
+            <li><strong>Fixed choices</strong> are asked with AskQuestion, at most three per round, all skippable.
+              Four rounds always happen: Project Kind, Delivery Target, Business Model, Operations &amp; support.
+            </li>
+            <li><strong>Prior art</strong> — with your consent, Sebastian searches for products and packages that
+              already do it, and you decide: build anyway, adopt, or integrate.</li>
+            <li><strong>The product is written down</strong> — journeys, domain model, requirements with
+              <em>Done means</em>, quality targets, risks.</li>
+            <li><strong>Ready check and readback</strong> — Tom checks the requirements can be tested, Mark reads
+              the decisions back, and only then is the PRD saved.</li>
+          </ol>
 
           <div class="chat-example">
             <p><span class="speaker">💎 Mark:</span> Before scope — who has this problem today, and what do they use
@@ -1716,6 +2224,29 @@
               <strong>SaaS subscription</strong>.</p>
             <p><span class="speaker">💎 Mark:</span> A SaaS that ships as an MVP — registration, projects and tasks
               are Must; the Kanban view and notifications can wait.</p>
+            <p><span class="speaker">💡 Sebastian:</span> Before scope, I would search for what already exists:
+              <em>"open source team task board laravel"</em> and <em>"self-hosted kanban"</em>. Nothing in those
+              words identifies you. May I?</p>
+            <div class="wizard">
+              <strong>AskQuestion — prior art (consent)</strong>
+              <ol>
+                <li>Search now · Search with generic terms only · Skip — I know the alternatives · Skip —
+                  confidential</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Search now</strong>.</p>
+            <p><span class="speaker">💡 Sebastian:</span> Three candidates, written to
+              <code>research/prior-art.md</code> with license, stack, and last release. The two closest are boards
+              with no Laravel code to reuse, and neither answers "who owns what" across projects.</p>
+            <div class="wizard">
+              <strong>AskQuestion — verdict</strong>
+              <ol>
+                <li>Build anyway · Adopt / fork · Integrate as dependency · Not checked</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Build anyway</strong>.</p>
+            <p><span class="speaker">💎 Mark:</span> Then the difference leads the backlog: <em>no task without an
+              owner</em> is the first Must.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (operations &amp; support)</strong>
               <ol>
@@ -1741,41 +2272,97 @@
               <strong>Tracked</strong>.</p>
             <p><span class="speaker">📐 John + ✨ Joe:</span> Coupled Blade/Inertia UI in this repo — Starter Kit +
               session auth fits Laravel 13 out of the box. Filament stays a Future Phase option for ops.</p>
-            <p><span class="speaker">💎 Mark:</span> Drafting the PRD — each functional requirement gets a MoSCoW tag.
-            </p>
+            <p><span class="speaker">🔎 Tom:</span> Ready check: nine points of ten. FR-003 says "assign a task"
+              and does not say what happens when the owner leaves the team. I would add: the task returns to the
+              project owner.</p>
+            <p><em>You:</em> Yes.</p>
+            <p><span class="speaker">💎 Mark:</span> Before I write anything — task board for small agencies ·
+              core journey <em>assign and follow a task</em> · MVP, sold as SaaS · prior art: build anyway · Must:
+              registration, projects, assignment with an owner always set · riskiest assumption: agencies leave
+              Trello · nothing left undecided.</p>
+            <div class="wizard">
+              <strong>AskQuestion — readback</strong>
+              <ol>
+                <li>Write the PRD · Revise</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Write the PRD</strong>.</p>
           </div>
 
           <div class="code-block">
             <div class="code-block-header">PRD.md (excerpt)</div>
-            <pre><code>**Project Kind:** Application
+            <pre><code>## User Journeys
+
+### J-001: Assign and follow a task _(core journey)_
+
+**Persona:** Agency lead · **Trigger:** client work arrives · **Frequency:** daily
+**Steps:** 1. open the project 2. create the task 3. pick the owner 4. the owner sees it on their list
+**Success end-state:** the task has exactly one owner and appears on that owner's list
+**Failure modes:** the owner left the team · the task has no project
+**FRs:** FR-002, FR-003 · **MoSCoW:** Must
+
+## Domain Model
+
+| Entity | What it is | Key states / lifecycle | Relations | Owner persona |
+| --- | --- | --- | --- | --- |
+| Task | A unit of work | Open → In progress → Done | belongs to Project, has one owner | Agency lead |
+
+## Functional Requirements
+
+### FR-003: Assign a task to a team member
+
+**MoSCoW:** Must · **Journey:** J-001 · **Persona:** Agency lead
+**Actor &amp; trigger:** the agency lead, from a project, when work is handed over
+**Behavior:** every task has exactly one owner, chosen among the members of its project
+**Done means:**
+- a task cannot be saved without an owner
+- when an owner leaves the team, their open tasks return to the project owner
+- the owner sees the task on their list at the next page load
+**Out of this FR:** several owners, watchers (Future Phases)
+**Depends on:** FR-002 · **Source:** interview
+
+### FR-004: SSO via Google Workspace
+
+**MoSCoW:** Won't
+
+## Non-Functional Requirements
+
+| ID | Category | Target | Applies to | Verified by |
+| --- | --- | --- | --- | --- |
+| NFR-001 | Performance | p95 &lt; 300 ms on task lists at 5k tasks | J-001 | k6 run in CI |
+| NFR-002 | Accessibility | WCAG 2.2 AA | all UI | Lighthouse + axe |
+
+## MVP Scope
+
+**Project Kind:** Application
 **Delivery Target:** MVP
 **Business Model:** SaaS subscription
-**Success signal:** three agencies using it daily; no task without an assignee
+**Prior Art:** Build anyway
+**Success signal:** three agencies using it daily; no task without an owner
+
+## Risks &amp; Assumptions
+
+**Riskiest assumption:** agencies will leave Trello
+**Kill condition:** no agency uses it daily after 90 days
+
+## Technical Architecture
+
 **Server Management:** Managed platform
 **Ops Owner:** Me / my team
 **Support Window:** Business hours
 **Frontend Topology:** Laravel-coupled
-**Stack:** Laravel 13 · Laravel Starter Kit · Pest
-
-### FR-001: User registration with email and password
-**MoSCoW:** Must
-
-### FR-002: Project CRUD for team members
-**MoSCoW:** Must
-
-### FR-003: Task assignment within projects
-**MoSCoW:** Must
-
-### FR-004: SSO via Google Workspace
-**MoSCoW:** Won't</code></pre>
+**Stack:** Laravel 13 · Laravel Starter Kit · Pest</code></pre>
           </div>
+          <p>Every section of the PRD is explained in <a href="#deep-dive-prd">The PRD</a>.</p>
 
           <div class="code-block">
             <div class="code-block-header">Your editor</div>
             <pre><code>/larapilot-spec</code></pre>
           </div>
 
-          <p>Tom maps <code>Must</code> FRs to MVP stories; <code>Won't</code> skipped.</p>
+          <p>Tom cuts one story per journey. Its acceptance criteria come from the <em>Done means</em> of the
+            requirements it delivers, plus the quality targets that apply. <code>Won't</code> requirements get no
+            story.</p>
 
           <div class="code-block">
             <div class="code-block-header">backlog.yaml (excerpt)</div>
@@ -2231,7 +2818,8 @@ body: |
             <pre><code>/larapilot-feature "Add PDF export for invoices"</code></pre>
           </div>
 
-          <p>Mark + Tom read PRD/backlog, confirm no duplicate, run 3 AskQuestion rounds.</p>
+          <p>Mark and Tom read the PRD and the backlog, confirm nothing already covers it, then ask three short
+            rounds. Nothing is saved until you confirm the readback.</p>
 
           <div class="chat-example">
             <p><span class="speaker">💎 Mark:</span> Got it — PDF export for invoices from the detail page.
@@ -2240,12 +2828,17 @@ body: |
               <strong>AskQuestion — Round 1 (scope &amp; priority)</strong>
               <ol>
                 <li><strong>MoSCoW:</strong> Should · Must · Could</li>
-                <li><strong>Traces to:</strong> New FR-011 · Extends FR-004 (Invoicing) · Standalone enhancement</li>
-                <li><strong>Persona:</strong> Freelancer · Accountant · Admin</li>
+                <li><strong>Traces to:</strong> New FR-011 · Extends FR-004 (Invoicing) · Changes FR-004 ·
+                  Standalone enhancement</li>
+                <li><strong>Journey and persona:</strong> J-002 Invoice a client (Freelancer) · New journey ·
+                  None</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Should</strong>, <strong>Extends FR-004</strong>, <strong>Freelancer</strong>.
+            <p><em>You pick:</em> <strong>Should</strong>, <strong>New FR-011</strong>,
+              <strong>J-002</strong>.
             </p>
+            <p><span class="speaker">👾 Andrew:</span> Prior art for the feature: <code>spatie/laravel-pdf</code>
+              renders a Blade view to PDF and is maintained. No reason to build a renderer.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (delivery shape)</strong>
               <ol>
@@ -2267,15 +2860,27 @@ body: |
             <p><em>You pick:</em> <strong>MEDIUM</strong> (Should), <strong>EP-002 Invoicing</strong>,
               <strong>US-004</strong>.
             </p>
-            <p><span class="speaker">🔎 Tom:</span> Acceptance criteria — can you confirm before I write the spec?</p>
+            <p><span class="speaker">🔎 Tom:</span> Acceptance criteria, from what FR-011 will promise:</p>
             <ul style="margin:.5rem 0 0 1.15rem;font-size:.875rem;">
-              <li>Download PDF from invoice detail (happy path)</li>
-              <li>403 when user lacks permission on that invoice</li>
-              <li>PDF includes line items, tax breakdown, company logo from tenant settings</li>
+              <li>The PDF downloads from the invoice detail page</li>
+              <li>403 when the user cannot view that invoice</li>
+              <li>The PDF carries line items, tax breakdown, and the tenant logo</li>
+              <li>NFR-001 applies: the download starts within 300 ms at p95</li>
             </ul>
+            <p><span class="speaker">💎 Mark:</span> Readback — new FR-011 <em>Export an invoice as PDF</em>,
+              Should, journey J-002 · four criteria · the PRD gains FR-011 and one history row · story in EP-002,
+              MEDIUM, after US-004.</p>
+            <div class="wizard">
+              <strong>AskQuestion — readback</strong>
+              <ol>
+                <li>Add to backlog · Revise</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Add to backlog</strong>.</p>
           </div>
 
-          <p>Mark adds <code>FR-011</code> to PRD, then agent creates <code>US-011</code>.</p>
+          <p>Mark adds <code>FR-011</code> to the PRD with a row in its revision history, then the story
+            <code>US-011</code> is created.</p>
 
           <div class="code-block">
             <div class="code-block-header">specs/US-011.yaml (excerpt)</div>
@@ -2288,8 +2893,9 @@ body: |
 
   **Epic:** EP-002 | **Priority:** MEDIUM | **Points:** 3 | **Status:** TODO
   **Blocked by:** US-004
-  **Type:** Feature | Enhancement
-  **Traces to:** FR-011 (MoSCoW: Should), extends FR-004
+  **Type:** Feature
+  **Traces to:** J-002 · FR-011 (MoSCoW: Should) · NFR-001
+  **Prior art:** package spatie/laravel-pdf — maintained, renders Blade
 
   **User Story**
   As a freelancer,
@@ -2299,17 +2905,26 @@ body: |
   **Acceptance Criteria**
   - [ ] PDF download from invoice detail for authorized users
   - [ ] 403 when the user cannot view the invoice
-  - [ ] PDF contains line items, tax breakdown, and tenant logo</code></pre>
+  - [ ] PDF contains line items, tax breakdown, and tenant logo
+  - [ ] Download starts within 300 ms at p95 (NFR-001)</code></pre>
           </div>
+
+          <h4>The feature changes something that already works</h4>
+          <p>That is a <strong>change request</strong>: the product does what was agreed and you now want it
+            different. The requirement is edited <strong>in place</strong> — same id, new behavior — and the
+            revision history records before and after. The story that shipped the old behavior stays
+            <span class="status status-done">DONE</span>; the new story cites it as <code>Supersedes</code>.
+            Rules: <a href="#deep-dive-prd-changes">How the PRD changes</a>.</p>
 
           <dl class="walkthrough-grid">
             <div>
               <dt>You do</dt>
-              <dd>Invoke with a one-line description; answer 3 wizard rounds; confirm AC</dd>
+              <dd>Describe the feature in one line; answer three rounds; confirm the readback</dd>
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd>Validates and persists <code>US-011</code> spec; updates PRD with <code>FR-011</code> when needed</dd>
+              <dd>Checks for packages that already do it, writes the criteria, adds <code>FR-011</code> to the
+                PRD, saves story <code>US-011</code></dd>
             </div>
             <div>
               <dt>Next step</dt>
@@ -2378,9 +2993,12 @@ body: |
                 <li><strong>Urgency:</strong> Hotfix now · Next sprint · Backlog</li>
               </ol>
             </div>
-            <p><em>You pick:</em> <strong>Rework existing spec</strong>, <strong>Next sprint</strong> (High but not
-              Critical — no <code>hotfix/*</code> branch).</p>
-            <p><span class="speaker">🔎 Tom:</span> Steps to reproduce documented for the rework payload.</p>
+            <p><em>You pick:</em> <strong>New fix spec</strong> (<code>US-003</code> is
+              <span class="status status-done">DONE</span> and stays closed), <strong>Next sprint</strong> (High but
+              not Critical — no <code>hotfix/*</code> branch).</p>
+            <p><span class="speaker">🔎 Tom:</span> Promise broken: nothing written — <code>FR-003</code> promises SSO
+              login and names no browser. That is a requirement gap, and the fix needs a sentence to be measured
+              against.</p>
           </div>
 
           <div class="code-block">
@@ -2426,33 +3044,74 @@ body: |
   2. Click "Sign in with Google"
   3. Complete OAuth — redirect returns to /login with error
 - **Expected / Actual:** Expected dashboard · Actual login error
-- **Affected spec:** US-003
-- **Routed to:** rework on US-003 via /larapilot-bug
-- **Security:** unsure — Lars/Oliver tagged</code></pre>
+- **Promise broken:** none — requirement gap (FR-003 names no browser)
+- **Affected spec:** US-003 (DONE)
+- **Routed to:** spec-add US-015, related US-003
+- **Security:** unsure — Lars/Oliver tagged
+- **Occurrences:** 2026-07-15 Production</code></pre>
           </div>
 
-          <p>Maps to <code>US-003</code> — skill sends it back to <span class="status status-todo">TODO</span> with
-            rework feedback. PRD update only if requirement gap (e.g. Safari never specified).</p>
+          <p><code>US-003</code> shipped and stays closed: the skill creates fix spec <code>US-015</code> and relates
+            it to the story that shipped the behavior. Because nothing ever named a browser, the PRD gains the
+            sentence the fix is measured against — a row in the compatibility NFR and a done-means bullet under
+            <code>FR-003</code>, never an <code>FR-012: Fix Safari</code>.</p>
 
           <div class="code-block">
-            <div class="code-block-header">Rework feedback (attached to US-003)</div>
-            <pre><code>## Bug report — 2026-07-15
-**Severity:** High
-**Steps to reproduce:** Safari 17+ → Sign in with Google → redirect error
-**Expected / Actual:** Dashboard vs login error
-**Diagnostics note:** redacted log tail pointed at OAuth state / SameSite cookie on Safari
+            <div class="code-block-header">specs/US-015.yaml — body (excerpt)</div>
+            <pre><code>#### US-015: Fix — SSO login fails on Safari
 
-**Additional acceptance criteria:**
+**Type:** Fix · **Severity:** High · **Security:** Lars/Oliver — unsure
+**Related:** US-003
+**Traces to:** J-001 · FR-003 · NFR-007
+**Promise broken:** none written — FR-003 now reads "SSO login succeeds on Safari 17+, macOS and iOS"
+
+**Steps to Reproduce**
+1. Safari 17+ → Sign in with Google → redirect returns to /login with an error
+
+**Acceptance Criteria**
 - [ ] SSO login succeeds on Safari 17+ (macOS and iOS)
-- [ ] SameSite / session cookie behaviour verified for OAuth callback
-- [ ] Regression test covers Safari user-agent (Anne)
-- [ ] Lars/Oliver review if cookie or state token issue confirmed</code></pre>
+- [ ] SameSite / session cookie behaviour verified for the OAuth callback
+- [ ] Regression test covers the Safari user-agent and fails without the fix (Anne)
+- [ ] Root cause named in the fix commit; auth developer doc updated
+- [ ] Lars/Oliver review if the cookie or state token issue is confirmed</code></pre>
           </div>
 
-          <h4>New fix spec instead?</h4>
-          <p>No matching story → new <code>US-XXX</code> with <strong>Type: Fix</strong>. Critical production → Jack's
-            <code>hotfix/*</code> note.
-          </p>
+          <h4>Which route, by the status of the story</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>The defect maps to a story in</th>
+                  <th>Route</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="status status-review">REVIEW</span></td>
+                  <td><code>spec-request-changes US-XXX</code> — back to TODO with the feedback. It is the only status
+                    that command accepts</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-todo">TODO</span> · <span class="status status-planned">PLANNED</span></td>
+                  <td>The story is re-issued through <code>spec-add</code> with the criteria added — same code, status
+                    kept. A planned one is planned again</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-progress">IN PROGRESS</span></td>
+                  <td>You are told work is under way; on your consent the criteria join the story and the next task</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-done">DONE</span></td>
+                  <td>New fix spec, <strong>Type: Fix</strong>, related to the story. A done story is never reopened
+                  </td>
+                </tr>
+                <tr>
+                  <td>No story at all</td>
+                  <td>New fix spec. Critical in production → Jack's <code>hotfix/*</code> note</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <dl class="walkthrough-grid">
             <div>
@@ -2466,7 +3125,365 @@ body: |
             </div>
             <div>
               <dt>Next step</dt>
-              <dd><code>/larapilot-plan US-003</code> (rework) or <code>/larapilot-plan US-012</code> (new fix)</dd>
+              <dd><code>/larapilot-plan US-015</code></dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- Bug or feature? -->
+        <article class="example-block" id="example-triage">
+          <h2>Bug or feature?</h2>
+          <p class="example-tag"><code>/larapilot-triage</code> → <code>/larapilot-bug</code> or
+            <code>/larapilot-feature</code></p>
+          <p class="example-context">Invoicing SaaS shipped. A client email lands: they want the company logo on the
+            invoice PDF. It reads like a wish — is it one?</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-triage "We would like the company logo on the invoice PDF"</code></pre>
+          </div>
+
+          <p>Triage is the front door. It does not interview you: it measures the request against what the product
+            <strong>promised</strong> — the backlog and the PRD — and says which skill owns it. Wording is a hint, never
+            the verdict.</p>
+
+          <h4>The promise test</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Verdict</th>
+                  <th>When</th>
+                  <th>Evidence cited</th>
+                  <th>Runs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Bug</strong></td>
+                  <td>An FR or an acceptance criterion promises it, or it worked before</td>
+                  <td><code>FR-XXX</code> done-means, <code>US-XXX</code> criterion, or the release where it
+                    worked</td>
+                  <td><code>/larapilot-bug</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Bug — requirement gap</strong></td>
+                  <td>Nothing written, but an FR covers the area and any user would take the behavior for granted
+                    (browser, locale, data kept, permission respected)</td>
+                  <td>Parent <code>FR-XXX</code></td>
+                  <td><code>/larapilot-bug</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Feature</strong></td>
+                  <td>No FR covers it — a new capability, or an extension of one</td>
+                  <td>Nearest <code>FR-XXX</code>, or none</td>
+                  <td><code>/larapilot-feature</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Feature — change request</strong></td>
+                  <td>It works as specified and you now want it different</td>
+                  <td>The FR or criterion that describes today's behavior</td>
+                  <td><code>/larapilot-feature</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>Tom and Mark look the request up: <code>spec-list</code> titles, the <code>### FR-</code> headings of the
+            PRD, then at most one spec and one FR. The whole PRD is never loaded.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Agent — evidence</div>
+            <pre><code>php artisan larapilot:config-show --only=settings,paths
+php artisan larapilot:spec-list
+php artisan larapilot:spec-show US-011 --fields=id   # body + criteria, tasks reduced to ids</code></pre>
+          </div>
+
+          <div class="chat-example">
+            <p><span class="speaker">🎧 Sophia:</span> Bug — US-011 criterion "tenant logo in PDF" not met →
+              larapilot-bug</p>
+          </div>
+
+          <p>One line, with its evidence. <code>US-011</code> is <span class="status status-done">DONE</span> and one of
+            its criteria reads <em>“PDF contains line items, tax breakdown, and tenant logo”</em>: the request was
+            phrased as a wish, but the product already promised it. Triage then runs <code>/larapilot-bug</code>
+            <strong>in the same turn</strong> — you do not type a second command — and passes what it found:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Triage handoff (carried into the target skill)</div>
+            <pre><code>Triage handoff
+request: We would like the company logo on the invoice PDF
+verdict: Bug
+evidence: US-011 criterion "PDF contains line items, tax breakdown, and tenant logo"
+maps to: US-011 (DONE)
+settled by: evidence</code></pre>
+          </div>
+
+          <p>Sophia's bug interview starts with <strong>Maps to existing spec?</strong> already answered, and does not
+            ask you to describe the problem again. From here it is the <a href="#example-bug-fix">bug walkthrough</a>:
+            severity, environment, intake log, and a fix story related to <code>US-011</code> — which is
+            <span class="status status-done">DONE</span> and stays closed.</p>
+
+          <h4>Same product, three other requests</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Evidence</th>
+                  <th>Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>“Invoice export to CSV does not work”</td>
+                  <td>No FR and no criterion mentions CSV — <code>FR-011</code> is PDF only</td>
+                  <td><strong>Feature</strong> — reported as broken, never promised.
+                    <code>/larapilot-feature</code> starts with <strong>Traceability</strong> answered</td>
+                </tr>
+                <tr>
+                  <td>“The PDF should open in the browser instead of downloading”</td>
+                  <td><code>US-011</code> promises a download, and delivers it</td>
+                  <td><strong>Feature — change request</strong>. <code>/larapilot-feature</code> edits
+                    <code>FR-011</code> instead of adding an FR</td>
+                </tr>
+                <tr>
+                  <td>“Login fails on Safari”</td>
+                  <td><code>FR-003</code> promises SSO login; no browser list anywhere</td>
+                  <td><strong>Bug — requirement gap</strong>. <code>/larapilot-bug</code> clarifies
+                    <code>FR-003</code> — see <a href="#deep-dive-prd-changes">How the PRD changes</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>When the evidence does not settle it</h4>
+          <p>One question, never a round of them. Severity, MoSCoW, priority, epic, and release are asked later, by the
+            skill that owns them.</p>
+
+          <div class="chat-example">
+            <p><span class="speaker">🎧 Sophia:</span> “Reminder emails arrive late” — FR-007 promises reminders, no
+              timing anywhere. Your call.</p>
+            <div class="wizard">
+              <strong>AskQuestion — verdict (skippable)</strong>
+              <ol>
+                <li>Bug — it should already work</li>
+                <li>Feature — it is new, or a change to what was agreed</li>
+              </ol>
+            </div>
+            <p><em>You pick:</em> <strong>Bug — it should already work</strong>. Skipped instead? An FR covers the area
+              → <strong>Bug — requirement gap</strong>; no FR covers it → <strong>Feature</strong>.</p>
+          </div>
+
+          <p>Your answer goes to the <a href="#deep-dive-decision-log">decision journal</a> — it is the record of who
+            decided that a report was a defect and not new scope:</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Agent — only when you settled the verdict</div>
+            <pre><code>php artisan larapilot:decision-log --topic="Triage: reminder-emails-late" \
+  --value="Bug — requirement gap" --source=askquestion --skill=larapilot-triage</code></pre>
+          </div>
+
+          <h4>Several requests in one message</h4>
+          <p>“Login is broken on Safari, and we'd like CSV export too.” Sophia lists the two, classifies each, and hands
+            off one at a time — bugs before features, the most severe bug first — coming back to the next when the
+            target skill reaches its next steps.</p>
+
+          <h4>Neither a bug nor a feature</h4>
+          <p>No handoff: triage says where the request belongs in one line and stops.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Exit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>No PRD and no backlog</td>
+                  <td><code>/larapilot-adopt</code> when the code exists, otherwise
+                    <code>/larapilot-inception</code></td>
+                </tr>
+                <tr>
+                  <td>Redefines the product vision or the target user</td>
+                  <td><code>/larapilot-inception</code></td>
+                </tr>
+                <tr>
+                  <td>Changes the PRD: priority, scope, a decision</td>
+                  <td><code>/larapilot-prd</code></td>
+                </tr>
+                <tr>
+                  <td>An open spec already covers it, and nothing is broken</td>
+                  <td>Names <code>US-XXX</code> and its status. No new spec</td>
+                </tr>
+                <tr>
+                  <td>Several stories for the backlog</td>
+                  <td><code>/larapilot-spec</code></td>
+                </tr>
+                <tr>
+                  <td>A question, a how-to, or a project setting</td>
+                  <td>Answers it, or <code>/larapilot-settings</code>. No spec</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Called the wrong skill directly?</h4>
+          <p><code>/larapilot-bug</code> and <code>/larapilot-feature</code> run the same check on their own evidence.
+            A “bug” nothing ever promised is handed to <code>/larapilot-feature</code>; a “feature” an FR already
+            promises is handed to <code>/larapilot-bug</code>. Once, on new evidence only, and never against a verdict
+            you settled.</p>
+
+          <h4>What it costs</h4>
+          <p>Triage reads the every-skill runtime rows and nothing else — not <code>runtime-ops</code>, not
+            <code>runtime-discovery</code> — so the branch it does not take costs nothing. The target skill loads its
+            own packs, does not re-read what triage loaded, and closes the session with one Zoey line and one Lucille
+            ledger entry that cover both.</p>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Paste the request as it arrived; answer one question only when the evidence is not enough</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Cites the FR or criterion, states the verdict in one line, runs the right skill with the handoff.
+                Writes no spec, PRD edit, or intake entry itself</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd>None to type — you are already in <code>/larapilot-bug</code> or <code>/larapilot-feature</code></dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- PRD revision -->
+        <article class="example-block" id="example-prd-revision">
+          <h2>PRD revision</h2>
+          <p class="example-tag"><code>/larapilot-prd</code></p>
+          <p class="example-context">Invoicing SaaS, PRD written three weeks ago, fourteen stories in the backlog.
+            Nothing is broken and nothing new is wanted — but the client dropped the CSV export, wants 2FA mandatory
+            for admins, and nobody ever said what "fast" means.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">Your editor</div>
+            <pre><code>/larapilot-prd "Drop the CSV export, make 2FA mandatory for admins, and say what 'fast' means"</code></pre>
+          </div>
+
+          <p>This is neither a bug nor a feature: the product will promise fewer things, in a different order, and
+            one of them more precisely. That is a <strong>revision</strong>. The skill does four things, in this
+            order, and writes nothing before you confirm.</p>
+
+          <h3>1 · Name what kind of change it is</h3>
+          <div class="chat-example">
+            <p><span class="speaker">💎 Mark:</span> Re-scope — FR-009 Should → Won't, FR-006 Could → Must · Sharpen —
+              NFR-001. Dropping the export frees <code>US-014</code>; accountants keep the integration in FR-011.</p>
+            <p><span class="speaker">🔎 Tom:</span> FR-006 has to say what mandatory means. Two done-means: an admin
+              without 2FA cannot reach the panel; recovery codes are shown once.</p>
+            <p><span class="speaker">📐 John:</span> "Fast" — p95 under 300 ms on list pages at 10k rows per tenant,
+              verified by a k6 run in CI. Is that the number, or do you have one from the client?</p>
+            <p><em>You:</em> That number is fine.</p>
+          </div>
+          <p>The team asks only what it cannot work out. When you do not have an answer, it is written as an open
+            question with an owner — never as an invented number. The seven kinds of revision are listed in
+            <a href="#deep-dive-prd-kinds">The PRD → Revision kinds</a>.</p>
+
+          <h3>2 · Find the stories that rest on it</h3>
+          <div class="code-block">
+            <div class="code-block-header">Agent — php artisan larapilot:prd-impact --ids=FR-009,FR-006,NFR-001</div>
+            <pre><code>{
+  "schema": "larapilot/v1",
+  "kind": "prd_impact",
+  "data": {
+    "scope": "ids",
+    "specs": [
+      { "code": "US-003", "status": "DONE",    "matches": ["FR-006"],  "action": "new_spec" },
+      { "code": "US-009", "status": "PLANNED", "matches": ["NFR-001"], "action": "update_and_replan" },
+      { "code": "US-014", "status": "TODO",    "matches": ["FR-009"],  "action": "update_spec" }
+    ],
+    "untraced": [],
+    "unknown": [],
+    "summary": { "ids": 3, "specs": 3, "by_action": { "new_spec": 1, "update_and_replan": 1, "update_spec": 1 } }
+  }
+}</code></pre>
+          </div>
+          <p>Three stories cite the ids being changed. What happens to each depends on how far it has gone — a
+            story in <span class="status status-todo">TODO</span> is simply rewritten, a
+            <span class="status status-done">DONE</span> one is never reopened. The full table is in
+            <a href="#deep-dive-prd-backlog">The PRD → The backlog follows</a>.</p>
+
+          <h3>3 · Read the change back</h3>
+          <div class="code-block">
+            <div class="code-block-header">Mark, in chat — then AskQuestion: Apply · Revise · Cancel</div>
+            <pre><code>FR-009 Export CSV      Should → Won't (Retired 2026-08-02 — replaced by the accountant integration)
+FR-006 2FA for admins  Could → Must · done-means +2
+NFR-001 Performance    "fast" → p95 &lt; 300 ms at 10k rows, verified by k6 in CI
+Backlog                US-014 TODO → delete · US-009 PLANNED → update and replan · US-003 DONE → change request</code></pre>
+          </div>
+          <p><em>You pick:</em> <strong>Apply</strong>.</p>
+
+          <h3>4 · Write the PRD and align the backlog</h3>
+          <div class="code-block">
+            <div class="code-block-header">PRD.md after the revision (excerpt)</div>
+            <pre><code>### FR-009: Export invoices as CSV
+
+**MoSCoW:** Won't · **Journey:** J-003 · **Persona:** Accountant
+**Retired:** 2026-08-02 — replaced by the accountant integration (FR-011)
+
+## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| 2026-07-01 | larapilot-inception | Initial PRD |
+| 2026-08-02 | larapilot-prd — Re-scope + Sharpen | FR-009 retired; FR-006 Could → Must (+2 done-means); NFR-001 p95 &lt; 300 ms |</code></pre>
+          </div>
+          <p>FR-009 is retired, not deleted: its heading stays, so every story, commit, and document that cites
+            <code>FR-009</code> still points somewhere. Then, with your consent, <code>US-014</code> is deleted,
+            <code>US-009</code> is rewritten with the new target, and <code>US-003</code> stays closed.</p>
+
+          <h3>Two other ways to use it</h3>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>Type</th>
+                  <th>What happens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>You edited <code>PRD.md</code> by hand</td>
+                  <td><code>/larapilot-prd "I edited the PRD by hand"</code></td>
+                  <td>It reads the git diff of the file, names the kind of change, and adds what a hand edit
+                    skips: the history row, validation, the dashboard snapshot, the backlog check</td>
+                </tr>
+                <tr>
+                  <td>The PRD was written by an older Larapilot and <code>validate-prd</code> shows warnings</td>
+                  <td><code>/larapilot-prd "Upgrade the PRD"</code></td>
+                  <td>It builds the missing sections from what exists — journeys from the stories, the domain
+                    model from the requirements and the code — and marks each item
+                    <em>derived — confirm</em>. What nobody knows becomes an open question</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <dl class="walkthrough-grid">
+            <div>
+              <dt>You do</dt>
+              <dd>Say what should change; answer only what the team cannot work out; confirm the readback</dd>
+            </div>
+            <div>
+              <dt>Agent does</dt>
+              <dd>Names the kind, finds the stories affected, edits the PRD with a history row, validates,
+                aligns the stories by status</dd>
+            </div>
+            <div>
+              <dt>Next step</dt>
+              <dd><code>/larapilot-plan US-009</code> · <code>/larapilot-feature "Enforce 2FA on existing admin
+                  accounts"</code></dd>
             </div>
           </dl>
         </article>
@@ -2816,8 +3833,8 @@ updated_at: '2026-07-27T11:04:12+00:00'</code></pre>
             merge is cheap.</p>
 
           <div class="cli-note"><strong>The tracker is a window, not a second workflow.</strong> Scope still changes
-            through <code>/larapilot-feature</code> and the PRD, plans through <code>/larapilot-plan</code>, and
-            acceptance through <code>/larapilot-review</code>. What the client gets is visibility in the tool they
+            through <code>/larapilot-feature</code> and <code>/larapilot-prd</code>, plans through
+            <code>/larapilot-plan</code>, and acceptance through <code>/larapilot-review</code>. What the client gets is visibility in the tool they
             already use — not a second place to run delivery from.
           </div>
         </article>
@@ -3264,103 +4281,6 @@ GO — Slack notified.</code></pre>
           </dl>
         </article>
 
-        <article class="example-appendix" id="examples-prd-living">
-          <h3>PRD living document</h3>
-          <p>Selective PRD updates with <code>## PRD Revision History</code> — bugs stay in specs + intake unless they
-            reveal a requirement gap.</p>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Change type</th>
-                  <th>Update PRD?</th>
-                  <th>Where it lives</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Legacy rewrite (<code>/larapilot-inception</code>)</td>
-                  <td><strong>Yes</strong> — full PRD + <code>Project Origin</code> + parity section</td>
-                  <td>PRD + <code>research/legacy-parity.md</code> + migration specs first</td>
-                </tr>
-                <tr>
-                  <td>New feature (<code>/larapilot-feature</code>)</td>
-                  <td><strong>Yes</strong> — new <code>FR-XXX</code> or MoSCoW / scope change</td>
-                  <td>PRD + spec + revision history</td>
-                </tr>
-                <tr>
-                  <td>Routine bug</td>
-                  <td><strong>No</strong></td>
-                  <td><code>support/intake.md</code> + fix spec or rework</td>
-                </tr>
-                <tr>
-                  <td>Bug reveals missing requirement (e.g. Safari SSO)</td>
-                  <td><strong>Yes</strong> — clarify parent FR, not a “fix FR”</td>
-                  <td>PRD bullet under <code>FR-003</code> + revision history + rework</td>
-                </tr>
-                <tr>
-                  <td>Review rework</td>
-                  <td><strong>No</strong></td>
-                  <td><code>/larapilot-review</code> feedback only</td>
-                </tr>
-                <tr>
-                  <td>Hotfix production</td>
-                  <td><strong>No</strong></td>
-                  <td>Spec + app <code>CHANGELOG.md</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="code-block">
-            <div class="code-block-header">PRD.md — revision history (after post-inception edits)</div>
-            <pre><code>## PRD Revision History
-
-| Date | Trigger | Summary |
-| --- | --- | --- |
-| 2026-07-01 | larapilot-inception | Initial PRD |
-| 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
-| 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |
-| 2026-07-24 | larapilot-inception | Frontend Topology: API + external frontend (React companion) |</code></pre>
-          </div>
-          <p>Unclear? Default: spec only — safer than polluting the PRD.</p>
-
-          <h3>Feature vs bug — at a glance</h3>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Step</th>
-                  <th><code>/larapilot-feature</code></th>
-                  <th><code>/larapilot-bug</code></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1. Invoke</td>
-                  <td><code>/larapilot-feature "Add PDF export for invoices"</code></td>
-                  <td><code>/larapilot-bug "SSO login fails on Safari"</code></td>
-                </tr>
-                <tr>
-                  <td>2. Interview</td>
-                  <td>Mark + Tom — MoSCoW, FR, mockup, epic (3 rounds)</td>
-                  <td>Sophia + Tom — severity, env, security, routing (3 rounds); diagnostics when
-                    prod/staging/logs</td>
-                </tr>
-                <tr>
-                  <td>3. Persist</td>
-                  <td><code>US-011</code> spec; PRD if new <code>FR-011</code> + revision history</td>
-                  <td><code>intake.md</code> + rework or fix spec; PRD only on requirement gap</td>
-                </tr>
-                <tr>
-                  <td>4. Implement</td>
-                  <td colspan="2"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
-                    <code>/larapilot-review</code>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
 
       </section>
 
@@ -3369,8 +4289,9 @@ GO — Slack notified.</code></pre>
         <div class="section-header">
           <span class="section-label">Deep Dive</span>
           <h2>Reference</h2>
-          <p>Skills, settings, personas, workflow, artifacts, usage, integrations, surfaces, CLI, dashboard, and API —
-            how every layer fits together.</p>
+          <p>Every skill, setting, file, and command, one chapter each. Read <a href="#concepts">Concepts</a>
+            first if a word is new, and use the search field at the top of the page to jump to a command or a
+            setting by name.</p>
         </div>
 
         <!-- How it works -->
@@ -3433,6 +4354,11 @@ GO — Slack notified.</code></pre>
                     <code>-1</code>, <code>-2</code>, … parts) · <code>runtime-dev-docs.md</code> ·
                     <code>runtime-release.md</code> · <code>runtime-project-docs.md</code> ·
                     <code>runtime-custom-skills.md</code> · <code>task-templates.md</code></td>
+                </tr>
+                <tr>
+                  <td><code>/larapilot-triage</code></td>
+                  <td>The every-skill row only. The skill it hands off to loads its own packs, so the branch not
+                    taken costs nothing</td>
                 </tr>
               </tbody>
             </table>
@@ -3543,16 +4469,13 @@ GO — Slack notified.</code></pre>
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Twenty</strong> editor-native skills cover the full product lifecycle — discovery,
-            brownfield onboarding, delivery, ship, settings, usage (Lucille), Backstage, trackers, frontend companion,
-            and three opt-in extras (<code>/larapilot-release</code>, <code>/larapilot-project-docs</code>,
-            <code>/larapilot-custom-skill</code>). Each packaged skill is a <code>SKILL.md</code> under
-            <code>resources/boost/skills/</code> with a name, description, persona roster, execution steps, and allowed
-            CLI calls. Laravel Boost publishes them on <code>php artisan boost:install</code>. Your own skills live in
-            <code>.larapilot/skills/</code> and are registered with Boost the moment you save them — see
+          <p class="lead"><strong>Twenty-two</strong> skills cover the life of a product: discovery, delivery,
+            changes after launch, ship, and the tools around them. Each one is a <code>SKILL.md</code> file that
+            names the personas who speak, the steps they follow, and the commands they may call. Laravel Boost
+            publishes them into your editor on <code>php artisan boost:install</code>.</p>
+          <p>Your own skills live in <code>.larapilot/skills/</code> — see
             <a href="#deep-dive-custom-skills">Custom skills</a>. A short Boost <strong>guideline</strong> ships
-            alongside (not a skill): what Larapilot is, which skill to reach for, where artifacts live.
-          </p>
+            alongside: it tells the agent what Larapilot is and which skill to reach for.</p>
 
           <p>When you type <code>/larapilot-plan US-001</code>, the agent:</p>
           <ol>
@@ -3575,30 +4498,38 @@ GO — Slack notified.</code></pre>
               <span class="skill-badge">discovery</span>
               <div class="skill-body">
                 <h3><code>/larapilot-inception</code></h3>
-                <p>Guided product interview → <code>PRD.md</code> with MoSCoW-tagged functional requirements.
-                  It is run as a <strong>conversation, not a questionnaire</strong>: AskQuestion only for the fixed
-                  choices Larapilot persists, a reaction to every answer before the next question, and — before any
-                  requirement is written — at least two <strong>challenge</strong> exchanges on the goal itself (who has
-                  this problem and what they do instead, what changes if it works, how you will know in 90 days, the
-                  riskiest assumption, what would make you stop).</p>
-                <ul>
-                  <li>Mark opens with Project Kind (Personal · Website · Application · Package)</li>
-                  <li><strong>Four rounds always happen</strong>, whatever the branch and whatever the legacy answer:
-                    Project Kind · <strong>Delivery Target</strong> · <strong>Business Model</strong> (client project ·
-                    SaaS · e-commerce · licensed package · internal tool) · <strong>Operations &amp; support</strong>
-                    (who manages the server, who is on the hook when it is down, what support window is promised).
-                    A skipped round is recorded as <code>Not decided</code>, never as a guess — and the ones that feed
-                    the quote say what skipping them costs</li>
-                  <li>Package branch: origin (new / local / git), distribution, consumer install, CI/docs</li>
-                  <li>John + Joe ask <strong>Frontend Topology</strong> when there is a UI; Mike on data stores;
-                    Lucille on deadlines (skippable); optional <strong>release mode</strong> AskQuestion on greenfield
-                    projects</li>
-                  <li>When <code>release_mode=YES</code>: Sarah proposes a semver roadmap; starting release persisted via
-                    <code>release-add</code></li>
-                  <li>AskQuestion rounds (max 3 questions each, skippable)</li>
-                  <li>Reads <code>client-materials/</code> and <code>legacy/</code> when present; snapshots choices via
-                    <code>choices-set</code></li>
-                </ul>
+                <p>A guided product interview that ends with <code>PRD.md</code>. It is run as a
+                  <strong>conversation, not a questionnaire</strong>: every answer gets a reaction before the next
+                  question, and AskQuestion is used only for the fixed choices Larapilot stores, three at most per
+                  round, all skippable. It goes through these steps, in order:</p>
+                <ol>
+                  <li><strong>The goal is challenged</strong> — at least two exchanges before any requirement is
+                    written: who has this problem and what they do instead, what changes if it works, how you will
+                    know in 90 days, the riskiest assumption, what would make you stop</li>
+                  <li><strong>Four rounds always happen</strong>, legacy rewrites included: Project Kind (Personal ·
+                    Website · Application · Package), Delivery Target, Business Model, Operations &amp; support. A
+                    skipped round is written as <code>Not decided</code>, never as a guess, with what skipping it
+                    costs</li>
+                  <li><strong>Prior-art check</strong> (<a href="#deep-dive-prior-art"><code>prior_art</code></a>, on
+                    by default) — Sebastian states his queries, asks your consent, searches for products and
+                    packages that already do it, writes <code>research/prior-art.md</code>, and you record the
+                    verdict: <code>Build anyway</code> · <code>Adopt / fork</code> ·
+                    <code>Integrate as dependency</code> · <code>Not checked</code></li>
+                  <li><strong>The product is written down</strong> — User Journeys, Domain Model, every requirement
+                    with a named actor and verifiable <strong>Done means</strong>, quality targets with a number and
+                    a verifier, Risks &amp; Assumptions. Each section is explained in
+                    <a href="#deep-dive-prd-sections">The PRD</a></li>
+                  <li><strong>Architecture choices are asked, never assumed</strong> — frontend topology, admin
+                    panel, data store, local development, deploy platform. Lucille asks for deadlines; on a new
+                    project one question offers release mode</li>
+                  <li><strong>Ready check and readback</strong> — Tom runs a ten-point Definition of Ready, Mark
+                    reads the decisions back in at most twelve lines, and the PRD is written once, after you
+                    confirm</li>
+                </ol>
+                <p>It reads <code>client-materials/</code> and <code>legacy/</code> first when they hold files. The
+                  <strong>Package</strong> kind adds its own questions: origin, distribution, consumer install,
+                  CI, docs. When a PRD already exists, inception does not overwrite it — it offers a revision
+                  through <code>/larapilot-prd</code>, or a pivot.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:prd-write</code> ·
                   <code>larapilot:validate-prd</code> · <code>larapilot:choices-set</code> ·
                   <code>larapilot:schedule-set</code>.
@@ -3609,10 +4540,25 @@ GO — Slack notified.</code></pre>
               <span class="skill-badge">backlog</span>
               <div class="skill-body">
                 <h3><code>/larapilot-spec</code></h3>
-                <p>Maps PRD <code>Must</code>/<code>Should</code> FRs to user stories. Writes <code>backlog.yaml</code>
-                  + <code>specs/US-XXX.yaml</code>.</p>
+                <p>Turns the PRD into a backlog of user stories: <code>backlog.yaml</code> plus one
+                  <code>specs/US-XXX.yaml</code> each. On an empty backlog it builds all of it; on an existing one
+                  it adds only what is missing.</p>
+                <ul>
+                  <li><strong>One story per journey</strong> by default. The
+                    <a href="#deep-dive-backlog"><code>backlog</code></a> setting makes stories coarser or finer</li>
+                  <li><strong>How much is built</strong> follows the MoSCoW tags and the delivery target: an MVP
+                    gets the <code>Must</code> requirements, a V1 adds the <code>Should</code>, a full product
+                    adds the <code>Could</code>. <code>Won't</code> never gets a story</li>
+                  <li><strong>Acceptance criteria</strong> come from each requirement's Done means, the journey's
+                    failure modes, and the quality targets that apply</li>
+                  <li>A requirement blocked by an open question gets its story with the question written in it
+                    — never a guessed answer</li>
+                  <li>It ends with a <strong>coverage check</strong>: every <code>Must</code> requirement has a
+                    story, or a stated reason why it waits</li>
+                </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
-                  <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code>.
+                  <code>larapilot:validate-spec</code> · <code>larapilot:spec-list</code> ·
+                  <code>larapilot:prd-impact</code>.
                 </p>
               </div>
             </div>
@@ -3711,7 +4657,10 @@ GO — Slack notified.</code></pre>
               <div class="skill-body">
                 <h3><code>/larapilot-feature "…"</code></h3>
                 <p>Mini-inception for one enhancement on a shipped product → new <code>US-XXX</code> spec (+ optional PRD
-                  FR). When <code>release_mode=YES</code> and open releases exist, AskQuestion assigns the spec to a
+                  FR). Criteria are built from the FR's done-means, the journey's failure modes, and the NFR targets
+                  that apply; Tom runs a five-point ready check and Mark reads the feature back before it is
+                  persisted. A <strong>change request</strong> edits the FR in place — same id, before → after in the
+                  revision history — and <code>prd-impact</code> names the other stories resting on it. When <code>release_mode=YES</code> and open releases exist, AskQuestion assigns the spec to a
                   release (or backlog) → <code>**Release:** x.y.z</code> line + <code>release-set --add-spec=</code>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
@@ -3728,9 +4677,48 @@ GO — Slack notified.</code></pre>
                 <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. When the report
                   mentions production/staging errors or logs, agents pull
                   <a href="#deep-dive-api-diagnostics">diagnostics</a> (redacted).</p>
+                <p>Every fix quotes the <strong>promise broken</strong> — an FR done-means, an acceptance criterion,
+                  or an NFR target — so "fixed" has a definition. The route follows the status of the story:
+                  <code>spec-request-changes</code> in REVIEW only, a re-issue through <code>spec-add</code> for TODO
+                  and PLANNED, a new fix spec for DONE. A defect already in the intake log gains an occurrence, not a
+                  second story.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
                   <code>larapilot:spec-request-changes</code> — plus <code>larapilot:diagnostics</code> for runtime
-                  evidence.
+                  evidence and <code>larapilot:prd-impact</code> on a requirement gap.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">bug or feature?</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-triage "…"</code></h3>
+                <p>Front door for a request you cannot place. Applies the <strong>promise test</strong>: a bug when an
+                  FR or an acceptance criterion promised the behavior (or it worked before), a feature when nothing
+                  did — a change to what was agreed included. States the verdict with its evidence in one line, then
+                  runs <code>/larapilot-bug</code> or <code>/larapilot-feature</code> in the same turn, with the
+                  answers it already has. Asks one question only when the evidence does not settle it. Writes no spec
+                  itself. Both target skills run the same check on their own evidence and hand over to each other
+                  once when the label was wrong. <a href="#example-triage">Walkthrough</a>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-list</code> ·
+                  <code>larapilot:spec-show US-XXX --fields=id</code> — <code>larapilot:decision-log</code> when you
+                  settle the verdict.
+                </p>
+              </div>
+            </div>
+            <div class="skill-item">
+              <span class="skill-badge">PRD revision</span>
+              <div class="skill-body">
+                <h3><code>/larapilot-prd "…"</code></h3>
+                <p>Changes the PRD when the change is neither a bug nor a feature. Mark names the
+                  <strong>revision kind</strong> — editorial, sharpen, re-scope, re-model, re-decide, upgrade — the
+                  team interviews in proportion to it, Tom traces the touched ids to the stories that cite them, and
+                  Mark reads the delta back before anything is written. Ids are never renumbered or reused; a dropped
+                  requirement is retired with its heading kept. Also reconciles a PRD you edited by hand and brings an
+                  older PRD up to the current shape. <a href="#example-prd-revision">Walkthrough</a>.</p>
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:validate-prd</code> ·
+                  <code>larapilot:prd-impact</code> (<code>--ids=</code>) · <code>larapilot:prd-write</code> ·
+                  <code>larapilot:choices-set --from-prd</code> · <code>larapilot:spec-add</code> /
+                  <code>spec-request-changes</code> / <code>spec-delete</code> to align the stories.
                 </p>
               </div>
             </div>
@@ -3802,6 +4790,8 @@ GO — Slack notified.</code></pre>
                     <code>git_mode</code>, <code>testing</code>, <code>auto_approve</code>, <code>lucille</code></li>
                   <li><strong>Traceability</strong> — <code>decision_log</code> (journal + regression guard, ON by
                     default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
+                  <li><strong>Discovery</strong> — <code>prior_art</code> (Sebastian's existing-solutions search at
+                    inception, consent asked before every search, ON)</li>
                   <li><strong>Delivery extras</strong> — <code>release_mode</code> (semver ledger + Gitflow release
                     branches, OFF), <code>project_docs</code> (living <code>_project_docs/</code> handbook, OFF)</li>
                   <li><strong>Business</strong> — <code>account</code> (<code>NONE</code> · <code>FREELANCE</code> ·
@@ -4062,7 +5052,7 @@ GO — Slack notified.</code></pre>
         <!-- Custom skills -->
         <article class="deep-dive-sub" id="deep-dive-custom-skills">
           <h3>Custom skills</h3>
-          <p class="lead">The twenty packaged skills are the base layer. On top of them, every project can keep its
+          <p class="lead">The twenty-two packaged skills are the base layer. On top of them, every project can keep its
             <strong>own</strong> Boost skills in <code>.larapilot/skills/</code> — committed with the code, registered
             with Boost automatically, and built on the same CLI the packaged skills use. They extend the loop; they
             never replace it. Walkthrough: <a href="#example-custom-skill">Your own skill</a>.</p>
@@ -4254,6 +5244,11 @@ cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes<
                   <td><code>YES</code> · <code>YES</code> · <code>NO</code></td>
                 </tr>
                 <tr>
+                  <td>Discovery</td>
+                  <td><a href="#deep-dive-prior-art"><code>prior_art</code></a></td>
+                  <td><code>YES</code></td>
+                </tr>
+                <tr>
                   <td>Business</td>
                   <td><a href="#deep-dive-account"><code>account</code></a></td>
                   <td><code>NONE</code></td>
@@ -4285,20 +5280,11 @@ cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes<
           <p>The <a href="#deep-dive-dev-docs">developer domain docs</a> have no setting on purpose: they are always
             written.</p>
 
-          <p class="skill-cli" style="margin-bottom:1rem"><strong>CLI:</strong>
-            <code>php artisan larapilot:settings-set --effort=… --backlog=… --git-mode=… --testing=… --account=… --auto-approve=… --lucille=… --decision-log=… --code-history=… --release-mode=… --project-docs=… --comments=… --dashboard-auth=… --api-auth=… --security-scan=… --github=… --gitlab=… --bitbucket=… --azure=… --notifications=… --notify-slack=… --notify-discord=… --notify-telegram=…</code>
-            persists one or more keys. <code>php artisan larapilot:config-show</code> returns
-            <code>data.settings</code> (<code>YES</code>/<code>NO</code> for booleans; YAML stores booleans).
-          </p>
-
-          <p>Defaults when unset: <code>effort: STANDARD</code> · <code>backlog: STANDARD</code> ·
-            <code>git_mode: GITFLOW</code> ·
-            <code>testing: NORMAL</code> · <code>account: NONE</code> · <code>auto_approve: NO</code> · <code>lucille: YES</code> ·
-            <code>decision_log: YES</code> · <code>code_history: NO</code> · <code>release_mode: NO</code> ·
-            <code>project_docs: NO</code> · <code>comments: NO</code> ·
-            <code>dashboard_auth: NO</code> · <code>api_auth: NO</code> · <code>security_scan: NO</code> ·
-            <code>github|gitlab|bitbucket|azure: NO</code> · <code>notifications: NO</code> · <code>notify_*: NO</code>.
-          </p>
+          <p>Set one or several at once: <code>php artisan larapilot:settings-set --effort=MAX --testing=BEST</code>.
+            Read them back with <code>php artisan larapilot:config-show --only=settings</code>. Yes/no settings are
+            stored as booleans in the YAML and reported as <code>YES</code> / <code>NO</code>. A setting that is
+            missing from the file takes its default. Every flag is listed
+            <a href="#deep-dive-settings-cli">at the end of this chapter</a>.</p>
 
           <h4 id="deep-dive-effort">Effort</h4>
           <div class="table-card">
@@ -4385,7 +5371,7 @@ cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes<
                 <tr>
                   <td><code>GITFLOW</code></td>
                   <td>Feature branches + atomic commits + PR prepared locally — <strong>no automatic push</strong>
-                    (<strong>default</strong></td>
+                    (<strong>default</strong>)</td>
                 </tr>
                 <tr>
                   <td><code>GITFLOW_PUSH</code></td>
@@ -4505,6 +5491,30 @@ cat SKILL.md | php artisan larapilot:custom-skill-add --name=acme-release-notes<
             <li>The <a href="#deep-dive-dashboard">dashboard</a> renders the journal on the <strong>PRD</strong> page
               (project / discovery vs per-story groups, timeline) and on each <strong>spec detail</strong> page (entries
               for that story only).</li>
+          </ul>
+
+          <h4 id="deep-dive-prior-art">Prior-art check <span class="chip">on by default</span></h4>
+          <p><code>settings.prior_art</code> (default <code>YES</code>) adds one step to
+            <code>/larapilot-inception</code>, after the goal is challenged and before scope is written: is there
+            already a product, an open-source project, or a package that does this?</p>
+          <ul>
+            <li><strong>Consent first.</strong> A search query can expose a confidential idea. Sebastian shows the
+              queries he would run and asks: <em>Search now · Search with generic terms only · Skip — I know the
+              alternatives · Skip — confidential</em>.</li>
+            <li><strong>Where he looks</strong> depends on the project kind: Packagist and GitHub for a package;
+              GitHub, self-hosted catalogs, and alternatives directories for an application; Laravel CMS and
+              commerce platforms for a site. A <strong>Personal</strong> project skips the step.</li>
+            <li><strong>What you get</strong> — <code>.larapilot/research/prior-art.md</code>: up to five
+              candidates with license, stack, last release, what each covers and lacks, and what adopting it would
+              cost.</li>
+            <li><strong>You decide</strong>: <code>Build anyway</code>, <code>Adopt / fork</code>,
+              <code>Integrate as dependency</code>, or <code>Not checked</code>. The verdict is written in the PRD
+              as <code>**Prior Art:**</code> and shown on the dashboard's Inception page.</li>
+            <li>When a mature product already does it and is not built on Laravel, inception says so and stops with
+              the report.</li>
+            <li>With no web access in the editor, or with the setting off, the PRD says
+              <code>Not checked</code> — never "nothing exists". Turn it off with
+              <code>php artisan larapilot:settings-set --prior-art=NO</code>.</li>
           </ul>
 
           <h4 id="deep-dive-code-history">Code change history <span class="chip">opt-in</span></h4>
@@ -4674,8 +5684,9 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
           <p>When a skill needs a path that is missing from env, it keeps asking until you provide it, then persists
             with the matching CLI command. The PRD records the <strong>stack</strong>, not the absolute path.</p>
 
+          <h4 id="deep-dive-settings-cli">Every flag, with its default</h4>
           <div class="code-block">
-            <div class="code-block-header">CLI — persist settings</div>
+            <div class="code-block-header">Terminal</div>
             <pre><code>php artisan larapilot:settings-set \
   --effort=STANDARD \
   --backlog=STANDARD \
@@ -4686,6 +5697,7 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
   --lucille=YES \
   --decision-log=YES \
   --code-history=NO \
+  --prior-art=YES \
   --release-mode=NO \
   --project-docs=NO \
   --comments=NO \
@@ -4709,8 +5721,8 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
           <p class="lead"><strong>30 personas</strong> are lenses, not costumes. Each skill activates a subset of the
             squad — they speak in chat as <code>💎 Mark:</code>, <code>📐 John:</code>, etc., applying a specific kind
             of scrutiny to the work at hand. <strong>Zoey</strong> (AI Guru) is active in every skill;
-            <strong>Lucille</strong> is active quietly by default (usage ledger); <strong>Mike</strong>,
-            <strong>Sarah</strong>, and Lucille joined in v2.4.0.
+            <strong>Lucille</strong> is active quietly by default (usage ledger). Nothing here is a separate agent with
+            its own memory: a persona is the point of view the agent takes while it does one part of the work.
           </p>
 
           <div class="persona-phases">
@@ -4770,7 +5782,9 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
               <h4>Ship &amp; support</h4>
               <p><strong>Jack</strong> owns CI/CD gates and deploy orchestration; <strong>Sarah</strong> owns pipeline
                 scripts and server-side shell those runbooks invoke. <strong>Oliver</strong> red-teams before launch.
-                <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs.
+                <strong>Albert</strong> ships client manuals and API docs. <strong>Sophia</strong> routes bugs and runs the front
+                door: with <strong>Mark</strong> and <strong>Tom</strong> she decides whether a request is a bug or a
+                feature (<code>/larapilot-triage</code>).
                 <strong>Violet</strong> and <strong>Emily</strong> cover compliance and localization.
                 <strong>Lucille</strong> reports schedule drift vs deadlines via <code>/larapilot-usage</code>.
               </p>
@@ -4958,7 +5972,7 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
               <code>/larapilot-ship</code> when all MVP stories are <span class="status status-done">DONE</span> ·
               <code>/larapilot-autopilot</code> to batch plan+implement, one fresh context per spec · <code>/larapilot-settings</code> ·
               <code>/larapilot-usage</code> · <code>/larapilot-feature</code> or <code>/larapilot-bug</code> on
-              existing products · Package kind skips UI mockups unless the package ships UI.
+              existing products (<code>/larapilot-triage</code> when you cannot tell which) · Package kind skips UI mockups unless the package ships UI.
             </p>
           </div>
 
@@ -5082,6 +6096,434 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
           </p>
         </article>
 
+        <!-- The PRD -->
+        <article class="deep-dive-sub" id="deep-dive-prd">
+          <h3>The PRD</h3>
+          <p class="lead">The PRD is the product contract: what the product promises, to whom, and how well.
+            Everything downstream is measured against it. A story exists because a requirement does, a bug is a
+            promise that was not kept, and a review checks that it was. It is one Markdown file,
+            <code>.larapilot/docs/PRD.md</code>, written by inception and changed only through skills.</p>
+
+          <h4 id="deep-dive-prd-sections">What is in it</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>What it holds</th>
+                  <th>Who uses it later</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Elevator Pitch</strong> · <strong>Vision</strong></td>
+                  <td>The product in one paragraph, and what changes for its users if it works</td>
+                  <td>Everyone. The dashboard's functional summary opens with it</td>
+                </tr>
+                <tr>
+                  <td><strong>User Personas</strong></td>
+                  <td>Who has the problem, their goals, and what they do today instead</td>
+                  <td>Stories are written <em>as</em> a persona</td>
+                </tr>
+                <tr>
+                  <td><strong>User Journeys</strong> <code>J-001</code></td>
+                  <td>One per way a persona gets value: trigger, steps, the state that means it worked, the ways
+                    it fails. The core journey comes first</td>
+                  <td><code>/larapilot-spec</code> cuts one story per journey</td>
+                </tr>
+                <tr>
+                  <td><strong>Domain Model</strong></td>
+                  <td>The nouns of the product: entities, their states, how they relate, and a glossary. Not a
+                    database schema</td>
+                  <td>Criteria, plans, and class names use these words and no synonym</td>
+                </tr>
+                <tr>
+                  <td><strong>Functional Requirements</strong> <code>FR-001</code></td>
+                  <td>One promise each: MoSCoW tag, journey, actor and trigger, behavior,
+                    <strong>Done means</strong> bullets a tester can verify, what is <em>not</em> included, what it
+                    depends on, where it came from</td>
+                  <td>Acceptance criteria are built from Done means. Triage and bug measure a request against
+                    them</td>
+                </tr>
+                <tr>
+                  <td><strong>Non-Functional Requirements</strong> <code>NFR-001</code></td>
+                  <td>Quality targets as a table: category, a measurable target, what it applies to, how it is
+                    verified</td>
+                  <td>Become criteria on the stories they apply to. Review and ship judge against them</td>
+                </tr>
+                <tr>
+                  <td><strong>MVP Scope</strong></td>
+                  <td>The fixed choices — project kind, origin, delivery target, business model, prior-art
+                    verdict, success signal, deadlines — then In Scope, Out of Scope, Future Phases</td>
+                  <td>How much of the PRD becomes stories now. Economics prices from it</td>
+                </tr>
+                <tr>
+                  <td><strong>Risks &amp; Assumptions</strong> <code>Q-001</code></td>
+                  <td>The riskiest assumption, the kill condition, assumptions and how each is validated, risks,
+                    open questions with an owner and a date, and everything left <code>Not decided</code></td>
+                  <td>An open question blocks the story that depends on it instead of being guessed</td>
+                </tr>
+                <tr>
+                  <td><strong>Technical Architecture</strong></td>
+                  <td>Every choice that was asked: who runs the server, support window, frontend topology, stack,
+                    data store, integrations, tenancy</td>
+                  <td>Plan, implement, and ship honor it instead of asking again</td>
+                </tr>
+                <tr>
+                  <td><strong>PRD Revision History</strong></td>
+                  <td>One row per change made after inception: date, the skill that made it, what changed</td>
+                  <td>You, when you need to know why the PRD says what it says</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The PRD is written in the language of your conversation. Ids and the MoSCoW labels stay as they are in
+            every language. A complete example is in the <a href="#example-new-product">New product</a>
+            walkthrough.</p>
+
+          <h4 id="deep-dive-prd-validate">What <code>validate-prd</code> checks</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Finding</th>
+                  <th>Severity</th>
+                  <th>Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>PRD_EMPTY</code> · <code>PRD_MISSING_SECTION</code></td>
+                  <td><strong>Error</strong></td>
+                  <td>One of the six required sections is missing: Elevator Pitch, Vision, User Personas,
+                    Functional Requirements, MVP Scope, Technical Architecture. Headings are recognized in
+                    English, Italian, Spanish, and French; any other language passes with six <code>##</code>
+                    headings</td>
+                </tr>
+                <tr>
+                  <td><code>PRD_RECOMMENDED_SECTION</code></td>
+                  <td>Warning</td>
+                  <td>User Journeys, Domain Model, Non-Functional Requirements, or Risks &amp; Assumptions is
+                    missing — usually a PRD written by an older version</td>
+                </tr>
+                <tr>
+                  <td><code>PRD_FR_MISSING_MOSCOW</code></td>
+                  <td>Warning</td>
+                  <td>A requirement has no <code>**MoSCoW:**</code> line, so spec cannot tell whether to build
+                    it</td>
+                </tr>
+                <tr>
+                  <td><code>PRD_DUPLICATE_ID</code></td>
+                  <td>Warning</td>
+                  <td>The same id is defined twice</td>
+                </tr>
+                <tr>
+                  <td><code>PRD_DANGLING_REFERENCE</code></td>
+                  <td>Warning</td>
+                  <td>An id is cited and never defined. Ids named in the revision history are not counted</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>An error fails the command. A warning never does, so an older PRD stays valid — and
+            <code>/larapilot-prd "Upgrade the PRD"</code> clears the warnings.</p>
+
+          <h4 id="deep-dive-prd-changes"><span id="examples-prd-living"></span>How the PRD changes after inception</h4>
+          <p>Three skills may change the PRD, and each one leaves a row in the revision history. Find what
+            happened in the first column.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>What happened</th>
+                  <th>Skill</th>
+                  <th>What changes in the PRD</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>You want one new capability</td>
+                  <td><code>/larapilot-feature</code></td>
+                  <td>A new <code>FR-XXX</code>, written in full</td>
+                </tr>
+                <tr>
+                  <td>It works as agreed, and you now want it different — a <strong>change request</strong></td>
+                  <td><code>/larapilot-feature</code></td>
+                  <td>The requirement is edited in place: same id, new behavior, before and after in the
+                    history</td>
+                </tr>
+                <tr>
+                  <td>Something is broken, and the PRD or a story already promised it</td>
+                  <td><code>/larapilot-bug</code></td>
+                  <td><strong>Nothing.</strong> The fix is a story; the report goes to
+                    <code>support/intake.md</code></td>
+                </tr>
+                <tr>
+                  <td>Something is broken, and nobody ever wrote the promise down — a
+                    <strong>requirement gap</strong></td>
+                  <td><code>/larapilot-bug</code></td>
+                  <td>The missing sentence, where it belongs: a Done means bullet under the requirement, or an
+                    NFR row. Never a requirement called "Fix …"</td>
+                </tr>
+                <tr>
+                  <td>Priorities, scope, wording, a target, or a recorded decision must change — nothing is
+                    new, nothing is broken</td>
+                  <td><code>/larapilot-prd</code></td>
+                  <td>The smallest edit that says it. See <a href="#deep-dive-prd-kinds">Revision kinds</a></td>
+                </tr>
+                <tr>
+                  <td>You edited <code>PRD.md</code> by hand</td>
+                  <td><code>/larapilot-prd</code></td>
+                  <td>Your edit stays. The skill adds the history row, validates, and checks the backlog</td>
+                </tr>
+                <tr>
+                  <td>A review was sent back · a refactor · performance work nobody will notice · a production
+                    hotfix</td>
+                  <td><code>/larapilot-review</code> · <code>/larapilot-plan</code> ·
+                    <code>/larapilot-bug</code></td>
+                  <td><strong>Nothing.</strong> These change how the product is built, not what it promises</td>
+                </tr>
+                <tr>
+                  <td>The vision or the target user changes — a <strong>pivot</strong></td>
+                  <td><code>/larapilot-inception</code></td>
+                  <td>Rewritten with the current PRD as input. Ids whose promise survives are kept</td>
+                </tr>
+                <tr>
+                  <td>You cannot tell which of these it is</td>
+                  <td><code>/larapilot-triage</code></td>
+                  <td>Triage decides and runs the right skill</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>When in doubt, leave the PRD alone and write the story.</strong> A story can be corrected
+            next week. A PRD that collects fixes stops being a contract.</p>
+
+          <div class="code-block">
+            <div class="code-block-header">PRD.md — revision history after three months</div>
+            <pre><code>## PRD Revision History
+
+| Date | Trigger | Summary |
+| --- | --- | --- |
+| 2026-07-01 | larapilot-inception | Initial PRD |
+| 2026-07-15 | larapilot-feature US-011 | Added FR-011 Export PDF (MoSCoW: Should) |
+| 2026-07-15 | larapilot-bug → FR-003 gap | SSO must work on Safari 17+ (macOS/iOS) |
+| 2026-08-02 | larapilot-prd — Re-scope + Sharpen | FR-009 retired; FR-006 Could → Must; NFR-001 p95 &lt; 300 ms |
+| 2026-08-20 | larapilot-feature US-019 (change request) | FR-011: PDF opens in the browser instead of downloading |</code></pre>
+          </div>
+
+          <h4 id="deep-dive-prd-kinds">Revision kinds</h4>
+          <p><code>/larapilot-prd</code> starts by naming the kind of change, because the kind decides how many
+            questions it asks and how much of the backlog moves. One request can carry several.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kind</th>
+                  <th>What changes</th>
+                  <th>Example</th>
+                  <th>Effect on the backlog</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Editorial</strong></td>
+                  <td>Wording only — no promise moves</td>
+                  <td>Typos, a clearer sentence, a glossary term</td>
+                  <td>None</td>
+                </tr>
+                <tr>
+                  <td><strong>Sharpen</strong></td>
+                  <td>A promise becomes testable or complete</td>
+                  <td>Done means added to a requirement, a number for a quality target, an open question
+                    answered, a <code>Not decided</code> settled</td>
+                  <td>Criteria added to open stories</td>
+                </tr>
+                <tr>
+                  <td><strong>Re-scope</strong></td>
+                  <td>What is in, what is out, and when</td>
+                  <td>A MoSCoW tag changes, something moves to Future Phases, the delivery target changes, a
+                    requirement is retired</td>
+                  <td>Stories created, deferred, or deleted</td>
+                </tr>
+                <tr>
+                  <td><strong>Re-model</strong></td>
+                  <td>The nouns and the paths</td>
+                  <td>An entity is renamed, a state is added, a journey is split, a persona is added</td>
+                  <td>Stories that use the old names are rewritten</td>
+                </tr>
+                <tr>
+                  <td><strong>Re-decide</strong></td>
+                  <td>A recorded decision</td>
+                  <td>Business model, who runs the server, support window, topology, data store, the prior-art
+                    verdict</td>
+                  <td>Architecture stories. The quote is recomputed</td>
+                </tr>
+                <tr>
+                  <td><strong>Upgrade</strong></td>
+                  <td>The shape of the PRD, not its promises</td>
+                  <td>An older PRD gains journeys, domain model, quality targets, risks</td>
+                  <td>None</td>
+                </tr>
+                <tr>
+                  <td><strong>Pivot</strong></td>
+                  <td>The vision, the target user, or the core journey</td>
+                  <td>A new audience</td>
+                  <td>Not a revision — it goes to <code>/larapilot-inception</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Whatever the kind, nothing is written before the <strong>readback</strong>: Mark shows before and
+            after for each item, then asks <em>Apply · Revise · Cancel</em>. When a security, privacy, or
+            accessibility target goes down, Lars or Violet states the consequence first.
+            <a href="#example-prd-revision">Walkthrough</a>.</p>
+
+          <h4 id="deep-dive-prd-ids">Ids are permanent</h4>
+          <p>Stories, plans, commits, and developer docs cite <code>FR-</code>, <code>J-</code>,
+            <code>NFR-</code>, and <code>Q-</code> ids. A revision never breaks those citations.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>You want to</th>
+                  <th>What happens to the id</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Drop a requirement</td>
+                  <td>It is <strong>retired</strong>: the heading stays, tagged <code>Won't</code>, with a
+                    <code>**Retired:**</code> line giving the date and the reason</td>
+                </tr>
+                <tr>
+                  <td>Split a requirement in two</td>
+                  <td>Two new ids are created. The original stays with
+                    <code>**Superseded by:** FR-012, FR-013</code></td>
+                </tr>
+                <tr>
+                  <td>Merge two requirements</td>
+                  <td>One survives and cites <code>**Merges:** FR-007</code>. The other is retired</td>
+                </tr>
+                <tr>
+                  <td>Rename an entity or a state</td>
+                  <td>It is renamed in every journey, requirement, and quality target in the same revision. The
+                    glossary keeps the old word as <em>formerly</em></td>
+                </tr>
+                <tr>
+                  <td>Reorder or renumber</td>
+                  <td>Never. A number is never reused either</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 id="deep-dive-prd-backlog">The backlog follows</h4>
+          <p>A changed promise is worth nothing if the stories still describe the old one.
+            <code>larapilot:prd-impact</code> lists the stories that cite the ids being changed, and says what each
+            one needs. What it needs depends on how far the story has gone.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>The story is</th>
+                  <th><code>action</code></th>
+                  <th>What happens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="status status-todo">TODO</span></td>
+                  <td><code>update_spec</code></td>
+                  <td>The story is rewritten. Same code, same status</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-planned">PLANNED</span></td>
+                  <td><code>update_and_replan</code></td>
+                  <td>The story is rewritten, then planned again: its plan was written against the old
+                    promise</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-progress">IN PROGRESS</span></td>
+                  <td><code>coordinate</code></td>
+                  <td>You are told work is under way. Nothing changes without your consent</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-review">REVIEW</span></td>
+                  <td><code>rework</code></td>
+                  <td>The story goes back to TODO with the change as feedback
+                    (<code>spec-request-changes</code>)</td>
+                </tr>
+                <tr>
+                  <td><span class="status status-done">DONE</span></td>
+                  <td><code>new_spec</code></td>
+                  <td><strong>Never reopened.</strong> A changed promise becomes a change request through
+                    <code>/larapilot-feature</code>; a promise the code never met becomes a bug</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:prd-impact --ids=FR-004,J-001   # the stories that cite these ids
+php artisan larapilot:prd-impact                       # the whole PRD: every id and the stories that cite it</code></pre>
+          </div>
+          <p>Without <code>--ids</code> the command is a coverage report. <code>untraced</code> lists the ids no
+            story cites, and <code>uncovered_must</code> the <code>Must</code> requirements among them — the ones
+            that would ship unbuilt. <code>/larapilot-spec</code> runs it after every backlog change.</p>
+
+          <h4 id="deep-dive-prd-compare">Feature, bug, or revision — side by side</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th><code>/larapilot-feature</code></th>
+                  <th><code>/larapilot-bug</code></th>
+                  <th><code>/larapilot-prd</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>You say</strong></td>
+                  <td>"Add PDF export for invoices"</td>
+                  <td>"SSO login fails on Safari"</td>
+                  <td>"Drop the CSV export and say what fast means"</td>
+                </tr>
+                <tr>
+                  <td><strong>It asks</strong></td>
+                  <td>Priority, journey, size, mockups, where it goes in the backlog</td>
+                  <td>Severity, environment, how to reproduce, which story it maps to</td>
+                  <td>Only what it cannot work out from the PRD</td>
+                </tr>
+                <tr>
+                  <td><strong>It writes</strong></td>
+                  <td>One new story</td>
+                  <td>An intake entry and a fix story, or a rework of a story in review</td>
+                  <td>No story of its own. It rewrites the stories the change touches</td>
+                </tr>
+                <tr>
+                  <td><strong>The PRD</strong></td>
+                  <td>Gains or changes one requirement</td>
+                  <td>Untouched, unless a requirement was never written down</td>
+                  <td>Is the point of the skill</td>
+                </tr>
+                <tr>
+                  <td><strong>Before saving</strong></td>
+                  <td colspan="3">A readback you confirm. Nothing is written before it</td>
+                </tr>
+                <tr>
+                  <td><strong>Then</strong></td>
+                  <td colspan="3"><code>/larapilot-plan</code> → <code>/larapilot-implement</code> →
+                    <code>/larapilot-review</code> on each story</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Rule files: <code>.larapilot/runtime-ops-1.md</code> (PRD Living Document) and
+            <code>runtime-ops-3.md</code> (PRD Revision).</p>
+        </article>
+
         <!-- Artifacts -->
         <article class="deep-dive-sub" id="deep-dive-artifacts">
           <h3>Artifacts</h3>
@@ -5122,7 +6564,7 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
 ├── skills/{name}/SKILL.md    <span class="comment"># your custom Boost skills</span>
 ├── client-materials/         <span class="comment"># drop client docs before inception</span>
 ├── legacy/                   <span class="comment"># legacy snapshot for rewrite/port</span>
-├── research/                 <span class="comment"># codebase analysis, parity, reference products</span>
+├── research/                 <span class="comment"># prior art, codebase analysis, parity, reference products</span>
 ├── brand/                    <span class="comment"># logo, favicon, OG image</span>
 ├── design-systems/           <span class="comment"># Filament · Starter Kit · Bootstrap 5 · Tailwind · AdminLTE</span>
 └── techdocs/                 <span class="comment"># generated by backstage-export --write</span>
@@ -5192,10 +6634,11 @@ _project_docs/                <span class="comment"># handbook at repo root (pro
                 </tr>
                 <tr>
                   <td><code>PRD.md</code></td>
-                  <td><code>/larapilot-inception</code>, <code>/larapilot-feature</code></td>
-                  <td>Vision, personas, MoSCoW FRs, architecture including <strong>Frontend Topology</strong> —
-                    updated selectively on scope changes. Mirrored to an external FE via
-                    <code>/larapilot-frontend-companion</code> when topology is split.
+                  <td><code>/larapilot-inception</code>, <code>/larapilot-adopt</code>; then
+                    <code>/larapilot-feature</code>, <code>/larapilot-bug</code> (requirement gap only),
+                    <code>/larapilot-prd</code></td>
+                  <td>The product contract: personas, journeys, domain model, requirements, quality targets,
+                    scope, risks, architecture. See <a href="#deep-dive-prd">The PRD</a>
                   </td>
                 </tr>
                 <tr>
@@ -5249,7 +6692,9 @@ _project_docs/                <span class="comment"># handbook at repo root (pro
                 <tr>
                   <td><code>choices.yaml</code></td>
                   <td>inception · <code>larapilot:choices-set</code></td>
-                  <td>Snapshot of Project Kind, topology, data-store/CLI choices, and current settings</td>
+                  <td>Snapshot of the fixed choices made at inception — kind, target, business model, prior-art
+                    verdict, success signal, kill condition, operations, topology, stack — for the dashboard and
+                    Economics</td>
                 </tr>
                 <tr>
                   <td><code>integrations.md</code></td>
@@ -5841,7 +7286,7 @@ nav:
           </ul>
           <div class="cli-note"><strong>The portal renders; it does not drive.</strong> Backstage is a read surface
             over <code>.larapilot/</code>. Scope changes still go through
-            <code>/larapilot-inception</code>, <code>/larapilot-feature</code>, or the PRD living document, and status
+            <code>/larapilot-feature</code> and <code>/larapilot-prd</code>, and status
             still moves only through skills and Artisan.
           </div>
         </article>
@@ -6095,7 +7540,7 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
 **External frontend repo:** (path in LARAPILOT_FRONTEND_REPO_PATH — not in committed YAML)</code></pre>
           </div>
 
-          <h4>Path storage (v3.0)</h4>
+          <h4>Where the path is stored</h4>
           <p>The absolute FE directory is stored in <code>LARAPILOT_FRONTEND_REPO_PATH</code> inside
             <code>.env</code> — never in <code>config.yaml</code> (avoids committing user-specific paths). Stack label
             stays in <code>config.yaml</code> → <code>frontend.stack</code>. <code>config-show</code> resolves
@@ -6776,7 +8221,7 @@ git add .larapilot/ &amp;&amp; git rebase --continue</code></pre>
                   <td><code>design-systems/filament/</code></td>
                   <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
                   <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                    <strong>17</strong> HTML screens — v3 light sidebar; <strong>slate</strong> primary (v1.8.1)
+                    <strong>17</strong> HTML screens — v3 light sidebar, <strong>slate</strong> primary
                   </td>
                 </tr>
                 <tr>
@@ -6843,8 +8288,8 @@ git add .larapilot/ &amp;&amp; git rebase --continue</code></pre>
           <h3>Code quality</h3>
           <p class="lead">Every Larapilot project stays compatible with <a href="https://github.com/larastan/larastan"
               target="_blank" rel="noopener">Larastan</a> (<strong>PHPStan level 5+</strong>) and <a
-              href="https://laravel.com/docs/pint" target="_blank" rel="noopener">Laravel Pint</a>. Introduced in
-            <strong>v2.3.1</strong> — not optional after install.</p>
+              href="https://laravel.com/docs/pint" target="_blank" rel="noopener">Laravel Pint</a>. The gate is
+            installed with the package and is not optional.</p>
 
           <h4>What install scaffolds</h4>
           <div class="table-card">
@@ -6919,14 +8364,10 @@ composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
         <!-- Artisan CLI -->
         <article class="deep-dive-sub" id="deep-dive-cli">
           <h3>Artisan CLI</h3>
-          <p class="lead">Optional and under the hood. Skills call these commands — you do not need to memorize them.
-            They persist artifacts, validate YAML/Markdown, enforce workflow guards, and return structured JSON for the
-            agent to parse.</p>
-
-          <div class="cli-note"><strong>You interact via skills.</strong> The CLI is the persistence layer agents use
-            internally. Run commands manually only for debugging, scripting, or CI — e.g.
-            <code>php artisan larapilot:doctor</code> to verify install health.
-          </div>
+          <p class="lead">Skills save everything through <code>php artisan larapilot:*</code> commands. You do not
+            need to learn them: they are how the agent writes files, checks them, and moves a story from one status
+            to the next. Run one by hand for debugging, scripting, or CI — for example
+            <code>php artisan larapilot:doctor --human</code> to check the install.</p>
 
           <h4>JSON envelope</h4>
           <div class="code-block">
@@ -7031,12 +8472,14 @@ php artisan larapilot:doctor --human                                  # a table 
                 <tr>
                   <td>PRD &amp; discovery</td>
                   <td><code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
+                    <code>larapilot:prd-impact</code> (<code>--ids=FR-004,J-001</code>; omit for the whole PRD) ·
                     <code>larapilot:choices-set</code> (<code>--from-prd</code>, <code>--business-model=</code>,
                     <code>--server-management=</code>, …) · <code>larapilot:frontend-set</code> ·
                     <code>larapilot:frontend-scan</code>
                   </td>
                   <td><code>/larapilot-inception</code>, <code>/larapilot-adopt</code>,
-                    <code>/larapilot-feature</code>, <code>/larapilot-frontend-companion</code>
+                    <code>/larapilot-feature</code>, <code>/larapilot-bug</code>, <code>/larapilot-prd</code>,
+                    <code>/larapilot-spec</code>, <code>/larapilot-frontend-companion</code>
                   </td>
                 </tr>
                 <tr>
@@ -7182,7 +8625,8 @@ php artisan larapilot:doctor --human                                  # a table 
                   <td>Read and validate commands only: <code>config-show</code>, <code>spec-list</code>,
                     <code>spec-show</code>, <code>spec-next</code>, <code>metrics</code>, <code>usage-report</code>,
                     <code>decision-check</code>, <code>code-history</code>, the four forge <code>*-status</code> probes,
-                    <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>doctor</code>,
+                    <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>prd-impact</code>,
+                    <code>doctor</code>,
                     <code>diagnostics</code>, <code>quality</code>, <code>frontend-scan</code>,
                     <code>backstage-export</code>, <code>tracker-status</code>. Anything else is refused</td>
                 </tr>
@@ -7194,11 +8638,12 @@ php artisan larapilot:doctor --human                                  # a table 
         <!-- Dashboard -->
         <article class="deep-dive-sub" id="deep-dive-dashboard">
           <h3>Dashboard</h3>
-          <p class="lead">Read-only web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
+          <p class="lead">Web UI over the artifacts in <code>.larapilot/</code>. Review backlog progress, read
             the PRD, browse the <strong>Design</strong> gallery, inspect settings/choices, Lucille usage, and Economics
             quotes — then drill into spec detail between skill sessions.
             With <code>comments=YES</code> you can also post <strong>internal feedback</strong> from the spec page
-            (dev/staging only) — workflow state still changes only via skills/CLI.</p>
+            (dev/staging only), and the <strong>File manager</strong> uploads and organizes the material the skills
+            read — workflow state still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
           <p>The dashboard is <strong>on by default</strong> after <code>php artisan larapilot:install</code>. Routes
@@ -7303,6 +8748,12 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     <code>description</code></td>
                 </tr>
                 <tr>
+                  <td><strong>File manager</strong></td>
+                  <td><code>/larapilot/files</code></td>
+                  <td>The five material folders, each with what it is for. Browse the folder tree, preview and
+                    download files, upload files or a whole folder with its structure, rename, delete</td>
+                </tr>
+                <tr>
                   <td><strong>Git</strong></td>
                   <td><code>/larapilot/git</code></td>
                   <td>Last-12-month contribution heatmap from local git history (all branches), full-width and
@@ -7336,6 +8787,76 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             </table>
           </div>
 
+          <p>Pages are reached from a sidebar grouped as Workflow, Workspace, Insights, and Reference; on a phone the
+            sidebar is a drawer behind the menu button. The dashboard follows the system theme, and the switch at the
+            foot of the sidebar pins <strong>light</strong> or <strong>dark</strong> for that browser.</p>
+
+          <h4>File manager</h4>
+          <p><code>/larapilot/files</code> manages what you hand the skills before they start. It opens on five
+            folders:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Folder</th>
+                  <th>What it is for</th>
+                  <th>Read by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>.larapilot/brand/</code></td>
+                  <td>Logo, palette, typography, and the brand guide</td>
+                  <td>Design and mockups</td>
+                </tr>
+                <tr>
+                  <td><code>.larapilot/client-materials/</code></td>
+                  <td>Briefs, analyses, and documents supplied by the client</td>
+                  <td>Inception and specs</td>
+                </tr>
+                <tr>
+                  <td><code>.larapilot/design-systems/</code></td>
+                  <td>Visual references and tokens the mockups are built on</td>
+                  <td>Design and mockups</td>
+                </tr>
+                <tr>
+                  <td><code>.larapilot/legacy/</code></td>
+                  <td>Snapshots of the old system to port or migrate</td>
+                  <td>Adopt, inception, and parity checks</td>
+                </tr>
+                <tr>
+                  <td><code>.larapilot/skills/</code></td>
+                  <td>Your custom skills, one folder per slash command</td>
+                  <td>Boost slash commands</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Inside a folder there is a folder tree on the left and the contents on the right. Markdown, text, and
+            images are previewed in the page; any file can be downloaded. <strong>Upload folder</strong>, or a folder
+            dropped on the page, keeps its structure: every file lands at the path it had inside the folder. A file
+            that already exists is kept unless <strong>Replace existing files</strong> is on, and whatever was skipped
+            is listed with the reason. The five folders themselves cannot be renamed or deleted, and the packaged
+            design systems are marked, because <code>larapilot:update</code> rewrites them.</p>
+          <ul>
+            <li><strong>Local by default.</strong> The file manager is open in <code>local</code>,
+              <code>development</code>, and <code>testing</code>. On any other environment
+              (<code>staging</code>) it is served only when
+              <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is <code>YES</code>, and answers
+              <code>404</code> otherwise: client documents and legacy snapshots stay behind a sign-in.</li>
+            <li><strong>Upload size.</strong> One file is limited by
+              <code>LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB</code> (default <code>51200</code>, 50 MB) and by PHP's
+              <code>upload_max_filesize</code> and <code>post_max_size</code>, whichever is lower. The page shows the
+              limit in force.</li>
+            <li><strong>Nothing leaves the folder.</strong> A path outside the five folders returns <code>404</code>,
+              a symlink is listed and never followed, and an uploaded <code>.html</code>, <code>.js</code>, or
+              <code>.svg</code> is never run in the dashboard.</li>
+            <li><strong>Custom skills stay in step.</strong> A change under <code>.larapilot/skills/{name}/</code>
+              refreshes that skill's copies in <code>.ai/skills/</code> and the agent folders; deleting the skill
+              removes the copies that still match it.</li>
+            <li><code>LARAPILOT_FILE_MANAGER=false</code> removes the page.</li>
+          </ul>
+
           <h4>Board</h4>
           <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. A search field and
             priority, epic, and status filters narrow the columns; the counts follow whatever is still visible.
@@ -7346,7 +8867,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later
-            <code>/larapilot-feature</code> or <code>/larapilot-bug</code> updates). Headings become anchor links in the
+            <code>/larapilot-feature</code>, <code>/larapilot-bug</code>, or <code>/larapilot-prd</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
             <strong>Download functional summary</strong> produces one Markdown file in the PRD's language for someone
             who will never read the full PRD: the one-sentence pitch, the personas, what is in and out of this
@@ -7442,7 +8963,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
         <!-- Economics -->
         <article class="deep-dive-sub" id="deep-dive-economics">
           <h3>Economics</h3>
-          <p>Two things wear the same name. <code>/larapilot-economics</code> is the <strong>skill</strong> — a
+          <p class="lead">Two things wear the same name. <code>/larapilot-economics</code> is the <strong>skill</strong> — a
             conversation with Aurora that calibrates who is selling the work and then writes the client quote.
             <code>/larapilot/economics</code> is the <strong>page</strong> — an interactive pricing tool that
             recomputes that same maths live while you move dropdowns. The skill decides; the page explores.
@@ -7825,7 +9346,8 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
         <!-- API hardening -->
         <article class="deep-dive-sub" id="deep-dive-api-hardening">
           <h3>API hardening</h3>
-          <p>Independent of <code>api_auth</code> — always on for <code>/larapilot/api/*</code>:</p>
+          <p class="lead">Four protections that are always on for <code>/larapilot/api/*</code>, whatever
+            <code>api_auth</code> says.</p>
           <ul>
             <li><strong>Rate limit</strong> — per IP, from <code>larapilot.api.rate_limit</code>
               (<code>"max,minutes"</code>, default <code>120,1</code>). Over budget → <code>HTTP 429</code> with
@@ -7846,7 +9368,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
         <!-- Diagnostics -->
         <article class="deep-dive-sub" id="deep-dive-api-diagnostics">
           <h3>Diagnostics</h3>
-          <p>Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
+          <p class="lead">Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
             of the API (never in production). Disable with <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> (returns
             <code>404</code>).
           </p>
@@ -7923,7 +9445,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v4.0.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v4.1.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 
@@ -8046,6 +9568,371 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
       }
       setActive();
 
+      // ---------------------------------------------------------------
+      // Search — live, in the page. The index is built in the browser from
+      // the headings and the text under them, so it never goes stale.
+      // ---------------------------------------------------------------
+      const searchInput = document.getElementById("docs-search");
+      const searchPanel = document.getElementById("docs-search-panel");
+      const searchList = document.getElementById("docs-search-results");
+      const searchStatus = document.getElementById("docs-search-status");
+      const docsMain = document.querySelector(".docs-main");
+
+      const fold = (text) =>
+        (text || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+      // Same fold, one character at a time, so an offset found in the folded
+      // text is the same offset in the original ("…" would otherwise become "...").
+      const foldKeep = (text) => {
+        let out = "";
+        for (let i = 0; i < text.length; i++) {
+          const code = text.charCodeAt(i);
+          if (code < 128) {
+            out += code >= 65 && code <= 90 ? String.fromCharCode(code + 32) : text[i];
+            continue;
+          }
+          const lower = text[i].toLowerCase();
+          const plain = lower.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+          out += plain.length === 1 ? plain : lower.length === 1 ? lower : text[i];
+        }
+        return out;
+      };
+      const squash = (text) => (text || "").replace(/\s+/g, " ").trim();
+      const escapeHtml = (text) =>
+        text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const slugify = (text) =>
+        fold(text).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 64);
+      // A heading's title without its badges ("opt-in", "— before plan").
+      const titleOf = (heading) => {
+        const copy = heading.cloneNode(true);
+        copy.querySelectorAll(".chip, .skills-group-note").forEach((badge) => badge.remove());
+        return squash(copy.textContent);
+      };
+
+      // Every heading gets an address, so a result (or a shared link) lands on
+      // the paragraph that answers the question, not on the top of its chapter.
+      const headingTargets = new Map();
+      if (docsMain) {
+        const taken = new Set([...document.querySelectorAll("[id]")].map((n) => n.id));
+        docsMain.querySelectorAll("h2, h3, h4").forEach((heading) => {
+          const box = heading.closest("article[id], section[id], .skill-item[id]");
+          if (box && box.querySelector("h2, h3, h4") === heading) {
+            headingTargets.set(heading, box.id);
+            return;
+          }
+          if (!heading.id) {
+            const base = ((box && box.id ? box.id + "--" : "s-") + slugify(titleOf(heading))) || "s";
+            let id = base;
+            for (let n = 2; taken.has(id); n++) id = base + "-" + n;
+            taken.add(id);
+            heading.id = id;
+          }
+          headingTargets.set(heading, heading.id);
+        });
+      }
+
+      let searchIndex = null;
+      const buildSearchIndex = () => {
+        if (searchIndex || !docsMain) return searchIndex || [];
+        const entries = [];
+        let current = null;
+        const walker = document.createTreeWalker(docsMain, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+          acceptNode(node) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const tag = node.tagName;
+              if (tag === "SCRIPT" || tag === "STYLE" || tag === "BUTTON") return NodeFilter.FILTER_REJECT;
+              return NodeFilter.FILTER_ACCEPT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        });
+        let node = walker.currentNode;
+        const skipSubtree = () => {
+          let next = walker.nextSibling();
+          while (!next && walker.parentNode()) next = walker.nextSibling();
+          return next;
+        };
+        node = walker.nextNode();
+        while (node) {
+          if (node.nodeType === Node.ELEMENT_NODE && headingTargets.has(node)) {
+            const section = node.closest("section.doc-section");
+            const label = section ? squash((section.querySelector(".section-label") || {}).textContent) : "";
+            const article = node.closest("article[id]");
+            const opener = article ? article.querySelector("h2, h3, h4") : null;
+            const chapter = opener ? titleOf(opener) : "";
+            const title = titleOf(node);
+            const crumb = [label, chapter !== title ? chapter : ""].filter(Boolean).join(" › ");
+            current = { id: headingTargets.get(node), title, crumb, body: "", order: entries.length };
+            entries.push(current);
+            node = skipSubtree();
+            continue;
+          }
+          if (node.nodeType === Node.TEXT_NODE && current && current.body.length < 9000) {
+            const text = squash(node.nodeValue);
+            if (text) current.body += (current.body ? " " : "") + text;
+          }
+          node = walker.nextNode();
+        }
+        entries.forEach((entry) => {
+          entry.fTitle = foldKeep(entry.title);
+          entry.fCrumb = foldKeep(entry.crumb);
+          entry.fBody = foldKeep(entry.body);
+        });
+        searchIndex = entries;
+        return entries;
+      };
+
+      const countOf = (haystack, needle) => {
+        let count = 0;
+        for (let at = haystack.indexOf(needle); at !== -1 && count < 6; at = haystack.indexOf(needle, at + needle.length)) count++;
+        return count;
+      };
+
+      const FILLER = new Set(["a", "an", "the", "to", "of", "in", "on", "for", "and", "or", "is", "are", "do", "does",
+        "how", "what", "when", "i", "my", "it", "with", "can", "be"]);
+      const termsOf = (query) => {
+        const words = fold(query).split(/\s+/).filter(Boolean);
+        const meaningful = words.filter((word) => !FILLER.has(word));
+        return meaningful.length ? meaningful : words;
+      };
+
+      const runSearch = (query) => {
+        const terms = termsOf(query);
+        if (!terms.length) return [];
+        const scored = [];
+        for (const entry of buildSearchIndex()) {
+          let score = 0;
+          let all = true;
+          for (const term of terms) {
+            let hit = 0;
+            const inTitle = entry.fTitle.indexOf(term);
+            if (inTitle !== -1) {
+              const starts = inTitle === 0 || /[^a-z0-9]/.test(entry.fTitle[inTitle - 1]);
+              const after = entry.fTitle[inTitle + term.length];
+              const ends = after === undefined || /[^a-z0-9]/.test(after);
+              hit += starts && ends ? 16 : starts ? 10 : 6;
+            }
+            if (entry.fCrumb.includes(term)) hit += 4;
+            const inBody = countOf(entry.fBody, term);
+            if (inBody) hit += 1 + inBody * 0.4;
+            if (!hit) { all = false; break; }
+            score += hit;
+          }
+          if (!all) continue;
+          if (terms.length > 1) {
+            const phrase = terms.join(" ");
+            const loose = (text) => text.replace(/[-_/]+/g, " ");
+            if (loose(entry.fTitle).includes(phrase)) score += 12;
+            if (loose(entry.fBody).includes(phrase)) score += 5;
+          }
+          scored.push({ entry, score });
+        }
+        scored.sort((a, b) => b.score - a.score || a.entry.order - b.entry.order);
+        return scored.slice(0, 24).map((row) => row.entry);
+      };
+
+      const highlight = (text, terms) => {
+        const folded = foldKeep(text);
+        const marks = [];
+        terms.forEach((term) => {
+          for (let at = folded.indexOf(term); at !== -1; at = folded.indexOf(term, at + term.length)) {
+            marks.push([at, at + term.length]);
+          }
+        });
+        marks.sort((a, b) => a[0] - b[0]);
+        let out = "";
+        let cursor = 0;
+        marks.forEach(([from, to]) => {
+          if (from < cursor) return;
+          out += escapeHtml(text.slice(cursor, from)) + "<mark>" + escapeHtml(text.slice(from, to)) + "</mark>";
+          cursor = to;
+        });
+        return out + escapeHtml(text.slice(cursor));
+      };
+
+      const snippetOf = (entry, terms) => {
+        const body = entry.body;
+        if (!body) return "";
+        let at = -1;
+        terms.forEach((term) => {
+          const found = entry.fBody.indexOf(term);
+          if (found !== -1 && (at === -1 || found < at)) at = found;
+        });
+        const from = at > 70 ? body.lastIndexOf(" ", at - 60) + 1 : 0;
+        const slice = body.slice(from, from + 190);
+        return (from > 0 ? "… " : "") + slice + (from + 190 < body.length ? " …" : "");
+      };
+
+      let searchHits = [];
+      let searchActive = -1;
+      const SUGGESTIONS = ["install", "change the PRD", "/larapilot-triage", "prd-impact", "settings", "gitflow", "dashboard", "tracker"];
+
+      const setActiveHit = (index) => {
+        searchActive = index;
+        [...searchList.children].forEach((item, i) => {
+          const on = i === index;
+          item.setAttribute("aria-selected", on ? "true" : "false");
+          if (on) {
+            item.scrollIntoView({ block: "nearest" });
+            searchInput.setAttribute("aria-activedescendant", item.id);
+          }
+        });
+        if (index < 0) searchInput.removeAttribute("aria-activedescendant");
+      };
+
+      const openPanel = () => {
+        searchPanel.hidden = false;
+        searchInput.setAttribute("aria-expanded", "true");
+      };
+
+      const closePanel = () => {
+        searchPanel.hidden = true;
+        searchInput.setAttribute("aria-expanded", "false");
+        searchInput.removeAttribute("aria-activedescendant");
+      };
+
+      const renderSearch = () => {
+        const query = searchInput.value.trim();
+        const terms = termsOf(query);
+        searchList.innerHTML = "";
+        searchHits = [];
+        searchActive = -1;
+
+        if (!terms.length) {
+          searchStatus.textContent = "Type to search every section of this page";
+          const empty = document.createElement("li");
+          empty.className = "search-empty";
+          empty.setAttribute("role", "presentation");
+          empty.innerHTML = "Try one of these:<ul>" +
+            SUGGESTIONS.map((word) => `<li><button type="button" data-suggest="${escapeHtml(word)}">${escapeHtml(word)}</button></li>`).join("") +
+            "</ul>";
+          searchList.appendChild(empty);
+          openPanel();
+          return;
+        }
+
+        searchHits = runSearch(query);
+        searchStatus.textContent = searchHits.length
+          ? `${searchHits.length === 24 ? "Top 24 results" : searchHits.length + (searchHits.length === 1 ? " result" : " results")} for “${query}”`
+          : `Nothing for “${query}”`;
+
+        if (!searchHits.length) {
+          const empty = document.createElement("li");
+          empty.className = "search-empty";
+          empty.setAttribute("role", "presentation");
+          empty.innerHTML = "No section mentions <mark>" + escapeHtml(query) + "</mark>. Use fewer words, or a command name such as <code>spec-add</code>.";
+          searchList.appendChild(empty);
+          openPanel();
+          return;
+        }
+
+        searchHits.forEach((entry, i) => {
+          const item = document.createElement("li");
+          item.id = "docs-search-hit-" + i;
+          item.setAttribute("role", "option");
+          item.setAttribute("aria-selected", "false");
+          item.innerHTML =
+            `<a href="#${encodeURIComponent(entry.id)}" data-hit="${i}" tabindex="-1">` +
+            (entry.crumb ? `<span class="search-crumb">${escapeHtml(entry.crumb)}</span>` : "") +
+            `<span class="search-title">${highlight(entry.title, terms)}</span>` +
+            `<span class="search-snippet">${highlight(snippetOf(entry, terms), terms)}</span></a>`;
+          searchList.appendChild(item);
+        });
+        setActiveHit(0);
+        openPanel();
+      };
+
+      const goToHit = (entry) => {
+        const target = document.getElementById(entry.id);
+        if (!target) return;
+        for (let box = target.closest("details"); box; box = box.parentElement && box.parentElement.closest("details")) {
+          box.open = true;
+        }
+        closePanel();
+        searchInput.blur();
+        history.pushState(null, "", "#" + encodeURIComponent(entry.id));
+        scrollToHash("smooth");
+        const flash = target.matches("h2, h3, h4") ? target : target.querySelector("h2, h3, h4") || target;
+        flash.classList.remove("search-hit");
+        void flash.offsetWidth;
+        flash.classList.add("search-hit");
+        setTimeout(() => flash.classList.remove("search-hit"), 2400);
+      };
+
+      if (searchInput && searchPanel && searchList && docsMain) {
+        let debounce = 0;
+        searchInput.addEventListener("input", () => {
+          clearTimeout(debounce);
+          debounce = setTimeout(renderSearch, 60);
+        });
+        searchInput.addEventListener("focus", renderSearch);
+        searchInput.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            if (!searchHits.length) return;
+            event.preventDefault();
+            const step = event.key === "ArrowDown" ? 1 : -1;
+            setActiveHit((searchActive + step + searchHits.length) % searchHits.length);
+          } else if (event.key === "Enter") {
+            const entry = searchHits[searchActive] || searchHits[0];
+            if (entry) {
+              event.preventDefault();
+              goToHit(entry);
+            }
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            if (searchInput.value) {
+              searchInput.value = "";
+              renderSearch();
+            } else {
+              closePanel();
+              searchInput.blur();
+            }
+          }
+        });
+        searchList.addEventListener("click", (event) => {
+          const suggestion = event.target.closest("[data-suggest]");
+          if (suggestion) {
+            searchInput.value = suggestion.getAttribute("data-suggest");
+            searchInput.focus();
+            renderSearch();
+            return;
+          }
+          const link = event.target.closest("a[data-hit]");
+          if (!link) return;
+          event.preventDefault();
+          const entry = searchHits[Number(link.getAttribute("data-hit"))];
+          if (entry) goToHit(entry);
+        });
+        searchList.addEventListener("mousemove", (event) => {
+          const link = event.target.closest("a[data-hit]");
+          if (link && Number(link.getAttribute("data-hit")) !== searchActive) {
+            setActiveHit(Number(link.getAttribute("data-hit")));
+          }
+        });
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".nav-search")) closePanel();
+        });
+        document.addEventListener("keydown", (event) => {
+          const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((event.target.tagName || "")) || event.target.isContentEditable;
+          const slash = event.key === "/" && !typing && !event.metaKey && !event.ctrlKey && !event.altKey;
+          const palette = (event.key === "k" || event.key === "K") && (event.metaKey || event.ctrlKey);
+          if (slash || palette) {
+            event.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+          }
+        });
+
+        const warmUp = window.requestIdleCallback || ((run) => setTimeout(run, 1200));
+        warmUp(() => buildSearchIndex());
+
+        const asked = new URLSearchParams(location.search).get("q");
+        if (asked) {
+          searchInput.value = asked;
+          searchInput.focus();
+          renderSearch();
+        }
+      }
+
       const el = document.getElementById("hero-terminal");
       if (!el) return;
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -8086,6 +9973,15 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
             `<span class="ok">✓</span> registered → .ai/skills · boost:update`,
             `<span class="prompt">$</span> /acme-predeploy-gate`,
             `<span class="ok">✓</span> doctor · quality · checkpoint — GO`,
+          ],
+        },
+        {
+          type: '/larapilot-triage "No logo on the invoice PDF"',
+          lines: [
+            `<span class="dim">→ Sophia · Mark · Tom — promise test</span>`,
+            `<span class="ok">✓</span> Bug — US-011 criterion not met`,
+            `<span class="dim">→ handoff · /larapilot-bug, same turn</span>`,
+            `<span class="ok">✓</span> fix story US-015 · intake logged`,
           ],
         },
         {

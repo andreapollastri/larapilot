@@ -22,6 +22,21 @@ class ArtifactSections
     }
 
     /**
+     * Sections a fresh inception writes but older PRDs may lack — reported as warnings.
+     *
+     * @return array<string, list<string>>
+     */
+    public static function prdRecommended(): array
+    {
+        return [
+            'User Journeys' => ['User Journeys', 'Journeys', 'Percorsi utente', 'Recorridos de usuario', 'Parcours utilisateur'],
+            'Domain Model' => ['Domain Model', 'Modello di dominio', 'Modelo de dominio', 'Modèle de domaine'],
+            'Non-Functional Requirements' => ['Non-Functional Requirements', 'Non Functional Requirements', 'Requisiti non funzionali', 'Requisitos no funcionales', 'Exigences non fonctionnelles'],
+            'Risks & Assumptions' => ['Risks & Assumptions', 'Risks and Assumptions', 'Rischi e assunzioni', 'Rischi e ipotesi', 'Riesgos y supuestos', 'Risques et hypothèses'],
+        ];
+    }
+
+    /**
      * @return array<string, list<string>>
      */
     public static function spec(): array

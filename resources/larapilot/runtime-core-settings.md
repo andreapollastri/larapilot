@@ -2,7 +2,7 @@ Section of the Larapilot runtime. Index: `.larapilot/shared-runtime.md`. Read th
 
 ## Project Settings
 
-Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Configure with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`.
 
 ### Environment paths (never commit user-specific absolute paths)
 
@@ -112,6 +112,10 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | **`false` / `NO`** | **Excluded.** Skills must not call `decision-log` / `decision-check`. Any existing `.larapilot/decisions.yaml` stays readable. |
 
 Topic is matched case-insensitively (normalized + substring), so keep `--topic` stable and specific ("primary background color", not "color"). `--source=askquestion` for AskQuestion answers, `--source=chat` for free-text directives.
+
+### Prior art check (`settings.prior_art`) — opt-out, default ON
+
+Before scope is written, **Sebastian** asks consent for the search queries, looks for existing open-source, packaged, or commercial solutions, writes `{paths.research}/prior-art.md`, and the user records a verdict (`Build anyway` | `Adopt / fork` | `Integrate as dependency` | `Not checked`) as `**Prior Art:**` in the PRD. Stored as a boolean; envelope exposes `YES`/`NO`; missing key → **`YES`**. `NO` skips the round without asking and the PRD records `Not checked`. Full contract: **Prior Art & Open-Source Alternatives** in `runtime-discovery.md`. Set with `php artisan larapilot:settings-set --prior-art=NO`.
 
 ### Code change history (`settings.code_history`) — opt-in, default OFF
 

@@ -4,133 +4,178 @@
 
 @push('styles')
 <style>
-    body .shell:has(.docs-page) {
-        max-width: none;
-        padding-left: max(20px, 4vw);
-        padding-right: max(20px, 4vw);
-    }
-
     .docs-page {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 18px;
     }
 
-    .docs-panel {
-        padding: 24px 28px;
+    .docs-panel { padding: 20px 18px; }
+
+    @media (min-width: 640px) {
+        .docs-panel { padding: 26px 28px; }
     }
 
     .docs-panel h2 {
-        margin: 0 0 8px;
+        margin: 0 0 6px;
         font-size: 1.15rem;
     }
 
     .docs-panel h3 {
-        margin: 24px 0 8px;
-        font-size: 1rem;
+        margin: 26px 0 10px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 650;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
     }
 
-    .docs-panel .sub {
-        margin: 0 0 20px;
-        color: var(--muted);
-        font-size: 0.9rem;
-        max-width: 80ch;
-        line-height: 1.55;
-    }
+    .docs-panel .sub { margin: 0 0 18px; max-width: 80ch; }
 
     .flow-steps {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 12px;
-        margin: 0 0 8px;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+        gap: 10px;
+        margin: 0;
+        counter-reset: step;
     }
 
     .flow-step {
         padding: 14px 16px;
-        border-radius: 10px;
         border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+        border-radius: var(--radius-sm);
+        background: var(--surface-2);
     }
 
     .flow-step strong {
         display: block;
-        font-size: 0.82rem;
         margin-bottom: 4px;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .flow-steps.is-ordered .flow-step strong::before {
+        counter-increment: step;
+        content: counter(step, decimal-leading-zero);
+        margin-right: 8px;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 0.72rem;
     }
 
     .flow-step span {
-        font-size: 0.78rem;
         color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.5;
     }
+
+    .flow-step code { font-size: 0.74rem; }
 
     .branch-list {
         list-style: none;
         margin: 0;
         padding: 0;
         display: grid;
-        gap: 10px;
+        gap: 8px;
     }
 
     .branch-list li {
         padding: 12px 14px;
-        border-radius: 10px;
         border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-2);
         font-size: 0.875rem;
         line-height: 1.5;
     }
 
+    .branch-list li strong { color: var(--text); font-weight: 600; }
+
     .branch-list li.is-on {
-        border-color: var(--accent);
+        border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
         background: var(--accent-soft);
     }
 
-    .branch-list code {
-        font-size: 0.78rem;
+    .branch-list li.is-on::after {
+        content: 'Active';
+        float: right;
+        margin-left: 10px;
+        color: var(--accent);
+        font-size: 0.66rem;
+        font-weight: 650;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
     }
+
+    .branch-list code { font-size: 0.78rem; }
 
     .skills-table,
     .personas-table {
         width: 100%;
+        min-width: 620px;
         border-collapse: collapse;
         font-size: 0.875rem;
     }
+
+    .personas-table { min-width: 460px; }
 
     .skills-table th,
     .skills-table td,
     .personas-table th,
     .personas-table td {
-        text-align: left;
-        padding: 10px 12px;
+        padding: 11px 12px;
         border-top: 1px solid var(--border);
+        text-align: left;
         vertical-align: top;
     }
 
     .skills-table th,
     .personas-table th {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: var(--muted);
         border-top: 0;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
+
+    .skills-table td:first-child,
+    .personas-table td:first-child { white-space: nowrap; }
 
     .skills-table code,
-    .personas-table code {
-        font-size: 0.78rem;
-        white-space: nowrap;
-    }
+    .personas-table code { font-size: 0.78rem; }
 
     .skill-optional {
+        display: inline-block;
+        margin-left: 4px;
         color: var(--muted);
-        font-size: 0.78rem;
+        font-size: 0.74rem;
     }
 
-    @media (max-width: 768px) {
-        .skills-table,
-        .personas-table {
-            display: block;
-            overflow-x: auto;
-        }
+    .folder-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+        gap: 10px;
+    }
+
+    .folder-list a {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface-2);
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .folder-list a:hover { border-color: var(--accent); }
+    .folder-list code { font-size: 0.78rem; }
+
+    .folder-list span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.45;
     }
 </style>
 @endpush
@@ -142,12 +187,16 @@
     @endphp
 
     <div class="docs-page">
-        <section class="card docs-panel">
-            <h2>How Larapilot works</h2>
-            <p class="sub">Larapilot turns your AI agent into a spec-driven product squad. Boost skills orchestrate the conversation; <code>php artisan larapilot:*</code> persists artifacts; <code>.larapilot/</code> in the repo is the source of truth between sessions.</p>
+        <header class="page-head" style="margin-bottom: 4px;">
+            <div>
+                <h2>How Larapilot works</h2>
+                <p class="sub">Larapilot turns your AI agent into a spec-driven product squad. Boost skills orchestrate the conversation; <code>php artisan larapilot:*</code> persists artifacts; <code>.larapilot/</code> in the repo is the source of truth between sessions.</p>
+            </div>
+        </header>
 
-            <h3>Core delivery loop</h3>
-            <div class="flow-steps">
+        <section class="card docs-panel">
+            <h3 style="margin-top: 0;">Core delivery loop</h3>
+            <div class="flow-steps is-ordered">
                 <div class="flow-step"><strong>Discovery</strong><span><code>/larapilot-inception</code> or <code>/larapilot-adopt</code> → PRD</span></div>
                 <div class="flow-step"><strong>Backlog</strong><span><code>/larapilot-spec</code> → user stories</span></div>
                 <div class="flow-step"><strong>Plan</strong><span><code>/larapilot-plan</code> → tasks + tests</span></div>
@@ -161,6 +210,8 @@
             <div class="flow-steps">
                 <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
+                <div class="flow-step"><strong>Triage</strong><span><code>/larapilot-triage</code> — bug or feature? classifies the request and hands off</span></div>
+                <div class="flow-step"><strong>PRD revision</strong><span><code>/larapilot-prd</code> — change the PRD when it is neither: sharpen, re-scope, re-decide, upgrade</span></div>
                 <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — one spec at a time; plan and implement in a fresh worker when effort is not ECO</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
             </div>
@@ -229,6 +280,7 @@
             <h2>Skills &amp; outputs</h2>
             <p class="sub">Invoke skills as slash commands in Cursor (Laravel Boost). Each skill loads <code>.larapilot/shared-runtime.md</code> plus the runtime packs it needs.</p>
 
+            <div class="table-wrap">
             <table class="skills-table">
                 <thead>
                     <tr>
@@ -243,6 +295,8 @@
                     <tr><td><code>/larapilot-spec</code></td><td><code>backlog.yaml</code>, <code>specs/US-XXX.yaml</code></td><td>💎 Mark · 🔎 Tom</td></tr>
                     <tr><td><code>/larapilot-feature</code></td><td>New user story + optional PRD FR</td><td>💎 Mark · 🔎 Tom</td></tr>
                     <tr><td><code>/larapilot-bug</code></td><td>Fix spec, support intake</td><td>🎧 Sophia · 🔎 Tom · 🧪 Anne</td></tr>
+                    <tr><td><code>/larapilot-prd</code></td><td>Revised PRD + revision history row, backlog impact by spec status</td><td>💎 Mark · 🔎 Tom · 🗄️ Mike</td></tr>
+                    <tr><td><code>/larapilot-triage</code></td><td>Verdict (bug or feature) + handoff to <code>/larapilot-bug</code> or <code>/larapilot-feature</code></td><td>🎧 Sophia · 💎 Mark · 🔎 Tom</td></tr>
                     <tr><td><code>/larapilot-plan</code></td><td><code>plans/US-XXX-plan.yaml</code></td><td>📐 John · 🧪 Anne · 🗄️ Mike</td></tr>
                     <tr><td><code>/larapilot-design</code> <span class="skill-optional">optional</span></td><td><code>mockups/{spec}/</code>, gallery <a href="{{ route('larapilot.dashboard.design') }}">/larapilot/design</a></td><td>🎨 Elise · ✨ Joe</td></tr>
                     <tr><td><code>/larapilot-implement</code></td><td>Code, tests, atomic commits per git_mode, developer domain docs in <code>.larapilot/docs/devs/</code></td><td>🔧 Alex · 👾 Andrew · ⌨️ Sarah · 📝 Albert</td></tr>
@@ -260,12 +314,30 @@
                     <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code> — listed on the <a href="{{ route('larapilot.dashboard.skills') }}">Skills</a> page</td><td>🤖 Zoey · ⌨️ Sarah</td></tr>
                 </tbody>
             </table>
+            </div>
         </section>
+
+        @if (Route::has('larapilot.dashboard.files.browse') && app(\Larapilot\Services\ConfigService::class)->fileManagerBrowsable())
+            <section class="card docs-panel">
+                <h2>Material folders</h2>
+                <p class="sub">What you hand the skills before they start. Drop files in from the <a href="{{ route('larapilot.dashboard.files') }}">File manager</a> or straight into the repository.</p>
+
+                <div class="folder-list">
+                    @foreach (app(\Larapilot\Services\FileManagerService::class)->roots() as $folder)
+                        <a href="{{ route('larapilot.dashboard.files.browse', ['root' => $folder['key']]) }}">
+                            <code>{{ $folder['path'] }}</code>
+                            <span>{{ $folder['description'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         <section class="card docs-panel">
             <h2>Personas</h2>
             <p class="sub">When an agent speaks in chat, it uses <code>icon + name</code> (e.g. 💎 Mark). Zoey and Lucille are cross-cutting on every skill when enabled.</p>
 
+            <div class="table-wrap">
             <table class="personas-table">
                 <thead>
                     <tr><th>Persona</th><th>Role</th></tr>
@@ -292,6 +364,7 @@
                     <tr><td>⚖️ Violet · 📈 Emma</td><td>Legal/privacy and SEO &amp; performance — mainly ship/discovery gates</td></tr>
                 </tbody>
             </table>
+            </div>
         </section>
     </div>
 @endsection

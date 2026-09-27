@@ -77,11 +77,11 @@
         <p>{!! $th('off.calibrate') !!}</p>
     </section>
 @else
-    <div class="eco-top">
+    <header class="page-head eco-top">
         <div>
             <h2>{{ $t('head.title') }}</h2>
             <p class="sub">{{ $t('head.sub') }}</p>
-            <div class="chips" style="margin:10px 0 0">
+            <div class="chips">
                 @if (($quoteDoc['source'] ?? 'template') === 'document')
                     <span class="chip {{ ! empty($quoteDoc['stale']) ? 'stale' : 'current' }}">
                         {{ $t('head.chip.written') }}{{ ! empty($quoteDoc['lang']) ? ' ('.$quoteDoc['lang'].')' : '' }}{{ ! empty($quoteDoc['stale']) ? ' · '.$t('head.chip.outdated') : '' }}
@@ -93,11 +93,11 @@
                 <span class="chip">{{ $t('head.chip.rates', ['year' => $fiscal_year ?? 2026]) }}</span>
             </div>
         </div>
-        <div class="eco-actions">
+        <div class="page-actions eco-actions">
             <a class="btn" href="{{ $link('larapilot.dashboard.economics.quote') }}">{{ $t('head.action.quote') }}</a>
             <a class="btn ghost" href="{{ $link('larapilot.dashboard.economics.report') }}">{{ $t('head.action.report') }}</a>
         </div>
-    </div>
+    </header>
 
     {{-- THE PRICING CONSOLE — operator controls, deliberately left in English --}}
     <form id="eco-controls" class="card eco-console" method="get" action="{{ route('larapilot.dashboard.economics') }}">

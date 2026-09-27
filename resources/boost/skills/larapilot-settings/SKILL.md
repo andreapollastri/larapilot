@@ -11,7 +11,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 
 Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
+Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, prior_art, comments, dashboard_auth, api_auth, security_scan, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
 
 ## Output Economy
 
@@ -48,7 +48,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 Run `config-show`. Show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -138,12 +138,14 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 - **Decision journal prompt:** `Decision journal (current: {VALUE}) — record every explicit choice you make and warn you before a later choice contradicts an earlier one?`
 - **Code history prompt:** `Code change history (current: {VALUE}) — keep a per-spec/task log of which files and lines were changed?`
 - **Comments prompt:** `Comments (current: {VALUE}) — allow PM/dev internal feedback on dashboard specs and via the API until DONE?`
-- **Chat framing (one line):** 💎 Mark — comments live in `.larapilot/internal-feedback/`; the journal (`.larapilot/decisions.yaml`) is ON by default; the code log (`.larapilot/code-history.yaml`) is OFF by default.
+- **Prior art prompt:** `Prior art check (current: {VALUE}) — at inception, search GitHub / Packagist / OSS catalogs for existing solutions before scope (consent asked per search)?`
+- **Chat framing (one line):** 💎 Mark — comments live in `.larapilot/internal-feedback/`; the journal (`.larapilot/decisions.yaml`) is ON by default; the code log (`.larapilot/code-history.yaml`) is OFF by default; 💡 Sebastian — the prior-art round is ON by default and writes `research/prior-art.md`.
 
 | Setting | YES label | NO label |
 | --- | --- | --- |
 | `decision_log` | `YES — journal AskQuestion answers + explicit directives; decision-check flags contradictions (default)` | `NO — do not record decisions or run the regression guard` |
 | `code_history` | `YES — after each task-done, log touched files + line ranges from the task commit` | `NO — no code change history (default)` |
+| `prior_art` | `YES — Sebastian searches for existing OSS / packages at inception, consent first; verdict in the PRD (default)` | `NO — skip the round; PRD records Prior Art: Not checked` |
 | `comments` | `YES — dashboard + API + larapilot:spec-comment until spec is DONE` | `NO — hide feedback UI and reject new comments project-wide (default)` |
 
 **6c. Release mode & Project docs**
@@ -245,8 +247,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (prior_art)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / forge / notifications → NO.)
 
 ### 2. Persist
 
@@ -263,6 +265,7 @@ php artisan larapilot:settings-set \
   --lucille=YES \
   --decision-log=YES \
   --code-history=NO \
+  --prior-art=YES \
   --comments=YES \
   --dashboard-auth=NO \
   --api-auth=NO \

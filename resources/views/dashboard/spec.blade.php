@@ -4,67 +4,143 @@
 
 @push('styles')
 <style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 16px;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 500;
+    }
+
+    .back-link:hover { color: var(--accent); text-decoration: none; }
+    .back-link .icon { width: 16px; height: 16px; }
+
     .spec-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--border);
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 16px;
+        gap: 14px 18px;
         flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .spec-header > :first-child { min-width: 0; flex: 1 1 320px; }
+
+    .spec-code {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 600;
     }
 
     .spec-header h2 {
-        margin: 0 0 6px;
-        font-size: 1.35rem;
+        margin: 4px 0 6px;
+        font-size: 1.5rem;
+        letter-spacing: -0.022em;
+        overflow-wrap: anywhere;
     }
 
     .spec-header p {
         margin: 0;
         color: var(--muted);
+        font-size: 0.9rem;
     }
 
     .spec-grid {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 20px 24px 28px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
     }
 
-    .panel {
-        padding: 20px 22px;
-    }
-
-    .panel h3 {
+    .spec-grid .panel h3 {
         margin: 0 0 14px;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
         color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 650;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
     }
 
-    .tasks {
+    .spec-badges {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .spec-badges .points { padding: 3px 10px; font-size: 0.7rem; }
+
+    .merge-commit-block {
+        margin-top: 8px !important;
+        font-size: 0.82rem !important;
+        overflow-wrap: anywhere;
+    }
+
+    .merge-commit-block a,
+    .merge-commit-block code {
+        font-family: var(--mono);
+        font-weight: 600;
+    }
+
+    .mockup-badge,
+    .feedback-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .mockup-badge {
+        background: color-mix(in srgb, var(--violet-fill) 14%, transparent);
+        color: var(--violet);
+    }
+
+    .feedback-badge {
+        background: color-mix(in srgb, var(--warn-fill) 15%, transparent);
+        color: var(--warn);
+    }
+
+    /* ---- accordions: tasks and feedback share one shape ---- */
+    .tasks,
+    .feedback-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
-    .task-accordion {
+    .task-accordion,
+    .feedback-accordion {
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
+        background: var(--surface-2);
         overflow: hidden;
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+        transition: border-color 0.14s ease;
     }
 
-    .task-accordion[open] {
+    .feedback-accordion--blocking {
+        border-color: color-mix(in srgb, var(--warn-fill) 45%, var(--border));
+        background: color-mix(in srgb, var(--warn-fill) 7%, var(--surface));
+    }
+
+    .task-accordion[open],
+    .feedback-accordion[open] {
         border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+        background: var(--surface);
     }
 
-    .task-accordion-summary {
+    .task-accordion-summary,
+    .feedback-accordion-summary {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 10px 12px;
         padding: 12px 14px;
         cursor: pointer;
         list-style: none;
@@ -72,166 +148,111 @@
         user-select: none;
     }
 
-    .task-accordion-summary::-webkit-details-marker {
-        display: none;
-    }
+    .task-accordion-summary::-webkit-details-marker,
+    .feedback-accordion-summary::-webkit-details-marker { display: none; }
 
-    .task-accordion-summary::marker {
-        content: '';
-    }
+    .task-accordion-summary::marker,
+    .feedback-accordion-summary::marker { content: ''; }
 
-    .task-accordion-title {
+    .task-accordion-title,
+    .feedback-accordion-title {
         display: flex;
         align-items: flex-start;
         gap: 10px;
         min-width: 0;
-        flex: 1;
+        flex: 1 1 220px;
     }
 
-    .task-accordion-chevron {
+    .task-accordion-chevron,
+    .feedback-accordion-chevron {
         flex-shrink: 0;
-        width: 18px;
-        height: 18px;
+        width: 17px;
+        height: 17px;
         margin-top: 2px;
         color: var(--muted);
         transition: transform 0.15s ease, color 0.15s ease;
     }
 
-    .task-accordion[open] .task-accordion-chevron {
+    .task-accordion[open] .task-accordion-chevron,
+    .feedback-accordion[open] .feedback-accordion-chevron {
         transform: rotate(90deg);
         color: var(--accent);
     }
 
-    .task-accordion-summary strong {
-        font-size: 0.92rem;
+    .task-accordion-summary strong,
+    .feedback-accordion-headline strong {
+        font-size: 0.9rem;
+        font-weight: 600;
     }
 
-    .task-accordion-panel {
+    .task-accordion-panel,
+    .feedback-accordion-panel {
         padding: 0 16px 16px;
         border-top: 1px solid var(--border);
     }
 
-    .task-accordion:not([open]) .task-accordion-panel {
-        display: none;
-    }
+    .task-accordion:not([open]) .task-accordion-panel,
+    .feedback-accordion:not([open]) .feedback-accordion-panel { display: none; }
 
     .task-type {
+        margin-top: 2px;
         color: var(--muted);
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-weight: 600;
-    }
-
-    .task-body {
-        padding: 14px 16px;
-    }
-
-    .task-status-done {
-        color: var(--status-done);
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
     }
 
+    .task-body { padding: 14px 0 0; }
+
+    .task-status-done,
     .task-status-todo {
-        color: var(--muted);
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
     }
+
+    .task-status-done { color: var(--ok); }
+    .task-status-todo { color: var(--muted); }
 
     .task-commit {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 4px;
+        gap: 3px;
         min-width: 0;
     }
 
     .task-commit a,
     .task-commit code {
+        padding: 0;
+        background: transparent;
+        font-family: var(--mono);
         font-size: 0.75rem;
-        font-weight: 700;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-weight: 600;
     }
 
     .task-commit-subject {
+        max-width: 240px;
         color: var(--muted);
         font-size: 0.72rem;
-        max-width: 220px;
+        text-align: right;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-align: right;
-    }
-
-    .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        font-size: 0.875rem;
-    }
-
-    .spec-badges {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .points {
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--accent);
-        background: var(--accent-soft);
-        padding: 4px 10px;
-        border-radius: 999px;
-    }
-
-    .merge-commit {
-        font-size: 0.72rem;
-        font-weight: 700;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        color: var(--status-done);
-    }
-
-    .merge-commit-block {
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 0.82rem;
-    }
-
-    .merge-commit-block a,
-    .merge-commit-block code {
-        font-weight: 700;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    .mockup-badge {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #7c3aed;
-        background: color-mix(in srgb, #7c3aed 12%, transparent);
-        padding: 4px 10px;
-        border-radius: 999px;
     }
 
     .mockup-preview {
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
         overflow: hidden;
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
     }
 
     .mockup-preview iframe {
         display: block;
         width: 100%;
-        min-height: 420px;
+        min-height: 440px;
         border: 0;
         background: #fff;
     }
@@ -239,7 +260,7 @@
     .mockup-screens {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
         margin-top: 14px;
     }
 
@@ -247,193 +268,52 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 12px;
+        min-height: 32px;
+        padding: 0 13px;
+        border: 1px solid var(--border-strong);
         border-radius: 999px;
-        border: 1px solid var(--border);
+        color: var(--text);
         font-size: 0.82rem;
-        font-weight: 600;
-        color: inherit;
+        font-weight: 550;
         text-decoration: none;
         transition: border-color 0.15s ease, color 0.15s ease;
     }
 
-    .mockup-screen-link:hover {
-        border-color: #7c3aed;
-        color: #7c3aed;
+    a.mockup-screen-link:hover {
+        border-color: var(--accent);
+        color: var(--accent);
         text-decoration: none;
     }
 
     .mockup-path {
-        margin-top: 10px;
+        margin: 12px 0 0;
         color: var(--muted);
         font-size: 0.82rem;
     }
 
-    .feedback-badge {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #b45309;
-        background: color-mix(in srgb, #f59e0b 14%, transparent);
-        padding: 4px 10px;
-        border-radius: 999px;
-    }
-
-    .feedback-alert {
-        margin: 0 24px 0;
-        padding: 12px 16px;
-        border-radius: 10px;
-        font-size: 0.92rem;
-    }
-
-    .feedback-alert--success {
-        background: color-mix(in srgb, #10b981 12%, transparent);
-        border: 1px solid color-mix(in srgb, #10b981 35%, var(--border));
-        color: #047857;
-    }
-
-    .feedback-alert--error {
-        background: color-mix(in srgb, #ef4444 10%, transparent);
-        border: 1px solid color-mix(in srgb, #ef4444 35%, var(--border));
-        color: #b91c1c;
-    }
-
-    .feedback-form {
-        display: grid;
-        gap: 12px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border);
-    }
-
-    .feedback-form label {
-        display: grid;
-        gap: 6px;
-        font-size: 0.88rem;
-        font-weight: 600;
-    }
-
-    .feedback-form input[type="text"],
-    .feedback-form textarea {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--surface);
-        color: var(--text);
-        font: inherit;
-    }
-
-    .feedback-form textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-
-
-    .feedback-submit {
-        border: 0;
-        border-radius: 999px;
-        padding: 10px 18px;
-        background: var(--accent);
-        color: #fff;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .feedback-closed {
-        margin-top: 12px;
+    .spec-empty {
+        margin: 0;
+        padding: 0;
         color: var(--muted);
-        font-size: 0.88rem;
+        text-align: left;
+        font-size: 0.9rem;
     }
 
-    .feedback-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .feedback-accordion {
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        overflow: hidden;
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
-    }
-
-    .feedback-accordion--blocking {
-        border-color: color-mix(in srgb, #f59e0b 45%, var(--border));
-        background: color-mix(in srgb, #f59e0b 6%, var(--surface));
-    }
-
-    .feedback-accordion[open] {
-        border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-    }
-
-    .feedback-accordion-summary {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 12px 14px;
-        cursor: pointer;
-        list-style: none;
-        flex-wrap: wrap;
-        user-select: none;
-    }
-
-    .feedback-accordion-summary::-webkit-details-marker,
-    .feedback-accordion-summary::marker {
-        display: none;
-        content: '';
-    }
-
-    .feedback-accordion-title {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        min-width: 0;
-        flex: 1;
-    }
-
-    .feedback-accordion-chevron {
-        flex-shrink: 0;
-        width: 18px;
-        height: 18px;
-        margin-top: 2px;
-        color: var(--muted);
-        transition: transform 0.15s ease, color 0.15s ease;
-    }
-
-    .feedback-accordion[open] .feedback-accordion-chevron {
-        transform: rotate(90deg);
-        color: var(--accent);
-    }
-
-    .feedback-accordion-headline {
-        min-width: 0;
-    }
-
-    .feedback-accordion-headline strong {
-        font-size: 0.92rem;
-    }
+    /* ---- feedback ---- */
+    .feedback-accordion-headline { min-width: 0; }
+    .feedback-when { color: var(--muted); font-weight: 500; }
 
     .feedback-accordion-preview {
-        margin-top: 4px;
+        margin-top: 3px;
+        max-width: 100%;
         color: var(--muted);
         font-size: 0.82rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 100%;
     }
 
-    .feedback-accordion:not([open]) .feedback-accordion-preview {
-        display: block;
-    }
-
-    .feedback-accordion[open] .feedback-accordion-preview {
-        display: none;
-    }
+    .feedback-accordion[open] .feedback-accordion-preview { display: none; }
 
     .feedback-accordion-meta {
         display: flex;
@@ -445,114 +325,119 @@
     }
 
     .feedback-status {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
         color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
     }
 
     .feedback-rework-badge {
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #b45309;
-        background: color-mix(in srgb, #f59e0b 18%, transparent);
-        padding: 3px 8px;
+        padding: 2px 9px;
         border-radius: 999px;
+        background: color-mix(in srgb, var(--warn-fill) 17%, transparent);
+        color: var(--warn);
+        font-size: 0.66rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
         white-space: nowrap;
     }
 
-    .feedback-accordion-panel {
-        padding: 0 16px 16px;
+    .feedback-body { padding: 14px 0 0; }
+
+    .feedback-form {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+        padding-top: 18px;
         border-top: 1px solid var(--border);
     }
 
-    .feedback-accordion:not([open]) .feedback-accordion-panel {
-        display: none;
+    .feedback-form > label {
+        display: grid;
+        gap: 6px;
+        font-size: 0.86rem;
+        font-weight: 600;
     }
 
-    .feedback-body {
-        padding: 14px 0 0;
-    }
+    .feedback-form input[type="text"] { max-width: 320px; }
 
     .md-editor {
         display: grid;
-        gap: 0;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        overflow: hidden;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
         background: var(--surface);
+        overflow: hidden;
+        transition: border-color 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .md-editor:focus-within {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
     }
 
     .md-toolbar {
         display: flex;
         align-items: center;
         gap: 2px;
-        padding: 6px 8px;
+        padding: 5px 8px;
         border-bottom: 1px solid var(--border);
-        background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+        background: var(--surface-2);
         flex-wrap: wrap;
     }
 
     .md-toolbar button {
+        width: 34px;
+        height: 32px;
         border: 0;
+        border-radius: var(--radius-xs);
         background: transparent;
         color: var(--muted);
-        width: 30px;
-        height: 28px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 700;
         font-family: inherit;
+        font-size: 0.82rem;
+        font-weight: 650;
+        cursor: pointer;
     }
 
     .md-toolbar button:hover,
     .md-toolbar button.is-active {
         background: var(--accent-soft);
-        color: var(--accent);
+        color: var(--accent-strong);
     }
 
     .md-toolbar-divider {
         width: 1px;
         height: 18px;
-        background: var(--border);
         margin: 0 4px;
+        background: var(--border);
     }
 
     .md-editor textarea {
         width: 100%;
-        min-height: 120px;
-        padding: 12px;
+        min-height: 130px;
+        padding: 12px 14px;
         border: 0;
         border-radius: 0;
         background: transparent;
         color: var(--text);
         font: inherit;
+        font-weight: 400;
         resize: vertical;
     }
 
-    .md-editor textarea:focus {
-        outline: none;
-    }
+    .md-editor textarea:focus { outline: none; }
 
     .md-preview {
         display: none;
-        padding: 12px;
-        border-top: 1px solid var(--border);
-        min-height: 120px;
+        min-height: 130px;
+        padding: 12px 14px;
         font-size: 0.92rem;
+        font-weight: 400;
     }
 
-    .md-editor.is-preview .md-preview {
-        display: block;
-    }
-
-    .md-editor.is-preview textarea {
-        display: none;
-    }
+    .md-editor.is-preview .md-preview { display: block; }
+    .md-editor.is-preview textarea { display: none; }
 
     .feedback-form-footer {
         display: flex;
@@ -560,7 +445,6 @@
         justify-content: space-between;
         gap: 12px;
         flex-wrap: wrap;
-        margin-top: 4px;
     }
 
     .feedback-form-options {
@@ -568,45 +452,52 @@
         flex-direction: column;
         gap: 6px;
         min-width: 0;
-        flex: 1;
+        flex: 1 1 240px;
     }
 
     .feedback-checkbox {
         display: inline-flex;
-        flex-direction: row;
         align-items: center;
         gap: 8px;
+        width: fit-content;
         font-size: 0.88rem;
         font-weight: 500;
         cursor: pointer;
-        width: fit-content;
     }
 
     .feedback-checkbox input {
+        width: 16px;
+        height: 16px;
         margin: 0;
         flex-shrink: 0;
+        accent-color: var(--accent);
     }
 
     .feedback-form-log {
         margin: 0;
-        padding-left: calc(1rem + 8px);
+        padding-left: 24px;
         color: var(--muted);
         font-size: 0.78rem;
+        overflow-wrap: anywhere;
     }
 
-    .feedback-form-log code {
-        font-size: 0.76rem;
-    }
+    .feedback-form-log code { font-size: 0.76rem; }
 
     .feedback-form-blocking-hint {
         margin-left: 0.35em;
-        color: #b45309;
+        color: var(--warn);
         font-size: 0.76rem;
         font-weight: 600;
     }
 
+    .feedback-closed {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
+
     .field-error {
-        color: #b91c1c;
+        color: var(--danger);
         font-size: 0.78rem;
         font-weight: 500;
     }
@@ -614,12 +505,13 @@
 @endpush
 
 @section('content')
-    <a class="back-link" href="{{ route('larapilot.dashboard.index') }}">← Back to board</a>
+    <a class="back-link" href="{{ route('larapilot.dashboard.index') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'back'])Back to board</a>
 
-    <article class="card">
+    <article>
         <header class="spec-header">
             <div>
-                <h2>{{ $spec['code'] }} — {{ $spec['title'] ?? 'Untitled' }}</h2>
+                <span class="spec-code">{{ $spec['code'] }}</span>
+                <h2>{{ $spec['title'] ?? 'Untitled' }}</h2>
                 @if (! empty($spec['epic']['title']))
                     <p>Epic: {{ $spec['epic']['title'] }}</p>
                 @endif
@@ -640,12 +532,6 @@
                 @endif
             </div>
             <div class="spec-badges">
-                @if (! empty($mockups))
-                    <span class="mockup-badge" title="{{ count($mockups['screens'] ?? []) }} screen(s)">Mockup</span>
-                @endif
-                @if (! empty($spec['points']))
-                    <span class="points">{{ $spec['points'] }} SP</span>
-                @endif
                 @php
                     $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
                     $badgeClass = match ($status) {
@@ -658,18 +544,17 @@
                     };
                 @endphp
                 <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                @if (! empty($spec['points']))
+                    <span class="points">{{ $spec['points'] }} SP</span>
+                @endif
+                @if (! empty($mockups))
+                    <span class="mockup-badge" title="{{ count($mockups['screens'] ?? []) }} screen(s)">Mockup</span>
+                @endif
                 @if (! empty($feedback['enabled']) && ! empty($feedback['blocking_count']))
                     <span class="feedback-badge" title="Blocking comments">{{ $feedback['blocking_count'] }} blocking</span>
                 @endif
             </div>
         </header>
-
-        @if (session('larapilot_success'))
-            <p class="feedback-alert feedback-alert--success">{{ session('larapilot_success') }}</p>
-        @endif
-        @if (session('larapilot_error'))
-            <p class="feedback-alert feedback-alert--error">{{ session('larapilot_error') }}</p>
-        @endif
 
         <div class="spec-grid">
             <section class="card panel">
@@ -725,7 +610,7 @@
                                             </svg>
                                             <div class="feedback-accordion-headline">
                                                 <strong>{{ $entry['author'] }}</strong>
-                                                <span style="color: var(--muted); font-weight: 500;"> · {{ $entry['at'] }}</span>
+                                                <span class="feedback-when"> · {{ $entry['at'] }}</span>
                                                 @if (! empty($entry['preview']))
                                                     <div class="feedback-accordion-preview">{{ $entry['preview'] }}</div>
                                                 @endif
@@ -745,7 +630,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="empty" style="padding: 12px 0; text-align: left;">No comments yet. PM and dev can log decisions and questions here until the story is DONE.</p>
+                        <p class="spec-empty">No comments yet. PM and dev can log decisions and questions here until the story is DONE.</p>
                     @endif
 
                     @if (! empty($feedback['writable']))
@@ -754,6 +639,7 @@
                             <label>
                                 Author
                                 <input
+                                    class="control"
                                     type="text"
                                     name="author"
                                     value="{{ old('author') }}"
@@ -805,7 +691,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <button type="submit" class="feedback-submit">Add comment</button>
+                                <button type="submit" class="btn feedback-submit">Add comment</button>
                             </div>
                         </form>
                     @else
@@ -831,7 +717,7 @@
             <section class="card panel">
                 <h3>Tasks ({{ count($tasks) }})</h3>
                 @if ($tasks === [])
-                    <p class="empty" style="padding: 12px 0; text-align: left;">No plan tasks yet. Run <code>/larapilot-plan {{ $spec['code'] }}</code>.</p>
+                    <p class="spec-empty">No plan tasks yet. Run <code>/larapilot-plan {{ $spec['code'] }}</code>.</p>
                 @else
                     <div class="tasks" data-exclusive-accordion>
                         @foreach ($tasks as $task)

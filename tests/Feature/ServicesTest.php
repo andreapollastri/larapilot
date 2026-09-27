@@ -98,7 +98,9 @@ it('exposes default project settings and updates them', function (): void {
         'notify_telegram' => 'NO',
         'release_mode' => 'NO',
         'project_docs' => 'NO',
+        'prior_art' => 'YES',
     ])->and($config->autoApproveEnabled())->toBeFalse()
+        ->and($config->priorArtEnabled())->toBeTrue()
         ->and($config->lucilleEnabled())->toBeTrue()
         ->and($config->decisionLogEnabled())->toBeTrue()
         ->and($config->codeHistoryEnabled())->toBeFalse()

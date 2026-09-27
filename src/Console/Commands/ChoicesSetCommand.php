@@ -20,6 +20,9 @@ class ChoicesSetCommand extends LarapilotCommand
                             {--package-git=}
                             {--delivery-target=}
                             {--business-model=}
+                            {--prior-art=}
+                            {--success-signal=}
+                            {--kill-condition=}
                             {--budget-sensitivity=}
                             {--frontend-topology=}
                             {--data-store=}
@@ -81,6 +84,9 @@ class ChoicesSetCommand extends LarapilotCommand
             'package_git' => 'package-git',
             'delivery_target' => 'delivery-target',
             'business_model' => 'business-model',
+            'prior_art' => 'prior-art',
+            'success_signal' => 'success-signal',
+            'kill_condition' => 'kill-condition',
             'budget_sensitivity' => 'budget-sensitivity',
             'frontend_topology' => 'frontend-topology',
             'data_store' => 'data-store',

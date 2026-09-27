@@ -2,123 +2,93 @@
 
 @section('title', 'Plan')
 
+@section('main-class', 'is-wide')
+
 @push('styles')
 <style>
-    body .shell:has(.plan-page) {
-        max-width: none;
-        padding-left: max(20px, 3vw);
-        padding-right: max(20px, 3vw);
-    }
-
-    .plan-page { display: flex; flex-direction: column; gap: 18px; }
-
-    .plan-top {
+    .plan-page {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 18px;
+        /* between the amber of work in progress and the red of a missed date */
+        --risk: color-mix(in srgb, var(--danger-fill) 55%, var(--warn-fill));
     }
-
-    .plan-top h2 { margin: 0 0 6px; font-size: 1.15rem; }
-
-    .plan-top .sub {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.875rem;
-        max-width: 78ch;
-        line-height: 1.5;
-    }
+    .plan-page .page-head,
+    .plan-page .metrics { margin-bottom: 0; }
 
     .health {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        font-size: 0.82rem;
-        font-weight: 650;
+        min-height: 36px;
+        padding: 0 14px;
         border: 1px solid var(--border);
+        border-radius: 999px;
         background: var(--surface);
+        font-size: 0.82rem;
+        font-weight: 600;
         white-space: nowrap;
+        --tone: var(--ok-fill);
+        border-color: color-mix(in srgb, var(--tone) 45%, var(--border));
     }
 
     .health .dot {
         width: 8px;
         height: 8px;
         border-radius: 999px;
-        background: var(--status-done);
+        background: var(--tone);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 22%, transparent);
     }
 
-    .health.at-risk { color: #b45309; border-color: color-mix(in srgb, #f59e0b 55%, var(--border)); }
-    .health.at-risk .dot { background: #f59e0b; }
-    .health.late { color: #b91c1c; border-color: color-mix(in srgb, #ef4444 55%, var(--border)); }
-    .health.late .dot { background: #ef4444; }
-    .health.ok { color: #047857; border-color: color-mix(in srgb, var(--status-done) 45%, var(--border)); }
+    .health.ok { color: var(--ok); }
+    .health.at-risk { --tone: var(--warn-fill); color: var(--warn); }
+    .health.late { --tone: var(--danger-fill); color: var(--danger); }
 
-    .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 14px;
-    }
-
-    .metric { padding: 16px 18px; }
-    .metric-label {
-        color: var(--muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-weight: 600;
-    }
-    .metric-value {
-        margin-top: 6px;
-        font-size: 1.35rem;
-        font-weight: 700;
-        line-height: 1.15;
-        font-variant-numeric: tabular-nums;
-    }
-    .metric-note {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 0.75rem;
-    }
+    .plan-page .metric-value { font-size: 1.4rem; }
+    .metric-value.is-date { font-size: 1.08rem; letter-spacing: -0.01em; }
+    .metric-unit { color: var(--muted); font-size: 0.85rem; font-weight: 600; letter-spacing: 0; }
 
     .alerts { display: grid; gap: 8px; }
+
     .alert {
-        padding: 12px 14px;
-        border-radius: 10px;
+        padding: 12px 16px;
         border: 1px solid var(--border);
-        font-size: 0.85rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.86rem;
         line-height: 1.45;
+        --tone: var(--warn-fill);
+        border-color: color-mix(in srgb, var(--tone) 45%, var(--border));
+        background: color-mix(in srgb, var(--tone) 9%, var(--surface));
     }
-    .alert strong { font-weight: 650; }
-    .alert.critical { border-color: #ef4444; background: color-mix(in srgb, #ef4444 8%, var(--surface)); }
-    .alert.warning { border-color: #f59e0b; background: color-mix(in srgb, #f59e0b 10%, var(--surface)); }
+
+    .alert strong { font-weight: 600; }
+    .alert.critical { --tone: var(--danger-fill); }
+    .alert.warning { --tone: var(--warn-fill); }
     .alert .when { color: var(--muted); font-variant-numeric: tabular-nums; }
 
     .milestones {
         display: flex;
         gap: 10px;
+        margin: 0 calc(var(--gutter) * -1);
+        padding: 2px var(--gutter) 6px;
         overflow-x: auto;
-        padding-bottom: 2px;
+        scrollbar-width: thin;
     }
 
     .milestone-card {
         flex: 0 0 auto;
-        min-width: 180px;
+        min-width: 190px;
         max-width: 260px;
-        padding: 12px 14px;
-        border-radius: 12px;
+        padding: 14px 16px;
         border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
         background: var(--surface);
-        box-shadow: var(--shadow);
     }
 
     .milestone-card .date {
-        font-size: 0.75rem;
-        font-weight: 650;
-        letter-spacing: 0.02em;
         color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 600;
         font-variant-numeric: tabular-nums;
     }
 
@@ -126,21 +96,23 @@
         display: block;
         margin-top: 4px;
         font-size: 0.92rem;
+        font-weight: 600;
     }
 
     .milestone-card .state {
         display: inline-block;
         margin-top: 8px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+        font-size: 0.68rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
     }
 
-    .milestone-card.on_track .state { color: #047857; }
-    .milestone-card.at_risk .state { color: #b45309; }
-    .milestone-card.delayed .state { color: #b91c1c; }
+    .milestone-card.on_track .state { color: var(--ok); }
+    .milestone-card.at_risk .state { color: var(--warn); }
+    .milestone-card.delayed .state { color: var(--danger); }
     .milestone-card.done .state { color: var(--muted); }
+
     .milestone-card .note {
         margin: 6px 0 0;
         color: var(--muted);
@@ -148,55 +120,46 @@
         line-height: 1.4;
     }
 
-    .chart-card { padding: 16px 16px 12px; }
+    .chart-card { padding: 16px 14px 14px; }
+
+    @media (min-width: 640px) {
+        .chart-card { padding: 20px 20px 16px; }
+    }
 
     .plan-tools {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px 12px;
+        gap: 12px;
         align-items: end;
         margin-bottom: 14px;
     }
 
-    .plan-tools label {
-        display: grid;
-        gap: 4px;
-        font-size: 0.72rem;
-        color: var(--muted);
-        font-weight: 650;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
+    .plan-tools .field { flex: 1 1 calc(50% - 6px); }
+    .plan-tools .field:first-child { flex-basis: 100%; }
 
-    .plan-tools input[type="search"],
-    .plan-tools select {
-        padding: 7px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        color: var(--text);
-        font-size: 0.85rem;
-        font-weight: 400;
-        text-transform: none;
-        letter-spacing: normal;
-        min-width: 160px;
+    @media (min-width: 860px) {
+        .plan-tools .field { flex: 0 1 190px; }
+        .plan-tools .field:first-child { flex: 0 1 260px; }
     }
 
     .plan-tools .check {
         display: flex;
         align-items: center;
         gap: 8px;
-        text-transform: none;
-        letter-spacing: normal;
-        font-size: 0.85rem;
-        font-weight: 550;
+        min-height: 36px;
         color: var(--text);
-        padding-bottom: 8px;
+        font-size: 0.86rem;
+        font-weight: 500;
+        cursor: pointer;
     }
+
+    .plan-tools .check input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
 
     .plan-count {
         margin-left: auto;
-        padding-bottom: 8px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
         color: var(--muted);
         font-size: 0.78rem;
         font-variant-numeric: tabular-nums;
@@ -206,16 +169,22 @@
         --label: 292px;
         overflow-x: auto;
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
         background:
             linear-gradient(var(--surface), var(--surface)) 0 0 / var(--label) 100% no-repeat,
-            var(--bg);
+            var(--surface-2);
+        scrollbar-width: thin;
     }
 
     .chart {
         --label: 292px;
-        --row: 36px;
+        --row: 38px;
         min-width: calc(var(--label) + var(--track));
+    }
+
+    /* a phone keeps most of its width for the timeline */
+    @media (max-width: 640px) {
+        .chart-scroll, .chart { --label: 168px; }
     }
 
     .gantt-head,
@@ -250,9 +219,9 @@
 
     .gantt-head .label-col {
         color: var(--muted);
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 650;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
     }
 
@@ -269,8 +238,9 @@
         display: flex;
         align-items: flex-end;
         padding-bottom: 6px;
-        font-size: 0.7rem;
         color: var(--muted);
+        font-size: 0.7rem;
+        font-variant-numeric: tabular-nums;
         white-space: nowrap;
         pointer-events: none;
     }
@@ -291,39 +261,52 @@
         bottom: 0;
         width: 0;
         z-index: 2;
-        border-left: 2px solid #ef4444;
+        border-left: 2px solid var(--danger-fill);
     }
 
     .today-flag span {
         position: absolute;
         top: 4px;
         left: 4px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #ef4444;
-        background: var(--surface);
-        padding: 0 4px;
+        padding: 0 5px;
         border-radius: 4px;
+        background: var(--surface);
+        color: var(--danger);
+        font-size: 0.64rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
 
     .gantt-row { border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent); }
     .gantt-row:last-child { border-bottom: 0; }
-    .gantt-row.is-epic { background: color-mix(in srgb, var(--accent) 4%, transparent); }
-    .gantt-row.is-epic .label-col { background: color-mix(in srgb, var(--accent) 4%, var(--surface)); font-weight: 700; }
+    .gantt-row.is-epic { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .gantt-row.is-epic .label-col { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); font-weight: 600; }
     .gantt-row.is-spec .label-col { padding-left: 28px; }
     .gantt-row.is-task .label-col { padding-left: 46px; }
-    .gantt-row.is-lane .label-col { color: var(--muted); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; }
+
+    .gantt-row.is-lane .label-col {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 650;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 640px) {
+        .gantt-row.is-spec .label-col { padding-left: 18px; }
+        .gantt-row.is-task .label-col { padding-left: 28px; }
+    }
 
     .fold {
         flex: 0 0 auto;
-        width: 22px;
-        height: 22px;
-        border-radius: 6px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        color: var(--text);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: 7px;
+        background: var(--surface);
+        color: var(--text-2);
         cursor: pointer;
         font-size: 0.7rem;
         line-height: 1;
@@ -370,51 +353,51 @@
         pointer-events: none;
     }
 
-    .today-line { width: 2px; background: #ef4444; z-index: 1; }
+    .today-line { width: 2px; background: var(--danger-fill); z-index: 1; }
 
     .bar {
         position: absolute;
-        top: 8px;
+        top: 9px;
         height: 20px;
-        border-radius: 5px;
+        border-radius: 6px;
         min-width: 8px;
-        background: color-mix(in srgb, var(--status-todo) 70%, transparent);
+        background: color-mix(in srgb, var(--status-todo) 75%, transparent);
         z-index: 1;
     }
 
     .bar.todo { background: color-mix(in srgb, var(--status-todo) 75%, transparent); }
-    .bar.planned { background: color-mix(in srgb, var(--status-planned) 78%, transparent); }
-    .bar.progress { background: color-mix(in srgb, var(--status-progress) 80%, var(--accent)); }
-    .bar.review { background: color-mix(in srgb, var(--status-review) 78%, transparent); }
-    .bar.done { background: color-mix(in srgb, var(--status-done) 78%, transparent); }
-    .bar.risk { background: color-mix(in srgb, #f59e0b 75%, transparent); }
+    .bar.planned { background: color-mix(in srgb, var(--status-planned) 80%, transparent); }
+    .bar.progress { background: color-mix(in srgb, var(--status-progress) 85%, transparent); }
+    .bar.review { background: color-mix(in srgb, var(--status-review) 80%, transparent); }
+    .bar.done { background: color-mix(in srgb, var(--status-done) 80%, transparent); }
+    .bar.risk { background: color-mix(in srgb, var(--risk) 85%, transparent); }
 
     .bar.epic {
-        top: 10px;
+        top: 11px;
         height: 16px;
-        border-radius: 4px;
-        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        border-radius: 5px;
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
         box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
         min-width: 10px;
     }
 
     .bar.epic.risk {
-        background: color-mix(in srgb, #f59e0b 22%, transparent);
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, #d97706 55%, transparent);
+        background: color-mix(in srgb, var(--risk) 20%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--risk) 60%, transparent);
     }
 
     .bar.epic.done {
-        background: color-mix(in srgb, var(--status-done) 22%, transparent);
+        background: color-mix(in srgb, var(--status-done) 20%, transparent);
         box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-done) 55%, transparent);
     }
 
-    .bar.task { top: 11px; height: 14px; }
-    .bar.parallel { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, #0ea5e9 85%, white); }
+    .bar.task { top: 12px; height: 14px; border-radius: 5px; }
+    .bar.parallel { box-shadow: inset 0 0 0 1.5px var(--sky-fill); }
 
     .bar .fill {
         position: absolute;
         inset: 0 auto 0 0;
-        background: rgba(255, 255, 255, 0.28);
+        background: rgba(255, 255, 255, 0.3);
         border-radius: inherit;
     }
 
@@ -427,7 +410,7 @@
         height: 10px;
         margin-left: -5px;
         transform: translateY(-50%) rotate(45deg);
-        background: #d97706;
+        background: var(--warn-fill);
         border: 2px solid var(--surface);
         z-index: 2;
     }
@@ -447,8 +430,8 @@
     }
 
     .diamond.on_track { background: var(--status-done); }
-    .diamond.at_risk { background: #f59e0b; }
-    .diamond.delayed { background: #ef4444; }
+    .diamond.at_risk { background: var(--warn-fill); }
+    .diamond.delayed { background: var(--danger-fill); }
     .diamond.done { background: var(--status-todo); }
 
     .tip {
@@ -457,15 +440,15 @@
         bottom: calc(100% + 8px);
         width: max-content;
         max-width: 280px;
-        padding: 8px 10px;
-        border-radius: 8px;
+        padding: 9px 11px;
+        border-radius: var(--radius-xs);
         background: var(--text);
         color: var(--bg);
         font-size: 0.75rem;
         line-height: 1.4;
         font-weight: 450;
         white-space: normal;
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-lg);
         opacity: 0;
         pointer-events: none;
         transform: translateY(4px);
@@ -482,13 +465,13 @@
         transform: none;
     }
 
-    .tip strong { display: block; font-weight: 650; margin-bottom: 2px; }
+    .tip strong { display: block; font-weight: 600; margin-bottom: 2px; }
 
     .legend {
         display: flex;
         flex-wrap: wrap;
         gap: 8px 16px;
-        margin-top: 12px;
+        margin-top: 14px;
         color: var(--muted);
         font-size: 0.75rem;
     }
@@ -498,21 +481,24 @@
         width: 16px;
         height: 8px;
         margin-right: 6px;
-        border-radius: 2px;
+        border-radius: 3px;
         vertical-align: middle;
     }
 
     .legend i.todo { background: color-mix(in srgb, var(--status-todo) 75%, transparent); }
-    .legend i.planned { background: color-mix(in srgb, var(--status-planned) 78%, transparent); }
-    .legend i.progress { background: color-mix(in srgb, var(--status-progress) 80%, var(--accent)); }
-    .legend i.review { background: color-mix(in srgb, var(--status-review) 78%, transparent); }
-    .legend i.done { background: color-mix(in srgb, var(--status-done) 78%, transparent); }
-    .legend i.risk { background: color-mix(in srgb, #f59e0b 75%, transparent); }
+    .legend i.planned { background: color-mix(in srgb, var(--status-planned) 80%, transparent); }
+    .legend i.progress { background: color-mix(in srgb, var(--status-progress) 85%, transparent); }
+    .legend i.review { background: color-mix(in srgb, var(--status-review) 80%, transparent); }
+    .legend i.done { background: color-mix(in srgb, var(--status-done) 80%, transparent); }
+    .legend i.risk { background: color-mix(in srgb, var(--risk) 85%, transparent); }
+
     .legend i.epic {
-        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
         box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
     }
-    .legend i.parallel { box-shadow: inset 0 0 0 1.5px #0ea5e9; background: transparent; }
+
+    .legend i.parallel { box-shadow: inset 0 0 0 1.5px var(--sky-fill); background: transparent; }
+
     .legend i.milestone {
         width: 8px;
         height: 8px;
@@ -523,59 +509,63 @@
 
     .epic-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+        gap: 14px;
     }
 
-    .epic-card { padding: 14px 16px; }
+    .epic-card { padding: 18px 20px; }
+
     .epic-card .kicker {
-        color: var(--muted);
+        color: var(--accent);
+        font-family: var(--mono);
         font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        font-weight: 600;
     }
+
     .epic-card h3 { margin: 4px 0 6px; font-size: 1rem; }
-    .epic-card p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.45; }
+    .epic-card p { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
+
     .epic-card dl {
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 4px 12px;
-        margin: 12px 0 0;
-        font-size: 0.8rem;
-    }
-    .epic-card dt { color: var(--muted); }
-    .epic-card dd { margin: 0; font-variant-numeric: tabular-nums; }
-    .epic-card .slip { color: #b45309; font-weight: 650; }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-    .chip {
-        padding: 2px 8px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        font-size: 0.72rem;
-        color: var(--muted);
+        gap: 5px 14px;
+        margin: 14px 0 0;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        font-size: 0.82rem;
     }
 
-    .notes { padding: 16px 18px; }
-    .notes h3 { margin: 0 0 12px; font-size: 0.95rem; }
+    .epic-card dt { color: var(--muted); }
+    .epic-card dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+    .epic-card .slip { color: var(--warn); font-weight: 600; }
+    .epic-card .chips { margin-top: 12px; }
+    .epic-card .chip { padding: 2px 9px; font-family: var(--mono); font-size: 0.7rem; }
+
+    .notes { padding: 18px 20px; }
+    .notes h3 { margin: 0 0 12px; font-size: 1rem; }
     .notes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+
     .notes li {
         display: grid;
-        grid-template-columns: 148px 88px 1fr;
-        gap: 10px;
-        font-size: 0.82rem;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px;
         padding-bottom: 8px;
         border-bottom: 1px solid var(--border);
+        font-size: 0.84rem;
     }
+
+    @media (min-width: 720px) {
+        .notes li { grid-template-columns: 120px 92px minmax(0, 1fr); gap: 12px; }
+    }
+
     .notes li:last-child { border-bottom: 0; padding-bottom: 0; }
     .notes time, .notes .tag { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-    .empty-plan { padding: 36px 24px; text-align: center; }
+    .empty-plan { padding: 44px 24px; text-align: center; }
     .empty-plan h3 { margin: 0 0 8px; }
     .empty-plan p { margin: 0 auto; max-width: 62ch; color: var(--muted); }
 
     @media (max-width: 720px) {
-        .notes li { grid-template-columns: 1fr; gap: 2px; }
         .plan-count { margin-left: 0; }
     }
 </style>
@@ -910,7 +900,7 @@
     @endphp
 
     <div class="plan-page">
-        <div class="plan-top">
+        <header class="page-head">
             <div>
                 <h2>Plan</h2>
                 <p class="sub">Epics, deadlines, and a dependency-aware Gantt from specs and plans. Token spend stays on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>.</p>
@@ -919,27 +909,27 @@
                 <span class="dot" aria-hidden="true"></span>
                 {{ $healthLabel }}
             </div>
-        </div>
+        </header>
 
         <div class="metrics">
             <div class="card metric">
                 <div class="metric-label">Window</div>
-                <div class="metric-value" style="font-size:1.05rem;">{{ $pretty($start) }}</div>
+                <div class="metric-value is-date">{{ $pretty($start) }}</div>
                 <div class="metric-note">through {{ $pretty($end) }} · {{ $span }} days</div>
             </div>
             <div class="card metric">
                 <div class="metric-label">Remaining</div>
-                <div class="metric-value">{{ $criticality['remaining_points'] ?? 0 }} <span style="font-size:0.85rem;font-weight:600;color:var(--muted);">SP</span></div>
+                <div class="metric-value">{{ $criticality['remaining_points'] ?? 0 }} <span class="metric-unit">SP</span></div>
                 <div class="metric-note">~{{ $criticality['remaining_hours'] ?? 0 }} h · ~{{ $criticality['forecast_work_days'] ?? 0 }} work-days</div>
             </div>
             <div class="card metric">
                 <div class="metric-label">Forecast end</div>
-                <div class="metric-value" style="font-size:1.05rem;">{{ $pretty($criticality['forecast_end'] ?? null) }}</div>
+                <div class="metric-value is-date">{{ $pretty($criticality['forecast_end'] ?? null) }}</div>
                 <div class="metric-note">from remaining effort, not the calendar window</div>
             </div>
             <div class="card metric">
                 <div class="metric-label">Scope</div>
-                <div class="metric-value">{{ count($epics) }} <span style="font-size:0.85rem;font-weight:600;color:var(--muted);">epics</span></div>
+                <div class="metric-value">{{ count($epics) }} <span class="metric-unit">epics</span></div>
                 <div class="metric-note">{{ $taskCount }} tasks · {{ count($milestones) }} milestones</div>
             </div>
         </div>
@@ -981,10 +971,10 @@
         @else
             <section class="card chart-card">
                 <div class="plan-tools">
-                    <label>Search
+                    <label class="field">Search
                         <input type="search" id="plan-q" placeholder="Epic, spec, task…" autocomplete="off">
                     </label>
-                    <label>Assignee
+                    <label class="field">Assignee
                         <select id="plan-assignee">
                             <option value="">Everyone</option>
                             @foreach ($assignees as $person)
@@ -992,7 +982,7 @@
                             @endforeach
                         </select>
                     </label>
-                    <label>Status
+                    <label class="field">Status
                         <select id="plan-status">
                             <option value="">Any</option>
                             <option value="todo">To do</option>

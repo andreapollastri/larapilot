@@ -4,105 +4,95 @@
 
 @push('styles')
 <style>
-    body .shell:has(.settings-page) {
-        max-width: none;
-        padding-left: max(20px, 4vw);
-        padding-right: max(20px, 4vw);
-    }
-
-    .settings-page {
+    .settings-tools {
         display: flex;
-        flex-direction: column;
-        gap: 24px;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px 16px;
+        margin-bottom: 22px;
     }
 
-    .settings-panel {
-        padding: 24px 28px;
+    .settings-tools .field { flex: 1 1 240px; max-width: 380px; }
+
+    .settings-jump {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        flex: 2 1 320px;
     }
 
-    .settings-panel h2 {
-        margin: 0 0 6px;
-        font-size: 1.15rem;
+    .settings-jump a {
+        padding: 5px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--text-2);
+        font-size: 0.8rem;
+        font-weight: 550;
+        text-decoration: none;
     }
 
-    .settings-panel .sub {
-        margin: 0 0 24px;
+    .settings-jump a:hover { border-color: var(--accent); color: var(--accent); }
+
+    .settings-group { margin-bottom: 26px; scroll-margin-top: 80px; }
+
+    .settings-group > h3 {
+        margin: 0 0 10px;
         color: var(--muted);
-        font-size: 0.9rem;
-        max-width: 72ch;
+        font-size: 0.72rem;
+        font-weight: 650;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
     }
 
-    .settings-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
+    .settings-list { overflow: hidden; }
 
     .setting-block {
-        padding: 20px 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        padding: 18px;
         border-top: 1px solid var(--border);
     }
 
-    .setting-block:first-child {
-        border-top: 0;
-        padding-top: 0;
+    .setting-block:first-child { border-top: 0; }
+
+    @media (min-width: 900px) {
+        .setting-block {
+            grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+            gap: 28px;
+            padding: 22px 24px;
+        }
     }
 
     .setting-head {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 8px 12px;
-        margin-bottom: 8px;
+        gap: 6px 10px;
+        margin-bottom: 6px;
     }
 
-    .setting-head h3 {
+    .setting-head h4 {
         margin: 0;
-        font-size: 1rem;
-        font-weight: 700;
+        font-size: 0.98rem;
     }
 
     .setting-key {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 0.75rem;
-        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 5px;
+        background: var(--surface-3);
         color: var(--muted);
-        background: color-mix(in srgb, var(--border) 40%, transparent);
-        padding: 2px 8px;
-        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
     }
 
     .setting-desc {
-        margin: 0 0 14px;
+        margin: 0;
         color: var(--muted);
-        font-size: 0.875rem;
+        font-size: 0.86rem;
         line-height: 1.55;
-        max-width: 80ch;
-    }
-
-    .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-
-    .chip {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        font-size: 0.82rem;
-        color: var(--muted);
-        background: color-mix(in srgb, var(--border) 35%, transparent);
-    }
-
-    .chip.current {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-weight: 600;
+        max-width: 70ch;
     }
 
     .option-guide {
@@ -111,30 +101,70 @@
         padding: 0;
         display: grid;
         gap: 6px;
+        align-content: start;
     }
 
     .option-guide li {
         display: grid;
-        grid-template-columns: auto 1fr;
+        grid-template-columns: 16px minmax(0, 1fr);
         gap: 10px;
-        align-items: baseline;
-        font-size: 0.82rem;
+        align-items: start;
+        padding: 9px 12px;
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
         color: var(--muted);
+        font-size: 0.83rem;
         line-height: 1.45;
     }
 
+    .option-guide li::before {
+        content: '';
+        width: 14px;
+        height: 14px;
+        margin-top: 3px;
+        border: 1.5px solid var(--border-strong);
+        border-radius: 999px;
+    }
+
     .option-guide .option-id {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--text);
-        white-space: nowrap;
+        display: block;
+        color: var(--text-2);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
     }
 
-    .option-guide li.is-current .option-id {
+    .option-guide li.is-current {
+        border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+        background: var(--accent-soft);
+        color: var(--text-2);
+    }
+
+    .option-guide li.is-current::before {
+        border-color: var(--accent);
+        background: radial-gradient(circle, var(--accent) 0 4px, transparent 4.5px);
+    }
+
+    .option-guide li.is-current .option-id { color: var(--accent-strong); }
+
+    .option-current {
+        display: inline-block;
+        margin-left: 6px;
         color: var(--accent);
+        font-family: var(--font);
+        font-size: 0.66rem;
+        font-weight: 650;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
     }
 
+    .settings-none {
+        margin: 0;
+        padding: 28px 18px;
+        text-align: center;
+        color: var(--muted);
+    }
 </style>
 @endpush
 
@@ -208,6 +238,14 @@
                 'options' => [
                     'YES' => 'Journal AskQuestion answers; flag contradictions before superseding (default).',
                     'NO' => 'Do not record decisions or run the regression guard.',
+                ],
+            ],
+            'prior_art' => [
+                'label' => 'Prior art check',
+                'description' => 'At inception Sebastian searches GitHub, Packagist, and OSS catalogs for existing solutions before scope is written; the verdict lands in the PRD and .larapilot/research/prior-art.md.',
+                'options' => [
+                    'YES' => 'Ask consent for the queries, search, and record Build anyway / Adopt / Integrate (default).',
+                    'NO' => 'Skip the round; the PRD records Prior Art: Not checked.',
                 ],
             ],
             'code_history' => [
@@ -333,54 +371,146 @@
         ];
     @endphp
 
+    @php
+        $settingGroups = [
+            'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve'],
+            'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'project_docs', 'comments'],
+            'Business' => ['account'],
+            'Security' => ['dashboard_auth', 'api_auth', 'security_scan'],
+            'Forges' => ['github', 'gitlab', 'bitbucket', 'azure'],
+            'Notifications' => ['notifications', 'notify_slack', 'notify_discord', 'notify_telegram'],
+        ];
+
+        $available = is_array($settings['options'] ?? null) ? $settings['options'] : [];
+        $sections = [];
+        $placed = [];
+
+        foreach ($settingGroups as $groupName => $groupKeys) {
+            foreach ($groupKeys as $groupKey) {
+                if (array_key_exists($groupKey, $available)) {
+                    $sections[$groupName][$groupKey] = $available[$groupKey];
+                    $placed[$groupKey] = true;
+                }
+            }
+        }
+
+        // A setting the package gained after this page was last touched still shows.
+        foreach ($available as $availableKey => $availableOptions) {
+            if (! isset($placed[$availableKey])) {
+                $sections['Other'][$availableKey] = $availableOptions;
+            }
+        }
+    @endphp
+
     <div class="settings-page">
-        <section class="card settings-panel">
-            <h2>Project settings</h2>
-            <p class="sub">Read-only snapshot of <code>.larapilot/config.yaml</code>. Change values with <code>/larapilot-settings</code> or <code>php artisan larapilot:settings-set</code>.</p>
+        <header class="page-head">
+            <div>
+                <h2>Project settings</h2>
+                <p class="sub">Read-only snapshot of <code>.larapilot/config.yaml</code>. Change values with <code>/larapilot-settings</code> or <code>php artisan larapilot:settings-set</code>.</p>
+            </div>
+        </header>
 
-            <div class="settings-list">
-                @foreach (($settings['options'] ?? []) as $key => $options)
-                    @php
-                        $meta = $settingCatalog[$key] ?? [
-                            'label' => str_replace('_', ' ', $key),
-                            'description' => null,
-                            'options' => [],
-                        ];
-                        $current = $settings['current'][$key] ?? null;
-                        $currentNorm = is_bool($current) ? ($current ? 'YES' : 'NO') : $current;
-                        $optionHints = $meta['options'] ?? [];
-                    @endphp
-                    <article class="setting-block">
-                        <div class="setting-head">
-                            <h3>{{ $meta['label'] }}</h3>
-                            <code class="setting-key">{{ $key }}</code>
-                        </div>
+        <div class="settings-tools">
+            <label class="field">
+                Find a setting
+                <input type="search" id="settings-q" placeholder="Name, key, or what it does…" autocomplete="off">
+            </label>
+            <nav class="settings-jump" aria-label="Setting groups">
+                @foreach (array_keys($sections) as $sectionName)
+                    <a href="#settings-{{ \Illuminate\Support\Str::slug($sectionName) }}">{{ $sectionName }}</a>
+                @endforeach
+            </nav>
+        </div>
 
-                        @if (! empty($meta['description']))
-                            <p class="setting-desc">{{ $meta['description'] }}</p>
-                        @endif
+        @foreach ($sections as $sectionName => $sectionSettings)
+            <section class="settings-group" id="settings-{{ \Illuminate\Support\Str::slug($sectionName) }}" data-settings-group>
+                <h3>{{ $sectionName }}</h3>
+                <div class="card settings-list">
+                    @foreach ($sectionSettings as $key => $options)
+                        @php
+                            $meta = $settingCatalog[$key] ?? [
+                                'label' => str_replace('_', ' ', $key),
+                                'description' => null,
+                                'options' => [],
+                            ];
+                            $current = $settings['current'][$key] ?? null;
+                            $currentNorm = is_bool($current) ? ($current ? 'YES' : 'NO') : $current;
+                            $optionHints = $meta['options'] ?? [];
+                            $settingSearch = strtolower(implode(' ', [$meta['label'], $key, (string) ($meta['description'] ?? ''), (string) $currentNorm]));
+                        @endphp
+                        <article class="setting-block" data-setting data-search="{{ $settingSearch }}">
+                            <div>
+                                <div class="setting-head">
+                                    <h4>{{ $meta['label'] }}</h4>
+                                    <code class="setting-key">{{ $key }}</code>
+                                </div>
 
-                        <div class="chips">
-                            @foreach ($options as $option)
-                                <span @class(['chip', 'current' => (string) $currentNorm === (string) $option])>{{ $option }}</span>
-                            @endforeach
-                        </div>
+                                @if (! empty($meta['description']))
+                                    <p class="setting-desc">{{ $meta['description'] }}</p>
+                                @endif
+                            </div>
 
-                        @if ($optionHints !== [])
-                            <ul class="option-guide">
+                            <ul class="option-guide" aria-label="Options for {{ $meta['label'] }}">
                                 @foreach ($options as $option)
-                                    @if (! empty($optionHints[$option]))
-                                        <li @class(['is-current' => (string) $currentNorm === (string) $option])>
-                                            <span class="option-id">{{ $option }}</span>
-                                            <span>{{ $optionHints[$option] }}</span>
-                                        </li>
-                                    @endif
+                                    @php $isCurrent = (string) $currentNorm === (string) $option; @endphp
+                                    <li @class(['is-current' => $isCurrent])>
+                                        <span>
+                                            <span class="option-id">{{ $option }}@if ($isCurrent)<span class="option-current">Current</span>@endif</span>
+                                            @if (! empty($optionHints[$option]))
+                                                {{ $optionHints[$option] }}
+                                            @endif
+                                        </span>
+                                    </li>
                                 @endforeach
                             </ul>
-                        @endif
-                    </article>
-                @endforeach
-            </div>
-        </section>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endforeach
+
+        <p class="card settings-none" id="settings-none" hidden>No setting matches that search.</p>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    (() => {
+        const query = document.getElementById('settings-q');
+        const none = document.getElementById('settings-none');
+
+        if (!query) {
+            return;
+        }
+
+        const groups = [...document.querySelectorAll('[data-settings-group]')];
+
+        const apply = () => {
+            const needle = query.value.trim().toLowerCase();
+            let shown = 0;
+
+            groups.forEach((group) => {
+                let visible = 0;
+
+                group.querySelectorAll('[data-setting]').forEach((setting) => {
+                    const match = needle === '' || (setting.dataset.search || '').includes(needle);
+                    setting.hidden = !match;
+
+                    if (match) {
+                        visible += 1;
+                    }
+                });
+
+                group.hidden = visible === 0;
+                shown += visible;
+            });
+
+            if (none) {
+                none.hidden = shown > 0;
+            }
+        };
+
+        query.addEventListener('input', apply);
+    })();
+</script>
+@endpush

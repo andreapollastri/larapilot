@@ -155,12 +155,16 @@ Use the **PRD Template in `/larapilot-inception`** (canonical section rules in `
   - `**Project Origin:** Adopted (existing codebase)`
   - `**Delivery Target:** …` (forward-looking, from Round 2)
   - `**Business Model:** …` (from Round 2)
+  - `**Prior Art:** Not checked (adopted codebase)` — the product already exists; do not run the search
+- `## Domain Model` from the Eloquent models, enums, and state columns found in the repo (entity, states, relations, owner persona); `## User Journeys` from routes, controllers, and feature tests — one `### J-XXX` per journey the code already serves, the core one first. Both cite evidence paths.
+- `## Non-Functional Requirements` records only what the repo proves (rate limits, queues, caching, WCAG tooling, backups in CI); unknown targets are rows with `Not recorded in repo — confirm`, never invented numbers.
+- `## Risks & Assumptions` lists every `Not recorded in repo — confirm` item as an open question with an owner, plus the risks the analysis report flagged under **Quality & Risk**.
 - Add a short lead paragraph under `## Functional Requirements`: *"Requirements FR-001…FR-NNN are reverse-engineered from the running codebase at commit {{GIT_SHA}}; see `research/codebase-analysis.md` for evidence."*
 - Every FR body cites its evidence paths and carries a **MoSCoW** tag (production code → Must).
 - `## Technical Architecture` reflects the **real** stack, plus `**Server Management:**`, `**Ops Owner:**`, and `**Support Window:**` from Round 3; unknowns are marked `Not recorded in repo — confirm`, never invented. Do not propose migrations or rewrites here.
 - `## PRD Revision History` first row: `| {{DATE}} | larapilot-adopt | Initial PRD reverse-engineered from codebase @ {{GIT_SHA}} |`.
 
-Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts).
+Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts); clear `PRD_RECOMMENDED_SECTION` warnings too — an adopted PRD carries every section a fresh one does.
 
 ### 6. Developer domain docs (retroactive bootstrap)
 

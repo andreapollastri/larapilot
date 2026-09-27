@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Larapilot\Support\ArtifactSections;
+use Larapilot\Support\PrdIds;
 use Larapilot\Support\SpecCode;
 
 class ValidationService
@@ -44,12 +45,81 @@ class ValidationService
                 'message' => 'PRD content is empty.',
                 'hint' => 'Write product discovery content before validating.',
             ];
+        } else {
+            foreach (ArtifactSections::prdRecommended() as $name => $aliases) {
+                if (! $this->hasSection($content, $aliases)) {
+                    $findings[] = $this->finding(
+                        'PRD_RECOMMENDED_SECTION',
+                        'warning',
+                        $name,
+                        "PRD has no {$name} section.",
+                        'A fresh inception writes it (Domain Model & User Journeys, Requirement Quality in runtime-discovery.md); older PRDs stay valid without it.'
+                    );
+                }
+            }
+
+            foreach ($this->frCodesWithoutMoscow($content) as $code) {
+                $findings[] = $this->finding(
+                    'PRD_FR_MISSING_MOSCOW',
+                    'warning',
+                    $code,
+                    "{$code} has no **MoSCoW:** line.",
+                    'Add **MoSCoW:** Must | Should | Could | Won\'t under the FR heading (MoSCoW Prioritization in runtime-discovery.md).'
+                );
+            }
+
+            foreach (PrdIds::duplicates($content) as $id) {
+                $findings[] = $this->finding(
+                    'PRD_DUPLICATE_ID',
+                    'warning',
+                    $id,
+                    "{$id} is defined more than once.",
+                    'Ids are permanent and unique: keep one definition and give the other a new id (PRD Revision in runtime-ops.md).'
+                );
+            }
+
+            foreach (PrdIds::dangling($content) as $id) {
+                $findings[] = $this->finding(
+                    'PRD_DANGLING_REFERENCE',
+                    'warning',
+                    $id,
+                    "{$id} is cited but never defined.",
+                    'Define it, fix the citation, or retire the id with its heading kept (PRD Revision in runtime-ops.md).'
+                );
+            }
         }
 
         return [
             'ok' => ! $this->hasErrors($findings),
             'findings' => $findings,
         ];
+    }
+
+    /**
+     * FR headings (`### FR-XXX`) whose block, up to the next FR or level-2 heading,
+     * carries no `**MoSCoW:**` label.
+     *
+     * @return list<string>
+     */
+    protected function frCodesWithoutMoscow(string $content): array
+    {
+        $parts = preg_split('/^###\s+(FR-\d+)\b[^\n]*$/mi', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+        if ($parts === false || count($parts) < 3) {
+            return [];
+        }
+
+        $missing = [];
+
+        for ($i = 1; $i < count($parts); $i += 2) {
+            $block = preg_split('/^##\s/m', (string) ($parts[$i + 1] ?? ''))[0] ?? '';
+
+            if (preg_match('/\*\*MoSCoW:\*\*/i', $block) !== 1) {
+                $missing[] = strtoupper($parts[$i]);
+            }
+        }
+
+        return $missing;
     }
 
     /**

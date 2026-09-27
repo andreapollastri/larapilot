@@ -35,7 +35,7 @@ Two classes:
 
 **Type mapping:** pick the closest sub-agent type the editor offers — e.g. Cursor: `explore`, `bugbot`, `security-review`; Claude Code: `Explore` for mapping, `general-purpose` with the review prompt for Robert/Lars. The spec worker is a generic writing sub-agent (Cursor `generalPurpose`, Claude Code `general-purpose`), never a readonly type. No matching type: use the generic/default sub-agent with the handoff prompt as-is. No sub-agent tool at all: inline fallback (see Capability check).
 
-Skills **without** sub-agents: `inception`, `feature`, `bug`, `spec`, `design`, `frontend-companion`, `ship`, `settings`. `adopt` may spawn **one** optional readonly `Explore` sub-agent for repo mapping (never under `effort: ECO`).
+Skills **without** sub-agents: `inception`, `feature`, `bug`, `triage`, `spec`, `design`, `frontend-companion`, `ship`, `settings`. `adopt` may spawn **one** optional readonly `Explore` sub-agent for repo mapping (never under `effort: ECO`).
 
 ### Spec worker (autopilot)
 

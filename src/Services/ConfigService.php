@@ -301,7 +301,8 @@ class ConfigService
      *     notify_discord: string,
      *     notify_telegram: string,
      *     release_mode: string,
-     *     project_docs: string
+     *     project_docs: string,
+     *     prior_art: string
      * }
      */
     public function settings(): array
@@ -350,7 +351,8 @@ class ConfigService
      *     notify_discord: bool,
      *     notify_telegram: bool,
      *     release_mode: bool,
-     *     project_docs: bool
+     *     project_docs: bool,
+     *     prior_art: bool
      * }
      */
     public function defaultSettings(): array
@@ -399,6 +401,7 @@ class ConfigService
             'notify_telegram' => false,
             'release_mode' => false,
             'project_docs' => false,
+            'prior_art' => true,
         ];
     }
 
@@ -526,6 +529,15 @@ class ConfigService
     public function projectDocsEnabled(): bool
     {
         return $this->settings()['project_docs'] === 'YES';
+    }
+
+    /**
+     * Prior-art search for existing open-source / packaged solutions at inception — ON by default.
+     * Only an explicit `settings.prior_art: false` / `NO` skips the round.
+     */
+    public function priorArtEnabled(): bool
+    {
+        return $this->settings()['prior_art'] === 'YES';
     }
 
     /**
@@ -948,6 +960,14 @@ class ConfigService
         return $this->allowedYesNoModes();
     }
 
+    /**
+     * @return list<string>
+     */
+    public function allowedPriorArtModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
     public function absolutePath(string $relative): string
     {
         if (str_starts_with($relative, '/') || preg_match('/^[A-Za-z]:[\\\\\\/]/', $relative) === 1) {
@@ -1131,6 +1151,22 @@ class ConfigService
     public function dashboardBrowsable(): bool
     {
         return $this->devRouteBrowsable('dashboard_route');
+    }
+
+    /**
+     * Whether the dashboard file manager is available. It follows the
+     * dashboard gate, so it is never true in production. It is open on a
+     * developer machine; on a shared host it needs the dashboard sign-in,
+     * because client documents and legacy snapshots are not for an
+     * anonymous visitor to read, let alone change.
+     */
+    public function fileManagerBrowsable(): bool
+    {
+        if (! $this->dashboardBrowsable() || ! (bool) config('larapilot.file_manager.enabled', true)) {
+            return false;
+        }
+
+        return app()->environment(['local', 'development', 'testing']) || $this->dashboardAuthEnabled();
     }
 
     /**

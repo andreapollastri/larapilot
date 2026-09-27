@@ -11,3 +11,5 @@ This file is an index, not the rules. Read **every** part below with the editor 
 | `.larapilot/runtime-discovery-3.md` | Decision Journal, Client Materials, Legacy Rewrite & Porting, Reference Products & Sebastian Deepsearch, Delivery Target, Business Model |
 | `.larapilot/runtime-discovery-4.md` | Operations & Support, MoSCoW Prioritization, Budget Sensitivity |
 | `.larapilot/runtime-discovery-5.md` | Frontend Topology |
+| `.larapilot/runtime-discovery-6.md` | Prior Art & Open-Source Alternatives, Domain Model & User Journeys |
+| `.larapilot/runtime-discovery-7.md` | Requirement Quality, Non-Functional Requirements, Risks & Assumptions, Definition of Ready & Readback |

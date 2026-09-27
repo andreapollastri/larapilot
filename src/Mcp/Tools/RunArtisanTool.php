@@ -32,6 +32,7 @@ class RunArtisanTool extends Tool
         'larapilot:bitbucket-status',
         'larapilot:azure-status',
         'larapilot:validate-prd',
+        'larapilot:prd-impact',
         'larapilot:validate-spec',
         'larapilot:validate-plan',
         'larapilot:doctor',

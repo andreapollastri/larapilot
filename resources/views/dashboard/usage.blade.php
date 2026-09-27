@@ -4,185 +4,112 @@
 
 @push('styles')
 <style>
-    .usage-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
+    .usage-panel { margin-bottom: 18px; }
+
+    .usage-panel h3 {
+        margin: 0 0 4px;
+        font-size: 1rem;
     }
 
-    .usage-top h2 {
-        margin: 0 0 6px;
-        font-size: 1.15rem;
-    }
-
-    .usage-top .sub {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.875rem;
-        max-width: 72ch;
-        line-height: 1.5;
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        padding: 8px 14px;
-        border-radius: 999px;
-        border: 1px solid var(--accent);
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .btn:hover { text-decoration: none; }
-
-    .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 14px;
-        margin-bottom: 22px;
-    }
-
-    .metric { padding: 16px 18px; }
-    .metric-label {
-        color: var(--muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-weight: 600;
-    }
-    .metric-value {
-        margin-top: 6px;
-        font-size: 1.6rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .panel {
-        padding: 18px 20px;
-        margin-bottom: 20px;
-    }
-
-    .panel h3 {
-        margin: 0 0 14px;
-        font-size: 0.95rem;
-    }
-
-    .panel .hint {
-        margin: -6px 0 14px;
-        color: var(--muted);
-        font-size: 0.8rem;
-        line-height: 1.45;
-    }
+    .usage-panel .hint { margin: 0 0 14px; font-variant-numeric: tabular-nums; }
+    .usage-panel h3 + .bars,
+    .usage-panel h3 + .filters,
+    .usage-panel h3 + .empty { margin-top: 14px; }
 
     .bars {
         display: grid;
-        gap: 10px;
+        gap: 12px;
     }
 
     .bar-row {
         display: grid;
-        grid-template-columns: 140px 1fr 70px;
-        gap: 10px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 6px 12px;
         align-items: center;
-        font-size: 0.85rem;
+        font-size: 0.86rem;
     }
 
-    .bar-track {
-        height: 10px;
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--border) 70%, transparent);
-        overflow: hidden;
-    }
+    .bar-row .bar-track { grid-column: 1 / -1; grid-row: 2; }
+    .bar-row > :last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-    .bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--accent), #0ea5e9);
-        border-radius: 999px;
+    @media (min-width: 640px) {
+        .bar-row { grid-template-columns: 150px minmax(0, 1fr) 70px; }
+        .bar-row .bar-track { grid-column: auto; grid-row: auto; }
+        .bar-row > :last-child { text-align: right; }
     }
 
     .filters {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 10px;
-        margin-bottom: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
     }
 
-    .filters label {
-        display: grid;
-        gap: 4px;
-        font-size: 0.75rem;
-        color: var(--muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
+    .filters .field:first-child { grid-column: 1 / -1; }
 
-    .filters input, .filters select {
-        padding: 7px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        color: var(--text);
-        font-size: 0.85rem;
-        font-weight: 400;
-        text-transform: none;
-        letter-spacing: normal;
+    @media (min-width: 860px) {
+        .filters { grid-template-columns: 2fr repeat(3, minmax(0, 1fr)); }
+        .filters .field:first-child { grid-column: auto; }
     }
 
     .entries {
         width: 100%;
+        min-width: 720px;
         border-collapse: collapse;
-        font-size: 0.82rem;
+        font-size: 0.84rem;
     }
 
-    .entries th, .entries td {
-        text-align: left;
-        padding: 8px 10px;
+    .entries th,
+    .entries td {
+        padding: 10px 12px;
         border-bottom: 1px solid var(--border);
+        text-align: left;
         vertical-align: top;
     }
 
-    .entries th { color: var(--muted); font-weight: 600; }
+    .entries th {
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .entries td:first-child,
+    .entries td:nth-child(4),
+    .entries td:nth-child(5) {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .entries td:first-child { color: var(--text-2); }
+    .entries td:last-child { white-space: nowrap; }
+
+    .entries tbody tr:hover { background: var(--surface-2); }
 
     .pager {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-top: 12px;
-        font-size: 0.8rem;
+        margin-top: 14px;
         color: var(--muted);
-    }
-
-    .pager button {
-        padding: 6px 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--border) 35%, transparent);
-        color: var(--text);
-        cursor: pointer;
         font-size: 0.8rem;
+        font-variant-numeric: tabular-nums;
     }
 
-    .pager button:disabled {
-        opacity: 0.45;
-        cursor: default;
-    }
+    .pager > div { display: flex; gap: 6px; }
 
     .reason-list {
         margin: 0;
         padding-left: 18px;
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.5;
+        color: var(--text-2);
+        font-size: 0.85rem;
+        line-height: 1.55;
     }
+
+    .reason-list li { margin: 3px 0; }
 </style>
 @endpush
 
@@ -209,15 +136,30 @@
 
             return rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') ?: '0';
         };
+        $logged = function (mixed $stamp): string {
+            $stamp = (string) $stamp;
+
+            if ($stamp === '') {
+                return '';
+            }
+
+            try {
+                return (new \DateTimeImmutable($stamp))->format('M j, Y · H:i');
+            } catch (\Exception) {
+                return $stamp;
+            }
+        };
     @endphp
 
-    <div class="usage-top">
+    <header class="page-head">
         <div>
             <h2>Lucille · Token usage</h2>
             <p class="sub">Tokens and hours logged by agents. Deadlines, epics, and the Gantt live on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a>.</p>
         </div>
-        <a class="btn" href="{{ route('larapilot.dashboard.usage.report') }}">Download report.md</a>
-    </div>
+        <div class="page-actions">
+            <a class="btn ghost" href="{{ route('larapilot.dashboard.usage.report') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report.md</a>
+        </div>
+    </header>
 
     <div class="metrics">
         <div class="card metric">
@@ -234,7 +176,7 @@
         </div>
     </div>
 
-    <section class="card panel">
+    <section class="card panel usage-panel">
         <h3>Zoey vs Lucille</h3>
         <p class="hint">
             Ledger {{ $zoey['ledger_tokens_display'] ?? '0' }}
@@ -251,10 +193,10 @@
         </ul>
     </section>
 
-    <section class="card panel">
+    <section class="card panel usage-panel">
         <h3>By category</h3>
         @if (($summary['entry_count'] ?? 0) === 0)
-            <div class="empty" style="padding:20px;">No ledger entries yet. Agents log with <code>larapilot:usage-log</code>.</div>
+            <div class="empty" style="padding: 24px 12px;">No ledger entries yet. Agents log with <code>larapilot:usage-log</code>.</div>
         @else
             <div class="bars">
                 @foreach ($byCategory as $category => $row)
@@ -272,16 +214,16 @@
         @endif
     </section>
 
-    <section class="card panel" id="ledger-panel">
+    <section class="card panel usage-panel" id="ledger-panel">
         <h3>Ledger history</h3>
         @if (($entries ?? []) === [])
-            <div class="empty" style="padding:16px;">Empty ledger.</div>
+            <div class="empty" style="padding: 24px 12px;">Empty ledger.</div>
         @else
             <div class="filters">
-                <label>Search
+                <label class="field">Search
                     <input type="search" id="ledger-q" placeholder="skill, spec, note…" autocomplete="off">
                 </label>
-                <label>Executor
+                <label class="field">Executor
                     <select id="ledger-user">
                         <option value="">All</option>
                         @foreach (($entry_users ?? []) as $user)
@@ -289,7 +231,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label>Category
+                <label class="field">Category
                     <select id="ledger-category">
                         <option value="">All</option>
                         @foreach (($entry_categories ?? []) as $category)
@@ -297,7 +239,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label>Estimate
+                <label class="field">Estimate
                     <select id="ledger-estimated">
                         <option value="">All</option>
                         <option value="1">Estimated</option>
@@ -305,6 +247,7 @@
                     </select>
                 </label>
             </div>
+            <div class="table-wrap">
             <table class="entries" id="ledger-table">
                 <thead>
                     <tr>
@@ -334,7 +277,7 @@
                             data-estimated="{{ !empty($entry['estimated']) ? '1' : '0' }}"
                             data-search="{{ $searchBlob }}"
                         >
-                            <td>{{ $entry['ts'] ?? '' }}</td>
+                            <td title="{{ $entry['ts'] ?? '' }}">{{ $logged($entry['ts'] ?? '') }}</td>
                             <td>{{ $entry['category'] ?? '' }}</td>
                             <td>{{ $entry['user'] ?? '' }}</td>
                             <td>{{ $formatTokens((int) ($entry['tokens'] ?? 0)) }}</td>
@@ -352,11 +295,12 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
             <div class="pager">
                 <span id="ledger-count">Showing 0</span>
                 <div>
-                    <button type="button" id="ledger-prev">Prev</button>
-                    <button type="button" id="ledger-next">Next</button>
+                    <button type="button" class="btn ghost small" id="ledger-prev">Prev</button>
+                    <button type="button" class="btn ghost small" id="ledger-next">Next</button>
                 </div>
             </div>
         @endif

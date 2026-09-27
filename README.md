@@ -111,6 +111,8 @@ php artisan larapilot:install  →  /larapilot-adopt  →  /larapilot-spec  → 
 | Existing Laravel app in production, built without Larapilot, no PRD yet | `/larapilot-adopt` |
 | One new capability on an existing product | `/larapilot-feature "…"` |
 | Defect or regression | `/larapilot-bug "…"` |
+| A request that may be either — a ticket, a client email | `/larapilot-triage "…"` |
+| A change to the PRD that is neither — priorities, scope, a sharper requirement, a decision reversed, an older PRD brought up to date | `/larapilot-prd "…"` |
 | Many planned stories at once | `/larapilot-autopilot US-004 US-005 …` |
 | A team ritual the packaged skills don't cover | `/larapilot-custom-skill` |
 
@@ -135,6 +137,8 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-spec` | MoSCoW backlog from the PRD |
 | `/larapilot-feature` | Mini-inception for one enhancement |
 | `/larapilot-bug` | Bug triage → fix spec or rework, with redacted diagnostics |
+| `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
+| `/larapilot-prd` | Revises the PRD when it is neither — sharpen, re-scope, re-model, re-decide, upgrade — and aligns the stories that cite what changed |
 | `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
 | `/larapilot-implement` | Code + tests + developer domain docs, one commit per task |
@@ -153,13 +157,40 @@ Published by Laravel Boost after `php artisan boost:install`:
 
 **Inception is a conversation, not a questionnaire.** AskQuestion is used only for the fixed choices Larapilot persists; every answer gets a reaction before the next question; and before any requirement is written, Mark, Jennifer, and Benjamin run at least two **challenge** exchanges on the goal itself (who has this problem and what they do instead, how you will know in 90 days, the riskiest assumption, what would make you stop). Four rounds always happen, legacy rewrites included: **Project Kind**, **Delivery Target**, **Business Model**, and **Operations & support**. A skipped round is recorded as `Not decided`, never as a guess.
 
+**Inception verifies before it scopes, and writes a PRD a spec can be built from.** After the goal challenge, Sebastian runs a **prior-art check** (`prior_art`, ON by default): he states the queries, asks consent, searches GitHub, Packagist, and open-source catalogs for products or packages that already do it, writes `research/prior-art.md` (license, stack, last release, what it covers and lacks, adoption cost), and you record a verdict — `Build anyway`, `Adopt / fork`, `Integrate as dependency`, or `Not checked`. Then the PRD gets its nouns and paths before its features: `## User Journeys` (one per way a persona gets value — the unit a spec is cut from), `## Domain Model` (entities, states, relations, glossary), every `### FR-XXX` with a named actor and verifiable **Done means** bullets, `## Non-Functional Requirements` with a target and a verifier per row, and `## Risks & Assumptions` (riskiest assumption, kill condition, open questions with an owner, the `Not decided` list). Tom runs a ten-point **Definition of Ready**, Mark reads the decisions back in twelve lines, and only then is the PRD written. `validate-prd` reports the new sections as warnings, so older PRDs stay valid.
+
+### Changing the PRD after inception
+
+The PRD changes through three doors, and each one leaves a row in `## PRD Revision History`:
+
+| The change is | Use | What it does to the PRD |
+| --- | --- | --- |
+| One new capability, or a shipped one that must now behave differently | `/larapilot-feature` | New `FR-XXX`, or the FR edited in place on a change request |
+| A defect that shows a requirement was never written | `/larapilot-bug` | A done-means bullet under the parent FR, or an NFR row. Never a "fix FR" |
+| Anything else | `/larapilot-prd` | See the revision kinds below |
+
+| Revision kind | Example | Backlog impact |
+| --- | --- | --- |
+| **Editorial** | Typos, a clearer sentence, a glossary term | None |
+| **Sharpen** | Done-means for an FR, a target for an NFR, an open question answered | Criteria added to open stories |
+| **Re-scope** | MoSCoW change, In Scope ↔ Future Phases, Delivery Target, an FR retired | Stories created, deferred, or deleted |
+| **Re-model** | Entity renamed, state added, journey split | Stories citing the old names |
+| **Re-decide** | Business model, ops owner, topology, data store, prior-art verdict | Architecture stories; quote recomputed |
+| **Upgrade** | An older PRD gains journeys, domain model, NFRs, risks | None |
+| **Pivot** | New vision or target user | `/larapilot-inception`, current PRD as input |
+
+- **Ids are permanent.** `FR-`, `J-`, `NFR-`, and `Q-` ids are never renumbered or reused. A dropped requirement keeps its heading with `MoSCoW: Won't` and a `Retired` line. `validate-prd` warns on `PRD_DUPLICATE_ID` and `PRD_DANGLING_REFERENCE`.
+- **The backlog follows.** `php artisan larapilot:prd-impact --ids=FR-004,J-001` lists the stories that cite the ids, with the action each needs: `TODO` re-issued, `PLANNED` re-issued and planned again, `IN PROGRESS` on your consent, `REVIEW` sent back with `spec-request-changes`, `DONE` never reopened. Without `--ids` it traces the whole PRD and lists the Must requirements no story covers.
+- **Nothing is written before the readback.** Mark shows before → after per changed item and asks Apply · Revise · Cancel.
+- **You edited `PRD.md` by hand?** Run `/larapilot-prd "I edited the PRD by hand"`. It reads the git diff and adds what a hand edit skips: the history row, validation, the inception snapshot, and the backlog check.
+
 Skills load rules from **runtime packs** in `.larapilot/`: `shared-runtime.md` is an index with a mandatory **Read protocol**, and each skill reads only the section files it needs (`runtime-core-*.md`, `runtime-delivery-N.md`, …), each under 15 KB.
 
 ---
 
 ## Custom skills — your own slash commands
 
-The 20 packaged skills are the base layer. On top of them, each project can keep its **own** Boost skills in `.larapilot/skills/` — committed with the code, registered with Boost automatically, built on the same `larapilot:*` CLI. Good candidates: a pre-deploy GO/NO-GO gate, a compliance check, client release notes, your team's house rules for a Filament resource.
+The 22 packaged skills are the base layer. On top of them, each project can keep its **own** Boost skills in `.larapilot/skills/` — committed with the code, registered with Boost automatically, built on the same `larapilot:*` CLI. Good candidates: a pre-deploy GO/NO-GO gate, a compliance check, client release notes, your team's house rules for a Filament resource.
 
 **Example — turn a pre-deploy checklist into `/acme-predeploy-gate`:**
 
@@ -223,7 +254,7 @@ Stop at the first NO-GO. Never deploy, push, tag, or merge from this skill.
 | Overwrite | refused without `--force` |
 | Input | `--file=`, `--content=`, or stdin |
 | Register again | `custom-skill-list`, `larapilot:update`, and the dashboard **Skills** page re-register every skill on disk |
-| Remove | delete `.larapilot/skills/{name}/` **and** its mirrors in `.ai/skills/` and the agent folders, then `php artisan boost:update` — registration never deletes a copy |
+| Remove | delete the folder from the dashboard **File manager** — it removes the mirrors in `.ai/skills/` and the agent folders that still match the skill — then `php artisan boost:update`. By hand: delete `.larapilot/skills/{name}/` **and** its mirrors. Registration never deletes a copy |
 
 Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-skill) · Contract: [Custom skills](https://larapilot.web.ap.it/#deep-dive-custom-skills).
 
@@ -240,7 +271,7 @@ Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-s
 | `docs/devs/` | **Developer domain docs** — why the code is built the way it is (always on) |
 | `docs/review/` · `test-results/` · `security/` · `launch/` · `support/` | Review findings, test evidence, OWASP assessments, launch checks, bug intake |
 | `docs/quote.md` | Client quote in the PRD language (Economics) |
-| `choices.yaml` | Snapshot of inception answers |
+| `choices.yaml` | Snapshot of inception answers (kinds, targets, prior-art verdict, success signal, kill condition, ops) |
 | `decisions.yaml` | Append-only journal of your explicit choices + regression guard (`decision_log`, ON) |
 | `code-history.yaml` | Files and line ranges touched per spec/task (`code_history`, OFF) |
 | `releases.yaml` | Semver release ledger (`release_mode`) |
@@ -250,7 +281,7 @@ Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-s
 | `mockups/{spec}/` | Static HTML previews; `styles/{slug}/` for style variants |
 | `internal-feedback/{code}.md` | PM/dev comments until **DONE** |
 | `skills/{name}/SKILL.md` | Your custom Boost skills |
-| `client-materials/` · `legacy/` · `research/` · `brand/` | Inputs for inception, legacy snapshots, analysis and parity reports, brand assets |
+| `client-materials/` · `legacy/` · `research/` · `brand/` | Inputs for inception, legacy snapshots, prior-art / reference-product / parity reports, brand assets |
 | `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) — add your own beside them |
 | `shared-runtime.md` · `runtime-*.md` · `task-templates.md` · `integrations.md` | Rules and guides the skills read — refreshed by `larapilot:update` |
 | `auth.yaml` | Hashed dashboard users — git-ignored |
@@ -295,6 +326,7 @@ Set with `/larapilot-settings` or `php artisan larapilot:settings-set --key=VALU
 | --- | --- |
 | Process | `effort` → `STANDARD` (`ECO` · `MAX`) · `backlog` → `STANDARD` (`LEAN` · `GRANULAR`) · `git_mode` → `GITFLOW` (`NO_GITFLOW` · `GITFLOW_PUSH`) · `testing` → `NORMAL` (`MINIMAL` · `BEST`) · `auto_approve` → `NO` |
 | Tracking | `lucille` → `YES` (switched off by `ECO` unless you pass `--lucille=YES`) · `decision_log` → `YES` · `code_history` → `NO` |
+| Discovery | `prior_art` → `YES` (Sebastian's existing-solutions search at inception, consent asked before every search) |
 | Business | `account` → `NONE` (`FREELANCE` · `COMPANY` unlock Economics) |
 | Delivery extras | `release_mode` → `NO` · `project_docs` → `NO` |
 | Access & security | `comments` → `NO` · `dashboard_auth` → `NO` · `api_auth` → `NO` · `security_scan` → `NO` |
@@ -331,12 +363,31 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | Design | `/larapilot/design` | One navigable mockup index: cover, ordered walk through every flow, style compare with **Use this style**, zip download |
 | Settings | `/larapilot/settings` | Every project mode with its options explained |
 | Skills | `/larapilot/skills` | Your custom skills — trigger, description, registration status |
+| File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, download, upload files or a whole folder (structure kept), rename, delete |
 | Git | `/larapilot/git` | 12-month contribution heatmap from local history, filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
 | Economics | `/larapilot/economics` | Pricing simulator (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
 | Docs | `/larapilot/docs` | Delivery loop, packaged skills, persona roster |
+
+The dashboard follows the system theme; pin **light** or **dark** from the sidebar. Every page works on a phone.
+
+### File manager
+
+`/larapilot/files` manages what you hand the skills before they start:
+
+| Folder | What it is for |
+| --- | --- |
+| `brand/` | Logo, palette, typography, and the brand guide |
+| `client-materials/` | Briefs, analyses, and documents supplied by the client |
+| `design-systems/` | Visual references and tokens the mockups are built on |
+| `legacy/` | Snapshots of the old system to port or migrate |
+| `skills/` | Your custom skills, one folder per slash command |
+
+- **Upload a folder** and it keeps its structure; an existing file is kept unless **Replace existing files** is on. One file is limited by `LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB` (default 50 MB) and by PHP's `upload_max_filesize` / `post_max_size`, whichever is lower.
+- **Local by default.** The file manager is open in `local`, `development`, and `testing`. On any other environment (`staging`) it is served only when `dashboard_auth` is `YES` — client documents and legacy snapshots stay behind a sign-in.
+- Nothing outside the five folders can be reached, a symlink is never followed, and an uploaded `.html`, `.js`, or `.svg` is never run in the dashboard. `LARAPILOT_FILE_MANAGER=false` removes the page.
 
 ### JSON API
 
@@ -412,6 +463,7 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 
 - Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
 - Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
+- The dashboard **file manager** is stricter than the rest of the UI: outside local/development/testing it answers `404` — reads and writes alike — until `dashboard_auth` is `YES`.
 - With `security_scan=YES`, `checkpoint:scan` `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles or runs the scanner while the setting is off.
 
 ### Diagnostics (bug triage)
@@ -510,7 +562,7 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | --- | --- |
 | Setup & health | `install` · `update` · `doctor` (`--human`) · `config-show` (`--only=settings,paths,frontend,tracker,dev_docs,backstage,workflow,personas`) · `settings-set` · `quality` (`--fix`) |
 | Access | `dashboard-user {list\|add\|remove}` |
-| Discovery | `prd-write` · `validate-prd` · `choices-set` · `frontend-set` · `frontend-scan` |
+| Discovery | `prd-write` · `validate-prd` · `prd-impact` (`--ids=`) · `choices-set` · `frontend-set` · `frontend-scan` |
 | Backlog | `spec-list` · `spec-add` · `spec-show` (`--task=`, `--fields=`) · `spec-next` · `spec-delete` · `validate-spec` · `spec-comment` |
 | Design | `mockup-choose-style US-XXX --style=` |
 | Plan & build | `validate-plan` · `spec-plan` · `spec-start` · `task-done` · `spec-review` |

@@ -56,3 +56,12 @@ it('renders fenced code blocks in the fallback renderer', function (): void {
         ->toContain('</code></pre>')
         ->not->toContain('id="code-line"');
 });
+
+it('renders tables and task lists', function (): void {
+    $html = Markdown::toHtml("| Layer | Choice |\n| --- | --- |\n| Payments | Stripe |\n\n- [x] Done\n- [ ] Open");
+
+    expect($html)->toContain('<table>')
+        ->toContain('<td>Stripe</td>')
+        ->toContain('type="checkbox"')
+        ->not->toContain('| --- |');
+});

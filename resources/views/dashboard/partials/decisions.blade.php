@@ -62,8 +62,12 @@
     @push('styles')
     <style>
         .decisions-panel {
-            margin-top: 20px;
-            padding: 20px 22px 24px;
+            margin-top: 22px;
+            padding: 20px 18px 22px;
+        }
+
+        @media (min-width: 640px) {
+            .decisions-panel { padding: 24px 26px 26px; }
         }
 
         .decisions-panel:not(.card) {
@@ -72,67 +76,71 @@
         }
 
         .decisions-panel:not(.card) .decisions-header h3 {
-            margin: 0 0 14px;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            margin: 0 0 6px;
             color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 650;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .decisions-header {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
             margin-bottom: 18px;
         }
 
         .decisions-header h2 {
             margin: 0 0 4px;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
         }
 
         .decisions-sub {
             margin: 0;
             color: var(--muted);
-            font-size: 0.875rem;
+            font-size: 0.85rem;
         }
 
         .decisions-count {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--muted);
-            padding: 4px 10px;
-            border-radius: 999px;
+            padding: 4px 11px;
             border: 1px solid var(--border);
-            background: color-mix(in srgb, var(--border) 35%, transparent);
+            border-radius: 999px;
+            background: var(--surface-2);
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
         }
 
         .decisions-regression-hint {
-            color: #b45309;
+            color: var(--warn);
             font-weight: 600;
         }
 
         .decisions-empty {
-            padding: 8px 0 0;
+            padding: 4px 0 0;
             text-align: left;
         }
+
+        .decisions-empty p, p.decisions-empty { max-width: none; margin: 0; }
 
         .decisions-groups {
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 24px;
         }
 
         .decisions-group-title {
-            margin: 0 0 10px;
-            font-size: 0.92rem;
-            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
+            margin: 0 0 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
         }
 
         .decisions-group-title a {
@@ -146,12 +154,13 @@
         }
 
         .decisions-group-count {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--muted);
-            padding: 2px 8px;
-            border-radius: 999px;
+            padding: 1px 8px;
             border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
         }
 
         .decisions-timeline {
@@ -162,28 +171,25 @@
 
         .decision-entry {
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-2);
             overflow: hidden;
-            background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+            transition: border-color 0.14s ease;
         }
 
-        .decision-entry--superseded {
-            opacity: 0.72;
-        }
-
-        .decision-entry--superseded .decision-entry-value {
-            text-decoration: line-through;
-        }
+        .decision-entry--superseded { opacity: 0.7; }
+        .decision-entry--superseded .decision-entry-value { text-decoration: line-through; }
 
         .decision-entry[open] {
             border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+            background: var(--surface);
         }
 
         .decision-entry-summary {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px 12px;
             padding: 12px 14px;
             cursor: pointer;
             list-style: none;
@@ -202,13 +208,13 @@
             align-items: flex-start;
             gap: 10px;
             min-width: 0;
-            flex: 1;
+            flex: 1 1 220px;
         }
 
         .decision-entry-chevron {
             flex-shrink: 0;
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             margin-top: 2px;
             color: var(--muted);
             transition: transform 0.15s ease, color 0.15s ease;
@@ -219,88 +225,87 @@
             color: var(--accent);
         }
 
-        .decision-entry-headline strong {
-            font-size: 0.92rem;
-        }
+        .decision-entry-headline { min-width: 0; }
+        .decision-entry-headline strong { font-size: 0.9rem; font-weight: 600; }
 
         .decision-entry-value {
             margin-top: 2px;
-            font-size: 0.88rem;
-            color: var(--text);
+            color: var(--text-2);
+            font-size: 0.86rem;
+            overflow-wrap: anywhere;
         }
 
         .decision-entry-meta {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
             justify-content: flex-end;
         }
 
         .decision-badge {
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-            padding: 2px 8px;
-            border-radius: 999px;
+            padding: 2px 9px;
             border: 1px solid var(--border);
+            border-radius: 999px;
             color: var(--muted);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
             white-space: nowrap;
+            text-decoration: none;
         }
 
         .decision-badge--spec {
             border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-            color: var(--accent);
             background: var(--accent-soft);
+            color: var(--accent-strong);
         }
 
-        .decision-badge--superseded {
-            border-color: #fcd34d;
-            color: #92400e;
-            background: #fef3c7;
-        }
-
+        .decision-badge--superseded,
         .decision-badge--changed {
-            border-color: #fdba74;
-            color: #9a3412;
-            background: #ffedd5;
+            border-color: color-mix(in srgb, var(--warn-fill) 50%, var(--border));
+            background: color-mix(in srgb, var(--warn-fill) 14%, transparent);
+            color: var(--warn);
         }
 
         .decision-entry-panel {
             padding: 0 16px 14px;
             border-top: 1px solid var(--border);
-            font-size: 0.88rem;
+            font-size: 0.87rem;
         }
 
-        .decision-entry:not([open]) .decision-entry-panel {
-            display: none;
-        }
+        .decision-entry:not([open]) .decision-entry-panel { display: none; }
 
         .decision-detail-grid {
             display: grid;
-            gap: 8px;
+            gap: 10px;
+            margin: 0;
             padding-top: 12px;
         }
 
         .decision-detail-row {
             display: grid;
-            grid-template-columns: 110px 1fr;
-            gap: 10px;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 2px;
+        }
+
+        @media (min-width: 560px) {
+            .decision-detail-row { grid-template-columns: 116px minmax(0, 1fr); gap: 12px; }
         }
 
         .decision-detail-label {
-            color: var(--muted);
-            font-size: 0.78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
             padding-top: 2px;
+            color: var(--muted);
+            font-size: 0.7rem;
+            font-weight: 650;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
         }
 
         .decision-detail-value {
             margin: 0;
-            word-break: break-word;
+            overflow-wrap: anywhere;
         }
     </style>
     @endpush

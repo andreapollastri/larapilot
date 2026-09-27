@@ -2,182 +2,166 @@
 
 @section('title', 'Design')
 
+@section('main-class', 'is-wide')
+
 @push('styles')
 <style>
-    body .shell:has(.design-page) {
-        max-width: none;
-        padding-left: max(20px, 3vw);
-        padding-right: max(20px, 3vw);
-    }
-
     .design-page { display: flex; flex-direction: column; gap: 18px; }
-
-    .design-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-    .design-top h2 { margin: 0 0 6px; font-size: 1.15rem; }
-    .design-top .sub {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.875rem;
-        max-width: 80ch;
-        line-height: 1.5;
-    }
-    .design-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        border: 1px solid var(--accent);
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-decoration: none;
-        white-space: nowrap;
-        cursor: pointer;
-        font-family: inherit;
-    }
-    .btn:hover { text-decoration: none; }
-    .btn.ghost {
-        border-color: var(--border);
-        background: var(--surface);
-        color: var(--text);
-    }
-    .btn.is-disabled,
-    .btn[disabled] {
-        opacity: 0.45;
-        pointer-events: none;
-        border-color: var(--border);
-        background: var(--surface);
-        color: var(--muted);
-    }
+    .design-page .page-head { margin-bottom: 0; }
 
     .design-stage {
         display: grid;
-        grid-template-columns: 280px minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         gap: 16px;
         align-items: start;
     }
-    @media (max-width: 1100px) {
-        .design-stage { grid-template-columns: minmax(0, 1fr); }
-        /* stacked above the viewer: keep the index scrollable so it never
-           pushes the screen itself below the fold */
-        .design-toc { position: static !important; max-height: 46vh !important; }
+
+    /* index: one list, ordered, with the entry screen of each flow marked.
+       Stacked above the viewer it stays scrollable, so it never pushes the
+       screen itself below the fold. */
+    .design-toc {
+        padding: 14px 10px 16px;
+        overflow: auto;
+        max-height: 44vh;
+        scrollbar-width: thin;
     }
 
-    /* index: one list, ordered, with the entry screen of each flow marked */
-    .design-toc {
-        padding: 14px 12px 18px;
-        overflow: auto;
-        max-height: calc(100vh - 140px);
-        position: sticky;
-        top: 16px;
+    @media (min-width: 1100px) {
+        .design-stage { grid-template-columns: 280px minmax(0, 1fr); }
+
+        .design-toc {
+            position: sticky;
+            top: 24px;
+            max-height: calc(100vh - 48px);
+        }
     }
+
     .design-toc h3 {
         margin: 0 0 4px;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--muted);
         padding: 0 8px;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
     }
+
     .design-toc .toc-lead {
         margin: 0 8px 12px;
         color: var(--muted);
-        font-size: 0.75rem;
+        font-size: 0.76rem;
         line-height: 1.45;
     }
+
     .toc-list { list-style: none; margin: 0; padding: 0; }
+
     .toc-item,
     .toc-flow {
         display: flex;
         align-items: center;
         gap: 8px;
         width: 100%;
-        text-align: left;
-        padding: 8px 10px;
+        min-height: 36px;
+        padding: 6px 10px;
         border: 0;
-        border-radius: 8px;
+        border-radius: var(--radius-xs);
         background: transparent;
-        color: inherit;
+        color: var(--text-2);
         font: inherit;
         font-size: 0.85rem;
+        text-align: left;
         cursor: pointer;
     }
+
     .toc-item.is-overview {
-        font-weight: 700;
-        border: 1px solid var(--border);
         margin-bottom: 10px;
-    }
-    .toc-flow {
+        border: 1px solid var(--border);
+        color: var(--text);
         font-weight: 600;
-        font-size: 0.82rem;
+    }
+
+    .toc-flow {
         gap: 10px;
+        font-size: 0.84rem;
+        font-weight: 600;
     }
+
     .toc-flow .toc-code {
-        font-variant-numeric: tabular-nums;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--muted);
         flex: none;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 600;
     }
+
     .toc-flow.is-active .toc-code { color: inherit; }
+
     .toc-flow .toc-name {
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        min-width: 0;
     }
+
     .toc-flow .toc-count {
+        flex: none;
         margin-left: auto;
+        color: var(--muted);
         font-size: 0.7rem;
         font-weight: 600;
-        color: var(--muted);
-        flex: none;
+        font-variant-numeric: tabular-nums;
     }
-    .toc-screens { list-style: none; margin: 0 0 4px; padding: 0 0 0 10px; border-left: 1px solid var(--border); }
-    .toc-screen { padding-left: 12px; font-size: 0.82rem; }
+
+    .toc-screens {
+        list-style: none;
+        margin: 0 0 4px 12px;
+        padding: 0 0 0 8px;
+        border-left: 1px solid var(--border);
+    }
+
+    .toc-screen { font-size: 0.82rem; }
+
     .toc-item:hover,
-    .toc-flow:hover,
+    .toc-flow:hover { background: var(--surface-3); color: var(--text); }
+
     .toc-item.is-active,
     .toc-flow.is-active {
         background: var(--accent-soft);
-        color: var(--accent);
+        color: var(--accent-strong);
     }
+
     .toc-badge {
-        font-size: 0.62rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        padding: 1px 6px;
-        border-radius: 999px;
-        border: 1px solid var(--status-done);
-        color: var(--status-done);
-        white-space: nowrap;
         flex: none;
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--ok-fill) 14%, transparent);
+        color: var(--ok);
+        font-size: 0.62rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
     }
+
+    .toc-item .toc-badge { margin-left: auto; }
 
     .design-viewer { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
     .design-frame-wrap { display: flex; flex-direction: column; overflow: hidden; }
+
     .design-frame-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
+        gap: 10px 12px;
         padding: 10px 14px;
         border-bottom: 1px solid var(--border);
-        font-size: 0.82rem;
+        font-size: 0.84rem;
         flex-wrap: wrap;
     }
-    .design-crumb { display: flex; flex-direction: column; min-width: 0; }
+
+    .design-crumb { display: flex; flex-direction: column; min-width: 0; flex: 1 1 180px; }
+
     .design-crumb .flow {
         color: var(--muted);
         font-size: 0.72rem;
@@ -185,21 +169,34 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     .design-crumb .screen { font-weight: 600; }
-    .design-nav { display: flex; align-items: center; gap: 8px; }
-    .design-nav .counter { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+
+    .design-nav { display: flex; align-items: center; gap: 6px; }
+
+    .design-nav .counter {
+        margin-right: 4px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-variant-numeric: tabular-nums;
+    }
+
     .design-nav .step {
-        border: 1px solid var(--border);
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
         background: var(--surface);
         color: var(--text);
-        border-radius: 8px;
-        width: 30px;
-        height: 28px;
-        font-size: 0.9rem;
-        cursor: pointer;
+        font-size: 0.95rem;
         line-height: 1;
+        cursor: pointer;
     }
-    .design-nav .step:disabled { opacity: 0.4; cursor: default; }
+
+    .design-nav .step:hover { border-color: var(--accent); color: var(--accent); }
+    .design-nav .step:disabled { opacity: 0.4; cursor: default; border-color: var(--border); color: var(--muted); }
+
     .design-frame {
         width: 100%;
         height: clamp(420px, 76vh, 900px);
@@ -208,17 +205,24 @@
     }
 
     /* screen galleries: live previews, as many per row as the width allows */
-    .screen-section { padding: 16px 18px 20px; }
+    .screen-section { padding: 18px 16px 20px; }
+
+    @media (min-width: 640px) {
+        .screen-section { padding: 20px 22px 24px; }
+    }
+
     .screen-section > header {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
-        gap: 10px 14px;
+        gap: 6px 14px;
         flex-wrap: wrap;
-        margin-bottom: 2px;
+        margin-bottom: 14px;
     }
-    .screen-section h3 { margin: 0; font-size: 0.95rem; }
-    .screen-section .hint { margin: 4px 0 14px; color: var(--muted); font-size: 0.8rem; }
+
+    .screen-section h3 { margin: 0; font-size: 1rem; }
+    .screen-section .hint { margin: -8px 0 14px; }
+    .screen-section > header .hint { margin: 0; }
 
     .screen-grid {
         --thumb-zoom: 0.32;
@@ -226,6 +230,7 @@
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
         gap: 14px;
     }
+
     @media (min-width: 1600px) {
         .screen-grid { --thumb-zoom: 0.28; }
     }
@@ -236,29 +241,27 @@
         overflow: hidden;
         padding: 0;
         margin: 0;
-        text-align: left;
-        font: inherit;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
         color: inherit;
+        font: inherit;
+        text-align: left;
         text-decoration: none;
         cursor: pointer;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
         transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
     }
+
     .screen-card:hover {
         text-decoration: none;
-        border-color: var(--accent);
-        box-shadow: var(--shadow);
+        border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+        box-shadow: 0 8px 22px color-mix(in srgb, var(--text) 9%, transparent);
         transform: translateY(-2px);
     }
-    .screen-card:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-    }
+
     .screen-card.is-active {
         border-color: var(--accent);
-        box-shadow: 0 0 0 2px var(--accent-soft);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
     }
 
     .screen-thumb {
@@ -268,6 +271,7 @@
         background: #fff;
         border-bottom: 1px solid var(--border);
     }
+
     .screen-thumb iframe {
         position: absolute;
         top: 0;
@@ -279,6 +283,7 @@
         transform: scale(var(--thumb-zoom));
         transform-origin: 0 0;
     }
+
     /* keeps the preview from swallowing clicks meant for the card */
     .screen-thumb::after {
         content: '';
@@ -290,32 +295,36 @@
         display: flex;
         flex-direction: column;
         gap: 3px;
-        padding: 10px 12px 12px;
+        padding: 11px 13px 13px;
         min-width: 0;
     }
+
     .screen-meta .row {
         display: flex;
         align-items: center;
         gap: 8px;
         min-width: 0;
     }
+
     .screen-code {
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        color: var(--accent);
         flex: none;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 600;
     }
+
     .screen-name {
-        font-size: 0.85rem;
+        font-size: 0.86rem;
         font-weight: 600;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
     .screen-flow {
-        font-size: 0.75rem;
         color: var(--muted);
+        font-size: 0.76rem;
         line-height: 1.35;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -323,26 +332,9 @@
         overflow: hidden;
     }
 
-    .empty-card { padding: 40px 28px; text-align: center; }
-    .empty-card h2 { margin: 0 0 8px; }
-    .empty-card p { margin: 0 auto 12px; max-width: 62ch; color: var(--muted); }
-
-    .design-flash {
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-    }
-    .design-flash--success {
-        border: 1px solid color-mix(in srgb, var(--status-done) 45%, var(--border));
-        background: color-mix(in srgb, var(--status-done) 10%, var(--surface));
-        color: #047857;
-    }
-    .design-flash--error {
-        border: 1px solid color-mix(in srgb, #ef4444 45%, var(--border));
-        background: color-mix(in srgb, #ef4444 8%, var(--surface));
-        color: #b91c1c;
-    }
+    .empty-card { padding: 48px 24px; text-align: center; }
+    .empty-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
+    .empty-card p { margin: 0 auto; max-width: 62ch; color: var(--muted); }
 
     .style-bar {
         display: flex;
@@ -351,73 +343,76 @@
         gap: 8px 10px;
         padding: 10px 14px;
         border-bottom: 1px solid var(--border);
-        background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+        background: var(--surface-2);
     }
+
     .style-bar[hidden] { display: none !important; }
+
     .style-bar .lead {
-        font-size: 0.75rem;
-        font-weight: 650;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--muted);
         margin-right: 4px;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
-    .style-chip {
+
+    #style-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .style-chip,
+    .style-bar .compare-toggle {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 5px 12px;
+        min-height: 32px;
+        padding: 0 13px;
+        border: 1px solid var(--border-strong);
         border-radius: 999px;
-        border: 1px solid var(--border);
         background: var(--surface);
         color: var(--text);
-        font-size: 0.78rem;
+        font-family: inherit;
+        font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
-        font-family: inherit;
     }
-    .style-chip:hover { border-color: var(--accent); color: var(--accent); }
-    .style-chip.is-active {
-        border-color: var(--accent);
+
+    .style-chip:hover,
+    .style-bar .compare-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    .style-chip.is-active,
+    .style-bar .compare-toggle[aria-pressed="true"] {
+        border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
         background: var(--accent-soft);
-        color: var(--accent);
+        color: var(--accent-strong);
     }
+
     .style-chip.is-chosen::after {
         content: '✓';
-        font-size: 0.72rem;
-        color: var(--status-done);
+        color: var(--ok);
+        font-size: 0.74rem;
     }
-    .style-bar .compare-toggle {
-        margin-left: auto;
-        padding: 5px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        font-size: 0.78rem;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: inherit;
-    }
-    .style-bar .compare-toggle[aria-pressed="true"] {
-        border-color: var(--accent);
-        background: var(--accent-soft);
-        color: var(--accent);
-    }
+
+    .style-bar .compare-toggle { margin-left: auto; }
+
     .style-choose {
         display: inline;
         margin: 0;
     }
+
     .style-choose .btn-mini {
-        padding: 5px 10px;
-        border-radius: 999px;
+        min-height: 28px;
+        padding: 0 11px;
         border: 1px solid var(--accent);
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-size: 0.72rem;
-        font-weight: 650;
-        cursor: pointer;
+        border-radius: var(--radius-xs);
+        background: var(--accent);
+        color: var(--accent-contrast);
         font-family: inherit;
+        font-size: 0.74rem;
+        font-weight: 600;
+        cursor: pointer;
     }
+
+    .style-choose .btn-mini:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
 
     .compare-grid {
         display: grid;
@@ -425,38 +420,48 @@
         gap: 12px;
         padding: 14px;
         border-top: 1px solid var(--border);
-        background: color-mix(in srgb, var(--border) 25%, var(--surface));
+        background: var(--surface-2);
     }
+
     .compare-grid[hidden] { display: none !important; }
+
     .compare-card {
         display: flex;
         flex-direction: column;
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
         overflow: hidden;
         background: var(--surface);
     }
-    .compare-card.is-chosen { border-color: var(--status-done); box-shadow: 0 0 0 1px color-mix(in srgb, var(--status-done) 35%, transparent); }
+
+    .compare-card.is-chosen {
+        border-color: var(--ok-fill);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok-fill) 20%, transparent);
+    }
+
     .compare-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        padding: 8px 10px;
+        min-height: 44px;
+        padding: 6px 12px;
         border-bottom: 1px solid var(--border);
-        font-size: 0.78rem;
-        font-weight: 650;
+        font-size: 0.8rem;
+        font-weight: 600;
     }
+
     .compare-head .tag {
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+        color: var(--ok);
+        font-size: 0.66rem;
+        font-weight: 650;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: var(--status-done);
     }
+
     .compare-frame {
         width: 100%;
-        height: 220px;
+        height: 240px;
         border: 0;
         background: #fff;
     }
@@ -608,37 +613,32 @@
     @endphp
 
     <div class="design-page">
-        @if (session('larapilot_success'))
-            <p class="design-flash design-flash--success">{{ session('larapilot_success') }}</p>
-        @endif
-        @if (session('larapilot_error'))
-            <p class="design-flash design-flash--error">{{ session('larapilot_error') }}</p>
-        @endif
-
-        <div class="design-top">
+        <header class="page-head">
             <div>
                 <h2>Design</h2>
+                @php
+                    $designCount = $available
+                        ? ' — '.$catalog['spec_count'].' flow'.($catalog['spec_count'] === 1 ? '' : 's')
+                            .', '.$catalog['screen_count'].' screen'.($catalog['screen_count'] === 1 ? '' : 's')
+                        : '';
+                @endphp
                 <p class="sub">
-                    Every mockup screen for <strong>{{ $projectTitle }}</strong>, flow by flow
-                    @if ($available)
-                        — {{ $catalog['spec_count'] }} flow{{ $catalog['spec_count'] === 1 ? '' : 's' }},
-                        {{ $catalog['screen_count'] }} screen{{ $catalog['screen_count'] === 1 ? '' : 's' }}
-                    @endif
-                    . Pick one from the gallery, step through them with the arrows, or compare style variants side by side and lock the one to implement.
+                    Every mockup screen for <strong>{{ $projectTitle }}</strong>, flow by flow{{ $designCount }}.
+                    Pick one from the gallery, step through them with the arrows, or compare style variants side by side and lock the one to implement.
                     Files live in <code>{{ $catalog['path'] ?? '.larapilot/mockups/' }}</code>.
                 </p>
             </div>
-            <div class="design-actions">
+            <div class="page-actions design-actions">
                 @if ($presentationUrl && $available)
-                    <a class="btn ghost" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open index in new tab</a>
+                    <a class="btn ghost" href="{{ $presentationUrl }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open index in new tab</a>
                 @endif
                 @if ($packageUrl && $available)
-                    <a class="btn" href="{{ $packageUrl }}">Download zip</a>
+                    <a class="btn" href="{{ $packageUrl }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download zip</a>
                 @else
                     <span class="btn is-disabled">Download zip</span>
                 @endif
             </div>
-        </div>
+        </header>
 
         @if (! $available)
             <section class="card empty-card">
@@ -698,7 +698,7 @@
                                 <span class="counter" id="design-counter"></span>
                                 <button type="button" class="step" id="design-prev" title="Previous screen" aria-label="Previous screen">←</button>
                                 <button type="button" class="step" id="design-next" title="Next screen" aria-label="Next screen">→</button>
-                                <a class="btn ghost" id="design-open" href="{{ $startStop['url'] ?? $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
+                                <a class="btn ghost small" id="design-open" href="{{ $startStop['url'] ?? $presentationUrl }}" target="_blank" rel="noopener noreferrer">Open</a>
                             </div>
                         </div>
                         <div class="style-bar" id="style-bar" hidden>
@@ -723,7 +723,7 @@
             <section class="card screen-section all-screens">
                 <header>
                     <h3>All {{ $catalog['screen_count'] }} screens, flow by flow</h3>
-                    <span class="hint" style="margin: 0;">Live previews — click one to open it in the viewer above.</span>
+                    <span class="hint">Live previews — click one to open it in the viewer above.</span>
                 </header>
                 <div class="screen-grid">
                     @foreach ($allScreens as $screen)

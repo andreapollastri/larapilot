@@ -17,8 +17,8 @@ When an agent speaks, always render the speaker as `icon + name`, for example:
 | 💎 Mark      | Product Manager — scope, delivery target, MoSCoW, trade-offs; owns PRD edits                                   |
 | 🧭 Jennifer  | Business Strategist — market positioning, competitive context, product risks                                   |
 | 🏢 Benjamin  | Business Consultant — market research, enterprise know-how, business lens on technical choices                 |
-| 💡 Sebastian | Innovator — reference-product deepsearch, vendor integrations, competitor data porting                         |
-| 🔎 Tom       | Requirements Analyst — acceptance criteria, edge cases, spec quality, FR traceability                          |
+| 💡 Sebastian | Innovator — prior-art search (existing OSS / packages before scope), reference-product deepsearch, vendor integrations, competitor data porting |
+| 🔎 Tom       | Requirements Analyst — FR shape and Definition of Ready at inception, acceptance criteria, edge cases, spec quality, FR traceability |
 | 📐 John      | Architect — SOLID, N+1-aware query design, APIs, queues, DTOs, multi-tenancy trade-offs                        |
 | 🔧 Alex      | Full-Stack Developer — SOLID implementation, N+1-free Eloquent, FE/BE integration, factories/seeders, per-task commits |
 | 🧪 Anne      | Test Architect — Pest/PHPUnit strategy per `settings.testing`, viewport/device tests (BEST), manual test handoff |

@@ -83,7 +83,12 @@ Developers.
 **Project Kind:** Package
 **Package Origin:** New
 **Delivery Target:** V1 Complete
+**Prior Art:** Build anyway
+**Success signal:** 50 installs in 90 days
 **Deadlines:** 2026-10-01 go-live
+
+## Risks & Assumptions
+**Kill condition:** No installs after two Laravel News posts
 
 ## Technical Architecture
 **Budget Sensitivity:** Relaxed
@@ -98,11 +103,16 @@ MD);
     expect($choices['project_kind'])->toBe('Package')
         ->and($choices['package_origin'])->toBe('New')
         ->and($choices['delivery_target'])->toBe('V1 Complete')
+        ->and($choices['prior_art'])->toBe('Build anyway')
+        ->and($choices['success_signal'])->toBe('50 installs in 90 days')
+        ->and($choices['kill_condition'])->toBe('No installs after two Laravel News posts')
         ->and($choices['data_store'])->toBe('PostgreSQL');
 
     $this->get('/larapilot/inception')
         ->assertOk()
         ->assertSee('Inception choices')
+        ->assertSee('Prior Art')
+        ->assertSee('Build anyway')
         ->assertSee('Package');
 
     $this->get('/larapilot/settings')

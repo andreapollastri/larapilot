@@ -34,6 +34,7 @@ use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\MockupChooseStyleCommand;
 use Larapilot\Console\Commands\NotifyCommand;
+use Larapilot\Console\Commands\PrdImpactCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
 use Larapilot\Console\Commands\ReleaseAddCommand;
@@ -89,6 +90,7 @@ use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\EconomicsMarketService;
 use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\EconomicsService;
+use Larapilot\Services\FileManagerService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
@@ -156,6 +158,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(ReleaseService::class);
         $this->app->singleton(ReleaseFlowService::class);
         $this->app->singleton(CustomSkillService::class);
+        $this->app->singleton(FileManagerService::class);
         $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
@@ -184,6 +187,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 AzureDevopsStatusCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
+                PrdImpactCommand::class,
                 SpecListCommand::class,
                 SpecAddCommand::class,
                 SpecShowCommand::class,

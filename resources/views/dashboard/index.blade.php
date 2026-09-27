@@ -2,145 +2,25 @@
 
 @section('title', 'Board')
 
+@section('main-class', 'is-wide')
+
 @push('styles')
 <style>
-    .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .metric {
-        padding: 18px 20px;
-    }
-
-    .metric-label {
-        color: var(--muted);
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        font-weight: 600;
-    }
-
-    .metric-value {
-        margin-top: 6px;
-        font-size: 1.75rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .board {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-        align-items: start;
-    }
-
-    .board-scroll {
-        width: 100%;
-    }
-
-    @media (max-width: 768px) {
-        .board-scroll {
-            margin: 0 -20px;
-            padding: 0 20px 4px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x proximity;
-            scrollbar-width: thin;
-        }
-
-        .board {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 16px;
-            align-items: stretch;
-            width: max-content;
-            min-width: 100%;
-        }
-
-        .column {
-            flex: 0 0 min(85vw, 300px);
-            scroll-snap-align: start;
-        }
-    }
-
-    .column {
-        min-height: 120px;
-    }
-
-    .column-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 14px;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-
-    .column-stats {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .column-count {
-        color: var(--muted);
-        font-weight: 600;
-        font-size: 0.72rem;
-        text-transform: none;
-        letter-spacing: normal;
-    }
-
-    .column-body {
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
+    /* phone: search on its own row, the selects side by side under it */
     .board-tools {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-bottom: 8px;
-        align-items: end;
-    }
-
-    .board-tools label {
         display: grid;
-        gap: 4px;
-        flex: 1 1 150px;
-        min-width: 0;
-        font-size: 0.75rem;
-        color: var(--muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+        align-items: end;
+        gap: 10px;
+        margin-bottom: 10px;
     }
 
-    .board-tools label:first-child {
-        flex: 2 1 220px;
-    }
+    .board-tools .field:first-child { grid-column: 1 / -1; }
 
-    .board-tools input,
-    .board-tools select {
-        width: 100%;
-        padding: 8px 10px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--bg);
-        color: var(--text);
-        font-size: 0.875rem;
-        font-weight: 400;
-        text-transform: none;
-        letter-spacing: normal;
+    @media (min-width: 860px) {
+        .board-tools { display: flex; flex-wrap: wrap; gap: 12px; }
+        .board-tools .field { flex: 1 1 150px; }
+        .board-tools .field:first-child { flex: 2 1 240px; }
     }
 
     .board-tools-bar {
@@ -148,65 +28,136 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        min-height: 28px;
-        margin-bottom: 16px;
+        min-height: 32px;
+        margin-bottom: 14px;
     }
 
     .board-filter-count {
         margin: 0;
         color: var(--muted);
         font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
     }
 
     .board-filter-clear {
-        border: 1px solid var(--border);
+        min-height: 30px;
+        padding: 0 12px;
+        border: 1px solid var(--border-strong);
+        border-radius: 999px;
         background: var(--surface);
         color: var(--text);
-        border-radius: 999px;
-        padding: 4px 12px;
+        font: inherit;
         font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
     }
 
-    .board-filter-clear:hover {
-        border-color: var(--accent);
-        color: var(--accent);
+    .board-filter-clear:hover { border-color: var(--accent); color: var(--accent); }
+
+    .board-scroll {
+        width: auto;
+        margin: 0 calc(var(--gutter) * -1);
+        padding: 2px var(--gutter) 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        scroll-padding-inline: var(--gutter);
+        scrollbar-width: thin;
     }
 
-    @media (max-width: 768px) {
-        .board-tools label,
-        .board-tools label:first-child {
-            flex-basis: 100%;
+    .board {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 14px;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .column {
+        flex: 0 0 min(84vw, 310px);
+        min-height: 120px;
+        background: var(--surface-2);
+        box-shadow: none;
+        scroll-snap-align: start;
+    }
+
+    @media (min-width: 1024px) {
+        .board-scroll {
+            margin: 0;
+            padding: 0 0 10px;
+            scroll-snap-type: none;
         }
+
+        /* one row: columns share the width, and scroll sideways when a
+           workflow has more statuses than the screen can hold */
+        .board {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(210px, 1fr);
+            width: auto;
+        }
+
+        .column { flex: none; }
+    }
+
+    /* status on one line, its numbers under it: a long status name and a
+       narrow column never fight for the same row */
+    .column-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 14px 14px 12px;
+    }
+
+    .column-stats {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 20px;
+        padding-left: 2px;
+    }
+
+    .column-count {
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 550;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .column-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 10px 10px;
+    }
+
+    .column-empty {
+        padding: 18px 12px;
+        border: 1px dashed var(--border-strong);
+        border-radius: var(--radius-sm);
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.82rem;
     }
 
     .spec-card {
         position: relative;
         display: block;
-        padding: 12px 14px;
-        border-radius: 10px;
+        padding: 13px 14px;
         border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--surface) 92%, var(--bg));
+        border-radius: var(--radius-sm);
+        background: var(--surface);
         color: inherit;
-        text-decoration: none;
-        transition: border-color 0.15s ease, transform 0.15s ease;
+        transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
     }
 
-    .board-tools-bar[hidden],
-    .spec-card[hidden],
-    .column[hidden],
-    .points[hidden],
-    .column-empty[hidden],
-    .board-filter-count[hidden],
-    .board-filter-clear[hidden] {
-        display: none !important;
-    }
-
-    .spec-card:hover {
-        border-color: var(--accent);
+    .spec-card:hover,
+    .spec-card:focus-within {
+        border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+        box-shadow: 0 6px 18px color-mix(in srgb, var(--text) 8%, transparent);
         transform: translateY(-1px);
-        text-decoration: none;
     }
 
     .spec-card-hit {
@@ -214,13 +165,9 @@
         inset: 0;
         z-index: 1;
         border-radius: inherit;
-        text-decoration: none;
     }
 
-    .spec-card-hit:focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-    }
+    .spec-card-hit:focus-visible { outline-offset: 2px; border-radius: var(--radius-sm); }
 
     .merge-commit-link {
         position: relative;
@@ -228,56 +175,58 @@
         color: inherit;
     }
 
-    .spec-card h3 {
-        margin: 0 0 6px;
-        font-size: 0.95rem;
-    }
-
-    .spec-card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.82rem;
-    }
-
     .spec-meta {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        margin-bottom: 7px;
+    }
+
+    .spec-meta strong {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
     }
 
     .spec-badges {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         flex-wrap: wrap;
         justify-content: flex-end;
     }
 
-    .points {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--accent);
-        background: var(--accent-soft);
-        padding: 2px 8px;
-        border-radius: 999px;
+    .spec-card h3 {
+        margin: 0;
+        font-size: 0.93rem;
+        font-weight: 600;
+        line-height: 1.35;
+        letter-spacing: -0.005em;
+    }
+
+    .spec-card p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.79rem;
     }
 
     .task-progress {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 10px;
+        gap: 9px;
+        margin-top: 11px;
     }
 
     .task-progress-track {
         flex: 1;
-        height: 5px;
+        height: 4px;
         border-radius: 999px;
-        background: color-mix(in srgb, var(--border) 70%, transparent);
+        background: var(--surface-3);
         overflow: hidden;
     }
 
@@ -292,38 +241,36 @@
         color: var(--muted);
         font-size: 0.72rem;
         font-weight: 600;
+        font-variant-numeric: tabular-nums;
         white-space: nowrap;
     }
 
     .merge-commit {
-        margin-top: 8px;
+        margin-top: 9px;
+        color: var(--ok);
+        font-family: var(--mono);
         font-size: 0.72rem;
-        font-weight: 700;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        color: var(--status-done);
-    }
-
-    .column-empty {
-        padding: 16px;
-        text-align: center;
-        color: var(--muted);
-        font-size: 0.85rem;
+        font-weight: 600;
     }
 
     .mockup-indicator {
-        margin-top: 8px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+        display: inline-flex;
+        margin-top: 9px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--violet-fill) 14%, transparent);
+        color: var(--violet);
+        font-size: 0.66rem;
+        font-weight: 650;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #7c3aed;
     }
 
     .spec-indicators {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 8px;
+        gap: 6px;
+        margin-top: 9px;
         flex-wrap: wrap;
     }
 
@@ -331,29 +278,23 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        line-height: 1;
-        padding: 4px 8px;
-        border-radius: 999px;
+        padding: 3px 8px;
         border: 1px solid var(--border);
-        background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+        border-radius: 999px;
+        background: var(--surface-2);
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
     }
 
-    .spec-indicator svg {
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-    }
-
-    .spec-indicator--comments {
-        color: var(--muted);
-    }
+    .spec-indicator svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .spec-indicator--comments { color: var(--muted); }
 
     .spec-indicator--blocking {
-        color: #b45309;
-        border-color: color-mix(in srgb, #f59e0b 35%, var(--border));
-        background: color-mix(in srgb, #f59e0b 10%, var(--surface));
+        color: var(--warn);
+        border-color: color-mix(in srgb, var(--warn-fill) 40%, var(--border));
+        background: color-mix(in srgb, var(--warn-fill) 11%, var(--surface));
     }
 </style>
 @endpush
@@ -394,7 +335,14 @@
         $specWord = static fn (int $count): string => $count === 1 ? 'spec' : 'specs';
     @endphp
 
-    <section class="metrics">
+    <header class="page-head">
+        <div>
+            <h2>Board</h2>
+            <p class="sub">Every user story in the backlog, grouped by workflow status.</p>
+        </div>
+    </header>
+
+    <section class="metrics" aria-label="Backlog summary">
         <div class="card metric">
             <div class="metric-label">Total specs</div>
             <div class="metric-value" data-metric="total" data-original="{{ $metrics['total'] ?? 0 }}">{{ $metrics['total'] ?? 0 }}</div>
@@ -419,11 +367,11 @@
         </div>
     @else
         <form class="board-tools" id="board-tools" role="search">
-            <label>
+            <label class="field">
                 Search
                 <input type="search" id="board-q" placeholder="Code, title, epic, merge…" autocomplete="off">
             </label>
-            <label>
+            <label class="field">
                 Priority
                 <select id="board-priority">
                     <option value="">All</option>
@@ -433,7 +381,7 @@
                 </select>
             </label>
             @if ($epics !== [])
-                <label>
+                <label class="field">
                     Epic
                     <select id="board-epic">
                         <option value="">All</option>
@@ -443,7 +391,7 @@
                     </select>
                 </label>
             @endif
-            <label>
+            <label class="field">
                 Status
                 <select id="board-status">
                     <option value="">All</option>

@@ -31,6 +31,8 @@ return [
         'release_mode' => false,
         // Living project documentation in _project_docs/ — OFF by default.
         'project_docs' => false,
+        // Prior-art search for existing open-source / packaged solutions at inception — ON by default.
+        'prior_art' => true,
         // Internal feedback comments on the dashboard, JSON API, and
         // `larapilot:spec-comment` — OFF by default; set true to enable.
         'comments' => false,
@@ -350,6 +352,19 @@ return [
             // Failed Basic Auth attempts allowed per minute per IP; 0 disables throttling.
             'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 30),
         ],
+    ],
+
+    // File manager on the dashboard (/larapilot/files): browse, upload, rename,
+    // and delete the material folders the skills read — brand, client-materials,
+    // design-systems, legacy, skills. It follows the dashboard's own gate, so it
+    // is never served in production. It is open in local/development/testing;
+    // on any other environment it is served only when the `dashboard_auth`
+    // project setting is ON, so client documents stay behind a sign-in.
+    'file_manager' => [
+        'enabled' => env('LARAPILOT_FILE_MANAGER', true),
+        // Largest single upload, in kilobytes. PHP's upload_max_filesize and
+        // post_max_size still apply, and win when they are lower.
+        'max_upload_kb' => (int) env('LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB', 51200),
     ],
 
     'workflow' => [

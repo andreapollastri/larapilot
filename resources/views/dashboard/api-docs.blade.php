@@ -4,38 +4,31 @@
 
 @push('styles')
 <style>
-    .api-docs-intro {
-        margin-bottom: 20px;
-        padding: 16px 20px;
-    }
+    .api-docs-link { overflow-wrap: anywhere; }
 
-    .api-docs-intro p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.9rem;
-    }
-
+    /* Swagger UI ships a light theme only: give it a light sheet in both modes. */
     .swagger-wrap {
         overflow: hidden;
+        background: #ffffff;
+        color: #17212b;
+        color-scheme: light;
     }
 
-    #swagger-ui {
-        min-height: 720px;
-    }
-
-    #swagger-ui .topbar {
-        display: none;
-    }
+    #swagger-ui { min-height: 720px; }
+    #swagger-ui .topbar { display: none; }
 </style>
 @endpush
 
 @section('content')
-    <section class="card api-docs-intro">
-        <p>
-            Read-only JSON API for the Larapilot workflow. Same access rules as this dashboard — available in local/staging, disabled in production.
-            OpenAPI spec: <a href="{{ route('larapilot.api.openapi') }}">{{ route('larapilot.api.openapi') }}</a>
-        </p>
-    </section>
+    <header class="page-head api-docs-intro">
+        <div>
+            <h2>API</h2>
+            <p class="sub">
+                Read-only JSON API for the Larapilot workflow. Same access rules as this dashboard — available in local/staging, disabled in production.
+                OpenAPI spec: <a class="api-docs-link" href="{{ route('larapilot.api.openapi') }}">{{ route('larapilot.api.openapi') }}</a>
+            </p>
+        </div>
+    </header>
 
     <section class="card swagger-wrap">
         <div id="swagger-ui"></div>
