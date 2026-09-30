@@ -11,7 +11,7 @@ class BoogleStatusCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:boogle-status';
 
-    protected $description = 'Probe the optional Boogle integration (setting, address, token, project)';
+    protected $description = 'Probe the production errors integration (setting, tracker, credentials, project)';
 
     public function handle(BoogleService $boogle): int
     {

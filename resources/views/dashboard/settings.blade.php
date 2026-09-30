@@ -312,12 +312,34 @@
                     'YES' => '/larapilot-aikido hands the open findings to triage; the ship gate stops on what nobody decided about; /larapilot/security shows them.',
                 ],
             ],
-            'boogle' => [
-                'label' => 'Boogle',
-                'description' => 'Reads the errors Boogle recorded for the running application. Needs LARAPILOT_BOOGLE_TOKEN in .env, and LARAPILOT_BOOGLE_URL when BOOGLE_SERVER is not set.',
+            'errors' => [
+                'label' => 'Production errors',
+                'description' => 'Reads the open errors of the running application from the tracker named in errors_provider. Credentials stay in .env — see .larapilot/integrations.md → Production errors.',
                 'options' => [
-                    'NO' => 'Boogle is not read (default).',
-                    'YES' => '/larapilot-boogle hands the open errors to triage, one request for each bug; /larapilot/errors shows them with what was decided.',
+                    'NO' => 'No tracker is read (default).',
+                    'YES' => '/larapilot-boogle downloads the errors, has you confirm them, groups them with errors-plan, and hands each group to triage; /larapilot/errors shows them.',
+                ],
+            ],
+            'errors_provider' => [
+                'label' => 'Error tracker',
+                'description' => 'Which tracker the errors are read from when errors is YES. Set with php artisan larapilot:settings-set --errors-provider=….',
+                'options' => [
+                    'boogle' => 'Boogle — the self-hosted tracker and uptime monitor; LARAPILOT_BOOGLE_URL and LARAPILOT_BOOGLE_TOKEN.',
+                    'sentry' => 'Sentry — LARAPILOT_SENTRY_AUTH_TOKEN, LARAPILOT_SENTRY_ORGANIZATION, LARAPILOT_SENTRY_PROJECT.',
+                    'bugsnag' => 'Bugsnag — LARAPILOT_BUGSNAG_AUTH_TOKEN and LARAPILOT_BUGSNAG_PROJECT_ID.',
+                    'flare' => 'Flare — LARAPILOT_FLARE_TOKEN and LARAPILOT_FLARE_PROJECT_ID.',
+                    'datadog' => 'Datadog — LARAPILOT_DATADOG_API_KEY and LARAPILOT_DATADOG_APP_KEY; Error Tracking, or the error logs.',
+                    'rollbar' => 'Rollbar — LARAPILOT_ROLLBAR_ACCESS_TOKEN.',
+                    'honeybadger' => 'Honeybadger — LARAPILOT_HONEYBADGER_AUTH_TOKEN and LARAPILOT_HONEYBADGER_PROJECT_ID.',
+                    'cloudwatch' => 'AWS CloudWatch Logs — LARAPILOT_CLOUDWATCH_LOG_GROUP, read with the AWS CLI signed in on this machine.',
+                ],
+            ],
+            'boogle' => [
+                'label' => 'Boogle (the old name)',
+                'description' => 'What errors was called when Boogle was the only tracker. YES is errors=YES with errors_provider=boogle; the two are kept in step.',
+                'options' => [
+                    'NO' => 'The errors are off, or read from another tracker (default).',
+                    'YES' => 'The errors are on and read from Boogle.',
                 ],
             ],
             'github' => [
@@ -393,7 +415,7 @@
             'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'project_docs', 'comments'],
             'Business' => ['account'],
             'Security' => ['dashboard_auth', 'api_auth', 'security_scan', 'aikido'],
-            'Monitoring' => ['boogle'],
+            'Monitoring' => ['errors', 'errors_provider', 'boogle'],
             'Forges' => ['github', 'gitlab', 'bitbucket', 'azure'],
             'Notifications' => ['notifications', 'notify_slack', 'notify_discord', 'notify_telegram'],
         ];

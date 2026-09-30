@@ -138,8 +138,8 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-feature` | Mini-inception for one enhancement |
 | `/larapilot-bug` | Bug triage → fix spec or rework, with redacted diagnostics |
 | `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
-| `/larapilot-aikido` | Downloads the open security findings of **Aikido** for the repository and hands each one to `/larapilot-triage` to be resolved (`aikido=YES`) |
-| `/larapilot-boogle` | Downloads the open errors **Boogle** recorded for the running application, puts together the ones that are one bug, and hands each bug to `/larapilot-triage` (`boogle=YES`) |
+| `/larapilot-aikido` | Downloads the open security findings of **Aikido**, confirms them with you, groups them by fix, and hands each group to `/larapilot-triage` (`aikido=YES`) |
+| `/larapilot-boogle` | Downloads the open **errors of production** from the tracker of the project — Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — confirms them with you, groups them by place in the code, and hands each group to `/larapilot-triage` (`errors=YES`) |
 | `/larapilot-prd` | Revises the PRD when it is neither — sharpen, re-scope, re-model, re-decide, upgrade — and aligns the stories that cite what changed |
 | `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
@@ -369,7 +369,7 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
 | Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. Always in the menu; with `aikido` off it says what Aikido is and how to connect it |
-| Errors | `/larapilot/errors` | What the running application threw, as Boogle recorded it: one row for each bug, how many times it was thrown day by day, and what was decided about it. Always in the menu; with `boogle` off it says what Boogle is, how to connect it, and invites the project to use it |
+| Errors | `/larapilot/errors` | What the running application threw, as the tracker of the project recorded it: one row for each bug, how many times it was thrown, and what was decided about it — day by day when the tracker records every throw. Always in the menu; with `errors` off it says what Boogle is, how to connect it, and which other trackers can be read instead |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
@@ -474,7 +474,7 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 | **API auth** — token mandatory; fails closed (`503`) with no token configured | OFF | `--api-auth=YES` |
 | **Security scan** — [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) in review and pre-ship | OFF | `composer require --dev andreapollastri/checkpoint` then `--security-scan=YES` |
 | **Aikido** — the findings of [Aikido](https://www.aikido.dev/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--aikido=YES` |
-| **Boogle** — the errors [Boogle](https://boogle.web.ap.it/) recorded for the running application, in triage and on the dashboard | OFF | address and token in `.env`, then `--boogle=YES` |
+| **Production errors** — what the running application throws, read from [Boogle](https://boogle.web.ap.it/), Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch, in triage and on the dashboard | OFF | a credential that reads the tracker in `.env`, then `--errors=YES --errors-provider=…` |
 
 - Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
 - Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
@@ -497,6 +497,7 @@ LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
 php artisan larapilot:settings-set --aikido=YES
 php artisan larapilot:aikido-status                  # setting, credentials, repository, last scan
 php artisan larapilot:aikido-issues --new --report   # what nobody decided about; writes docs/security/aikido.md
+php artisan larapilot:aikido-plan --ids=24,31        # group confirmed ids by kind and fix before triage
 php artisan larapilot:aikido-link 24 --spec=US-012   # the spec that fixes it
 php artisan larapilot:aikido-link 40 --waive --reason="Internal tool, never distributed."
 php artisan larapilot:aikido-issues --gate           # exit 1 when the gate fails — for CI
@@ -504,14 +505,41 @@ php artisan larapilot:aikido-scan                    # ask Aikido to scan again
 ```
 
 - **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes (`repositories:write` to ask for a scan). The repository has to be connected in Aikido, through the git provider.
-- **`/larapilot-aikido`** downloads the open findings, shows the new ones, and hands each one you pick to **`/larapilot-triage`** with an *Aikido finding* block. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
+- **`/larapilot-aikido`** downloads the open findings, lets you **confirm each one** (resolve, waive, or skip), runs **`larapilot:aikido-plan`** on the ids you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with an *Aikido finding* block — same kind and same fix together, secrets never merged. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
 - **The ship gate** stops on an open finding at `LARAPILOT_AIKIDO_FAIL_ON` or above that was not waived. A finding in the backlog is not fixed: it counts until Aikido no longer reports it, after the fix is merged and scanned.
 - **A waiver needs a reason**, in a sentence, and only the user gives it.
 - **What is kept**: `.larapilot/aikido.yaml` holds the decisions — ids, the spec, the reason — and is meant to be committed. The credentials stay in `.env`; the access token lives in the cache and is never written to a file of the project.
 
-### Boogle
+### Production errors
 
-[Boogle](https://boogle.web.ap.it/) is a self-hosted exception tracker and uptime monitor: the application sends what it throws there, with [`andreapollastri/boogle-client`](https://github.com/andreapollastri/boogle). Larapilot **reads the open errors back** over the admin API and brings each bug into the workflow.
+Larapilot reads the errors the running application throws from **one tracker** and brings each bug into the workflow. `settings.errors` turns it on, and `settings.errors_provider` names the tracker.
+
+| Provider | What is read | In `.env` | Closed from Larapilot |
+| --- | --- | --- | --- |
+| `boogle` *(default)* | Every throw the self-hosted [Boogle](https://boogle.web.ap.it/) recorded, and the outages its uptime monitor found | `LARAPILOT_BOOGLE_URL` · `LARAPILOT_BOOGLE_TOKEN` | Yes |
+| `sentry` | The unresolved issues of a project | `LARAPILOT_SENTRY_AUTH_TOKEN` · `LARAPILOT_SENTRY_ORGANIZATION` · `LARAPILOT_SENTRY_PROJECT` | Yes |
+| `bugsnag` | The open errors of a project | `LARAPILOT_BUGSNAG_AUTH_TOKEN` · `LARAPILOT_BUGSNAG_PROJECT_ID` | Yes |
+| `flare` | The open errors of a [Flare](https://flareapp.io/) project | `LARAPILOT_FLARE_TOKEN` · `LARAPILOT_FLARE_PROJECT_ID` | Yes |
+| `datadog` | The open issues of [Datadog](https://www.datadoghq.com/) Error Tracking — or the error logs, with `LARAPILOT_DATADOG_SOURCE=logs` | `LARAPILOT_DATADOG_API_KEY` · `LARAPILOT_DATADOG_APP_KEY` | Yes — not with logs |
+| `rollbar` | The active items of a project | `LARAPILOT_ROLLBAR_ACCESS_TOKEN` | Yes |
+| `honeybadger` | The unresolved faults of a project | `LARAPILOT_HONEYBADGER_AUTH_TOKEN` · `LARAPILOT_HONEYBADGER_PROJECT_ID` | Yes |
+| `cloudwatch` | The error lines of an AWS CloudWatch log group, through the AWS CLI signed in on the machine | `LARAPILOT_CLOUDWATCH_LOG_GROUP` | No |
+
+Every credential is one that **reads** the tracker — never the key the application reports with (`FLARE_KEY`, `BUGSNAG_API_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The optional variables of each tracker are in `.larapilot/integrations.md` → *Production errors*, and `larapilot:boogle-status` names every one that is missing.
+
+```bash
+php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
+php artisan larapilot:boogle-status                                # setting, tracker, credentials, project, what is missing
+php artisan larapilot:boogle-errors --new --kind=error --report    # what nobody decided about; writes docs/support/errors.md
+php artisan larapilot:errors-plan --codes=BUG12,BUG21              # group the confirmed codes before triage (alias: boogle-plan)
+php artisan larapilot:boogle-link BUG12 --spec=US-012              # the spec that fixes the bug that code belongs to
+php artisan larapilot:boogle-link BUG21 --ignore --reason="The mail provider was down on its side."
+php artisan larapilot:boogle-resolve BUG12                         # once the fix is released: closes it in the tracker
+```
+
+The commands, the skill, and the ledger keep the name of Boogle, the first tracker Larapilot read, whichever one the project uses. `--boogle=YES` still works: it means `--errors=YES --errors-provider=boogle`, and a project that turned Boogle on before 4.1.3 has nothing to change.
+
+**Boogle** is the self-hosted one — an exception tracker and uptime monitor the application sends to with [`andreapollastri/boogle-client`](https://github.com/andreapollastri/boogle):
 
 ```dotenv
 LARAPILOT_BOOGLE_URL=https://boogle.example.com   # empty = taken from BOOGLE_SERVER
@@ -519,21 +547,13 @@ LARAPILOT_BOOGLE_TOKEN=                            # the token of an admin user 
 LARAPILOT_BOOGLE_PROJECT=                          # id or title; empty = found from BOOGLE_PROJECT_KEY, then APP_URL
 ```
 
-```bash
-php artisan larapilot:settings-set --boogle=YES
-php artisan larapilot:boogle-status                           # setting, address, token, project
-php artisan larapilot:boogle-errors --new --report            # what nobody decided about; writes docs/support/boogle.md
-php artisan larapilot:boogle-link BUG12 --spec=US-012         # the spec that fixes the bug that code belongs to
-php artisan larapilot:boogle-link BUG21 --ignore --reason="The mail provider was down on its side."
-php artisan larapilot:boogle-resolve BUG12                    # once the fix is released: closes it in Boogle
-```
-
-- **One entry for each bug.** Boogle keeps a row for each time an exception is thrown. Larapilot puts together the rows that share the exception, the file, and the line, and says how many times and on how many routes. A file of the server (`/home/forge/…/releases/…/app/Services/X.php`) is read as the file of the repository it is.
-- **`/larapilot-boogle`** downloads the open errors, shows the ones nobody decided about, and hands each bug you pick to **`/larapilot-triage`** with a *Boogle error* block. `/larapilot-bug` then writes the fix spec, with a test that throws the same exception before the fix.
-- **A decision is about the bug**, not about one time it was thrown: the next time it happens, under a code nobody has seen, it is not handed over again. `.larapilot/boogle.yaml` holds the decisions and is meant to be committed.
+- **One entry for each bug.** Boogle and logs keep a row for each time an exception is thrown: Larapilot puts together the rows that share the exception, the file, and the line, and says how many times and on how many routes. Sentry, Bugsnag, Flare, Rollbar, Honeybadger, and Datadog Error Tracking group by themselves: their grouping and their count are kept. A file of the server (`/home/forge/…/releases/…/app/Services/X.php`) is read as the file of the repository it is.
+- **`/larapilot-boogle`** downloads the open errors, lets you **confirm each bug** — resolve, ignore with a reason, or skip — runs **`larapilot:errors-plan`** on the codes you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with a *Production error* block. The same exception in the same folder of the application goes together, so one spec fixes it; **outages**, errors in a **package**, and application code never merge. `/larapilot-bug` then writes the fix spec, with a test that throws the same exception before the fix.
+- **A decision is about the bug**, not about one time it was thrown: the next time it happens it is not handed over again. `.larapilot/boogle.yaml` holds the decisions and is meant to be committed.
 - **Back after the fix.** An error closed with `boogle-resolve` and thrown again is shown as such, first in the list: the fix did not hold.
-- **Personal data stays in Boogle.** The user, the query string, and the payload of a request are never read into a file, a report, the cache, or the chat. Larapilot keeps the exception, the message with addresses masked, the file and line, the method and the path — with ids and tokens in the path replaced by `{id}` and `{token}`.
-- **Writing to Boogle is asked for.** `boogle-resolve` is the only command that writes there; it runs when you say so and is not allowed through the MCP tool. The token reads every project of that Boogle — Boogle gives tokens to users, not to projects — so it lives in `.env`.
+- **Personal data stays in the tracker.** The user, the query string, and the payload of a request are never read into a file, a report, the cache, or the chat. Larapilot keeps the exception, the message with addresses and long secrets masked, the file and line, the method and the path — with ids and tokens in the path replaced by `{id}` and `{token}`.
+- **Writing to the tracker is asked for.** `boogle-resolve` is the only command that writes there; it runs when you say so, is not allowed through the MCP tool, and refuses where nothing can be closed — CloudWatch, and the logs of Datadog.
+- **On the dashboard**, `/larapilot/errors` shows every bug with how many times it was thrown and what was decided. A tracker that records every throw also gets the chart of the last two weeks, day by day.
 
 ### Diagnostics (bug triage)
 
@@ -641,14 +661,14 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
 | Releases | `release-list` · `release-add` · `release-set` · `release-cut` · `release-feature` · `release-sync` · `release-ship` (`--push`) · `release-import` |
 | Custom skills | `custom-skill-list` · `custom-skill-add` (`--name=`, `--file=` / `--content=` / stdin, `--force`) |
-| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`) · `aikido-scan` |
-| Errors | `boogle-status` · `boogle-errors` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `boogle-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `boogle-resolve` (`--status=FIXED\|DONE`, `--comment=`) |
+| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`) · `aikido-scan` |
+| Errors | `boogle-status` · `boogle-errors` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` / `boogle-plan` (`--codes=`) · `boogle-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `boogle-resolve` (`--status=FIXED\|DONE`, `--comment=`) |
 | Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` · `vps-provision` |
 | Runtime | `diagnostics` (`--lines=`, `--no-logs`) |
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `backstage-export`, `tracker-status`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `backstage-export`, `tracker-status`, `aikido-status` / `aikido-issues` / `aikido-plan`, `boogle-status` / `boogle-errors` / `errors-plan`).
 
 ---
 

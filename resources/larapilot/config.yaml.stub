@@ -27,7 +27,9 @@ settings:
   # Run andreapollastri/checkpoint (static security scan) in /larapilot-review + pre-ship — OFF by default.
   security_scan: false
   aikido: false
+  errors: false
   boogle: false
+  errors_provider: ''
   github: false
   gitlab: false
   bitbucket: false

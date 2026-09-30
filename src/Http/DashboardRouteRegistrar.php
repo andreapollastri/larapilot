@@ -111,8 +111,10 @@ class DashboardRouteRegistrar
                 Route::get('/errors', [DashboardController::class, 'errors'])
                     ->name('larapilot.dashboard.errors');
 
-                Route::get('/errors/boogle.md', [DashboardController::class, 'errorsReport'])
+                Route::get('/errors/errors.md', [DashboardController::class, 'errorsReport'])
                     ->name('larapilot.dashboard.errors.report');
+                // The address the report had when Boogle was the only tracker.
+                Route::get('/errors/boogle.md', [DashboardController::class, 'errorsReport']);
 
                 Route::get('/design', [DashboardController::class, 'design'])
                     ->name('larapilot.dashboard.design');

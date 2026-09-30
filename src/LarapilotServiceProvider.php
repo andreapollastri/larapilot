@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\AikidoIssuesCommand;
 use Larapilot\Console\Commands\AikidoLinkCommand;
+use Larapilot\Console\Commands\AikidoPlanCommand;
 use Larapilot\Console\Commands\AikidoScanCommand;
 use Larapilot\Console\Commands\AikidoStatusCommand;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
@@ -17,6 +18,7 @@ use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\BitbucketStatusCommand;
 use Larapilot\Console\Commands\BoogleErrorsCommand;
 use Larapilot\Console\Commands\BoogleLinkCommand;
+use Larapilot\Console\Commands\BooglePlanCommand;
 use Larapilot\Console\Commands\BoogleResolveCommand;
 use Larapilot\Console\Commands\BoogleStatusCommand;
 use Larapilot\Console\Commands\ChoicesSetCommand;
@@ -34,6 +36,7 @@ use Larapilot\Console\Commands\EconomicsMarketWriteCommand;
 use Larapilot\Console\Commands\EconomicsQuoteWriteCommand;
 use Larapilot\Console\Commands\EconomicsSetCommand;
 use Larapilot\Console\Commands\EconomicsShowCommand;
+use Larapilot\Console\Commands\ErrorsPlanCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
 use Larapilot\Console\Commands\FrontendSetCommand;
 use Larapilot\Console\Commands\GithubStatusCommand;
@@ -106,6 +109,8 @@ use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\EconomicsMarketService;
 use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\EconomicsService;
+use Larapilot\Services\Errors\ErrorDataHelper;
+use Larapilot\Services\Errors\ErrorTrackerManager;
 use Larapilot\Services\FileManagerService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GitGraphService;
@@ -135,7 +140,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '4.1.2';
+    public const VERSION = '4.1.3';
 
     public function register(): void
     {
@@ -162,6 +167,8 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(AikidoService::class);
         $this->app->singleton(BoogleClient::class);
         $this->app->singleton(BoogleLedger::class);
+        $this->app->singleton(ErrorDataHelper::class);
+        $this->app->singleton(ErrorTrackerManager::class);
         $this->app->singleton(BoogleService::class);
         $this->app->singleton(NotifyService::class);
         $this->app->singleton(PrdService::class);
@@ -215,9 +222,12 @@ class LarapilotServiceProvider extends ServiceProvider
                 AzureDevopsStatusCommand::class,
                 AikidoStatusCommand::class,
                 AikidoIssuesCommand::class,
+                AikidoPlanCommand::class,
                 AikidoLinkCommand::class,
                 AikidoScanCommand::class,
                 BoogleStatusCommand::class,
+                ErrorsPlanCommand::class,
+                BooglePlanCommand::class,
                 BoogleErrorsCommand::class,
                 BoogleLinkCommand::class,
                 BoogleResolveCommand::class,

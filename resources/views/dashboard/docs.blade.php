@@ -211,8 +211,8 @@
                 <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
                 <div class="flow-step"><strong>Triage</strong><span><code>/larapilot-triage</code> — bug or feature? classifies the request and hands off</span></div>
-                <div class="flow-step"><strong>Aikido</strong><span><code>/larapilot-aikido</code> — downloads the security findings and hands each one to triage</span></div>
-                <div class="flow-step"><strong>Boogle</strong><span><code>/larapilot-boogle</code> — downloads the errors thrown in production and hands each bug to triage</span></div>
+                <div class="flow-step"><strong>Aikido</strong><span><code>/larapilot-aikido</code> — downloads the security findings, has you confirm them, groups them by fix, hands each group to triage</span></div>
+                <div class="flow-step"><strong>Production errors</strong><span><code>/larapilot-boogle</code> — downloads the open errors from the tracker of the project, has you confirm them, groups them by place, hands each group to triage</span></div>
                 <div class="flow-step"><strong>PRD revision</strong><span><code>/larapilot-prd</code> — change the PRD when it is neither: sharpen, re-scope, re-decide, upgrade</span></div>
                 <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — one spec at a time; plan and implement in a fresh worker when effort is not ECO</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
@@ -275,8 +275,8 @@
                 <li @class(['is-on' => $isYes($s['aikido'] ?? 'NO')])>
                     <strong>Aikido = YES</strong> — <code>/larapilot-aikido</code> hands the findings of Aikido to triage; <code>/larapilot-ship</code> stops on the ones that are open and not waived.
                 </li>
-                <li @class(['is-on' => $isYes($s['boogle'] ?? 'NO')])>
-                    <strong>Boogle = YES</strong> — <code>/larapilot-boogle</code> hands the errors the running application throws to triage, one request for each bug; the Errors page shows them.
+                <li @class(['is-on' => $isYes($s['errors'] ?? $s['boogle'] ?? 'NO')])>
+                    <strong>Errors = YES</strong> — <code>/larapilot-boogle</code> reads the tracker named in <code>errors_provider</code> (Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, CloudWatch), has you confirm the bugs, runs <code>errors-plan</code>, and hands each group to triage; <code>/larapilot/errors</code> shows them.
                 </li>
                 <li @class(['is-on' => $isYes($s['notifications'] ?? 'NO')])>
                     <strong>Notifications = YES</strong> — Slack/Discord/Telegram fan-out when channels are configured in <code>.env</code>.
@@ -317,8 +317,8 @@
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query and Markdown report — token charts on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>, schedule and Gantt on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a></td><td>📒 Lucille · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
                     <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
-                    <tr><td><code>/larapilot-aikido</code></td><td>Findings of Aikido in <code>docs/security/aikido.md</code>, decisions in <code>aikido.yaml</code>, handoff to <code>/larapilot-triage</code></td><td>🔐 Lars · 🎧 Sophia · 🔗 Matt</td></tr>
-                    <tr><td><code>/larapilot-boogle</code></td><td>Errors of Boogle in <code>docs/support/boogle.md</code>, decisions in <code>boogle.yaml</code>, handoff to <code>/larapilot-triage</code></td><td>🎧 Sophia · 🧪 Anne · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-aikido</code></td><td>Confirm findings, <code>aikido-plan</code> groups by fix, handoff to <code>/larapilot-triage</code>; report in <code>docs/security/aikido.md</code>, decisions in <code>aikido.yaml</code></td><td>🔐 Lars · 🎧 Sophia · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-boogle</code></td><td>Confirm bugs, <code>errors-plan</code> groups by place, handoff to <code>/larapilot-triage</code>; report in <code>docs/support/errors.md</code>, decisions in <code>boogle.yaml</code></td><td>🎧 Sophia · 🧪 Anne · 🔗 Matt</td></tr>
                     <tr><td><code>/larapilot-tracker</code></td><td>Linear/Jira/… mirror in <code>tracker.yaml</code></td><td>🔗 Matt · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-backstage</code></td><td>Backstage catalog + TechDocs</td><td>📝 Albert · 🚀 Jack</td></tr>
                     <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code> — listed on the <a href="{{ route('larapilot.dashboard.skills') }}">Skills</a> page</td><td>🤖 Zoey · ⌨️ Sarah</td></tr>

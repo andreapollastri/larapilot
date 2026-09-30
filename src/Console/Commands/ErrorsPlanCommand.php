@@ -10,16 +10,14 @@ use Larapilot\Services\BoogleService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Support\LarapilotCommand;
 
-class BoogleResolveCommand extends LarapilotCommand
+class ErrorsPlanCommand extends LarapilotCommand
 {
-    protected $signature = 'larapilot:boogle-resolve
-                            {errors : The errors, by their code or by their key, separated by commas: BUG12 or BUG12,BUG15}
-                            {--status=FIXED : What they become in Boogle: FIXED or DONE. Another tracker has one way to close}
-                            {--comment= : The line Boogle keeps in the history of each one. Default: the spec that fixed it}';
+    protected $signature = 'larapilot:errors-plan
+                            {--codes= : Comma-separated error codes (#BUG12) or keys confirmed for triage}';
 
-    protected $description = 'Close errors in the tracker once their fix is released: every open occurrence of each one, with what fixed it (Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger)';
+    protected $description = 'Group the errors of production the user confirmed by domain and place in the code, one triage handoff for each group';
 
-    public function handle(BoogleService $boogle, ConfigService $config): int
+    public function handle(BoogleService $errors, ConfigService $config): int
     {
         if (! $config->errorsEnabled()) {
             return $this->failure(
@@ -30,10 +28,21 @@ class BoogleResolveCommand extends LarapilotCommand
             );
         }
 
-        $names = array_values(array_filter(array_map('trim', explode(',', (string) $this->argument('errors'))), static fn (string $name): bool => $name !== ''));
+        $raw = trim((string) $this->option('codes'));
+
+        if ($raw === '') {
+            return $this->failure(
+                'E_INVALID_INPUT',
+                'Name the errors to plan.',
+                $this->exitForCode('E_INVALID_INPUT'),
+                'Example: php artisan larapilot:errors-plan --codes=BUG12,BUG21'
+            );
+        }
+
+        $codes = array_values(array_filter(array_map('trim', explode(',', $raw)), static fn (string $part): bool => $part !== ''));
 
         try {
-            $result = $boogle->resolve($names, (string) $this->option('status'), $this->option('comment'));
+            $plan = $errors->resolutionPlan($codes);
         } catch (BoogleException $e) {
             return $this->failure('E_CONNECTOR', $e->getMessage(), $this->exitForCode('E_CONNECTOR'), $e->hint());
         } catch (InvalidArgumentException $e) {
@@ -42,6 +51,8 @@ class BoogleResolveCommand extends LarapilotCommand
             return $this->failure($code, $e->getMessage(), $this->exitForCode($code));
         }
 
-        return $this->success('boogle_resolve', $result);
+        $this->success('errors_plan', $plan);
+
+        return self::SUCCESS;
     }
 }

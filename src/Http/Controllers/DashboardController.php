@@ -272,7 +272,7 @@ class DashboardController
             abort(404);
         }
 
-        return $this->markdown($report, 'boogle-errors-'.now()->format('Y-m-d').'.md');
+        return $this->markdown($report, $this->dashboard->errorsReportFilename());
     }
 
     public function design(): View

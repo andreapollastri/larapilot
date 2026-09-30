@@ -27,7 +27,9 @@ class SettingsSetCommand extends LarapilotCommand
                             {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
                             {--security-scan= : Run andreapollastri/checkpoint in /larapilot-review + pre-ship: YES or NO (default NO)}
                             {--aikido= : Read the findings of Aikido for this repository: YES or NO (default NO)}
-                            {--boogle= : Read the errors Boogle recorded for the running application: YES or NO (default NO)}
+                            {--errors= : Read the errors of production from the tracker of --errors-provider: YES or NO (default NO)}
+                            {--errors-provider= : The tracker the errors are read from: boogle, sentry, bugsnag, flare, datadog, rollbar, honeybadger, or cloudwatch}
+                            {--boogle= : The name --errors had when Boogle was the only tracker: YES is --errors=YES --errors-provider=boogle}
                             {--github= : GitHub remote via gh CLI: YES or NO (default NO)}
                             {--gitlab= : GitLab remote via glab CLI: YES or NO (default NO)}
                             {--bitbucket= : Bitbucket Cloud remote via API tokens: YES or NO (default NO)}
@@ -130,6 +132,7 @@ class SettingsSetCommand extends LarapilotCommand
             'api-auth' => ['api_auth', $config->allowedApiAuthModes()],
             'security-scan' => ['security_scan', $config->allowedSecurityScanModes()],
             'aikido' => ['aikido', $config->allowedAikidoModes()],
+            'errors' => ['errors', $config->allowedErrorsModes()],
             'boogle' => ['boogle', $config->allowedBoogleModes()],
             'github' => ['github', $config->allowedGithubModes()],
             'gitlab' => ['gitlab', $config->allowedGitlabModes()],
@@ -157,10 +160,26 @@ class SettingsSetCommand extends LarapilotCommand
             $partial[$key] = $value;
         }
 
+        $errorsProvider = $this->normalizeOption('errors-provider');
+        if ($errorsProvider !== null) {
+            $errorsProvider = strtolower($errorsProvider);
+
+            if (! in_array($errorsProvider, $config->allowedErrorsProviders(), true)) {
+                return $this->failure(
+                    'E_INVALID_INPUT',
+                    "Invalid --errors-provider value: {$errorsProvider}.",
+                    $this->exitForCode('E_INVALID_INPUT'),
+                    'Allowed: '.implode(', ', $config->allowedErrorsProviders()).'.'
+                );
+            }
+
+            $partial['errors_provider'] = $errorsProvider;
+        }
+
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

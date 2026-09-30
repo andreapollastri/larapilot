@@ -59,12 +59,17 @@ return [
         // /larapilot/security shows them. Aikido scans the repository on its side; Larapilot
         // only reads the result, with the credentials under `aikido` below.
         'aikido' => false,
-        // Read the errors Boogle (https://boogle.web.ap.it) recorded for the running
-        // application — OFF by default. When true, /larapilot-boogle downloads the open
-        // errors, groups the ones that are one bug, and hands each group to
-        // /larapilot-triage; /larapilot/errors shows them with what was decided. Boogle
-        // is self-hosted: its address and a token are under `boogle` below.
+        // Read the errors of production from one tracker — OFF by default. When true,
+        // /larapilot-boogle downloads the open errors, has you confirm them, groups them
+        // with larapilot:errors-plan, and hands each group to /larapilot-triage;
+        // /larapilot/errors shows them. The tracker is `errors_provider` below.
+        'errors' => false,
+        // The name `errors` had when Boogle was the only tracker: `--boogle=YES` is
+        // `--errors=YES --errors-provider=boogle`, and the two are kept in step.
         'boogle' => false,
+        // One of: boogle, sentry, bugsnag, flare, datadog, rollbar, honeybadger,
+        // cloudwatch. Credentials live under `errors` and `boogle` below, from .env.
+        'errors_provider' => '',
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
         'gitlab' => false,
@@ -128,6 +133,66 @@ return [
         'timeout' => (int) env('LARAPILOT_BOOGLE_TIMEOUT', 15),
         // Seconds the dashboard keeps the errors before it asks Boogle again.
         'cache_seconds' => (int) env('LARAPILOT_BOOGLE_CACHE', 300),
+    ],
+
+    // Production errors — the trackers `settings.errors_provider` can name, besides
+    // Boogle above. Every credential comes from .env: a token that READS the tracker,
+    // never the key the application reports with.
+    'errors' => [
+        'timeout' => (int) env('LARAPILOT_ERRORS_TIMEOUT', 15),
+        // Seconds the dashboard keeps what it read before asking the tracker again.
+        'cache_seconds' => (int) env('LARAPILOT_ERRORS_CACHE', env('LARAPILOT_BOOGLE_CACHE', 300)),
+        'sentry' => [
+            'url' => env('LARAPILOT_SENTRY_URL', env('SENTRY_URL', 'https://sentry.io')),
+            // An auth token with event:read (event:write to close an issue from Larapilot).
+            'token' => env('LARAPILOT_SENTRY_AUTH_TOKEN', env('SENTRY_AUTH_TOKEN')),
+            'organization' => env('LARAPILOT_SENTRY_ORGANIZATION', env('SENTRY_ORG')),
+            'project' => env('LARAPILOT_SENTRY_PROJECT', env('SENTRY_PROJECT')),
+        ],
+        'bugsnag' => [
+            // A personal auth token of the Data Access API, not the notifier API key.
+            'token' => env('LARAPILOT_BUGSNAG_AUTH_TOKEN'),
+            'project_id' => env('LARAPILOT_BUGSNAG_PROJECT_ID'),
+            'project_name' => env('LARAPILOT_BUGSNAG_PROJECT_NAME'),
+        ],
+        'flare' => [
+            'url' => env('LARAPILOT_FLARE_URL', 'https://flareapp.io/api'),
+            // A personal access token with the read scope (write to resolve), not FLARE_KEY.
+            'token' => env('LARAPILOT_FLARE_TOKEN'),
+            'project_id' => env('LARAPILOT_FLARE_PROJECT_ID'),
+            'project_name' => env('LARAPILOT_FLARE_PROJECT_NAME'),
+        ],
+        'datadog' => [
+            'site' => env('LARAPILOT_DATADOG_SITE', env('DD_SITE', 'datadoghq.com')),
+            'api_key' => env('LARAPILOT_DATADOG_API_KEY', env('DD_API_KEY')),
+            'application_key' => env('LARAPILOT_DATADOG_APP_KEY', env('DD_APP_KEY')),
+            // The service the application is tagged with; empty = APP_NAME.
+            'service' => env('LARAPILOT_DATADOG_SERVICE'),
+            // error_tracking (default) reads the open issues of Error Tracking; logs reads
+            // the error logs of the last two weeks from Log Management instead.
+            'source' => env('LARAPILOT_DATADOG_SOURCE', 'error_tracking'),
+            // The track of Error Tracking the issues are in: trace (APM), logs, or rum.
+            'track' => env('LARAPILOT_DATADOG_TRACK', 'trace'),
+        ],
+        'rollbar' => [
+            // A project access token with the read scope (write to resolve), not the
+            // post_server_item token the application posts with.
+            'access_token' => env('LARAPILOT_ROLLBAR_ACCESS_TOKEN'),
+            'project_name' => env('LARAPILOT_ROLLBAR_PROJECT_NAME'),
+        ],
+        'honeybadger' => [
+            // The personal authentication token of a user, not the project API key.
+            'auth_token' => env('LARAPILOT_HONEYBADGER_AUTH_TOKEN'),
+            'project_id' => env('LARAPILOT_HONEYBADGER_PROJECT_ID'),
+            'project_name' => env('LARAPILOT_HONEYBADGER_PROJECT_NAME'),
+        ],
+        'cloudwatch' => [
+            // Read with the AWS CLI signed in on this machine: no key is kept here.
+            'log_group' => env('LARAPILOT_CLOUDWATCH_LOG_GROUP'),
+            'region' => env('LARAPILOT_CLOUDWATCH_REGION', env('AWS_DEFAULT_REGION', 'eu-west-1')),
+            'profile' => env('LARAPILOT_CLOUDWATCH_PROFILE'),
+            'filter' => env('LARAPILOT_CLOUDWATCH_FILTER', '?ERROR ?Exception ?CRITICAL'),
+        ],
     ],
 
     // External frontend repository (when PRD topology is API + external frontend).

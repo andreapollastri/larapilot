@@ -424,7 +424,7 @@ php artisan larapilot:aikido-status
 
 ### When ON
 
-- `/larapilot-aikido` downloads the open findings, shows the new ones, and hands each one the user picks to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:aikido-link`.
+- `/larapilot-aikido` downloads the open findings, has the user confirm each one (resolve, waive, or skip), groups the confirmed ids with `larapilot:aikido-plan`, and hands each resolution group to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:aikido-link`.
 - `/larapilot-ship` runs `php artisan larapilot:aikido-issues --gate --report`: `FAIL` is a release blocker, `WARN` a note.
 - `/larapilot/security` shows the findings, what was decided about each, and the verdict of the gate.
 - `{paths.security}/aikido.md` is the report: every open finding with its decision.
@@ -439,11 +439,61 @@ php artisan larapilot:aikido-status
 
 The address of the token endpoint is derived from the region (`https://app.{region}.aikido.dev/api/oauth/token`). Set `LARAPILOT_AIKIDO_BASE_URL` when the workspace is reached through another address.
 
-## Boogle (`settings.boogle`)
+## Production errors (`settings.errors` + `settings.errors_provider`)
 
-Brings the errors of [Boogle](https://boogle.web.ap.it/) into the workflow. OFF by default. Boogle is the exception tracker and uptime monitor the team hosts; the application sends its exceptions there with `andreapollastri/boogle-client`. Larapilot reads them back over the admin API.
+Brings the errors the running application throws into the workflow. OFF by default. **One tracker at a time** records them; Larapilot reads the open ones back, puts them together into bugs, has you confirm them, plans resolution groups with `larapilot:errors-plan`, and hands **each group** to `/larapilot-triage`.
 
-### Setup
+### Choose the tracker
+
+```bash
+php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
+php artisan larapilot:boogle-status
+```
+
+| Provider | The application sends with | Larapilot reads | One row is | Closes from Larapilot |
+| --- | --- | --- | --- | --- |
+| **boogle** (default) | `andreapollastri/boogle-client` | The admin API of the [Boogle](https://boogle.web.ap.it/) the team hosts | a throw | Yes |
+| **sentry** | `sentry/sentry-laravel` | The unresolved issues of a project | a bug | Yes |
+| **bugsnag** | `bugsnag/bugsnag-laravel` | The open errors of a project | a bug | Yes |
+| **flare** | `spatie/laravel-flare`, or Ignition | The open errors of a project | a bug | Yes |
+| **datadog** | the Datadog agent, or the logs | The open issues of Error Tracking — or the error logs | a bug — a throw with logs | Yes — No with logs |
+| **rollbar** | `rollbar/rollbar-laravel` | The active items of a project | a bug | Yes |
+| **honeybadger** | `honeybadger-io/honeybadger-laravel` | The unresolved faults of a project | a bug | Yes |
+| **cloudwatch** | the log channel, shipped to AWS | The log events that match an error filter, through the AWS CLI | a throw | No |
+
+`--boogle=YES` is the name the setting had when Boogle was the only tracker: it is `--errors=YES --errors-provider=boogle`, and `settings.boogle` is kept in step with the two. Turning `errors` off keeps the tracker that was named.
+
+- **One row is a throw** — Larapilot puts together the rows that share the exception, the file, and the line, counts them, and draws them day by day on `/larapilot/errors`.
+- **One row is a bug** — the tracker grouped already: its grouping and its count are kept. The page has no day chart, since the tracker says when a bug was last thrown and not each time.
+
+### What goes in `.env`
+
+Always a credential that **reads** the tracker — never the key the application reports with (`SENTRY_LARAVEL_DSN`, `BUGSNAG_API_KEY`, `FLARE_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The variables of each tracker are in its section below, and `boogle-status` names every one that is missing. Two are shared:
+
+```dotenv
+LARAPILOT_ERRORS_CACHE=300     # seconds the dashboard keeps what it read
+LARAPILOT_ERRORS_TIMEOUT=15    # seconds a call to the tracker may take
+```
+
+### When ON
+
+- `/larapilot-boogle` — the skill keeps its name, whichever the tracker — downloads the open errors, writes `{paths.support}/errors.md`, has you confirm each bug (resolve, ignore with a reason, or skip), groups the confirmed codes with `larapilot:errors-plan` (alias `larapilot:boogle-plan`), and hands each group to `/larapilot-triage`. The spec that fixes it is recorded with `larapilot:boogle-link`.
+- `/larapilot/errors` shows the bugs, how many times each was thrown, and what was decided. **Download report (.md)** saves the report.
+- `.larapilot/boogle.yaml` keeps the decisions — the file keeps its name too. Commit it, so a bug handed to the backlog on one machine is not handed over again on another, nor the next time it is thrown.
+- `larapilot:boogle-resolve` closes an error in the tracker once its fix is released, where the tracker allows it. An error closed this way and thrown again is shown as **back after the fix**.
+
+### What it never does
+
+- It never calls a tracker while `errors` is `NO`.
+- It never reads the user, the query string, or the payload of a request into a file, a report, the cache, or the chat. It keeps the exception, the message with addresses and long secrets masked, the file and line, the method and the path.
+- It never writes to a tracker by itself: `boogle-resolve` runs when the user asks, and is not allowed through the MCP tool. `larapilot:errors-plan` only reads, and is.
+- It never leaves an error as it is. Only the user does, with a reason of at least a sentence.
+
+Laravel Nightwatch is not among the trackers: it publishes no API to read exceptions with.
+
+## Boogle (`errors_provider: boogle`)
+
+[Boogle](https://boogle.web.ap.it/) is the exception tracker and uptime monitor the team hosts; the application sends its exceptions there with `andreapollastri/boogle-client`. Larapilot reads them back over the admin API.
 
 1. Have the application send its exceptions to Boogle: `composer require andreapollastri/boogle-client`, then `php artisan boogle:install`. Larapilot does not do this step.
 2. In Boogle, as an **admin** user, create a token in the profile under **API tokens**. The admin API answers to admin users only.
@@ -458,27 +508,90 @@ LARAPILOT_BOOGLE_PROJECT=                          # id or title in Boogle; empt
 4. Turn it on and check:
 
 ```bash
-php artisan larapilot:settings-set --boogle=YES
+php artisan larapilot:settings-set --errors=YES --errors-provider=boogle   # or --boogle=YES
 php artisan larapilot:boogle-status
 ```
 
-### When ON
-
-- `/larapilot-boogle` downloads the open errors (`OPEN` and `READ` in Boogle), puts together the ones that are one bug — the same exception at the same line — and hands each bug the user picks to `/larapilot-triage`. The spec that fixes it is recorded with `larapilot:boogle-link`.
-- `/larapilot/errors` shows the bugs, how many times each was thrown, day by day, and what was decided.
-- `{paths.support}/boogle.md` is the report: every open error with its decision.
-- `.larapilot/boogle.yaml` keeps the decisions, under what the occurrences of one bug share. Commit it, so a bug handed to the backlog on one machine is not handed over again on another, nor the next time it is thrown.
-- `larapilot:boogle-resolve` closes an error in Boogle as `FIXED`, with the spec that fixed it in the history. An error closed this way and thrown again is shown as **back after the fix**.
-
-### What it never does
-
-- It never calls Boogle while the setting is `NO`.
-- It never reads the user, the query string, or the payload of a request into a file, a report, the cache, or the chat. It keeps the exception, the message with addresses masked, the file and line, the method and the path.
-- It never keeps the key and the token of a project, which Boogle sends with the list of projects: they are compared with `BOOGLE_PROJECT_KEY` and dropped.
-- It never writes to Boogle by itself: `boogle-resolve` runs when the user asks, and is not allowed through the MCP tool.
-- It never leaves an error as it is. Only the user does, with a reason of at least a sentence.
+- What is open is `OPEN` and `READ` in Boogle: seen is not fixed. Codes are the ones of Boogle (`#BUG12`).
+- Boogle also watches uptime: the times the application did not answer (`#OUT…`) are listed apart, as **outages**, and handed to triage only when asked.
+- `boogle-resolve` closes every open occurrence of the bug as `FIXED` (`--status=DONE` for the other word Boogle has), with the spec that fixed it in the history.
+- The key and the token of a project, which Boogle sends with the list of projects, are never kept: they are compared with `BOOGLE_PROJECT_KEY` and dropped.
 
 The token reads **every project** of that Boogle, because Boogle gives tokens to users and not to projects. Keep it in `.env` and in the secrets of the CI.
+
+## Sentry (`errors_provider: sentry`)
+
+```dotenv
+LARAPILOT_SENTRY_AUTH_TOKEN=             # or SENTRY_AUTH_TOKEN — scope event:read; event:write to close an issue
+LARAPILOT_SENTRY_ORGANIZATION=           # or SENTRY_ORG — the slug of the organization
+LARAPILOT_SENTRY_PROJECT=                # or SENTRY_PROJECT — the slug of the project
+LARAPILOT_SENTRY_URL=https://sentry.io   # a self-hosted Sentry, or a region such as https://de.sentry.io
+```
+
+Reads the unresolved issues of the project, the ones thrown the most first, a hundred at most. Codes are the short ids of Sentry (`SHOP-1A`). `boogle-resolve` marks the issue resolved.
+
+## Bugsnag (`errors_provider: bugsnag`)
+
+```dotenv
+LARAPILOT_BUGSNAG_AUTH_TOKEN=     # a personal auth token: My account → Personal auth tokens
+LARAPILOT_BUGSNAG_PROJECT_ID=     # Project settings → General
+LARAPILOT_BUGSNAG_PROJECT_NAME=   # optional: the title of the report
+```
+
+Reads the open errors of the project over the Data Access API, a hundred at most. `boogle-resolve` marks the error fixed.
+
+## Flare (`errors_provider: flare`)
+
+```dotenv
+LARAPILOT_FLARE_TOKEN=            # a personal access token: scope read; write to resolve an error
+LARAPILOT_FLARE_PROJECT_ID=
+LARAPILOT_FLARE_PROJECT_NAME=     # optional: the title of the report
+```
+
+Reads the errors of the [Flare](https://flareapp.io/) project and leaves out the ones resolved or snoozed there. `boogle-resolve` resolves the error.
+
+## Datadog (`errors_provider: datadog`)
+
+```dotenv
+LARAPILOT_DATADOG_API_KEY=               # or DD_API_KEY
+LARAPILOT_DATADOG_APP_KEY=               # or DD_APP_KEY
+LARAPILOT_DATADOG_SITE=datadoghq.com     # or DD_SITE: datadoghq.eu, us3.datadoghq.com, …
+LARAPILOT_DATADOG_SERVICE=               # the service the application is tagged with; empty = APP_NAME
+LARAPILOT_DATADOG_SOURCE=error_tracking  # or logs
+LARAPILOT_DATADOG_TRACK=trace            # the track of Error Tracking: trace (APM), logs, or rum
+```
+
+With `error_tracking`, reads the open issues of the service in [Datadog](https://www.datadoghq.com/) Error Tracking over the last two weeks; `boogle-resolve` sets the issue to resolved. With `logs`, reads the error logs of the service (`status:error`) over the last two weeks from Log Management, one row for each throw, and nothing is closed from Larapilot.
+
+## Rollbar (`errors_provider: rollbar`)
+
+```dotenv
+LARAPILOT_ROLLBAR_ACCESS_TOKEN=   # a project access token: scope read; write to resolve an item
+LARAPILOT_ROLLBAR_PROJECT_NAME=   # optional: the title of the report
+```
+
+Reads the active items of the project the token belongs to. Codes are the numbers of the items (`#RB57`). `boogle-resolve` resolves the item.
+
+## Honeybadger (`errors_provider: honeybadger`)
+
+```dotenv
+LARAPILOT_HONEYBADGER_AUTH_TOKEN=     # the personal authentication token of a user: profile → Authentication
+LARAPILOT_HONEYBADGER_PROJECT_ID=     # as in the address of the page of the project
+LARAPILOT_HONEYBADGER_PROJECT_NAME=   # optional: the title of the report
+```
+
+Reads the faults that are neither resolved nor ignored, the most frequent first, a hundred at most. `boogle-resolve` marks the fault resolved.
+
+## AWS CloudWatch Logs (`errors_provider: cloudwatch`)
+
+```dotenv
+LARAPILOT_CLOUDWATCH_LOG_GROUP=          # the log group the application writes to
+LARAPILOT_CLOUDWATCH_REGION=eu-west-1    # or AWS_DEFAULT_REGION
+LARAPILOT_CLOUDWATCH_PROFILE=            # optional: a profile of the AWS CLI
+LARAPILOT_CLOUDWATCH_FILTER="?ERROR ?Exception ?CRITICAL"
+```
+
+No key of AWS is kept by Larapilot: it runs `aws logs filter-log-events` with the AWS CLI signed in on the machine (`aws configure`, or the keys in the environment), over the last two weeks, three hundred events at most. The exception and the place in the code are read from the text of each line. Nothing is closed from Larapilot.
 
 ## Security scan (`settings.security_scan`)
 

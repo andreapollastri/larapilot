@@ -1545,7 +1545,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.2</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.3</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1607,7 +1607,7 @@
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
       <a class="sub" href="#deep-dive-aikido">Aikido</a>
-      <a class="sub" href="#deep-dive-boogle">Boogle</a>
+      <a class="sub" href="#deep-dive-boogle">Production errors</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
       <a class="sub" href="#deep-dive-vps">Self-hosted VPS</a>
 
@@ -2029,7 +2029,7 @@
               </tr>
               <tr>
                 <td>Errors the application throws in production</td>
-                <td><code>/larapilot-boogle</code> — see <a href="#deep-dive-boogle">Boogle</a></td>
+                <td><code>/larapilot-boogle</code> — see <a href="#deep-dive-boogle">Production errors</a></td>
               </tr>
               <tr>
                 <td>A Backstage developer portal</td>
@@ -5069,8 +5069,8 @@ GO — Slack notified.</code></pre>
                   <code>aikido=YES</code>. Full reference: <a href="#deep-dive-aikido">Aikido</a>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:aikido-status</code> ·
-                  <code>larapilot:aikido-issues</code> · <code>larapilot:aikido-link</code> ·
-                  <code>larapilot:aikido-scan</code>.
+                  <code>larapilot:aikido-issues</code> · <code>larapilot:aikido-plan</code> ·
+                  <code>larapilot:aikido-link</code> · <code>larapilot:aikido-scan</code>.
                 </p>
               </div>
             </div>
@@ -5078,16 +5078,17 @@ GO — Slack notified.</code></pre>
               <span class="skill-badge">production errors</span>
               <div class="skill-body">
                 <h3><code>/larapilot-boogle</code></h3>
-                <p>Downloads the open errors <strong>Boogle</strong> recorded for the running application,
-                  puts together the times one bug was thrown, and hands each bug you pick to
-                  <code>/larapilot-triage</code>, which routes it to <code>/larapilot-bug</code> or
-                  <code>/larapilot-feature</code>. It writes no spec itself, and it never reads who the user
-                  of a request was. Needs <code>boogle=YES</code>. Full reference:
-                  <a href="#deep-dive-boogle">Boogle</a>.
+                <p>Downloads the open errors of production from the tracker of the project — Boogle, Sentry,
+                  Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — has you confirm each bug,
+                  groups the confirmed codes with <code>larapilot:errors-plan</code>, and hands
+                  <strong>each group</strong> to <code>/larapilot-triage</code>, which routes it to
+                  <code>/larapilot-bug</code> or <code>/larapilot-feature</code>. It writes no spec itself,
+                  and it never reads who the user of a request was. Needs <code>errors=YES</code>. Full
+                  reference: <a href="#deep-dive-boogle">Production errors</a>.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:boogle-status</code> ·
-                  <code>larapilot:boogle-errors</code> · <code>larapilot:boogle-link</code> ·
-                  <code>larapilot:boogle-resolve</code>.
+                  <code>larapilot:boogle-errors</code> · <code>larapilot:errors-plan</code> ·
+                  <code>larapilot:boogle-link</code> · <code>larapilot:boogle-resolve</code>.
                 </p>
               </div>
             </div>
@@ -5691,18 +5692,23 @@ php artisan larapilot:aikido-status</code></pre>
           <p>Owned by <strong>Lars</strong>. Everything else — the credentials, the skill, the gate — is in
             <a href="#deep-dive-aikido">Aikido</a>.</p>
 
-          <h4 id="deep-dive-boogle-setting">Boogle <span class="chip">opt-in</span></h4>
-          <p><code>settings.boogle</code> (default <code>NO</code>) reads the errors
-            <a href="https://boogle.web.ap.it/" target="_blank" rel="noopener">Boogle</a> recorded for the
-            running application, with the address of Boogle and a token kept in <code>.env</code>. While the
-            setting is off, Boogle is never called.</p>
+          <h4 id="deep-dive-boogle-setting">Production errors <span class="chip">opt-in</span></h4>
+          <p><code>settings.errors</code> (default <code>NO</code>) reads the errors the running application
+            throws from one tracker, and <code>settings.errors_provider</code> names it:
+            <code>boogle</code> (the default), <code>sentry</code>, <code>bugsnag</code>, <code>flare</code>,
+            <code>datadog</code>, <code>rollbar</code>, <code>honeybadger</code>, or <code>cloudwatch</code>.
+            The credentials stay in <code>.env</code>. While <code>errors</code> is off no tracker is called,
+            and the tracker that was named is kept for when it is turned on again.</p>
           <div class="code-block">
             <div class="code-block-header">turn it on</div>
-            <pre><code>php artisan larapilot:settings-set --boogle=YES
+            <pre><code>php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
 php artisan larapilot:boogle-status</code></pre>
           </div>
-          <p>Owned by <strong>Sophia</strong>. Everything else — the token, the skill, what is kept — is in
-            <a href="#deep-dive-boogle">Boogle</a>.</p>
+          <p><code>settings.boogle</code> is the name the setting had when Boogle was the only tracker:
+            <code>--boogle=YES</code> is <code>--errors=YES --errors-provider=boogle</code>, and the key is
+            kept in step with the two. A project that turned Boogle on before 4.1.3 has nothing to change.</p>
+          <p>Owned by <strong>Sophia</strong>. The trackers, what each needs in <code>.env</code>, and the
+            skill are in <a href="#deep-dive-boogle">Production errors</a>.</p>
 
           <h4 id="deep-dive-github">Remote forges <span class="chip">opt-in</span></h4>
           <p><code>settings.github</code>, <code>gitlab</code>, <code>bitbucket</code>, and <code>azure</code> (all default
@@ -5776,7 +5782,7 @@ php artisan larapilot:boogle-status</code></pre>
   --api-auth=NO \
   --security-scan=NO \
   --aikido=NO \
-  --boogle=NO \
+  --errors=NO \
   --github=NO \
   --gitlab=NO \
   --bitbucket=NO \
@@ -7618,10 +7624,13 @@ php artisan larapilot:aikido-status</code></pre>
             <li><strong>Download</strong> — <code>aikido-issues --new --report</code>. The findings nobody decided
               about are shown in a table, the most severe first, 15 rows at most; the detail of all of them goes
               to <code>.larapilot/docs/security/aikido.md</code>.</li>
-            <li><strong>Choose</strong> — one question: the findings that stop the ship gate, every new finding,
+            <li><strong>Scope</strong> — one question: the findings that stop the ship gate, every new finding,
               the ones you name, or none.</li>
-            <li><strong>Group by fix</strong> — one request per fix, not per finding: several CVEs of one
-              package closed by one upgrade go together.</li>
+            <li><strong>Confirm</strong> — finding by finding (or in batches when there are many): resolve, waive
+              with a reason, or skip for now. Waives are recorded immediately with
+              <code>aikido-link</code>.</li>
+            <li><strong>Plan</strong> — <code>aikido-plan --ids=…</code> groups the confirmed ids by kind and fix;
+              you approve the groups. Leaked secrets never merge with anything else.</li>
             <li><strong>Hand off to triage</strong> — each group goes to <code>/larapilot-triage</code> in the
               same turn, with the block below. Triage measures it against the PRD like any request: a known
               vulnerability in shipped code is a <strong>bug</strong> when a requirement names security for that
@@ -7708,6 +7717,10 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
                     <code>FAIL</code></td>
                 </tr>
                 <tr>
+                  <td><code>larapilot:aikido-plan --ids=24,31</code></td>
+                  <td>Groups confirmed ids by kind and fix for triage handoffs. Read-only</td>
+                </tr>
+                <tr>
                   <td><code>larapilot:aikido-link 24,25 --spec=US-012</code></td>
                   <td>The spec that fixes the findings. A number Aikido does not report is refused</td>
                 </tr>
@@ -7726,8 +7739,8 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               </tbody>
             </table>
           </div>
-          <p><code>aikido-status</code> and <code>aikido-issues</code> are allowed through the MCP
-            <code>RunArtisanTool</code>; the two that write are not.</p>
+          <p><code>aikido-status</code>, <code>aikido-issues</code>, and <code>aikido-plan</code> are allowed
+            through the MCP <code>RunArtisanTool</code>; the commands that write are not.</p>
 
           <h4 id="deep-dive-aikido-dashboard">On the dashboard</h4>
           <p><code>/larapilot/security</code> is always in the menu. With the setting off it is two lines: what
@@ -7784,17 +7797,105 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
           </div>
         </article>
 
-        <!-- Boogle -->
+        <!-- Production errors -->
         <article class="deep-dive-sub" id="deep-dive-boogle">
-          <h3>Boogle</h3>
-          <p class="lead">Optional. <a href="https://boogle.web.ap.it/" target="_blank" rel="noopener">Boogle</a>
-            is a self-hosted exception tracker and uptime monitor for Laravel: the application sends what it
-            throws there, with <code>andreapollastri/boogle-client</code>. Larapilot
-            <strong>reads the open errors back</strong> over the admin API, puts together the ones that are one
-            bug, says what was already decided about each, and brings the rest into the workflow through
-            <code>/larapilot-triage</code>.</p>
+          <h3>Production errors</h3>
+          <p class="lead">Optional. The running application throws, <strong>one tracker</strong> records it,
+            and Larapilot <strong>reads the open errors back</strong>: it puts them together into bugs, says
+            what was already decided about each, and brings the rest into the workflow through
+            <code>/larapilot-triage</code>. <code>settings.errors</code> turns it on and
+            <code>settings.errors_provider</code> names the tracker. The skill
+            (<code>/larapilot-boogle</code>), the commands (<code>larapilot:boogle-*</code>), and the ledger
+            (<code>.larapilot/boogle.yaml</code>) keep the name of Boogle, the first tracker Larapilot read,
+            whichever one the project uses.</p>
 
-          <h4 id="deep-dive-boogle-setup">Setup</h4>
+          <h4 id="deep-dive-boogle-providers">The trackers</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>What is read</th>
+                  <th>In <code>.env</code></th>
+                  <th>Closed from here</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>boogle</code> — the default</td>
+                  <td>Every throw the self-hosted
+                    <a href="https://boogle.web.ap.it/" target="_blank" rel="noopener">Boogle</a> recorded,
+                    and the outages its uptime monitor found</td>
+                  <td><code>LARAPILOT_BOOGLE_URL</code><br><code>LARAPILOT_BOOGLE_TOKEN</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>sentry</code></td>
+                  <td>The unresolved issues of a project</td>
+                  <td><code>LARAPILOT_SENTRY_AUTH_TOKEN</code><br><code>LARAPILOT_SENTRY_ORGANIZATION</code><br><code>LARAPILOT_SENTRY_PROJECT</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>bugsnag</code></td>
+                  <td>The open errors of a project, over the Data Access API</td>
+                  <td><code>LARAPILOT_BUGSNAG_AUTH_TOKEN</code><br><code>LARAPILOT_BUGSNAG_PROJECT_ID</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>flare</code></td>
+                  <td>The open errors of a
+                    <a href="https://flareapp.io/" target="_blank" rel="noopener">Flare</a> project</td>
+                  <td><code>LARAPILOT_FLARE_TOKEN</code><br><code>LARAPILOT_FLARE_PROJECT_ID</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>datadog</code></td>
+                  <td>The open issues of
+                    <a href="https://www.datadoghq.com/" target="_blank" rel="noopener">Datadog</a> Error
+                    Tracking for the service — or its error logs, with
+                    <code>LARAPILOT_DATADOG_SOURCE=logs</code></td>
+                  <td><code>LARAPILOT_DATADOG_API_KEY</code><br><code>LARAPILOT_DATADOG_APP_KEY</code></td>
+                  <td>Yes — not with logs</td>
+                </tr>
+                <tr>
+                  <td><code>rollbar</code></td>
+                  <td>The active items of a project</td>
+                  <td><code>LARAPILOT_ROLLBAR_ACCESS_TOKEN</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>honeybadger</code></td>
+                  <td>The unresolved faults of a project</td>
+                  <td><code>LARAPILOT_HONEYBADGER_AUTH_TOKEN</code><br><code>LARAPILOT_HONEYBADGER_PROJECT_ID</code></td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>cloudwatch</code></td>
+                  <td>The error lines of an AWS CloudWatch log group, through the AWS CLI signed in on the
+                    machine</td>
+                  <td><code>LARAPILOT_CLOUDWATCH_LOG_GROUP</code></td>
+                  <td>No</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Every credential is one that <strong>reads</strong> the tracker — never the key the application
+            reports with (<code>FLARE_KEY</code>, <code>BUGSNAG_API_KEY</code>, <code>ROLLBAR_TOKEN</code>,
+            <code>HONEYBADGER_API_KEY</code>). <code>SENTRY_AUTH_TOKEN</code>, <code>SENTRY_ORG</code>,
+            <code>SENTRY_PROJECT</code>, <code>DD_API_KEY</code>, <code>DD_APP_KEY</code>, and
+            <code>DD_SITE</code> are taken when the project has them already. One tracker is read at a time.
+            Laravel Nightwatch is not among them: it publishes no API to read exceptions with.</p>
+          <ul>
+            <li><strong>One row is a throw</strong> — Boogle, CloudWatch, the logs of Datadog. Larapilot puts
+              together the rows that share the exception, the file, and the line, counts them, and draws
+              them day by day on the dashboard.</li>
+            <li><strong>One row is a bug</strong> — Sentry, Bugsnag, Flare, Rollbar, Honeybadger, Datadog
+              Error Tracking. The tracker grouped already: its grouping and its count are kept. The
+              dashboard has no day chart, since such a tracker says when a bug was last thrown and not each
+              time.</li>
+          </ul>
+
+          <h4 id="deep-dive-boogle-setup">Setup with Boogle</h4>
           <ol>
             <li><strong>Have the application send its exceptions to Boogle</strong>:
               <code>composer require andreapollastri/boogle-client</code>, then
@@ -7814,20 +7915,79 @@ LARAPILOT_BOOGLE_CACHE=300                         # seconds the dashboard keeps
           </div>
           <div class="code-block">
             <div class="code-block-header">Terminal</div>
-            <pre><code>php artisan larapilot:settings-set --boogle=YES
+            <pre><code>php artisan larapilot:settings-set --errors=YES --errors-provider=boogle   # or --boogle=YES
 php artisan larapilot:boogle-status</code></pre>
           </div>
-          <p><code>boogle-status</code> answers with <code>enabled</code>, <code>configured</code>,
-            <code>authenticated</code>, the <code>project</code> it matched (id, title, address, group, whether
-            the uptime is watched), and <code>hints</code>: one line for each thing that is missing. The project
-            is the one named in <code>LARAPILOT_BOOGLE_PROJECT</code>; with nothing named, the one whose key is
+          <p><code>boogle-status</code> answers with <code>enabled</code>, <code>provider</code>,
+            <code>configured</code>, <code>authenticated</code>, the <code>project</code> it matched (id, title,
+            address, group, whether the uptime is watched), <code>remote_resolve</code>, and
+            <code>hints</code>: one line for each thing that is missing. The project is the one named in
+            <code>LARAPILOT_BOOGLE_PROJECT</code>; with nothing named, the one whose key is
             <code>BOOGLE_PROJECT_KEY</code> — what the client package sends with — and then the one whose
             address is <code>APP_URL</code>.</p>
+
+          <h4 id="deep-dive-boogle-other">Setup with another tracker</h4>
+          <p>The application sends its exceptions to the tracker as it already does — Larapilot changes
+            nothing there. Put what reads the tracker in <code>.env</code>, name the tracker, and check: with
+            the errors on, <code>boogle-status</code> asks the tracker, so a token it refuses is known before
+            the skill runs.</p>
+          <div class="code-block">
+            <div class="code-block-header">.env — the variables of the tracker the project uses</div>
+            <pre><code># Sentry — an auth token with event:read (event:write to close an issue)
+LARAPILOT_SENTRY_AUTH_TOKEN=             # or SENTRY_AUTH_TOKEN
+LARAPILOT_SENTRY_ORGANIZATION=           # or SENTRY_ORG: the slug of the organization
+LARAPILOT_SENTRY_PROJECT=                # or SENTRY_PROJECT: the slug of the project
+LARAPILOT_SENTRY_URL=https://sentry.io   # self-hosted, or a region: https://de.sentry.io
+
+# Bugsnag — a personal auth token (My account → Personal auth tokens)
+LARAPILOT_BUGSNAG_AUTH_TOKEN=
+LARAPILOT_BUGSNAG_PROJECT_ID=            # Project settings → General
+
+# Flare — a personal access token with the read scope (write to resolve an error)
+LARAPILOT_FLARE_TOKEN=
+LARAPILOT_FLARE_PROJECT_ID=
+
+# Datadog — an API key and an application key
+LARAPILOT_DATADOG_API_KEY=               # or DD_API_KEY
+LARAPILOT_DATADOG_APP_KEY=               # or DD_APP_KEY
+LARAPILOT_DATADOG_SITE=datadoghq.com     # or DD_SITE: datadoghq.eu, us3.datadoghq.com, …
+LARAPILOT_DATADOG_SERVICE=               # the service tag; empty = APP_NAME
+LARAPILOT_DATADOG_SOURCE=error_tracking  # or logs: the error logs of two weeks
+LARAPILOT_DATADOG_TRACK=trace            # in Error Tracking: trace (APM), logs, rum
+
+# Rollbar — a project access token with the read scope (write to resolve an item)
+LARAPILOT_ROLLBAR_ACCESS_TOKEN=
+
+# Honeybadger — the personal authentication token of a user (profile → Authentication)
+LARAPILOT_HONEYBADGER_AUTH_TOKEN=
+LARAPILOT_HONEYBADGER_PROJECT_ID=        # as in the address of the project page
+
+# AWS CloudWatch Logs — read with the AWS CLI signed in on the machine: no key is kept
+LARAPILOT_CLOUDWATCH_LOG_GROUP=          # the log group the application writes to
+LARAPILOT_CLOUDWATCH_REGION=eu-west-1    # or AWS_DEFAULT_REGION
+LARAPILOT_CLOUDWATCH_PROFILE=            # optional: a profile of the AWS CLI
+LARAPILOT_CLOUDWATCH_FILTER="?ERROR ?Exception ?CRITICAL"
+
+# Every tracker
+LARAPILOT_ERRORS_CACHE=300               # seconds the dashboard keeps what it read
+LARAPILOT_ERRORS_TIMEOUT=15              # seconds a call to the tracker may take</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
+php artisan larapilot:boogle-status</code></pre>
+          </div>
+          <p><code>*_PROJECT_NAME</code> (Bugsnag, Flare, Rollbar, Honeybadger) is optional, and gives the
+            report its title. A provider Larapilot does not know, written by hand in
+            <code>config.yaml</code>, is named by <code>boogle-status</code> with the ones it does.</p>
 
           <h4 id="deep-dive-boogle-bug">One entry for each bug</h4>
           <p>Boogle keeps one row for each time an exception is thrown, and gives each a code
             (<code>#BUG12</code>, <code>#OUT3</code>). Fourteen rows of one exception at one line are one bug
-            thrown fourteen times, and that is how Larapilot shows them:</p>
+            thrown fourteen times, and that is how Larapilot shows them. A tracker that groups by itself —
+            Sentry, Bugsnag, Flare, Rollbar, Honeybadger, Datadog Error Tracking — answers with the bug and
+            its count: both are kept as they are, under the code the tracker gives (<code>SHOP-1A</code>,
+            <code>#RB57</code>, <code>#FL9001</code>).</p>
           <div class="table-card">
             <table>
               <thead>
@@ -7858,12 +8018,13 @@ php artisan larapilot:boogle-status</code></pre>
                 </tr>
                 <tr>
                   <td>Thrown</td>
-                  <td>How many times, the first, the last, and how many nobody opened in Boogle yet</td>
+                  <td>How many times, the first, the last, and — with Boogle — how many nobody opened there
+                    yet</td>
                 </tr>
                 <tr>
                   <td>Outage</td>
-                  <td>What the uptime monitor recorded (<code>#OUT…</code>). Listed apart: an outage is not a
-                    bug of the code by itself</td>
+                  <td>What the uptime monitor of Boogle recorded (<code>#OUT…</code>). Listed apart: an outage
+                    is not a bug of the code by itself</td>
                 </tr>
               </tbody>
             </table>
@@ -7875,35 +8036,46 @@ php artisan larapilot:boogle-status</code></pre>
             <pre><code>/larapilot-boogle</code></pre>
           </div>
           <ol>
-            <li><strong>Status</strong> — one line: project, address, whether the uptime is watched. With
-              something missing, the hints are printed and the skill stops.</li>
+            <li><strong>Status</strong> — one line: tracker, project, address, whether the uptime is watched.
+              With a credential missing, the skill says which variable and where its value is created; with
+              anything else missing, the hints are printed and the skill stops.</li>
             <li><strong>Download</strong> — <code>boogle-errors --new --kind=error --report</code>. The bugs
               nobody decided about are shown in a table, the ones thrown the most first, 15 rows at most; the
-              detail of all of them goes to <code>.larapilot/docs/support/boogle.md</code>. A bug that came
-              back after its fix is said first.</li>
-            <li><strong>Choose</strong> — one question: the three thrown the most, every one, the ones you
-              name, or none.</li>
-            <li><strong>Read the code first</strong> — the line is opened in the repository before the
-              handoff. When it is in a package, the call of the application that leads there is found.</li>
-            <li><strong>Hand off to triage</strong> — each bug goes to <code>/larapilot-triage</code> in the
-              same turn, with the block below. An exception is evidence that something broke, not the
-              verdict: triage applies the promise test to what the user was doing.
+              detail of all of them goes to <code>.larapilot/docs/support/errors.md</code> (dashboard route
+              <code>/larapilot/errors/errors.md</code>; <code>boogle.md</code> is kept as an alias). A bug that
+              came back after its fix is said first.</li>
+            <li><strong>Scope</strong> — one question: the three thrown the most and the ones that came back,
+              every one, the ones you name, or none.</li>
+            <li><strong>Confirm</strong> — bug by bug (or in batches when there are many): resolve, ignore with
+              a reason, or skip for now. Ignores are recorded immediately with <code>boogle-link</code>.</li>
+            <li><strong>Plan</strong> — <code>errors-plan --codes=…</code> groups the confirmed codes by domain
+              (application, package, outage) and by place in the code: the same exception thrown in the same
+              folder is one group, so one spec fixes it. You approve the groups. Outages and errors in a
+              package never merge with application code, and a bug the tracker gives no file for stays
+              alone.</li>
+            <li><strong>Read the code first</strong> — every <code>where</code> in the group is opened in the
+              repository before the handoff. When it is in a package, the call of the application that leads
+              there is found.</li>
+            <li><strong>Hand off to triage</strong> — each <strong>group</strong> goes to
+              <code>/larapilot-triage</code> in the same turn, with the block below.
               <code>/larapilot-bug</code> then writes the fix spec, with a test that throws the same exception
               before the fix.</li>
-            <li><strong>Record</strong> — <code>boogle-link BUG12 --spec=US-012</code>. One code is enough:
-              the decision is about the bug.</li>
-            <li><strong>Close in Boogle</strong> — only when the fix is released and you say so:
-              <code>boogle-resolve BUG12</code>.</li>
+            <li><strong>Record</strong> — <code>boogle-link BUG12,BUG15 --spec=US-012</code>, with every code
+              of the group. A decision is about the bug, so one code for each bug is enough, however many
+              times it was thrown.</li>
+            <li><strong>Close in the tracker</strong> — only when the fix is released and you say so:
+              <code>boogle-resolve BUG12</code>, where the tracker can be closed from Larapilot.</li>
           </ol>
           <div class="code-block">
             <div class="code-block-header">what triage receives</div>
-            <pre><code>Boogle error
+            <pre><code>Production error
 codes: #BUG12, #BUG15
 class: Illuminate\Database\QueryException
 message: SQLSTATE[23000]: Integrity constraint violation
-where: app/Services/CustomerImporter.php:88
+where: app/Services/CustomerImporter.php:88, app/Services/CustomerImporter.php:102
 request: POST /admin/customers/import
-thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
+thrown: 14 times
+returned: false</code></pre>
           </div>
 
           <h4 id="deep-dive-boogle-states">What a bug can be</h4>
@@ -7918,12 +8090,12 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
               <tbody>
                 <tr>
                   <td><code>new</code></td>
-                  <td>Open in Boogle, and nobody decided about it</td>
+                  <td>Open in the tracker, and nobody decided about it</td>
                 </tr>
                 <tr>
                   <td><code>in_backlog</code></td>
                   <td>A spec of the backlog fixes it. <strong>Not fixed yet</strong>: it stays in the list
-                    until Boogle holds it as fixed</td>
+                    until the tracker holds it as fixed</td>
                 </tr>
                 <tr>
                   <td><code>ignored</code></td>
@@ -7936,7 +8108,7 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
                 </tr>
                 <tr>
                   <td>no longer open</td>
-                  <td>Decided about here, and Boogle holds it no more as open</td>
+                  <td>Decided about here, and the tracker holds it no more as open</td>
                 </tr>
               </tbody>
             </table>
@@ -7957,18 +8129,24 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
               <tbody>
                 <tr>
                   <td><code>larapilot:boogle-status</code></td>
-                  <td>Setting, address, token, project, hints. Read-only</td>
+                  <td>Setting, tracker, credentials, project, whether it can be closed from here, hints. It
+                    asks the tracker only while the errors are on, and writes nothing</td>
                 </tr>
                 <tr>
                   <td><code>larapilot:boogle-errors</code></td>
                   <td>The open errors, one entry for each bug, with their state.
                     <code>--new</code> only the ones with no decision and the ones that came back ·
                     <code>--kind=error</code> or <code>outage</code> · <code>--limit=</code> ·
-                    <code>--report</code> writes <code>{paths.support}/boogle.md</code></td>
+                    <code>--report</code> writes <code>{paths.support}/errors.md</code></td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:errors-plan --codes=BUG12,BUG21</code></td>
+                  <td>Groups the confirmed codes by domain and place in the code, one triage handoff for
+                    each group. It only reads. Alias: <code>larapilot:boogle-plan</code></td>
                 </tr>
                 <tr>
                   <td><code>larapilot:boogle-link BUG12 --spec=US-012</code></td>
-                  <td>The spec that fixes the bug that code belongs to. A code Boogle does not hold is
+                  <td>The spec that fixes the bug that code belongs to. A code the tracker does not hold is
                     refused</td>
                 </tr>
                 <tr>
@@ -7978,30 +8156,39 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
                 <tr>
                   <td><code>larapilot:boogle-link BUG21 --forget</code></td>
                   <td>Drops what was decided: the bug is <code>new</code> again. Takes the key of the bug
-                    too, which is all that is left of one Boogle closed</td>
+                    too, which is all that is left of one the tracker closed</td>
                 </tr>
                 <tr>
                   <td><code>larapilot:boogle-resolve BUG12</code></td>
-                  <td><strong>Writes to Boogle.</strong> Closes every open occurrence of the bug as
-                    <code>FIXED</code> (<code>--status=DONE</code> for the other word Boogle has), with
-                    <em>Fixed by US-012.</em> in its history, or the line given with <code>--comment=</code></td>
+                  <td><strong>Writes to the tracker.</strong> Closes the bug there: resolved in Sentry,
+                    Flare, Rollbar, Honeybadger, and Datadog Error Tracking, fixed in Bugsnag. In Boogle every
+                    open occurrence becomes <code>FIXED</code> (<code>--status=DONE</code> for the other word
+                    Boogle has), with <em>Fixed by US-012.</em> in its history, or the line given with
+                    <code>--comment=</code>. Refused for CloudWatch and the logs of Datadog, before anything
+                    is touched</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p><code>boogle-status</code> and <code>boogle-errors</code> are allowed through the MCP
-            <code>RunArtisanTool</code>; the two that write are not.</p>
+          <p><code>boogle-status</code>, <code>boogle-errors</code>, and <code>errors-plan</code> (with its
+            alias <code>boogle-plan</code>) are allowed through the MCP <code>RunArtisanTool</code>; the two
+            that write — <code>boogle-link</code> to the ledger, <code>boogle-resolve</code> to the tracker —
+            are not.</p>
 
           <h4 id="deep-dive-boogle-dashboard">On the dashboard</h4>
-          <p><code>/larapilot/errors</code> is always under Insights. With the setting off it is two lines: what Boogle records, and an invitation to use it, with how to turn the link on. With the setting on it opens on what is
-            open, in a sentence — <em>5 open errors, thrown 33 times: 2 with no decision yet. 1 came back after
-            its fix</em> — then four figures, then the errors thrown <strong>day by day</strong> over the last
-            two weeks, with the same numbers as a table. Every bug is a row: how many times it was thrown, the
-            exception and what it said, the codes of Boogle, the file and the line, how long ago it last
-            happened, and the decision. A row opens on the whole message, the route, the first and the last
-            time, and what to do next. Bugs filter by decision and by text. What was read is kept for five
-            minutes; <strong>Read again</strong> asks Boogle anew, and
-            <strong>Download report (.md)</strong> saves the same document the skill writes. When Boogle cannot be read the page says what to check, and the rest of
+          <p><code>/larapilot/errors</code> is always under Insights. With the setting off it says what Boogle
+            is and how to connect it, and lists under it the other trackers that can be read instead. With the
+            setting on it names the tracker it read and opens on what is open, in a sentence — <em>5 open
+            errors, thrown 33 times: 2 with no decision yet. 1 came back after its fix</em> — then four
+            figures. For a tracker that records every throw — Boogle, CloudWatch, the logs of Datadog — the
+            errors are then drawn <strong>day by day</strong> over the last two weeks, with the same numbers
+            as a table. Every bug is a row: how many times it was thrown, the exception and what it said, its
+            codes in the tracker, the file and the line, how long ago it last happened, and the decision. A
+            row opens on the whole message, the route, the first and the last time, and what to do next. Bugs
+            filter by decision and by text. What was read is kept for five minutes
+            (<code>LARAPILOT_ERRORS_CACHE</code>); <strong>Read again</strong> asks the tracker anew, and
+            <strong>Download report (.md)</strong> saves the same document the skill writes, named after the
+            tracker and the day. When the tracker cannot be read the page says what to check, and the rest of
             the dashboard is untouched.</p>
 
           <h4 id="deep-dive-boogle-kept">What is kept, and where</h4>
@@ -8016,7 +8203,7 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td>Address and token of Boogle</td>
+                  <td>What reads the tracker: address, token, keys</td>
                   <td><code>.env</code></td>
                   <td>Never</td>
                 </tr>
@@ -8027,28 +8214,29 @@ thrown: 14 times, first 2026-09-21, last 2026-09-26</code></pre>
                 </tr>
                 <tr>
                   <td>The report: every open bug with its decision</td>
-                  <td><code>.larapilot/docs/support/boogle.md</code></td>
+                  <td><code>.larapilot/docs/support/errors.md</code></td>
                   <td>Your call: it quotes what the application said when it failed</td>
                 </tr>
                 <tr>
                   <td>The user, the query string, the payload of a request</td>
-                  <td>Boogle, and nowhere else</td>
+                  <td>The tracker, and nowhere else</td>
                   <td>—</td>
                 </tr>
                 <tr>
-                  <td>The key and the token of the project</td>
+                  <td>The key and the token of the project, which Boogle sends with the list of projects</td>
                   <td>Compared with <code>BOOGLE_PROJECT_KEY</code> in memory, and dropped</td>
                   <td>—</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="cli-note"><strong>Personal data stays in Boogle.</strong> An exception is recorded with
-            the user who met it and the request that caused it. None of it is needed to fix a bug, so none of
-            it is read: not into a file, not into the report, not into the cache, not into the chat. An
-            address or a long secret quoted in a message is masked. The token reads
-            <strong>every project</strong> of that Boogle, because Boogle gives tokens to users and not to
-            projects: it lives in <code>.env</code> and in the secrets of the CI.
+          <div class="cli-note"><strong>Personal data stays in the tracker.</strong> An exception is recorded
+            with the user who met it and the request that caused it. None of it is needed to fix a bug, so
+            none of it is read: not into a file, not into the report, not into the cache, not into the chat.
+            An address or a long secret quoted in a message is masked, whichever tracker it comes from. The
+            token of Boogle reads <strong>every project</strong> of that Boogle, because Boogle gives tokens
+            to users and not to projects: like every credential here, it lives in <code>.env</code> and in the
+            secrets of the CI.
           </div>
         </article>
 
@@ -9173,6 +9361,7 @@ php artisan larapilot:doctor --human                                  # a table 
                   <td><code>larapilot:aikido-status</code> · <code>larapilot:aikido-issues</code>
                     (<code>--new</code>, <code>--severity=</code>, <code>--type=</code>,
                     <code>--limit=</code>, <code>--report</code>, <code>--gate</code>) ·
+                    <code>larapilot:aikido-plan</code> (<code>--ids=</code>) ·
                     <code>larapilot:aikido-link</code> (<code>--spec=</code>,
                     <code>--waive --reason=</code>, <code>--forget</code>) ·
                     <code>larapilot:aikido-scan</code>
@@ -9181,16 +9370,17 @@ php artisan larapilot:doctor --human                                  # a table 
                       href="#deep-dive-aikido">Aikido</a></td>
                 </tr>
                 <tr>
-                  <td>Boogle</td>
+                  <td>Production errors</td>
                   <td><code>larapilot:boogle-status</code> · <code>larapilot:boogle-errors</code>
                     (<code>--new</code>, <code>--kind=</code>, <code>--limit=</code>,
-                    <code>--report</code>) · <code>larapilot:boogle-link</code> (<code>--spec=</code>,
+                    <code>--report</code>) · <code>larapilot:errors-plan</code> (<code>--codes=</code>) ·
+                    <code>larapilot:boogle-link</code> (<code>--spec=</code>,
                     <code>--ignore --reason=</code>, <code>--forget</code>) ·
                     <code>larapilot:boogle-resolve</code> (<code>--status=</code>,
                     <code>--comment=</code>)
                   </td>
                   <td><code>/larapilot-boogle</code>, <code>/larapilot-ship</code> — see <a
-                      href="#deep-dive-boogle">Boogle</a></td>
+                      href="#deep-dive-boogle">Production errors</a></td>
                 </tr>
                 <tr>
                   <td>Self-hosted VPS</td>
@@ -9392,10 +9582,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Errors</strong></td>
                   <td><code>/larapilot/errors</code></td>
-                  <td>What the running application threw, as Boogle recorded it: one row for each bug, how many
-                    times day by day, and what was decided. Always listed; with <code>boogle</code> off, two
-                    lines on what Boogle is, how to connect it, and an invitation to use it. Download
-                    <code>/larapilot/errors/boogle.md</code></td>
+                  <td>What the running application threw, as the tracker of the project recorded it: one row
+                    for each bug, how many times it was thrown — day by day when the tracker records every
+                    throw — and what was decided. Always listed; with <code>errors</code> off, what Boogle is,
+                    how to connect it, and the other trackers that can be read instead. Download
+                    <code>/larapilot/errors/errors.md</code> (<code>boogle.md</code> still answers)</td>
                 </tr>
                 <tr>
                   <td><strong>Economics</strong></td>
@@ -9746,9 +9937,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             chapter: <a href="#deep-dive-aikido">Aikido</a>.</p>
 
           <h4>Errors</h4>
-          <p>What the running application threw, as Boogle recorded it. The page is always in the menu; with
-            <code>boogle</code> off it says what Boogle is, how to connect it, and invites the project to use
-            it. Full chapter: <a href="#deep-dive-boogle">Boogle</a>.</p>
+          <p>What the running application threw, as the tracker of the project recorded it — Boogle, Sentry,
+            Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch. The page is always in the menu; with
+            <code>errors</code> off it says what Boogle is, how to connect it, and which other trackers can be
+            read instead. Full chapter: <a href="#deep-dive-boogle">Production errors</a>.</p>
 
           <h4>Git</h4>
           <p>Three views of the local repository. None of them calls GitHub, GitLab, or any remote API.</p>
@@ -10403,7 +10595,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v4.1.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v4.1.3 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

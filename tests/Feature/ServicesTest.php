@@ -89,6 +89,7 @@ it('exposes default project settings and updates them', function (): void {
         'api_auth' => 'NO',
         'security_scan' => 'NO',
         'aikido' => 'NO',
+        'errors' => 'NO',
         'boogle' => 'NO',
         'github' => 'NO',
         'gitlab' => 'NO',
@@ -101,6 +102,7 @@ it('exposes default project settings and updates them', function (): void {
         'release_mode' => 'NO',
         'project_docs' => 'NO',
         'prior_art' => 'YES',
+        'errors_provider' => '',
     ])->and($config->autoApproveEnabled())->toBeFalse()
         ->and($config->priorArtEnabled())->toBeTrue()
         ->and($config->lucilleEnabled())->toBeTrue()

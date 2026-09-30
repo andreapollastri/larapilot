@@ -106,6 +106,8 @@ class ChoicesService
             'api_auth' => $this->config->allowedApiAuthModes(),
             'security_scan' => $this->config->allowedSecurityScanModes(),
             'aikido' => $this->config->allowedAikidoModes(),
+            'errors' => $this->config->allowedErrorsModes(),
+            'errors_provider' => $this->config->allowedErrorsProviders(),
             'boogle' => $this->config->allowedBoogleModes(),
             'github' => $this->config->allowedGithubModes(),
             'gitlab' => $this->config->allowedGitlabModes(),

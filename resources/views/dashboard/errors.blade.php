@@ -261,6 +261,8 @@
     @php
         $service = \Larapilot\Services\BoogleService::class;
         $read = is_array($boogle ?? null) ? $boogle : null;
+        $providerLabel = $read['provider_label'] ?? $provider_label ?? (is_array($status ?? null) ? ($status['provider_label'] ?? null) : null) ?? 'the error tracker';
+        $isBoogle = ($read['provider'] ?? $provider ?? null) === 'boogle';
         $all = $read['errors'] ?? [];
         $bugs = array_values(array_filter($all, static fn (array $error): bool => $error['kind'] === $service::ERROR));
         $outages = array_values(array_filter($all, static fn (array $error): bool => $error['kind'] === $service::OUTAGE));
@@ -296,10 +298,23 @@
             <div>
                 <h2>Errors</h2>
                 @if ($enabled)
-                    <p class="sub">What the running application threw, as Boogle recorded it: one row for each bug, however many times it happened, with what was decided about it.</p>
+                    <p class="sub">What the running application threw, as {{ $providerLabel }} recorded it: one row for each bug, however many times it happened, with what was decided about it.</p>
                 @else
                     <p class="sub">Boogle records the exceptions the running application throws, and whether it answers. Larapilot reads those errors and brings each bug into the workflow.</p>
                     <p class="sub">Use <a href="https://boogle.web.ap.it/">Boogle</a> for this project: send the exceptions with <code>andreapollastri/boogle-client</code>, put the address and token in <code>.env</code>, then turn the link on with <code>php artisan larapilot:settings-set --boogle=YES</code>.</p>
+                    <details class="errors-providers" style="margin-top: 4px">
+                        <summary class="sub" style="cursor: pointer; color: var(--muted); list-style: none">Other trackers you can use instead</summary>
+                        <ul class="sub" style="margin: 8px 0 0; padding-left: 1.2rem; color: var(--text-2); line-height: 1.55; max-width: 84ch">
+                            <li><strong>Sentry</strong> — <code>sentry/sentry-laravel</code> · <code>--errors-provider=sentry</code></li>
+                            <li><strong>Bugsnag</strong> — <code>bugsnag/bugsnag-laravel</code> · <code>--errors-provider=bugsnag</code></li>
+                            <li><strong><a href="https://flareapp.io/" target="_blank" rel="noopener">Flare</a></strong> — by Spatie · <code>--errors-provider=flare</code></li>
+                            <li><strong><a href="https://www.datadoghq.com/" target="_blank" rel="noopener">Datadog</a></strong> — Error Tracking, or the error logs · <code>--errors-provider=datadog</code></li>
+                            <li><strong>Rollbar</strong> — <code>--errors-provider=rollbar</code></li>
+                            <li><strong>Honeybadger</strong> — <code>--errors-provider=honeybadger</code></li>
+                            <li><strong>AWS CloudWatch Logs</strong> — read with the AWS CLI · <code>--errors-provider=cloudwatch</code></li>
+                        </ul>
+                        <p class="hint" style="margin: 8px 0 0">Turn it on with <code>php artisan larapilot:settings-set --errors=YES --errors-provider=…</code>. What each tracker needs in <code>.env</code> is in <code>.larapilot/integrations.md</code> → Production errors.</p>
+                    </details>
                 @endif
                 @if ($project)
                     <div class="chips" style="margin-top: 12px">
@@ -314,7 +329,7 @@
             </div>
             @if ($enabled)
                 <div class="page-actions">
-                    <a class="btn ghost" href="{{ route('larapilot.dashboard.errors', ['refresh' => 1]) }}" title="Ask Boogle again instead of showing what was read a few minutes ago">@include('larapilot::dashboard.partials.icon', ['name' => 'refresh'])Read again</a>
+                    <a class="btn ghost" href="{{ route('larapilot.dashboard.errors', ['refresh' => 1]) }}" title="Ask the tracker again instead of showing what was read a few minutes ago">@include('larapilot::dashboard.partials.icon', ['name' => 'refresh'])Read again</a>
                     @if ($read)
                         <a class="btn ghost" href="{{ route('larapilot.dashboard.errors.report') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report (.md)</a>
                     @endif
@@ -345,7 +360,7 @@
                 @include('larapilot::dashboard.partials.icon', ['name' => $tone === 'pass' ? 'check' : 'info'])
                 <div>
                     <strong>{{ $headline }}</strong>
-                    <p>{{ $read['summary'] }} An error in the backlog is not fixed yet: it stays here until Boogle holds it as fixed.</p>
+                    <p>{{ $read['summary'] }} An error in the backlog is not fixed yet: it stays here until {{ $providerLabel }} holds it as fixed.</p>
                 </div>
             </div>
 
@@ -368,14 +383,14 @@
                 <div class="card metric">
                     <div class="metric-label">Outages</div>
                     <div class="metric-value">{{ number_format($counts['outages']) }}</div>
-                    <div class="metric-note">{{ $project['uptime'] ? 'times the application did not answer' : 'the uptime monitor is off in Boogle' }}</div>
+                    <div class="metric-note">{{ $project['uptime'] ? 'times the application did not answer' : ($isBoogle ? 'the uptime monitor is off in Boogle' : $providerLabel.' has no uptime monitor') }}</div>
                 </div>
             </section>
 
-            @if ($bugs !== [])
+            @if ($bugs !== [] && $days !== [])
                 <section class="card days" aria-labelledby="days-title">
                     <h3 id="days-title">Errors thrown, day by day</h3>
-                    <p class="hint">The open errors over the last {{ count($days) }} days: {{ $times($thrownLately) }} in all. What was fixed and closed in Boogle is not counted.</p>
+                    <p class="hint">The open errors over the last {{ count($days) }} days: {{ $times($thrownLately) }} in all. What was fixed and closed in {{ $providerLabel }} is not counted.</p>
                     <ul class="days-plot" style="--days: {{ count($days) }}" role="img" aria-label="Errors thrown on each of the last {{ count($days) }} days. The most in one day: {{ $peak }}.">
                         @foreach ($days as $point)
                             <li @class(['is-empty' => $point['count'] === 0]) tabindex="0" style="--height: {{ round($point['count'] / $peak * 100, 2) }}%">
@@ -405,7 +420,7 @@
 
             @if ($bugs === [])
                 <div class="card empty">
-                    <p>Boogle holds no open error for <strong>{{ $project['title'] }}</strong>.</p>
+                    <p>{{ $providerLabel }} holds no open error for <strong>{{ $project['title'] }}</strong>.</p>
                 </div>
             @else
                 <div class="tools">
@@ -448,9 +463,9 @@
                                     <h4>Decision</h4>
                                     <p>
                                         @if ($item['returned'])
-                                            Fixed by <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a> and closed in Boogle on {{ $when($item['resolved_at']) }}, then thrown again. The fix did not hold: run <code>/larapilot-boogle</code> to hand it to triage again.
+                                            Fixed by <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a> and closed in {{ $providerLabel }} on {{ $when($item['resolved_at']) }}, then thrown again. The fix did not hold: run <code>/larapilot-boogle</code> to hand it to triage again.
                                         @elseif ($item['state'] === 'in_backlog')
-                                            In the backlog as <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a>{{ $item['spec_status'] ? ', now '.$item['spec_status'] : '' }}. Once the fix is released, close it in Boogle: <code>php artisan larapilot:boogle-resolve {{ ltrim($item['codes'][0] ?? $item['key'], '#') }}</code>
+                                            In the backlog as <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a>{{ $item['spec_status'] ? ', now '.$item['spec_status'] : '' }}. Once the fix is released, close it in {{ $providerLabel }}: <code>php artisan larapilot:boogle-resolve {{ ltrim($item['codes'][0] ?? $item['key'], '#') }}</code>
                                         @elseif ($item['state'] === 'ignored')
                                             Left as it is: {{ $item['reason'] }}
                                         @else
@@ -466,11 +481,11 @@
                                     @if ($item['request'] !== null)
                                         <div><dt>Request</dt><dd><code>{{ $item['request'] }}</code>{{ $item['requests'] > 1 ? ' and '.($item['requests'] - 1).' other '.($item['requests'] === 2 ? 'route' : 'routes') : '' }}</dd></div>
                                     @endif
-                                    <div><dt>Thrown</dt><dd>{{ $times($item['count']) }}{{ $item['unseen'] > 0 ? ', '.$item['unseen'].' not opened in Boogle yet' : '' }}</dd></div>
+                                    <div><dt>Thrown</dt><dd>{{ $times($item['count']) }}{{ $item['unseen'] > 0 ? ', '.$item['unseen'].' not opened in '.$providerLabel.' yet' : '' }}</dd></div>
                                     <div><dt>First</dt><dd>{{ $when($item['first_seen']) }}</dd></div>
                                     <div><dt>Last</dt><dd>{{ $when($item['last_seen']) }}</dd></div>
                                     @if ($item['codes'] !== [])
-                                        <div><dt>In Boogle</dt><dd>{{ implode(', ', array_slice($item['codes'], 0, 12)) }}{{ count($item['codes']) > 12 ? ' and '.(count($item['codes']) - 12).' more' : '' }}</dd></div>
+                                        <div><dt>In {{ $providerLabel }}</dt><dd>{{ implode(', ', array_slice($item['codes'], 0, 12)) }}{{ count($item['codes']) > 12 ? ' and '.(count($item['codes']) - 12).' more' : '' }}</dd></div>
                                     @endif
                                     <div><dt>Key</dt><dd><code>{{ $item['key'] }}</code></dd></div>
                                 </dl>
@@ -481,14 +496,14 @@
                 </section>
 
                 @if ($read['truncated'])
-                    <p class="hint" style="margin: 0">Boogle holds more open occurrences than were read: the counts are of the most recent ones.</p>
+                    <p class="hint" style="margin: 0">{{ $providerLabel }} holds more open errors than were read: the counts are of the most recent ones.</p>
                 @endif
             @endif
 
             @if ($outages !== [])
                 <section class="card panel">
                     <h3 style="margin: 0 0 4px; font-size: 1rem">Outages</h3>
-                    <p class="hint" style="margin: 0 0 10px">Times the uptime monitor of Boogle asked the application and got no answer. An outage is not a bug by itself: it is handed to triage only when asked.</p>
+                    <p class="hint" style="margin: 0 0 10px">Times the uptime monitor of {{ $providerLabel }} asked the application and got no answer. An outage is not a bug by itself: it is handed to triage only when asked.</p>
                     <ul class="closed-list">
                         @foreach ($outages as $item)
                             <li>
@@ -503,8 +518,8 @@
 
             @if ($read['closed'] !== [])
                 <section class="card panel">
-                    <h3 style="margin: 0 0 4px; font-size: 1rem">No longer open in Boogle</h3>
-                    <p class="hint" style="margin: 0 0 10px">Errors that were decided about here and that Boogle holds no more as open.</p>
+                    <h3 style="margin: 0 0 4px; font-size: 1rem">No longer open in {{ $providerLabel }}</h3>
+                    <p class="hint" style="margin: 0 0 10px">Errors that were decided about here and that {{ $providerLabel }} holds no more as open.</p>
                     <ul class="closed-list">
                         @foreach ($read['closed'] as $closed)
                             <li>
@@ -520,7 +535,7 @@
             @endif
 
             <p class="footer-note" style="margin: 0; text-align: left">
-                Decisions are kept in <code>{{ $read['ledger'] }}</code>. The user, the query string, and the payload of a request stay in Boogle: this page shows the exception, the place in the code, and the route. Turn errors into work with <code>/larapilot-boogle</code>.
+                Decisions are kept in <code>{{ $read['ledger'] }}</code>. The user, the query string, and the payload of a request stay in {{ $providerLabel }}: this page shows the exception, the place in the code, and the route. Turn errors into work with <code>/larapilot-boogle</code>.
             </p>
         @endif
     </div>

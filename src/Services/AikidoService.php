@@ -242,6 +242,53 @@ class AikidoService
     }
 
     /**
+     * Resolution groups for findings the user confirmed: same kind and the
+     * same fix go together; leaked secrets never merge with anything else.
+     *
+     * @param  list<int|string>  $ids
+     * @return array<string, mixed>
+     */
+    public function resolutionPlan(array $ids): array
+    {
+        $ids = $this->ids($ids);
+        $known = $this->known($ids);
+        $issues = [];
+
+        foreach ($ids as $id) {
+            $issues[] = $known[$id];
+        }
+
+        $rank = array_flip(self::SEVERITIES);
+
+        usort($issues, static fn (array $a, array $b): int => [$rank[$a['severity']], -$a['score'], $a['id']] <=> [$rank[$b['severity']], -$b['score'], $b['id']]);
+
+        $groups = $this->resolutionGroups($issues);
+        $domains = [];
+
+        foreach ($groups as $group) {
+            $label = (string) $group['type_label'];
+
+            if (! isset($domains[$label])) {
+                $domains[$label] = [
+                    'type' => $group['type'],
+                    'type_label' => $label,
+                    'group_keys' => [],
+                    'ids' => [],
+                ];
+            }
+
+            $domains[$label]['group_keys'][] = $group['key'];
+            $domains[$label]['ids'] = array_values(array_unique([...$domains[$label]['ids'], ...$group['ids']]));
+        }
+
+        return [
+            'ids' => $ids,
+            'domains' => array_values($domains),
+            'groups' => $groups,
+        ];
+    }
+
+    /**
      * Ask Aikido to scan the repository again. The scan runs on its side
      * and takes minutes: the findings change when it is done.
      *
@@ -771,5 +818,85 @@ class AikidoService
     protected function cacheKey(): string
     {
         return 'larapilot.aikido.findings.'.sha1($this->client->host().'|'.$this->config->projectRoot().'|'.$this->wanted());
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $issues
+     * @return list<array<string, mixed>>
+     */
+    protected function resolutionGroups(array $issues): array
+    {
+        $buckets = [];
+
+        foreach ($issues as $issue) {
+            $buckets[$this->resolutionSignature($issue)][] = $issue;
+        }
+
+        $rank = array_flip(self::SEVERITIES);
+        $groups = [];
+
+        foreach ($buckets as $signature => $of) {
+            usort($of, static fn (array $a, array $b): int => [$rank[$a['severity']], -$a['score'], $a['id']] <=> [$rank[$b['severity']], -$b['score'], $b['id']]);
+
+            $lead = $of[0];
+            $ids = array_column($of, 'id');
+            $cves = [];
+            $where = [];
+
+            foreach ($of as $issue) {
+                $cves = [...$cves, ...$issue['cves']];
+                $where = [...$where, ...$issue['where']];
+            }
+
+            $cves = array_values(array_unique($cves));
+            $where = array_values(array_unique($where));
+            $title = count($of) === 1
+                ? (string) $lead['title']
+                : (string) $lead['title'].' (+'.(count($of) - 1).' more)';
+
+            $groups[] = [
+                'key' => substr(sha1($signature), 0, 8),
+                'ids' => $ids,
+                'type' => (string) $lead['type'],
+                'type_label' => (string) $lead['type_label'],
+                'severity' => (string) $lead['severity'],
+                'score' => (int) $lead['score'],
+                'title' => $title,
+                'where' => $where,
+                'cves' => $cves,
+                'how_to_fix' => (string) $lead['how_to_fix'],
+                'reason' => count($of) === 1
+                    ? 'One finding — not merged with others.'
+                    : 'Same kind ('.$lead['type_label'].') and the same fix — one triage handoff avoids duplicate specs.',
+            ];
+        }
+
+        usort($groups, static fn (array $a, array $b): int => [$rank[$a['severity']], -$a['score'], min($a['ids'])] <=> [$rank[$b['severity']], -$b['score'], min($b['ids'])]);
+
+        return $groups;
+    }
+
+    /**
+     * @param  array<string, mixed>  $issue
+     */
+    protected function resolutionSignature(array $issue): string
+    {
+        $type = (string) $issue['type'];
+
+        if ($type === 'leaked_secret') {
+            return 'leaked_secret|'.$issue['id'];
+        }
+
+        $fix = $this->resolutionKey((string) $issue['how_to_fix']);
+        $title = $this->resolutionKey((string) $issue['title']);
+
+        return $type.'|'.$title.'|'.$fix;
+    }
+
+    protected function resolutionKey(string $text): string
+    {
+        $text = strtolower(trim($text));
+
+        return trim((string) preg_replace('/\s+/', ' ', $text));
     }
 }

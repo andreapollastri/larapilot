@@ -1,11 +1,11 @@
 ---
 name: larapilot-boogle
-description: "Downloads the open errors Boogle recorded for the running application, puts together the ones that are one bug, and hands each bug to larapilot-triage to be resolved. Italian: errori in produzione, eccezioni, bug da Boogle, monitoraggio, downtime."
+description: "Downloads the open errors of production from the tracker of the project (Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, CloudWatch), has the user confirm them, groups them by place, and hands each group to larapilot-triage. Italian: errori in produzione, eccezioni, bug, monitoraggio, downtime."
 ---
 
-# Larapilot — Boogle
+# Larapilot — Production errors
 
-You bring the errors of **Boogle** into the workflow. Boogle is the exception tracker and uptime monitor the team hosts: it records what the running application throws. You download what is open, show what nobody decided about, and hand each bug the user picks to `larapilot-triage`, which routes it to `larapilot-bug` or `larapilot-feature`. You write no spec and no code yourself.
+You bring the errors of production into the workflow. One tracker, `settings.errors_provider`, records what the running application throws. You download what is open, have the user **confirm bug by bug**, group what they chose into **resolution groups**, and hand each group to `larapilot-triage`. You write no spec and no code yourself.
 
 ## Shared Runtime
 
@@ -22,24 +22,25 @@ Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. The skill
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — output economy, session/credit risk *(every skill)* |
-| 🎧 **Sophia** | Support Manager — reads the errors, orders the handoffs, one at a time |
+| 🎧 **Sophia** | Support Manager — confirms each bug, then the handoffs, one group at a time |
 | 🧪 **Anne** | Test Architect — what reproduces the error, the test that pins the fix |
-| 🔗 **Matt** | Integration Manager — the address and the token in `.env`, the project in Boogle |
+| 🔗 **Matt** | Integration Manager — the credentials in `.env`, the project in the tracker |
 
 ## Config & CLI
 
 1. `php artisan larapilot:config-show --only=settings,paths`
-2. `php artisan larapilot:boogle-status` — setting, address, token, project, `hints`
-3. `php artisan larapilot:boogle-errors --new --kind=error --report` — the errors nobody decided about and the ones that came back; writes `{paths.support}/boogle.md` about all of them
-4. `php artisan larapilot:boogle-link BUG12 --spec=US-012` — the spec that fixes the error that code belongs to
-5. `php artisan larapilot:boogle-link BUG12 --ignore --reason="…"` — left as it is, and why
-6. `php artisan larapilot:boogle-resolve BUG12` — closes the error **in Boogle**, once the fix is released
+2. `php artisan larapilot:boogle-status` — setting, tracker, credentials, project, `hints`
+3. `php artisan larapilot:boogle-errors --new --kind=error --report` — the errors with no decision and the ones that came back; writes `{paths.support}/errors.md`
+4. `php artisan larapilot:errors-plan --codes=BUG12,BUG21` — groups confirmed codes by domain and place
+5. `php artisan larapilot:boogle-link BUG12 --spec=US-012` — the spec that fixes the bug
+6. `php artisan larapilot:boogle-link BUG12 --ignore --reason="…"` — left as it is, and why
+7. `php artisan larapilot:boogle-resolve BUG12` — closes it in the tracker, once the fix is released
 
-Never call the Boogle API yourself and never hand-write `.larapilot/boogle.yaml` — always the CLI.
+The commands are named `boogle-*` whichever the tracker. Never call the API of a tracker yourself and never hand-write `.larapilot/boogle.yaml` — always the CLI.
 
 ## Preconditions
 
-- `data.settings.boogle` is `YES` — otherwise say `php artisan larapilot:settings-set --boogle=YES` and stop
+- `data.settings.errors` is `YES` — otherwise say `php artisan larapilot:settings-set --errors=YES --errors-provider=…` and stop
 - A PRD or a backlog: triage measures an error against what the product promised
 
 ## Workflow
@@ -48,24 +49,24 @@ Never call the Boogle API yourself and never hand-write `.larapilot/boogle.yaml`
 
 Run `boogle-status`. One line:
 
-`boogle · project={project.title} · {host} · uptime={watched|not watched}`
+`{provider} · project={project.title} · {host} · uptime={watched|not watched}`
 
 `configured: false` → step 1. Any other `ready: false` → print `hints` as they are and stop.
 
-### 1. Address and token (Matt) — only when missing
+### 1. Credentials (Matt) — only when missing
 
-**Ask in chat**, not AskQuestion — the token is a secret. Tell the user where: Boogle → profile of an **admin** user → API tokens. Write them to `.env`, and the **key names only** into `.env.example`:
+`hints` names each variable that is missing and where its value is created. **Ask in chat**, not AskQuestion — a token is a secret. Write it to `.env`, and the **key names only** into `.env.example`. For Boogle:
 
 ```dotenv
 LARAPILOT_BOOGLE_URL=https://boogle.example.com
 LARAPILOT_BOOGLE_TOKEN=
 ```
 
-`LARAPILOT_BOOGLE_URL` can stay empty when `BOOGLE_SERVER` is set. The project is found from `BOOGLE_PROJECT_KEY`, then from `APP_URL`; name it with `LARAPILOT_BOOGLE_PROJECT` otherwise. Never write the token into `.larapilot/` and never echo it in chat. Run `boogle-status` again.
+The token **reads** the tracker: it is never the key the application reports with. Other trackers: `.larapilot/integrations.md` → **Production errors**. Never write a token into `.larapilot/` and never echo it in chat. Run `boogle-status` again.
 
 ### 2. Download (Sophia)
 
-Run `boogle-errors --new --kind=error --report`. An entry is a **bug**: every time the same exception was thrown at the same line. Show the ones thrown the most first, 15 rows at most, and say how many were left out:
+Run `boogle-errors --new --kind=error --report`. An entry is a **bug**, however many times it was thrown. Show the ones thrown the most first, 15 rows at most, and say how many were left out:
 
 | Code | Thrown | Exception | Where | Request |
 | --- | --- | --- | --- | --- |
@@ -74,11 +75,11 @@ Run `boogle-errors --new --kind=error --report`. An entry is a **bug**: every ti
 
 - `counts.new` and `counts.returned` are 0 → say so, give `summary`, stop
 - `returned: true` → say it first: `Back after {spec}: the fix did not hold`
-- `closed` is not empty → `No longer open in Boogle: {class} ({spec})`
+- `closed` is not empty → `No longer open in {provider_label}: {class} ({spec})`
 
-### 3. Choose (one AskQuestion, skippable)
+### 3. Scope (one AskQuestion, skippable)
 
-- **AskQuestion prompt:** `Boogle — {N} errors with no decision. Which ones go to resolution now?`
+- **AskQuestion prompt:** `{provider_label} — {N} errors with no decision. Which ones enter the review queue?`
 
 | Option id | AskQuestion label |
 | --- | --- |
@@ -87,37 +88,60 @@ Run `boogle-errors --new --kind=error --report`. An entry is a **bug**: every ti
 | `pick` | `Let me name them` |
 | `none` | `None — the report is enough` |
 
-Skipped → `top`.
+Skipped → `top`. `none` → stop.
 
-### 4. Read the code first (Anne)
+### 4. Confirm (Sophia)
 
-For each error picked, open `where` in the repository before the handoff. `in_vendor: true` → the line is in a package: find the call of the application that leads there. One request per bug; put two entries together only when one fix closes both.
+For each bug in scope, **thrown the most first**, the user decides before any triage:
 
-### 5. Hand off to triage (Sophia)
+| Decision | What you do |
+| --- | --- |
+| **Resolve** | Add a code (first of `codes`) to the list for step 5 |
+| **Ignore** | Ask for a reason in chat if missing, then `boogle-link {code} --ignore --reason="…"` and `decision-log` when the journal is on |
+| **Skip** | Leave it `new` for a later run |
 
-For each bug, the one thrown the most first, activate `larapilot-triage` through the editor's skill mechanism — read its `SKILL.md` when the editor has none — **in this same turn**. The request is `Error in production from Boogle: {short} — {message}`, with this block:
+- **Up to 8 in scope:** one AskQuestion per bug — prompt `{code} — {short}: {message}` — options `Resolve` · `Ignore` · `Skip for now` (skipped → **Resolve** when `returned`, **Skip** otherwise).
+- **More than 8:** batches of 5 with a compact table; AskQuestion `Resolve which codes in this batch?` with multi-select codes plus `None in this batch`.
+
+**Never ignore on your own.** No code on the resolve list → stop after ignores.
+
+### 5. Plan groups (Sophia + Anne)
+
+Run `errors-plan --codes={comma-separated resolve codes}`. Show **domains** (`data.domains`) then **groups** (`data.groups`), most thrown first:
+
+| Group | Domain | codes | Exception | Why grouped |
+| --- | --- | --- | --- | --- |
+
+One AskQuestion, skippable: `Start triage on these {g} groups?` → `Yes` · `Adjust` · `Cancel` (skipped → **Yes**). **Adjust** → re-run `errors-plan`. Outages, packages, and app code never merge in the CLI; split in chat when one spec would mix fixes.
+
+### 6. Read the code first (Anne)
+
+For each group, open every `where` in the repository before the handoff. `in_vendor: true` → find the call in the application that leads there.
+
+### 7. Hand off to triage (Sophia)
+
+For each **group** in plan order, activate `larapilot-triage` through the editor's skill mechanism — read its `SKILL.md` when the editor has none — **in this same turn**. The request is `Error in production: {title}`, with this block (all codes of the group):
 
 ```text
-Boogle error
+Production error
 codes: #BUG12, #BUG15
 class: Illuminate\Database\QueryException
 message: SQLSTATE[23000]: Integrity constraint violation
-where: app/Services/CustomerImporter.php:88
+where: app/Services/CustomerImporter.php:88, app/Services/CustomerImporter.php:102
 request: POST /admin/customers/import
-thrown: 14 times, first 2026-09-21, last 2026-09-26
+thrown: 14 times
+returned: false
 ```
 
-### 6. Record the decision
+### 8. Record the decision
 
-When the target skill reaches its **Next steps** with a spec code, run `boogle-link {code} --spec={spec}` and go to the next bug. One code is enough: the decision is about the bug, so the next time it is thrown it is not handed over again.
+When the target skill reaches its **Next steps** with a spec code, run `boogle-link {codes} --spec={spec}` with every code of the group, then go to the next **group**.
 
-An error the user decides not to fix: `boogle-link {code} --ignore --reason="…"` with the reason in the user's words, and `decision-log --topic="Boogle error left as it is: {short}" --skill=larapilot-boogle` when `data.settings.decision_log` is `YES`. **Never ignore on your own.**
+### 9. Close in the tracker — only when asked
 
-### 7. Close in Boogle — only when asked
+`boogle-resolve` **writes to the remote tracker**. Run it only when the fix is released **and** the user says so, and only when `boogle-status` gives `remote_resolve: true`: logs are closed by nobody.
 
-`boogle-resolve` **writes to Boogle**: it closes every open occurrence of the error there. Run it only when the fix is released — the spec is `DONE` and shipped — **and** the user says so. Never at the end of an implementation, never for a spec in review.
-
-### 8. Close
+### 10. Close
 
 Run `boogle-errors --report` and give one line: the counts and `summary`.
 
@@ -125,11 +149,11 @@ Run `boogle-errors --report` and give one line: the counts and `summary`.
 
 - No spec, PRD edit, plan, or code here — triage and the skill it hands to write them
 - Do not paste the message of every error in chat; name the report
-- Do not print, store, or commit the token
-- **Never ask Boogle, the user, or the logs for who the person was.** The user, the query string, and the payload of a request stay in Boogle: the CLI leaves them out, and a fix is written from the exception and the code
+- Do not print, store, or commit a token
+- **Never ask the tracker, the user, or the logs for who the person was.** The user, the query string, and the payload of a request stay in the tracker: the CLI leaves them out, and a fix is written from the exception and the code
 - Do not hand over again an error whose `state` is `in_backlog` or `ignored`, unless `returned` is `true`
 - An outage is not a bug by itself: hand one to triage only when the user asks
-- `in_backlog` is not fixed — the error stays open until Boogle holds it as fixed
+- `in_backlog` is not fixed — the error stays open until the tracker holds it as fixed
 
 ## Example
 
@@ -137,16 +161,12 @@ Run `boogle-errors --report` and give one line: the counts and `summary`.
 
 **Status:** `boogle · project=Loyalty · https://boogle.example.com · uptime=watched`
 
-**Download:** `5 open · 3 new · 1 in the backlog · 1 left as it is · 0 back after a fix · 2 outages · .larapilot/docs/support/boogle.md`
+**Download:** `5 open · 3 new · 1 in the backlog · 1 left as it is · 0 back after a fix · 2 outages · .larapilot/docs/support/errors.md`
 
-| Code | Thrown | Exception | Where | Request |
-| --- | --- | --- | --- | --- |
-| #BUG1 | 14 | QueryException | app/Services/CustomerImporter.php:88 | POST /admin/customers/import |
-| #BUG101 | 9 | RewardNotAvailable | app/Actions/RedeemReward.php:27 | POST /api/rewards/12/redeem |
-| #BUG110 | 1 | TypeError | app/Support/Money.php:19 | GET /admin/reports/monthly |
+**Confirm:** #BUG1 Resolve · #BUG101 Resolve · #BUG110 Skip.
 
-**Choose:** `top` → #BUG1, then #BUG101, then #BUG110.
+**Plan:** `errors-plan --codes=BUG1,BUG101` → two groups.
 
-**Handoff:** #BUG1 → `larapilot-triage` → `🎧 Sophia: Bug — FR-014 promises the import skips a customer that exists → larapilot-bug` → fix spec `US-012` → `boogle-link BUG1 --spec=US-012`. Then #BUG101.
+**Handoff:** group #BUG1 → `larapilot-triage` → `larapilot-bug` → `US-012` → `boogle-link BUG1 --spec=US-012`; then group #BUG101.
 
-**Close:** `5 open · 0 new · 4 in the backlog · 1 left as it is` — once `US-012` is released and the user confirms: `boogle-resolve BUG1`.
+**Close:** `5 open · 1 new · 3 in the backlog · 1 left as it is` — once `US-012` is released and the user confirms: `boogle-resolve BUG1`.

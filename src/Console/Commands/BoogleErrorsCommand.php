@@ -16,18 +16,18 @@ class BoogleErrorsCommand extends LarapilotCommand
                             {--new : Only the errors nobody decided about, and the ones that came back after a fix}
                             {--kind= : One kind: error (thrown by the code) or outage (found by the uptime monitor)}
                             {--limit= : List at most this many, the ones thrown the most first}
-                            {--report : Write the errors to {paths.support}/boogle.md}';
+                            {--report : Write the errors to {paths.support}/errors.md}';
 
-    protected $description = 'Download the open errors Boogle recorded for this application, one entry for each bug, with what was decided about it';
+    protected $description = 'Download the open errors of production from the tracker of the project, one entry for each bug, with what was decided about it';
 
     public function handle(BoogleService $boogle, ConfigService $config): int
     {
-        if (! $config->boogleEnabled()) {
+        if (! $config->errorsEnabled()) {
             return $this->failure(
                 'E_PRECONDITION',
-                'Boogle is off for this project.',
+                'Production errors are off for this project.',
                 $this->exitForCode('E_PRECONDITION'),
-                'Enable with: php artisan larapilot:settings-set --boogle=YES'
+                'Enable with: php artisan larapilot:settings-set --errors=YES --errors-provider=boogle (or sentry, bugsnag, flare, datadog, rollbar, honeybadger, cloudwatch)'
             );
         }
 

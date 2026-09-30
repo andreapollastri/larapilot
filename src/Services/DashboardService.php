@@ -6,6 +6,7 @@ namespace Larapilot\Services;
 
 use Larapilot\Services\Aikido\AikidoException;
 use Larapilot\Services\Boogle\BoogleException;
+use Larapilot\Services\Errors\ErrorTrackerManager;
 use Larapilot\Support\Markdown;
 
 class DashboardService
@@ -27,6 +28,7 @@ class DashboardService
         protected AgentGuidelineService $guidelines,
         protected AikidoService $aikido,
         protected BoogleService $boogle,
+        protected ErrorTrackerManager $errorTrackers,
         protected EconomicsService $economicsService,
     ) {}
 
@@ -296,16 +298,24 @@ class DashboardService
 
     /**
      * The errors Boogle recorded, or why they cannot be read. The page
-     * never fails on a Boogle that is down: it says what is wrong.
+     * never fails on a tracker that is down: it says what is wrong.
      *
      * @return array<string, mixed>
      */
     public function errors(bool $refresh = false): array
     {
-        $enabled = $this->config->boogleEnabled();
+        $enabled = $this->config->errorsEnabled();
         // Not `errors`: a view has a variable of that name already, the
         // validation errors of the request.
-        $data = ['enabled' => $enabled, 'status' => null, 'boogle' => null, 'error' => null, 'hint' => null];
+        $data = [
+            'enabled' => $enabled,
+            'status' => null,
+            'boogle' => null,
+            'error' => null,
+            'hint' => null,
+            'provider' => $this->config->errorsProvider(),
+            'provider_label' => $this->errorTrackers->label(),
+        ];
 
         if (! $enabled) {
             return $data;
@@ -328,9 +338,19 @@ class DashboardService
         return $data;
     }
 
+    /**
+     * The name the report is saved as: the tracker, then the day.
+     */
+    public function errorsReportFilename(): string
+    {
+        $provider = $this->config->errorsProvider();
+
+        return ($provider !== '' ? $provider : 'boogle').'-errors-'.now()->format('Y-m-d').'.md';
+    }
+
     public function errorsReport(): ?string
     {
-        if (! $this->config->boogleEnabled()) {
+        if (! $this->config->errorsEnabled()) {
             return null;
         }
 

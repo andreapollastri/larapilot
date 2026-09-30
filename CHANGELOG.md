@@ -2,6 +2,37 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.1.3] - 2026-09-30
+
+### Added
+
+- **Production errors from eight trackers** — the errors workflow no longer reads Boogle alone. `settings.errors` turns it on and `settings.errors_provider` names the one tracker it reads: **boogle** (the default), **sentry**, **bugsnag**, **flare**, **datadog**, **rollbar**, **honeybadger**, or **cloudwatch** — `larapilot:settings-set --errors=YES --errors-provider=sentry`. The commands (`larapilot:boogle-status`, `boogle-errors`, `boogle-link`, `boogle-resolve`), the skill `/larapilot-boogle`, the page `/larapilot/errors`, and the ledger `.larapilot/boogle.yaml` keep their names and work the same whichever the tracker. Each one is read over its documented API: the unresolved issues of a Sentry project, the open errors of Bugsnag (Data Access API) and of Flare, the open issues of Datadog Error Tracking — or the error logs, with `LARAPILOT_DATADOG_SOURCE=logs` — the active items of Rollbar, the unresolved faults of Honeybadger, and the error lines of an AWS CloudWatch log group, read with the AWS CLI signed in on the machine.
+- **A credential that reads, never the one that reports** — every tracker takes from `.env` a token made for reading it (`LARAPILOT_SENTRY_AUTH_TOKEN`, `LARAPILOT_BUGSNAG_AUTH_TOKEN`, `LARAPILOT_FLARE_TOKEN`, `LARAPILOT_DATADOG_API_KEY` with `LARAPILOT_DATADOG_APP_KEY`, `LARAPILOT_ROLLBAR_ACCESS_TOKEN`, `LARAPILOT_HONEYBADGER_AUTH_TOKEN`), and the key the application notifies with (`FLARE_KEY`, `BUGSNAG_API_KEY`, `HONEYBADGER_API_KEY`, `ROLLBAR_TOKEN`) is never taken in its place. `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `DD_API_KEY`, `DD_APP_KEY`, and `DD_SITE` are read when the project has them already. CloudWatch keeps no key at all. `LARAPILOT_ERRORS_CACHE` and `LARAPILOT_ERRORS_TIMEOUT` are shared by every tracker.
+- **A tracker that groups by itself keeps its grouping and its count** — Boogle and logs answer one row for each throw, and Larapilot puts together the rows that share the exception, the file, and the line. Sentry, Bugsnag, Flare, Rollbar, Honeybadger, and Datadog Error Tracking answer one row for each bug: their grouping is kept, *thrown 14 times* is the count the tracker holds, and `/larapilot/errors` leaves out the day-by-day chart, since such a tracker says when a bug was last thrown and not each time.
+- **`boogle-status` says what is missing, tracker by tracker** — `provider`, `provider_label`, `host`, `granularity`, `remote_resolve`, and one hint for each variable of `.env` that is not set, with where its value is created. The credentials are proven by asking the tracker, and what it answers is kept for the read that follows. A provider written by hand that Larapilot does not know is named, with the ones it does.
+- **`boogle-resolve` closes an error wherever the tracker allows it** — Boogle, Sentry, Bugsnag, Flare, Datadog Error Tracking, Rollbar, and Honeybadger. For CloudWatch and the logs of Datadog the command refuses before anything is touched, and says the decision stays in the ledger.
+- **`larapilot:errors-plan` — group bugs before triage** — like `larapilot:aikido-plan`, it groups the error codes the user confirmed by **domain** (application code, package, outage) and by **place in the code**, so one spec covers the same exception thrown in the same folder. Outages and errors in a package never merge with application code, and a bug the tracker gives no file for stays alone. Alias: `larapilot:boogle-plan`. It only reads, and is allowed through the MCP `RunArtisanTool`.
+- **`/larapilot-boogle` — confirm, then plan, then triage** — after the scope is chosen, the skill asks **bug by bug** (in batches when there are many): resolve, ignore with a reason, or skip for now. The codes to resolve go to `errors-plan`, the user approves the groups, and each **group** is handed to `/larapilot-triage` with a *Production error* block that carries every code and every place of the group. The spec is then recorded for every code of the group.
+- **`/larapilot-aikido` — confirm, then plan, then triage** — after you pick which new findings enter the queue, the skill asks **finding by finding** (or in batches when there are many): resolve, waive with a reason, or skip for now. Only the ids you confirmed go to **`larapilot:aikido-plan --ids=…`**, which groups them by **domain** (kind of finding) and **fix** so one upgrade or one code change becomes one triage handoff — leaked secrets never merge with anything else. You approve the groups, then triage runs **group by group**, not at random. **`larapilot:aikido-plan`** is read-only and allowed through the MCP `RunArtisanTool`.
+- **The tracker in the settings** — the settings page of the dashboard lists **Production errors**, **Error tracker**, and the old **Boogle** flag under Monitoring, with what each tracker needs in `.env`. `/larapilot-settings` asks which tracker when the errors are turned on.
+
+### Changed
+
+- **`settings.boogle` is the old name of `errors` with Boogle** — `--boogle=YES` is `--errors=YES --errors-provider=boogle`. A project that turned Boogle on before this version keeps reading it with nothing to change, and its `config.yaml` takes the new keys the next time a setting is saved. `--boogle=NO` turns the errors off when Boogle is the tracker, and leaves another tracker on. Turning `errors` off keeps the tracker that was named.
+- **The report is `{paths.support}/errors.md`** — it was `boogle.md`. Its title names the tracker (`# Sentry errors — shop`), and the dashboard saves it as `{provider}-errors-{date}.md` from `/larapilot/errors/errors.md`; `/larapilot/errors/boogle.md` still answers. A `boogle.md` written by an earlier version is left where it is.
+- **The handoff block is *Production error*** — it was *Boogle error*. `/larapilot-triage` and `/larapilot-bug` read it under the new name.
+- **`boogle-status` asks the tracker only while the errors are on** — with the setting off it lists what `.env` lacks and sends nothing, so *it never calls a tracker while `errors` is `NO`* holds for every command.
+- **The Errors page names the tracker it read** — *as Sentry recorded it*, *In Sentry*, *stay in Sentry* — instead of Boogle. With the setting off it still opens on Boogle, and lists the other trackers under it.
+- A command run with the errors off answers *Production errors are off for this project.*
+
+### Not included
+
+- **Laravel Nightwatch** — it publishes no API to read exceptions with, so it is not among the trackers.
+
+### Docs
+
+- Site / package version **v4.1.3**. README, `docs/index.html`, `integrations.md`, the runtime settings, and the docs page of the dashboard describe **production errors**: the eight trackers with what each reads, what it needs in `.env`, and whether it can be closed from Larapilot; `errors-plan`; `errors.md`; confirm → plan → triage by group. `integrations.md` has a section for each tracker.
+
 ## [4.1.2] - 2026-09-28
 
 ### Changed

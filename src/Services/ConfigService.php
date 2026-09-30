@@ -293,6 +293,7 @@ class ConfigService
      *     api_auth: string,
      *     security_scan: string,
      *     aikido: string,
+     *     errors: string,
      *     boogle: string,
      *     github: string,
      *     gitlab: string,
@@ -304,7 +305,8 @@ class ConfigService
      *     notify_telegram: string,
      *     release_mode: string,
      *     project_docs: string,
-     *     prior_art: string
+     *     prior_art: string,
+     *     errors_provider: string
      * }
      */
     public function settings(): array
@@ -326,7 +328,36 @@ class ConfigService
             $settings[$key] = $this->normalizeYesNo($merged[$key] ?? $default, $default);
         }
 
+        // `errors`, its tracker, and the old `boogle` flag are read as one
+        // thing, so a file written before 4.1.3 says the same as a new one.
+        [$errors, $provider] = $this->errorsWithTracker(
+            $settings['errors'] === 'YES',
+            $settings['boogle'] === 'YES',
+            strtolower(trim((string) ($merged['errors_provider'] ?? '')))
+        );
+
+        $settings['errors'] = $errors ? 'YES' : 'NO';
+        $settings['boogle'] = $errors && $provider === 'boogle' ? 'YES' : 'NO';
+        $settings['errors_provider'] = $provider;
+
         return $settings;
+    }
+
+    /**
+     * Whether the errors are on, and from which tracker, from what the
+     * file holds. Before 4.1.3 the only tracker was Boogle, under
+     * `boogle`: a project that turned it on reads its errors from Boogle
+     * still. With the errors on and no tracker named, it is Boogle.
+     *
+     * @return array{0: bool, 1: string}
+     */
+    protected function errorsWithTracker(bool $errors, bool $boogle, string $provider): array
+    {
+        if ($boogle && ! $errors) {
+            return [true, 'boogle'];
+        }
+
+        return [$errors, $errors && $provider === '' ? 'boogle' : $provider];
     }
 
     /**
@@ -345,6 +376,7 @@ class ConfigService
      *     api_auth: bool,
      *     security_scan: bool,
      *     aikido: bool,
+     *     errors: bool,
      *     boogle: bool,
      *     github: bool,
      *     gitlab: bool,
@@ -356,7 +388,8 @@ class ConfigService
      *     notify_telegram: bool,
      *     release_mode: bool,
      *     project_docs: bool,
-     *     prior_art: bool
+     *     prior_art: bool,
+     *     errors_provider: string
      * }
      */
     public function defaultSettings(): array
@@ -375,6 +408,8 @@ class ConfigService
         foreach ($boolDefaults as $key => $default) {
             $settings[$key] = $this->yesNoToBool($defaults[$key] ?? $default, $default);
         }
+
+        $settings['errors_provider'] = strtolower(trim((string) ($defaults['errors_provider'] ?? '')));
 
         return $settings;
     }
@@ -396,6 +431,7 @@ class ConfigService
             'api_auth' => false,
             'security_scan' => false,
             'aikido' => false,
+            'errors' => false,
             'boogle' => false,
             'github' => false,
             'gitlab' => false,
@@ -430,6 +466,7 @@ class ConfigService
      *     api_auth: string,
      *     security_scan: string,
      *     aikido: string,
+     *     errors: string,
      *     boogle: string,
      *     github: string,
      *     gitlab: string,
@@ -438,7 +475,8 @@ class ConfigService
      *     notifications: string,
      *     notify_slack: string,
      *     notify_discord: string,
-     *     notify_telegram: string
+     *     notify_telegram: string,
+     *     errors_provider: string
      * }
      */
     public function updateSettings(array $partial): array
@@ -460,6 +498,12 @@ class ConfigService
             $settings[$key] = $this->yesNoToBool($settings[$key] ?? $default, $default);
         }
 
+        [$settings['errors'], $settings['errors_provider']] = $this->errorsWithTracker(
+            $settings['errors'],
+            $settings['boogle'],
+            $settings['errors_provider']
+        );
+
         // Selecting ECO turns Lucille off unless the caller also sets lucille
         // explicitly (re-enable with settings-set --lucille=YES while staying on ECO).
         if (($partial['effort'] ?? null) === 'ECO' && ! array_key_exists('lucille', $partial)) {
@@ -477,8 +521,33 @@ class ConfigService
                 continue;
             }
 
+            if ($key === 'errors_provider') {
+                $settings[$key] = strtolower(trim((string) $value));
+
+                continue;
+            }
+
             $settings[$key] = $key === 'account' ? $this->normalizeAccount($value) : $value;
         }
+
+        if (array_key_exists('boogle', $partial)) {
+            if ($settings['boogle'] === true) {
+                // `--boogle=YES` is `--errors=YES --errors-provider=boogle`.
+                $settings['errors'] = true;
+                $settings['errors_provider'] = 'boogle';
+            } elseif (! array_key_exists('errors', $partial) && in_array($settings['errors_provider'], ['', 'boogle'], true)) {
+                // `--boogle=NO` turns the errors off when Boogle was the tracker.
+                $settings['errors'] = false;
+            }
+        }
+
+        if ($settings['errors'] === true && $settings['errors_provider'] === '') {
+            $settings['errors_provider'] = 'boogle';
+        }
+
+        // `boogle` is the old name of errors=YES with provider boogle,
+        // and is kept in step with them for the projects that read it.
+        $settings['boogle'] = $settings['errors'] === true && $settings['errors_provider'] === 'boogle';
 
         $existing['settings'] = $settings;
 
@@ -624,13 +693,51 @@ class ConfigService
     }
 
     /**
-     * Read the errors Boogle recorded for the running application — OFF by
-     * default. When ON, `/larapilot-boogle` downloads the open errors and
-     * hands them to triage, and `/larapilot/errors` shows them.
+     * Read the errors of production from the tracker the project chose —
+     * OFF by default. `boogle` is the name the setting had when Boogle
+     * was the only tracker, and still turns it on.
+     */
+    public function errorsEnabled(): bool
+    {
+        return $this->settings()['errors'] === 'YES';
+    }
+
+    /**
+     * The trackers Larapilot can read, as `settings.errors_provider`
+     * names them.
+     *
+     * @return list<string>
+     */
+    public function allowedErrorsProviders(): array
+    {
+        return ['boogle', 'sentry', 'bugsnag', 'flare', 'datadog', 'rollbar', 'honeybadger', 'cloudwatch'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedErrorsModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * The tracker the project chose, as it was written — `boogle` when
+     * none was named, since Boogle was the only tracker before 4.1.3.
+     */
+    public function errorsProvider(): string
+    {
+        $provider = $this->settings()['errors_provider'];
+
+        return $provider !== '' ? $provider : 'boogle';
+    }
+
+    /**
+     * @deprecated Use errorsEnabled(): the errors may come from another tracker.
      */
     public function boogleEnabled(): bool
     {
-        return $this->settings()['boogle'] === 'YES';
+        return $this->errorsEnabled();
     }
 
     /**

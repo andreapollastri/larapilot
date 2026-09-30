@@ -96,7 +96,7 @@ A request with an **Aikido finding** block is measured like any other, with one 
 
 ## Handoff from `larapilot-boogle`
 
-A **Boogle error** block is an exception the running application threw: evidence that something broke, not the verdict. Apply the promise test to what the user was doing (`request`, `where`). Do not ask about the verdict. Put the block under `evidence`, unchanged.
+A **Production error** block (from `/larapilot-boogle`) is an exception the running application threw — often several codes in one group: evidence that something broke, not the verdict. Apply the promise test to what the user was doing (`request`, `where`). Do not ask about the verdict. Put the block under `evidence`, unchanged.
 
 ## Other exits
 

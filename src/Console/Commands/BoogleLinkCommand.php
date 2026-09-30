@@ -14,22 +14,22 @@ use Larapilot\Support\SpecCode;
 class BoogleLinkCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:boogle-link
-                            {errors : The errors, by a code of Boogle or by their key, separated by commas: BUG12 or BUG12,BUG15}
+                            {errors : The errors, by their code or by their key, separated by commas: BUG12 or BUG12,BUG15}
                             {--spec= : The spec of the backlog that fixes them, e.g. US-012}
                             {--ignore : Leave the errors as they are instead of fixing them}
                             {--reason= : Why they are left as they are — required with --ignore}
                             {--forget : Drop what was decided about them}';
 
-    protected $description = 'Record what was decided about errors of Boogle: the spec that fixes them, or why they are left as they are';
+    protected $description = 'Record what was decided about errors of production: the spec that fixes them, or why they are left as they are';
 
     public function handle(BoogleService $boogle, ConfigService $config): int
     {
-        if (! $config->boogleEnabled()) {
+        if (! $config->errorsEnabled()) {
             return $this->failure(
                 'E_PRECONDITION',
-                'Boogle is off for this project.',
+                'Production errors are off for this project.',
                 $this->exitForCode('E_PRECONDITION'),
-                'Enable with: php artisan larapilot:settings-set --boogle=YES'
+                'Enable with: php artisan larapilot:settings-set --errors=YES --errors-provider=boogle (or sentry, bugsnag, flare, datadog, rollbar, honeybadger, cloudwatch)'
             );
         }
 
@@ -58,7 +58,7 @@ class BoogleLinkCommand extends LarapilotCommand
         } catch (BoogleException $e) {
             return $this->failure('E_CONNECTOR', $e->getMessage(), $this->exitForCode('E_CONNECTOR'), $e->hint());
         } catch (InvalidArgumentException $e) {
-            $missing = str_starts_with($e->getMessage(), 'No spec') || str_starts_with($e->getMessage(), 'Boogle holds no open error');
+            $missing = str_starts_with($e->getMessage(), 'No spec') || str_contains($e->getMessage(), 'holds no open error');
             $code = $missing ? 'E_NOT_FOUND' : 'E_INVALID_INPUT';
 
             return $this->failure($code, $e->getMessage(), $this->exitForCode($code));

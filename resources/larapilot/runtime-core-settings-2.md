@@ -89,36 +89,39 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | Value | Behavior |
 | --- | --- |
 | **`false` / `NO`** | **Default.** Aikido is never called. |
-| **`true` / `YES`** | **`/larapilot-aikido`** downloads the open findings and hands each one to `/larapilot-triage`. **`/larapilot-ship`** runs `larapilot:aikido-issues --gate`: `FAIL` when a finding at `LARAPILOT_AIKIDO_FAIL_ON` (default `high`) or above is open and not waived, `WARN` when only lower ones are. `/larapilot/security` shows them. |
+| **`true` / `YES`** | **`/larapilot-aikido`** downloads the open findings, confirms them with the user, plans resolution groups with `larapilot:aikido-plan`, and hands each group to `/larapilot-triage`. **`/larapilot-ship`** runs `larapilot:aikido-issues --gate`: `FAIL` when a finding at `LARAPILOT_AIKIDO_FAIL_ON` (default `high`) or above is open and not waived, `WARN` when only lower ones are. `/larapilot/security` shows them. |
 
 | Command | What it does |
 | --- | --- |
 | `larapilot:aikido-status` | Setting, credentials, repository, last scan, `hints` |
 | `larapilot:aikido-issues [--new] [--severity=] [--report] [--gate]` | The open findings with `state` `new` · `in_backlog` · `waived`, and `gate.verdict` |
+| `larapilot:aikido-plan --ids=24,31` | Groups confirmed ids by kind and fix for triage (read-only; secrets never merge) |
 | `larapilot:aikido-link {ids} --spec=US-XXX` · `--waive --reason="…"` · `--forget` | What was decided, kept in `.larapilot/aikido.yaml` (committed: ids and decisions, never a credential) |
 | `larapilot:aikido-scan` | Asks Aikido for a new scan (`repositories:write`) |
 
 A finding `in_backlog` is **not fixed**: it stops the gate until Aikido no longer reports it. Only the user waives a finding, with a reason. Owned by **Lars**. Setup notes: `.larapilot/integrations.md` → **Aikido**.
 
-### Boogle (`settings.boogle`) — opt-in, default OFF
+### Production errors (`settings.errors` + `settings.errors_provider`) — opt-in, default OFF
 
-Reads the errors [Boogle](https://boogle.web.ap.it/) recorded for the running application. Boogle is self-hosted: Larapilot reads its admin API with `LARAPILOT_BOOGLE_URL` and `LARAPILOT_BOOGLE_TOKEN` (the token of an admin user) from `.env`.
+Reads the open errors of the running application from **one** tracker and brings each bug into triage. `errors_provider` names it: **boogle** (self-hosted, the default), **sentry**, **bugsnag**, **flare**, **datadog**, **rollbar**, **honeybadger**, **cloudwatch**. Credentials live in `.env`: a token that **reads** the tracker, never the key the application reports with.
 
-Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
-
-| Value | Behavior |
+| Setting | Behavior |
 | --- | --- |
-| **`false` / `NO`** | **Default.** Boogle is never called. |
-| **`true` / `YES`** | **`/larapilot-boogle`** downloads the open errors, one entry for each bug, and hands each one to `/larapilot-triage`. **`/larapilot-ship`** names the errors with no decision as a note. `/larapilot/errors` shows them. |
+| **`errors` = `NO`** | **Default.** No tracker is called. `errors_provider` is kept for when it is turned on again. |
+| **`errors` = `YES`** | **`/larapilot-boogle`** downloads the open errors, has the user confirm them, runs **`errors-plan`** on the codes to fix, and hands **each group** to **`/larapilot-triage`**. Writes `{paths.support}/errors.md`. **`/larapilot-ship`** names the errors with no decision as a note. `/larapilot/errors` shows them. |
+
+`settings.boogle` is the name `errors` had when Boogle was the only tracker: `--boogle=YES` is `--errors=YES --errors-provider=boogle`, and the key is kept in step with the two.
 
 | Command | What it does |
 | --- | --- |
-| `larapilot:boogle-status` | Setting, address, token, project, `hints` |
+| `larapilot:settings-set --errors=YES --errors-provider=sentry` | Turns the errors on and names the tracker |
+| `larapilot:boogle-status` | Setting, tracker, credentials, project, `remote_resolve`, `hints` |
 | `larapilot:boogle-errors [--new] [--kind=error\|outage] [--limit=] [--report]` | The open errors with `state` `new` · `in_backlog` · `ignored`, and `returned` when one came back after its fix |
+| `larapilot:errors-plan --codes=BUG12,BUG21` (`larapilot:boogle-plan`) | Groups the confirmed codes by domain and place for triage (read-only; outages and packages never merge with app code) |
 | `larapilot:boogle-link {codes} --spec=US-XXX` · `--ignore --reason="…"` · `--forget` | What was decided, kept in `.larapilot/boogle.yaml` (committed: class, place in the code, decision) |
-| `larapilot:boogle-resolve {codes}` | **Writes to Boogle:** closes the error there. Only when the fix is released and the user says so |
+| `larapilot:boogle-resolve {codes}` | **Writes to the tracker:** closes the error there. Only when the fix is released and the user says so; refused where nothing can be closed (CloudWatch, the logs of Datadog) |
 
-**Personal data stays in Boogle.** The user, the query string, and the payload of a request are never read into a file, a report, or the chat; an address in a message is masked. Never ask for them. Owned by **Sophia**. Setup notes: `.larapilot/integrations.md` → **Boogle**.
+The commands are named `boogle-*` whichever the tracker. **Personal data stays in the tracker.** The user, the query string, and the payload of a request are never read into a file, a report, or the chat; an address in a message is masked. Never ask for them. Owned by **Sophia**. Setup notes: `.larapilot/integrations.md` → **Production errors**.
 
 ### Remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`) — opt-in, default OFF
 

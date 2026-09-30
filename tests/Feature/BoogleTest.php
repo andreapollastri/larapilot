@@ -176,11 +176,12 @@ it('keeps Boogle off until the project turns it on', function (): void {
     expect($status['enabled'])->toBeFalse()
         ->and($status['configured'])->toBeFalse()
         ->and($status['ready'])->toBeFalse()
-        ->and($status['hints'][0])->toContain('larapilot:settings-set --boogle=YES')
+        ->and($status['provider'])->toBe('boogle')
+        ->and($status['hints'][0])->toContain('larapilot:settings-set --errors=YES --errors-provider=boogle')
         ->and($status['hints'][1])->toContain('LARAPILOT_BOOGLE_URL')
         ->and($status['hints'][2])->toContain('LARAPILOT_BOOGLE_TOKEN');
 
-    $this->artisan('larapilot:boogle-errors')->assertExitCode(4)->expectsOutputToContain('Boogle is off for this project');
+    $this->artisan('larapilot:boogle-errors')->assertExitCode(4)->expectsOutputToContain('Production errors are off for this project');
     $this->artisan('larapilot:boogle-link', ['errors' => 'BUG1', '--spec' => 'US-001'])->assertExitCode(4);
     $this->artisan('larapilot:boogle-resolve', ['errors' => 'BUG1'])->assertExitCode(4);
 
@@ -189,8 +190,14 @@ it('keeps Boogle off until the project turns it on', function (): void {
 
     $this->artisan('larapilot:settings-set', ['--boogle' => 'YES'])->assertSuccessful();
 
-    expect(Yaml::parseFile(base_path('.larapilot/config.yaml'))['settings']['boogle'])->toBeTrue()
-        ->and(app(ConfigService::class)->boogleEnabled())->toBeTrue();
+    $written = Yaml::parseFile(base_path('.larapilot/config.yaml'))['settings'];
+
+    expect($written['boogle'])->toBeTrue()
+        ->and($written['errors'])->toBeTrue()
+        ->and($written['errors_provider'])->toBe('boogle')
+        ->and(app(ConfigService::class)->boogleEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->errorsEnabled())->toBeTrue()
+        ->and(app(ConfigService::class)->errorsProvider())->toBe('boogle');
 });
 
 it('finds where Boogle is from its address, or from where the exceptions are sent', function (): void {
@@ -237,6 +244,7 @@ it('finds the project the application is, and keeps nothing that opens it', func
             'url' => 'https://loyalty.example.com',
             'group' => 'Shops',
             'uptime' => true,
+            'provider' => 'boogle',
         ])
         ->and($status['hints'])->toBe([]);
 
@@ -269,7 +277,8 @@ it('finds the project the application is, and keeps nothing that opens it', func
 
     expect($status['ready'])->toBeFalse()
         ->and($status['authenticated'])->toBeTrue()
-        ->and($status['hints'][0])->toContain('No project of Boogle matches this application ("Nope")');
+        ->and($status['hints'][0])->toContain('No project of Boogle matches this application')
+        ->and($status['hints'][0])->toContain('LARAPILOT_BOOGLE_PROJECT');
 });
 
 it('puts together the times one bug was thrown, and leaves the person in Boogle', function (): void {
@@ -592,7 +601,7 @@ it('writes the errors as a document of the project', function (): void {
     $envelope = boogleEnvelope();
 
     expect($envelope['kind'])->toBe('boogle_errors')
-        ->and($envelope['data']['report'])->toBe('.larapilot/docs/support/boogle.md')
+        ->and($envelope['data']['report'])->toBe('.larapilot/docs/support/errors.md')
         ->and(array_column($envelope['data']['errors'], 'short'))->toBe(['ErrorException'])
         ->and($envelope['data']['counts']['errors'])->toBe(3)
         // what an agent reads is kept short
@@ -601,7 +610,7 @@ it('writes the errors as a document of the project', function (): void {
 
     expectNothingPersonal((string) json_encode($envelope), 'the output of the command');
 
-    $report = (string) file_get_contents(base_path('.larapilot/docs/support/boogle.md'));
+    $report = (string) file_get_contents(base_path('.larapilot/docs/support/errors.md'));
 
     expect($report)->toStartWith("# Boogle errors — Loyalty\n")
         ->toContain('**In short:** 3 open errors, thrown 6 times: 2 with no decision yet.')
@@ -671,15 +680,65 @@ it('says what is wrong when Boogle cannot be read', function (): void {
 it('lets an agent read Boogle over MCP and nothing more', function (): void {
     $allowed = (new ReflectionClass(RunArtisanTool::class))->getDefaultProperties()['allowed'];
 
-    expect($allowed)->toContain('larapilot:boogle-status', 'larapilot:boogle-errors')
+    expect($allowed)->toContain('larapilot:boogle-status', 'larapilot:boogle-errors', 'larapilot:errors-plan', 'larapilot:boogle-plan')
         ->not->toContain('larapilot:boogle-link')
         ->not->toContain('larapilot:boogle-resolve');
+});
+
+it('groups confirmed error codes by kind and place for triage', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableBoogle();
+
+    $rows = boogleRows();
+    $rows['OPEN'][] = boogleRow(8, [
+        'exception' => 'ErrorException',
+        'error' => 'Undefined index in report',
+        'file' => '/home/forge/loyalty.example.com/releases/20260920/app/Services/ReportBuilder.php',
+        'line' => 10,
+        'http' => ['method' => 'GET', 'url' => '/admin/reports/daily'],
+        'created_at' => '2026-09-24T09:00:00Z',
+    ]);
+    $rows['OPEN'][] = boogleRow(9, [
+        'exception' => 'ErrorException',
+        'error' => 'Undefined index in export',
+        'file' => '/home/forge/loyalty.example.com/releases/20260920/app/Services/ReportExporter.php',
+        'line' => 22,
+        'http' => ['method' => 'GET', 'url' => '/admin/reports/export'],
+        'created_at' => '2026-09-23T09:00:00Z',
+    ]);
+
+    fakeBoogle($rows);
+    app(BoogleService::class)->errors();
+
+    $plan = app(BoogleService::class)->resolutionPlan(['BUG8', 'BUG9', 'BUG4']);
+
+    expect($plan['codes'])->toContain('#BUG8', '#BUG4')
+        ->and($plan['groups'])->toHaveCount(2);
+
+    $reports = collect($plan['groups'])->first(
+        static fn (array $group): bool => in_array('#BUG8', $group['codes'], true)
+    );
+
+    expect($reports)->not->toBeNull()
+        ->and($reports['codes'])->toEqualCanonicalizing(['#BUG8', '#BUG9']);
+
+    Artisan::call('larapilot:errors-plan', ['--codes' => 'BUG8,BUG9,BUG4']);
+    $payload = boogleEnvelope();
+
+    expect($payload['kind'])->toBe('errors_plan');
+
+    $merged = collect($payload['data']['groups'])->first(
+        static fn (array $group): bool => in_array('#BUG8', $group['codes'], true)
+    );
+
+    expect($merged)->not->toBeNull()
+        ->and($merged['codes'])->toEqualCanonicalizing(['#BUG8', '#BUG9']);
 });
 
 it('shows the errors on the dashboard, with what was decided', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    // off: the page stays in the menu, says what Boogle is, and invites the project to use it
+    // off: Boogle first, other trackers listed second
     $this->get('/larapilot/errors')
         ->assertOk()
         ->assertSee('Boogle records the exceptions the running application throws', false)
@@ -687,6 +746,10 @@ it('shows the errors on the dashboard, with what was decided', function (): void
         ->assertSee('Use <a href="https://boogle.web.ap.it/">Boogle</a> for this project', false)
         ->assertSee('andreapollastri/boogle-client', false)
         ->assertSee('php artisan larapilot:settings-set --boogle=YES', false)
+        ->assertSee('Other trackers you can use instead', false)
+        ->assertSee('https://flareapp.io/', false)
+        ->assertSee('https://www.datadoghq.com/', false)
+        ->assertSee('--errors-provider=sentry', false)
         ->assertDontSee('Boogle is off for this project', false)
         ->assertDontSee('Read again', false);
 
@@ -742,6 +805,9 @@ it('shows the errors on the dashboard, with what was decided', function (): void
     expect($download->headers->get('Content-Disposition'))->toBe('attachment; filename="boogle-errors-2026-09-27.md"')
         ->and($download->getContent())->toStartWith("# Boogle errors — Loyalty\n");
 
+    $this->get('/larapilot/errors/errors.md')
+        ->assertOk();
+
     // nothing open
     fakeBoogle(['OPEN' => [], 'READ' => []]);
 
@@ -789,20 +855,23 @@ it('ships a skill that downloads the errors and hands them to triage', function 
     expect($skill)->toStartWith("---\nname: larapilot-boogle\n")
         ->toContain('php artisan larapilot:boogle-status')
         ->toContain('php artisan larapilot:boogle-errors --new --kind=error --report')
-        ->toContain('boogle-link {code} --spec={spec}')
+        ->toContain('php artisan larapilot:errors-plan --codes=BUG12,BUG21')
+        ->toContain('errors-plan --codes=')
+        ->toContain('boogle-link {codes} --spec={spec}')
         ->toContain('activate `larapilot-triage`')
         ->toContain('**in this same turn**')
-        ->toContain("```text\nBoogle error\n")
+        ->toContain("```text\nProduction error\n")
         ->toContain('**Never ignore on your own.**')
-        ->toContain('Never call the Boogle API yourself')
+        ->toContain('Never call the API of a tracker yourself')
+        ->toContain('remote_resolve: true')
         ->toContain('never echo it in chat')
-        ->toContain('`boogle-resolve` **writes to Boogle**')
-        ->toContain('**Never ask Boogle, the user, or the logs for who the person was.**')
+        ->toContain('`boogle-resolve` **writes to the remote tracker**')
+        ->toContain('**Never ask the tracker, the user, or the logs for who the person was.**')
         ->toContain('`in_backlog` is not fixed')
         ->and(strlen($skill))->toBeLessThanOrEqual(9000);
 
     // Every command the skill names exists.
-    preg_match_all('/larapilot:(boogle-[a-z]+)/', $skill, $matches);
+    preg_match_all('/larapilot:([a-z0-9-]+)/', $skill, $matches);
 
     foreach (array_unique($matches[1]) as $command) {
         expect(array_key_exists('larapilot:'.$command, Artisan::all()))->toBeTrue($command);
@@ -810,22 +879,33 @@ it('ships a skill that downloads the errors and hands them to triage', function 
 
     expect($triage)->toContain('## Handoff from `larapilot-boogle`')
         ->and(strlen($triage))->toBeLessThanOrEqual(9000)
-        ->and($bug)->toContain('A **Boogle error** block under `evidence`')
+        ->and($bug)->toContain('A **Production error** block under `evidence`')
         ->toContain('Never ask who the user of the request was.')
         ->and($ship)->toContain('php artisan larapilot:boogle-errors --new --kind=error')
-        ->and($settings)->toContain('**7f. Boogle**')
-        ->toContain('--boogle=NO');
+        ->and($settings)->toContain('**7f. Production errors**')
+        ->toContain('--errors-provider=')
+        ->toContain('--errors=NO');
 
-    expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Boogle (`settings.boogle`)')
+    expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Production errors (`settings.errors`')
+        ->toContain('larapilot:errors-plan')
         ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-aikido` and `larapilot-boogle` do the same.')
         ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-boogle`**')
-        ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Boogle (`settings.boogle`)')
+        ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Production errors (`settings.errors`')
+        ->toContain('## Boogle (`errors_provider: boogle`)')
+        ->toContain('## Sentry (`errors_provider: sentry`)')
+        ->toContain('## Bugsnag (`errors_provider: bugsnag`)')
+        ->toContain('## Flare (`errors_provider: flare`)')
+        ->toContain('## Datadog (`errors_provider: datadog`)')
+        ->toContain('## Rollbar (`errors_provider: rollbar`)')
+        ->toContain('## Honeybadger (`errors_provider: honeybadger`)')
+        ->toContain('## AWS CloudWatch Logs (`errors_provider: cloudwatch`)')
+        ->not->toContain('nightwatch')
         ->and((string) file_get_contents($root.'/boost/guidelines/core.blade.php'))->toContain('`larapilot-boogle`');
 
     $this->artisan('larapilot:install')->assertSuccessful();
 
     $this->get('/larapilot/skills/larapilot-boogle')
         ->assertOk()
-        ->assertSee('Larapilot — Boogle', false)
+        ->assertSee('Larapilot — Production errors', false)
         ->assertSee('Ships with Larapilot', false);
 });

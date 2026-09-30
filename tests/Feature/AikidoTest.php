@@ -132,7 +132,7 @@ it('keeps Aikido off until the project turns it on', function (): void {
         ->and($status['hints'][0])->toContain('larapilot:settings-set --aikido=YES')
         ->and($status['hints'][1])->toContain('LARAPILOT_AIKIDO_CLIENT_ID');
 
-    foreach (['larapilot:aikido-issues', 'larapilot:aikido-scan'] as $command) {
+    foreach (['larapilot:aikido-issues', 'larapilot:aikido-plan', 'larapilot:aikido-scan'] as $command) {
         $this->artisan($command)->assertExitCode(4)->expectsOutputToContain('Aikido is off for this project');
     }
 
@@ -564,7 +564,7 @@ it('asks once for a new token when the one it holds is refused', function (): vo
 it('lets an agent read Aikido over MCP and nothing more', function (): void {
     $allowed = (new ReflectionClass(RunArtisanTool::class))->getDefaultProperties()['allowed'];
 
-    expect($allowed)->toContain('larapilot:aikido-status', 'larapilot:aikido-issues')
+    expect($allowed)->toContain('larapilot:aikido-status', 'larapilot:aikido-issues', 'larapilot:aikido-plan')
         ->not->toContain('larapilot:aikido-link')
         ->not->toContain('larapilot:aikido-scan');
 });
@@ -662,6 +662,78 @@ it('says on the page what is wrong when Aikido cannot be read', function (): voi
     Http::assertNothingSent();
 });
 
+it('groups confirmed findings by kind and fix for triage', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+
+    $issues = aikidoIssues();
+    $issues[] = [
+        'id' => 25,
+        'type' => 'open_source',
+        'title' => 'guzzlehttp/psr7',
+        'description' => 'Another CVE on the same package.',
+        'time_to_fix_minutes' => 30,
+        'group_status' => 'new',
+        'severity_score' => 90,
+        'severity' => 'critical',
+        'locations' => [['id' => 12, 'name' => 'fjord-invoices', 'type' => 'code_repository']],
+        'how_to_fix' => 'Upgrade guzzlehttp/psr7 to 2.7.0 or later.',
+        'related_cve_ids' => ['CVE-2026-2222'],
+        'first_detected_at' => 1757100000,
+    ];
+
+    fakeAikido($issues);
+
+    app(AikidoService::class)->findings();
+
+    $plan = app(AikidoService::class)->resolutionPlan([24, 25, 31]);
+
+    expect($plan['ids'])->toBe([24, 25, 31])
+        ->and($plan['groups'])->toHaveCount(2)
+        ->and($plan['groups'][0]['ids'])->toBe([24, 25])
+        ->and($plan['groups'][0]['cves'])->toBe(['CVE-2026-1111', 'CVE-2026-2222'])
+        ->and($plan['groups'][1]['ids'])->toBe([31])
+        ->and(collect($plan['domains'])->pluck('type_label', 'type_label')->keys()->all())->toBe(['Vulnerable dependency', 'Weakness in the code']);
+
+    Artisan::call('larapilot:aikido-plan', ['--ids' => '24,25,31']);
+    $payload = envelope();
+
+    expect($payload['kind'])->toBe('aikido_plan')
+        ->and($payload['data']['groups'][0]['ids'])->toBe([24, 25]);
+});
+
+it('never merges a leaked secret with another finding', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+
+    $issues = aikidoIssues();
+    $issues[] = [
+        'id' => 50,
+        'type' => 'leaked_secret',
+        'title' => 'API key in history',
+        'description' => 'A secret was committed.',
+        'time_to_fix_minutes' => 60,
+        'group_status' => 'new',
+        'severity_score' => 99,
+        'severity' => 'critical',
+        'locations' => [['id' => 12, 'name' => 'fjord-invoices', 'type' => 'code_repository']],
+        'how_to_fix' => 'Rotate the key and purge history.',
+        'related_cve_ids' => [],
+        'first_detected_at' => 1757200000,
+    ];
+
+    fakeAikido($issues);
+    app(AikidoService::class)->findings();
+
+    $plan = app(AikidoService::class)->resolutionPlan([24, 50]);
+
+    expect($plan['groups'])->toHaveCount(2);
+
+    $soloIds = array_map(static fn (array $group): int => $group['ids'][0], $plan['groups']);
+
+    expect($soloIds)->toEqualCanonicalizing([24, 50]);
+});
+
 it('ships a skill that downloads the findings and hands them to triage', function (): void {
     $root = dirname(__DIR__, 2).'/resources';
     $skill = (string) file_get_contents($root.'/boost/skills/larapilot-aikido/SKILL.md');
@@ -673,8 +745,11 @@ it('ships a skill that downloads the findings and hands them to triage', functio
     expect($skill)->toStartWith("---\nname: larapilot-aikido\n")
         ->toContain('php artisan larapilot:aikido-status')
         ->toContain('php artisan larapilot:aikido-issues --new --report')
+        ->toContain('php artisan larapilot:aikido-plan --ids=24,31')
         ->toContain('aikido-link {ids} --spec={code}')
         ->toContain('activate `larapilot-triage`')
+        ->toContain('Confirm (Sophia + Lars)')
+        ->toContain('aikido-plan --ids=')
         ->toContain('**in this same turn**')
         ->toContain("```text\nAikido finding\n")
         ->toContain('**Never waive on your own.**')

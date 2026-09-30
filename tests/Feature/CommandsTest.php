@@ -441,6 +441,7 @@ it('persists project settings via settings-set', function (): void {
         'api_auth' => 'YES',
         'security_scan' => 'YES',
         'aikido' => 'NO',
+        'errors' => 'NO',
         'boogle' => 'NO',
         'github' => 'YES',
         'gitlab' => 'YES',
@@ -453,6 +454,7 @@ it('persists project settings via settings-set', function (): void {
         'release_mode' => 'NO',
         'project_docs' => 'NO',
         'prior_art' => 'NO',
+        'errors_provider' => '',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
         ->and(app(ConfigService::class)->priorArtEnabled())->toBeFalse()

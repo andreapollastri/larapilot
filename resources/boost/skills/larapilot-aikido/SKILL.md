@@ -1,11 +1,11 @@
 ---
 name: larapilot-aikido
-description: "Downloads the open security findings of Aikido for this repository and hands each one to larapilot-triage to be resolved. Italian: vulnerabilità, sicurezza, scansione Aikido, CVE."
+description: "Downloads the open security findings of Aikido for this repository, has the user confirm them, groups them by fix, and hands each group to larapilot-triage. Italian: vulnerabilità, sicurezza, scansione Aikido, CVE."
 ---
 
 # Larapilot — Aikido
 
-You bring the findings of **Aikido** into the workflow. Aikido scans the repository on its side; you download what it found, show what is new, and hand each finding the user picks to `larapilot-triage`, which routes it to `larapilot-bug` or `larapilot-feature`. You run no scanner, and you write no spec and no code yourself.
+You bring the findings of **Aikido** into the workflow. Aikido scans the repository on its side; you download what it found, have the user **confirm finding by finding**, group what they chose into **resolution groups** by kind and fix, then hand each group to `larapilot-triage`. You run no scanner, and you write no spec and no code yourself.
 
 ## Shared Runtime
 
@@ -22,18 +22,19 @@ Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. The skill
 | Agent | Role |
 | --- | --- |
 | 🤖 **Zoey** | AI Guru — output economy, session/credit risk *(every skill)* |
-| 🔐 **Lars** | Security Expert — reads the findings, groups them by fix, owns every waiver |
-| 🎧 **Sophia** | Support Manager — the order of the handoffs, one at a time |
+| 🔐 **Lars** | Security Expert — domains and resolution groups, owns every waiver |
+| 🎧 **Sophia** | Support Manager — confirm each finding, then handoffs one group at a time |
 | 🔗 **Matt** | Integration Manager — credentials in `.env`, the repository in Aikido |
 
 ## Config & CLI
 
 1. `php artisan larapilot:config-show --only=settings,paths`
 2. `php artisan larapilot:aikido-status` — setting, credentials, repository, last scan, `hints`
-3. `php artisan larapilot:aikido-issues --new --report` — the findings nobody decided about; writes `{paths.security}/aikido.md` about all of them
-4. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them
-5. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why
-6. `php artisan larapilot:aikido-scan` — ask Aikido to scan again
+3. `php artisan larapilot:aikido-issues --new --report` — findings with no decision; writes `{paths.security}/aikido.md`
+4. `php artisan larapilot:aikido-plan --ids=24,31` — groups confirmed ids by kind and fix (secrets never merge)
+5. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them
+6. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why
+7. `php artisan larapilot:aikido-scan` — ask Aikido to scan again
 
 Never call the Aikido API yourself and never hand-write `.larapilot/aikido.yaml` — always the CLI.
 
@@ -76,9 +77,9 @@ Then one line: `{total} open · {states.new} new · {states.in_backlog} in the b
 - `states.new` is 0 → say so, give `gate.summary`, stop
 - `closed` is not empty → `No longer open in Aikido: #24 (US-012)`
 
-### 3. Choose (one AskQuestion, skippable)
+### 3. Scope (one AskQuestion, skippable)
 
-- **AskQuestion prompt:** `Aikido — {N} new findings. Which ones go to resolution now?`
+- **AskQuestion prompt:** `Aikido — {N} new findings. Which ones enter the review queue?`
 
 | Option id | AskQuestion label |
 | --- | --- |
@@ -87,15 +88,37 @@ Then one line: `{total} open · {states.new} new · {states.in_backlog} in the b
 | `pick` | `Let me name them` |
 | `none` | `None — the report is enough` |
 
-Skipped → `blocking`.
+Skipped → `blocking`. `none` → stop.
 
-### 4. Group by fix (Lars)
+### 4. Confirm (Sophia + Lars)
 
-One request per fix, not per finding: several CVEs of one package closed by one upgrade, the same weakness in several files. Never group across kinds, and never a secret with anything else.
+For each finding in scope, **most severe first**, the user decides before any triage:
 
-### 5. Hand off to triage (Sophia)
+| Decision | What you do |
+| --- | --- |
+| **Resolve** | Add its id to the list for step 5 |
+| **Waive** | Ask for a reason in chat if missing, then `aikido-link {id} --waive --reason="…"` and `decision-log` when the journal is on |
+| **Skip** | Leave it `new` for a later run |
 
-For each group, most severe first, activate `larapilot-triage` through the editor's skill mechanism — read its `SKILL.md` when the editor has none — **in this same turn**. The request is `Security finding from Aikido: {title} — {description}`, with this block:
+- **Up to 8 in scope:** one AskQuestion per finding — prompt `Aikido #{id} — {severity} · {type_label}: {title}` — options `Resolve` · `Waive` · `Skip for now` (skipped → **Resolve** for gate blockers, **Skip** otherwise).
+- **More than 8:** batches of 5 with a compact table; AskQuestion `Resolve which ids in this batch?` with multi-select ids plus `None in this batch`.
+
+**Never waive on your own.** No id on the resolve list → stop after waives.
+
+### 5. Plan groups (Lars)
+
+Run `aikido-plan --ids={comma-separated resolve ids}`. Show **domains** (`data.domains`: kind → ids) then **groups** (`data.groups`), most severe first:
+
+| Group | Domain | Severity | ids | Finding | Why grouped |
+| --- | --- | --- | --- | --- | --- |
+
+One AskQuestion, skippable: `Aikido — start triage on these {g} groups?` → `Yes` · `Adjust in chat` · `Cancel`. Skipped → **Yes**. On adjust, merge or split ids in chat, re-run `aikido-plan`, ask again. **Cancel** → stop (resolve list unchanged except waives from step 4).
+
+The CLI never merges across kinds or a **leaked secret** with anything else. You may split a group in chat before triage when two fixes would conflict in one spec.
+
+### 6. Hand off to triage (Sophia)
+
+For each group in plan order, activate `larapilot-triage` through the editor's skill mechanism — read its `SKILL.md` when the editor has none — **in this same turn**. The request is `Security finding from Aikido: {title} — {description}`, with this block (all ids of the group):
 
 ```text
 Aikido finding
@@ -108,13 +131,11 @@ cves: CVE-2026-1111
 fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later
 ```
 
-### 6. Record the decision
+### 7. Record the decision
 
 When the target skill reaches its **Next steps** with a spec code, run `aikido-link {ids} --spec={code}` and go to the next group.
 
-A finding the user decides not to fix: `aikido-link {ids} --waive --reason="…"` with the reason in the user's words, and `decision-log --topic="Aikido waiver: #{id}" --skill=larapilot-aikido` when `data.settings.decision_log` is `YES`. **Never waive on your own.** Saying a finding is not reachable is an argument for the user to accept, not a decision.
-
-### 7. Close
+### 8. Close
 
 Run `aikido-issues --report` and give one line: the counts and `gate.verdict`. A finding leaves the list when Aikido no longer reports it: after the fix is merged, `aikido-scan`, then `/larapilot-aikido` again.
 
@@ -131,18 +152,12 @@ Run `aikido-issues --report` and give one line: the counts and `gate.verdict`. A
 
 **Invoke:** `/larapilot-aikido`
 
-**Status:** `aikido · repo=fjord-invoices · branch=main · last scan=2026-09-26 · gate fails on high`
+**Scope:** `blocking` → #24, #31 in the review queue.
 
-**Download:** `3 open · 3 new · 0 in the backlog · 0 waived · gate FAIL · .larapilot/docs/security/aikido.md`
+**Confirm:** #24 Resolve · #31 Resolve.
 
-| # | Severity | Kind | Finding | CVE |
-| --- | --- | --- | --- | --- |
-| 24 | critical | Vulnerable dependency | guzzlehttp/psr7 | CVE-2026-1111 |
-| 31 | high | Weakness in the code | SQL built from request input | — |
-| 40 | low | License risk | Package under AGPL-3.0 | — |
+**Plan:** `aikido-plan --ids=24,31` → one group (#24) · one group (#31).
 
-**Choose:** `blocking` → #24, then #31.
+**Handoff:** group #24 → `larapilot-triage` → `US-012` → `aikido-link 24 --spec=US-012`. Then group #31.
 
-**Handoff:** #24 → `larapilot-triage` → `🎧 Sophia: Bug — requirement gap, NFR-002 security → larapilot-bug` → fix spec `US-012` → `aikido-link 24 --spec=US-012`. Then #31.
-
-**Close:** `3 open · 1 new · 2 in the backlog · 0 waived · gate FAIL` — the gate passes when Aikido no longer reports #24 and #31.
+**Close:** `3 open · 1 new · 2 in the backlog · 0 waived · gate FAIL`.
