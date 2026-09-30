@@ -108,6 +108,12 @@ class DashboardRouteRegistrar
                 Route::get('/security/aikido.md', [DashboardController::class, 'securityReport'])
                     ->name('larapilot.dashboard.security.report');
 
+                Route::get('/security/register.md', [DashboardController::class, 'securityRegister'])
+                    ->name('larapilot.dashboard.security.register');
+
+                Route::post('/security/repository', [DashboardController::class, 'chooseSecurityRepository'])
+                    ->name('larapilot.dashboard.security.repository');
+
                 Route::get('/errors', [DashboardController::class, 'errors'])
                     ->name('larapilot.dashboard.errors');
 

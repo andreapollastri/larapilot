@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Larapilot\Services\Aikido\AikidoException;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
@@ -253,6 +254,44 @@ class DashboardController
         }
 
         return $this->markdown($report, 'aikido-findings-'.now()->format('Y-m-d').'.md');
+    }
+
+    public function securityRegister(): Response
+    {
+        $this->guard();
+
+        $register = $this->dashboard->securityRegister();
+
+        if ($register === null) {
+            abort(404);
+        }
+
+        return $this->markdown($register['content'], $register['filename']);
+    }
+
+    public function chooseSecurityRepository(Request $request): RedirectResponse
+    {
+        $this->guard();
+
+        if (! $this->config->aikidoEnabled()) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'repository' => ['required', 'integer', 'min:1'],
+        ]);
+
+        try {
+            $repository = $this->dashboard->chooseSecurityRepository((int) $validated['repository']);
+        } catch (AikidoException|\InvalidArgumentException $e) {
+            return redirect()
+                ->route('larapilot.dashboard.security')
+                ->with('larapilot_error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('larapilot.dashboard.security', ['refresh' => 1])
+            ->with('larapilot_success', 'This project is “'.$repository['name'].'” in Aikido. The choice is in .larapilot/aikido.yaml: commit it.');
     }
 
     public function errors(Request $request): View

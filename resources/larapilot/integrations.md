@@ -399,20 +399,21 @@ Independent of `api_auth`, always on:
 
 ## Aikido (`settings.aikido`)
 
-Brings the findings of [Aikido](https://www.aikido.dev/) into the workflow. OFF by default. **Aikido scans the repository on its side**; Larapilot runs no scanner and installs nothing: it reads what Aikido found, over the public REST API.
+Brings the findings of [Aikido](https://www.aikido.dev/) into the workflow. OFF by default. **Aikido scans the repository on its side**; Larapilot runs no scanner and installs nothing: it reads what Aikido found, over the public REST API, and tells Aikido what the user decided about each finding.
 
 ### Setup
 
 1. Connect the repository in Aikido, through the git provider (GitHub, GitLab, Bitbucket, Azure DevOps). Larapilot cannot do this step.
-2. In Aikido, **Settings → Integrations → Public REST API**, create a client. Reading needs the `issues:read` and `repositories:read` scopes; asking for a scan needs `repositories:write`.
+2. In Aikido, **Settings → Integrations → Public REST API**, create a client. Reading needs the `issues:read` and `repositories:read` scopes; telling Aikido a decision needs `issues:write`; asking for a scan needs `repositories:write`.
 3. Put the credentials in `.env` — never in `.larapilot/`, which is committed:
 
 ```dotenv
 LARAPILOT_AIKIDO_CLIENT_ID=
 LARAPILOT_AIKIDO_CLIENT_SECRET=
 LARAPILOT_AIKIDO_REGION=eu            # eu (default) · us · au · me
-LARAPILOT_AIKIDO_REPOSITORY=          # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_REPOSITORY=          # id or name in Aikido, for this machine; empty = chosen or found from the git remote
 LARAPILOT_AIKIDO_FAIL_ON=high         # critical · high · medium · low · none
+LARAPILOT_AIKIDO_PUSH_DECISIONS=true  # false = decisions stay in the project, Aikido is told nothing
 ```
 
 4. Turn it on and check:
@@ -422,20 +423,57 @@ php artisan larapilot:settings-set --aikido=YES
 php artisan larapilot:aikido-status
 ```
 
+### The repository
+
+Larapilot finds the repository of the workspace from the git remote of the project, by its address or by its name. When the code is scanned under another repository — a fork, a mirror, a monorepo, a name that differs — nothing matches: `aikido-status` answers `needs_repository: true`, and **the user is asked which one it is**. `/larapilot-aikido` asks in chat, `/larapilot/security` shows the list with a form, and from the terminal:
+
+```bash
+php artisan larapilot:aikido-repos                # the repositories of the workspace
+php artisan larapilot:aikido-repos --search=shop  # only the names that hold these letters
+php artisan larapilot:aikido-repos --use=12       # this project is repository 12 (or its exact name)
+php artisan larapilot:aikido-repos --forget       # back to the git remote
+```
+
+The choice is kept in `.larapilot/aikido.yaml`, which is committed, so every machine reads the same repository. `LARAPILOT_AIKIDO_REPOSITORY` in `.env` names it for one machine and wins there. Nothing is ever chosen for the user: a name that looks alike is not a match.
+
+### Decisions are told to Aikido
+
+What the user decides here is sent to Aikido, so the workspace says the same as the project:
+
+| Decision | In Aikido |
+| --- | --- |
+| `aikido-link 40 --waive --reason="…"` | The finding is **ignored**, with the reason as its comment |
+| `aikido-link 24 --spec=US-012` | A **note** on the finding: the spec that fixes it |
+| `aikido-link 40 --forget` | The waiver is taken back: the finding is open again |
+
+- A finding can be in several repositories of the workspace. When it is, only the issues of **this** repository are ignored, and the other projects keep theirs.
+- The credentials need the `issues:write` scope. When Aikido refuses, or cannot be reached, **the decision is kept** and listed as `unsent`; `php artisan larapilot:aikido-push` tells it later. It also tells the decisions taken with an earlier version.
+- A waiver Aikido would not take back is not forgotten here, so the two never disagree.
+- `--local` on `aikido-link` keeps one decision in the project; `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` keeps them all.
+- A waived finding leaves the open ones as soon as Aikido ignores it, and is listed under *No longer open in Aikido* with its reason.
+
+### The register for the client
+
+`php artisan larapilot:aikido-register` writes `{paths.security}/aikido-register.md`, and **Register for the client (.md)** on `/larapilot/security` downloads it: every finding of the repository — **open** with the fix that is planned, **resolved** with the date, **ignored** with the date and the reason — and a count by severity. It is the document a client or an auditor asks for, written in the language of the PRD.
+
+The reason of a finding waived here is the one the user wrote. Aikido does not give back the reason of a finding ignored there by hand: the register lists it, and says the reason is kept in Aikido.
+
 ### When ON
 
 - `/larapilot-aikido` downloads the open findings, has the user confirm each one (resolve, waive, or skip), groups the confirmed ids with `larapilot:aikido-plan`, and hands each resolution group to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:aikido-link`.
 - `/larapilot-ship` runs `php artisan larapilot:aikido-issues --gate --report`: `FAIL` is a release blocker, `WARN` a note.
 - `/larapilot/security` shows the findings, what was decided about each, and the verdict of the gate.
-- `{paths.security}/aikido.md` is the report: every open finding with its decision.
-- `.larapilot/aikido.yaml` keeps the decisions. Commit it, so a finding handed to the backlog on one machine is not handed over again on another.
+- `{paths.security}/aikido.md` is the report for the team: every open finding with its decision. `{paths.security}/aikido-register.md` is the register for the client.
+- `.larapilot/aikido.yaml` keeps the decisions, whether Aikido was told, and the repository that was chosen. Commit it, so a finding handed to the backlog on one machine is not handed over again on another.
 
 ### What it never does
 
 - It never calls Aikido while the setting is `NO`.
 - It never writes a credential or an access token to a file of the project: the token lives in the cache for as long as Aikido says it lasts.
 - It never marks a finding as fixed. A finding leaves the list when Aikido no longer reports it — after the fix is merged and scanned.
-- It never waives a finding. Only the user does, with a reason of at least a sentence.
+- It never waives a finding. Only the user does, with a reason of at least a sentence — and only then is Aikido told to ignore it.
+- It never writes to Aikido anything but a decision of the user: no finding is closed, snoozed, or rated again.
+- It never chooses the repository: when the git remote finds none, the user names it.
 
 The address of the token endpoint is derived from the region (`https://app.{region}.aikido.dev/api/oauth/token`). Set `LARAPILOT_AIKIDO_BASE_URL` when the workspace is reached through another address.
 

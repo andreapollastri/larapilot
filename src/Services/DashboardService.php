@@ -27,6 +27,7 @@ class DashboardService
         protected SkillLibraryService $skillLibrary,
         protected AgentGuidelineService $guidelines,
         protected AikidoService $aikido,
+        protected AikidoRegisterWriter $aikidoRegister,
         protected BoogleService $boogle,
         protected ErrorTrackerManager $errorTrackers,
         protected EconomicsService $economicsService,
@@ -260,7 +261,7 @@ class DashboardService
     public function security(bool $refresh = false): array
     {
         $enabled = $this->config->aikidoEnabled();
-        $data = ['enabled' => $enabled, 'status' => null, 'findings' => null, 'error' => null, 'hint' => null];
+        $data = ['enabled' => $enabled, 'status' => null, 'findings' => null, 'error' => null, 'hint' => null, 'repositories' => null];
 
         if (! $enabled) {
             return $data;
@@ -278,9 +279,54 @@ class DashboardService
             $data['error'] = $e->getMessage();
             $data['hint'] = $e->hint();
             $data['status'] = $this->aikido->status();
+
+            // None of the repositories of the workspace is this project:
+            // the page asks which one it is.
+            if ($data['status']['needs_repository']) {
+                try {
+                    $data['repositories'] = $this->aikido->repositories();
+                } catch (AikidoException) {
+                    // what is wrong is already on the page
+                }
+            }
         }
 
         return $data;
+    }
+
+    /**
+     * Keep the repository of Aikido the user says this project is.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws AikidoException|\InvalidArgumentException
+     */
+    public function chooseSecurityRepository(int $id): array
+    {
+        return $this->aikido->useRepository((string) $id);
+    }
+
+    /**
+     * The register of the findings for the client, with the name of its file.
+     *
+     * @return array{content: string, filename: string}|null
+     */
+    public function securityRegister(): ?array
+    {
+        if (! $this->config->aikidoEnabled()) {
+            return null;
+        }
+
+        try {
+            $register = $this->aikido->register();
+        } catch (AikidoException) {
+            return null;
+        }
+
+        return [
+            'content' => $this->aikidoRegister->render($register),
+            'filename' => $this->aikidoRegister->filename($register),
+        ];
     }
 
     public function securityReport(): ?string

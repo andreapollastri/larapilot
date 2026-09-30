@@ -32,9 +32,12 @@ Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. The skill
 2. `php artisan larapilot:aikido-status` — setting, credentials, repository, last scan, `hints`
 3. `php artisan larapilot:aikido-issues --new --report` — findings with no decision; writes `{paths.security}/aikido.md`
 4. `php artisan larapilot:aikido-plan --ids=24,31` — groups confirmed ids by kind and fix (secrets never merge)
-5. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them
-6. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why
+5. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them; leaves a note in Aikido
+6. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why; **ignores it in Aikido** with that reason
 7. `php artisan larapilot:aikido-scan` — ask Aikido to scan again
+8. `php artisan larapilot:aikido-repos` · `--use={id}` — which repository of Aikido this project is
+9. `php artisan larapilot:aikido-push` — tell Aikido the decisions it was not told
+10. `php artisan larapilot:aikido-register` — `{paths.security}/aikido-register.md`: open, resolved, ignored with reason, for the client
 
 Never call the Aikido API yourself and never hand-write `.larapilot/aikido.yaml` — always the CLI.
 
@@ -51,11 +54,11 @@ Run `aikido-status`. One line:
 
 `aikido · repo={repository.name} · branch={repository.branch} · last scan={repository.last_scanned_at} · gate fails on {fail_on}`
 
-`configured: false` → step 1. Any other `ready: false` → print `hints` as they are and stop.
+`configured: false` → step 1. `needs_repository: true` → step 1b. Any other `ready: false` → print `hints` as they are and stop.
 
 ### 1. Credentials (Matt + Lars) — only when missing
 
-**Ask in chat**, not AskQuestion — these are secrets. Tell the user where: Aikido → Settings → Integrations → Public REST API → a client with `issues:read` and `repositories:read` (`repositories:write` to ask for a scan). Write them to `.env`, and the **key names only** into `.env.example`:
+**Ask in chat**, not AskQuestion — these are secrets. Tell the user where: Aikido → Settings → Integrations → Public REST API → a client with `issues:read`, `repositories:read`, and `issues:write` to tell Aikido the decisions (`repositories:write` to ask for a scan). Write them to `.env`, and the **key names only** into `.env.example`:
 
 ```dotenv
 LARAPILOT_AIKIDO_CLIENT_ID=
@@ -64,6 +67,10 @@ LARAPILOT_AIKIDO_REGION=eu
 ```
 
 Region is `eu`, `us`, `au`, or `me`. Never write a credential into `.larapilot/` and never echo it in chat. The repository has to be connected in Aikido, through the git provider, and Larapilot cannot do that. Run `aikido-status` again.
+
+### 1b. Repository (Matt) — only when `needs_repository`
+
+The git remote matches no repository of the workspace. Run `aikido-repos` and **ask**: one AskQuestion `Aikido — which repository is this project?` with up to 8 names from `data.repositories`, plus `Another — I will name it` (then `aikido-repos --search=…`) and `It is not connected yet` (say to connect it in Aikido, stop). **Never choose one yourself.** Then `aikido-repos --use={id}` and `aikido-status` again.
 
 ### 2. Download (Lars)
 
@@ -97,7 +104,7 @@ For each finding in scope, **most severe first**, the user decides before any tr
 | Decision | What you do |
 | --- | --- |
 | **Resolve** | Add its id to the list for step 5 |
-| **Waive** | Ask for a reason in chat if missing, then `aikido-link {id} --waive --reason="…"` and `decision-log` when the journal is on |
+| **Waive** | Ask for a reason in chat if missing, then `aikido-link {id} --waive --reason="…"` and `decision-log` when the journal is on. `data.aikido[].sent: false` → print `data.hint` once and go on: the decision is kept |
 | **Skip** | Leave it `new` for a later run |
 
 - **Up to 8 in scope:** one AskQuestion per finding — prompt `Aikido #{id} — {severity} · {type_label}: {title}` — options `Resolve` · `Waive` · `Skip for now` (skipped → **Resolve** for gate blockers, **Skip** otherwise).
@@ -137,7 +144,9 @@ When the target skill reaches its **Next steps** with a spec code, run `aikido-l
 
 ### 8. Close
 
-Run `aikido-issues --report` and give one line: the counts and `gate.verdict`. A finding leaves the list when Aikido no longer reports it: after the fix is merged, `aikido-scan`, then `/larapilot-aikido` again.
+Run `aikido-issues --report` and give one line: the counts and `gate.verdict`. `unsent` not empty → `aikido-push` once. A finding leaves the list when Aikido no longer reports it: after the fix is merged, `aikido-scan`, then `/larapilot-aikido` again.
+
+Asked for the document for a client or an audit → `aikido-register`, and name the file.
 
 ## Output Boundaries
 

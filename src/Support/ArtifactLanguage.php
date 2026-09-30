@@ -10,7 +10,8 @@ class ArtifactLanguage
 
     /**
      * Languages the built-in templates carry end to end: detection, the
-     * Economics page and engine, the client quote, and the design presentation.
+     * Economics page and engine, the client quote, the design presentation,
+     * and the register of security findings.
      * `ArtifactStringsCoverageTest` fails the build if one of those falls behind.
      *
      * @var list<string>

@@ -18,9 +18,10 @@ class AikidoLinkCommand extends LarapilotCommand
                             {--spec= : The spec of the backlog that fixes them, e.g. US-012}
                             {--waive : Accept the findings as they are instead of fixing them}
                             {--reason= : Why they are accepted — required with --waive}
-                            {--forget : Drop what was decided about them}';
+                            {--forget : Drop what was decided about them}
+                            {--local : Keep the decision here and do not tell Aikido}';
 
-    protected $description = 'Record what was decided about findings of Aikido: the spec that fixes them, or why they are waived';
+    protected $description = 'Record what was decided about findings of Aikido — the spec that fixes them, or why they are waived — and tell Aikido';
 
     public function handle(AikidoService $aikido, ConfigService $config): int
     {
@@ -69,10 +70,12 @@ class AikidoLinkCommand extends LarapilotCommand
         }
 
         try {
+            $push = ! (bool) $this->option('local');
+
             $result = match (true) {
-                $spec !== '' => $aikido->link($ids, $spec),
-                (bool) $this->option('waive') => $aikido->waive($ids, (string) $this->option('reason')),
-                default => $aikido->forget($ids),
+                $spec !== '' => $aikido->link($ids, $spec, $push),
+                (bool) $this->option('waive') => $aikido->waive($ids, (string) $this->option('reason'), $push),
+                default => $aikido->forget($ids, $push),
             };
         } catch (AikidoException $e) {
             return $this->failure('E_CONNECTOR', $e->getMessage(), $this->exitForCode('E_CONNECTOR'), $e->hint());
@@ -83,6 +86,23 @@ class AikidoLinkCommand extends LarapilotCommand
             return $this->failure($code, $e->getMessage(), $this->exitForCode($code));
         }
 
-        return $this->success('aikido_link', $result);
+        // A waiver Aikido would not take back stays: say so with the code of a failure.
+        $kept = array_values(array_filter($result['aikido'], static fn (array $told): bool => ($told['kept'] ?? false) === true));
+
+        if ($kept !== []) {
+            return $this->failure(
+                'E_CONNECTOR',
+                'Aikido did not take back the waiver of #'.implode(', #', array_column($kept, 'id')).': '.$kept[0]['error'],
+                $this->exitForCode('E_CONNECTOR'),
+                'The decision is kept, so the project and Aikido say the same. Run the command again, or with --local to drop it here only.',
+                $result
+            );
+        }
+
+        $refused = array_values(array_filter($result['aikido'], static fn (array $told): bool => ! $told['sent']));
+
+        return $this->success('aikido_link', $result + [
+            'hint' => $refused !== [] ? $refused[0]['error'].' '.($refused[0]['hint'] ?? '') : null,
+        ]);
     }
 }

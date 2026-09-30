@@ -82,7 +82,7 @@ Owned by **Lars** (Security Expert), alongside `dashboard_auth` and `api_auth`. 
 
 ### Aikido (`settings.aikido`) — opt-in, default OFF
 
-Reads the findings of [Aikido](https://www.aikido.dev/) for this repository. **Aikido scans on its side**, through its connection to the git provider; Larapilot runs no scanner and only reads the result over the public REST API, with `LARAPILOT_AIKIDO_CLIENT_ID` and `LARAPILOT_AIKIDO_CLIENT_SECRET` from `.env`.
+Reads the findings of [Aikido](https://www.aikido.dev/) for this repository. **Aikido scans on its side**, through its connection to the git provider; Larapilot runs no scanner: it reads the result over the public REST API, with `LARAPILOT_AIKIDO_CLIENT_ID` and `LARAPILOT_AIKIDO_CLIENT_SECRET` from `.env`, and tells Aikido what the user decided.
 
 Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key → **`NO`**.
 
@@ -96,10 +96,13 @@ Stored as a boolean `true`/`false`; envelope exposes `YES`/`NO`. Missing key →
 | `larapilot:aikido-status` | Setting, credentials, repository, last scan, `hints` |
 | `larapilot:aikido-issues [--new] [--severity=] [--report] [--gate]` | The open findings with `state` `new` · `in_backlog` · `waived`, and `gate.verdict` |
 | `larapilot:aikido-plan --ids=24,31` | Groups confirmed ids by kind and fix for triage (read-only; secrets never merge) |
-| `larapilot:aikido-link {ids} --spec=US-XXX` · `--waive --reason="…"` · `--forget` | What was decided, kept in `.larapilot/aikido.yaml` (committed: ids and decisions, never a credential) |
+| `larapilot:aikido-link {ids} --spec=US-XXX` · `--waive --reason="…"` · `--forget` | What was decided, kept in `.larapilot/aikido.yaml` (committed: ids and decisions, never a credential) and **told to Aikido** (`issues:write`): a waiver ignores the finding there with its reason, a spec leaves a note, `--forget` takes the waiver back. `--local` tells nothing |
+| `larapilot:aikido-push` | Tells Aikido the decisions it was not told (`unsent`) |
+| `larapilot:aikido-repos [--search=]` · `--use={id}` · `--forget` | The repositories of the workspace, and the one this project is when the git remote finds none (`needs_repository`). **Ask the user; never choose** |
+| `larapilot:aikido-register` | `{paths.security}/aikido-register.md` for the client: every finding open, resolved, or ignored with its reason, in the PRD language |
 | `larapilot:aikido-scan` | Asks Aikido for a new scan (`repositories:write`) |
 
-A finding `in_backlog` is **not fixed**: it stops the gate until Aikido no longer reports it. Only the user waives a finding, with a reason. Owned by **Lars**. Setup notes: `.larapilot/integrations.md` → **Aikido**.
+A finding `in_backlog` is **not fixed**: it stops the gate until Aikido no longer reports it. Only the user waives a finding, with a reason. Aikido refusing a decision never undoes it: it stays `unsent`. Owned by **Lars**. Setup notes: `.larapilot/integrations.md` → **Aikido**.
 
 ### Production errors (`settings.errors` + `settings.errors_provider`) — opt-in, default OFF
 

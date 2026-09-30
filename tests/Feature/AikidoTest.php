@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Larapilot\Mcp\Tools\RunArtisanTool;
 use Larapilot\Services\Aikido\AikidoClient;
+use Larapilot\Services\AikidoRegisterWriter;
 use Larapilot\Services\AikidoService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\GitService;
+use Larapilot\Services\PrdService;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -75,20 +77,98 @@ function resetHttp(): void
 }
 
 /**
+ * The single issues of the findings, as the export of Aikido lists them:
+ * finding 24 is two CVEs of one package, finding 40 is in this repository
+ * and in another one of the workspace.
+ *
+ * @return list<array<string, mixed>>
+ */
+function aikidoSingles(): array
+{
+    $issue = static fn (int $id, int $group, int $repository, string $status = 'open', array $more = []): array => array_merge([
+        'id' => $id,
+        'group_id' => $group,
+        'status' => $status,
+        'code_repo_id' => $repository,
+        'closed_at' => null,
+        'ignored_at' => null,
+        'ignored_by' => null,
+        'snooze_until' => null,
+    ], $more);
+
+    return [
+        $issue(2401, 24, 12),
+        $issue(2402, 24, 12),
+        $issue(3101, 31, 12),
+        $issue(4001, 40, 12),
+        $issue(4002, 40, 11),
+        $issue(5201, 52, 12, 'closed', ['closed_at' => 1758300000]),
+        $issue(6101, 61, 12, 'ignored', ['ignored_at' => 1758400000, 'ignored_by' => 'user']),
+    ];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function aikidoRepositories(): array
+{
+    return [
+        ['id' => 11, 'name' => 'fjord-website', 'provider' => 'github', 'url' => 'https://github.com/example/fjord-website', 'branch' => 'main', 'last_scanned_at' => 1758900000, 'connectivity' => 'connected'],
+        ['id' => 12, 'name' => 'fjord-invoices', 'provider' => 'github', 'url' => 'https://github.com/example/fjord-invoices', 'branch' => 'main', 'last_scanned_at' => 1758900000, 'connectivity' => 'connected'],
+    ];
+}
+
+/**
+ * Aikido as the documentation of its API describes it. Nothing a test does
+ * leaves the machine: a call no line below answers fails the test.
+ *
+ * With `$readOnly`, the credentials have no `issues:write` scope: Aikido
+ * refuses every decision it is told.
+ *
  * @param  list<array<string, mixed>>|null  $issues
  */
-function fakeAikido(?array $issues = null): void
+function fakeAikido(?array $issues = null, bool $readOnly = false): void
 {
     resetHttp();
+    Http::preventStrayRequests();
+
+    $query = static function (Request $request): array {
+        parse_str((string) parse_url($request->url(), PHP_URL_QUERY), $query);
+
+        return $query;
+    };
+
+    $group = static fn (int $id, string $title, string $severity, string $type): array => [
+        'id' => $id, 'type' => $type, 'title' => $title, 'description' => null, 'time_to_fix_minutes' => 20, 'group_status' => 'todo',
+        'severity_score' => $severity === 'high' ? 70 : 40, 'severity' => $severity, 'locations' => [], 'how_to_fix' => '', 'related_cve_ids' => [], 'first_detected_at' => 1755000000,
+    ];
 
     Http::fake([
         'app.aikido.dev/api/oauth/token' => Http::response(['access_token' => 'token-1', 'token_type' => 'bearer', 'expires_in' => 3600]),
         'app.aikido.dev/api/public/v1/repositories/code/12/scan*' => Http::response(null, 204),
-        'app.aikido.dev/api/public/v1/repositories/code*' => Http::response([
-            ['id' => 11, 'name' => 'fjord-website', 'provider' => 'github', 'url' => 'https://github.com/example/fjord-website', 'branch' => 'main', 'last_scanned_at' => 1758900000, 'connectivity' => 'connected'],
-            ['id' => 12, 'name' => 'fjord-invoices', 'provider' => 'github', 'url' => 'https://github.com/example/fjord-invoices', 'branch' => 'main', 'last_scanned_at' => 1758900000, 'connectivity' => 'connected'],
-        ]),
-        'app.aikido.dev/api/public/v1/open-issue-groups*' => Http::response($issues ?? aikidoIssues()),
+        'app.aikido.dev/api/public/v1/repositories/code/11' => Http::response(aikidoRepositories()[0]),
+        'app.aikido.dev/api/public/v1/repositories/code/12' => Http::response(aikidoRepositories()[1]),
+        'app.aikido.dev/api/public/v1/repositories/code/*' => Http::response(['reason_phrase' => 'Not found'], 404),
+        'app.aikido.dev/api/public/v1/repositories/code*' => Http::response(aikidoRepositories()),
+        'app.aikido.dev/api/public/v1/open-issue-groups*' => static fn (Request $request) => Http::response(match ($query($request)['filter_status'] ?? 'open') {
+            'open' => $issues ?? aikidoIssues(),
+            'closed' => [$group(52, 'symfony/http-kernel', 'high', 'open_source')],
+            'ignored' => [$group(61, 'Debug flag in a test fixture', 'medium', 'sast')],
+            default => [],
+        }),
+        'app.aikido.dev/api/public/v1/issues/export*' => static function (Request $request) use ($query) {
+            $asked = $query($request);
+
+            return Http::response(array_values(array_filter(aikidoSingles(), static fn (array $issue): bool => (! isset($asked['filter_issue_group_id']) || (int) $asked['filter_issue_group_id'] === $issue['group_id'])
+                && (! isset($asked['filter_code_repo_id']) || (int) $asked['filter_code_repo_id'] === $issue['code_repo_id'])
+                && (($asked['filter_status'] ?? 'all') === 'all' || $asked['filter_status'] === $issue['status']))));
+        },
+        ...($readOnly ? ['app.aikido.dev/api/public/v1/issues/*' => Http::response(['reason_phrase' => 'The client lacks the issues:write scope.'], 403)] : []),
+        'app.aikido.dev/api/public/v1/issues/groups/*/ignore' => Http::response(['success' => 1, 'ignored_single_issues_amount' => 2]),
+        'app.aikido.dev/api/public/v1/issues/groups/*/unignore' => Http::response(['status' => 'ok']),
+        'app.aikido.dev/api/public/v1/issues/groups/*/notes' => Http::response(['note_id' => 900]),
+        'app.aikido.dev/api/public/v1/issues/*/ignore' => Http::response(['status' => 'ok']),
+        'app.aikido.dev/api/public/v1/issues/*/unignore' => Http::response(['status' => 'ok']),
     ]);
 }
 
@@ -564,8 +644,10 @@ it('asks once for a new token when the one it holds is refused', function (): vo
 it('lets an agent read Aikido over MCP and nothing more', function (): void {
     $allowed = (new ReflectionClass(RunArtisanTool::class))->getDefaultProperties()['allowed'];
 
-    expect($allowed)->toContain('larapilot:aikido-status', 'larapilot:aikido-issues', 'larapilot:aikido-plan')
+    expect($allowed)->toContain('larapilot:aikido-status', 'larapilot:aikido-issues', 'larapilot:aikido-plan', 'larapilot:aikido-repos')
         ->not->toContain('larapilot:aikido-link')
+        ->not->toContain('larapilot:aikido-push')
+        ->not->toContain('larapilot:aikido-register')
         ->not->toContain('larapilot:aikido-scan');
 });
 
@@ -605,7 +687,11 @@ it('shows the findings on the dashboard, with what was decided', function (): vo
         ->assertSee('href="'.url('/larapilot/specs/US-001').'"', false)
         ->assertSee('SQL built from request input', false)
         ->assertSee('No decision yet', false)
-        ->assertSee('Waived: Internal tool, never distributed: AGPL does not apply.', false)
+        // Waived here and ignored in Aikido: it left the open findings.
+        ->assertSee('waived: Internal tool, never distributed: AGPL does not apply.', false)
+        ->assertSee('Register for the client (.md)', false)
+        ->assertSee('told to Aikido', false)
+        ->assertDontSee('not told to Aikido yet', false)
         ->assertSee('/larapilot-aikido', false)
         ->assertDontSee('client-secret', false)
         ->assertDontSee('token-1', false)
@@ -617,7 +703,7 @@ it('shows the findings on the dashboard, with what was decided', function (): vo
         ->and(strpos($html, 'SQL built from request input'))->toBeLessThan(strpos($html, 'Package under AGPL-3.0'))
         ->and(substr_count($html, 'data-state="new"'))->toBe(2)
         ->and(substr_count($html, 'data-state="in_backlog"'))->toBe(2)
-        ->and(substr_count($html, 'data-state="waived"'))->toBe(2);
+        ->and(substr_count($html, 'data-state="waived"'))->toBe(1);
 
     $report = $this->get('/larapilot/security/aikido.md')
         ->assertOk()
@@ -753,6 +839,14 @@ it('ships a skill that downloads the findings and hands them to triage', functio
         ->toContain('**in this same turn**')
         ->toContain("```text\nAikido finding\n")
         ->toContain('**Never waive on your own.**')
+        // The repository is the user's to name, and a decision is told to Aikido.
+        ->toContain('### 1b. Repository (Matt) — only when `needs_repository`')
+        ->toContain('**Never choose one yourself.**')
+        ->toContain('aikido-repos --use={id}')
+        ->toContain('**ignores it in Aikido** with that reason')
+        ->toContain('`unsent` not empty → `aikido-push` once')
+        ->toContain('php artisan larapilot:aikido-register')
+        ->toContain('`issues:write` to tell Aikido the decisions')
         ->toContain('Never call the Aikido API yourself')
         ->toContain('never echo it in chat')
         ->toContain('`in_backlog` is not fixed')
@@ -778,4 +872,437 @@ it('ships a skill that downloads the findings and hands them to triage', functio
         ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-aikido`**')
         ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Aikido (`settings.aikido`)')
         ->and((string) file_get_contents($root.'/boost/guidelines/core.blade.php'))->toContain('`larapilot-aikido`');
+});
+
+/**
+ * A project whose git remote is the one given.
+ */
+function aikidoOrigin(string $url): void
+{
+    app()->instance(GitService::class, new class(app(ConfigService::class), $url) extends GitService
+    {
+        public function __construct(ConfigService $config, private readonly string $url)
+        {
+            parent::__construct($config);
+        }
+
+        public function originUrl(): ?string
+        {
+            return $this->url;
+        }
+    });
+
+    app()->forgetInstance(AikidoService::class);
+}
+
+/**
+ * @return list<string>
+ */
+function aikidoWrites(): array
+{
+    return Http::recorded(fn (Request $request): bool => in_array($request->method(), ['PUT', 'POST'], true) && str_contains($request->url(), '/issues/'))
+        ->map(fn (array $pair): string => $pair[0]->method().' '.(string) parse_url($pair[0]->url(), PHP_URL_PATH))
+        ->values()
+        ->all();
+}
+
+it('tells Aikido a waiver by ignoring the finding there, with the reason', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+
+    // Finding 31 is in this repository alone: the whole finding is ignored.
+    Artisan::call('larapilot:aikido-link', ['issues' => '31', '--waive' => true, '--reason' => 'The query is built from a fixed list, never from the request.']);
+    $told = envelope()['data']['aikido'];
+
+    expect($told)->toBe([['id' => 31, 'sent' => true, 'action' => 'ignored', 'issues' => 1, 'whole_finding' => true]])
+        ->and(aikidoWrites())->toBe(['PUT /api/public/v1/issues/groups/31/ignore']);
+
+    Http::assertSent(fn (Request $request): bool => str_ends_with($request->url(), '/issues/groups/31/ignore')
+        && $request['reason'] === 'The query is built from a fixed list, never from the request.');
+
+    // Finding 40 is also in another repository of the workspace: only the
+    // issue of this one is ignored, and the other project keeps its own.
+    Artisan::call('larapilot:aikido-link', ['issues' => '40', '--waive' => true, '--reason' => 'Internal tool, never distributed: AGPL does not apply.']);
+
+    expect(envelope()['data']['aikido'][0])->toBe(['id' => 40, 'sent' => true, 'action' => 'ignored', 'issues' => 1, 'whole_finding' => false])
+        ->and(aikidoWrites())->toBe(['PUT /api/public/v1/issues/groups/31/ignore', 'PUT /api/public/v1/issues/4001/ignore']);
+
+    $ledger = Yaml::parseFile(base_path('.larapilot/aikido.yaml'));
+
+    expect($ledger['issues'][31]['sent'])->toBe('ignored')
+        ->and($ledger['issues'][31]['sent_group'])->toBeTrue()
+        ->and($ledger['issues'][40]['sent'])->toBe('ignored')
+        ->and($ledger['issues'][40]['sent_issues'])->toBe([4001])
+        ->and($ledger['issues'][40])->not->toHaveKey('sent_group');
+
+    // Taking a waiver back takes it back in Aikido, the way it was told.
+    $this->artisan('larapilot:aikido-link', ['issues' => '31,40', '--forget' => true])->assertSuccessful();
+
+    expect(array_slice(aikidoWrites(), 2))->toBe(['PUT /api/public/v1/issues/groups/31/unignore', 'PUT /api/public/v1/issues/4001/unignore'])
+        ->and(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['issues'])->toBe([]);
+});
+
+it('leaves a note in Aikido on a finding that went to the backlog', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    addSpec(['code' => 'US-001', 'title' => 'Upgrade guzzlehttp/psr7']);
+
+    Artisan::call('larapilot:aikido-link', ['issues' => '24', '--spec' => 'US-001']);
+
+    expect(envelope()['data']['aikido'])->toBe([['id' => 24, 'sent' => true, 'action' => 'noted', 'spec' => 'US-001']])
+        ->and(aikidoWrites())->toBe(['POST /api/public/v1/issues/groups/24/notes']);
+
+    Http::assertSent(fn (Request $request): bool => str_ends_with($request->url(), '/issues/groups/24/notes')
+        && $request['note'] === 'Larapilot: the fix for fjord-invoices is in the backlog as US-001 — Upgrade guzzlehttp/psr7.');
+
+    $findings = app(AikidoService::class)->findings();
+
+    // Told, and still open: a finding in the backlog is not fixed.
+    expect($findings['unsent'])->toBe([])
+        ->and($findings['states']['in_backlog'])->toBe(1)
+        ->and(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['issues'][24]['sent_spec'])->toBe('US-001');
+
+    // Forgetting a note takes nothing back: nothing was ignored.
+    $this->artisan('larapilot:aikido-link', ['issues' => '24', '--forget' => true])->assertSuccessful();
+
+    expect(aikidoWrites())->toHaveCount(1);
+});
+
+it('keeps a decision to itself when it is asked to', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    addSpec();
+
+    Artisan::call('larapilot:aikido-link', ['issues' => '40', '--waive' => true, '--reason' => 'Internal tool, never distributed: AGPL does not apply.', '--local' => true]);
+
+    expect(envelope()['data']['aikido'])->toBe([])
+        ->and(aikidoWrites())->toBe([])
+        ->and(app(AikidoService::class)->findings()['unsent'])->toBe([40]);
+
+    // The whole project, with one line of .env.
+    config()->set('larapilot.aikido.push_decisions', false);
+
+    $this->artisan('larapilot:aikido-link', ['issues' => '24', '--spec' => 'US-001'])->assertSuccessful();
+    $this->artisan('larapilot:aikido-push')->assertExitCode(4)->expectsOutputToContain('keeps its decisions to itself');
+
+    $findings = app(AikidoService::class)->findings();
+
+    expect(aikidoWrites())->toBe([])
+        ->and($findings['unsent'])->toBe([])
+        ->and($findings['push_decisions'])->toBeFalse()
+        ->and(app(AikidoService::class)->status()['push_decisions'])->toBeFalse();
+});
+
+it('keeps the decision when Aikido refuses it, and tells it later', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    addSpec();
+
+    // Credentials made for reading: Aikido refuses the write.
+    fakeAikido(null, true);
+
+    Artisan::call('larapilot:aikido-link', ['issues' => '40,24', '--waive' => true, '--reason' => 'Internal tool, never distributed: AGPL does not apply.']);
+    $data = envelope()['data'];
+
+    // The decision is recorded, the command succeeds, and it says what is left to do.
+    expect($data['state'])->toBe('waived')
+        ->and($data['aikido'])->toHaveCount(1)
+        ->and($data['aikido'][0]['sent'])->toBeFalse()
+        ->and($data['aikido'][0]['status'])->toBe(403)
+        ->and($data['aikido'][0]['error'])->toBe('These Aikido credentials may not do this — The client lacks the issues:write scope.')
+        ->and($data['hint'])->toContain('issues:write')->toContain('larapilot:aikido-push');
+
+    $ledger = Yaml::parseFile(base_path('.larapilot/aikido.yaml'));
+
+    expect($ledger['issues'][40]['state'])->toBe('waived')
+        ->and($ledger['issues'][40])->not->toHaveKey('sent')
+        ->and($ledger['issues'][24]['state'])->toBe('waived');
+
+    $findings = app(AikidoService::class)->findings();
+
+    expect($findings['unsent'])->toBe([24, 40])
+        ->and($findings['states']['waived'])->toBe(2);
+
+    $this->get('/larapilot/security')->assertOk()->assertSee('2 decisions were not told to Aikido yet (#24, #40)', false);
+
+    // Still refused: the push says so, and fails.
+    $this->artisan('larapilot:aikido-push')->assertExitCode(3)->expectsOutputToContain('php artisan larapilot:aikido-push');
+
+    // The credentials were given the scope.
+    fakeAikido();
+    Artisan::call('larapilot:aikido-push');
+    $pushed = envelope()['data'];
+
+    expect(array_column($pushed['aikido'], 'id'))->toBe([24, 40])
+        ->and(array_column($pushed['aikido'], 'sent'))->toBe([true, true])
+        ->and($pushed['left'])->toBe([])
+        ->and(aikidoWrites())->toBe(['PUT /api/public/v1/issues/groups/24/ignore', 'PUT /api/public/v1/issues/4001/ignore']);
+});
+
+it('keeps a waiver Aikido would not take back', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+
+    $this->artisan('larapilot:aikido-link', ['issues' => '31', '--waive' => true, '--reason' => 'The query is built from a fixed list, never from the request.'])->assertSuccessful();
+
+    resetHttp();
+    Http::preventStrayRequests();
+    Http::fake([
+        'app.aikido.dev/api/oauth/token' => Http::response(['access_token' => 'token-1', 'expires_in' => 3600]),
+        'app.aikido.dev/api/public/v1/issues/groups/31/unignore' => Http::response(['reason_phrase' => 'Try later'], 500),
+    ]);
+
+    // Ignored in Aikido and forgotten here, the finding would never come back.
+    $this->artisan('larapilot:aikido-link', ['issues' => '31', '--forget' => true])
+        ->assertExitCode(3)
+        ->expectsOutputToContain('Aikido did not take back the waiver of #31');
+
+    expect(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['issues'][31]['state'])->toBe('waived');
+
+    // Here only, when that is what is wanted.
+    $this->artisan('larapilot:aikido-link', ['issues' => '31', '--forget' => true, '--local' => true])->assertSuccessful();
+
+    expect(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['issues'])->toBe([]);
+});
+
+it('asks which repository of Aikido the project is when the remote finds none', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    config()->set('larapilot.aikido.repository', null);
+    aikidoOrigin('git@github.com:agency/client-portal.git');
+
+    $status = app(AikidoService::class)->status();
+
+    expect($status['repository'])->toBeNull()
+        ->and($status['needs_repository'])->toBeTrue()
+        ->and($status['ready'])->toBeFalse()
+        ->and($status['hints'][0])->toContain('php artisan larapilot:aikido-repos --use={id}');
+
+    $this->artisan('larapilot:aikido-issues')->assertExitCode(3)->expectsOutputToContain('larapilot:aikido-repos');
+
+    // The repositories of the workspace, for the user to choose from.
+    Artisan::call('larapilot:aikido-repos');
+    $listed = envelope()['data'];
+
+    expect(array_column($listed['repositories'], 'name'))->toBe(['fjord-invoices', 'fjord-website'])
+        ->and(array_column($listed['repositories'], 'current'))->toBe([false, false])
+        ->and($listed['origin'])->toBe('git@github.com:agency/client-portal.git')
+        ->and($listed['chosen'])->toBeNull();
+
+    // A name Aikido does not hold is refused, and nothing is kept.
+    $this->artisan('larapilot:aikido-repos', ['--use' => '999'])->assertExitCode(4)->expectsOutputToContain('Aikido holds no repository');
+    $this->artisan('larapilot:aikido-repos', ['--use' => 'fjord'])->assertExitCode(4);
+    $this->artisan('larapilot:aikido-repos', ['--use' => '12', '--forget' => true])->assertExitCode(2);
+
+    expect(is_file(base_path('.larapilot/aikido.yaml')))->toBeFalse();
+
+    Artisan::call('larapilot:aikido-repos', ['--use' => '12']);
+    $chosen = envelope()['data'];
+
+    expect($chosen['repository']['name'])->toBe('fjord-invoices')
+        ->and($chosen['source'])->toBe('chosen')
+        ->and($chosen['hint'])->toContain('commit it');
+
+    $ledger = Yaml::parseFile(base_path('.larapilot/aikido.yaml'));
+
+    expect($ledger['chosen_repository']['id'])->toBe(12)
+        ->and($ledger['chosen_repository']['name'])->toBe('fjord-invoices');
+
+    app()->forgetInstance(AikidoService::class);
+    $status = app(AikidoService::class)->status();
+
+    expect($status['ready'])->toBeTrue()
+        ->and($status['needs_repository'])->toBeFalse()
+        ->and($status['repository']['id'])->toBe(12)
+        ->and($status['repository_source'])->toBe('chosen')
+        ->and(app(AikidoService::class)->findings()['total'])->toBe(3);
+
+    Artisan::call('larapilot:aikido-repos');
+
+    expect(collect(envelope()['data']['repositories'])->firstWhere('current', true)['id'])->toBe(12);
+
+    // By its exact name too, and a decision does not lose the choice.
+    $this->artisan('larapilot:aikido-repos', ['--use' => 'Fjord-Website'])->assertSuccessful();
+    expect(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['chosen_repository']['id'])->toBe(11);
+
+    $this->artisan('larapilot:aikido-repos', ['--use' => '12'])->assertSuccessful();
+    $this->artisan('larapilot:aikido-link', ['issues' => '31', '--waive' => true, '--reason' => 'The query is built from a fixed list, never from the request.'])->assertSuccessful();
+    expect(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['chosen_repository']['id'])->toBe(12);
+
+    // .env names the repository for one machine, and wins there.
+    config()->set('larapilot.aikido.repository', 'fjord-website');
+    Artisan::call('larapilot:aikido-repos', ['--use' => '12']);
+
+    expect(envelope()['data']['source'])->toBe('env')
+        ->and(envelope()['data']['hint'] ?? '')->toBe('');
+
+    config()->set('larapilot.aikido.repository', null);
+    Artisan::call('larapilot:aikido-repos', ['--forget' => true]);
+
+    expect(envelope()['data']['repository'])->toBeNull()
+        ->and(Yaml::parseFile(base_path('.larapilot/aikido.yaml')))->not->toHaveKey('chosen_repository');
+});
+
+it('asks for the repository on the page, and keeps the answer', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    config()->set('larapilot.aikido.repository', null);
+    aikidoOrigin('git@github.com:agency/client-portal.git');
+
+    $this->get('/larapilot/security')
+        ->assertOk()
+        ->assertSee('No repository of the Aikido workspace matches this project.', false)
+        ->assertSee('Which repository of Aikido is this project?', false)
+        ->assertSee('git@github.com:agency/client-portal.git', false)
+        ->assertSee('<option value="12">fjord-invoices · main · github (#12)</option>', false)
+        ->assertSee('<option value="11">fjord-website · main · github (#11)</option>', false)
+        ->assertSee('action="'.url('/larapilot/security/repository').'"', false)
+        ->assertDontSee('A release is stopped', false);
+
+    $this->post('/larapilot/security/repository', ['repository' => 'fjord'])->assertSessionHasErrors('repository');
+    $this->post('/larapilot/security/repository', ['repository' => 999])
+        ->assertRedirect(url('/larapilot/security'))
+        ->assertSessionHas('larapilot_error');
+
+    $this->post('/larapilot/security/repository', ['repository' => 12])
+        ->assertRedirect(url('/larapilot/security').'?refresh=1')
+        ->assertSessionHas('larapilot_success', 'This project is “fjord-invoices” in Aikido. The choice is in .larapilot/aikido.yaml: commit it.');
+
+    expect(Yaml::parseFile(base_path('.larapilot/aikido.yaml'))['chosen_repository']['id'])->toBe(12);
+
+    app()->forgetInstance(AikidoService::class);
+
+    $this->get('/larapilot/security')
+        ->assertOk()
+        ->assertSee('A release is stopped', false)
+        ->assertDontSee('Which repository of Aikido is this project?', false);
+
+    // With the link off there is nothing to choose.
+    $this->artisan('larapilot:settings-set', ['--aikido' => 'NO'])->assertSuccessful();
+    $this->post('/larapilot/security/repository', ['repository' => 12])->assertNotFound();
+});
+
+it('lists every finding for the client: open, resolved, and ignored with its reason', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    addSpec(['code' => 'US-001', 'title' => 'Upgrade guzzlehttp/psr7']);
+
+    $aikido = app(AikidoService::class);
+    $aikido->findings();
+    $aikido->link([24], 'US-001');
+    $aikido->waive([40], 'Internal tool, never distributed: AGPL does not apply.');
+
+    $register = $aikido->register(true);
+
+    expect(array_column($register['open'], 'id'))->toBe([24, 31])
+        ->and(array_column($register['resolved'], 'id'))->toBe([52])
+        ->and($register['resolved'][0]['closed_at'])->toStartWith('2025-09-19')
+        // the one ignored by hand in Aikido, then the one waived here
+        ->and(array_column($register['ignored'], 'id'))->toBe([61, 40])
+        ->and($register['ignored'][0]['ignored_by'])->toBe('user')
+        ->and($register['ignored'][0]['reason'])->toBeNull()
+        ->and($register['ignored'][1]['reason'])->toBe('Internal tool, never distributed: AGPL does not apply.')
+        ->and($register['counts']['open'])->toBe(['critical' => 1, 'high' => 1, 'medium' => 0, 'low' => 0, 'all' => 2])
+        ->and($register['counts']['resolved']['all'])->toBe(1)
+        ->and($register['counts']['ignored']['all'])->toBe(2);
+
+    Artisan::call('larapilot:aikido-register');
+    $data = envelope()['data'];
+
+    expect($data['register'])->toBe('.larapilot/docs/security/aikido-register.md')
+        ->and($data['language'])->toBe('en')
+        ->and([$data['open'], $data['resolved'], $data['ignored'], $data['without_reason']])->toBe([2, 1, 2, 1]);
+
+    $document = (string) file_get_contents(base_path('.larapilot/docs/security/aikido-register.md'));
+
+    expect($document)->toStartWith("# Security findings register — fjord-invoices\n")
+        ->toContain('- **Repository:** fjord-invoices (https://github.com/example/fjord-invoices)')
+        ->toContain('| Severity | Open | Resolved | Ignored |')
+        ->toContain('| Critical | 1 | 0 | 0 |')
+        ->toContain('| **Total** | **2** | **1** | **2** |')
+        ->toContain('## Open findings (2)')
+        ->toContain('| 24 | Critical | Vulnerable dependency | guzzlehttp/psr7 | CVE-2026-1111 | 2025-09-04 | Fix planned: US-001 |')
+        ->toContain('| 31 | High | Weakness in the code | SQL built from request input | — | 2025-09-16 | None yet |')
+        ->toContain('## Resolved findings (1)')
+        ->toContain('| 52 | High | Vulnerable dependency | symfony/http-kernel | — | 2025-08-12 | 2025-09-19 | No longer found by the scan |')
+        ->toContain('## Ignored findings (2)')
+        ->toContain('| 61 | Medium | Weakness in the code | Debug flag in a test fixture | — | 2025-08-12 | 2025-09-20 | Ignored by a person in Aikido, where the reason is kept. |')
+        ->toContain('| Internal tool, never distributed: AGPL does not apply. |')
+        ->not->toContain('client-secret')
+        ->not->toContain('token-1');
+
+    // The same document from the page, under a name that says what it is.
+    $this->get('/larapilot/security/register.md')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8')
+        ->assertHeader('Content-Disposition', 'attachment; filename="fjord-invoices-security-register-'.now()->format('Y-m-d').'.md"')
+        ->assertSee('## Ignored findings (2)', false);
+
+    $this->artisan('larapilot:settings-set', ['--aikido' => 'NO'])->assertSuccessful();
+    $this->get('/larapilot/security/register.md')->assertNotFound();
+});
+
+it('writes the register in the language of the PRD, with the reasons as they were written', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+    addSpec(['code' => 'US-001', 'title' => 'Aggiornare guzzlehttp/psr7']);
+
+    app(PrdService::class)->write(<<<'MD'
+# Portale fatture
+
+## Panoramica
+Il portale serve a registrare i clienti e le fatture che i tecnici emettono.
+
+## Funzionalità principali
+- Anagrafica dei clienti con lo storico delle fatture
+- Gestione degli allegati e delle scadenze
+MD);
+
+    $aikido = app(AikidoService::class);
+    $aikido->findings();
+    $aikido->link([24], 'US-001');
+    $aikido->waive([40], 'Strumento interno | mai distribuito: la AGPL non si applica.');
+
+    $document = app(AikidoRegisterWriter::class)->render($aikido->register(true));
+
+    expect(app(AikidoRegisterWriter::class)->language())->toBe('it')
+        ->and($document)->toStartWith("# Registro delle vulnerabilità — fjord-invoices\n")
+        ->toContain('| Gravità | Aperte | Risolte | Ignorate |')
+        ->toContain('## Segnalazioni aperte (2)')
+        ->toContain('| 24 | Critica | Dipendenza vulnerabile | guzzlehttp/psr7 | CVE-2026-1111 | 2025-09-04 | Correzione pianificata: US-001 |')
+        ->toContain('## Segnalazioni risolte (1)')
+        ->toContain('Non più rilevata dalla scansione')
+        ->toContain('## Segnalazioni ignorate (2)')
+        // The reason is the user's: kept as written, and inside its cell.
+        ->toContain('| Strumento interno \\| mai distribuito: la AGPL non si applica. |')
+        ->toContain('Ignorata da una persona in Aikido, dove è conservata la motivazione.')
+        ->and(app(AikidoRegisterWriter::class)->filename($aikido->register()))->toBe('fjord-invoices-registro-vulnerabilita-'.now()->format('Y-m-d').'.md');
+});
+
+it('asks Aikido once for the register, and again after a decision', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    enableAikido();
+    fakeAikido();
+
+    $asked = static fn (): int => Http::recorded(fn (Request $request): bool => str_contains($request->url(), 'filter_status=closed'))->count();
+
+    $this->get('/larapilot/security/register.md')->assertOk();
+    $this->get('/larapilot/security/register.md')->assertOk();
+
+    expect($asked())->toBe(1);
+
+    app(AikidoService::class)->waive([40], 'Internal tool, never distributed: AGPL does not apply.');
+
+    $this->get('/larapilot/security/register.md')->assertOk()->assertSee('Internal tool, never distributed', false);
+
+    expect($asked())->toBe(2);
 });

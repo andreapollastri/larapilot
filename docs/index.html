@@ -1545,7 +1545,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.3</span></div>
+      <div class="hero-brand">larapilot<span>.</span><span class="hero-version">v4.1.4</span></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -5070,7 +5070,9 @@ GO — Slack notified.</code></pre>
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:aikido-status</code> ·
                   <code>larapilot:aikido-issues</code> · <code>larapilot:aikido-plan</code> ·
-                  <code>larapilot:aikido-link</code> · <code>larapilot:aikido-scan</code>.
+                  <code>larapilot:aikido-link</code> · <code>larapilot:aikido-push</code> ·
+                  <code>larapilot:aikido-repos</code> · <code>larapilot:aikido-register</code> ·
+                  <code>larapilot:aikido-scan</code>.
                 </p>
               </div>
             </div>
@@ -7587,7 +7589,8 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
               Bitbucket, Azure DevOps). Larapilot cannot do this step.</li>
             <li><strong>Create the credentials</strong> in Aikido under <em>Settings → Integrations → Public REST
               API</em>. Reading needs the <code>issues:read</code> and <code>repositories:read</code> scopes;
-              asking for a scan needs <code>repositories:write</code>.</li>
+              telling Aikido a decision needs <code>issues:write</code>; asking for a scan needs
+              <code>repositories:write</code>.</li>
             <li><strong>Put them in <code>.env</code></strong> — never in <code>.larapilot/</code>, which is
               committed.</li>
             <li><strong>Turn the setting on</strong> and check the connection.</li>
@@ -7597,8 +7600,9 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
             <pre><code>LARAPILOT_AIKIDO_CLIENT_ID=
 LARAPILOT_AIKIDO_CLIENT_SECRET=
 LARAPILOT_AIKIDO_REGION=eu        # eu (default) · us · au · me
-LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido, for this machine; empty = chosen or found from the git remote
 LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
+LARAPILOT_AIKIDO_PUSH_DECISIONS=true  # false = decisions stay in the project
 LARAPILOT_AIKIDO_CACHE=300        # seconds the dashboard keeps what it read
 LARAPILOT_AIKIDO_BASE_URL=        # only when the workspace is reached through another address</code></pre>
           </div>
@@ -7609,9 +7613,25 @@ php artisan larapilot:aikido-status</code></pre>
           </div>
           <p><code>aikido-status</code> answers with <code>enabled</code>, <code>configured</code>,
             <code>authenticated</code>, the <code>repository</code> it matched (id, name, branch, last scan), and
-            <code>hints</code>: one line for each thing that is missing, with what to do about it. The repository is
-            found from the git remote, by its address or by its name; when Aikido calls it something else, name it
-            with <code>LARAPILOT_AIKIDO_REPOSITORY</code>.</p>
+            <code>hints</code>: one line for each thing that is missing, with what to do about it.</p>
+
+          <h4 id="deep-dive-aikido-repository">The repository</h4>
+          <p>The repository is found from the git remote, by its address or by its name. When the code is scanned
+            under another repository — a fork, a mirror, a monorepo, a name that differs — nothing matches:
+            <code>aikido-status</code> answers <code>needs_repository: true</code>, and <strong>you are asked
+            which one it is</strong>. <code>/larapilot-aikido</code> asks in chat, <code>/larapilot/security</code>
+            shows the list with a form, and the terminal has a command. Nothing is chosen for you: a name that
+            looks alike is not a match.</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:aikido-repos                # the repositories of the workspace
+php artisan larapilot:aikido-repos --search=shop  # only the names that hold these letters
+php artisan larapilot:aikido-repos --use=12       # this project is repository 12 (or its exact name)
+php artisan larapilot:aikido-repos --forget       # back to the git remote</code></pre>
+          </div>
+          <p>The choice is kept in <code>.larapilot/aikido.yaml</code>, which is committed, so every machine reads
+            the same repository. <code>LARAPILOT_AIKIDO_REPOSITORY</code> in <code>.env</code> names it for one
+            machine, and wins there.</p>
 
           <h4 id="deep-dive-aikido-skill">The skill</h4>
           <div class="code-block">
@@ -7680,12 +7700,62 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
                 </tr>
                 <tr>
                   <td>no longer open</td>
-                  <td>Decided about here, and Aikido reports it no more: fixed, or closed there</td>
+                  <td>Decided about here, and Aikido reports it as open no more: fixed, or waived here and
+                    ignored there</td>
                   <td>Does not count</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <h4 id="deep-dive-aikido-decisions">Decisions are told to Aikido</h4>
+          <p>What you decide here is sent to Aikido, so the workspace says the same as the project.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Decision</th>
+                  <th>In Aikido</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>aikido-link 40 --waive --reason="…"</code></td>
+                  <td>The finding is <strong>ignored</strong>, with the reason as its comment. It leaves the
+                    open findings at once</td>
+                </tr>
+                <tr>
+                  <td><code>aikido-link 24 --spec=US-012</code></td>
+                  <td>A <strong>note</strong> on the finding: the spec that fixes it. The finding stays open</td>
+                </tr>
+                <tr>
+                  <td><code>aikido-link 40 --forget</code></td>
+                  <td>The waiver is taken back: the finding is open again</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li>A finding can be in several repositories of the workspace. When it is, only the issues of
+              <strong>this</strong> repository are ignored, and the other projects keep theirs.</li>
+            <li>The credentials need the <code>issues:write</code> scope. When Aikido refuses, or cannot be
+              reached, <strong>the decision is kept</strong> and listed as <code>unsent</code>;
+              <code>larapilot:aikido-push</code> tells it later. It also tells the decisions taken with an
+              earlier version.</li>
+            <li>A waiver Aikido would not take back is not forgotten here, so the two never disagree.</li>
+            <li><code>--local</code> on <code>aikido-link</code> keeps one decision in the project;
+              <code>LARAPILOT_AIKIDO_PUSH_DECISIONS=false</code> keeps them all.</li>
+          </ul>
+
+          <h4 id="deep-dive-aikido-register">The register for the client</h4>
+          <p><code>larapilot:aikido-register</code> writes <code>{paths.security}/aikido-register.md</code>, and
+            <strong>Register for the client (.md)</strong> on <code>/larapilot/security</code> downloads it: one
+            document with every finding of the repository — <strong>open</strong> with the fix that is planned,
+            <strong>resolved</strong> with the date, <strong>ignored</strong> with the date and the reason — and
+            a count by severity. It is what a client or an auditor asks for when a certification requires that
+            every vulnerability is tracked to a decision, and it is written in the language of the PRD.</p>
+          <p>The reason of a finding waived here is the one you wrote. Aikido does not give back the reason of a
+            finding ignored there by hand: the register lists it, and says the reason is kept in Aikido.</p>
           <p>The verdict of the gate is <code>FAIL</code> when a finding at
             <code>LARAPILOT_AIKIDO_FAIL_ON</code> (default <code>high</code>) or above counts,
             <code>WARN</code> when only lower ones do, <code>PASS</code> otherwise. <code>/larapilot-ship</code>
@@ -7722,15 +7792,32 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
                 </tr>
                 <tr>
                   <td><code>larapilot:aikido-link 24,25 --spec=US-012</code></td>
-                  <td>The spec that fixes the findings. A number Aikido does not report is refused</td>
+                  <td>The spec that fixes the findings, and a note about it in Aikido. A number Aikido does not
+                    report is refused</td>
                 </tr>
                 <tr>
                   <td><code>larapilot:aikido-link 40 --waive --reason="…"</code></td>
-                  <td>Accepts a finding as it is, and keeps why</td>
+                  <td>Accepts a finding as it is, keeps why, and ignores it in Aikido with that reason</td>
                 </tr>
                 <tr>
                   <td><code>larapilot:aikido-link 40 --forget</code></td>
-                  <td>Drops what was decided: the finding is <code>new</code> again</td>
+                  <td>Drops what was decided, and takes a waiver back in Aikido: the finding is
+                    <code>new</code> again. <code>--local</code> on any of the three tells Aikido nothing</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-push</code></td>
+                  <td>Tells Aikido the decisions it was not told yet</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-repos</code></td>
+                  <td>The repositories of the workspace. <code>--search=</code> narrows the list ·
+                    <code>--use=12</code> keeps the one this project is · <code>--forget</code> drops the
+                    choice</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:aikido-register</code></td>
+                  <td>Writes the register for the client to
+                    <code>{paths.security}/aikido-register.md</code></td>
                 </tr>
                 <tr>
                   <td><code>larapilot:aikido-scan</code></td>
@@ -7739,8 +7826,9 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               </tbody>
             </table>
           </div>
-          <p><code>aikido-status</code>, <code>aikido-issues</code>, and <code>aikido-plan</code> are allowed
-            through the MCP <code>RunArtisanTool</code>; the commands that write are not.</p>
+          <p><code>aikido-status</code>, <code>aikido-issues</code>, <code>aikido-plan</code>, and
+            <code>aikido-repos</code> (the list only) are allowed through the MCP <code>RunArtisanTool</code>;
+            the commands and the options that write are not.</p>
 
           <h4 id="deep-dive-aikido-dashboard">On the dashboard</h4>
           <p><code>/larapilot/security</code> is always in the menu. With the setting off it is two lines: what
@@ -7750,9 +7838,12 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
             A row opens on what the finding is, how to fix it, where it is, its CVE, when it was first seen, and
             what was decided: the spec it is in the backlog as, with its status, or the reason it was waived.
             Findings filter by decision and by text. What was read is kept for five minutes; <strong>Read
-            again</strong> asks Aikido anew, and <strong>Download report (.md)</strong> saves the same document
-            the skill writes. When Aikido cannot be read the page says what to check, and the rest of the
-            dashboard is untouched.</p>
+            again</strong> asks Aikido anew, <strong>Download report (.md)</strong> saves the same document
+            the skill writes, and <strong>Register for the client (.md)</strong> saves every finding — open,
+            resolved, ignored with its reason. A decision Aikido was not told yet is said under the list. When
+            the git remote matches no repository of Aikido, the page lists the repositories of the workspace
+            and asks which one the project is. When Aikido cannot be read the page says what to check, and the
+            rest of the dashboard is untouched.</p>
 
           <h4 id="deep-dive-aikido-kept">What is kept, and where</h4>
           <div class="table-card">
@@ -7776,9 +7867,15 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
                   <td>Never written to a file</td>
                 </tr>
                 <tr>
-                  <td>Decisions: finding id, spec, reason of a waiver</td>
+                  <td>Decisions: finding id, spec, reason of a waiver, whether Aikido was told. The repository
+                    that was chosen</td>
                   <td><code>.larapilot/aikido.yaml</code></td>
                   <td>Yes — the team shares one set of decisions</td>
+                </tr>
+                <tr>
+                  <td>The register for the client: every finding, open, resolved, or ignored</td>
+                  <td><code>.larapilot/docs/security/aikido-register.md</code></td>
+                  <td>Your call: it names vulnerabilities that are still open</td>
                 </tr>
                 <tr>
                   <td>The report: every open finding with its decision</td>
@@ -7790,8 +7887,9 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
           </div>
           <div class="cli-note"><strong>What Larapilot never does.</strong> It never marks a finding as fixed: a
             finding leaves the list when Aikido no longer reports it, after the fix is merged and scanned. It
-            never waives a finding: only the user does, with a reason. It never rates a finding again: the
-            severity is Aikido's. The address of the token endpoint is taken from the region
+            never waives a finding: only the user does, with a reason — and only then is Aikido told to ignore
+            it. It never chooses the repository: when the git remote finds none, you name it. It never rates
+            a finding again: the severity is Aikido's. The address of the token endpoint is taken from the region
             (<code>https://app.{region}.aikido.dev/api/oauth/token</code>, and
             <code>https://app.aikido.dev</code> for <code>eu</code>).
           </div>
@@ -9363,7 +9461,10 @@ php artisan larapilot:doctor --human                                  # a table 
                     <code>--limit=</code>, <code>--report</code>, <code>--gate</code>) ·
                     <code>larapilot:aikido-plan</code> (<code>--ids=</code>) ·
                     <code>larapilot:aikido-link</code> (<code>--spec=</code>,
-                    <code>--waive --reason=</code>, <code>--forget</code>) ·
+                    <code>--waive --reason=</code>, <code>--forget</code>, <code>--local</code>) ·
+                    <code>larapilot:aikido-push</code> · <code>larapilot:aikido-repos</code>
+                    (<code>--search=</code>, <code>--use=</code>, <code>--forget</code>) ·
+                    <code>larapilot:aikido-register</code> ·
                     <code>larapilot:aikido-scan</code>
                   </td>
                   <td><code>/larapilot-aikido</code>, <code>/larapilot-ship</code>, CI gate — see <a
@@ -9427,11 +9528,22 @@ php artisan larapilot:doctor --human                                  # a table 
                     <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>prd-impact</code>,
                     <code>doctor</code>,
                     <code>diagnostics</code>, <code>quality</code>, <code>frontend-scan</code>,
-                    <code>backstage-export</code>, <code>tracker-status</code>. Anything else is refused</td>
+                    <code>backstage-export</code>, <code>tracker-status</code>, <code>aikido-status</code> /
+                    <code>aikido-issues</code> / <code>aikido-plan</code> / <code>aikido-repos</code>,
+                    <code>boogle-status</code> /
+                    <code>boogle-errors</code> / <code>errors-plan</code>. Anything else is refused</td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <p><code>RunArtisanTool</code> checks the parameters too. Each command takes through MCP only the
+            parameters that read, and an option that writes a file is refused before the command runs:
+            <code>quality --fix</code>, <code>backstage-export --write</code> / <code>--force</code> /
+            <code>--catalog=</code> / <code>--mkdocs=</code> / <code>--file=</code>,
+            <code>usage-report --output=</code>, <code>aikido-issues --report</code>,
+            <code>aikido-repos --use=</code> / <code>--forget</code>, <code>boogle-errors --report</code>. Run directly with Artisan, the commands take every option as
+            before. All four tools are annotated as read-only (<code>readOnlyHint</code>), and the schema of
+            <code>command</code> lists the commands that are allowed.</p>
         </article>
 
         <!-- Dashboard -->
@@ -10595,7 +10707,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v4.1.3 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v4.1.4 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

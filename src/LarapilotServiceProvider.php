@@ -11,6 +11,9 @@ use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\AikidoIssuesCommand;
 use Larapilot\Console\Commands\AikidoLinkCommand;
 use Larapilot\Console\Commands\AikidoPlanCommand;
+use Larapilot\Console\Commands\AikidoPushCommand;
+use Larapilot\Console\Commands\AikidoRegisterCommand;
+use Larapilot\Console\Commands\AikidoReposCommand;
 use Larapilot\Console\Commands\AikidoScanCommand;
 use Larapilot\Console\Commands\AikidoStatusCommand;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
@@ -88,6 +91,7 @@ use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Services\AgentGuidelineService;
 use Larapilot\Services\Aikido\AikidoClient;
 use Larapilot\Services\Aikido\AikidoLedger;
+use Larapilot\Services\AikidoRegisterWriter;
 use Larapilot\Services\AikidoService;
 use Larapilot\Services\ApiAuditService;
 use Larapilot\Services\ApiService;
@@ -140,7 +144,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '4.1.3';
+    public const VERSION = '4.1.4';
 
     public function register(): void
     {
@@ -165,6 +169,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(AikidoClient::class);
         $this->app->singleton(AikidoLedger::class);
         $this->app->singleton(AikidoService::class);
+        $this->app->singleton(AikidoRegisterWriter::class);
         $this->app->singleton(BoogleClient::class);
         $this->app->singleton(BoogleLedger::class);
         $this->app->singleton(ErrorDataHelper::class);
@@ -225,6 +230,9 @@ class LarapilotServiceProvider extends ServiceProvider
                 AikidoPlanCommand::class,
                 AikidoLinkCommand::class,
                 AikidoScanCommand::class,
+                AikidoPushCommand::class,
+                AikidoReposCommand::class,
+                AikidoRegisterCommand::class,
                 BoogleStatusCommand::class,
                 ErrorsPlanCommand::class,
                 BooglePlanCommand::class,

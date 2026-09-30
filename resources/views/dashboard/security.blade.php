@@ -6,6 +6,8 @@
 <style>
     .security-page { display: flex; flex-direction: column; gap: 20px; }
     .security-page .page-head, .security-page .metrics { margin-bottom: 0; }
+    /* Three actions: they go under the words before the words are squeezed. */
+    .security-page .page-head > :first-child { flex-basis: 520px; }
 
     /* Severity is a state, so it is always a word beside the colour. */
     .sev { --tone: var(--status-todo); }
@@ -175,6 +177,9 @@
     .closed-list li { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 8px 0; border-top: 1px solid var(--border); }
     .closed-list li:first-child { border-top: 0; }
     .closed-list small { color: var(--muted); }
+
+    .repo-choice { display: flex; align-items: end; gap: 10px 12px; flex-wrap: wrap; }
+    .repo-choice .field { flex: 1 1 280px; max-width: 520px; }
 </style>
 @endpush
 
@@ -220,7 +225,8 @@
                 <div class="page-actions">
                     <a class="btn ghost" href="{{ route('larapilot.dashboard.security', ['refresh' => 1]) }}" title="Ask Aikido again instead of showing what was read a few minutes ago">@include('larapilot::dashboard.partials.icon', ['name' => 'refresh'])Read again</a>
                     @if ($findings)
-                        <a class="btn ghost" href="{{ route('larapilot.dashboard.security.report') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report (.md)</a>
+                        <a class="btn ghost" href="{{ route('larapilot.dashboard.security.report') }}" title="The open findings in detail, for the team">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report (.md)</a>
+                        <a class="btn ghost" href="{{ route('larapilot.dashboard.security.register') }}" title="Every finding that is open, resolved, or ignored with its reason — the document a client or an auditor asks for">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Register for the client (.md)</a>
                     @endif
                 </div>
             @endif
@@ -229,11 +235,38 @@
         @if ($enabled && $error)
             <div class="flash flash--error" role="alert">
                 <strong>{{ $error }}</strong>
-                @if ($hint)
+                {{-- With the list under it, the page asks: the commands are said once, beside the form. --}}
+                @if ($hint && empty($repositories['repositories']))
                     <span>{{ $hint }}</span>
                 @endif
             </div>
-            @if (! empty($status['hints']))
+            @if (! empty($repositories['repositories']))
+                <section class="card panel">
+                    <h3 style="margin: 0 0 4px; font-size: 1rem">Which repository of Aikido is this project?</h3>
+                    <p class="hint" style="margin: 0 0 12px">The git remote of this project{{ ($repositories['origin'] ?? null) ? ' ('.$repositories['origin'].')' : '' }} matches none of the repositories Aikido scans. Choose the one that holds this code: the findings are read from it.</p>
+                    <form class="repo-choice" method="post" action="{{ route('larapilot.dashboard.security.repository') }}">
+                        @csrf
+                        <label class="field">
+                            Repository in Aikido
+                            <select class="control" name="repository" required>
+                                <option value="" selected disabled>Choose a repository…</option>
+                                @foreach ($repositories['repositories'] as $candidate)
+                                    <option value="{{ $candidate['id'] }}">{{ $candidate['name'] }}{{ $candidate['branch'] !== '' ? ' · '.$candidate['branch'] : '' }}{{ $candidate['provider'] !== '' ? ' · '.$candidate['provider'] : '' }} (#{{ $candidate['id'] }})</option>
+                                @endforeach
+                            </select>
+                        </label>
+                        <button type="submit" class="btn">Use this repository</button>
+                    </form>
+                    <p class="hint" style="margin: 12px 0 0">
+                        @if ($repositories['truncated'])
+                            The workspace holds more repositories than this list shows: name yours from the terminal, <code>php artisan larapilot:aikido-repos --search=name</code> then <code>--use=id</code>.
+                        @else
+                            A repository that is not in the list has to be connected in Aikido first. The choice is kept in <code>{{ $repositories['ledger'] }}</code>, for every machine; from the terminal it is <code>php artisan larapilot:aikido-repos --use=id</code>.
+                        @endif
+                    </p>
+                </section>
+            @endif
+            @if (! empty($status['hints']) && empty($repositories['repositories']))
                 <section class="card panel">
                     <h3 style="margin: 0 0 8px; font-size: 1rem">What to check</h3>
                     <ul class="notes" style="margin: 0; padding-left: 1.1rem; color: var(--text-2); font-size: 0.9rem; line-height: 1.6">
@@ -359,20 +392,24 @@
             @if ($findings['closed'] !== [])
                 <section class="card panel">
                     <h3 style="margin: 0 0 4px; font-size: 1rem">No longer open in Aikido</h3>
-                    <p class="hint" style="margin: 0 0 10px">Findings that were decided about here and that Aikido reports no more.</p>
+                    <p class="hint" style="margin: 0 0 10px">Findings that were decided about here and that Aikido reports as open no more: fixed, or waived here and ignored there.</p>
                     <ul class="closed-list">
                         @foreach ($findings['closed'] as $closed)
                             <li>
                                 <strong>#{{ $closed['id'] }} {{ $closed['title'] ?? '' }}</strong>
-                                <small>{{ ($closed['state'] ?? '') === 'waived' ? 'was waived' : 'fixed by '.($closed['spec'] ?? '—') }}</small>
+                                <small>{{ ($closed['state'] ?? '') === 'waived' ? 'waived: '.($closed['reason'] ?? '—') : 'fixed by '.($closed['spec'] ?? '—') }}</small>
                             </li>
                         @endforeach
                     </ul>
                 </section>
             @endif
 
+            @if ($findings['unsent'] !== [])
+                <p class="hint" style="margin: 0">{{ count($findings['unsent']) === 1 ? 'One decision was' : count($findings['unsent']).' decisions were' }} not told to Aikido yet (#{{ implode(', #', $findings['unsent']) }}). Tell Aikido with <code>php artisan larapilot:aikido-push</code>; the credentials need the <code>issues:write</code> scope.</p>
+            @endif
+
             <p class="footer-note" style="margin: 0; text-align: left">
-                Decisions are kept in <code>{{ $findings['ledger'] }}</code>. Turn findings into work with <code>/larapilot-aikido</code>; ask for a new scan with <code>php artisan larapilot:aikido-scan</code>.
+                Decisions are kept in <code>{{ $findings['ledger'] }}</code>{{ $findings['push_decisions'] ? ' and told to Aikido: a waiver ignores the finding there, with its reason' : '' }}. Turn findings into work with <code>/larapilot-aikido</code>; ask for a new scan with <code>php artisan larapilot:aikido-scan</code>.
             </p>
         @endif
     </div>

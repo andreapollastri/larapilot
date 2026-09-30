@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Http;
 
 /**
  * The public REST API of Aikido: an access token from the client
- * credentials, then read calls with it.
+ * credentials, then calls with it — reads, and the few writes a decision
+ * of the user asks for.
  *
  * The credentials live in `.env` and nowhere else. The token is kept in the
  * cache for as long as Aikido says it lasts, less a minute, and never
@@ -67,10 +68,19 @@ class AikidoClient
 
     /**
      * @param  array<string, scalar|null>  $query
+     * @param  array<string, scalar|null>  $body
      */
-    public function post(string $path, array $query = []): Response
+    public function post(string $path, array $query = [], array $body = []): Response
     {
-        return $this->send('post', $path, $query);
+        return $this->send('post', $path, $query, $body);
+    }
+
+    /**
+     * @param  array<string, scalar|null>  $body
+     */
+    public function put(string $path, array $body = []): Response
+    {
+        return $this->send('put', $path, [], $body);
     }
 
     public function forgetToken(): void
@@ -80,15 +90,22 @@ class AikidoClient
 
     /**
      * @param  array<string, scalar|null>  $query
+     * @param  array<string, scalar|null>  $body
      */
-    protected function send(string $method, string $path, array $query, bool $retry = true): Response
+    protected function send(string $method, string $path, array $query, array $body = [], bool $retry = true): Response
     {
-        $query = array_filter($query, static fn (mixed $value): bool => $value !== null && $value !== '');
+        $filled = static fn (mixed $value): bool => $value !== null && $value !== '';
+        $query = array_filter($query, $filled);
+        $body = array_filter($body, $filled);
         $url = $this->host().'/api/public/v1'.$path.($query === [] ? '' : '?'.http_build_query($query));
 
         try {
             $request = $this->http()->withToken($this->token());
-            $response = $method === 'post' ? $request->post($url) : $request->get($url);
+            $response = match ($method) {
+                'post' => $request->post($url, $body),
+                'put' => $request->put($url, $body),
+                default => $request->get($url),
+            };
         } catch (ConnectionException $e) {
             throw new AikidoException(
                 'Aikido could not be reached at '.$this->host().'.',
@@ -100,7 +117,7 @@ class AikidoClient
         if ($response->status() === 401 && $retry) {
             $this->forgetToken();
 
-            return $this->send($method, $path, $query, false);
+            return $this->send($method, $path, $query, $body, false);
         }
 
         if ($response->successful()) {
@@ -155,12 +172,12 @@ class AikidoClient
 
     protected function failure(Response $response): AikidoException
     {
-        $detail = $response->json('error') ?? $response->json('message');
-        $detail = is_string($detail) && $detail !== '' ? ' — '.$detail : '';
+        $detail = $response->json('reason_phrase') ?? $response->json('error') ?? $response->json('message');
+        $detail = is_string($detail) && trim($detail, " .\n") !== '' ? ' — '.trim($detail, " .\n") : '';
 
         return match ($response->status()) {
             401 => new AikidoException('Aikido refused the access token'.$detail.'.', 'Create new credentials in Aikido and update .env.', 401),
-            403 => new AikidoException('These Aikido credentials may not do this'.$detail.'.', 'Give the credentials the issues:read and repositories:read scopes, and repositories:write to ask for a scan.', 403),
+            403 => new AikidoException('These Aikido credentials may not do this'.$detail.'.', 'Give the credentials the issues:read and repositories:read scopes, issues:write to send a decision, and repositories:write to ask for a scan.', 403),
             404 => new AikidoException('Aikido does not know this'.$detail.'.', 'Check LARAPILOT_AIKIDO_REPOSITORY, or that the repository is connected in Aikido.', 404),
             429 => new AikidoException('Aikido asked to slow down'.$detail.'.', 'Wait a minute and run the command again.', 429),
             default => new AikidoException('Aikido answered '.$response->status().$detail.'.', null, $response->status()),

@@ -306,7 +306,7 @@
             ],
             'aikido' => [
                 'label' => 'Aikido',
-                'description' => 'Reads the findings of Aikido for this repository. Needs LARAPILOT_AIKIDO_CLIENT_ID and LARAPILOT_AIKIDO_CLIENT_SECRET in .env; Aikido scans the repository on its side.',
+                'description' => 'Reads the findings of Aikido for this repository, and tells Aikido what was decided about them. Needs LARAPILOT_AIKIDO_CLIENT_ID and LARAPILOT_AIKIDO_CLIENT_SECRET in .env; Aikido scans the repository on its side.',
                 'options' => [
                     'NO' => 'Aikido is not read (default).',
                     'YES' => '/larapilot-aikido hands the open findings to triage; the ship gate stops on what nobody decided about; /larapilot/security shows them.',

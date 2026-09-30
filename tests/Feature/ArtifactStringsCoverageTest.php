@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
+use Larapilot\Services\AikidoService;
 use Larapilot\Services\EconomicsQuoteWriter;
 use Larapilot\Services\MockupPackageService;
 use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\EconomicsStrings;
 use Larapilot\Support\FunctionalSummaryStrings;
+use Larapilot\Support\SecurityRegisterStrings;
 
 /**
- * Larapilot writes prose in four places — the Economics page and engine, the
- * client quote, the design presentation, and the functional-analysis summary —
- * each with its own vocabulary.
+ * Larapilot writes prose in five places — the Economics page and engine, the
+ * client quote, the design presentation, the functional-analysis summary, and
+ * the register of security findings — each with its own vocabulary.
  * A language added to `ArtifactLanguage::SUPPORTED` but forgotten in one of
  * them would silently render English there, which is worse than not offering
  * the language at all. These tests make that impossible to ship.
@@ -105,6 +107,47 @@ it('carries the functional summary vocabulary in every supported language', func
         $gaps = structureGaps($english, (array) $tables[$lang]);
 
         expect($gaps)->toBe([], "Functional summary strings for '{$lang}': ".implode(' · ', array_slice($gaps, 0, 8)));
+    }
+});
+
+it('carries the security register vocabulary in every supported language', function (): void {
+    $english = rawTable(SecurityRegisterStrings::class, 'en');
+    $tables = rawTable(SecurityRegisterStrings::class, 'table');
+
+    expect($english)->not->toBeEmpty();
+
+    $placeholders = static function (string $line): array {
+        preg_match_all('/:[a-z_]+/', $line, $matches);
+        $found = array_unique($matches[0]);
+        sort($found);
+
+        return $found;
+    };
+
+    // Every kind of finding Aikido names has its words.
+    foreach (array_keys(AikidoService::TYPES) as $type) {
+        expect($english)->toHaveKey('type_'.$type);
+    }
+
+    foreach (AikidoService::SEVERITIES as $severity) {
+        expect($english)->toHaveKey('severity_'.$severity);
+    }
+
+    foreach (ArtifactLanguage::SUPPORTED as $lang) {
+        if ($lang === ArtifactLanguage::DEFAULT) {
+            continue;
+        }
+
+        expect(array_key_exists($lang, $tables))->toBeTrue("no security register table for '{$lang}'");
+        expect($tables[$lang]['title'])->not->toBe($english['title'], "the security register has no '{$lang}' title");
+
+        $gaps = structureGaps($english, (array) $tables[$lang]);
+
+        expect($gaps)->toBe([], "Security register strings for '{$lang}': ".implode(' · ', array_slice($gaps, 0, 8)));
+
+        foreach ($english as $key => $line) {
+            expect($placeholders((string) $tables[$lang][$key]))->toBe($placeholders((string) $line), "{$lang} / {$key}");
+        }
     }
 });
 

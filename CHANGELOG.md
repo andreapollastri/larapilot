@@ -2,6 +2,31 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [4.1.4] - 2026-09-30
+
+### Added
+
+- **Decisions about Aikido findings are told to Aikido** — until now a decision lived in `.larapilot/aikido.yaml` alone, and the workspace in Aikido went on showing the finding as open. `larapilot:aikido-link {ids} --waive --reason="…"` now **ignores the finding in Aikido**, with the reason as its comment; `--spec=US-XXX` leaves a **note** on the finding with the spec that fixes it; `--forget` takes a waiver back, and the finding is open again. A finding that is in several repositories of the workspace is ignored in this one only: each of its issues here is ignored by itself, and the other projects keep theirs. The credentials need the **`issues:write`** scope.
+- **A decision Aikido refuses is kept, and told later** — with credentials made for reading, or with Aikido out of reach, the command still records the decision, says what is missing, and lists the finding as `unsent` (`aikido-issues`, `/larapilot/security`). **`larapilot:aikido-push`** tells Aikido every decision it was not told, the ones taken with an earlier version included. A waiver Aikido would not take back is not forgotten in the project, so the two never disagree. `--local` on `aikido-link` keeps one decision in the project; `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` keeps them all.
+- **The repository is asked for when the git remote does not find it** — the code is sometimes scanned in Aikido under another repository: a fork, a mirror, a name that differs. Larapilot no longer stops at *no repository matches*: `aikido-status` answers `needs_repository: true`, **`larapilot:aikido-repos`** lists the repositories of the workspace (`--search=` narrows the list), and `--use={id}` keeps the one the user names — by its id or its exact name — in `.larapilot/aikido.yaml`, so every machine reads the same repository. `/larapilot-aikido` asks in chat and never chooses by itself; `/larapilot/security` shows the list with a form. `LARAPILOT_AIKIDO_REPOSITORY` in `.env` still names it for one machine, and wins there. `aikido-repos --forget` goes back to the git remote. The list is allowed through the MCP `RunArtisanTool`; `--use` and `--forget` are not.
+- **The register of the findings, for the client** — **Register for the client (.md)** on `/larapilot/security`, and `larapilot:aikido-register`, which writes `{paths.security}/aikido-register.md`: one document with **every** finding of the repository — **open** with the fix that is planned, **resolved** with the date, **ignored** with the date and the **reason** — and a count by severity. It is what a client or an auditor asks for when a certification requires that every vulnerability is tracked to a decision. Written in the language of the PRD (English, Italian, Spanish, French, German, Portuguese, Dutch, Polish); the title of a finding and the reason of a waiver stay as they were written. A finding ignored by hand in Aikido is listed too: Aikido does not give back its reason, and the register says where it is kept.
+
+### Changed
+
+- **A waived finding leaves the open ones** — once Aikido ignores it, it is no longer in the list of `/larapilot/security` or of `aikido-issues`: it is under *No longer open in Aikido*, now with its reason, in the page and in `aikido.md`. A waiver that was not told yet stays in the list as `waived`, as before.
+- **An error of Aikido says what Aikido said** — the `reason_phrase` of a refused call is part of the message.
+- **`RunArtisanTool` says it only reads** — it carries the `readOnlyHint` annotation like the other three tools of the server, so a client can treat it as one that changes nothing in the project. The schema of `command` lists the commands that are allowed, so an agent sees them before it calls the tool.
+
+### Fixed
+
+- **MCP `RunArtisanTool` refuses the options that write** — the tool checked the command and passed its parameters on as they came, so an agent could write files through a command allowed for reading: `larapilot:quality --fix`, `larapilot:backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `larapilot:usage-report --output=`, and `--report` on `larapilot:aikido-issues` and `larapilot:boogle-errors`. Each command now takes through MCP only the parameters that read; anything else is refused before the command runs, with the list of what the command takes. An option added to a command later is closed until the tool names it. Run directly with Artisan, the commands take every option as before. Reported by Roberto Gallea ([#2](https://github.com/andreapollastri/larapilot/issues/2)).
+- **A parameter of the wrong type is refused by the tool** — a list, an object, or a boolean where a value goes reached the command as a type it never sees from a terminal, and the command failed with an error that carried the path of a file of the package. The tool now answers *`--status` takes a string or a number* or *`--human` takes true or false* before the command runs. A number is passed as a string, a flag set to `false` and a value set to `null` are left out.
+
+
+### Docs
+
+- Site / package version **v4.1.4**. README and `docs/index.html` say which options `RunArtisanTool` refuses, and the table of the MCP tools lists the Aikido and error commands it allows. README, `docs/index.html`, `integrations.md`, the runtime settings, and `/larapilot-aikido` describe the decisions told to Aikido, the choice of the repository, and the register for the client.
+
 ## [4.1.3] - 2026-09-30
 
 ### Added

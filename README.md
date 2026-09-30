@@ -368,7 +368,7 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
-| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. Always in the menu; with `aikido` off it says what Aikido is and how to connect it |
+| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of Aikido, the page asks which one the project is. Always in the menu; with `aikido` off it says what Aikido is and how to connect it |
 | Errors | `/larapilot/errors` | What the running application threw, as the tracker of the project recorded it: one row for each bug, how many times it was thrown, and what was decided about it — day by day when the tracker records every throw. Always in the menu; with `errors` off it says what Boogle is, how to connect it, and which other trackers can be read instead |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
@@ -483,14 +483,15 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 
 ### Aikido
 
-[Aikido](https://www.aikido.dev/) scans the repository on its side — dependencies, code, secrets, infrastructure. Larapilot runs no scanner and installs nothing: it **reads what Aikido found** over the public REST API and brings it into the workflow.
+[Aikido](https://www.aikido.dev/) scans the repository on its side — dependencies, code, secrets, infrastructure. Larapilot runs no scanner and installs nothing: it **reads what Aikido found** over the public REST API, brings it into the workflow, and **tells Aikido what you decided** about each finding.
 
 ```dotenv
 LARAPILOT_AIKIDO_CLIENT_ID=
 LARAPILOT_AIKIDO_CLIENT_SECRET=
 LARAPILOT_AIKIDO_REGION=eu        # eu · us · au · me
-LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido; empty = found from the git remote
+LARAPILOT_AIKIDO_REPOSITORY=      # id or name in Aikido, for this machine; empty = chosen or found from the git remote
 LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
+LARAPILOT_AIKIDO_PUSH_DECISIONS=true  # false = decisions stay in the project
 ```
 
 ```bash
@@ -498,17 +499,23 @@ php artisan larapilot:settings-set --aikido=YES
 php artisan larapilot:aikido-status                  # setting, credentials, repository, last scan
 php artisan larapilot:aikido-issues --new --report   # what nobody decided about; writes docs/security/aikido.md
 php artisan larapilot:aikido-plan --ids=24,31        # group confirmed ids by kind and fix before triage
-php artisan larapilot:aikido-link 24 --spec=US-012   # the spec that fixes it
-php artisan larapilot:aikido-link 40 --waive --reason="Internal tool, never distributed."
+php artisan larapilot:aikido-link 24 --spec=US-012   # the spec that fixes it; leaves a note in Aikido
+php artisan larapilot:aikido-link 40 --waive --reason="Internal tool, never distributed."   # ignores it in Aikido, with the reason
+php artisan larapilot:aikido-push                    # tell Aikido the decisions it was not told yet
+php artisan larapilot:aikido-repos                   # the repositories of the workspace; --use=12 says which one this project is
+php artisan larapilot:aikido-register                # the register for the client: open, resolved, ignored with reason
 php artisan larapilot:aikido-issues --gate           # exit 1 when the gate fails — for CI
 php artisan larapilot:aikido-scan                    # ask Aikido to scan again
 ```
 
-- **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes (`repositories:write` to ask for a scan). The repository has to be connected in Aikido, through the git provider.
+- **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes, `issues:write` to tell Aikido your decisions, and `repositories:write` to ask for a scan. The repository has to be connected in Aikido, through the git provider.
+- **The repository is asked for when it is not found.** Larapilot finds it from the git remote, by address or by name. When the code is scanned under another repository — a fork, a mirror, a different name — it does not guess: `/larapilot-aikido` asks which one it is, `/larapilot/security` shows the list with a form, and `larapilot:aikido-repos --use=12` keeps the choice in `.larapilot/aikido.yaml` for every machine. `LARAPILOT_AIKIDO_REPOSITORY` in `.env` names it for one machine.
 - **`/larapilot-aikido`** downloads the open findings, lets you **confirm each one** (resolve, waive, or skip), runs **`larapilot:aikido-plan`** on the ids you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with an *Aikido finding* block — same kind and same fix together, secrets never merged. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
 - **The ship gate** stops on an open finding at `LARAPILOT_AIKIDO_FAIL_ON` or above that was not waived. A finding in the backlog is not fixed: it counts until Aikido no longer reports it, after the fix is merged and scanned.
 - **A waiver needs a reason**, in a sentence, and only the user gives it.
-- **What is kept**: `.larapilot/aikido.yaml` holds the decisions — ids, the spec, the reason — and is meant to be committed. The credentials stay in `.env`; the access token lives in the cache and is never written to a file of the project.
+- **Decisions are told to Aikido.** A waiver **ignores the finding in Aikido**, with the reason as its comment; a spec leaves a note on the finding; `--forget` takes a waiver back. A finding that is in several repositories of the workspace is ignored in this one only. When Aikido refuses — credentials without `issues:write` — or cannot be reached, the decision is kept and `larapilot:aikido-push` tells it later. `--local` keeps one decision in the project, `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` all of them.
+- **The register for the client.** `larapilot:aikido-register`, or **Register for the client (.md)** on `/larapilot/security`, gives one Markdown document with every finding of the repository: open with the fix that is planned, resolved with the date, ignored with the date and the reason, and a count by severity — what a client or an auditor asks for, in the language of the PRD. A finding ignored by hand in Aikido is listed too; its reason stays in Aikido, which does not give it back.
+- **What is kept**: `.larapilot/aikido.yaml` holds the decisions — ids, the spec, the reason, whether Aikido was told — and the repository that was chosen, and is meant to be committed. The credentials stay in `.env`; the access token lives in the cache and is never written to a file of the project.
 
 ### Production errors
 
@@ -661,14 +668,14 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
 | Releases | `release-list` · `release-add` · `release-set` · `release-cut` · `release-feature` · `release-sync` · `release-ship` (`--push`) · `release-import` |
 | Custom skills | `custom-skill-list` · `custom-skill-add` (`--name=`, `--file=` / `--content=` / stdin, `--force`) |
-| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`) · `aikido-scan` |
+| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`, `--local`) · `aikido-push` · `aikido-repos` (`--search=`, `--use=`, `--forget`) · `aikido-register` · `aikido-scan` |
 | Errors | `boogle-status` · `boogle-errors` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` / `boogle-plan` (`--codes=`) · `boogle-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `boogle-resolve` (`--status=FIXED\|DONE`, `--comment=`) |
 | Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` · `vps-provision` |
 | Runtime | `diagnostics` (`--lines=`, `--no-logs`) |
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `backstage-export`, `tracker-status`, `aikido-status` / `aikido-issues` / `aikido-plan`, `boogle-status` / `boogle-errors` / `errors-plan`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `backstage-export`, `tracker-status`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `boogle-status` / `boogle-errors` / `errors-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `boogle-errors --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
 
 ---
 

@@ -99,7 +99,8 @@ return [
     // repository, read through the public REST API. Create the credentials in
     // Aikido under Settings → Integrations → Public REST API and keep them in
     // .env. Reading needs the `issues:read` and `repositories:read` scopes;
-    // asking for a new scan needs `repositories:write`.
+    // telling Aikido a decision needs `issues:write`, and asking for a new
+    // scan needs `repositories:write`.
     'aikido' => [
         'client_id' => env('LARAPILOT_AIKIDO_CLIENT_ID', env('AIKIDO_CLIENT_ID')),
         'client_secret' => env('LARAPILOT_AIKIDO_CLIENT_SECRET', env('AIKIDO_CLIENT_SECRET')),
@@ -107,8 +108,12 @@ return [
         'region' => env('LARAPILOT_AIKIDO_REGION', 'eu'),
         // Overrides the address the region gives, for a proxy or a private instance.
         'base_url' => env('LARAPILOT_AIKIDO_BASE_URL'),
-        // The repository in Aikido, by id or by name. Empty: found from the git remote.
+        // The repository in Aikido, by id or by name, for this machine. Empty: the one
+        // chosen with `larapilot:aikido-repos --use`, or found from the git remote.
         'repository' => env('LARAPILOT_AIKIDO_REPOSITORY'),
+        // Tell Aikido what is decided here: a waiver ignores the finding there with
+        // its reason, a spec leaves a note on it. false keeps every decision local.
+        'push_decisions' => (bool) env('LARAPILOT_AIKIDO_PUSH_DECISIONS', true),
         // Lowest severity that stops the ship gate: critical, high, medium, low, or none.
         'fail_on' => env('LARAPILOT_AIKIDO_FAIL_ON', 'high'),
         'timeout' => (int) env('LARAPILOT_AIKIDO_TIMEOUT', 15),
