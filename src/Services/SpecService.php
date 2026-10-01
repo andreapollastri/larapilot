@@ -7,6 +7,7 @@ namespace Larapilot\Services;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Checklist;
 use Larapilot\Support\FileLock;
+use Larapilot\Support\PlanDate;
 use Larapilot\Support\PrdIds;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
@@ -322,6 +323,11 @@ class SpecService
                 $code = (string) ($spec['code'] ?? '');
                 if (! SpecCode::isValid($code)) {
                     continue;
+                }
+
+                // `deadline: 2027-01-29` without quotes reaches here as a timestamp.
+                if (is_array($spec['epic'] ?? null) && is_int($spec['epic']['deadline'] ?? null)) {
+                    $spec['epic']['deadline'] = PlanDate::day($spec['epic']['deadline']);
                 }
 
                 $indexed[$code] = array_merge($indexed[$code] ?? [], $spec);

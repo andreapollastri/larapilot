@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use DateTimeImmutable;
+use Larapilot\Support\PlanDate;
 use Larapilot\Support\SpecBlockers;
 
 /**
@@ -150,7 +151,7 @@ class ScheduleService
         $deadlines = [];
 
         foreach ($inputs['schedule']['deadlines'] ?? [] as $deadline) {
-            $date = (string) ($deadline['date'] ?? '');
+            $date = PlanDate::day($deadline['date'] ?? null) ?? '';
             $status = (string) ($deadline['status'] ?? 'on_track');
             $release = trim((string) ($deadline['release'] ?? '')) ?: null;
             // A milestone that names a release waits for that release, not for the whole backlog.
@@ -385,13 +386,7 @@ class ScheduleService
      */
     protected function day(mixed $date): ?string
     {
-        if (is_int($date)) {
-            return gmdate('Y-m-d', $date);
-        }
-
-        $day = substr(trim((string) $date), 0, 10);
-
-        return $this->isDate($day) ? $day : null;
+        return PlanDate::day($date);
     }
 
     /**
@@ -458,7 +453,7 @@ class ScheduleService
             if (array_key_exists('blocked_by', $row)) {
                 $blockers = [];
 
-                foreach (is_array($row['blocked_by']) ? $row['blocked_by'] : [] as $blocker) {
+                foreach ($this->names($row['blocked_by']) as $blocker) {
                     $other = $known[strtoupper(trim((string) $blocker))] ?? null;
 
                     if ($other === null || $other === $index) {
@@ -493,9 +488,12 @@ class ScheduleService
             $path = "epics[{$at}]";
             $epic = strtoupper(trim((string) ($row['code'] ?? '')));
             $deadline = $row['deadline'] ?? null;
+            // A YAML payload hands an unquoted date over as a timestamp: it is a date, not "none".
+            $deadline = is_int($deadline) ? $this->day($deadline) : $deadline;
+            $given = $deadline !== null && $deadline !== '';
             $deadline = is_string($deadline) && trim($deadline) !== '' ? trim($deadline) : null;
 
-            if (! array_key_exists('deadline', $row) || ($deadline !== null && ! $this->isDate($deadline))) {
+            if (! array_key_exists('deadline', $row) || ($given && ($deadline === null || ! $this->isDate($deadline)))) {
                 $findings[] = $this->finding('SCHEDULE_INVALID_DATE', 'error', $path.'.deadline', 'An epic takes a `deadline`: a date as YYYY-MM-DD, or null for none.', 'Read the forecast of the epic in `schedule-show` → `epics`.');
 
                 continue;
@@ -579,7 +577,7 @@ class ScheduleService
             if (array_key_exists('dependencies', $row)) {
                 $dependencies = [];
 
-                foreach (is_array($row['dependencies']) ? $row['dependencies'] : [] as $dependency) {
+                foreach ($this->names($row['dependencies']) as $dependency) {
                     $other = $ids[strtoupper(trim((string) $dependency))] ?? null;
 
                     if ($other === null || $other === $position) {
@@ -645,7 +643,7 @@ class ScheduleService
                 : ['id' => bin2hex(random_bytes(6)), 'label' => 'Deadline', 'date' => '', 'status' => 'on_track', 'note' => null];
 
             if (array_key_exists('date', $row)) {
-                $milestone['date'] = trim((string) $row['date']);
+                $milestone['date'] = is_int($row['date']) ? (string) $this->day($row['date']) : trim((string) $row['date']);
             }
 
             if (! $this->isDate((string) $milestone['date'])) {
@@ -934,6 +932,27 @@ class ScheduleService
     }
 
     /**
+     * The codes a row names, as a list: `[US-001, US-002]`, or one code, or
+     * `US-001, US-002` on one line. A single code read as "none" would
+     * clear the blockers it was meant to set.
+     *
+     * @return list<string>
+     */
+    protected function names(mixed $value): array
+    {
+        if (is_string($value)) {
+            $value = preg_split('/[\s,]+/', trim($value), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        }
+
+        return is_array($value)
+            ? array_values(array_filter(array_map(
+                static fn (mixed $name): string => is_scalar($name) ? trim((string) $name) : '',
+                $value
+            ), static fn (string $name): bool => $name !== '' && $name !== '-'))
+            : [];
+    }
+
+    /**
      * The rows of one list of the payload, each an array.
      *
      * @param  array<string, mixed>  $payload
@@ -955,8 +974,7 @@ class ScheduleService
 
     protected function isDate(string $date): bool
     {
-        return preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date, $part) === 1
-            && checkdate((int) $part[2], (int) $part[3], (int) $part[1]);
+        return PlanDate::isDay($date);
     }
 
     /**

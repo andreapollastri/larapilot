@@ -1717,7 +1717,6 @@
     <div class="nav-links" id="nav-links">
       <a href="#quickstart">Quickstart</a>
       <a href="#how-it-works">How to use</a>
-      <a href="#deep-dive-dashboard">Dashboard</a>
       <a href="#examples">Examples</a>
       <a href="#deep-dive">Deep Dive</a>
       <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
@@ -10696,8 +10695,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               opens with the driver, the database, the date, and what was left out, and ends with
               <code>-- Dump complete.</code> — or with the error that stopped it.</li>
             <li><strong>Credentials stay out of the dump</strong> unless you ask: the hidden columns are written
-              as <code>NULL</code>, or as an empty string where <code>NULL</code> is not allowed, and the head of the
-              file names them. <strong>Include passwords and tokens</strong> puts them in, and is offered only in
+              as <code>NULL</code>, or as an empty string where <code>NULL</code> is not allowed — as
+              <code>hidden-1</code>, <code>hidden-2</code>, … where a unique index holds the column, so the file
+              still restores — and the head of the file names them. <strong>Include passwords and tokens</strong> puts them in, and is offered only in
               <code>local</code>, <code>development</code>, and <code>testing</code> — on a shared host they never
               leave the server, sign-in or not.</li>
             <li><strong>Local by default.</strong> Like the file manager, the page is open in

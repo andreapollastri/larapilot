@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\PlanDate;
 use Larapilot\Support\SpecBlockers;
 use Symfony\Component\Yaml\Yaml;
 
@@ -779,10 +780,11 @@ class UsageService
                 continue;
             }
 
-            $date = (string) $deadline['date'];
+            $date = PlanDate::day($deadline['date']);
             $status = (string) ($deadline['status'] ?? 'on_track');
 
-            if ($status === 'done') {
+            // A date that cannot be read is a finding of the re-plan, not an alert.
+            if ($status === 'done' || $date === null) {
                 continue;
             }
 
@@ -926,8 +928,8 @@ class UsageService
         $projectStart = $dates !== [] ? min($dates) : null;
 
         foreach ($schedule['deadlines'] as $deadline) {
-            if (! empty($deadline['date'])) {
-                $dates[] = (string) $deadline['date'];
+            if (($day = PlanDate::day($deadline['date'] ?? null)) !== null) {
+                $dates[] = $day;
             }
         }
 
@@ -1097,7 +1099,7 @@ class UsageService
                     'code' => $epicCode,
                     'title' => (string) ($epic['title'] ?? $epicCode),
                     'objective' => trim((string) ($epic['objective'] ?? '')) ?: null,
-                    'deadline' => ! empty($epic['deadline']) ? substr((string) $epic['deadline'], 0, 10) : null,
+                    'deadline' => PlanDate::day($epic['deadline'] ?? null),
                     'start' => $row['start'],
                     'forecast_end' => $row['end'],
                     'spec_codes' => [],
@@ -1118,8 +1120,8 @@ class UsageService
                 $epicBuckets[$epicCode]['objective'] = (string) $epic['objective'];
             }
 
-            if (! empty($epic['deadline'])) {
-                $epicBuckets[$epicCode]['deadline'] = substr((string) $epic['deadline'], 0, 10);
+            if (($day = PlanDate::day($epic['deadline'] ?? null)) !== null) {
+                $epicBuckets[$epicCode]['deadline'] = $day;
             }
 
             if (! empty($epic['title'])) {
@@ -1162,7 +1164,7 @@ class UsageService
             $milestones[] = [
                 'id' => (string) ($deadline['id'] ?? ''),
                 'label' => (string) ($deadline['label'] ?? 'Deadline'),
-                'date' => (string) ($deadline['date'] ?? ''),
+                'date' => PlanDate::day($deadline['date'] ?? null) ?? '',
                 'status' => (string) ($deadline['status'] ?? 'on_track'),
                 'note' => $deadline['note'] ?? null,
                 'release' => $deadline['release'] ?? null,

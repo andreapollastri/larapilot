@@ -167,7 +167,8 @@ class UpdateCommand extends LarapilotCommand
             static fn (array $finding): bool => $finding['severity'] !== 'info'
         );
         $undated = in_array('SCHEDULE_NO_DATES', array_column($forecast['findings'], 'code'), true);
-        $ends = 'Delivery forecast: the open specs end on '.$forecast['forecast_end'];
+        // Open specs whose tasks are all done leave nothing to forecast: they end today.
+        $ends = 'Delivery forecast: the open specs end on '.($forecast['forecast_end'] ?? $forecast['today']);
 
         if ($forecast['alerts'] !== [] || $unread !== []) {
             $this->components->warn(sprintf(

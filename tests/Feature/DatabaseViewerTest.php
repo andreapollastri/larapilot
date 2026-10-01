@@ -381,6 +381,38 @@ it('puts the credentials in the dump only when asked, and only on a developer ma
         ->assertSee('Passwords and tokens are left out on a shared host.', false);
 });
 
+it('keeps a dump restorable when a hidden column is unique', function (): void {
+    viewerDatabase();
+
+    // The shape of Sanctum's table: the token is hidden, required, and unique.
+    Schema::create('personal_access_tokens', function (Blueprint $table): void {
+        $table->id();
+        $table->string('name');
+        $table->string('token', 64)->unique();
+    });
+
+    DB::table('personal_access_tokens')->insert([
+        ['name' => 'ci', 'token' => str_repeat('a', 64)],
+        ['name' => 'mobile', 'token' => str_repeat('b', 64)],
+        ['name' => 'cli', 'token' => str_repeat('c', 64)],
+    ]);
+
+    $sql = $this->get('/larapilot/database.sql')->assertOk()->streamedContent();
+
+    expect($sql)->toContain('personal_access_tokens.token')
+        ->not->toContain(str_repeat('a', 64));
+
+    $copy = new PDO('sqlite::memory:');
+    $copy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $copy->exec($sql);
+
+    $tokens = $copy->query('select token from personal_access_tokens order by id')->fetchAll(PDO::FETCH_COLUMN);
+
+    expect($tokens)->toHaveCount(3)
+        ->and(array_unique($tokens))->toHaveCount(3)
+        ->and(implode('', $tokens))->not->toContain('aaaa');
+});
+
 it('offers no dump when the database cannot be read or the page is off', function (): void {
     config()->set('database.connections.unreachable', [
         'driver' => 'pgsql',

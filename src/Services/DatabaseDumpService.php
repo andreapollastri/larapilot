@@ -54,7 +54,9 @@ class DatabaseDumpService
     /**
      * Write the dump through `$write`, a piece at a time. With
      * `$credentials` off, a column the viewer hides goes out as NULL, or
-     * as an empty string when it cannot be NULL.
+     * as an empty string when it cannot be NULL — and as a placeholder of
+     * its own on each row when a unique index holds it, so the file still
+     * goes back in.
      *
      * @param  callable(string): void  $write
      * @return array{tables: int, views: int, rows: int, hidden: list<string>}
@@ -128,7 +130,7 @@ class DatabaseDumpService
      * What one table needs to have its rows written.
      *
      * @param  array<string, mixed>  $table
-     * @return array{columns: list<array{name: string, nullable: bool, binary: bool, hidden: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}
+     * @return array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}
      */
     protected function plan(array $table, bool $credentials): array
     {
@@ -136,6 +138,20 @@ class DatabaseDumpService
         $columns = [];
         $hidden = [];
         $identity = false;
+        $order = [];
+        $unique = [];
+
+        foreach ($this->attempt(fn (): array => $schema->getIndexes($table['key'])) as $index) {
+            $indexed = array_values(array_map('strval', (array) ($index['columns'] ?? [])));
+
+            if (! empty($index['primary']) && $order === []) {
+                $order = $indexed;
+            }
+
+            if (! empty($index['primary']) || ! empty($index['unique'])) {
+                $unique = array_merge($unique, $indexed);
+            }
+        }
 
         foreach ($this->attempt(fn (): array => $schema->getColumns($table['key'])) as $column) {
             // A generated column is computed again on the way in.
@@ -151,21 +167,17 @@ class DatabaseDumpService
                 $hidden[] = $name;
             }
 
+            $typeName = strtolower((string) ($column['type_name'] ?? ''));
+
             $columns[] = [
                 'name' => $name,
                 'nullable' => (bool) ($column['nullable'] ?? true),
-                'binary' => (bool) preg_match('/blob|binary|bytea|^image$/', strtolower((string) ($column['type_name'] ?? ''))),
+                'binary' => (bool) preg_match('/blob|binary|bytea|^image$/', $typeName),
+                'numeric' => (bool) preg_match('/int|dec|num|float|double|real|money|serial/', $typeName),
                 'hidden' => $hide,
+                // Two rows cannot share one value under a unique index.
+                'distinct' => $hide && in_array($name, $unique, true),
             ];
-        }
-
-        $order = [];
-
-        foreach ($this->attempt(fn (): array => $schema->getIndexes($table['key'])) as $index) {
-            if (! empty($index['primary'])) {
-                $order = array_values(array_map('strval', (array) $index['columns']));
-                break;
-            }
         }
 
         return [
@@ -179,7 +191,7 @@ class DatabaseDumpService
 
     /**
      * @param  array<string, mixed>  $table
-     * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, hidden: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}  $plan
+     * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}  $plan
      */
     protected function rows(array $table, array $plan): int
     {
@@ -218,7 +230,7 @@ class DatabaseDumpService
 
                 foreach ($plan['columns'] as $column) {
                     $values[] = $column['hidden']
-                        ? ($column['nullable'] ? 'NULL' : $this->literal(''))
+                        ? $this->hiddenLiteral($column, $written + 1)
                         : $this->literal($record[$column['name']] ?? null, $column['binary']);
                 }
 
@@ -244,6 +256,23 @@ class DatabaseDumpService
         }
 
         return $written;
+    }
+
+    /**
+     * What a hidden column holds in the dump: NULL, or an empty string when
+     * it cannot be NULL. Under a unique index every row gets a value of its
+     * own instead — an empty string twice would refuse the restore, and SQL
+     * Server takes NULL only once.
+     *
+     * @param  array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}  $column
+     */
+    protected function hiddenLiteral(array $column, int $row): string
+    {
+        if ($column['distinct'] && (! $column['nullable'] || $this->driver === 'sqlsrv')) {
+            return $column['numeric'] ? (string) $row : $this->literal('hidden-'.$row, $column['binary']);
+        }
+
+        return $column['nullable'] ? 'NULL' : $this->literal('');
     }
 
     // ---- MySQL and MariaDB ----
@@ -663,7 +692,8 @@ class DatabaseDumpService
         } elseif ($summary['hidden'] === []) {
             $lines[] = 'Credentials: no column holds any.';
         } else {
-            $lines[] = 'Credentials: left out — written as NULL, or as an empty string where NULL is not allowed:';
+            $lines[] = 'Credentials: left out — written as NULL, or as an empty string where NULL is not allowed';
+            $lines[] = '             (as hidden-N, one for each row, where the column is unique):';
 
             foreach ($summary['hidden'] as $column) {
                 $lines[] = '               '.$column;

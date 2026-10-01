@@ -511,6 +511,8 @@ class VendorAuditService
             return match ($manager) {
                 'pnpm' => 'pnpm update '.$name.' --depth Infinity',
                 'yarn' => 'yarn up -R '.$name,
+                // Yarn 1 has no `up`.
+                'yarn-classic' => 'yarn upgrade '.$name,
                 'bun' => 'bun update '.$name,
                 default => 'npm update '.$name,
             };
@@ -518,7 +520,7 @@ class VendorAuditService
 
         return match ($manager) {
             'pnpm' => 'pnpm add '.$target,
-            'yarn' => 'yarn add '.$target,
+            'yarn', 'yarn-classic' => 'yarn add '.$target,
             'bun' => 'bun add '.$target,
             default => 'npm install '.$target,
         };
@@ -535,7 +537,14 @@ class VendorAuditService
 
         try {
             foreach ($this->sbom->inventory()['inventories'] as $item) {
-                $managers[(string) $item['id']] = is_string($item['manager'] ?? null) ? $item['manager'] : 'npm';
+                $manager = is_string($item['manager'] ?? null) ? $item['manager'] : 'npm';
+
+                if ($manager === 'yarn' && is_string($item['path'] ?? null) && is_file($item['path'])
+                    && str_contains((string) file_get_contents($item['path'], false, null, 0, 400), '# yarn lockfile v1')) {
+                    $manager = 'yarn-classic';
+                }
+
+                $managers[(string) $item['id']] = $manager;
             }
         } catch (\Throwable) {
             // the commands fall back to npm

@@ -269,6 +269,94 @@ it('says at the update what the forecast of an existing project misses', functio
         ->assertSuccessful();
 });
 
+it('reads a date written without quotes as the day it names', function (): void {
+    test()->artisan('larapilot:install')->assertSuccessful();
+
+    // YAML hands an unquoted date over as a timestamp.
+    $payload = base_path('.larapilot/tmp-payload-unquoted.yaml');
+    file_put_contents($payload, <<<'YAML'
+specs:
+  - code: US-001
+    title: Story US-001
+    priority: HIGH
+    points: 3
+    status: TODO
+    epic:
+      code: EP-001
+      title: Core
+      deadline: 2020-01-15
+    body: |
+      **Epic:** EP-001 | **Priority:** HIGH | **Points:** 3 | **Status:** TODO
+      **Blocked by:** -
+
+      **User Story**
+      As a user,
+      I want to log in,
+      so that I can access my account.
+
+      **Demonstrates**
+      After implementing this spec, login works end to end.
+
+      **Acceptance Criteria**
+      - [ ] Happy path
+      - [ ] Error case
+YAML);
+
+    $this->artisan('larapilot:spec-add', ['--file' => $payload])->assertSuccessful();
+
+    expect(app(SpecService::class)->find('US-001')['epic']['deadline'])->toBe('2020-01-15');
+
+    // A backlog an earlier version stored as a timestamp still draws.
+    $backlog = app(SpecService::class)->backlogPath();
+    file_put_contents($backlog, str_replace("'2020-01-15'", '2020-01-15', (string) file_get_contents($backlog)));
+    app()->forgetInstance(SpecService::class);
+
+    $show = scheduleRun('larapilot:schedule-show');
+
+    expect($show['exit'])->toBe(0)
+        ->and($show['data']['epics'][0]['deadline'])->toBe('2020-01-15')
+        ->and($show['data']['epics'][0]['slip_days'])->toBeGreaterThan(0)
+        ->and(array_column($show['data']['alerts'], 'scope'))->toContain('epic');
+
+    $this->get('/larapilot/plan')->assertOk();
+
+    // The same in a re-plan: an unquoted date sets the deadline, it does not remove it.
+    $replan = base_path('.larapilot/tmp-payload-schedule.yaml');
+    file_put_contents($replan, "epics:\n  - code: EP-001\n    deadline: 2031-03-05\ndeadlines:\n  - label: Go-live\n    date: 2031-04-01\n");
+
+    $applied = scheduleRun('larapilot:schedule-apply', ['--file' => $replan]);
+
+    expect($applied['exit'])->toBe(0)
+        ->and(app(SpecService::class)->find('US-001')['epic']['deadline'])->toBe('2031-03-05')
+        ->and(app(UsageService::class)->schedule()['deadlines'][0]['date'])->toBe('2031-04-01');
+
+    file_put_contents($replan, "epics:\n  - code: EP-001\n    deadline: soon\n");
+
+    expect(scheduleRun('larapilot:schedule-apply', ['--file' => $replan])['exit'])->toBe(2)
+        ->and(app(SpecService::class)->find('US-001')['epic']['deadline'])->toBe('2031-03-05');
+});
+
+it('takes one blocker named without a list as that blocker', function (): void {
+    scheduleBacklog([
+        scheduleSpec('US-001'),
+        scheduleSpec('US-002'),
+        scheduleSpec('US-003'),
+    ]);
+
+    $applied = scheduleRun('larapilot:schedule-apply', ['--file' => payloadFile([
+        'specs' => [
+            ['code' => 'US-002', 'blocked_by' => 'US-001'],
+            ['code' => 'US-003', 'blocked_by' => 'US-001, US-002'],
+        ],
+    ], 'tmp-payload-schedule.yaml')]);
+
+    $specs = app(SpecService::class);
+
+    expect($applied['exit'])->toBe(0)
+        ->and(SpecBlockers::read((string) $specs->find('US-002')['body']))->toBe(['US-001'])
+        ->and(SpecBlockers::read((string) $specs->find('US-003')['body']))->toBe(['US-001', 'US-002']);
+});
+
 it('writes the blockers of a spec where its body keeps them', function (): void {
     expect(SpecBlockers::read('No line here'))->toBeNull()
         ->and(SpecBlockers::read("**Blocked by:** -\nText"))->toBe([])

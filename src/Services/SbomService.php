@@ -295,7 +295,8 @@ class SbomService
 
     /**
      * `permissive`, `weak-copyleft`, `strong-copyleft`, or `unknown`. A
-     * choice of licenses (`MIT OR GPL-3.0`) takes the most permissive one.
+     * choice of licenses (`MIT OR GPL-3.0`) takes the most permissive one;
+     * licenses that hold together (`MIT AND GPL-3.0`) take the strictest.
      *
      * @param  list<string>  $licenses
      */
@@ -310,7 +311,18 @@ class SbomService
 
         foreach ($licenses as $license) {
             foreach (preg_split('/\s+OR\s+|\s*\/\s*/i', trim($license, '() ')) ?: [] as $choice) {
-                $class = self::classOf($choice);
+                $class = null;
+
+                foreach (preg_split('/\s+AND\s+/i', trim($choice, '() ')) ?: [] as $part) {
+                    $partClass = self::classOf($part);
+
+                    // `unknown` says nothing about the terms: a known license next to it decides.
+                    if ($class === null || $class === 'unknown' || ($partClass !== 'unknown' && $rank[$partClass] > $rank[$class])) {
+                        $class = $partClass;
+                    }
+                }
+
+                $class ??= 'unknown';
 
                 if ($best === null || $rank[$class] < $rank[$best]) {
                     $best = $class;
@@ -481,6 +493,17 @@ class SbomService
         $components = [];
 
         foreach ($inventory['components'] as $component) {
+            // One package in two inventories — the assets and the companion — is one component: a bom-ref is unique.
+            if (isset($components[$component['purl']])) {
+                $components[$component['purl']]['properties'][] = ['name' => 'larapilot:inventory', 'value' => $component['inventory']];
+
+                if ($component['scope'] !== 'dev') {
+                    $components[$component['purl']]['scope'] = 'required';
+                }
+
+                continue;
+            }
+
             $name = $component['name'];
             $group = null;
 
@@ -503,8 +526,10 @@ class SbomService
                 ],
             ], static fn (mixed $value): bool => $value !== null && $value !== []);
 
-            $components[] = $entry;
+            $components[$component['purl']] = $entry;
         }
+
+        $components = array_values($components);
 
         $bom = [
             'bomFormat' => 'CycloneDX',
