@@ -6,6 +6,7 @@ namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\NotifyService;
 use Larapilot\Services\PlanService;
+use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
 
 class TaskDoneCommand extends LarapilotCommand
@@ -13,18 +14,29 @@ class TaskDoneCommand extends LarapilotCommand
     protected $signature = 'larapilot:task-done
                             {code : Spec code}
                             {taskId : Task id, e.g. TASK-01}
-                            {--commit= : Optional git commit SHA to link (auto-detected from recent history when omitted)}';
+                            {--commit= : Optional git commit SHA to link (auto-detected from recent history when omitted)}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Mark one plan task as completed';
 
     protected bool $refreshesEconomics = true;
 
-    public function handle(PlanService $plans, NotifyService $notify): int
+    public function handle(PlanService $plans, NotifyService $notify, SpecService $specs): int
     {
         $code = (string) $this->argument('code');
         $taskId = (string) $this->argument('taskId');
         $commitOption = $this->option('commit');
         $commitSha = is_string($commitOption) && $commitOption !== '' ? $commitOption : null;
+        $hookContext = $this->specHookContext($code, $specs->find($code) ?? []) + ['task' => $taskId];
+
+        // A task the plan does not have fails below as it always did; the
+        // hooks run only for a task that is there to be done.
+        $plan = $plans->read($code);
+        $known = is_array($plan) && in_array($taskId, array_column(is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [], 'id'), true);
+
+        if ($known && ($blocked = $this->beforeHooks('task.done', $hookContext)) !== null) {
+            return $blocked;
+        }
 
         try {
             $commit = $plans->markTaskDone($code, $taskId, $commitSha);
@@ -38,6 +50,8 @@ class TaskDoneCommand extends LarapilotCommand
             'body' => is_array($commit) ? ('commit '.($commit['short_sha'] ?? $commit['sha'] ?? '')) : null,
             'url' => is_array($commit) ? ($commit['url'] ?? null) : null,
         ]);
+
+        $this->afterHooks('task.done', $hookContext + ['commit' => $commit]);
 
         return $this->success('task_done_result', [
             'code' => $code,

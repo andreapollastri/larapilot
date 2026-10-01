@@ -5,12 +5,24 @@ declare(strict_types=1);
 namespace Larapilot\Services;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\EnvWriter;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigService
 {
+    /**
+     * Where the living project handbook lives by default.
+     */
+    public const PROJECT_DOCS_PATH = '.larapilot/docs/handbook/';
+
+    /**
+     * The handbook's home before it moved under `.larapilot/docs/`. Configs
+     * written back then still name it; nothing writes there any more.
+     */
+    public const LEGACY_PROJECT_DOCS_PATH = '_project_docs/';
+
     /**
      * @var array<string, mixed>|null
      */
@@ -35,18 +47,24 @@ class ConfigService
     protected function resolveFresh(): array
     {
         $configPath = $this->configPath();
+        $parsed = is_file($configPath) ? Yaml::parseFile($configPath) : null;
+        $merged = is_array($parsed)
+            ? array_replace_recursive($this->defaults(), $parsed)
+            : $this->defaults();
 
-        if (! is_file($configPath)) {
-            return $this->defaults();
+        // A config written before the handbook moved still names `_project_docs/`:
+        // read it as the new home, and `larapilot:update` moves the files there.
+        if (is_array($merged['paths'] ?? null) && $this->isLegacyProjectDocsPath($merged['paths']['project_docs'] ?? null)) {
+            $merged['paths']['project_docs'] = self::PROJECT_DOCS_PATH;
         }
 
-        $parsed = Yaml::parseFile($configPath);
+        return $merged;
+    }
 
-        if (! is_array($parsed)) {
-            return $this->defaults();
-        }
-
-        return array_replace_recursive($this->defaults(), $parsed);
+    protected function isLegacyProjectDocsPath(mixed $path): bool
+    {
+        return is_string($path)
+            && trim((string) preg_replace('#^\./#', '', trim($path)), '/') === rtrim(self::LEGACY_PROJECT_DOCS_PATH, '/');
     }
 
     public function configPath(): string
@@ -89,12 +107,15 @@ class ConfigService
                 'decisions' => $this->absolutePath($config['paths']['decisions'] ?? '.larapilot/decisions.yaml'),
                 'code_history' => $this->absolutePath($config['paths']['code_history'] ?? '.larapilot/code-history.yaml'),
                 'releases' => $this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml'),
-                'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
+                'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? self::PROJECT_DOCS_PATH),
                 'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
                 'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
                 'economics_snapshot' => $this->absolutePath($config['paths']['economics_snapshot'] ?? '.larapilot/economics.snapshot.yaml'),
                 'economics_quote' => $this->absolutePath($config['paths']['economics_quote'] ?? '.larapilot/docs/quote.md'),
                 'economics_market' => $this->absolutePath($config['paths']['economics_market'] ?? '.larapilot/economics.market.yaml'),
+                'frontend_briefs' => $this->absolutePath($config['paths']['frontend_briefs'] ?? '.larapilot/docs/frontend-briefs/'),
+                'upgrades' => $this->absolutePath($config['paths']['upgrades'] ?? '.larapilot/docs/upgrades/'),
+                'hooks' => $this->hooksPath(),
                 'backlog' => $this->absolutePath($config['file']['backlog'] ?? '.larapilot/backlog.yaml'),
                 'planning' => $this->absolutePath($config['file']['planning'] ?? '.larapilot/plans/'),
             ],
@@ -145,9 +166,12 @@ class ConfigService
     }
 
     /**
-     * External frontend repository wiring for split-repo topology.
+     * External frontend repository wiring for split-repo topology: where it
+     * is (`.env`, never committed), its stack, the workspace projects that
+     * belong to this product (a monorepo holds others), and who writes it —
+     * this workspace (`driven`) or the frontend team from a brief (`handoff`).
      *
-     * @return array{repo_path: string|null, stack: string|null, configured: bool}
+     * @return array{repo_path: string|null, workspace_path: string|null, stack: string|null, projects: list<string>, mode: string, configured: bool}
      */
     public function frontend(): array
     {
@@ -164,9 +188,55 @@ class ConfigService
 
         return [
             'repo_path' => $repoPath,
+            'workspace_path' => $this->frontendWorkspacePath(),
             'stack' => $stack,
+            'projects' => self::frontendProjects($merged['projects'] ?? []),
+            'mode' => self::frontendMode($merged['mode'] ?? null),
             'configured' => is_string($repoPath) && is_dir($repoPath),
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function frontendProjects(mixed $value): array
+    {
+        $items = is_array($value) ? $value : (is_string($value) ? explode(',', $value) : []);
+        $projects = [];
+
+        foreach ($items as $item) {
+            if (is_string($item) && trim($item) !== '' && ! in_array(trim($item), $projects, true)) {
+                $projects[] = trim($item);
+            }
+        }
+
+        return $projects;
+    }
+
+    public static function frontendMode(mixed $value): string
+    {
+        $mode = is_string($value) ? strtolower(trim($value)) : '';
+
+        return in_array($mode, ['driven', 'handoff'], true) ? $mode : 'driven';
+    }
+
+    /**
+     * The workspace a frontend project builds in, when it is not the
+     * repository itself nor one of its parent folders. Machine-specific:
+     * `.env` only.
+     */
+    public function frontendWorkspacePath(): ?string
+    {
+        foreach ([
+            EnvWriter::get('LARAPILOT_FRONTEND_WORKSPACE_PATH'),
+            is_string(config('larapilot.frontend.workspace_path')) ? trim((string) config('larapilot.frontend.workspace_path')) : null,
+        ] as $candidate) {
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return rtrim(trim($candidate), '/\\');
+            }
+        }
+
+        return null;
     }
 
     public function frontendRepoPath(): ?string
@@ -180,7 +250,7 @@ class ConfigService
     }
 
     /**
-     * @return array{repo_path: string|null, stack: string|null}
+     * @return array{repo_path: string|null, stack: string|null, projects: list<string>, mode: string}
      */
     public function defaultFrontend(): array
     {
@@ -191,6 +261,8 @@ class ConfigService
             'stack' => is_string($defaults['stack'] ?? null) && $defaults['stack'] !== ''
                 ? $defaults['stack']
                 : null,
+            'projects' => self::frontendProjects($defaults['projects'] ?? []),
+            'mode' => self::frontendMode($defaults['mode'] ?? null),
         ];
     }
 
@@ -219,8 +291,8 @@ class ConfigService
     /**
      * Persist external frontend repo settings into `.larapilot/config.yaml`.
      *
-     * @param  array<string, string|null>  $partial
-     * @return array{repo_path: string|null, stack: string|null, configured: bool}
+     * @param  array<string, string|list<string>|null>  $partial
+     * @return array{repo_path: string|null, workspace_path: string|null, stack: string|null, projects: list<string>, mode: string, configured: bool}
      */
     public function updateFrontend(array $partial): array
     {
@@ -237,6 +309,12 @@ class ConfigService
         $frontend = array_replace($this->defaultFrontend(), array_intersect_key($current, $this->defaultFrontend()));
 
         foreach ($partial as $key => $value) {
+            if ($key === 'workspace_path') {
+                EnvWriter::set('LARAPILOT_FRONTEND_WORKSPACE_PATH', is_string($value) && trim($value) !== '' ? rtrim(trim($value), '/\\') : '');
+
+                continue;
+            }
+
             if (! array_key_exists($key, $this->defaultFrontend())) {
                 continue;
             }
@@ -253,7 +331,19 @@ class ConfigService
                 continue;
             }
 
-            if ($value === null || $value === '') {
+            if ($key === 'projects') {
+                $frontend['projects'] = self::frontendProjects($value);
+
+                continue;
+            }
+
+            if ($key === 'mode') {
+                $frontend['mode'] = self::frontendMode($value);
+
+                continue;
+            }
+
+            if ($value === null || $value === '' || is_array($value)) {
                 $frontend[$key] = null;
 
                 continue;
@@ -262,6 +352,15 @@ class ConfigService
             $frontend[$key] = trim((string) $value);
         }
 
+        // The path is machine-specific: it lives in `.env` only. A path an
+        // older version left in the YAML moves there instead of being lost.
+        $legacyPath = is_string($current['repo_path'] ?? null) ? trim($current['repo_path']) : '';
+
+        if (! array_key_exists('repo_path', $partial) && $legacyPath !== '' && trim((string) EnvWriter::get('LARAPILOT_FRONTEND_REPO_PATH')) === '') {
+            EnvWriter::set('LARAPILOT_FRONTEND_REPO_PATH', rtrim($legacyPath, '/\\'));
+        }
+
+        unset($frontend['repo_path']);
         $existing['frontend'] = $frontend;
 
         AtomicFile::write(
@@ -306,6 +405,7 @@ class ConfigService
      *     release_mode: string,
      *     project_docs: string,
      *     prior_art: string,
+     *     hooks: string,
      *     errors_provider: string
      * }
      */
@@ -389,6 +489,7 @@ class ConfigService
      *     release_mode: bool,
      *     project_docs: bool,
      *     prior_art: bool,
+     *     hooks: bool,
      *     errors_provider: string
      * }
      */
@@ -444,6 +545,7 @@ class ConfigService
             'release_mode' => false,
             'project_docs' => false,
             'prior_art' => true,
+            'hooks' => false,
         ];
     }
 
@@ -601,7 +703,7 @@ class ConfigService
     }
 
     /**
-     * Living project documentation in `_project_docs/` — OFF by default.
+     * Living project handbook in `.larapilot/docs/handbook/` — OFF by default.
      */
     public function projectDocsEnabled(): bool
     {
@@ -615,6 +717,24 @@ class ConfigService
     public function priorArtEnabled(): bool
     {
         return $this->settings()['prior_art'] === 'YES';
+    }
+
+    /**
+     * Workflow hooks from `.larapilot/hooks.yaml` — OFF by default. The
+     * machine-level switch `LARAPILOT_HOOKS_ENABLED` is applied by the hook
+     * service, not here: this is what the project chose.
+     */
+    public function hooksEnabled(): bool
+    {
+        return $this->settings()['hooks'] === 'YES';
+    }
+
+    /**
+     * Where the workflow hooks are defined (`paths.hooks`).
+     */
+    public function hooksPath(): string
+    {
+        return $this->absolutePath($this->resolve()['paths']['hooks'] ?? '.larapilot/hooks.yaml');
     }
 
     /**
@@ -1034,6 +1154,14 @@ class ConfigService
     /**
      * @return list<string>
      */
+    public function allowedHooksModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
     public function allowedAikidoModes(): array
     {
         return $this->allowedYesNoModes();
@@ -1191,7 +1319,7 @@ class ConfigService
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
             $this->absolutePath('.larapilot/brand/'),
             dirname($this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml')),
-            $this->absolutePath($config['paths']['project_docs'] ?? '_project_docs/'),
+            $this->absolutePath($config['paths']['project_docs'] ?? self::PROJECT_DOCS_PATH),
             $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
         ]));
     }
@@ -1206,6 +1334,8 @@ class ConfigService
 
         $this->ensureIntakeReadmes();
         $this->ensureDevDocsScaffold();
+        $this->ensureProjectDocsScaffold();
+        $this->ensureHooksScaffold();
         $this->ensureGitkeeps();
     }
 
@@ -1263,6 +1393,164 @@ class ConfigService
         }
     }
 
+    public function projectDocsDirectory(): string
+    {
+        return rtrim(
+            $this->absolutePath($this->resolve()['paths']['project_docs'] ?? self::PROJECT_DOCS_PATH),
+            '/\\'
+        );
+    }
+
+    /**
+     * Seed the handbook folder with a README that says what the folder is for while
+     * `project_docs` is off. Written once, never overwritten: the bootstrap
+     * replaces it with the handbook index.
+     */
+    public function ensureProjectDocsScaffold(): void
+    {
+        $target = $this->projectDocsDirectory().DIRECTORY_SEPARATOR.'README.md';
+        $source = $this->projectDocsReadmeStub();
+
+        if (! is_file($target) && is_file($source)) {
+            AtomicFile::write($target, (string) file_get_contents($source));
+        }
+    }
+
+    /**
+     * Seed `.larapilot/hooks.yaml` with every event listed and every example
+     * commented out, so turning `hooks` on runs nothing until a hook is
+     * written. Written once, never overwritten: the file belongs to the team.
+     */
+    public function ensureHooksScaffold(): void
+    {
+        $target = $this->hooksPath();
+        $source = dirname(__DIR__, 2).'/resources/larapilot/hooks.yaml.stub';
+
+        if (! is_file($target) && is_file($source)) {
+            AtomicFile::write($target, (string) file_get_contents($source));
+        }
+    }
+
+    protected function projectDocsReadmeStub(): string
+    {
+        return dirname(__DIR__, 2).'/resources/larapilot/handbook/README.md';
+    }
+
+    /**
+     * Move a handbook written in `_project_docs/` into `.larapilot/docs/handbook/`, point
+     * `paths.project_docs` at it, and drop the old folder once it is empty.
+     * A file the new folder already holds is never overwritten — except the
+     * untouched README stub, which the old index replaces — and stays behind
+     * in `_project_docs/` for a person to reconcile. Null when the project
+     * has no `_project_docs/` folder.
+     *
+     * @return array{from: string, to: string, moved: list<string>, kept: list<string>, removed: bool}|null
+     */
+    public function migrateLegacyProjectDocs(): ?array
+    {
+        $this->forgetLegacyProjectDocsPath();
+
+        $legacy = $this->absolutePath(rtrim(self::LEGACY_PROJECT_DOCS_PATH, '/'));
+
+        if (! is_dir($legacy)) {
+            return null;
+        }
+
+        $target = $this->projectDocsDirectory();
+        $stub = is_file($this->projectDocsReadmeStub()) ? (string) file_get_contents($this->projectDocsReadmeStub()) : null;
+        $moved = [];
+        $kept = [];
+
+        foreach (File::allFiles($legacy, true) as $file) {
+            $relative = str_replace('\\', '/', $file->getRelativePathname());
+
+            if (basename($relative) === '.gitkeep') {
+                continue;
+            }
+
+            $destination = $target.DIRECTORY_SEPARATOR.$relative;
+            $replacesStub = $relative === 'README.md'
+                && is_file($destination)
+                && (string) file_get_contents($destination) === $stub;
+
+            if (is_file($destination) && ! $replacesStub) {
+                $kept[] = $relative;
+
+                continue;
+            }
+
+            File::ensureDirectoryExists(dirname($destination));
+            File::move($file->getPathname(), $destination);
+            $moved[] = $relative;
+        }
+
+        sort($moved);
+        sort($kept);
+
+        return [
+            'from' => $this->relativePath($legacy).'/',
+            'to' => $this->relativePath($target).'/',
+            'moved' => $moved,
+            'kept' => $kept,
+            'removed' => $this->removeEmptyDirectory($legacy),
+        ];
+    }
+
+    /**
+     * Rewrite a config that still names `_project_docs/`. The resolver already
+     * reads it as the new folder; this keeps the file honest.
+     */
+    protected function forgetLegacyProjectDocsPath(): void
+    {
+        $path = $this->configPath();
+
+        if (! is_file($path)) {
+            return;
+        }
+
+        $parsed = Yaml::parseFile($path);
+
+        if (! is_array($parsed) || ! is_array($parsed['paths'] ?? null) || ! $this->isLegacyProjectDocsPath($parsed['paths']['project_docs'] ?? null)) {
+            return;
+        }
+
+        $parsed['paths']['project_docs'] = self::PROJECT_DOCS_PATH;
+
+        AtomicFile::write($path, Yaml::dump($parsed, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK));
+
+        $this->resolved = null;
+    }
+
+    /**
+     * Remove a directory tree that holds nothing but `.gitkeep` files.
+     */
+    protected function removeEmptyDirectory(string $directory): bool
+    {
+        $empty = true;
+
+        foreach (scandir($directory) ?: [] as $entry) {
+            if ($entry === '.' || $entry === '..' || $entry === '.gitkeep') {
+                continue;
+            }
+
+            $path = $directory.DIRECTORY_SEPARATOR.$entry;
+
+            if (! is_dir($path) || ! $this->removeEmptyDirectory($path)) {
+                $empty = false;
+            }
+        }
+
+        if (! $empty) {
+            return false;
+        }
+
+        if (is_file($directory.DIRECTORY_SEPARATOR.'.gitkeep')) {
+            unlink($directory.DIRECTORY_SEPARATOR.'.gitkeep');
+        }
+
+        return rmdir($directory);
+    }
+
     /**
      * @param  array<string, mixed>  $overrides
      */
@@ -1314,6 +1602,21 @@ class ConfigService
     public function fileManagerBrowsable(): bool
     {
         if (! $this->dashboardBrowsable() || ! (bool) config('larapilot.file_manager.enabled', true)) {
+            return false;
+        }
+
+        return app()->environment(['local', 'development', 'testing']) || $this->dashboardAuthEnabled();
+    }
+
+    /**
+     * Whether the dashboard database viewer is available. Same rule as the
+     * file manager: never in production, open on a developer machine, and
+     * behind the dashboard sign-in anywhere else — the rows of the
+     * application's database are not for an anonymous visitor.
+     */
+    public function databaseViewerBrowsable(): bool
+    {
+        if (! $this->dashboardBrowsable() || ! (bool) config('larapilot.database_viewer.enabled', true)) {
             return false;
         }
 

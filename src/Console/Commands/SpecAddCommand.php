@@ -12,7 +12,8 @@ use Larapilot\Support\PayloadFile;
 class SpecAddCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-add
-                            {--file= : YAML or JSON file with specs payload}';
+                            {--file= : YAML or JSON file with specs payload}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Create or extend the backlog with specs';
 
@@ -44,11 +45,21 @@ class SpecAddCommand extends LarapilotCommand
             );
         }
 
+        $hookContext = ['specs' => array_values(array_map(
+            static fn (mixed $spec): string => is_array($spec) ? (string) ($spec['code'] ?? '') : '',
+            $payload['specs']
+        ))];
+
+        if (($blocked = $this->beforeHooks('spec.added', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $specs->add($payload['specs']);
+        $this->afterHooks('spec.added', $hookContext);
 
         return $this->success('spec_add_result', [
             'added' => count($payload['specs']),
-            'summary' => $specs->list()['summary'],
+            'summary' => $specs->overview()['summary'],
         ]);
     }
 }

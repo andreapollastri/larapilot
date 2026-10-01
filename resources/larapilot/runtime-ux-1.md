@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## UX & Frontend Design _(Elise owns)_
 
 Elise privileges the **Laravel frontend ecosystem** when topology is **`Laravel-coupled`** or **`SPA-in-Laravel`**. When topology is **`API + external frontend`**, Elise still owns UX/mockups as the shared contract; Joe maps them to the external stack.
@@ -100,4 +98,3 @@ Mockups annotate focus states, error states, and screen-reader-only text where n
 | **Documentation** | Publish an **accessibility statement** page (reachability, contact, conformance level, known gaps) when legally required                                 |
 
 Elise, Emma, and Violet **triangulate** in inception (PRD NFRs), plan (a11y tasks), design (mockup README), implement, and ship. Violet can flag launch blockers on legal a11y gaps; Emma flags Lighthouse/SEO-a11y failures; Elise flags WCAG design gaps.
-

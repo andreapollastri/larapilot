@@ -10,9 +10,13 @@ use Larapilot\Support\LarapilotCommand;
 class FrontendScanCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:frontend-scan
-                            {--path= : Scan this absolute path instead of the configured frontend repo}';
+                            {--path= : Scan this absolute path instead of the configured frontend repo}
+                            {--project=* : Target project (repeat, or comma-separated) instead of the configured ones}
+                            {--full : List every project of the workspace with its targets and dependencies}
+                            {--no-cli : Do not run the nx installed in the workspace; read the files only}
+                            {--fresh : Rebuild the cached Nx graph}';
 
-    protected $description = 'Scan the external frontend repository structure and detect stack/tooling';
+    protected $description = 'Scan the external frontend repository: workspace and projects, agent rules, observed conventions, commands, API client';
 
     public function handle(FrontendService $frontend): int
     {
@@ -32,7 +36,15 @@ class FrontendScanCommand extends LarapilotCommand
             }
         }
 
-        $scan = $frontend->scan($scanPath);
+        $projects = $this->projects();
+
+        $scan = $frontend->scan(
+            $scanPath,
+            $projects === [] ? null : $projects,
+            ! (bool) $this->option('no-cli'),
+            (bool) $this->option('fresh'),
+            (bool) $this->option('full'),
+        );
 
         if (($scan['ok'] ?? false) !== true) {
             return $this->failure(
@@ -44,5 +56,23 @@ class FrontendScanCommand extends LarapilotCommand
         }
 
         return $this->success('frontend-scan', $scan);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function projects(): array
+    {
+        $projects = [];
+
+        foreach ((array) $this->option('project') as $value) {
+            foreach (explode(',', (string) $value) as $name) {
+                if (trim($name) !== '') {
+                    $projects[] = trim($name);
+                }
+            }
+        }
+
+        return array_values(array_unique($projects));
     }
 }

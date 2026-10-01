@@ -7,11 +7,9 @@ description: "Authors a custom skill under .larapilot/skills/. Italian: skill pe
 
 Author **user-defined Boost skills** stored in `.larapilot/skills/`. Zoey interviews; Sarah persists files via `larapilot:custom-skill-add` (never hand-write `SKILL.md`). Packaged Larapilot skills remain the base layer.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-custom-skills.md`.
+`php artisan larapilot:context custom-skill` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The contract is `custom-skills.md`; the roster is `core-personas.md`.
 
 ## The Team
 
@@ -23,8 +21,7 @@ Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-custom-skil
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:custom-skill-list` — avoid duplicate names; also registers discovered skills with Boost
+1. `php artisan larapilot:custom-skill-list` — avoid duplicate names; also registers discovered skills with Boost
 
 ## Workflow
 
@@ -51,9 +48,11 @@ When `list`: run `custom-skill-list`, print triggers, stop.
 
 Free-text allowed for step details after the round.
 
+- **Run as a hook?** — when the skill belongs to a moment of the loop (a gate before `spec.review`, notes after `release.shipped`, a pre-deploy check before `ship`), read `hooks.md` (on demand) and offer to add it to `.larapilot/hooks.yaml` as `- skill: {name}` under that event. Write the hook only on a yes; it runs once `hooks` is `YES`.
+
 ### 4. Draft & persist
 
-1. Zoey drafts full `SKILL.md` (front matter + sections mirroring packaged skills: Shared Runtime, Team, Config & CLI, Workflow, Output Economy). Front matter **must** include `name` and `description`.
+1. Zoey drafts full `SKILL.md` (front matter + sections mirroring packaged skills: Context, Team, CLI, Workflow, Output Economy). Front matter **must** include `name` and `description`.
 2. Sarah **must** persist with Artisan (never write the canonical `SKILL.md` by hand). Write the draft to a temp file, then:
 
 ```bash
@@ -66,7 +65,7 @@ Delete the temp file after a successful envelope. For a family, call `custom-ski
 
 ### 5. Quality checklist (before finish)
 
-- [ ] Starts with `config-show`
+- [ ] Starts with `php artisan larapilot:context {name}` (plus `--with=` for the packs it needs) and reads what it lists
 - [ ] Honors `data.settings`
 - [ ] No user-specific paths in examples
 - [ ] Persistence only via `larapilot:*` commands

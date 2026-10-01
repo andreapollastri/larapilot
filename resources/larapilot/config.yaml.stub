@@ -15,10 +15,12 @@ settings:
   code_history: false
   # Semver release ledger + Gitflow release branches — OFF by default.
   release_mode: false
-  # Living project documentation (_project_docs/) — OFF by default.
+  # Living project handbook (.larapilot/docs/handbook/) — OFF by default.
   project_docs: false
   # Prior-art search for existing open-source / packaged solutions at inception — ON by default.
   prior_art: true
+  # Workflow hooks (.larapilot/hooks.yaml) — your commands and skills on the loop's transitions — OFF by default.
+  hooks: false
   # Internal feedback on dashboard/API/spec-comment — OFF by default.
   comments: false
   dashboard_auth: false
@@ -39,9 +41,13 @@ settings:
   notify_discord: false
   notify_telegram: false
 
-# External frontend repo — absolute path in LARAPILOT_FRONTEND_REPO_PATH (.env); stack here.
+# External frontend repo — absolute path in LARAPILOT_FRONTEND_REPO_PATH (.env); the rest here.
+# projects: workspace projects of this product in a monorepo (Nx, Angular CLI, pnpm/yarn workspaces, Turborepo).
+# mode: driven (Larapilot writes the frontend) | handoff (the frontend team builds from larapilot:frontend-brief).
 frontend:
   stack: null
+  projects: []
+  mode: driven
 
 paths:
   prd: .larapilot/docs/PRD.md
@@ -58,12 +64,15 @@ paths:
   design_systems: .larapilot/design-systems/
   internal_feedback: .larapilot/internal-feedback/
   releases: .larapilot/releases.yaml
-  project_docs: _project_docs/
+  project_docs: .larapilot/docs/handbook/
   custom_skills: .larapilot/skills/
   economics: .larapilot/economics.yaml
   economics_snapshot: .larapilot/economics.snapshot.yaml
   economics_quote: .larapilot/docs/quote.md
   economics_market: .larapilot/economics.market.yaml
+  frontend_briefs: .larapilot/docs/frontend-briefs/
+  upgrades: .larapilot/docs/upgrades/
+  hooks: .larapilot/hooks.yaml
 
 workflow:
   statuses:

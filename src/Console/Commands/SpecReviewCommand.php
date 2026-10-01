@@ -16,7 +16,8 @@ class SpecReviewCommand extends LarapilotCommand
                             {--note= : Optional review note markdown}
                             {--commit-type=chore : Conventional commit type}
                             {--commit-summary= : Optional commit summary}
-                            {--force : Move to REVIEW even with incomplete plan tasks}';
+                            {--force : Move to REVIEW even with incomplete plan tasks}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Move a spec to REVIEW after implementation';
 
@@ -48,7 +49,14 @@ class SpecReviewCommand extends LarapilotCommand
             }
         }
 
+        $hookContext = $this->specHookContext($code, $spec, $config->status('review'));
+
+        if (($blocked = $this->beforeHooks('spec.review', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $specs->setStatus($code, $config->status('review'));
+        $this->afterHooks('spec.review', $hookContext);
 
         return $this->success('review_result', [
             'code' => $code,

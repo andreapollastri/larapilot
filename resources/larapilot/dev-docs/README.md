@@ -7,7 +7,7 @@ made, and the key decisions that keep it running.
 
 It is written **for the people who will maintain this codebase**, not for the
 client and not for the product owner. The client-facing documents live elsewhere
-(`PRD.md`, `quote.md`, `_project_docs/`).
+(`PRD.md`, `quote.md`, the handbook in `../handbook/`).
 
 ## Rules
 

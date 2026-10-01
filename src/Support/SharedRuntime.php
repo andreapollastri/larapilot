@@ -57,11 +57,22 @@ final class SharedRuntime
      */
     public static function refresh(bool $includeDesignSystems = true): void
     {
-        foreach (self::packagedDocs() as $packageFile => $projectFile) {
+        $docs = self::packagedDocs();
+
+        foreach ($docs as $packageFile => $projectFile) {
             AtomicFile::write(
                 self::projectDocPath($projectFile),
                 File::get(self::packageDocPath($packageFile))
             );
+        }
+
+        // A runtime file the package no longer ships would be read as a
+        // rule that still holds: the `runtime-*.md` names belong to the
+        // package, so what it dropped is removed.
+        foreach (glob(self::projectDocPath('runtime-*.md')) ?: [] as $path) {
+            if (! in_array(basename($path), $docs, true)) {
+                @unlink($path);
+            }
         }
 
         if ($includeDesignSystems) {

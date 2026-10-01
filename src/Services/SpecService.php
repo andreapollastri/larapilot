@@ -7,6 +7,7 @@ namespace Larapilot\Services;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Checklist;
 use Larapilot\Support\FileLock;
+use Larapilot\Support\PrdIds;
 use Larapilot\Support\SpecCode;
 use Symfony\Component\Yaml\Yaml;
 
@@ -59,6 +60,57 @@ class SpecService
             'items' => $items,
             'summary' => $this->summary($items),
         ];
+    }
+
+    /**
+     * The backlog at a glance: what it takes to find a spec, without the
+     * bodies. Each item says which PRD ids its spec cites, so a request can
+     * be matched to a spec before any of them is opened.
+     *
+     * @return array{items: list<array<string, mixed>>, summary: array<string, mixed>}
+     */
+    public function overview(?string $status = null): array
+    {
+        $list = $this->list($status);
+        $byStatus = [];
+        $items = [];
+
+        foreach ($list['items'] as $spec) {
+            $epic = $spec['epic'] ?? null;
+            $state = (string) ($spec['status'] ?? '');
+            $byStatus[$state] = ($byStatus[$state] ?? 0) + 1;
+
+            $item = [
+                'code' => (string) ($spec['code'] ?? ''),
+                'title' => (string) ($spec['title'] ?? ''),
+                'status' => $state,
+                'priority' => (string) ($spec['priority'] ?? ''),
+                'points' => (int) ($spec['points'] ?? 0),
+            ];
+
+            if (is_array($epic) && isset($epic['code'])) {
+                $item['epic'] = (string) $epic['code'];
+            }
+
+            if (($spec['rework'] ?? false) === true) {
+                $item['rework'] = true;
+            }
+
+            $cites = PrdIds::cited(((string) ($spec['title'] ?? ''))."\n".((string) ($spec['body'] ?? '')));
+
+            if ($cites !== []) {
+                $item['cites'] = $cites;
+            }
+
+            $items[] = $item;
+        }
+
+        $summary = $list['summary'];
+        // Every item carries its title: the map would say it twice.
+        unset($summary['titles']);
+        $summary['by_status'] = $byStatus;
+
+        return ['items' => $items, 'summary' => $summary];
     }
 
     /**

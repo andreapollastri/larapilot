@@ -15,7 +15,8 @@ class SpecPlanCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-plan
                             {code : Spec code}
-                            {--file= : Plan payload YAML or JSON file}';
+                            {--file= : Plan payload YAML or JSON file}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Save implementation plan and move spec to PLANNED';
 
@@ -60,7 +61,15 @@ class SpecPlanCommand extends LarapilotCommand
             );
         }
 
+        $hookContext = $this->specHookContext($code, $spec, $config->status('planned'))
+            + ['tasks' => count($payload['tasks'] ?? [])];
+
+        if (($blocked = $this->beforeHooks('spec.planned', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $plans->save($code, $payload);
+        $this->afterHooks('spec.planned', $hookContext);
 
         return $this->success('plan_result', [
             'code' => $code,

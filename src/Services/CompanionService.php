@@ -17,6 +17,8 @@ class CompanionService
      *     in_repo_stack: string|null,
      *     external_repo: string|null,
      *     external_stack: string|null,
+     *     projects: list<string>,
+     *     delivery: string|null,
      *     sync_mode: string|null,
      *     raw: array<string, string>
      * }|null
@@ -34,6 +36,8 @@ class CompanionService
             'Frontend stack (in-repo)' => 'in_repo_stack',
             'External frontend repo' => 'external_repo',
             'External frontend stack' => 'external_stack',
+            'Frontend projects' => 'projects',
+            'Frontend delivery' => 'delivery',
             'Companion sync' => 'sync_mode',
         ] as $label => $key) {
             $value = $this->matchLabeledField($prd, $label);
@@ -54,9 +58,41 @@ class CompanionService
             'in_repo_stack' => $raw['Frontend stack (in-repo)'] ?? null,
             'external_repo' => $raw['External frontend repo'] ?? null,
             'external_stack' => $raw['External frontend stack'] ?? null,
+            'projects' => $this->projectList($raw['Frontend projects'] ?? null),
+            'delivery' => $this->deliveryMode($raw['Frontend delivery'] ?? null),
             'sync_mode' => $raw['Companion sync'] ?? null,
             'raw' => $raw,
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function projectList(?string $value): array
+    {
+        if ($value === null || preg_match('/^\s*(n\/?a|none|-|—)\s*$/i', $value) === 1) {
+            return [];
+        }
+
+        return ConfigService::frontendProjects(array_map(
+            static fn (string $item): string => trim($item, " \t`*"),
+            preg_split('/[,;]/', $value) ?: []
+        ));
+    }
+
+    protected function deliveryMode(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = strtolower($value);
+
+        return match (true) {
+            str_contains($value, 'handoff') => 'handoff',
+            str_contains($value, 'driven') => 'driven',
+            default => null,
+        };
     }
 
     protected function matchLabeledField(string $prd, string $label): ?string

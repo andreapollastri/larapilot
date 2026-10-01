@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Deploy Runbooks _(Jack orchestrates — Sarah scripts; run only the runbook matching the recorded choice)_
 
 ### Cipi
@@ -109,7 +107,7 @@ Pre-deploy assessment mapped to **OWASP Top 10 (2021)** and Laravel-specific vec
 | A09 | Logging & monitoring — auth failures, deploy events logged; **observability stack** live (Nightwatch, CloudWatch, or equivalent)                                               |
 | A10 | SSRF — outbound HTTP from user-controlled input                                                                                                                                |
 
-Also: run `composer audit` when available; when `settings.aikido` is `YES` run `php artisan larapilot:aikido-issues --gate --report` — `FAIL` blocks the release until the findings are fixed or waived with a reason (`/larapilot-aikido`); run `php artisan checkpoint:scan` ([checkpoint](https://github.com/andreapollastri/checkpoint)) — **mandatory when `settings.security_scan` is `YES`** (stop for `composer require --dev andreapollastri/checkpoint` if missing), otherwise opportunistically when installed; treat FAIL as High unless waived via `larapilot:decision-log`; use Boost `Database Schema` and code review for access-control and injection checks; confirm new entities use UUID primary keys unless the PRD documents an exception.
+Also: use Boost `Database Schema` and code review for access-control and injection checks; confirm new entities use UUID primary keys unless the PRD documents an exception. `composer audit` and the scans the settings turn on — Aikido, `checkpoint:scan`, the error tracker — are Phase 2 of `/larapilot-ship`.
 
 Write the assessment to `{paths.security}/{release-id}.md`:
 
@@ -152,4 +150,3 @@ Write the assessment to `{paths.security}/{release-id}.md`:
 | **Digital accessibility**            | EAA / EN 301 549 / national law conformance documented; **accessibility statement** page reachable when required — coordinate with **Elise** + **Emma** |
 
 Violet works with **Lars** on security controls that implement privacy (encryption, access control, breach logging) and with **Aurora** when compliance tooling has cost implications. At ship, Violet issues PASS / issues for launch blockers. **Emma/Lauren** ensure tracking respects consent; **Emily** aligns legal pages and consent copy per locale.
-

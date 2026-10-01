@@ -14,21 +14,19 @@ You bring an **existing, running Laravel project** under Larapilot. The codebase
 | Greenfield product / idea, no code yet | `/larapilot-inception` |
 | Rewrite or port **away from** a legacy non-Laravel system (parity contract, DB/asset migration) | `/larapilot-inception` + drop snapshots in `.larapilot/legacy/` (Sabrine leads) |
 | A PRD already exists, you want to add one capability | `/larapilot-feature` |
-| A PRD already exists, product scope shifted | Edit the PRD per **PRD Living Document** (`runtime-ops.md`) |
+| A PRD already exists, product scope shifted | `/larapilot-prd` |
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context adopt` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, `data.project`, `data.dev_docs`, and `data.frontend` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core — **Language Policy**, **Assumptions and Questions**, **Sub-agents**, **Output Economy**), then `.larapilot/runtime-discovery.md` (**Project Kind**, **Delivery Target**, **MoSCoW Prioritization**, **Frontend Topology**, **Decision Journal**, **Reference Products** only if the user asks for competitor context). Skim **Data Architecture** in `.larapilot/runtime-delivery.md` when the schema is non-trivial (trees, NoSQL, search). Load `.larapilot/runtime-dev-docs.md` (**Retroactive bootstrap**) — an adopted codebase gets one best-effort domain doc per domain under `{paths.dev_docs}`. Load `.larapilot/runtime-ops.md` (**Usage Ledger & Schedule**) when `data.settings.lucille` is `YES`.
+The rest is read when its step arrives: `discovery-6.md` and `discovery-7.md` at step 5, before the PRD is written; `discovery-5.md`, `delivery-3.md`, and `ship-1.md` only when the repository leaves the frontend, the data architecture, or the deploy platform open. The catch-up of step 6 is **First-change catch-up** (`dev-docs-catchup.md`).
 
-When `data.settings.decision_log` is `YES` (default), journal the choices the user makes about adopted scope with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
-
-When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
+When `data.settings.decision_log` is `YES`, journal the choices the user makes about adopted scope with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## The Team (this phase)
 
-🤖 Zoey · 💎 Mark · 🔎 Tom · 📐 John · 🗄️ Mike · 👾 Andrew · ⌨️ Sarah · 🚀 Jack · 🔐 Lars · ⚖️ Violet · 📈 Emma · 🎨 Elise · ✨ Joe · 📱 Ricky · ✍️ Marika · 🌍 Emily · 📝 Albert · 📒 Lucille — roles in the shared-runtime roster. Participation depth follows the **Project Kind branching rules** in `runtime-discovery.md`, applied to what the code actually contains.
+🤖 Zoey · 💎 Mark · 🔎 Tom · 📐 John · 🗄️ Mike · 👾 Andrew · ⌨️ Sarah · 🚀 Jack · 🔐 Lars · ⚖️ Violet · 📈 Emma · 🎨 Elise · ✨ Joe · 📱 Ricky · ✍️ Marika · 🌍 Emily · 📝 Albert · 📒 Lucille — roles in `core-personas.md`. Participation depth follows the **Project Kind branching rules** (`discovery-2.md`), applied to what the code actually contains.
 
 - **Mark** owns the PRD and product framing; every functional requirement is inferred from shipped behavior.
 - **John + Mike + Andrew** map architecture, data model, and Laravel-idiom / package inventory from the code.
@@ -40,21 +38,20 @@ When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-releas
 
 ## Config & CLI
 
-1. Run `php artisan larapilot:config-show` and parse the stdout JSON envelope.
-2. This skill uses: `config-show`, `prd-write`, `validate-prd`, `choices-set`, `frontend-set` (only if an external FE repo is discovered), `schedule-set` (only if the user gives deadlines), `usage-log`, `release-import`, `release-add`, `release-list`, `settings-set --release-mode=YES` (when enabling release mode).
-3. **Never** create backlog, plan, or spec artifacts here — that is `/larapilot-spec`.
+1. This skill uses: `context`, `prd-write`, `validate-prd`, `choices-set`, `frontend-set` (only if an external FE repo is discovered), `schedule-set` (only if the user gives deadlines), `usage-log`, `release-import`, `release-add`, `release-list`, `settings-set --release-mode=YES` (when enabling release mode).
+2. **Never** create backlog, plan, or spec artifacts here — that is `/larapilot-spec`.
 
 ## Preconditions
 
 - Larapilot is installed (`.larapilot/config.yaml` present).
-- **No PRD yet** at `data.paths.prd`. If a PRD already exists, stop and route to `/larapilot-feature` or the PRD living-document flow.
+- **No PRD yet** (`data.project.prd` is `false`). If a PRD already exists, stop and route to `/larapilot-feature` or `/larapilot-prd`.
 - If `data.paths.legacy` contains artifacts beyond `README.md`, ask (AskQuestion) whether this is really an **adopt** (keep and document the Laravel app) or a **legacy rewrite** (→ `/larapilot-inception`). Do not assume.
 
 ## Workflow
 
 ### 0. Context load
 
-Run `config-show`. Note `{paths.prd}`, `{paths.research}`, `{paths.client_materials}`, `{paths.legacy}`, `data.settings` (honor `effort`, `lucille`, `backlog`). Zoey posts the start **Context estimate** line.
+From the `context` envelope note `{paths.prd}`, `{paths.research}`, `{paths.client_materials}`, `{paths.legacy}`, `data.settings` (honor `effort`, `lucille`, `backlog`). Zoey posts the start **Context estimate** line.
 
 If `{paths.client_materials}` has real documents, read them first — they are stronger evidence of product intent than code comments; reconcile against the code during discovery.
 
@@ -81,7 +78,7 @@ Inventory, with file-path evidence for each item:
 
 The team converts the inventory into product terms:
 
-- **Project Kind** (`runtime-discovery.md`) — infer: `Application` for an app with accounts/workflows; `Package` when the repo is a Composer library (`type: library`, `src/` + provider, no `artisan`); `Website` when it is mostly public content pages; `Personal` only if the user says so. State the inference; confirm in step 3.
+- **Project Kind** (`discovery-2.md`) — infer: `Application` for an app with accounts/workflows; `Package` when the repo is a Composer library (`type: library`, `src/` + provider, no `artisan`); `Website` when it is mostly public content pages; `Personal` only if the user says so. State the inference; confirm in step 3.
 - **User Personas** — from guards, role/permission definitions, distinct auth flows, admin panels, API-token consumers. Name each and give Role / Goals / Pain Points inferred from the features they can reach.
 - **Functional Requirements** — one `### FR-XXX` per coherent shipped capability (a route group + its controller/job/policy cluster), not one per class. Cite the evidence paths in the FR body. Group into `### In Scope` (in production today), `### Future Phases` (half-built / feature-flagged / TODO-heavy code), `### Out of Scope` (dead or deprecated code you recommend retiring — needs user confirmation).
 - **MoSCoW** — everything already running in production is **Must** (it exists and users depend on it). Tag experimental / partial / flagged code **Should** or **Could**. Nothing is **Won't** unless the user wants it removed.
@@ -107,11 +104,11 @@ Ask **only** what the code cannot tell you. Persona intro in chat; options in As
 
 **Round 3 — Gaps the repo left blank (John + Jack, only if unresolved)**
 
-- **Deploy platform / edge / cloud** when no infra config exists — never assume Sail, Cloudflare, or AWS (see **Infrastructure & Cloud** in `runtime-ship.md`).
-- **Operations & support** — always ask, even when the repo shows the platform: who manages the server, who is on the hook when it is down, and what support window is promised (`--server-management=`, `--ops-owner=`, `--support-window=`; options in **Operations & Support**, `runtime-discovery.md`). On an adopted codebase there is already a machine in production and the arrangement around it is usually undocumented — it is also what prices the maintenance retainer in Economics.
-- **External frontend repo** if the API has no coupled UI — AskQuestion until path is known; run `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`) + `larapilot:frontend-scan` (see `runtime-discovery.md` → **Frontend Topology**).
+- **Deploy platform / edge / cloud** when no infra config exists — never assume Sail, Cloudflare, or AWS (**Infrastructure & Cloud**, `ship-1.md`).
+- **Operations & support** — always ask, even when the repo shows the platform: who manages the server, who is on the hook when it is down, and what support window is promised (`--server-management=`, `--ops-owner=`, `--support-window=`; options in **Operations & Support**, `discovery-8.md`). On an adopted codebase there is already a machine in production and the arrangement around it is usually undocumented — it is also what prices the maintenance retainer in Economics.
+- **External frontend repo** if the API has no coupled UI — AskQuestion until path is known; run `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`) + `larapilot:frontend-scan`; a monorepo (`targets.needs_project`) needs the user to name this product's projects (`frontend-set --project=…`), and the user says who builds the frontend (`--mode=driven|handoff`) (**Frontend Topology**, `discovery-5.md`).
 
-**Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `runtime-release.md`.
+**Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `release.md`.
 
 ### 4. Codebase analysis report
 
@@ -148,7 +145,7 @@ Write `{paths.research}/codebase-analysis.md` (create parent dirs). This is the 
 
 ### 5. Write the PRD
 
-Use the **PRD Template in `/larapilot-inception`** (canonical section rules in `runtime-discovery.md`) — same required sections, rendered in the detected language. Adopt-specific requirements:
+Use the **PRD Template in `/larapilot-inception`** (section rules in `discovery-6.md` and `discovery-7.md` — read them now) — same required sections, rendered in the detected language. Adopt-specific requirements:
 
 - Under `## MVP Scope` record:
   - `**Project Kind:** …` (confirmed)
@@ -168,12 +165,12 @@ Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `p
 
 ### 6. Developer domain docs (retroactive bootstrap)
 
-Albert writes one best-effort file per domain under `{paths.dev_docs}` (default `.larapilot/docs/devs/`), derived from the analysis report's **Domain Model** and **Feature Inventory** — **English**, from `TEMPLATE.md`, with anything inferred rather than verified marked `<!-- TODO: verify -->`. Keep the folder `README.md` index in sync. Cover **every** domain the analysis found, not a sample: this is the project's catch-up, and a project adopted through this skill must reach its first spec already level. Accuracy is best-effort — `<!-- TODO: verify -->` is the honest marker, and the next spec that touches a domain corrects its file. Contract: **First-change catch-up** in `.larapilot/runtime-dev-docs.md`.
+Albert writes one best-effort file per domain under `{paths.dev_docs}` (default `.larapilot/docs/devs/`), derived from the analysis report's **Domain Model** and **Feature Inventory** — **English**, from `TEMPLATE.md`, with anything inferred rather than verified marked `<!-- TODO: verify -->`. Keep the folder `README.md` index in sync. Cover **every** domain the analysis found, not a sample: this is the project's catch-up, and a project adopted through this skill must reach its first spec already level. Accuracy is best-effort — `<!-- TODO: verify -->` is the honest marker, and the next spec that touches a domain corrects its file. Contract: **First-change catch-up** (`dev-docs-catchup.md`).
 
 ### 7. Dashboard snapshot & ledger
 
 - `php artisan larapilot:choices-set --from-prd` (plus flags for any architecture choice not scraped).
-- When `data.settings.lucille` is `YES`: `php artisan larapilot:usage-log --category=analysis --tokens=… --minutes=… --skill=larapilot-adopt --estimated`.
+- When `data.settings.lucille` is `YES`: the `usage_log` command of the `context` envelope.
 - Zoey posts the end **Context estimate** line.
 
 ### 8. Next steps
@@ -194,13 +191,13 @@ Offer, in order:
 
 ## Output Economy
 
-**Clarity first** — like `larapilot-inception`. Persona chat blocks: 2–4 sentences. The analysis report and PRD stay complete and formal.
+**Clarity first.** Report what the code shows with file-path evidence, then ask only the gaps (3 questions per round at most). Persona chat blocks: 2–4 sentences. `codebase-analysis.md` and the reverse-engineered PRD stay complete and formal.
 
 ## Example
 
 **Invoke:** `/larapilot-adopt` in a 3-year-old Laravel 11 invoicing SaaS with no `.larapilot/docs/PRD.md`.
 
-1. `config-show` → no PRD, `lucille: YES`, `effort: STANDARD`.
+1. `context` → no PRD, `lucille: YES`, `effort: STANDARD`.
 2. Discovery: Livewire + Filament admin, Sanctum API, 14 models, Stripe + Mailgun + S3, Horizon queues, GitHub Actions CI, Sentry. `Explore` sub-agent maps `app/`.
 3. Derived: Project Kind **Application**; personas **Account Owner**, **Team Member**, **API Consumer**, **Admin**; 22 FRs (all Must — in production); half-built "recurring invoices" behind a feature flag → Future Phases.
 4. Interview: name **"Bilo"**, pitch confirmed; forward Delivery Target **V1 Complete**; recurring invoices → *Keep & finish*; deploy platform not in repo → user says Forge + AWS.

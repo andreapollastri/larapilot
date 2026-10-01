@@ -17,6 +17,7 @@ Larapilot is a spec-driven workflow for Laravel projects, built on [Laravel Boos
 - [The core loop](#the-core-loop)
 - [Skills](#skills)
 - [Custom skills — your own slash commands](#custom-skills--your-own-slash-commands)
+- [Workflow hooks — your commands on the loop](#workflow-hooks--your-commands-on-the-loop)
 - [What lands in `.larapilot/`](#what-lands-in-larapilot)
 - [Developer domain docs](#developer-domain-docs-docsdevs-always-on)
 - [Project settings](#project-settings)
@@ -24,6 +25,7 @@ Larapilot is a spec-driven workflow for Laravel projects, built on [Laravel Boos
 - [Economics](#economics-account-none-by-default)
 - [Traceability](#traceability)
 - [Security](#security)
+- [Upgrades — Laravel, PHP, database](#upgrades--laravel-php-database)
 - [Integrations](#integrations)
 - [Artisan CLI & MCP](#artisan-cli--mcp)
 - [Requirements](#requirements)
@@ -86,7 +88,17 @@ php artisan larapilot:update
 php artisan larapilot:doctor
 ```
 
-`larapilot:update` refreshes the runtime packs, `task-templates.md`, `integrations.md`, and the packaged design systems (`--preserve-design-systems` keeps yours), re-registers your custom skills, then runs `composer update laravel/boost` (skipped inside a Composer script) and `boost:update`. Runtime-only refresh: `php artisan larapilot:update --skip-boost`. It never touches `config.yaml`, the PRD, the backlog, plans, domain docs, or custom skills. Do not re-run `larapilot:install` on an existing project unless you mean `--force`.
+`larapilot:update` refreshes the runtime packs, `task-templates.md`, `integrations.md`, and the packaged design systems (`--preserve-design-systems` keeps yours), re-registers your custom skills, moves a handbook left in `_project_docs/` by an older version into `.larapilot/docs/handbook/`, **realigns the delivery forecast** of a project that is already planned, then runs `composer update laravel/boost` (skipped inside a Composer script) and `boost:update`. Runtime-only refresh: `php artisan larapilot:update --skip-boost`. It never touches `config.yaml` (except to repoint an old `paths.project_docs: _project_docs/`), the PRD, plans, domain docs, or custom skills. In the backlog and the schedule it writes only what takes no decision — an id and a plain date on a milestone that lacks them, the release a milestone is named after, the deadline of an epic on the specs of that epic that lack it — and it says what the forecast now misses: dates that do not hold and inputs it could not read are for `/larapilot-schedule`. `php artisan larapilot:schedule-apply --repair --dry-run` lists those repairs without writing them. Do not re-run `larapilot:install` on an existing project unless you mean `--force`.
+
+**From 4.x to 5.0** — `composer update` stays inside the major your `composer.json` names, so raise the constraint first:
+
+```bash
+composer require andreapollastri/larapilot:^5.0 --dev --with-all-dependencies
+php artisan larapilot:update
+php artisan larapilot:doctor
+```
+
+If `composer why andreapollastri/larapilot` says *requires* rather than *requires (for development)*, Larapilot sits in `require`: drop `--dev`, or Composer moves it to `require-dev`. Nothing in `.larapilot/` is migrated: PRD, backlog, plans, decisions, and settings are read as they are. Three things to check: `spec-list` answers without the bodies (add `--full` where a script reads `body`); a custom skill that names a runtime part by its number should cite the heading, or start with `larapilot:context {name} --with=…`; `/larapilot-boogle` is `/larapilot-error`, and the `boogle-*` commands still answer. What v5 changes, measured: [Version 5 vs version 4](https://larapilot.web.ap.it/#v5). Step by step — a branch, a dry run, the output to read, the checks as `git grep` commands, and the way back: [Major releases](https://larapilot.web.ap.it/#upgrade-major).
 
 ---
 
@@ -116,7 +128,7 @@ php artisan larapilot:install  →  /larapilot-adopt  →  /larapilot-spec  → 
 | Many planned stories at once | `/larapilot-autopilot US-004 US-005 …` |
 | A team ritual the packaged skills don't cover | `/larapilot-custom-skill` |
 
-Optional around the loop: `/larapilot-design` before plan · `/larapilot-ship` when the MVP stories are **DONE** · `/larapilot-settings` for project modes · `/larapilot-usage` for time and tokens · `/larapilot-economics` for quotes and pricing.
+Optional around the loop: `/larapilot-design` before plan · `/larapilot-ship` when the MVP stories are **DONE** · `/larapilot-settings` for project modes · `/larapilot-usage` for time and tokens · `/larapilot-schedule` to re-plan the order and the dates · `/larapilot-economics` for quotes and pricing.
 
 **Status machine:** `TODO` → `PLANNED` → `IN PROGRESS` → `REVIEW` → `DONE`. A rejected review sends the story back to `TODO` with your feedback attached.
 
@@ -139,7 +151,11 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-bug` | Bug triage → fix spec or rework, with redacted diagnostics |
 | `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
 | `/larapilot-aikido` | Downloads the open security findings of **Aikido**, confirms them with you, groups them by fix, and hands each group to `/larapilot-triage` (`aikido=YES`) |
-| `/larapilot-boogle` | Downloads the open **errors of production** from the tracker of the project — Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — confirms them with you, groups them by place in the code, and hands each group to `/larapilot-triage` (`errors=YES`) |
+| `/larapilot-error` | Asks which tracker records the **errors of production** — Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — when none is set, downloads the open ones, confirms them with you, groups them by place in the code, and hands each group to `/larapilot-triage` (`errors=YES`) |
+| `/larapilot-vendor-check` | Checks every dependency — Composer, the JavaScript of the repository, the frontend companion — against **OSV.dev** for known vulnerabilities, confirms each vulnerable package with you, then updates it, hands it to `/larapilot-triage`, or waives it with a reason |
+| `/larapilot-laravel-upgrade` | Upgrades Laravel to the version you name: readiness report and criticalities first, then one major at a time on its own branch — dependencies, the upgrade guide, Filament, Nova, Livewire, Inertia — with an upgrade report |
+| `/larapilot-php-upgrade` | Upgrades PHP: the suite on the target version, the packages that exclude it, deprecated code, every file that pins PHP (Docker, CI, Vapor, Herd, Sail), and the server runbook |
+| `/larapilot-db-upgrade` | Upgrades or switches the database — MySQL 5.7 → 8.0 → 8.4, MySQL → MariaDB or PostgreSQL, a PostgreSQL major — with portable SQL, a local rehearsal on the target engine, and the data and cutover runbook |
 | `/larapilot-prd` | Revises the PRD when it is neither — sharpen, re-scope, re-model, re-decide, upgrade — and aligns the stories that cite what changed |
 | `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare |
 | `/larapilot-plan` | Technical plan + tasks for a spec |
@@ -149,11 +165,12 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-ship` | Security gate + deploy runbook when the MVP is done |
 | `/larapilot-settings` | Persist project modes (effort, backlog, git, testing, account, auth, forges, notifications, …) |
 | `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (`release_mode=YES`) |
-| `/larapilot-project-docs` | Living handbook in `_project_docs/` (`project_docs=YES`) |
+| `/larapilot-project-docs` | Living handbook in `.larapilot/docs/handbook/` (`project_docs=YES`) |
 | `/larapilot-custom-skill` | Create your own skills under `.larapilot/skills/`, registered with Boost |
-| `/larapilot-frontend-companion` | Link an external frontend repo and scan it — driven from Laravel |
+| `/larapilot-frontend-companion` | Link an external frontend repo or monorepo, name this product's projects, load its agent rules — driven from Laravel, or handed off to its team |
 | `/larapilot-economics` | **Aurora + Jennifer + Benjamin** — quote, tax, payback, packaging, business plan, client quote (`account` ≠ NONE) |
 | `/larapilot-usage` | **Lucille** — time/token ledger, deadlines, Markdown report |
+| `/larapilot-schedule` | **Lucille** — re-plan a project that is already planned: order, estimates, epic deadlines, and milestones against the forecast, with a dry run before anything is written |
 | `/larapilot-backstage` | Publish the repo into a **Backstage** developer portal |
 | `/larapilot-tracker` | Mirror the backlog into **Linear · Asana · Jira · Trello · ClickUp · Monday** |
 
@@ -186,13 +203,29 @@ The PRD changes through three doors, and each one leaves a row in `## PRD Revisi
 - **Nothing is written before the readback.** Mark shows before → after per changed item and asks Apply · Revise · Cancel.
 - **You edited `PRD.md` by hand?** Run `/larapilot-prd "I edited the PRD by hand"`. It reads the git diff and adds what a hand edit skips: the history row, validation, the inception snapshot, and the backlog check.
 
-Skills load rules from **runtime packs** in `.larapilot/`: `shared-runtime.md` is an index with a mandatory **Read protocol**, and each skill reads only the section files it needs (`runtime-core-*.md`, `runtime-delivery-N.md`, …), each under 15 KB.
+### Context economy — what a skill loads
+
+A skill opens with one command, **`php artisan larapilot:context {skill}`**. It answers the settings, the paths, what the PRD says about the project (kind, delivery target, budget, topology, …), and the runtime files that skill reads. Three things keep the context small, and keep an agent from applying a rule that is not the project's:
+
+- **Only what the skill needs.** Every skill has its own list of packs. The heavy ones — tenancy, CI/CD, integrations, UX, deploy platforms — are named with the moment they apply and read only then.
+- **Only what the settings call for.** The packs are compiled for the project into `.larapilot/cache/runtime/`: under `GITFLOW` an agent reads the `GITFLOW` rules and never sees the other two modes; a toggle that is off has no section at all. Change a setting and the next call hands out the files that changed.
+- **Only once per conversation.** The call returns a session token. Passed back with `--session=`, it tells the next skill of the same conversation which files are already loaded: the skill reads the new ones and nothing else. After the conversation is compacted, `--fresh` reads everything again — a summary keeps the token and loses the rules.
+
+| What is loaded (skill + runtime, default settings) | v4 | v5 |
+| --- | --- | --- |
+| `/larapilot-implement`, first skill of a conversation | ~43k tokens | ~16k |
+| `/larapilot-review` after implement, same conversation | ~38k | ~2k |
+| triage → bug → plan → implement → review, one conversation | ~173k | ~36k |
+
+Commands answer with the slice, too: `spec-list` is the backlog without the bodies (`--full` for everything), and `prd-show` reads the PRD by the piece — its outline, `--ids=FR-004,J-001`, or `--section="Technical Architecture"`. A custom skill gets the same treatment: `larapilot:context my-skill --with=delivery-1,dev-docs`.
+
+`.larapilot/shared-runtime.md` and the `runtime-*.md` files stay in the repository as the index for people, and as the fallback when the command cannot run. `.larapilot/cache/` is derived, ignores itself in git, and is rebuilt whenever it is stale.
 
 ---
 
 ## Custom skills — your own slash commands
 
-The 22 packaged skills are the base layer. On top of them, each project can keep its **own** Boost skills in `.larapilot/skills/` — committed with the code, registered with Boost automatically, built on the same `larapilot:*` CLI. Good candidates: a pre-deploy GO/NO-GO gate, a compliance check, client release notes, your team's house rules for a Filament resource.
+The 29 packaged skills are the base layer. On top of them, each project can keep its **own** Boost skills in `.larapilot/skills/` — committed with the code, registered with Boost automatically, built on the same `larapilot:*` CLI. Good candidates: a pre-deploy GO/NO-GO gate, a compliance check, client release notes, your team's house rules for a Filament resource.
 
 **Example — turn a pre-deploy checklist into `/acme-predeploy-gate`:**
 
@@ -236,8 +269,8 @@ description: "Pre-deploy gate before a production release — GO or NO-GO. Use w
 
 # Acme — Pre-deploy gate
 
-## Config & CLI
-1. `php artisan larapilot:config-show --only=settings`
+## Context
+`php artisan larapilot:context acme-predeploy-gate` — read what `data.runtime.read` lists; `data.settings` is in that envelope.
 
 ## Workflow
 1. `larapilot:spec-list --status=REVIEW` and `--status="IN PROGRESS"` — anything listed → NO-GO.
@@ -262,6 +295,70 @@ Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-s
 
 ---
 
+## Workflow hooks — your commands on the loop
+
+`hooks`, OFF by default. A story always moves through the same transitions — planned, started, task done, review, approved or sent back, released, shipped. **Hooks** attach your team's own commands and skills to those moments, in `.larapilot/hooks.yaml` (committed, so the team shares them):
+
+```yaml
+hooks:
+  task.done:
+    before:
+      - name: Tests
+        run: php artisan test --compact
+        timeout: 900
+  spec.review:
+    before:
+      - name: Static analysis
+        run: vendor/bin/phpstan analyse --no-progress
+      - skill: acme-a11y-check
+  spec.approved:
+    after:
+      - name: Deploy to staging
+        run: curl -fsS -X POST "$FORGE_STAGING_DEPLOY_URL"
+  ship:
+    before:
+      - skill: acme-predeploy-gate
+    after:
+      - name: Deploy to production
+        run: php vendor/bin/envoy run deploy
+```
+
+| Event | Fired by | Event | Fired by |
+| --- | --- | --- | --- |
+| `prd.written` | `prd-write` | `spec.review` | `spec-review` |
+| `spec.added` | `spec-add` | `spec.approved` | `spec-approve` |
+| `spec.planned` | `spec-plan` | `spec.changes_requested` | `spec-request-changes` |
+| `spec.started` | `spec-start` | `release.shipped` | `release-ship` |
+| `task.done` | `task-done` | `ship` | `/larapilot-ship`: `before` as the gate starts, `after` on a GO |
+
+| | When | If it fails |
+| --- | --- | --- |
+| `before` | After the command's own checks, before anything is written | The transition is refused — `E_PRECONDITION` with `details.hooks` — and nothing is written. `blocking: false` only warns |
+| `after` | Once the state is written | Reported under `data.hooks.after.warnings`; the transition stands |
+| `run:` | Larapilot runs it from the project root, with the event in `LARAPILOT_HOOK_*` variables and as JSON on stdin | The answer carries the last 40 lines; the whole output is in `.larapilot/cache/hooks/` |
+| `skill:` | The agent runs it. Before a transition, the command refuses until the agent reports it with `--skill-hooks-done=name`; after one, the answer lists it under `data.hooks.after.skills` | — |
+
+What teams use them for:
+
+- **Gates an agent cannot skip** — tests, Larastan, `npm run build`, `composer audit`, a coverage floor before `task.done` or `spec.review`. An instruction in a prompt can be forgotten; a hook runs inside the command.
+- **Deploys** — staging after `spec.approved`, production after a GO from `/larapilot-ship` or after `release.shipped`.
+- **Your rituals at the right moment** — a [custom skill](#custom-skills--your-own-slash-commands) as an architecture review after `spec.planned`, an accessibility pass before `spec.review`, client release notes after `release.shipped`.
+- **What Larapilot does not integrate** — Teams, Mattermost, or email; a Toggl or Harvest timer on `spec.started`; a Confluence or Notion export after `prd.written`; an n8n, Zapier, or Make webhook.
+
+```bash
+php artisan larapilot:settings-set --hooks=YES
+php artisan larapilot:hook-list            # what is defined, and what is wrong with the file
+php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TASK-01 --dry-run
+```
+
+- **Nothing runs until you say so.** Install writes `hooks.yaml` with every event listed and every example commented out, and `hooks` is OFF. `LARAPILOT_HOOKS_ENABLED=false` in `.env` runs none on one machine — a CI runner, a teammate without the tools a hook calls.
+- **A file with errors is a closed gate.** While hooks are on, every transition is refused until `hook-list` is clean or hooks are off; `doctor` reports it as `checks.hooks`.
+- **Artisan only.** Hooks never run from the dashboard, the API, or MCP, where `hook-list` is read-only. `/larapilot/settings` shows the hooks of the project.
+- **The hooks are yours.** Agents never edit a hook or turn hooks off to get past one unless you ask; `--force` on `spec-review` and `spec-approve` skips the task and feedback checks, never a hook.
+- **Secrets stay in `.env`** — a hook reads them from its environment. Timeout 300 s by default (`LARAPILOT_HOOKS_TIMEOUT`), at most 3600 per hook.
+
+---
+
 ## What lands in `.larapilot/`
 
 | Path | Purpose |
@@ -271,10 +368,12 @@ Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-s
 | `backlog.yaml` · `specs/US-XXX.yaml` | User stories with their status machine |
 | `plans/US-XXX-plan.yaml` | Technical plans and tasks per spec |
 | `docs/devs/` | **Developer domain docs** — why the code is built the way it is (always on) |
+| `docs/handbook/` | **Handbook** — the living technical + functional manual of the project (`project_docs=YES`); only its README until then |
 | `docs/review/` · `test-results/` · `security/` · `launch/` · `support/` | Review findings, test evidence, OWASP assessments, launch checks, bug intake |
 | `docs/quote.md` | Client quote in the PRD language (Economics) |
 | `choices.yaml` | Snapshot of inception answers (kinds, targets, prior-art verdict, success signal, kill condition, ops) |
 | `decisions.yaml` | Append-only journal of your explicit choices + regression guard (`decision_log`, ON) |
+| `hooks.yaml` | Your commands and skills on the transitions of the loop — every example commented out until you write one (`hooks`, OFF) |
 | `code-history.yaml` | Files and line ranges touched per spec/task (`code_history`, OFF) |
 | `releases.yaml` | Semver release ledger (`release_mode`) |
 | `tracker.yaml` | Spec → tracker issue ids — commit it, or every machine creates duplicates |
@@ -285,11 +384,10 @@ Full walkthrough: [Your own skill](https://larapilot.web.ap.it/#example-custom-s
 | `skills/{name}/SKILL.md` | Your custom Boost skills |
 | `client-materials/` · `legacy/` · `research/` · `brand/` | Inputs for inception, legacy snapshots, prior-art / reference-product / parity reports, brand assets |
 | `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) — add your own beside them |
-| `shared-runtime.md` · `runtime-*.md` · `task-templates.md` · `integrations.md` | Rules and guides the skills read — refreshed by `larapilot:update` |
+| `shared-runtime.md` · `runtime-*.md` · `task-templates.md` · `integrations.md` | Rules and guides behind the skills — refreshed by `larapilot:update`, which also removes the runtime files a new version no longer ships |
+| `cache/` | The runtime compiled for the settings of the project, and what each conversation already loaded — derived, never committed (it ignores itself) |
 | `auth.yaml` | Hashed dashboard users — git-ignored |
 | `techdocs/` | Generated Backstage TechDocs (after `larapilot:backstage-export --write`) |
-
-`_project_docs/` (repo root) holds the optional handbook when `project_docs=YES`.
 
 ---
 
@@ -316,7 +414,7 @@ There is no setting to turn them on: the folder ships with its contract (`README
 
 **A project with no docs is brought level on the first change, not gradually.** `config-show` reports `data.dev_docs.documented`; when it is `false` and the codebase already has domains, the first spec, fix, or hotfix documents **every** existing domain, commits the backfill on its own (`docs(US-XXX): bring developer domain docs level`), and only then runs its own work. `/larapilot-adopt` does the same at the end of onboarding. Where the original reasoning is unrecoverable, the file says `<!-- TODO: verify -->` rather than inventing a motive.
 
-This is not `_project_docs/` — that optional handbook is a mixed technical/functional manual for the whole project. `docs/devs/` is engineering-only and mandatory.
+This is not the handbook (`docs/handbook/`) — that optional manual is a mixed technical/functional manual for the whole project. `docs/devs/` is engineering-only and mandatory.
 
 ---
 
@@ -331,6 +429,7 @@ Set with `/larapilot-settings` or `php artisan larapilot:settings-set --key=VALU
 | Discovery | `prior_art` → `YES` (Sebastian's existing-solutions search at inception, consent asked before every search) |
 | Business | `account` → `NONE` (`FREELANCE` · `COMPANY` unlock Economics) |
 | Delivery extras | `release_mode` → `NO` · `project_docs` → `NO` |
+| Automation | `hooks` → `NO` ([workflow hooks](#workflow-hooks--your-commands-on-the-loop) from `.larapilot/hooks.yaml`) |
 | Access & security | `comments` → `NO` · `dashboard_auth` → `NO` · `api_auth` → `NO` · `security_scan` → `NO` |
 | Integrations | `github` · `gitlab` · `bitbucket` · `azure` · `notifications` · `notify_slack` · `notify_discord` · `notify_telegram` → all `NO` |
 
@@ -361,19 +460,22 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included |
 | PRD | `/larapilot/prd` | Rendered PRD with a **search** that looks in the PRD and nowhere else, decision journal timeline, **Download PRD (.md)**, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
 | Inception | `/larapilot/inception` | Discovery choices snapshot |
-| Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, dependency-aware Gantt |
+| Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
 | Design | `/larapilot/design` | Every screen first, as a card. A click opens that mockup as a site you browse, with **All screens** to come back; prev / next through every flow, style compare with **Use this style**, zip download |
 | Settings | `/larapilot/settings` | Every project mode with its options explained |
 | Skills | `/larapilot/skills` | Every skill the agents of the project can run, whoever brought it — the project, Larapilot, another package, Laravel Boost, a hand that dropped it into the folder of an agent — with which agent has it. Click one to **read it**. Under them, **what the agents are told**: `CLAUDE.md`, `AGENTS.md`, and the rules around them, one part for each author |
 | File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
+| Database | `/larapilot/database` | The tables and views of the database in `.env`, whatever the driver — MySQL, MariaDB, PostgreSQL, SQLite, SQL Server. Rows a page at a time with sort, search, and foreign keys that lead to the row they point at; the structure of each table; **Download SQL** for a dump of the whole database. Read only; passwords and tokens are never shown |
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
-| Security | `/larapilot/security` | What Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of Aikido, the page asks which one the project is. Always in the menu; with `aikido` off it says what Aikido is and how to connect it |
+| Security | `/larapilot/security` · `/larapilot/security/checkpoint` | Two tabs. **Aikido**: what Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of Aikido, the page asks which one the project is. Always in the menu; with `aikido` off it says what Aikido is and how to connect it. **Checkpoint**: the last scan of [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) — verdict, checks by area (dependencies, configuration, code), every finding with its suppression hash, the trend of the scans — with **Run the scan** and **Download report (.md)**; when the package is missing it says how to install it |
+| SBOM | `/larapilot/sbom` | Every package the project ships — Composer, the JavaScript of the repository, and the frontend companion — from the lockfiles: version, direct or transitive, production or development, license (copyleft flagged), abandoned packages. **Check vulnerabilities** asks OSV.dev; the vulnerable packages come grouped with the version that fixes them and the command to run, and what was decided about each. Downloads: **SBOM (.md)**, **CycloneDX (.json)**, **Vulnerabilities (.md)** |
 | Errors | `/larapilot/errors` | What the running application threw, as the tracker of the project recorded it: one row for each bug, how many times it was thrown, and what was decided about it — day by day when the tracker records every throw. Always in the menu; with `errors` off it says what Boogle is, how to connect it, and which other trackers can be read instead |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
 | Docs | `/larapilot/docs` | Delivery loop, packaged skills, persona roster |
+| About | `/larapilot/about` | What the project runs on: Laravel, PHP, the database server, Node — each with its upstream support window drawn as a bar (bug fixes, security fixes, today) and an alert when it is past or near its end — the project, PHP extensions and limits, connections, drivers, the packages that shape an upgrade (Filament, Nova, Livewire, Inertia, …), frontend, CI and deploy, and every file that pins a version |
 
 The dashboard follows the system theme; pin **light** or **dark** from the sidebar. Every page works on a phone.
 
@@ -397,6 +499,18 @@ The dashboard follows the system theme; pin **light** or **dark** from the sideb
 - **Upload a folder** and it keeps its structure; an existing file is kept unless **Replace existing files** is on. One file is limited by `LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB` (default 50 MB) and by PHP's `upload_max_filesize` / `post_max_size`, whichever is lower.
 - **Local by default.** The file manager is open in `local`, `development`, and `testing`. On any other environment (`staging`) it is served only when `dashboard_auth` is `YES` — client documents and legacy snapshots stay behind a sign-in.
 - Nothing outside the six folders can be reached, a symlink is never followed, and an uploaded `.html`, `.js`, or `.svg` is never run in the dashboard. `LARAPILOT_FILE_MANAGER=false` removes the page.
+
+### Database
+
+`/larapilot/database` shows the application's own database — the connection named by `DB_CONNECTION`, with the `DB_*` values in `.env` — through Laravel's schema and query builders, so the page is the same on MySQL, MariaDB, PostgreSQL, SQLite, and SQL Server. It reads, and never writes.
+
+- **The list**: every table and view, with its size where the driver reports one, and the driver, database, and host on top — never the password. On MySQL/MariaDB only the database in `.env` is listed; on PostgreSQL every schema is, a table outside `public` named `schema.table`. A connection `prefix` is left out of the names.
+- **Rows**, 50 to a page (`LARAPILOT_DATABASE_VIEWER_PER_PAGE`), by primary key. Click a column to sort; the search looks in the text columns, without regard to case; a foreign key value links to the row it points at. Click a row to open it whole — long text in full, JSON indented, **Copy as JSON**. Binary is shown as hex with its size.
+- **Structure**: columns (type, null, default, primary key, auto increment, comment), indexes, foreign keys with their on update / on delete.
+- **Credentials are never shown.** A column named like a password, token, or secret (`*password*`, `remember_token`, `token`, `*_token`, `*secret*`, `two_factor_recovery_codes`, `*api_key*`, `*private_key*`) is shown as `*****************` and is never searched, sorted, or filtered on. Add patterns in `database_viewer.masked_columns` of `config/larapilot.php`.
+- **Download SQL** writes the whole database as one `.sql` file in the dialect of its driver — structure, every row, then indexes, keys, sequences, and views — to restore with `mysql`, `psql -f`, `sqlite3`, or `sqlcmd`. MySQL, MariaDB, and SQLite give their own `CREATE` statements; PostgreSQL is rebuilt from its catalogs like `pg_dump` (schemas, enum types, serial and identity columns with their next value); SQL Server from Laravel's schema builder. Each table and view is dropped first if it exists. It is written while it downloads, from one read-only snapshot.
+- **The dump leaves credentials out**: the hidden columns are written as `NULL`, or `''` where `NULL` is not allowed, and listed at the top of the file. **Include passwords and tokens** puts them in — offered only in `local`, `development`, and `testing`.
+- **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_DATABASE_VIEWER_CONNECTION` reads another connection; `LARAPILOT_DATABASE_VIEWER=false` removes the page.
 
 ### JSON API
 
@@ -472,14 +586,31 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 | **Dashboard auth** — HTTP Basic Auth on the `/larapilot` UI | OFF | `larapilot:dashboard-user add andrea` then `--dashboard-auth=YES` |
 | **API token** — bearer token or `X-Larapilot-Token` on `/larapilot/api/*` | enforced when `LARAPILOT_API_TOKEN` is set | set the env var |
 | **API auth** — token mandatory; fails closed (`503`) with no token configured | OFF | `--api-auth=YES` |
-| **Security scan** — [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) in review and pre-ship | OFF | `composer require --dev andreapollastri/checkpoint` then `--security-scan=YES` |
+| **Security scan** — [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) in review and pre-ship; the last scan on **Security → Checkpoint** | OFF | `composer require --dev andreapollastri/checkpoint` then `--security-scan=YES` |
+| **Vulnerable dependencies** — every package of the SBOM against [OSV.dev](https://osv.dev), at the ship gate and on the **SBOM** page | on demand | nothing: `php artisan larapilot:vendor-audit` or `/larapilot-vendor-check` |
 | **Aikido** — the findings of [Aikido](https://www.aikido.dev/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--aikido=YES` |
 | **Production errors** — what the running application throws, read from [Boogle](https://boogle.web.ap.it/), Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch, in triage and on the dashboard | OFF | a credential that reads the tracker in `.env`, then `--errors=YES --errors-provider=…` |
 
 - Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
 - Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
-- The dashboard **file manager** is stricter than the rest of the UI: outside local/development/testing it answers `404` — reads and writes alike — until `dashboard_auth` is `YES`.
-- With `security_scan=YES`, `checkpoint:scan` `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles or runs the scanner while the setting is off.
+- The dashboard **file manager** and **database** pages are stricter than the rest of the UI: outside local/development/testing they answer `404` — reads and writes alike — until `dashboard_auth` is `YES`.
+- With `security_scan=YES`, review and ship run `larapilot:checkpoint-scan`: `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles the scanner; with the setting off it runs only when someone asks — the command, or **Run the scan** on the dashboard. The result stays in `.larapilot/cache/checkpoint/`, out of git: the details can quote code.
+
+### Checkpoint and the SBOM
+
+```bash
+php artisan larapilot:checkpoint-scan --report        # runs checkpoint:scan --json, keeps it for Security → Checkpoint
+php artisan larapilot:checkpoint-scan --only="Hardcoded Secrets" --gate   # exit 1 when a check fails
+php artisan larapilot:sbom                            # inventories, totals, licenses, abandoned packages
+php artisan larapilot:sbom --write=both               # docs/security/sbom.md and sbom.cdx.json (CycloneDX 1.5)
+php artisan larapilot:vendor-audit --report --gate    # OSV.dev; exit 1 on an open advisory at --fail-on=high or above
+php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --spec=US-012      # the spec that fixes it
+php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fed user input."
+```
+
+- **The SBOM** reads `composer.lock`, the JavaScript lockfile of the repository (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lock`), and the one of the **frontend companion** when it is linked — its own, or the workspace's in a monorepo. Nothing is installed or downloaded.
+- **The vulnerability check** sends the name and the version of each package — nothing else — to OSV.dev, the open database behind the GitHub advisories, FriendsOfPHP, and npm. No account, no key. Severity is the advisory's word, else its CVSS 3 score; each package gets the version that fixes all its advisories and the command that moves to it (`composer update …`, `npm update …`, or a new constraint when the current one does not allow the fix).
+- **Decisions** — the spec that fixes an advisory, or a waiver with its reason — live in `.larapilot/vendor-audit.yaml` with the trend of the checks: commit it. The advisories are cached in `.larapilot/cache/`. **`/larapilot-ship`** runs `vendor-audit --gate`: an open advisory at `high` or above that was not waived stops the release; one in the backlog counts until the update is merged.
 
 ### Aikido
 
@@ -519,7 +650,7 @@ php artisan larapilot:aikido-scan                    # ask Aikido to scan again
 
 ### Production errors
 
-Larapilot reads the errors the running application throws from **one tracker** and brings each bug into the workflow. `settings.errors` turns it on, and `settings.errors_provider` names the tracker.
+Larapilot reads the errors the running application throws from **one tracker** and brings each bug into the workflow. `settings.errors` turns it on, and `settings.errors_provider` names the tracker. Run **`/larapilot-error`**: when no tracker is set, it asks which one — Boogle or any of the others — and turns the errors on.
 
 | Provider | What is read | In `.env` | Closed from Larapilot |
 | --- | --- | --- | --- |
@@ -532,19 +663,19 @@ Larapilot reads the errors the running application throws from **one tracker** a
 | `honeybadger` | The unresolved faults of a project | `LARAPILOT_HONEYBADGER_AUTH_TOKEN` · `LARAPILOT_HONEYBADGER_PROJECT_ID` | Yes |
 | `cloudwatch` | The error lines of an AWS CloudWatch log group, through the AWS CLI signed in on the machine | `LARAPILOT_CLOUDWATCH_LOG_GROUP` | No |
 
-Every credential is one that **reads** the tracker — never the key the application reports with (`FLARE_KEY`, `BUGSNAG_API_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The optional variables of each tracker are in `.larapilot/integrations.md` → *Production errors*, and `larapilot:boogle-status` names every one that is missing.
+Every credential is one that **reads** the tracker — never the key the application reports with (`FLARE_KEY`, `BUGSNAG_API_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The optional variables of each tracker are in `.larapilot/integrations.md` → *Production errors*, and `larapilot:errors-status` names every one that is missing.
 
 ```bash
 php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
-php artisan larapilot:boogle-status                                # setting, tracker, credentials, project, what is missing
-php artisan larapilot:boogle-errors --new --kind=error --report    # what nobody decided about; writes docs/support/errors.md
-php artisan larapilot:errors-plan --codes=BUG12,BUG21              # group the confirmed codes before triage (alias: boogle-plan)
-php artisan larapilot:boogle-link BUG12 --spec=US-012              # the spec that fixes the bug that code belongs to
-php artisan larapilot:boogle-link BUG21 --ignore --reason="The mail provider was down on its side."
-php artisan larapilot:boogle-resolve BUG12                         # once the fix is released: closes it in the tracker
+php artisan larapilot:errors-status                                # setting, tracker, credentials, project, what is missing
+php artisan larapilot:errors-list --new --kind=error --report      # what nobody decided about; writes docs/support/errors.md
+php artisan larapilot:errors-plan --codes=BUG12,BUG21              # group the confirmed codes before triage
+php artisan larapilot:errors-link BUG12 --spec=US-012              # the spec that fixes the bug that code belongs to
+php artisan larapilot:errors-link BUG21 --ignore --reason="The mail provider was down on its side."
+php artisan larapilot:errors-resolve BUG12                         # once the fix is released: closes it in the tracker
 ```
 
-The commands, the skill, and the ledger keep the name of Boogle, the first tracker Larapilot read, whichever one the project uses. `--boogle=YES` still works: it means `--errors=YES --errors-provider=boogle`, and a project that turned Boogle on before 4.1.3 has nothing to change.
+The skill and the commands are the same for every tracker. The names they had when Boogle was the only one still answer — `boogle-status`, `boogle-errors`, `boogle-plan`, `boogle-link`, `boogle-resolve` — and the ledger keeps its name, `.larapilot/boogle.yaml`. `--boogle=YES` still works: it means `--errors=YES --errors-provider=boogle`, and a project that turned Boogle on before 4.1.3 has nothing to change.
 
 **Boogle** is the self-hosted one — an exception tracker and uptime monitor the application sends to with [`andreapollastri/boogle-client`](https://github.com/andreapollastri/boogle):
 
@@ -555,11 +686,11 @@ LARAPILOT_BOOGLE_PROJECT=                          # id or title; empty = found 
 ```
 
 - **One entry for each bug.** Boogle and logs keep a row for each time an exception is thrown: Larapilot puts together the rows that share the exception, the file, and the line, and says how many times and on how many routes. Sentry, Bugsnag, Flare, Rollbar, Honeybadger, and Datadog Error Tracking group by themselves: their grouping and their count are kept. A file of the server (`/home/forge/…/releases/…/app/Services/X.php`) is read as the file of the repository it is.
-- **`/larapilot-boogle`** downloads the open errors, lets you **confirm each bug** — resolve, ignore with a reason, or skip — runs **`larapilot:errors-plan`** on the codes you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with a *Production error* block. The same exception in the same folder of the application goes together, so one spec fixes it; **outages**, errors in a **package**, and application code never merge. `/larapilot-bug` then writes the fix spec, with a test that throws the same exception before the fix.
+- **`/larapilot-error`** downloads the open errors, lets you **confirm each bug** — resolve, ignore with a reason, or skip — runs **`larapilot:errors-plan`** on the codes you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with a *Production error* block. The same exception in the same folder of the application goes together, so one spec fixes it; **outages**, errors in a **package**, and application code never merge. `/larapilot-bug` then writes the fix spec, with a test that throws the same exception before the fix.
 - **A decision is about the bug**, not about one time it was thrown: the next time it happens it is not handed over again. `.larapilot/boogle.yaml` holds the decisions and is meant to be committed.
-- **Back after the fix.** An error closed with `boogle-resolve` and thrown again is shown as such, first in the list: the fix did not hold.
+- **Back after the fix.** An error closed with `errors-resolve` and thrown again is shown as such, first in the list: the fix did not hold.
 - **Personal data stays in the tracker.** The user, the query string, and the payload of a request are never read into a file, a report, the cache, or the chat. Larapilot keeps the exception, the message with addresses and long secrets masked, the file and line, the method and the path — with ids and tokens in the path replaced by `{id}` and `{token}`.
-- **Writing to the tracker is asked for.** `boogle-resolve` is the only command that writes there; it runs when you say so, is not allowed through the MCP tool, and refuses where nothing can be closed — CloudWatch, and the logs of Datadog.
+- **Writing to the tracker is asked for.** `errors-resolve` is the only command that writes there; it runs when you say so, is not allowed through the MCP tool, and refuses where nothing can be closed — CloudWatch, and the logs of Datadog.
 - **On the dashboard**, `/larapilot/errors` shows every bug with how many times it was thrown and what was decided. A tracker that records every throw also gets the chart of the last two weeks, day by day.
 
 ### Diagnostics (bug triage)
@@ -574,6 +705,23 @@ A read-only runtime snapshot — app info, health checks (`storage_writable`, `c
 
 ---
 
+## Upgrades — Laravel, PHP, database
+
+Three skills move the project to a new version, and all three start the same way: a **readiness report**, then the **criticalities** — `blocker`, `high`, `medium`, `low`, `info` — and nothing changes until you choose **upgrade now**, **add it to the backlog**, or **stop at the report**.
+
+```bash
+php artisan larapilot:stack                          # Laravel, PHP, database, packages, frontend, pins — with support windows
+php artisan larapilot:upgrade-check --laravel=13 --report
+php artisan larapilot:upgrade-check --php=8.4        # --php-from=8.2 when composer.json does not say
+php artisan larapilot:upgrade-check --db=pgsql:17 --db-from=mysql:8.0
+php artisan larapilot:upgrade-check --laravel=13 --offline   # the lock only, no Packagist
+```
+
+- **`upgrade-check`** reads `composer.lock` and asks Packagist which release of each direct dependency supports the target Laravel — following `self.version` into the packages of the same vendor, so Filament is measured by `filament/support` — on the PHP that Laravel needs. Each package gets a verdict: `ok`, `update` (fits the constraint), `bump` (a new constraint, often a major: read its guide), `blocker` (no release supports the target yet), `abandoned`, `private` (Nova, Spark, a Satis: Packagist cannot see it). It lists every file that pins a version (Dockerfile and compose images, CI matrices, `vapor.yml`, `.php-version`, `.nvmrc`, `config.platform.php`, `phpstan.neon`, `rector.php`), scans the code for what the target PHP deprecates and for SQL the target database does not speak, and writes the report to `.larapilot/docs/upgrades/` (`paths.upgrades`). Composer has the last word: the report names the `--dry-run` that asks it.
+- **Upgrade now** runs on its own branch (by `git_mode`), after a baseline of the suite: PHP first when the target Laravel needs it, **one Laravel major at a time**, the database last; each step is the Composer change, the upgrade guide of that version (read through Boost `Search Docs`, never from memory), the package playbooks — Filament's upgrade script, `livewire:upgrade`, Inertia server and client together, Nova's guide — the gates (`about`, `route:list`, `config:cache`, tests, Pint, Larastan, the build), and one commit. The end is an **upgrade report** with the deploy runbook and the rollback.
+- **`/larapilot-db-upgrade`** never touches a production or shared database: it makes the code portable, proves it on a local rehearsal against a scratch database, and writes the data move (pgloader for MySQL → PostgreSQL) and the cutover.
+- **About** on the dashboard shows the same facts: each version with its support window, and the command that checks the next upgrade.
+
 ## Integrations
 
 All optional, all OFF until configured. Credentials live in `.env` — never in `.larapilot/`. Setup guide: `.larapilot/integrations.md`.
@@ -584,14 +732,28 @@ All optional, all OFF until configured. Credentials live in `.env` — never in 
 
 ### Frontend companion — split repo
 
-When **Frontend Topology** is `API + external frontend`, **Laravel stays the only cockpit**: PRD, backlog, plans, and every `/larapilot-*` command run in the backend workspace, and the frontend repo is a linked write target.
+When **Frontend Topology** is `API + external frontend`, **Laravel stays the only cockpit**: PRD, backlog, plans, and every `/larapilot-*` command run in the backend workspace, and the frontend repo is a linked write target — a single app, or a monorepo shared with other products, in Angular, React / Next.js, Vue / Nuxt, or Svelte / SvelteKit.
 
 ```bash
-php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo --stack=React   # writes LARAPILOT_FRONTEND_REPO_PATH to .env
-php artisan larapilot:frontend-scan                                                  # stack, tooling, structure, entrypoints
+php artisan larapilot:frontend-set --path=/absolute/path/to/fe-repo     # writes LARAPILOT_FRONTEND_REPO_PATH to .env
+php artisan larapilot:frontend-scan                                     # workspace, projects, agent rules, conventions, commands
+php artisan larapilot:frontend-set --project=portal --project=admin     # the projects of this product in a monorepo
+php artisan larapilot:frontend-rules --file=apps/portal/src/app/orders/order-list.ts   # the rules that govern a file
+php artisan larapilot:frontend-brief US-012                             # handoff: the brief the frontend team builds from
 ```
 
-UI tasks in a plan carry `repo: frontend`; implement writes under the env-resolved path and commits there. Or run `/larapilot-frontend-companion`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
+- **Workspaces** — Nx (the graph of `nx graph` when Nx is installed, cached until the workspace moves; the files otherwise, plugin-inferred targets included), Angular CLI, pnpm / yarn / npm / bun workspaces with Turborepo or Lerna, Rush, or one app. Each project comes with its type, tags, targets, stack and installed version, and what it depends on.
+- **An app kept in its own repository and built inside a monorepo** — a `project.json` with no `nx.json`, a `tsconfig` that extends a file two folders up: the scan finds the monorepo among the parent folders (or `frontend-set --workspace=/absolute/path` links it, in `.env`), runs the commands there, and commits in the app's own repository. An app that is a workspace of its own but sits inside a monorepo reads that monorepo's agent rules too. Every path of the scan is relative to `root`; commands run in `run_in`.
+- **Target projects and write scope** — in a monorepo the user names this product's projects. Libraries only they use are *owned*; a library another app also uses is *shared* and changes only when a task names it.
+- **The frontend team's rules** — `AGENTS.md` at any depth, `CLAUDE.md` with its `@imports`, `GEMINI.md`, Cursor (`.cursorrules`, `.cursor/rules/*.mdc` with `globs` / `alwaysApply`), Copilot (`copilot-instructions.md`, `*.instructions.md` with `applyTo`), Windsurf, Cline, Junie, Kiro, Amazon Q, Roo, JetBrains AI. The editor never loads them from the Laravel workspace, so implement reads them on purpose, and they win on code.
+- **What the code already does** — measured on the target projects: standalone or NgModule components, `@if` or `*ngIf`, signal inputs, `inject()`, zoneless, `<script setup>`, Pinia store style, Svelte runes, test naming, styling. Recent files of each kind are the models for new ones.
+- **Commands and generators** — `nx run portal:test`, `nx affected`, `ng test --watch=false` with Karma headless (the launcher the karma config defines, or `ChromeHeadless`), `turbo run --filter`, `pnpm --filter`, … with the package manager of the lockfile; the team's own Nx generators before the plugins'. A target the installed CLI can no longer run — the TSLint builder since Angular CLI 13, Protractor since 19, or one the installed package does not ship — is left out and named. A project with no spec, or a team whose generators skip them, is a question for the user.
+- **Commits in the team's style** — the scan reads the history: Conventional Commits or not, types, scopes, the language of the subjects, commitlint and hooks. A task's commit follows it with `{code} TASK-NN` in the subject. Vendored packages (built code copied into the repository) are listed and never edited.
+- **API client** — orval, openapi-generator, ng-openapi-gen, hey-api, openapi-typescript, kubb, RTK Query codegen: regenerated from the product OpenAPI, never edited.
+- **Playbooks** — Angular, React, Vue, and Svelte defaults by major version, for what the rules and the code leave open.
+- **Handoff** — `frontend-set --mode=handoff` when the frontend team builds in its own repository: `frontend-brief` writes the story, the frontend tasks, the API operations they call, and the mockups to `.larapilot/docs/frontend-briefs/`. `task-done` finds a frontend task's commit in the frontend repository.
+
+UI tasks in a plan carry `repo: frontend` (and `project:` in a monorepo); implement writes under the env-resolved path and commits there, hooks on. Or run `/larapilot-frontend-companion`. Details: [Frontend companion](https://larapilot.web.ap.it/#deep-dive-frontend-companion).
 
 ### Project trackers — Linear, Asana, Jira, Trello, ClickUp, Monday
 
@@ -627,27 +789,6 @@ php artisan larapilot:backstage-export --write   # catalog-info.yaml + mkdocs.ym
 
 `catalog-info.yaml` and `mkdocs.yml` are never overwritten without `--force`; TechDocs pages are regenerated. Set at least `LARAPILOT_BACKSTAGE_OWNER` (also `_SYSTEM`, `_LIFECYCLE`, `_COMPONENT_TYPE`, `_BASE_URL`). For a portal plugin, `GET /larapilot/api/backstage` returns entities and a lean delivery snapshot — call it through the Backstage backend proxy so the API token stays server-side. Or run `/larapilot-backstage`. Details: [Backstage portal](https://larapilot.web.ap.it/#deep-dive-backstage).
 
-### Self-hosted VPS — one server for the whole team
-
-`larapilot:vps-provision` writes a standalone `provision.sh` for an Ubuntu 24.04 / 26.04 LTS server that hosts several Laravel projects for a team working over SSH with Claude Code and their own Claude plan.
-
-```bash
-php artisan larapilot:vps-provision              # writes ./provision.sh
-php artisan larapilot:vps-provision --with-readme # + the operator guide
-scp provision.sh root@<vps>: && ssh root@<vps> 'bash provision.sh'
-```
-
-It installs PHP 8.3/8.4/8.5 (an FPM pool per project), MySQL, Redis, Nginx + certbot, Supervisor, Node LTS, Composer, Claude Code, and the `gh` / `glab` / `az` CLIs, then generates:
-
-| Tool | For | Does |
-| --- | --- | --- |
-| `prj-ai` | admin (root) | `config` · `list` · `add` · `del` · `php` · `user-add` · `user-del` · `deploy` · `rollback` · `preview` · `workspace-init` |
-| `prj-work` | developers | login menu → per-developer workspace inside a persistent `tmux` session |
-| `prj-token` | developers | save their **own** git token, so commits and PRs are attributed to them |
-| `prj-pr` | developers | open a PR/MR on GitHub, GitLab, Bitbucket Cloud, or Azure DevOps |
-
-Deploys are atomic and zero-downtime (a new `releases/` directory, `current` flipped only after every build step succeeds; `prj-ai rollback` flips back). Each developer can get a private preview URL with its own database. Full operator guide: `resources/larapilot/vps/README.md`, or the [Self-hosted VPS](https://larapilot.web.ap.it/#deep-dive-vps) docs.
-
 ---
 
 ## Artisan CLI & MCP
@@ -656,26 +797,30 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 
 | Area | Commands |
 | --- | --- |
-| Setup & health | `install` · `update` · `doctor` (`--human`) · `config-show` (`--only=settings,paths,frontend,tracker,dev_docs,backstage,workflow,personas`) · `settings-set` · `quality` (`--fix`) |
+| Setup & health | `install` · `update` · `doctor` (`--human`) · `context {skill}` (`--session=`, `--fresh`, `--with=`) · `config-show` (`--only=settings,paths,frontend,tracker,dev_docs,backstage,workflow,personas`) · `settings-set` · `quality` (`--fix`) |
 | Access | `dashboard-user {list\|add\|remove}` |
-| Discovery | `prd-write` · `validate-prd` · `prd-impact` (`--ids=`) · `choices-set` · `frontend-set` · `frontend-scan` |
-| Backlog | `spec-list` · `spec-add` · `spec-show` (`--task=`, `--fields=`) · `spec-next` · `spec-delete` · `validate-spec` · `spec-comment` |
+| Discovery | `prd-write` · `validate-prd` · `prd-show` (`--ids=`, `--section=`) · `prd-impact` (`--ids=`) · `choices-set` · `frontend-set` (`--project=`, `--mode=`) · `frontend-scan` (`--project=`, `--full`, `--no-cli`, `--fresh`) · `frontend-rules` (`--file=`) · `frontend-brief` |
+| Backlog | `spec-list` (`--status=`, `--full`) · `spec-add` · `spec-show` (`--task=`, `--fields=`) · `spec-next` · `spec-delete` · `validate-spec` · `spec-comment` |
 | Design | `mockup-choose-style US-XXX --style=` |
 | Plan & build | `validate-plan` · `spec-plan` · `spec-start` · `task-done` · `spec-review` |
 | Review | `spec-approve` (`--force`) · `spec-request-changes` (`--include-feedback`) |
 | Traceability | `decision-log` · `decision-check` · `code-log` · `code-history` |
-| Metrics & usage | `metrics` · `usage-log` · `usage-report` (`--insights`, `--format=json\|md\|human`) · `schedule-set` |
+| Metrics & usage | `metrics` · `usage-log` · `usage-report` (`--insights`, `--format=json\|md\|human`) · `schedule-set` (`--release=` for a milestone of one release) |
+| Schedule | `schedule-show` (`--only=queue,epics,deadlines,releases,alerts,findings`) · `schedule-apply --file=` (`--dry-run`) |
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
 | Releases | `release-list` · `release-add` · `release-set` · `release-cut` · `release-feature` · `release-sync` · `release-ship` (`--push`) · `release-import` |
 | Custom skills | `custom-skill-list` · `custom-skill-add` (`--name=`, `--file=` / `--content=` / stdin, `--force`) |
+| Hooks | `hook-list` (`--event=`) · `hook-run {event}` (`--phase=before\|after`, `--spec=`, `--task=`, `--release=`, `--dry-run`) · `--skill-hooks-done=` on every command that fires an event |
+| Stack & upgrades | `stack` (`--only=`, `--no-db`) · `upgrade-check` (`--laravel=`, `--php=`, `--php-from=`, `--db=`, `--db-from=`, `--offline`, `--report`, `--gate`) |
+| Dependencies | `sbom` (`--full`, `--write=md\|cyclonedx\|both`) · `vendor-audit` (`--cached`, `--new`, `--limit=`, `--report`, `--fail-on=`, `--gate`) · `vendor-link` (`--spec=`, `--waive --reason=`, `--clear`) · `checkpoint-scan` (`--only=`, `--skip=`, `--cached`, `--report`, `--gate`, `--fail-on-warn`) |
 | Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`, `--local`) · `aikido-push` · `aikido-repos` (`--search=`, `--use=`, `--forget`) · `aikido-register` · `aikido-scan` |
-| Errors | `boogle-status` · `boogle-errors` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` / `boogle-plan` (`--codes=`) · `boogle-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `boogle-resolve` (`--status=FIXED\|DONE`, `--comment=`) |
-| Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` · `vps-provision` |
+| Errors | `errors-status` · `errors-list` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` (`--codes=`) · `errors-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `errors-resolve` (`--status=FIXED\|DONE`, `--comment=`) — old names `boogle-status` · `boogle-errors` · `boogle-plan` · `boogle-link` · `boogle-resolve` |
+| Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` |
 | Runtime | `diagnostics` (`--lines=`, `--no-logs`) |
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `backstage-export`, `tracker-status`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `boogle-status` / `boogle-errors` / `errors-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `boogle-errors --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `stack`, `upgrade-check`, `sbom`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
 
 ---
 
@@ -694,6 +839,7 @@ Laravel **10** and **11** are past their security-fix window. Composer 2.9+ refu
 
 ## Learn more
 
+- [Version 5 vs version 4](https://larapilot.web.ap.it/#v5) — the context an agent loads, measured, and what to check when upgrading
 - [How it works](https://larapilot.web.ap.it/#deep-dive-how-it-works) — skills, artifacts, CLI, runtime packs
 - [Eleven use cases](https://larapilot.web.ap.it/#examples) — new product, adopt an app, Laravel package, legacy porting, feature, bug, frontend companion, tracker sync, team server, SSH & tmux, your own skill
 - [Custom skills](https://larapilot.web.ap.it/#deep-dive-custom-skills) — anatomy, validation, lifecycle

@@ -11,7 +11,8 @@ class ReleaseShipCommand extends ReleaseBranchCommand
 {
     protected $signature = 'larapilot:release-ship
                             {--semver= : SemVer X.Y.Z}
-                            {--push : Push main, develop, and the version tag}';
+                            {--push : Push main, develop, and the version tag}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Merge the release branch into main, tag it, and back-merge into develop';
 
@@ -31,10 +32,20 @@ class ReleaseShipCommand extends ReleaseBranchCommand
             );
         }
 
+        $hookContext = ['release' => trim($version), 'push' => (bool) $this->option('push')];
+
+        if (($blocked = $this->beforeHooks('release.shipped', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         try {
             $result = $flow->ship($version, (bool) $this->option('push'));
         } catch (\InvalidArgumentException $exception) {
             return $this->invalidRelease($exception);
+        }
+
+        if (($result['ok'] ?? false) === true) {
+            $this->afterHooks('release.shipped', $hookContext);
         }
 
         return $this->flowResult('release_ship', $result);

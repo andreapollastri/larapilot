@@ -1,0 +1,76 @@
+# Larapilot workflow hooks
+#
+# Your own commands and skills, attached to the moments of the delivery loop.
+# Nothing here runs until `settings.hooks` is YES
+# (php artisan larapilot:settings-set --hooks=YES), and nothing runs on a
+# machine where LARAPILOT_HOOKS_ENABLED=false.
+#
+# Events, and the command that fires each one:
+#   prd.written             larapilot:prd-write             the PRD is saved
+#   spec.added              larapilot:spec-add              stories enter the backlog
+#   spec.planned            larapilot:spec-plan             a plan is saved: TODO → PLANNED
+#   spec.started            larapilot:spec-start            PLANNED → IN PROGRESS
+#   task.done               larapilot:task-done             one task of the plan is done
+#   spec.review             larapilot:spec-review           IN PROGRESS → REVIEW
+#   spec.approved           larapilot:spec-approve          REVIEW → DONE
+#   spec.changes_requested  larapilot:spec-request-changes  REVIEW → TODO, with rework
+#   release.shipped         larapilot:release-ship          the release is merged and tagged (release_mode)
+#   ship                    /larapilot-ship                 before: the gate starts · after: the verdict is GO
+#
+# Phases:
+#   before  runs before the state is written. A hook that fails (an exit code
+#           other than 0, or past its timeout) blocks the transition, unless it
+#           says `blocking: false`.
+#   after   runs once the state is written. A failure is reported, never undone.
+#
+# A hook is one of:
+#   run: <shell command>   Larapilot runs it, from the project root.
+#   skill: <name>          The agent runs that skill at that moment: one of
+#                          .larapilot/skills/, or any skill your agent has.
+#                          Before a transition, the command refuses until the
+#                          agent reports it done with --skill-hooks-done=<name>.
+#
+# Optional keys: name (shown in reports), timeout (seconds, default 300, at
+# most 3600), blocking (before hooks only, default true).
+#
+# A `run` hook gets the event in its environment: LARAPILOT_HOOK_EVENT,
+# LARAPILOT_HOOK_PHASE, LARAPILOT_HOOK_SPEC, LARAPILOT_HOOK_SPEC_TITLE,
+# LARAPILOT_HOOK_TASK, LARAPILOT_HOOK_STATUS_FROM, LARAPILOT_HOOK_STATUS_TO,
+# LARAPILOT_HOOK_COMMIT, LARAPILOT_HOOK_RELEASE, LARAPILOT_HOOK_PROJECT_ROOT;
+# and the same as JSON on stdin. Secrets stay in .env: a hook reads them from
+# its environment, never from this file.
+#
+# Check this file:  php artisan larapilot:hook-list
+# Try one event:    php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TASK-01
+#
+# Examples: uncomment and adapt.
+
+hooks:
+#  task.done:
+#    before:
+#      - name: Tests
+#        run: php artisan test --compact
+#        timeout: 900
+#  spec.review:
+#    before:
+#      - name: Static analysis
+#        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+#      - skill: acme-a11y-check
+#  spec.started:
+#    after:
+#      - name: Start the timer
+#        run: ./scripts/timer-start.sh "$LARAPILOT_HOOK_SPEC $LARAPILOT_HOOK_SPEC_TITLE"
+#  spec.approved:
+#    after:
+#      - name: Deploy to staging
+#        run: curl -fsS -X POST "$FORGE_STAGING_DEPLOY_URL"
+#  ship:
+#    before:
+#      - skill: acme-predeploy-gate
+#    after:
+#      - name: Deploy to production
+#        run: php vendor/bin/envoy run deploy
+#        timeout: 1800
+#  release.shipped:
+#    after:
+#      - skill: acme-release-notes

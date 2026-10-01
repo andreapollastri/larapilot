@@ -7,21 +7,19 @@ description: "Plans and implements eligible backlog specs, optionally auto-appro
 
 Batch-run `larapilot-plan` and `larapilot-implement` across eligible specs. Optionally auto-approve when `settings.auto_approve` is `YES`.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context autopilot` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` and **Spec worker** in `.larapilot/runtime-core-subagents.md`.
+When this session delegates to a spec worker, that is all it reads: the core, `core-subagents.md`, and `spec-worker.md`. Do not read `runtime-delivery` or its parts, `runtime-dev-docs`, `task-templates`, the PRD, or `larapilot-implement` — each worker runs its own `context` call, and that context dies with it. Delivery target is `data.project.delivery_target`. Phase 2 uses **Review handoff** in `core-subagents.md`. One `usage-log` at batch end.
 
-When this session delegates to a spec worker, stop after the every-skill rows plus `runtime-core-subagents.md`. Do not read `runtime-delivery` or its parts, `runtime-dev-docs`, `runtime-ops`, `task-templates`, the PRD, or `larapilot-implement`. `config-show --only=settings,paths,dev_docs`. Delivery target is `{paths.choices}` key `delivery_target`. Phase 2 uses **Review handoff** in that same sub-agents file. One `usage-log` at batch end comes from Output Economy.
-
-When `effort` is `ECO`, or the editor has no writing sub-agent, this session runs plan and implement inline and reads `runtime-delivery` (every part), `runtime-dev-docs`, and `task-templates`.
+When `effort` is `ECO`, the envelope already lists what plan and implement read, because this session runs them inline. When the editor has no writing sub-agent, run `larapilot:context plan --session={token}` and `larapilot:context implement --session={token}` before the first spec, for the same reason.
 
 An unattended run still writes the developer domain docs for every spec. The first-change catch-up runs inside the first implement worker when `data.dev_docs.documented` is `false`. Under the inline path, this session runs that catch-up before the first spec.
 
 ## Output Economy
 
-**Minimal** — see `larapilot-autopilot` in shared-runtime. Per spec: `US-XXX: {from}→{to} | N tasks | OK or blocker`. Batch summary at end. Plan and implement chat stay inside the spec worker. This session prints the line, not the phase.
+**Minimal.** Per spec: `US-XXX: {from}→{to} | N tasks | OK or blocker`. Batch summary at end. This session prints that line, not the phase: a spec worker follows plan or implement economy inside its own context and returns `OK` or `BLOCKED`.
 
 ## The Team
 
@@ -32,14 +30,14 @@ An unattended run still writes the developer domain docs for every spec. The fir
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — read `data.settings.auto_approve`
-2. `php artisan larapilot:spec-list`
-3. `php artisan larapilot:metrics`
-4. When auto-approving: `php artisan larapilot:spec-approve {code}`
+1. `php artisan larapilot:spec-list` — codes, statuses, priorities; `data.settings.auto_approve` is in the `context` envelope
+2. `php artisan larapilot:metrics`
+3. When auto-approving: `php artisan larapilot:spec-approve {code}`
+4. When `data.settings.hooks` is `YES`, the transitions the parent calls run the project's workflow hooks (`hooks.md`): the parent fixes or reports a refusal with `details.hooks`, runs the skills a refusal names before repeating with `--skill-hooks-done=`, and runs `data.hooks.after.skills` before the next spec. A hook that cannot be fixed stops that spec, like a failing test.
 
 ## Selection Rules
 
-Delivery target is `{paths.choices}` key `delivery_target` (do not open the PRD). For `Full Product` or `Enterprise`, confirm with the user before processing large batches.
+Delivery target is `data.project.delivery_target` (do not open the PRD). For `Full Product` or `Enterprise`, confirm with the user before processing large batches.
 
 Default pipeline per spec. Walk forward in the same visit until `REVIEW`, `DONE`, or a blocker — a `TODO` spec is planned and then implemented before the next spec starts.
 
@@ -57,7 +55,7 @@ Respect user filters:
 
 ## Execution
 
-Process specs one at a time in priority order (same ordering as `spec-next`). Follow **Spec worker** in `.larapilot/runtime-core-subagents.md` — that section is the contract. Do not re-derive it.
+Process specs one at a time in priority order (same ordering as `spec-next`). Follow **Spec worker** in `spec-worker.md` — that file is the contract. Do not re-derive it.
 
 When `effort` is `ECO`, or the editor cannot spawn a writing sub-agent: run `larapilot-plan` and `larapilot-implement` inline in this session, including their own sub-agent rules (none under `ECO`).
 

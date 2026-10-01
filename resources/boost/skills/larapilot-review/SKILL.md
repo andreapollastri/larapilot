@@ -7,15 +7,13 @@ description: "Human acceptance of a spec in REVIEW: approve to DONE or request c
 
 Present the delivered increment and execute the human verdict.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` — including **Project Settings** and **Sub-agents** (review artifact from implement) — then `.larapilot/runtime-dev-docs.md` (**Freshness gate**).
+`php artisan larapilot:context review` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`: after an implement run in the same conversation there is usually nothing left to read. Settings, paths, `data.project`, and `data.dev_docs` come from that envelope: no `config-show`. The gate is **Code Review Gate** (`delivery-2.md`) and the **Freshness gate** (`dev-docs.md`).
 
 ## Output Economy
 
-**High** — see `larapilot-review` in shared-runtime. Robert presents a checklist gate: criteria, evidence pointers, risks, verdict ask. Summarize diffs; do not narrate every hunk.
+**High.** Robert presents a **checklist gate**: criteria status, evidence pointers (branch, test command and output), residual risks, verdict ask. Summarize diffs; do not narrate every hunk.
 
 When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + verdict); **do not block on missing README/PDF**; **do block if public API routes changed without OpenAPI update, or if a touched domain has no current file under `{paths.dev_docs}`** — domain docs are not part of the `ECO` deferral. When **`MAX`**: expand residual risks, design-system, docs, and copy notes.
 
@@ -34,11 +32,13 @@ When `settings.effort` is **`ECO`**: ultra-short checklist (criteria + tests + v
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — honor `data.settings` (git/testing evidence; `auto_approve`; `security_scan`)
-2. `php artisan larapilot:spec-list --status=REVIEW`
-3. `php artisan larapilot:spec-show {code}`
-4. On approval: `php artisan larapilot:spec-approve {code}`
-5. On rework: `php artisan larapilot:spec-request-changes {code} --file=...`
+1. `php artisan larapilot:spec-list --status=REVIEW`
+2. `php artisan larapilot:spec-show {code} --fields=id,title,status` — the spec body with its acceptance criteria, the tasks without their bodies
+3. On approval: `php artisan larapilot:spec-approve {code}`
+4. On rework: `php artisan larapilot:spec-request-changes {code} --file=...`
+5. When `data.settings.hooks` is `YES`, both run the project's workflow hooks (`hooks.md`). A refused approval names a failing hook or a skill to run first: report it to the human, never approve around it, and repeat with `--skill-hooks-done=` once the skill ran. The skills under `data.hooks.after.skills` run before the review is closed.
+
+Honor `data.settings` for the evidence asked: `git_mode`, `testing`, `auto_approve`, `security_scan`.
 
 When `settings.auto_approve` is **`NO`** (default): always ask the human Approve / Request changes before calling CLI. When **`YES`** and this skill was invoked from autopilot (or the user already said to approve), you may `spec-approve` after the short checklist if no Critical blockers — still never invent approval on failed tests.
 
@@ -55,12 +55,13 @@ Robert speaks in character. For the selected spec, he presents:
 - Mockup/responsive evidence — smoke usability on phone/desktop; automated multi-viewport only when `BEST`
 - `CHANGELOG.md`, `security.txt`, `SECURITY.md` updates when in scope
 - Residual risks or open concerns before the human verdict
-- Lars security findings from implementation — read `{paths.review}/{code}.md` (from `config-show`) when present (written during implement sub-agent merge); otherwise from implementation notes
+- Lars security findings from implementation — read `{paths.review}/{code}.md` when present (written during the implement review merge); otherwise from implementation notes
 - **Aikido** — when `settings.aikido` is `YES` and the spec carries an **Aikido finding**: the criterion "Aikido no longer reports it" is met only after the merge and a new scan, so approve on the evidence of the fix and say `php artisan larapilot:aikido-scan` in the handoff. Never run the whole list of findings here — that is `/larapilot-aikido` and the ship gate
-- **Security scan** — when `settings.security_scan` is `YES`: run `php artisan checkpoint:scan --json` (`andreapollastri/checkpoint`). Fold results into Robert's checklist — every `FAIL` is a **Critical blocker** (do not approve until fixed, or the user records a waiver via `php artisan larapilot:decision-log`); `WARN` findings are review notes. If the command is missing, **stop and tell the user** to `composer require --dev andreapollastri/checkpoint` or turn `security_scan` back OFF via `/larapilot-settings`. Skip entirely when `security_scan` is `NO`
+- **Security scan** — when `settings.security_scan` is `YES`: run `php artisan larapilot:checkpoint-scan` (it runs `andreapollastri/checkpoint` and keeps the result for the dashboard, **Security → Checkpoint**). Fold results into Robert's checklist — every `FAIL` is a **Critical blocker** (do not approve until fixed, or the user records a waiver via `php artisan larapilot:decision-log`); `WARN` findings are review notes. If it answers `E_PRECONDITION` (not installed), **stop and tell the user** to `composer require --dev andreapollastri/checkpoint` or turn `security_scan` back OFF via `/larapilot-settings`. Skip entirely when `security_scan` is `NO`
 - **Sabrine** parity findings when Project Origin is legacy **or the spec is refactoring/porting** — compare deliverables to `{paths.research}/legacy-parity.md` and porting/refactoring AC; flag undocumented feature or content drops; **Robert does not approve without Sabrine sign-off**
 - **Marika** + **Emily** copy/i18n notes when the spec touched user-facing text — typos, tone, clarity, **translation consistency** between source and `lang/` files _(skip or one-liner under `effort: ECO`)_
 - **Joe** design-system notes when UI changed — token/component drift vs Elise mockups and agreed design system _(skip or one-liner under `effort: ECO`)_
+- **Frontend repository** — when the spec has `repo: frontend` tasks: review that diff per **Review** in **Frontend Companion** (`frontend.md`) — the FE repo's agent rules (`frontend-rules --file=` for each changed file), `write_scope`, `observed` conventions, `commands.affected` green, no undocumented endpoint, generated client untouched. Each finding names the rule file it breaks
 - **Anne** manual test handoff — list tests the human should run on real devices or outside automation (when applicable)
 - Any open review notes
 
@@ -102,7 +103,7 @@ Delete temp file after CLI exits.
 
 - Robert speaks in character when presenting the increment
 - Only human approval moves a spec to DONE
-- Judge against the **full spec** and PRD delivery target — not a reduced MVP bar unless the PRD says MVP. Read `paths.prd` (from `config-show`) when the delivered increment looks narrower than the spec and you need to confirm that's actually the chosen target
-- **`spec-request-changes` never updates the PRD** — rework is spec/plan level per **PRD Living Document** in shared-runtime; suggest `/larapilot-feature` if the gap is new product scope
+- Judge against the **full spec** and `data.project.delivery_target` — not a reduced MVP bar unless the target is MVP. When the delivered increment looks narrower than the spec, read the promise with `prd-show --ids=` on the spec's `**Traces to:**` line — never the whole PRD
+- **`spec-request-changes` never updates the PRD** — rework is spec and plan level; suggest `/larapilot-feature` if the gap is new product scope
 - This is a gate, not a re-implementation — follow Output Economy (checklist format, no diff narration)
-- Use the detected language for all user-facing messages (see Language Policy in shared runtime)
+- Use the detected language for all user-facing messages

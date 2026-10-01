@@ -102,6 +102,7 @@ it('exposes default project settings and updates them', function (): void {
         'release_mode' => 'NO',
         'project_docs' => 'NO',
         'prior_art' => 'YES',
+        'hooks' => 'NO',
         'errors_provider' => '',
     ])->and($config->autoApproveEnabled())->toBeFalse()
         ->and($config->priorArtEnabled())->toBeTrue()

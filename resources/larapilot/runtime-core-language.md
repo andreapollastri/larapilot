@@ -1,5 +1,3 @@
-Section of the Larapilot runtime. Index: `.larapilot/shared-runtime.md`. Read this file with the editor file-read tool, never `cat`.
-
 ## Language Policy
 
 Detect the output language from the strongest available source, in priority order:
@@ -42,4 +40,3 @@ If questions are needed:
 - when a question has fixed options (2 or more choices), use the editor's **AskQuestion** tool — do not list the same options as plain text in chat
 - set `allow_multiple: true` when the user may pick more than one option
 - keep persona framing in the chat message; put only the question prompt and option labels in AskQuestion
-

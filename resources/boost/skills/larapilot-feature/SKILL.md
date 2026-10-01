@@ -7,17 +7,15 @@ description: "Adds one feature to an existing project and creates a backlog spec
 
 You run a **mini-inception** for one new feature on an **existing** project, then add a spec to the backlog.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context feature` — with `--session={token}` when this conversation already holds one (a triage handoff does), `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`, and an `on_demand` file only when its `when` comes true: `discovery-6.md` for a whole subsystem or a new journey or entity, `discovery-3.md` for legacy scope, `delivery-3.md` for the package policy. Settings, paths, and `data.project` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core — **Assumptions and Questions**), then `.larapilot/runtime-ops.md` (**PRD Living Document**, per-skill PRD rules) and `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Requirement Quality**, **Prior Art & Open-Source Alternatives** — feature-level rule, **Legacy Rewrite & Porting** when the feature touches legacy scope). When `data.settings.release_mode` is `YES`, also load `.larapilot/runtime-release.md`.
-
-When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+When `data.settings.decision_log` is `YES`, journal material user choices with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## Output Economy
 
-**Moderate** — brief chat; full spec body in the backlog file.
+**Moderate.** A focused mini-inception: brief scope summary in chat, AskQuestion rounds of 3 at most, the full user story and acceptance criteria in the spec body.
 
 ## The Team (this phase)
 
@@ -38,14 +36,13 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:spec-list`
-3. Read PRD from `data.paths.prd` — if missing, suggest `/larapilot-inception` first
-4. `php artisan larapilot:validate-spec --file=...`
-5. `php artisan larapilot:spec-add --file=...`
-6. When `release_mode=YES` and open releases exist: `release-list`, AskQuestion for target release (each open release | new release | none/backlog), then `release-set --add-spec=US-XXX` after `spec-add`; add `**Release:** x.y.z` to the spec body.
-7. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
-8. On a **change request**: `php artisan larapilot:prd-impact --ids=FR-XXX` — the other specs that rest on the promise being changed, with the action each needs by status
+1. `php artisan larapilot:spec-list` — titles, statuses, and `cites`: the PRD ids each spec names
+2. `php artisan larapilot:prd-show` — the outline; then `--ids=` for the FRs, journeys, and NFRs the feature touches. When `data.project.prd` is `false`, suggest `/larapilot-inception` first. Read the whole PRD only when step 3 edits it
+3. `php artisan larapilot:validate-spec --file=...`
+4. `php artisan larapilot:spec-add --file=...`
+5. When `release_mode=YES` and open releases exist: `release-list`, AskQuestion for target release (each open release | new release | none/backlog), then `release-set --add-spec=US-XXX` after `spec-add`; add `**Release:** x.y.z` to the spec body.
+6. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
+7. On a **change request**: `php artisan larapilot:prd-impact --ids=FR-XXX` — the other specs that rest on the promise being changed, with the action each needs by status
 
 ## Preconditions
 
@@ -58,7 +55,7 @@ Read **`data.paths.client_materials`**, **`data.paths.legacy`**, and **`data.pat
 
 When the session arrives with a **Triage handoff** block, take it as answers already given:
 
-- The every-skill runtime rows are loaded and Zoey's start line is posted — do not repeat either. Post the end line and the single `usage-log`, counting what triage read
+- `context feature --session={token}` lists only what triage did not read, and Zoey's start line is posted — repeat neither. Post the end line and the single `usage-log`, counting what triage read
 - `request` is the feature — do not restate it or ask for it again
 - `evidence` answers **Traceability** in Round 1: an FR cited → extends existing `FR-XXX`; `none` → needs new `FR-XXX`
 - `verdict: Feature — change request` means today's behavior is as specified: cite the FR or criterion being changed, and step 3 edits that FR instead of adding one
@@ -69,7 +66,7 @@ With or without a handoff: when discovery shows an FR or an acceptance criterion
 
 ### 0. Context load
 
-Run `config-show` and `spec-list`. Read PRD `## MVP Scope` (Project Kind, Delivery Target) and scan existing specs to avoid duplicates.
+Run `context`, `spec-list`, and the `prd-show` outline. Project Kind and Delivery Target are `data.project.kind` and `data.project.delivery_target`; scan the spec titles and `cites` to avoid duplicates.
 
 Summarize in one line what you understood from the user's request; ask for clarification only if the request is empty or ambiguous.
 
@@ -87,7 +84,7 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 
 **Round 2 — Delivery shape** (Tom + Mark)
 
-- **Complexity signal:** small (1 spec) | medium (may split) | large (suggest epic breakdown) — honor `settings.backlog` (see **Backlog granularity** in shared-runtime): under `LEAN`/`STANDARD` prefer one spec with richer plan tasks over splitting; split/epic breakdown mainly under `GRANULAR`
+- **Complexity signal:** small (1 spec) | medium (may split) | large (suggest epic breakdown) — honor `settings.backlog` (**Backlog granularity**, Project Settings): under `LEAN`/`STANDARD` prefer one spec with richer plan tasks over splitting; split/epic breakdown mainly under `GRANULAR`
 - **Mockup first?** `Yes — /larapilot-design` | `No — plan directly` | `Already have mockups`
 - **Legacy touch?** `No` | `Maps to legacy parity row` | `Needs new legacy scraping/porting` _(Sabrine joins)_
 
@@ -96,7 +93,7 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 **Round 3 — Backlog placement** (Mark)
 
 - **Priority:** `CRITICAL` | `HIGH` | `MEDIUM` | `LOW` (default from MoSCoW: Must→HIGH, Should→MEDIUM, Could→LOW; compliance/security→CRITICAL)
-- **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (see **Epic consolidation** in shared-runtime)
+- **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (**Epic consolidation**, Project Settings)
 - **Blocked by:** none | existing `US-XXX` (dependency)
 
 **Release assignment (when `release_mode=YES` and `release-list` shows open releases)** — AskQuestion: each open `planned`/`in_progress` release | **new release** (Sarah proposes next semver) | **none / backlog**. Persist after `spec-add` with `release-set --add-spec=`. That question picks the release, not the git branch. Do not ask again which branch to check out: `release-list` → `git.needs_choice` is the only later branch question, and only when the spec stayed unassigned.
@@ -135,7 +132,7 @@ Apply **PRD Living Document** rules — update the PRD when the feature changes 
 
 **Update PRD when any of:**
 
-- New `### FR-XXX` needed (not covered by existing FRs) — written in the **Requirement Quality** shape (`runtime-discovery.md`): MoSCoW, journey, persona, actor and trigger, behavior, verifiable **Done means**, out of this FR, depends on, source
+- New `### FR-XXX` needed (not covered by existing FRs) — written in the **Requirement Quality** shape (`discovery-7.md`): MoSCoW, journey, persona, actor and trigger, behavior, verifiable **Done means**, out of this FR, depends on, source
 - A new journey, a new entity or state in `## Domain Model`, or a new NFR row the feature introduces
 - An open question in `## Risks & Assumptions` the feature answers (resolve it there, cite the decision)
 - MoSCoW changes on an existing `FR-XXX` (e.g. `Could` → `Must`)
@@ -155,7 +152,7 @@ Apply **PRD Living Document** rules — update the PRD when the feature changes 
 
 **Skip PRD update** when the feature clearly traces to an existing FR with unchanged MoSCoW and scope — spec-only is enough.
 
-**Change request** (the behavior works as specified and must now be different): edit the FR **in place** — same id, new **Behavior** and **Done means** — and write the before → after in the revision-history row. Never add a second FR that contradicts the first. Run `prd-impact --ids=FR-XXX`: open specs citing the FR follow the action of their status (**Impact on the backlog**, `runtime-ops.md`); the `DONE` spec that shipped the old behavior stays closed and the new spec cites it as `**Supersedes:**`.
+**Change request** (the behavior works as specified and must now be different): edit the FR **in place** — same id, new **Behavior** and **Done means** — and write the before → after in the revision-history row. Never add a second FR that contradicts the first. Run `prd-impact --ids=FR-XXX`: open specs citing the FR follow the `action` and `hint` the command returns for their status; the `DONE` spec that shipped the old behavior stays closed and the new spec cites it as `**Supersedes:**`.
 
 **Not a feature after all:** when the request turns out to be a change of priorities, scope, targets, or wording with no capability behind it, say so in one line and hand over to `/larapilot-prd`.
 

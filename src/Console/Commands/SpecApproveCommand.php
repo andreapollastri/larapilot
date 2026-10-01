@@ -16,7 +16,8 @@ class SpecApproveCommand extends LarapilotCommand
     protected $signature = 'larapilot:spec-approve
                             {code : Spec code}
                             {--commit= : Optional merge commit SHA to link (auto-detected from recent history when omitted)}
-                            {--force : Approve even with blocking feedback or incomplete plan tasks}';
+                            {--force : Approve even with blocking feedback or incomplete plan tasks}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Mark a reviewed spec as DONE after human approval';
 
@@ -66,6 +67,11 @@ class SpecApproveCommand extends LarapilotCommand
 
         $commitOption = $this->option('commit');
         $commitSha = is_string($commitOption) && $commitOption !== '' ? $commitOption : null;
+        $hookContext = $this->specHookContext($code, $spec, $config->status('done'));
+
+        if (($blocked = $this->beforeHooks('spec.approved', $hookContext)) !== null) {
+            return $blocked;
+        }
 
         try {
             $commit = $specs->approve($code, $commitSha);
@@ -80,6 +86,8 @@ class SpecApproveCommand extends LarapilotCommand
             'body' => 'Status: '.$config->status('done'),
             'url' => is_array($commit) ? ($commit['url'] ?? null) : null,
         ]);
+
+        $this->afterHooks('spec.approved', $hookContext + ['commit' => $commit]);
 
         return $this->success('approve_result', [
             'code' => $code,

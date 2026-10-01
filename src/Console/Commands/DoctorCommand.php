@@ -6,6 +6,7 @@ namespace Larapilot\Console\Commands;
 
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\HookService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
@@ -19,7 +20,7 @@ class DoctorCommand extends LarapilotCommand
 
     protected $description = 'Diagnose Larapilot installation and project setup';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, PrdService $prd, SpecService $specs): int
+    public function handle(ConfigService $config, CodeQualityService $quality, PrdService $prd, SpecService $specs, HookService $hooks): int
     {
         $designSystems = SharedRuntime::designSystemsProjectPath();
         $qualityStatus = $quality->status();
@@ -37,10 +38,13 @@ class DoctorCommand extends LarapilotCommand
             'design_systems' => is_dir($designSystems) && count(glob($designSystems.'/*') ?: []) > 0,
             'dev_docs_scaffold' => is_file(base_path('.larapilot/docs/devs/README.md'))
                 && is_file(base_path('.larapilot/docs/devs/TEMPLATE.md')),
+            'handbook_scaffold' => is_dir($config->projectDocsDirectory()),
             'backlog' => is_file($specs->backlogPath()),
             'prd' => $prd->exists(),
             'boost' => class_exists(BoostServiceProvider::class),
             'settings_valid' => $config->settingsValid(),
+            // Off, or a hooks.yaml that reads: with errors every transition is refused.
+            'hooks' => $hooks->healthy(),
             'quality_pint' => $qualityStatus['pint_config'],
             'quality_larastan' => $qualityStatus['larastan_config'] && $qualityStatus['larastan_level_ok'],
             'quality_packages' => $qualityStatus['composer_require_dev'][CodeQualityService::PINT_PACKAGE]
@@ -48,10 +52,12 @@ class DoctorCommand extends LarapilotCommand
         ];
 
         $missingSettings = $config->missingSettingKeys();
+        $legacyProjectDocs = is_dir($config->absolutePath(ConfigService::LEGACY_PROJECT_DOCS_PATH));
         $healthy = $checks['config']
             && $checks['shared_runtime']
             && $checks['boost']
             && $checks['settings_valid']
+            && $checks['hooks']
             && $checks['quality_pint']
             && $checks['quality_larastan']
             && $checks['quality_packages'];
@@ -69,6 +75,13 @@ class DoctorCommand extends LarapilotCommand
                 );
             }
 
+            if ($legacyProjectDocs) {
+                $this->components->warn(
+                    'A '.ConfigService::LEGACY_PROJECT_DOCS_PATH.' folder is still at the project root. Run larapilot:update to move it into '
+                    .$config->relativePath($config->projectDocsDirectory()).'/.'
+                );
+            }
+
             $healthy
                 ? $this->components->info('Larapilot installation is healthy.')
                 : $this->components->error('Larapilot installation has problems. Run larapilot:install / boost:install.');
@@ -82,6 +95,7 @@ class DoctorCommand extends LarapilotCommand
             'dev_docs' => $config->devDocsStatus(),
             'quality' => $qualityStatus,
             'settings_missing_keys' => $missingSettings,
+            'legacy_project_docs' => $legacyProjectDocs,
             'project_root' => $config->projectRoot(),
         ]);
     }

@@ -15,6 +15,13 @@ class ErrorsPlanCommand extends LarapilotCommand
     protected $signature = 'larapilot:errors-plan
                             {--codes= : Comma-separated error codes (#BUG12) or keys confirmed for triage}';
 
+    /**
+     * The name it had when Boogle was the only tracker.
+     *
+     * @var list<string>
+     */
+    protected $aliases = ['larapilot:boogle-plan'];
+
     protected $description = 'Group the errors of production the user confirmed by domain and place in the code, one triage handoff for each group';
 
     public function handle(BoogleService $errors, ConfigService $config): int

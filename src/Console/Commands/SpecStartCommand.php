@@ -10,7 +10,9 @@ use Larapilot\Support\LarapilotCommand;
 
 class SpecStartCommand extends LarapilotCommand
 {
-    protected $signature = 'larapilot:spec-start {code : Spec code}';
+    protected $signature = 'larapilot:spec-start
+                            {code : Spec code}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Move a planned spec to IN PROGRESS';
 
@@ -29,7 +31,14 @@ class SpecStartCommand extends LarapilotCommand
             return $guard;
         }
 
+        $hookContext = $this->specHookContext($code, $spec, $config->status('in_progress'));
+
+        if (($blocked = $this->beforeHooks('spec.started', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $specs->setStatus($code, $config->status('in_progress'));
+        $this->afterHooks('spec.started', $hookContext);
 
         return $this->success('status_result', [
             'code' => $code,

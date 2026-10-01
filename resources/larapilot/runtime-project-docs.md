@@ -1,14 +1,14 @@
 # Larapilot Runtime — Project Docs
 
-Phase pack for **`larapilot-project-docs`** and for incremental updates from **every skill** when `settings.project_docs` is `YES`. Read `.larapilot/shared-runtime.md` (core) first.
+Phase pack for **`larapilot-project-docs`** and for incremental updates from the skills that change or ship code when `settings.project_docs` is `YES`.
 
 ## Gate _(Zoey enforces)_
 
-Honor **`data.settings.project_docs`** from `config-show`. When `NO` (**default**), skip this entire pack — no `_project_docs/` obligation. When `YES`, Albert maintains a living handbook at **`paths.project_docs`** (default `_project_docs/` at the project root).
+Honor **`data.settings.project_docs`**. When `NO` (**default**), skip this entire pack — no handbook obligation. When `YES`, Albert maintains a **living handbook** at **`paths.project_docs`** (default `.larapilot/docs/handbook/`). Never write it anywhere else: `_project_docs/` at the project root is the old location, and `larapilot:update` moves it.
 
 ## Handbook structure _(Albert owns layout; all personas contribute content)_
 
-Organize by chapter — one topic per file, cross-linked index at `_project_docs/README.md`:
+Organize by chapter — one topic per file, cross-linked index at `README.md` in the handbook folder (it replaces the stub seeded on install):
 
 | Chapter | File(s) | Owner | Content |
 | --- | --- | --- | --- |

@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Infrastructure & Cloud _(Jack + Aurora own)_
 
 **Never impose deploy target, edge provider, or cloud vendor by default.** **Jack** asks via **AskQuestion** during inception (downstream skills ask only if the PRD omits a choice). After the user's answers, **recommend AWS** for compute/data and **Cloudflare** for edge when feasible — existing stack, compliance, EU residency, budget, and delivery target may favor alternatives. Record each choice in the PRD under `## Technical Architecture` so all skills honor it instead of re-imposing defaults.
@@ -64,4 +62,3 @@ Jack stays **open to other providers** when the PRD, compliance, or user prefere
 Coverage to plan: **application** (exceptions, slow queries, queue latency, failed jobs); **infrastructure** (CPU, memory, disk, HTTP 5xx, SSL cert expiry); **alerting** (PagerDuty, Slack, email, or CloudWatch alarms on error-rate spikes and downtime); **logs** (centralized retention aligned with Violet's policy; structured JSON where possible).
 
 Ownership: **Jack** owns provider selection (per PRD choices), deploy runbooks, edge setup, and observability wiring; **Sarah** owns shell/deploy-hook scripts, systemd/cron, SSH/rsync glue, and CI deploy job scripts that those runbooks invoke; **Aurora** owns cost fit; **John** aligns architecture to cloud primitives and ensures apps emit observable signals.
-

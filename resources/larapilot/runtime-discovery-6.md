@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Prior Art & Open-Source Alternatives _(Sebastian — `settings.prior_art`, default ON)_
 
 Before the first functional requirement, the team checks whether the product — or its core — already exists as open source, as a maintained package, or as a product worth buying instead of building. The goal challenge asks "what do they do instead?"; this round verifies the answer against the world instead of trusting it. It runs in **`larapilot-inception`** right after the goal challenge and **before** scope. It is advisory: the team says what it found once, clearly, and the user decides.

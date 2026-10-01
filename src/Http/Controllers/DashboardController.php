@@ -186,6 +186,16 @@ class DashboardController
         return view('larapilot::dashboard.plan', $this->dashboard->plan());
     }
 
+    /**
+     * Epics, stories, tasks, milestones, and the forecast, as Markdown.
+     */
+    public function planDownload(): Response
+    {
+        $this->guard();
+
+        return $this->markdown($this->exports->plan(), $this->exports->planFilename());
+    }
+
     public function economics(Request $request): View
     {
         $this->guard();

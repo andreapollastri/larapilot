@@ -193,7 +193,7 @@ it('says what the tracker still needs, whether the errors are on or off', functi
         ->and($status['hints'][0])->toContain('larapilot:settings-set --errors=YES --errors-provider=sentry')
         ->and($status['hints'][1])->toContain('LARAPILOT_SENTRY_AUTH_TOKEN');
 
-    $this->artisan('larapilot:boogle-errors')->assertExitCode(4)->expectsOutputToContain('Production errors are off for this project');
+    $this->artisan('larapilot:errors-list')->assertExitCode(4)->expectsOutputToContain('Production errors are off for this project');
 
     // A tracker Larapilot does not know, written by hand.
     rewriteSettingsByHand(static fn (array $settings): array => ['errors' => true, 'errors_provider' => 'newrelic'] + $settings);
@@ -205,7 +205,7 @@ it('says what the tracker still needs, whether the errors are on or off', functi
         ->and($status['provider_label'])->toBeNull()
         ->and($status['hints'][0])->toContain('Unknown errors provider "newrelic"');
 
-    expect(Artisan::call('larapilot:boogle-errors'))->toBe(3)
+    expect(Artisan::call('larapilot:errors-list'))->toBe(3)
         ->and(errorsEnvelope()['error'])->toMatchArray([
             'code' => 'E_CONNECTOR',
             'message' => 'Unknown errors provider "newrelic".',
@@ -325,10 +325,10 @@ it('reads the unresolved issues of Sentry, and closes one when asked', function 
 
     expect(app(BoogleService::class)->report($payload))->toStartWith("# Sentry errors — shop\n");
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'SHOP-1']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'SHOP-1']);
     $envelope = errorsEnvelope();
 
-    expect($envelope['kind'])->toBe('boogle_resolve')
+    expect($envelope['kind'])->toBe('errors_resolve')
         ->and($envelope['data']['closed'])->toBe(['SHOP-1']);
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'PUT'
@@ -405,9 +405,9 @@ it('reads the open errors of Bugsnag, and marks one fixed when asked', function 
         && $request->hasHeader('Authorization', 'token bugsnag-token')
         && $request->hasHeader('X-Version', '2'));
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'e1']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'e1']);
 
-    expect(errorsEnvelope()['kind'])->toBe('boogle_resolve');
+    expect(errorsEnvelope()['kind'])->toBe('errors_resolve');
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'PATCH'
         && $request->url() === 'https://api.bugsnag.com/projects/p1/errors/e1'
@@ -464,9 +464,9 @@ it('reads the open errors of Flare, and resolves one when asked', function (): v
         && str_contains($request->url(), 'page%5Bsize%5D=100')
         && $request->hasHeader('Authorization', 'Bearer flare-token'));
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'FL9001']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'FL9001']);
 
-    expect(errorsEnvelope()['kind'])->toBe('boogle_resolve');
+    expect(errorsEnvelope()['kind'])->toBe('errors_resolve');
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'POST'
         && $request->url() === 'https://flareapp.io/api/errors/9001/resolve');
@@ -531,9 +531,9 @@ it('reads the open issues of Datadog Error Tracking, and resolves one when asked
         && $request['data']['attributes']['states'] === ['OPEN']
         && is_int($request['data']['attributes']['from']));
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'DDissue-1']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'DDissue-1']);
 
-    expect(errorsEnvelope()['kind'])->toBe('boogle_resolve');
+    expect(errorsEnvelope()['kind'])->toBe('errors_resolve');
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'PUT'
         && $request->url() === 'https://api.datadoghq.com/api/v2/error-tracking/issues/issue-1/state'
@@ -582,7 +582,7 @@ it('reads the error logs of Datadog when that is what the project sends, one row
         && $request['filter']['from'] === 'now-14d');
 
     // Logs are not closed: the ledger keeps the decision, the tracker is not written to.
-    Artisan::call('larapilot:boogle-resolve', ['errors' => $payload['errors'][0]['key']]);
+    Artisan::call('larapilot:errors-resolve', ['errors' => $payload['errors'][0]['key']]);
     $envelope = errorsEnvelope();
 
     expect($envelope['kind'])->toBe('error')
@@ -653,9 +653,9 @@ it('reads the active items of Rollbar, and resolves one when asked', function ()
         && str_contains($request->url(), 'status=active')
         && $request->hasHeader('X-Rollbar-Access-Token', 'rollbar-read'));
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'RB57']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'RB57']);
 
-    expect(errorsEnvelope()['kind'])->toBe('boogle_resolve');
+    expect(errorsEnvelope()['kind'])->toBe('errors_resolve');
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'PATCH'
         && $request->url() === 'https://api.rollbar.com/api/1/item/275123456'
@@ -687,9 +687,9 @@ it('reads the unresolved faults of Honeybadger, and resolves one when asked', fu
         && str_contains($request->url(), 'q=-is%3Aresolved')
         && $request->hasHeader('Authorization', 'Basic '.base64_encode('hb-personal:')));
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => 'HB2']);
+    Artisan::call('larapilot:errors-resolve', ['errors' => 'HB2']);
 
-    expect(errorsEnvelope()['kind'])->toBe('boogle_resolve');
+    expect(errorsEnvelope()['kind'])->toBe('errors_resolve');
 
     Http::assertSent(static fn (Request $request): bool => $request->method() === 'PUT'
         && $request->url() === 'https://app.honeybadger.io/v2/projects/7/faults/2'
@@ -737,7 +737,7 @@ it('reads the error logs of CloudWatch with the AWS CLI, and never writes there'
     expect($status['remote_resolve'])->toBeFalse()
         ->and($status['granularity'])->toBe('occurrence');
 
-    Artisan::call('larapilot:boogle-resolve', ['errors' => $payload['errors'][0]['key']]);
+    Artisan::call('larapilot:errors-resolve', ['errors' => $payload['errors'][0]['key']]);
 
     expect(errorsEnvelope()['error']['message'])->toBe('AWS CloudWatch Logs cannot close an error from Larapilot.');
 });
@@ -749,7 +749,7 @@ it('says what to check when the AWS CLI is not signed in', function (): void {
 
     Process::fake(['*filter-log-events*' => Process::result(errorOutput: 'Unable to locate credentials. You can configure credentials by running "aws configure".', exitCode: 255)]);
 
-    expect(Artisan::call('larapilot:boogle-errors'))->toBe(3);
+    expect(Artisan::call('larapilot:errors-list'))->toBe(3);
 
     $error = errorsEnvelope()['error'];
 

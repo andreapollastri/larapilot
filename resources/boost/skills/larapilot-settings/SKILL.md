@@ -7,15 +7,21 @@ description: "Sets project settings (effort, backlog, git, testing, account, aut
 
 Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other skills read and honor them.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context settings` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. `data.settings` in that envelope is the current state: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, git mode, testing, account, auto_approve, lucille, decision_log, code_history, prior_art, comments, dashboard_auth, api_auth, security_scan, aikido, errors, errors_provider, github, gitlab, bitbucket, azure, notifications). Bot/webhook/forge setup: `.larapilot/integrations.md`. When `account` is not `NONE`, also load `.larapilot/runtime-economics.md`.
+The option labels of every round are in this skill. Read more only when the user asks for it:
+
+- **What a value changes, in detail** — `core-settings.full.md` and `core-settings-2.full.md` (on demand): every value of every setting.
+- **Setting up** a forge, a bot, dashboard or API auth, Aikido, an error tracker, or the security scan — `.larapilot/integrations.md` is 33 KB: search its `## ` heading with the editor search tool and read that section only.
+- **Economics** — `economics-1.md`, in `read` when `account` is not `NONE`, on demand when the user turns it on.
+
+A setting saved here changes what the other skills are given: their next `context` call lists the files that changed.
 
 ## Output Economy
 
-**High** — short confirmations only. AskQuestion carries the options; chat stays terse. Still honor Zoey's start/end **Context estimate** lines from shared-runtime.
+**High.** One line of current values; AskQuestion carries the options; confirm the saved values. No product narrative.
 
 ## The Team
 
@@ -34,9 +40,9 @@ Read `.larapilot/shared-runtime.md` — **Project Settings** (effort, backlog, g
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — read current `data.settings`
+1. `data.settings` of the `context` envelope — the current values
 2. After answers: `php artisan larapilot:settings-set` with the answered flags
-3. Re-run `config-show` and confirm the saved values
+3. Confirm the saved values from what `settings-set` answers
 4. Optional probes: `larapilot:github-status`, `larapilot:gitlab-status`, `larapilot:bitbucket-status`, `larapilot:azure-status`, `larapilot:notify --event=custom --title="Larapilot test"`
 5. Dashboard auth users: `php artisan larapilot:dashboard-user {list|add <username>|remove <username>}` — `add` prompts for the password (or takes `--password=`); credentials hash into `.larapilot/auth.yaml` (git-ignored)
 
@@ -46,9 +52,9 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 ### 0. Load current settings
 
-Run `config-show`. Show one line with current values:
+From the `context` envelope, show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · aikido={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · hooks={…} · comments={…} · dashboard_auth={…} · api_auth={…} · security_scan={…} · aikido={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -151,13 +157,24 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 **6c. Release mode & Project docs**
 
 - **Release mode prompt:** `Release mode (current: {VALUE}) — track semver releases in .larapilot/releases.yaml with Gitflow release/x.y.z branches?`
-- **Project docs prompt:** `Project docs (current: {VALUE}) — maintain living handbook in _project_docs/ updated on every material change?`
-- **Chat framing (one line):** ⌨️ Sarah — release branches; 📝 Albert — `_project_docs/` chapters + diagrams. Both OFF by default.
+- **Project docs prompt:** `Project docs (current: {VALUE}) — maintain the living handbook in .larapilot/docs/handbook/ updated on every material change?`
+- **Chat framing (one line):** ⌨️ Sarah — release branches; 📝 Albert — handbook chapters + diagrams. Both OFF by default.
 
 | Setting | YES label | NO label |
 | --- | --- | --- |
 | `release_mode` | `YES — release ledger + /larapilot-release + Gitflow release branches` | `NO — classic develop/feature flow only (default)` |
-| `project_docs` | `YES — Albert maintains _project_docs/ (bootstrap from history if enabled mid-project)` | `NO — no handbook obligation (default)` |
+| `project_docs` | `YES — Albert maintains the handbook in .larapilot/docs/handbook/ (bootstrap from history if enabled mid-project)` | `NO — no handbook obligation (default)` |
+
+**6c-bis. Workflow hooks**
+
+- **AskQuestion prompt:** `Workflow hooks (current: {VALUE}) — run your own commands and skills from .larapilot/hooks.yaml when a spec is planned, started, a task is done, a spec goes to review, is approved or sent back, a release ships, and around /larapilot-ship?`
+- **Chat framing (one line):** ⌨️ Sarah — a `before` hook that fails blocks the transition, an `after` hook is reported; OFF by default, and the file ships with every example commented out.
+
+| Setting | YES label | NO label |
+| --- | --- | --- |
+| `hooks` | `YES — run the hooks of .larapilot/hooks.yaml on the transitions of the loop` | `NO — no hook runs; the file is kept (default)` |
+
+On `YES`, read `hooks.md` (on demand), run `php artisan larapilot:hook-list`, and show the hooks it lists in one line per event — or say the file has none yet and offer to write the first ones **with** the user: the test suite before `task.done`, static analysis before `spec.review`, a staging deploy after `spec.approved`, a custom skill before `ship`. Write a hook only with the user's words for the command, then `hook-list` again and `hook-run {event} --dry-run`. Never put a secret in the file: a hook reads it from `.env`.
 
 **6d. Account mode** — unlocks `/larapilot/economics` quotes (default NONE)
 
@@ -221,7 +238,7 @@ When the user picks `YES`, remind once: set `LARAPILOT_API_TOKEN` in `.env` (dev
 | Option id | AskQuestion label |
 | --- | --- |
 | `NO` | `NO — no security scan step (default)` |
-| `YES` | `YES — /larapilot-review runs php artisan checkpoint:scan; FAIL = blocker, WARN = review note` |
+| `YES` | `YES — /larapilot-review runs php artisan larapilot:checkpoint-scan; FAIL = blocker, WARN = review note` |
 
 When the user picks `YES`, remind once: the scanner is not bundled — run `composer require --dev andreapollastri/checkpoint` in the target app (if missing, `/larapilot-review` will stop and ask for it). Setup notes: `.larapilot/integrations.md` → **Security scan**.
 
@@ -240,14 +257,14 @@ When the user picks `YES`, remind once: set `LARAPILOT_AIKIDO_CLIENT_ID` and `LA
 **7f. Production errors** — read the errors the running application throws, from one tracker (default OFF)
 
 - **AskQuestion prompt:** `Production errors (current: {VALUE}) — read the errors the running application throws?`
-- **Chat framing (one line):** 🎧 Sophia — one tracker records the exceptions; Larapilot reads the open ones with credentials kept in `.env`, and `/larapilot-boogle` hands the bugs to triage, group by group.
+- **Chat framing (one line):** 🎧 Sophia — one tracker records the exceptions; Larapilot reads the open ones with credentials kept in `.env`, and `/larapilot-error` hands the bugs to triage, group by group.
 
 | Option id | AskQuestion label |
 | --- | --- |
 | `NO` | `NO — no tracker is read (default)` |
-| `YES` | `YES — /larapilot-boogle downloads the errors; /larapilot/errors shows them` |
+| `YES` | `YES — /larapilot-error downloads the errors; /larapilot/errors shows them` |
 
-On `YES`, one more AskQuestion — `Error tracker (current: {errors_provider})` — with `boogle` · `sentry` · `bugsnag` · `flare` · `datadog` · `rollbar` · `honeybadger` · `cloudwatch`; skipped → the current one, `boogle` when none. Persist both: `--errors=YES --errors-provider={id}`. Remind once: the credentials of that tracker go in `.env` — never collect a token through AskQuestion — then run `/larapilot-boogle`, whose status names what is missing. `--boogle=YES` is the old name of `--errors=YES --errors-provider=boogle`. Setup notes: `.larapilot/integrations.md` → **Production errors**.
+On `YES`, one more AskQuestion — `Error tracker (current: {errors_provider})` — with `boogle` · `sentry` · `bugsnag` · `flare` · `datadog` · `rollbar` · `honeybadger` · `cloudwatch`; skipped → the current one, `boogle` when none. Persist both: `--errors=YES --errors-provider={id}`. Remind once: the credentials of that tracker go in `.env` — never collect a token through AskQuestion — then run `/larapilot-error`, whose status names what is missing — it asks for the tracker itself when none is set. `--boogle=YES` is the old name of `--errors=YES --errors-provider=boogle`. Setup notes: `.larapilot/integrations.md` → **Production errors**.
 
 **8. Notifications** — master switch (default OFF)
 
@@ -271,8 +288,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (prior_art)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / `aikido` / `errors` / forge / notifications → NO; missing `errors_provider` → `boogle`.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (prior_art)** / **`NO` (hooks)** / **`NO` (comments)** / **`NO` (dashboard_auth)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `hooks` / `comments` / `dashboard_auth` / `api_auth` / `security_scan` / `aikido` / `errors` / forge / notifications → NO; missing `errors_provider` → `boogle`.)
 
 ### 2. Persist
 
@@ -290,6 +307,7 @@ php artisan larapilot:settings-set \
   --decision-log=YES \
   --code-history=NO \
   --prior-art=YES \
+  --hooks=NO \
   --comments=YES \
   --dashboard-auth=NO \
   --api-auth=NO \
@@ -308,7 +326,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · aikido=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · hooks=… · comments=… · dashboard_auth=… · api_auth=… · security_scan=… · aikido=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.
@@ -317,7 +335,7 @@ If a forge is YES, optionally run the matching `larapilot:{github,gitlab,bitbuck
 
 ### 3. Next steps
 
-Remind once (one line): other skills honor these on next run via `config-show` → `data.settings`.
+Remind once (one line): other skills honor these on their next `larapilot:context` call.
 
 ## Rules
 
@@ -328,4 +346,5 @@ Remind once (one line): other skills honor these on next run via `config-show` �
 - Never collect Slack/Discord/Telegram secrets or the dashboard password in chat — `larapilot:dashboard-user add` prompts for it
 - `dashboard_auth` gates the dashboard **UI only**; `api_auth` gates the **JSON API only** (`/larapilot/api/*`, `LARAPILOT_API_TOKEN`) — neither affects the other surface, and neither touches MCP
 - `security_scan` only wires `andreapollastri/checkpoint` into `/larapilot-review` + pre-ship — it never installs the package and never runs `checkpoint:scan` on its own; when ON and the package is absent, `/larapilot-review` stops and asks for `composer require --dev andreapollastri/checkpoint`
+- `hooks` runs what `.larapilot/hooks.yaml` says, on this machine, from Artisan only — never from the dashboard, the API, or MCP. `LARAPILOT_HOOKS_ENABLED=false` in `.env` turns them off on one machine without touching the committed setting
 - Never collect the `LARAPILOT_API_TOKEN` value in chat — it lives in `.env`; point at `.larapilot/integrations.md` → **API access** for setup and client examples

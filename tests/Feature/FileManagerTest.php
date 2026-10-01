@@ -1002,3 +1002,15 @@ it('adds, renames, and deletes in the five material folders and nowhere else', f
             ->and(is_dir(base_path('lp-moved')))->toBeFalse();
     });
 });
+
+it('keeps the zeros of a whole size', function (): void {
+    $files = app(FileManagerService::class);
+
+    expect($files->formatBytes(512))->toBe('512 B')
+        ->and($files->formatBytes(1536))->toBe('1.5 KB')
+        ->and($files->formatBytes(10240))->toBe('10 KB')
+        ->and($files->formatBytes(20480))->toBe('20 KB')
+        ->and($files->formatBytes(104857600))->toBe('100 MB')
+        ->and($files->formatBytes(2 * 1024 ** 3))->toBe('2 GB')
+        ->and($files->formatBytes(1024 ** 4))->toBe('1,024 GB');
+});

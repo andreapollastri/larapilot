@@ -16,18 +16,15 @@ use Larapilot\Console\Commands\AikidoRegisterCommand;
 use Larapilot\Console\Commands\AikidoReposCommand;
 use Larapilot\Console\Commands\AikidoScanCommand;
 use Larapilot\Console\Commands\AikidoStatusCommand;
+use Larapilot\Console\Commands\CheckpointScanCommand;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
 use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\BitbucketStatusCommand;
-use Larapilot\Console\Commands\BoogleErrorsCommand;
-use Larapilot\Console\Commands\BoogleLinkCommand;
-use Larapilot\Console\Commands\BooglePlanCommand;
-use Larapilot\Console\Commands\BoogleResolveCommand;
-use Larapilot\Console\Commands\BoogleStatusCommand;
 use Larapilot\Console\Commands\ChoicesSetCommand;
 use Larapilot\Console\Commands\CodeHistoryLogCommand;
 use Larapilot\Console\Commands\CodeHistoryShowCommand;
 use Larapilot\Console\Commands\ConfigShowCommand;
+use Larapilot\Console\Commands\ContextCommand;
 use Larapilot\Console\Commands\CustomSkillAddCommand;
 use Larapilot\Console\Commands\CustomSkillListCommand;
 use Larapilot\Console\Commands\DashboardUserCommand;
@@ -39,16 +36,25 @@ use Larapilot\Console\Commands\EconomicsMarketWriteCommand;
 use Larapilot\Console\Commands\EconomicsQuoteWriteCommand;
 use Larapilot\Console\Commands\EconomicsSetCommand;
 use Larapilot\Console\Commands\EconomicsShowCommand;
+use Larapilot\Console\Commands\ErrorsLinkCommand;
+use Larapilot\Console\Commands\ErrorsListCommand;
 use Larapilot\Console\Commands\ErrorsPlanCommand;
+use Larapilot\Console\Commands\ErrorsResolveCommand;
+use Larapilot\Console\Commands\ErrorsStatusCommand;
+use Larapilot\Console\Commands\FrontendBriefCommand;
+use Larapilot\Console\Commands\FrontendRulesCommand;
 use Larapilot\Console\Commands\FrontendScanCommand;
 use Larapilot\Console\Commands\FrontendSetCommand;
 use Larapilot\Console\Commands\GithubStatusCommand;
 use Larapilot\Console\Commands\GitlabStatusCommand;
+use Larapilot\Console\Commands\HookListCommand;
+use Larapilot\Console\Commands\HookRunCommand;
 use Larapilot\Console\Commands\InstallCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\MockupChooseStyleCommand;
 use Larapilot\Console\Commands\NotifyCommand;
 use Larapilot\Console\Commands\PrdImpactCommand;
+use Larapilot\Console\Commands\PrdShowCommand;
 use Larapilot\Console\Commands\PrdWriteCommand;
 use Larapilot\Console\Commands\QualityCommand;
 use Larapilot\Console\Commands\ReleaseAddCommand;
@@ -59,7 +65,10 @@ use Larapilot\Console\Commands\ReleaseListCommand;
 use Larapilot\Console\Commands\ReleaseSetCommand;
 use Larapilot\Console\Commands\ReleaseShipCommand;
 use Larapilot\Console\Commands\ReleaseSyncCommand;
+use Larapilot\Console\Commands\SbomCommand;
+use Larapilot\Console\Commands\ScheduleApplyCommand;
 use Larapilot\Console\Commands\ScheduleSetCommand;
+use Larapilot\Console\Commands\ScheduleShowCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
@@ -72,17 +81,20 @@ use Larapilot\Console\Commands\SpecRequestChangesCommand;
 use Larapilot\Console\Commands\SpecReviewCommand;
 use Larapilot\Console\Commands\SpecShowCommand;
 use Larapilot\Console\Commands\SpecStartCommand;
+use Larapilot\Console\Commands\StackCommand;
 use Larapilot\Console\Commands\TaskDoneCommand;
 use Larapilot\Console\Commands\TrackerPullCommand;
 use Larapilot\Console\Commands\TrackerPushCommand;
 use Larapilot\Console\Commands\TrackerStatusCommand;
 use Larapilot\Console\Commands\UpdateCommand;
+use Larapilot\Console\Commands\UpgradeCheckCommand;
 use Larapilot\Console\Commands\UsageLogCommand;
 use Larapilot\Console\Commands\UsageReportCommand;
 use Larapilot\Console\Commands\ValidatePlanCommand;
 use Larapilot\Console\Commands\ValidatePrdCommand;
 use Larapilot\Console\Commands\ValidateSpecCommand;
-use Larapilot\Console\Commands\VpsProvisionCommand;
+use Larapilot\Console\Commands\VendorAuditCommand;
+use Larapilot\Console\Commands\VendorLinkCommand;
 use Larapilot\Http\ApiRouteRegistrar;
 use Larapilot\Http\DashboardRouteRegistrar;
 use Larapilot\Http\MockupAssetsRouteRegistrar;
@@ -105,6 +117,7 @@ use Larapilot\Services\CodeHistoryService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\ContextService;
 use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
@@ -116,6 +129,7 @@ use Larapilot\Services\EconomicsService;
 use Larapilot\Services\Errors\ErrorDataHelper;
 use Larapilot\Services\Errors\ErrorTrackerManager;
 use Larapilot\Services\FileManagerService;
+use Larapilot\Services\FrontendBriefService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GitGraphService;
 use Larapilot\Services\GithubService;
@@ -144,18 +158,20 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '4.1.4';
+    public const VERSION = '5.0.0';
 
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/larapilot.php', 'larapilot');
 
         $this->app->singleton(ConfigService::class);
+        $this->app->singleton(ContextService::class);
         $this->app->singleton(CodeQualityService::class);
         $this->app->singleton(DecisionService::class);
         $this->app->singleton(CodeHistoryService::class);
         $this->app->singleton(CompanionService::class);
         $this->app->singleton(FrontendService::class);
+        $this->app->singleton(FrontendBriefService::class);
         $this->app->singleton(BackstageService::class);
         $this->app->singleton(DiagnosticsService::class);
         $this->app->singleton(GitService::class);
@@ -216,10 +232,15 @@ class LarapilotServiceProvider extends ServiceProvider
                 DiagnosticsCommand::class,
                 FrontendSetCommand::class,
                 FrontendScanCommand::class,
+                FrontendRulesCommand::class,
+                FrontendBriefCommand::class,
                 BackstageExportCommand::class,
                 ConfigShowCommand::class,
+                ContextCommand::class,
                 SettingsSetCommand::class,
                 DashboardUserCommand::class,
+                HookListCommand::class,
+                HookRunCommand::class,
                 NotifyCommand::class,
                 GithubStatusCommand::class,
                 GitlabStatusCommand::class,
@@ -233,15 +254,21 @@ class LarapilotServiceProvider extends ServiceProvider
                 AikidoPushCommand::class,
                 AikidoReposCommand::class,
                 AikidoRegisterCommand::class,
-                BoogleStatusCommand::class,
+                CheckpointScanCommand::class,
+                SbomCommand::class,
+                VendorAuditCommand::class,
+                VendorLinkCommand::class,
+                StackCommand::class,
+                UpgradeCheckCommand::class,
+                ErrorsStatusCommand::class,
+                ErrorsListCommand::class,
                 ErrorsPlanCommand::class,
-                BooglePlanCommand::class,
-                BoogleErrorsCommand::class,
-                BoogleLinkCommand::class,
-                BoogleResolveCommand::class,
+                ErrorsLinkCommand::class,
+                ErrorsResolveCommand::class,
                 PrdWriteCommand::class,
                 ValidatePrdCommand::class,
                 PrdImpactCommand::class,
+                PrdShowCommand::class,
                 SpecListCommand::class,
                 SpecAddCommand::class,
                 SpecShowCommand::class,
@@ -257,6 +284,8 @@ class LarapilotServiceProvider extends ServiceProvider
                 UsageLogCommand::class,
                 UsageReportCommand::class,
                 ScheduleSetCommand::class,
+                ScheduleShowCommand::class,
+                ScheduleApplyCommand::class,
                 ChoicesSetCommand::class,
                 DecisionLogCommand::class,
                 DecisionCheckCommand::class,
@@ -284,7 +313,6 @@ class LarapilotServiceProvider extends ServiceProvider
                 TrackerStatusCommand::class,
                 TrackerPushCommand::class,
                 TrackerPullCommand::class,
-                VpsProvisionCommand::class,
             ]);
 
             $this->publishes([

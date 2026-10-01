@@ -232,6 +232,8 @@
             @endif
         </header>
 
+        @include('larapilot::dashboard.partials.security-tabs', ['current' => 'aikido'])
+
         @if ($enabled && $error)
             <div class="flash flash--error" role="alert">
                 <strong>{{ $error }}</strong>

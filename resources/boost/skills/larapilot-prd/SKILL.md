@@ -7,25 +7,15 @@ description: "Revises an existing PRD when the change is neither a bug nor a new
 
 You revise the **existing** PRD and keep the backlog honest about it. You add no capability and fix no defect: a revision makes the product promise the same things better, fewer things, in a different order, or under different decisions.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step.
+`php artisan larapilot:context prd` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. The discovery parts are `on_demand`, keyed by revision kind: after step 1, read the ones whose `when` names the kind at hand — an **Editorial** revision reads none. Settings, paths, and `data.project` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **PRD Revision History**, **PRD Revision**). From the discovery pack read the part files the revision kind names — the parts directly, not the index:
-
-| Revision kind | Discovery parts |
-| --- | --- |
-| Editorial | none |
-| Sharpen · Upgrade | `.larapilot/runtime-discovery-7.md` (**Requirement Quality**, **Non-Functional Requirements**, **Risks & Assumptions**, **Definition of Ready & Readback**); add `-6` when journeys or the domain model are touched |
-| Re-model | `.larapilot/runtime-discovery-6.md` (**Domain Model & User Journeys**) and `-7` |
-| Re-scope | `.larapilot/runtime-discovery-4.md` (**MoSCoW Prioritization**) and `-3` (**Delivery Target**) |
-| Re-decide | the part that owns the decision: `-2` (Project Kind, core rounds), `-3` (Business Model), `-4` (Operations & Support, Budget Sensitivity), `-5` (Frontend Topology), `-6` (Prior Art) |
-
-When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+When `data.settings.decision_log` is `YES`, journal material user choices with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## Output Economy
 
-**Moderate** — one line naming the revision kind and the ids, the before and after of each changed item, the impact rows. Never recap the unchanged PRD.
+**Moderate.** One line naming the revision kind and the ids, then before → after per changed item and the backlog impact rows. Never a recap of the unchanged PRD.
 
 ## The Team (this phase)
 
@@ -45,8 +35,8 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:validate-prd` — before and after; its warnings are the upgrade to-do list
+1. `php artisan larapilot:validate-prd` — before and after; its warnings are the upgrade to-do list
+2. `php artisan larapilot:prd-show` — the outline; `--ids=` and `--section=` for the pieces the request touches
 3. `php artisan larapilot:spec-list`
 4. `php artisan larapilot:prd-impact --ids=FR-004,J-001` — specs that cite the ids being changed; without `--ids`, the whole PRD with `untraced` and `uncovered_must`
 5. `php artisan larapilot:prd-write --file=…` + `validate-prd` (max 3 attempts)
@@ -74,13 +64,13 @@ When a request mixes a revision with one of these, do the revision here and hand
 
 ### 0. Context load
 
-Run `config-show`, `validate-prd`, and `spec-list`. Find the sections the request touches with the editor search tool (`### FR-`, `### J-`, `| NFR-`, `| Q-`, `**Label:**`) and read only those. Restate the request in one line.
+Run `context`, `validate-prd`, `spec-list`, and the `prd-show` outline. Read only what the request touches — `prd-show --ids=…` for FRs, journeys, NFRs, and questions, `--section=…` for a section; an **Upgrade** or a rename that lands everywhere reads the whole file with the file-read tool. Restate the request in one line.
 
 **The PRD was edited by hand** — read `git diff -- {paths.prd}` (or `git log -p -1` when already committed) to find the delta, then continue from step 1 with that delta as the request: the history row, the validator, the dashboard snapshot, and the backlog check still have to happen.
 
 ### 1. Name the kind (Mark)
 
-One line in chat, per **Revision kinds** in `runtime-ops.md`:
+One line in chat, per **Revision kinds** (`ops-3.md`):
 
 `💎 Mark: Re-scope — FR-009 Should → Won't, FR-006 Could → Must · Sharpen — NFR-001 target`
 
@@ -101,7 +91,7 @@ Fixed choices go through **AskQuestion** (max 3 per round, skippable). A skipped
 
 ### 3. Identifier stability (Tom)
 
-Apply **Identifier stability** in `runtime-ops.md`: never renumber, never reuse; a retired FR keeps its heading with `**MoSCoW:** Won't` and `**Retired:** {date} — {reason}`; a split keeps the parent with `**Superseded by:**`; a rename lands everywhere in the same revision.
+Apply **Identifier stability** (`ops-3.md`): never renumber, never reuse; a retired FR keeps its heading with `**MoSCoW:** Won't` and `**Retired:** {date} — {reason}`; a split keeps the parent with `**Superseded by:**`; a rename lands everywhere in the same revision.
 
 ### 4. Impact (Tom)
 

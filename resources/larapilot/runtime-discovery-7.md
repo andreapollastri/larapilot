@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Requirement Quality _(Tom — the shape of an FR)_
 
 A functional requirement is a promise a spec can be written from and a reviewer can test. One line and a MoSCoW tag is a wish. Every `### FR-XXX` in the PRD carries:

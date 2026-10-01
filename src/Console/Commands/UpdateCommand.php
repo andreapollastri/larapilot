@@ -8,6 +8,7 @@ use Larapilot\Services\BoostPackageService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
+use Larapilot\Services\ScheduleService;
 use Larapilot\Support\LarapilotCommand;
 use Larapilot\Support\SharedRuntime;
 use Symfony\Component\Process\Process;
@@ -20,7 +21,7 @@ class UpdateCommand extends LarapilotCommand
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + latest Boost + guidelines and skills)';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills): int
+    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills, ScheduleService $schedule): int
     {
         if (! $config->hasProjectConfig()) {
             return $this->failure(
@@ -40,6 +41,10 @@ class UpdateCommand extends LarapilotCommand
         $preserveDesignSystems
             ? $this->line('Design systems preserved (.larapilot/design-systems/ untouched).')
             : $this->line('Design systems refreshed — local customizations in .larapilot/design-systems/ are overwritten. Use --preserve-design-systems to keep them.');
+
+        $this->moveLegacyProjectDocs($config);
+        $config->ensureDirectories();
+        $this->realignSchedule($schedule);
 
         $missingSettings = $config->missingSettingKeys();
 
@@ -92,6 +97,90 @@ class UpdateCommand extends LarapilotCommand
         $this->components->info('Larapilot is up to date.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * The handbook used to live in `_project_docs/` at the project root; an
+     * upgrade carries what it holds into `.larapilot/docs/handbook/`.
+     */
+    protected function moveLegacyProjectDocs(ConfigService $config): void
+    {
+        $migration = $config->migrateLegacyProjectDocs();
+
+        if ($migration === null) {
+            return;
+        }
+
+        if ($migration['moved'] !== []) {
+            $this->components->info(sprintf(
+                'Handbook moved: %d file(s) from %s to %s.',
+                count($migration['moved']),
+                $migration['from'],
+                $migration['to']
+            ));
+        }
+
+        if ($migration['kept'] !== []) {
+            $this->components->warn(sprintf(
+                'Left in %s because %s already holds a file with the same name: %s. Reconcile them by hand.',
+                $migration['from'],
+                $migration['to'],
+                implode(', ', $migration['kept'])
+            ));
+        } elseif ($migration['removed']) {
+            $this->line('Removed the empty '.$migration['from'].' folder.');
+        }
+    }
+
+    /**
+     * A project planned on an earlier version keeps what that version wrote,
+     * and its dates were agreed against a chart where every spec started on
+     * the first day. The upgrade puts right what takes no decision, and says
+     * what the forecast now misses: that part is for `/larapilot-schedule`.
+     */
+    protected function realignSchedule(ScheduleService $schedule): void
+    {
+        try {
+            $repair = $schedule->repair();
+            $forecast = $schedule->show();
+        } catch (\Throwable $e) {
+            // The backlog or the schedule cannot be read: the forecast pages report it themselves.
+            $this->components->warn('The delivery forecast could not be checked: '.$e->getMessage());
+
+            return;
+        }
+
+        if ($repair['fixes'] !== []) {
+            $this->components->info(sprintf('Delivery forecast realigned: %d fix(es).', count($repair['fixes'])));
+
+            foreach ($repair['fixes'] as $fix) {
+                $this->line('  '.$fix['message']);
+            }
+        }
+
+        if ($forecast['remaining']['specs'] === 0) {
+            return;
+        }
+
+        $unread = array_filter(
+            $forecast['findings'],
+            static fn (array $finding): bool => $finding['severity'] !== 'info'
+        );
+        $undated = in_array('SCHEDULE_NO_DATES', array_column($forecast['findings'], 'code'), true);
+        $ends = 'Delivery forecast: the open specs end on '.$forecast['forecast_end'];
+
+        if ($forecast['alerts'] !== [] || $unread !== []) {
+            $this->components->warn(sprintf(
+                '%s — %d date(s) do not hold and %d finding(s) need a decision. Re-plan with /larapilot-schedule; php artisan larapilot:schedule-show lists them.',
+                $ends,
+                count($forecast['alerts']),
+                count($unread)
+            ));
+        } elseif ($undated) {
+            $this->line($ends.', and no milestone or epic deadline is set to measure it against. /larapilot-schedule proposes them.');
+        } else {
+            $this->line($ends.'; every date holds.');
+        }
     }
 
     /**

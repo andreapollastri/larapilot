@@ -7,11 +7,9 @@ description: "Syncs the backlog to Linear, Asana, Jira, Trello, ClickUp, or Mond
 
 You mirror the `.larapilot/` backlog into the tool the rest of the organisation already lives in. **Larapilot stays the source of truth.** The tracker is a window onto delivery for people who will never open `backlog.yaml` — it is not a second place to run the workflow.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-ops.md` → **Project Trackers** (canonical direction, credential, and status-mapping rules — do not restate them, apply them).
+`php artisan larapilot:context tracker` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The canonical direction, credential, and status-mapping rules are **Project Trackers** (`ops-6.md`) — do not restate them, apply them.
 
 ## The Team (this phase)
 
@@ -149,4 +147,4 @@ Offer, do not silently configure:
 
 ## Output Economy
 
-**High** — the status line, the drift table when pulling, and the push summary. Honor Zoey's start/end **Context estimate** lines from shared-runtime.
+**High.** The status line, the drift table when pulling, and the push summary.

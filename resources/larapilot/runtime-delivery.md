@@ -1,13 +1,13 @@
 # Larapilot Runtime — Delivery
 
-Phase pack for **`larapilot-plan`**, **`larapilot-implement`**, **`larapilot-review`**, and **`larapilot-bug`**. **`larapilot-autopilot`** reads it only when plan and implement run inline in the parent. A delegating autopilot parent skips this index. Read `.larapilot/shared-runtime.md` first. Task **body templates** live only in `.larapilot/task-templates.md`. The parts below hold the canonical prose rules.
+The rules of planning, building, and reviewing code. **`larapilot-plan`** and **`larapilot-implement`** read the build rules and the Git, documentation, and review part; **`larapilot-review`** reads the latter. The design-time, platform, and ecosystem parts are read when a spec or a task touches them. Task **body templates** live only in `.larapilot/task-templates.md`.
 
-This file is an index, not the rules. Read **every** part below with the editor file-read tool (never `cat`, `head`, or `sed`). A truncated preview or a temp-file pointer means the load failed — read the remainder before any other step. Obey **Read protocol** in `.larapilot/shared-runtime.md`.
+This file is an index for people, and for a session that cannot run `php artisan larapilot:context`. A skill reads the parts that command lists for it — never every part by default. Without the command: find the heading the skill cites in the table below and read that part, whole, with the editor file-read tool (**Read protocol**, `.larapilot/shared-runtime.md`).
 
 | Part | Headings |
 | --- | --- |
-| `.larapilot/runtime-delivery-1.md` | Architecture Standards, Data Architecture |
-| `.larapilot/runtime-delivery-2.md` | CLI, Git Pipelines & Linux, Git Workflow — Gitflow, Code Review Gate |
-| `.larapilot/runtime-delivery-3.md` | Test Data — Factories & Seeders, Testing Standards, Versioning & Changelog, Security Disclosure Files, CI/CD Pipeline, Code quality gate, Vendor & Package Policy |
-| `.larapilot/runtime-delivery-4.md` | Laravel Scaffolding Defaults, Technical Documentation |
+| `.larapilot/runtime-delivery-1.md` | Architecture Standards, Laravel Scaffolding Defaults (security baseline), Test Data — Factories & Seeders, Testing Standards, Code quality gate |
+| `.larapilot/runtime-delivery-2.md` | Git Workflow — Gitflow, Technical Documentation, Code Review Gate |
+| `.larapilot/runtime-delivery-3.md` | Multi-tenancy, Data Architecture, Vendor & Package Policy, Local development environment |
+| `.larapilot/runtime-delivery-4.md` | CLI, Git Pipelines & Linux, CI/CD Pipeline, Versioning & Changelog, Security Disclosure Files, Optional integrations |
 | `.larapilot/runtime-delivery-5.md` | Laravel Ecosystem Expertise, Integrations & APIs, Internationalization & Localization |

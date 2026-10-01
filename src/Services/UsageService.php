@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
-use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Larapilot\Support\AtomicFile;
+use Larapilot\Support\SpecBlockers;
 use Symfony\Component\Yaml\Yaml;
 
 class UsageService
@@ -27,10 +27,19 @@ class UsageService
         'other',
     ];
 
+    /**
+     * Hours of work in a delivery day, and the hours a story point stands for
+     * while its spec has no plan.
+     */
+    protected const HOURS_PER_DAY = 6.0;
+
+    protected const HOURS_PER_POINT = 4.0;
+
     public function __construct(
         protected ConfigService $config,
         protected SpecService $specs,
         protected PlanService $plans,
+        protected ReleaseService $releases,
     ) {}
 
     public function usageDirectory(): string
@@ -420,10 +429,70 @@ class UsageService
             'note' => trim((string) ($attributes['note'] ?? '')) ?: null,
         ];
 
+        if (trim((string) ($attributes['release'] ?? '')) !== '') {
+            $deadline['release'] = $this->releaseVersion((string) $attributes['release']);
+        }
+
         $schedule['deadlines'][] = $deadline;
         $this->writeSchedule($schedule);
 
         return $deadline;
+    }
+
+    /**
+     * The version of a release as the release plan writes it.
+     *
+     * @throws \InvalidArgumentException When no release has it.
+     */
+    public function releaseVersion(string $version): string
+    {
+        $release = $this->releases->find($version);
+
+        if ($release === null) {
+            throw new \InvalidArgumentException("No release {$version} in the release plan.");
+        }
+
+        return (string) $release['version'];
+    }
+
+    /**
+     * The day the last spec of a release is forecast to be done. Null when
+     * the release is unknown, or the chart has none of its specs.
+     *
+     * @param  array<string, mixed>  $gantt
+     */
+    public function releaseForecast(string $version, array $gantt): ?string
+    {
+        try {
+            $release = $this->releases->find($version);
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+
+        $codes = array_flip(array_map('strval', is_array($release['specs'] ?? null) ? $release['specs'] : []));
+        $end = null;
+
+        foreach ($gantt['bars'] ?? [] as $bar) {
+            if (($bar['type'] ?? '') !== 'epic' && isset($codes[explode('·', (string) $bar['id'], 2)[0]])) {
+                $end = max($end ?? $bar['end'], $bar['end']);
+            }
+        }
+
+        return $end;
+    }
+
+    /**
+     * The milestones as a re-plan leaves them: moved, added, removed. The
+     * notes stay as they are.
+     *
+     * @param  list<array<string, mixed>>  $deadlines
+     */
+    public function replaceDeadlines(array $deadlines): void
+    {
+        $schedule = $this->schedule();
+        $schedule['deadlines'] = array_values($deadlines);
+
+        $this->writeSchedule($schedule);
     }
 
     /**
@@ -681,52 +750,29 @@ class UsageService
      * Forecast remaining effort against project and epic deadlines.
      *
      * @param  array<string, mixed>|null  $gantt
+     * @param  array{specs?: list<array<string, mixed>>, plans?: array<string, array<string, mixed>|null>, schedule?: array<string, mixed>}|null  $inputs  See {@see gantt()}.
      * @return array<string, mixed>
      */
-    public function criticality(?array $gantt = null): array
+    public function criticality(?array $gantt = null, ?array $inputs = null): array
     {
-        $gantt ??= $this->gantt();
-        $schedule = $this->schedule();
+        $gantt ??= $this->gantt($inputs);
+        $schedule = $inputs['schedule'] ?? $this->schedule();
         $today = (new DateTimeImmutable('today'))->format('Y-m-d');
         $alerts = [];
         $remainingPoints = 0;
-        $remainingHours = 0.0;
 
-        foreach ($this->specs->allSpecs() as $spec) {
-            if (! is_array($spec)) {
+        foreach ($inputs['specs'] ?? $this->specs->allSpecs() as $spec) {
+            if (! is_array($spec) || strtoupper((string) ($spec['status'] ?? 'TODO')) === 'DONE') {
                 continue;
             }
 
-            $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
-
-            if ($status === 'DONE') {
-                continue;
-            }
-
-            $points = max(0, (int) ($spec['points'] ?? 0));
-            $remainingPoints += $points;
-            $code = (string) ($spec['code'] ?? '');
-            $plan = $code !== '' ? $this->plans->read($code) : null;
-            $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-
-            if ($tasks === []) {
-                $remainingHours += max(2.0, $points * 4.0);
-
-                continue;
-            }
-
-            foreach ($tasks as $task) {
-                if (! is_array($task) || strtoupper((string) ($task['status'] ?? '')) === 'DONE') {
-                    continue;
-                }
-
-                $remainingHours += max(1.0, (float) ($task['estimate_hours'] ?? max(2.0, ($points * 4.0) / max(1, count($tasks)))));
-            }
+            $remainingPoints += max(0, (int) ($spec['points'] ?? 0));
         }
 
-        $forecastDays = max(0.5, $remainingHours / 6.0);
-        $forecastEnd = $this->addDays($today, $forecastDays);
-        $projectEnd = $gantt['project_end'] ?? $forecastEnd;
+        // The forecast is the one the Gantt draws: the day its last open bar ends.
+        $remainingHours = (float) ($gantt['remaining_hours'] ?? 0.0);
+        $forecastDays = $remainingHours / self::HOURS_PER_DAY;
+        $forecastEnd = (string) ($gantt['forecast_end'] ?? $today);
 
         foreach ($schedule['deadlines'] as $deadline) {
             if (! is_array($deadline) || empty($deadline['date'])) {
@@ -740,24 +786,31 @@ class UsageService
                 continue;
             }
 
-            $slipDays = 0;
-
-            if ($projectEnd > $date) {
-                $slipDays = (new DateTimeImmutable($date))->diff(new DateTimeImmutable($projectEnd))->days;
-            }
+            // A milestone that names a release waits for that release, not for the whole backlog.
+            $release = trim((string) ($deadline['release'] ?? ''));
+            $releaseEnd = $release !== '' ? $this->releaseForecast($release, $gantt) : null;
+            $target = $releaseEnd ?? $forecastEnd;
 
             $overdue = $date < $today;
-            $level = $overdue ? 'critical' : ($slipDays > 0 || $status === 'delayed' ? 'critical' : ($status === 'at_risk' || ($slipDays === 0 && $forecastEnd >= $date) ? 'warning' : 'ok'));
+            $slipDays = $target > $date
+                ? (new DateTimeImmutable($date))->diff(new DateTimeImmutable($target))->days
+                : 0;
 
-            if ($level === 'ok' && ! $overdue && $slipDays === 0 && $status === 'on_track') {
-                $daysLeft = (new DateTimeImmutable($today))->diff(new DateTimeImmutable($date))->days;
-                $bufferDays = max(0, $daysLeft) - (int) ceil($forecastDays);
+            $level = match (true) {
+                $overdue, $slipDays > 0, $status === 'delayed' => 'critical',
+                $status === 'at_risk' => 'warning',
+                default => 'ok',
+            };
 
-                if ($bufferDays < 2 && $remainingPoints > 0) {
-                    $level = 'warning';
-                } else {
+            if ($level === 'ok') {
+                $bufferDays = (new DateTimeImmutable($target))->diff(new DateTimeImmutable($date))->days;
+
+                // A release whose last spec is behind today has nothing left to slip.
+                if ($bufferDays >= 2 || $remainingPoints === 0 || ($releaseEnd !== null && $releaseEnd < $today)) {
                     continue;
                 }
+
+                $level = 'warning';
             }
 
             $alerts[] = [
@@ -768,13 +821,17 @@ class UsageService
                 'message' => $overdue
                     ? 'Overdue vs today — remaining ~'.round($forecastDays, 1).' work-days still open.'
                     : ($slipDays > 0
-                        ? 'Forecast end '.$projectEnd.' slips '.$slipDays.' day(s) past this deadline.'
-                        : 'Thin buffer before '.$date.' (~'.round($forecastDays, 1).' work-days left in backlog).'),
+                        ? ($releaseEnd !== null
+                            ? 'Release '.$release.' is forecast for '.$target.': '.$slipDays.' day(s) past this deadline.'
+                            : 'Forecast end '.$forecastEnd.' slips '.$slipDays.' day(s) past this deadline.')
+                        : ($releaseEnd !== null
+                            ? 'Thin buffer before '.$date.': release '.$release.' is forecast for '.$target.'.'
+                            : 'Thin buffer before '.$date.' (~'.round($forecastDays, 1).' work-days left in backlog).')),
             ];
         }
 
         foreach ($gantt['epics'] ?? [] as $epic) {
-            if (! is_array($epic) || empty($epic['deadline']) || empty($epic['forecast_end'])) {
+            if (! is_array($epic) || empty($epic['deadline']) || empty($epic['forecast_end']) || ! empty($epic['done'])) {
                 continue;
             }
 
@@ -806,18 +863,31 @@ class UsageService
             'remaining_hours' => round($remainingHours, 1),
             'forecast_work_days' => round($forecastDays, 1),
             'forecast_end' => $forecastEnd,
-            'project_end' => $projectEnd,
+            'project_end' => $gantt['project_end'] ?? $forecastEnd,
             'alerts' => $alerts,
             'on_track' => $alerts === [],
         ];
     }
 
     /**
-     * Build a realistic Gantt from schedule + epics + task dependencies + usage.
+     * Build the delivery forecast from the backlog, the plans, and the ledger.
      *
+     * Done work sits in the past, on the days the ledger recorded it. Open
+     * work is queued from today, one spec at a time in delivery order, so a
+     * bar starts where the one before it ends.
+     *
+     * `$inputs` replaces what is on disk — the backlog, a plan by spec code,
+     * the schedule — so a re-plan can be forecast before any of it is written.
+     *
+     * @param  array{specs?: list<array<string, mixed>>, plans?: array<string, array<string, mixed>|null>, schedule?: array<string, mixed>}|null  $inputs
      * @return array{
+     *     today: string,
      *     project_start: ?string,
      *     project_end: ?string,
+     *     forecast_end: ?string,
+     *     remaining_hours: float,
+     *     assumptions: array{hours_per_day: float, hours_per_point: float},
+     *     queue: list<string>,
      *     bars: list<array<string, mixed>>,
      *     epics: list<array<string, mixed>>,
      *     milestones: list<array<string, mixed>>,
@@ -825,21 +895,35 @@ class UsageService
      *     legend: list<array{key: string, label: string, kind: string}>
      * }
      */
-    public function gantt(): array
+    public function gantt(?array $inputs = null): array
     {
-        $entries = $this->entries();
-        $schedule = $this->schedule();
-        $specs = $this->specs->allSpecs();
+        $schedule = $inputs['schedule'] ?? $this->schedule();
+        $today = (new DateTimeImmutable('today'))->format('Y-m-d');
+        // Open work is forecast from the first working day, today included.
+        $anchor = $this->workdayOnOrAfter(new DateTimeImmutable('today'));
 
         $dates = [];
+        $activity = [];
 
-        foreach ($entries as $entry) {
-            $ts = (string) ($entry['ts'] ?? '');
+        foreach ($this->entries() as $entry) {
+            $day = substr((string) ($entry['ts'] ?? ''), 0, 10);
 
-            if ($ts !== '') {
-                $dates[] = substr($ts, 0, 10);
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $day) !== 1) {
+                continue;
+            }
+
+            $dates[] = $day;
+            $code = (string) ($entry['spec'] ?? '');
+
+            if ($code !== '') {
+                $activity[$code] = [
+                    min($activity[$code][0] ?? $day, $day),
+                    max($activity[$code][1] ?? $day, $day),
+                ];
             }
         }
+
+        $projectStart = $dates !== [] ? min($dates) : null;
 
         foreach ($schedule['deadlines'] as $deadline) {
             if (! empty($deadline['date'])) {
@@ -847,124 +931,206 @@ class UsageService
             }
         }
 
-        $bars = [];
-        $epicBuckets = [];
+        $nodes = $this->specWork($inputs);
+
+        // Done work the ledger has no dates for is laid end to end up to today,
+        // and squeezed when it would start before the project did.
+        $undated = [];
+
+        foreach (['done', 'active', 'queued'] as $stage) {
+            foreach ($nodes as $code => $node) {
+                if ($node['stage'] === $stage && $node['done_length'] > 0 && ! isset($activity[$code])) {
+                    $undated[$code] = $node['done_length'];
+                }
+            }
+        }
+
+        $undatedDays = array_sum($undated);
+        $room = $projectStart !== null
+            ? $this->workdaysBetween(new DateTimeImmutable($projectStart), $anchor)
+            : 0;
+        $squeeze = $room > 0 && $undatedDays > $room ? $room / $undatedDays : 1.0;
+        $position = -$undatedDays * $squeeze;
+        $pastStart = [];
+
+        foreach ($undated as $code => $length) {
+            $pastStart[$code] = $position;
+            $position += $length * $squeeze;
+        }
+
+        $cursor = 0.0;
+        $queueStart = [];
+        $remainingHours = 0.0;
+
+        $queue = $this->deliveryOrder($nodes);
+
+        foreach ($queue as $code) {
+            $queueStart[$code] = $cursor;
+            $cursor += $nodes[$code]['open_length'];
+            $remainingHours += $nodes[$code]['open_hours'];
+        }
+
+        $forecastEnd = $cursor > 0 ? $this->workSpan($anchor, 0.0, $cursor)[1] : null;
+
+        $rows = [];
         $assignees = [];
 
-        foreach ($specs as $spec) {
-            if (! is_array($spec)) {
-                continue;
-            }
+        foreach ($nodes as $code => $node) {
+            $code = (string) $code;
+            $recorded = $activity[$code] ?? null;
 
-            $code = (string) ($spec['code'] ?? '');
+            $past = function (float $from, float $to) use ($node, $code, $recorded, $today, $anchor, $pastStart, $squeeze): array {
+                if ($recorded === null) {
+                    $base = $pastStart[$code] ?? 0.0;
 
-            if ($code === '') {
-                continue;
-            }
-
-            $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
-            $points = max(1, (int) ($spec['points'] ?? 1));
-            $progress = $this->plans->taskProgress($code);
-            $doneRatio = ($progress['total'] ?? 0) > 0
-                ? ($progress['done'] / max(1, $progress['total']))
-                : ($status === 'DONE' ? 1.0 : ($status === 'REVIEW' ? 0.85 : ($status === 'IN PROGRESS' ? 0.45 : 0.0)));
-
-            $usageMinutes = 0.0;
-
-            foreach ($entries as $entry) {
-                if (($entry['spec'] ?? null) === $code) {
-                    $usageMinutes += (float) ($entry['minutes'] ?? 0);
+                    return $this->workSpan($anchor, $base + $from * $squeeze, $base + $to * $squeeze);
                 }
-            }
 
-            $specStart = $this->inferSpecStart($code, $entries, $dates);
-            $plan = $this->plans->read($code);
-            $tasks = is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [];
-            $scheduled = $this->schedulePlanTasks($tasks, $specStart, $points, $code, $status, (string) ($spec['title'] ?? ''));
+                $until = $node['stage'] === 'done' ? $recorded[1] : max($recorded[0], $today);
 
-            if ($scheduled === []) {
-                $estimatedDays = max(0.5, $points * 0.5 + ($usageMinutes / (60 * 6)));
-                $end = $this->addDays($specStart, $estimatedDays);
-                $dates[] = $specStart;
-                $dates[] = $end;
+                return $this->recordedSpan($recorded[0], $until, $from, $to, $node['done_length']);
+            };
 
-                $bars[] = [
+            $future = fn (float $from, float $to): array => $this->workSpan(
+                $anchor,
+                ($queueStart[$code] ?? 0.0) + $from,
+                ($queueStart[$code] ?? 0.0) + $to
+            );
+
+            $specBars = [];
+
+            if ($node['tasks'] === []) {
+                [$start, $end] = $node['stage'] === 'done'
+                    ? $past(0.0, $node['done_length'])
+                    : $future(0.0, $node['open_length']);
+
+                // A spec that is being worked on began the day the ledger first saw it.
+                if ($node['stage'] === 'active' && $recorded !== null) {
+                    $start = min($start, $recorded[0]);
+                }
+
+                $specBars[] = [
                     'id' => $code,
-                    'label' => $code.' — '.(string) ($spec['title'] ?? ''),
+                    'label' => $code.' — '.$node['title'],
                     'type' => 'spec',
-                    'status' => $status,
-                    'start' => $specStart,
+                    'status' => $node['status'],
+                    'start' => $start,
                     'end' => $end,
-                    'progress' => round(min(1, max(0, $doneRatio)), 2),
-                    'points' => $points,
+                    'progress' => $node['progress'],
+                    'points' => $node['points'],
                     'assignee' => null,
                     'parallel' => false,
-                    'depends_on' => [],
-                    'epic' => is_array($spec['epic'] ?? null) ? ($spec['epic']['code'] ?? null) : null,
+                    'depends_on' => $node['blocked_by'],
+                    'epic' => $node['epic']['code'] ?? null,
+                    'remaining_hours' => round($node['open_hours'], 1),
                 ];
-
-                $specEnd = $end;
-            } else {
-                $specEnd = $specStart;
-
-                foreach ($scheduled as $taskBar) {
-                    $dates[] = $taskBar['start'];
-                    $dates[] = $taskBar['end'];
-                    $bars[] = $taskBar;
-                    $specEnd = max($specEnd, (string) $taskBar['end']);
-
-                    if (! empty($taskBar['assignee'])) {
-                        $assignees[] = (string) $taskBar['assignee'];
-                    }
-                }
             }
 
-            $epic = is_array($spec['epic'] ?? null) ? $spec['epic'] : null;
+            foreach ($node['tasks'] as $task) {
+                $id = (string) $task['id'];
+                $done = isset($node['done_slots'][$id]);
+                [$start, $end] = $done
+                    ? $past(...$node['done_slots'][$id])
+                    : $future(...$node['open_slots'][$id]);
+                $assignee = trim((string) ($task['assignee'] ?? '')) ?: null;
 
-            if (is_array($epic) && ! empty($epic['code'])) {
-                $epicCode = (string) $epic['code'];
-
-                if (! isset($epicBuckets[$epicCode])) {
-                    $epicBuckets[$epicCode] = [
-                        'id' => $epicCode,
-                        'code' => $epicCode,
-                        'title' => (string) ($epic['title'] ?? $epicCode),
-                        'objective' => trim((string) ($epic['objective'] ?? '')) ?: null,
-                        'deadline' => ! empty($epic['deadline']) ? substr((string) $epic['deadline'], 0, 10) : null,
-                        'start' => $specStart,
-                        'forecast_end' => $specEnd,
-                        'spec_codes' => [],
-                        'points' => 0,
-                    ];
+                if ($assignee !== null) {
+                    $assignees[] = $assignee;
                 }
 
-                $epicBuckets[$epicCode]['start'] = min((string) $epicBuckets[$epicCode]['start'], $specStart);
-                $epicBuckets[$epicCode]['forecast_end'] = max((string) $epicBuckets[$epicCode]['forecast_end'], $specEnd);
-                $epicBuckets[$epicCode]['spec_codes'][] = $code;
-                $epicBuckets[$epicCode]['points'] += $points;
+                $specBars[] = [
+                    'id' => $code.'·'.$id,
+                    'task_id' => $id,
+                    'label' => $code.' / '.$id.' — '.(string) ($task['title'] ?? $id),
+                    'type' => 'task',
+                    'status' => $done ? 'DONE' : $node['status'],
+                    'start' => $start,
+                    'end' => $end,
+                    'progress' => $done ? 1.0 : (str_contains($node['status'], 'PROGRESS') ? 0.45 : 0.0),
+                    'points' => null,
+                    'assignee' => $assignee,
+                    'parallel' => in_array($id, $node['parallel'], true),
+                    'depends_on' => $this->taskDependencies($task),
+                    'epic' => null,
+                    'spec_title' => $node['title'] !== '' ? $node['title'] : null,
+                    'spec_status' => $node['status'],
+                    'spec_depends_on' => $node['blocked_by'],
+                    'estimate_hours' => round($this->taskHours($task, $node['default_hours']), 1),
+                ];
+            }
 
-                if (! empty($epic['objective'])) {
-                    $epicBuckets[$epicCode]['objective'] = (string) $epic['objective'];
-                }
+            // Tasks read top to bottom in the order they are worked.
+            usort($specBars, static fn (array $a, array $b): int => strcmp($a['start'], $b['start']));
 
-                if (! empty($epic['deadline'])) {
-                    $epicBuckets[$epicCode]['deadline'] = substr((string) $epic['deadline'], 0, 10);
-                    $dates[] = $epicBuckets[$epicCode]['deadline'];
-                }
+            $rows[] = [
+                'node' => $node,
+                'start' => min(array_column($specBars, 'start')),
+                'end' => max(array_column($specBars, 'end')),
+                'bars' => $specBars,
+            ];
+        }
 
-                if (! empty($epic['title'])) {
-                    $epicBuckets[$epicCode]['title'] = (string) $epic['title'];
-                }
+        // Specs, and the epics they open, read in the order they are delivered.
+        usort($rows, static fn (array $a, array $b): int => [$a['start'], $a['end']] <=> [$b['start'], $b['end']]
+            ?: strnatcmp($a['node']['code'], $b['node']['code']));
+
+        $bars = [];
+        $epicBuckets = [];
+
+        foreach ($rows as $row) {
+            $node = $row['node'];
+            $dates[] = $row['start'];
+            $dates[] = $row['end'];
+            array_push($bars, ...$row['bars']);
+
+            $epic = $node['epic'];
+
+            if (! is_array($epic) || empty($epic['code'])) {
+                continue;
+            }
+
+            $epicCode = (string) $epic['code'];
+
+            if (! isset($epicBuckets[$epicCode])) {
+                $epicBuckets[$epicCode] = [
+                    'id' => $epicCode,
+                    'code' => $epicCode,
+                    'title' => (string) ($epic['title'] ?? $epicCode),
+                    'objective' => trim((string) ($epic['objective'] ?? '')) ?: null,
+                    'deadline' => ! empty($epic['deadline']) ? substr((string) $epic['deadline'], 0, 10) : null,
+                    'start' => $row['start'],
+                    'forecast_end' => $row['end'],
+                    'spec_codes' => [],
+                    'points' => 0,
+                    'done_points' => 0,
+                    'done' => $node['stage'] === 'done',
+                ];
+            }
+
+            $epicBuckets[$epicCode]['start'] = min($epicBuckets[$epicCode]['start'], $row['start']);
+            $epicBuckets[$epicCode]['forecast_end'] = max($epicBuckets[$epicCode]['forecast_end'], $row['end']);
+            $epicBuckets[$epicCode]['spec_codes'][] = $node['code'];
+            $epicBuckets[$epicCode]['points'] += $node['points'];
+            $epicBuckets[$epicCode]['done_points'] += $node['stage'] === 'done' ? $node['points'] : 0;
+            $epicBuckets[$epicCode]['done'] = $epicBuckets[$epicCode]['done'] && $node['stage'] === 'done';
+
+            if (! empty($epic['objective'])) {
+                $epicBuckets[$epicCode]['objective'] = (string) $epic['objective'];
+            }
+
+            if (! empty($epic['deadline'])) {
+                $epicBuckets[$epicCode]['deadline'] = substr((string) $epic['deadline'], 0, 10);
+            }
+
+            if (! empty($epic['title'])) {
+                $epicBuckets[$epicCode]['title'] = (string) $epic['title'];
             }
         }
 
         $epicBars = [];
 
         foreach ($epicBuckets as $epic) {
-            $dates[] = $epic['start'];
-            $dates[] = $epic['forecast_end'];
-
-            if (! empty($epic['deadline'])) {
+            if ($epic['deadline'] !== null) {
                 $dates[] = $epic['deadline'];
             }
 
@@ -972,10 +1138,14 @@ class UsageService
                 'id' => $epic['code'],
                 'label' => $epic['code'].' — '.$epic['title'],
                 'type' => 'epic',
-                'status' => ! empty($epic['deadline']) && $epic['forecast_end'] > $epic['deadline'] ? 'AT RISK' : 'PLANNED',
+                'status' => match (true) {
+                    $epic['done'] => 'DONE',
+                    $epic['deadline'] !== null && $epic['forecast_end'] > $epic['deadline'] => 'AT RISK',
+                    default => 'PLANNED',
+                },
                 'start' => $epic['start'],
                 'end' => $epic['forecast_end'],
-                'progress' => 0,
+                'progress' => round($epic['done_points'] / max(1, $epic['points']), 2),
                 'objective' => $epic['objective'],
                 'deadline' => $epic['deadline'],
                 'points' => $epic['points'],
@@ -995,6 +1165,7 @@ class UsageService
                 'date' => (string) ($deadline['date'] ?? ''),
                 'status' => (string) ($deadline['status'] ?? 'on_track'),
                 'note' => $deadline['note'] ?? null,
+                'release' => $deadline['release'] ?? null,
             ];
         }
 
@@ -1007,8 +1178,16 @@ class UsageService
         $bars = array_merge($epicBars, $bars);
 
         return [
+            'today' => $today,
             'project_start' => $dates[0] ?? null,
             'project_end' => $dates !== [] ? $dates[array_key_last($dates)] : null,
+            'forecast_end' => $forecastEnd,
+            'remaining_hours' => round($remainingHours, 1),
+            'assumptions' => [
+                'hours_per_day' => self::HOURS_PER_DAY,
+                'hours_per_point' => self::HOURS_PER_POINT,
+            ],
+            'queue' => $queue,
             'bars' => $bars,
             'epics' => array_values($epicBuckets),
             'milestones' => $milestones,
@@ -1056,105 +1235,244 @@ class UsageService
     }
 
     /**
-     * Schedule plan tasks with dependency-aware starts and parallel flags.
+     * What every spec has delivered and what it still asks for, in working
+     * days, with its tasks placed on a timeline that starts when the spec does.
      *
-     * @param  list<array<string, mixed>>  $tasks
-     * @return list<array<string, mixed>>
+     * @param  array{specs?: list<array<string, mixed>>, plans?: array<string, array<string, mixed>|null>, schedule?: array<string, mixed>}|null  $inputs
+     * @return array<string, array<string, mixed>>
      */
-    protected function schedulePlanTasks(array $tasks, string $specStart, int $points, string $specCode, string $specStatus, string $specTitle = ''): array
+    protected function specWork(?array $inputs = null): array
     {
-        $normalized = [];
+        $specs = [];
+        $known = [];
 
-        foreach ($tasks as $task) {
-            if (! is_array($task) || empty($task['id'])) {
-                continue;
+        foreach ($inputs['specs'] ?? $this->specs->allSpecs() as $spec) {
+            $code = is_array($spec) ? (string) ($spec['code'] ?? '') : '';
+
+            if ($code !== '' && ! isset($specs[$code])) {
+                $specs[$code] = $spec;
+                $known[strtoupper($code)] = $code;
             }
-
-            $normalized[] = $task;
         }
 
-        if ($normalized === []) {
-            return [];
-        }
+        $nodes = [];
 
-        $ordered = $this->topoSortTasks($normalized);
-        $ends = [];
-        $starts = [];
-        $bars = [];
-        $defaultHours = max(2.0, ($points * 4.0) / max(1, count($normalized)));
-
-        foreach ($ordered as $task) {
-            $id = (string) $task['id'];
-            $deps = array_values(array_filter(
-                is_array($task['dependencies'] ?? null) ? $task['dependencies'] : [],
-                static fn (mixed $dep): bool => is_string($dep) && $dep !== ''
+        foreach ($specs as $code => $spec) {
+            $code = (string) $code;
+            $status = strtoupper((string) ($spec['status'] ?? 'TODO'));
+            $stage = match (true) {
+                $status === 'DONE' => 'done',
+                str_contains($status, 'PROGRESS'), str_contains($status, 'REVIEW') => 'active',
+                default => 'queued',
+            };
+            $points = max(1, (int) ($spec['points'] ?? 1));
+            $plan = array_key_exists($code, $inputs['plans'] ?? [])
+                ? $inputs['plans'][$code]
+                : $this->plans->read($code);
+            $planned = array_values(array_filter(
+                is_array($plan['tasks'] ?? null) ? $plan['tasks'] : [],
+                static fn (mixed $task): bool => is_array($task)
             ));
+            $doneTasks = count(array_filter(
+                $planned,
+                static fn (array $task): bool => strtoupper((string) ($task['status'] ?? '')) === 'DONE'
+            ));
+            $doneRatio = $planned !== []
+                ? $doneTasks / count($planned)
+                : ($status === 'DONE' ? 1.0 : ($status === 'REVIEW' ? 0.85 : ($status === 'IN PROGRESS' ? 0.45 : 0.0)));
 
-            $start = $specStart;
+            $blockedBy = [];
 
-            foreach ($deps as $dep) {
-                if (isset($ends[$dep])) {
-                    $candidate = $this->addDays($ends[$dep], 0);
-                    if ($candidate > $start) {
-                        $start = $candidate;
-                    }
+            foreach (SpecBlockers::read((string) ($spec['body'] ?? '')) ?? [] as $blocker) {
+                if (isset($known[$blocker]) && $known[$blocker] !== $code) {
+                    $blockedBy[] = $known[$blocker];
                 }
             }
 
-            $hours = max(1.0, (float) ($task['estimate_hours'] ?? $defaultHours));
-            $days = max(0.5, $hours / 6.0);
-            $end = $this->addDays($start, $days);
-            $taskStatus = strtoupper((string) ($task['status'] ?? 'TODO'));
+            $tasks = array_values(array_filter(
+                $planned,
+                static fn (array $task): bool => ! empty($task['id'])
+            ));
+            $hours = max(2.0, $points * self::HOURS_PER_POINT);
 
-            if ($taskStatus === 'DONE') {
-                $progress = 1.0;
-            } elseif (str_contains(strtoupper($specStatus), 'PROGRESS')) {
-                $progress = 0.45;
-            } else {
-                $progress = 0.0;
-            }
-
-            $assignee = trim((string) ($task['assignee'] ?? '')) ?: null;
-            $starts[$id] = $start;
-            $ends[$id] = $end;
-
-            $bars[] = [
-                'id' => $specCode.'·'.$id,
-                'task_id' => $id,
-                'label' => $specCode.' / '.$id.' — '.(string) ($task['title'] ?? $id),
-                'type' => 'task',
-                'status' => $taskStatus === 'DONE' ? 'DONE' : $specStatus,
-                'start' => $start,
-                'end' => $end,
-                'progress' => $progress,
-                'points' => null,
-                'assignee' => $assignee,
-                'parallel' => false,
-                'depends_on' => $deps,
-                'epic' => null,
-                'spec_title' => $specTitle !== '' ? $specTitle : null,
-                'estimate_hours' => round($hours, 1),
+            $node = [
+                'code' => $code,
+                'title' => (string) ($spec['title'] ?? ''),
+                'status' => $status,
+                'stage' => $stage,
+                'points' => $points,
+                'priority' => strtoupper((string) ($spec['priority'] ?? 'MEDIUM')),
+                'epic' => is_array($spec['epic'] ?? null) ? $spec['epic'] : null,
+                'progress' => round(min(1, max(0, $doneRatio)), 2),
+                'blocked_by' => $blockedBy,
+                'tasks' => [],
+                'parallel' => [],
+                'default_hours' => $hours,
+                'done_slots' => [],
+                'done_length' => 0.0,
+                'open_slots' => [],
+                'open_length' => 0.0,
+                'open_hours' => 0.0,
             ];
-        }
 
-        // Mark tasks that share a start date and do not depend on each other as parallel.
-        $byStart = [];
+            if ($tasks === []) {
+                // Without a plan the story points are the estimate, less what the status says is behind.
+                if ($stage === 'done') {
+                    $node['done_length'] = $hours / self::HOURS_PER_DAY;
+                } else {
+                    $node['open_hours'] = max(1.0, $hours * (1 - $node['progress']));
+                    $node['open_length'] = $node['open_hours'] / self::HOURS_PER_DAY;
+                }
 
-        foreach ($bars as $index => $bar) {
-            $byStart[$bar['start']][] = $index;
-        }
+                $nodes[$code] = $node;
 
-        foreach ($byStart as $indexes) {
-            if (count($indexes) < 2) {
                 continue;
             }
 
-            foreach ($indexes as $index) {
-                $bars[$index]['parallel'] = true;
+            $tasks = $this->topoSortTasks($tasks);
+            $defaultHours = max(2.0, $hours / count($tasks));
+            $done = [];
+            $open = [];
+            $sameGate = [];
+
+            foreach ($tasks as $task) {
+                if ($stage === 'done' || strtoupper((string) ($task['status'] ?? '')) === 'DONE') {
+                    $done[] = $task;
+                } else {
+                    $open[] = $task;
+                    $node['open_hours'] += $this->taskHours($task, $defaultHours);
+                }
+
+                $gate = $this->taskDependencies($task);
+                sort($gate);
+                $sameGate[implode('|', $gate)][] = (string) $task['id'];
+            }
+
+            // Tasks that wait for the same dependencies do not block each other.
+            foreach ($sameGate as $ids) {
+                if (count($ids) > 1) {
+                    array_push($node['parallel'], ...$ids);
+                }
+            }
+
+            [$node['done_slots'], $node['done_length']] = $this->layoutTasks($done, $defaultHours);
+            [$node['open_slots'], $node['open_length']] = $this->layoutTasks($open, $defaultHours);
+            $node['tasks'] = $tasks;
+            $node['default_hours'] = $defaultHours;
+            $nodes[$code] = $node;
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * The order the open specs are delivered in: work already started first,
+     * then priority and code as `spec-next` picks them, and never before the
+     * specs a story is blocked by. A spec that blocks a more urgent one is as
+     * urgent as it: the urgent story cannot be delivered without it.
+     *
+     * @param  array<string, array<string, mixed>>  $nodes
+     * @return list<string>
+     */
+    protected function deliveryOrder(array $nodes): array
+    {
+        $priorities = ['CRITICAL' => 0, 'HIGH' => 1, 'MEDIUM' => 2, 'LOW' => 3];
+        $waiting = [];
+
+        foreach ($nodes as $code => $node) {
+            if ($node['stage'] !== 'done') {
+                $waiting[(string) $code] = [$node['stage'] === 'active' ? 0 : 1, $priorities[$node['priority']] ?? 2];
             }
         }
 
-        return $bars;
+        do {
+            $raised = false;
+
+            foreach ($waiting as $code => $rank) {
+                foreach ($nodes[$code]['blocked_by'] as $blocker) {
+                    if (isset($waiting[$blocker]) && $waiting[$blocker][1] > $rank[1]) {
+                        $waiting[$blocker][1] = $rank[1];
+                        $raised = true;
+                    }
+                }
+            }
+        } while ($raised);
+
+        uksort($waiting, static fn (mixed $a, mixed $b): int => $waiting[$a] <=> $waiting[$b]
+            ?: strnatcmp((string) $a, (string) $b));
+
+        $order = [];
+
+        while ($waiting !== []) {
+            // Blockers that name each other leave nothing ready: the first in rank goes.
+            $next = array_key_first($waiting);
+
+            foreach (array_keys($waiting) as $code) {
+                $blockers = $nodes[$code]['stage'] === 'active' ? [] : $nodes[$code]['blocked_by'];
+
+                if (array_intersect_key(array_flip($blockers), $waiting) === []) {
+                    $next = $code;
+
+                    break;
+                }
+            }
+
+            $order[] = (string) $next;
+            unset($waiting[$next]);
+        }
+
+        return $order;
+    }
+
+    /**
+     * Place tasks on a timeline counted in working days from the moment
+     * their spec starts. A task waits for its dependencies and for its
+     * assignee, so only work given to different people overlaps.
+     *
+     * @param  list<array<string, mixed>>  $tasks  in dependency order
+     * @return array{0: array<string, array{0: float, 1: float}>, 1: float} the slot of each task, and the length of them all
+     */
+    protected function layoutTasks(array $tasks, float $defaultHours): array
+    {
+        $slots = [];
+        $free = [];
+        $length = 0.0;
+
+        foreach ($tasks as $task) {
+            $person = strtolower(trim((string) ($task['assignee'] ?? '')));
+            $start = $free[$person] ?? 0.0;
+
+            foreach ($this->taskDependencies($task) as $dependency) {
+                $start = max($start, $slots[$dependency][1] ?? 0.0);
+            }
+
+            $end = $start + $this->taskHours($task, $defaultHours) / self::HOURS_PER_DAY;
+            $slots[(string) $task['id']] = [$start, $end];
+            $free[$person] = $end;
+            $length = max($length, $end);
+        }
+
+        return [$slots, $length];
+    }
+
+    /**
+     * @param  array<string, mixed>  $task
+     * @return list<string>
+     */
+    protected function taskDependencies(array $task): array
+    {
+        return array_values(array_filter(
+            is_array($task['dependencies'] ?? null) ? $task['dependencies'] : [],
+            static fn (mixed $dependency): bool => is_string($dependency) && $dependency !== ''
+        ));
+    }
+
+    /**
+     * @param  array<string, mixed>  $task
+     */
+    protected function taskHours(array $task, float $defaultHours): float
+    {
+        return max(1.0, (float) ($task['estimate_hours'] ?? $defaultHours));
     }
 
     /**
@@ -1267,41 +1585,77 @@ class UsageService
             : 'on_track';
     }
 
-    /**
-     * @param  list<array<string, mixed>>  $entries
-     * @param  list<string>  $dates
-     */
-    protected function inferSpecStart(string $code, array $entries, array $dates): string
+    protected function workdayOnOrAfter(DateTimeImmutable $day): DateTimeImmutable
     {
-        foreach ($entries as $entry) {
-            if (($entry['spec'] ?? null) === $code && ! empty($entry['ts'])) {
-                return substr((string) $entry['ts'], 0, 10);
+        $weekday = (int) $day->format('N');
+
+        return $weekday > 5 ? $day->modify('+'.(8 - $weekday).' days') : $day;
+    }
+
+    /**
+     * The working day that many working days after — or, below zero, before —
+     * an anchor that is itself a working day.
+     */
+    protected function shiftWorkdays(DateTimeImmutable $anchor, int $offset): DateTimeImmutable
+    {
+        $weekday = (int) $anchor->format('N') - 1;
+        $weeks = (int) floor(($weekday + $offset) / 5);
+        $days = $weeks * 7 + ($weekday + $offset - $weeks * 5) - $weekday;
+
+        return $anchor->modify(sprintf('%+d days', $days));
+    }
+
+    /**
+     * Working days from one date up to, and not including, another.
+     */
+    protected function workdaysBetween(DateTimeImmutable $from, DateTimeImmutable $to): int
+    {
+        $count = 0;
+
+        for ($day = $from; $day < $to; $day = $day->modify('+1 day')) {
+            if ((int) $day->format('N') <= 5) {
+                $count++;
             }
         }
 
-        if ($dates !== []) {
-            sort($dates);
-
-            return $dates[0];
-        }
-
-        return (new DateTimeImmutable('today'))->format('Y-m-d');
+        return $count;
     }
 
-    protected function addDays(string $start, float $days): string
+    /**
+     * First and last day of work that runs between two positions counted in
+     * working days from the anchor. Work that ends within a day leaves the
+     * rest of that day to what follows.
+     *
+     * @return array{0: string, 1: string}
+     */
+    protected function workSpan(DateTimeImmutable $anchor, float $from, float $to): array
     {
-        $date = new DateTimeImmutable($start);
-        $whole = (int) floor($days);
-        $fraction = $days - $whole;
+        $first = (int) floor($from + 1e-6);
+        $last = max($first, (int) ceil($to - 1e-6) - 1);
 
-        if ($whole > 0) {
-            $date = $date->add(new DateInterval('P'.$whole.'D'));
-        }
+        return [
+            $this->shiftWorkdays($anchor, $first)->format('Y-m-d'),
+            $this->shiftWorkdays($anchor, $last)->format('Y-m-d'),
+        ];
+    }
 
-        if ($fraction >= 0.5) {
-            $date = $date->add(new DateInterval('P1D'));
-        }
+    /**
+     * First and last day of a slice of done work inside the window the
+     * ledger recorded for its spec: the ledger says when a spec was worked
+     * on, not task by task, so each task takes its share of the window.
+     *
+     * @return array{0: string, 1: string}
+     */
+    protected function recordedSpan(string $from, string $to, float $start, float $end, float $length): array
+    {
+        $first = new DateTimeImmutable($from);
+        $days = $first->diff(new DateTimeImmutable(max($from, $to)))->days + 1;
+        $head = $length > 0 ? min($days - 1, (int) floor($start / $length * $days + 1e-6)) : 0;
+        $tail = $length > 0 ? max($head, (int) ceil($end / $length * $days - 1e-6) - 1) : $days - 1;
 
-        return $date->format('Y-m-d');
+        return [
+            $first->modify('+'.$head.' days')->format('Y-m-d'),
+            $first->modify('+'.$tail.' days')->format('Y-m-d'),
+        ];
     }
 }

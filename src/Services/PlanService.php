@@ -146,6 +146,34 @@ class PlanService
     }
 
     /**
+     * Write the tasks of a plan back as a re-plan leaves them — hours,
+     * assignees, dependencies. The spec keeps the status it has.
+     *
+     * @param  list<array<string, mixed>>  $tasks
+     */
+    public function replaceTasks(string $code, array $tasks): void
+    {
+        FileLock::withLock($this->path($code), function () use ($code, $tasks): void {
+            unset($this->planCache[$code]);
+            $plan = $this->read($code);
+
+            if ($plan === null) {
+                throw new \RuntimeException("Plan for {$code} not found.");
+            }
+
+            $plan['tasks'] = array_values($tasks);
+            $plan['updated_at'] = now()->toIso8601String();
+
+            AtomicFile::write(
+                $this->path($code),
+                Yaml::dump($plan, 4, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK)
+            );
+
+            $this->planCache[$code] = $plan;
+        });
+    }
+
+    /**
      * @return array{sha: string, short_sha: string, subject: string, committed_at: string, url: string|null}|null
      */
     public function markTaskDone(string $code, string $taskId, ?string $commitSha = null): ?array
@@ -160,7 +188,7 @@ class PlanService
 
             $tasks = $plan['tasks'] ?? [];
             $found = false;
-            $commit = $this->git->resolveTaskCommit($code, $taskId, $commitSha);
+            $commit = $this->taskGit($tasks, $taskId)->resolveTaskCommit($code, $taskId, $commitSha);
 
             foreach ($tasks as $index => $task) {
                 if (($task['id'] ?? null) === $taskId) {
@@ -196,5 +224,33 @@ class PlanService
 
             return $commit;
         });
+    }
+
+    /**
+     * A `repo: frontend` task is committed in the linked frontend repository
+     * — or in its project's own repository, cloned inside the workspace — so
+     * its commit is looked for there.
+     *
+     * @param  array<int, mixed>  $tasks
+     */
+    protected function taskGit(array $tasks, string $taskId): GitService
+    {
+        foreach ($tasks as $task) {
+            if (! is_array($task) || ($task['id'] ?? null) !== $taskId) {
+                continue;
+            }
+
+            if (strtolower((string) ($task['repo'] ?? '')) === 'frontend') {
+                $root = app(FrontendService::class)->gitRootFor(is_string($task['project'] ?? null) ? $task['project'] : null);
+
+                if ($root !== null) {
+                    return $this->git->at($root);
+                }
+            }
+
+            break;
+        }
+
+        return $this->git;
     }
 }

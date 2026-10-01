@@ -261,6 +261,148 @@ it('builds dependency-aware gantt bars and formats tokens as K', function (): vo
         ->and($zoey['why_they_differ'])->not->toBeEmpty();
 });
 
+it('queues open specs one after another, by priority and after their blockers', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $spec = fn (string $code, string $priority, string $blockedBy = '-'): array => [
+        'code' => $code,
+        'title' => 'Story '.$code,
+        'priority' => $priority,
+        'points' => 3,
+        'status' => 'TODO',
+        'body' => "**Blocked by:** {$blockedBy}\n\n".validSpecBody(),
+    ];
+
+    $this->artisan('larapilot:spec-add', ['--file' => payloadFile(['specs' => [
+        $spec('US-001', 'LOW'),
+        $spec('US-002', 'CRITICAL', 'US-003'),
+        $spec('US-003', 'MEDIUM'),
+        $spec('US-004', 'HIGH'),
+    ]])])->assertSuccessful();
+
+    $usage = app(UsageService::class);
+    $gantt = $usage->gantt();
+    $bars = collect($gantt['bars'])->where('type', 'spec')->values();
+
+    // US-002 is the most urgent and waits for US-003, which is as urgent for it.
+    expect($bars->pluck('id')->all())->toBe(['US-003', 'US-002', 'US-004', 'US-001'])
+        ->and($gantt['queue'])->toBe(['US-003', 'US-002', 'US-004', 'US-001'])
+        ->and($bars[1]['depends_on'])->toBe(['US-003'])
+        ->and($bars[0]['start'])->toBeGreaterThanOrEqual(date('Y-m-d'))
+        ->and($gantt['forecast_end'])->toBe($bars[3]['end'])
+        ->and($gantt['remaining_hours'])->toBe(48.0);
+
+    foreach ($bars as $index => $bar) {
+        expect((int) date('N', strtotime($bar['start'])))->toBeLessThanOrEqual(5)
+            ->and((int) date('N', strtotime($bar['end'])))->toBeLessThanOrEqual(5);
+
+        if ($index > 0) {
+            expect($bar['start'])->toBeGreaterThan($bars[$index - 1]['end']);
+        }
+    }
+
+    $this->artisan('larapilot:schedule-set', [
+        '--deadline' => date('Y-m-d', strtotime('+1 day')),
+        '--label' => 'Demo',
+    ])->assertSuccessful();
+
+    $criticality = $usage->criticality($usage->gantt());
+
+    expect($criticality['forecast_end'])->toBe($gantt['forecast_end'])
+        ->and($criticality['alerts'][0]['level'])->toBe('critical')
+        ->and($criticality['alerts'][0]['message'])->toContain('slips');
+
+    $this->get('/larapilot/plan')
+        ->assertOk()
+        ->assertSee('Delivery order')
+        ->assertSee('after US-003');
+});
+
+it('runs the tasks of a spec one after another unless they have different assignees', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['points' => 5]);
+
+    $task = fn (string $id, string $assignee): array => [
+        'id' => $id,
+        'title' => 'Work '.$id,
+        'body' => "## Description\nx\n\n## Git Deliverables\n- Commit: feat\n\n## Test Data\nN/A\n\n## Completion Criteria\n- [ ] done",
+        'type' => 'Impl',
+        'status' => 'TODO',
+        'assignee' => $assignee,
+        'estimate_hours' => 6,
+        'dependencies' => [],
+    ];
+
+    app(PlanService::class)->save('US-001', [
+        'plan_body' => "## Technical Solution\nTest\n\n## Git & Branching\nNO_GITFLOW\n\n## Test Data Strategy\nN/A\n\n## Test Strategy\nMINIMAL",
+        'tasks' => [$task('TASK-00', 'Alex'), $task('TASK-01', 'Alex'), $task('TASK-02', 'Joe')],
+    ]);
+
+    $gantt = app(UsageService::class)->gantt();
+    $tasks = collect($gantt['bars'])->where('type', 'task')->keyBy('task_id');
+
+    expect($tasks['TASK-01']['start'])->toBeGreaterThan($tasks['TASK-00']['end'])
+        ->and($tasks['TASK-02']['start'])->toBe($tasks['TASK-00']['start'])
+        ->and($tasks->where('parallel', true)->count())->toBe(3)
+        ->and($gantt['forecast_end'])->toBe($tasks['TASK-01']['end'])
+        ->and($gantt['remaining_hours'])->toBe(18.0);
+});
+
+it('keeps done work in the past, on the days the ledger recorded it', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $spec = fn (string $code, string $status): array => [
+        'code' => $code,
+        'title' => 'Story '.$code,
+        'priority' => 'HIGH',
+        'points' => 3,
+        'status' => $status,
+        'body' => validSpecBody(),
+    ];
+
+    $this->artisan('larapilot:spec-add', ['--file' => payloadFile(['specs' => [
+        $spec('US-001', 'DONE'),
+        $spec('US-002', 'DONE'),
+        $spec('US-003', 'TODO'),
+    ]])])->assertSuccessful();
+
+    $usage = app(UsageService::class);
+
+    foreach (['2026-01-05T10:00:00+00:00', '2026-01-09T10:00:00+00:00'] as $ts) {
+        $usage->log(['category' => 'implementation', 'spec' => 'US-001', 'ts' => $ts, 'user' => 'git:Test']);
+    }
+
+    $gantt = $usage->gantt();
+    $bars = collect($gantt['bars'])->where('type', 'spec')->keyBy('id');
+    $today = date('Y-m-d');
+
+    expect($bars['US-001']['start'])->toBe('2026-01-05')
+        ->and($bars['US-001']['end'])->toBe('2026-01-09')
+        // no dates in the ledger: laid out before today, never in the forecast
+        ->and($bars['US-002']['end'])->toBeLessThan($today)
+        ->and($bars['US-003']['start'])->toBeGreaterThanOrEqual($today)
+        ->and($gantt['forecast_end'])->toBe($bars['US-003']['end'])
+        ->and($gantt['remaining_hours'])->toBe(12.0);
+});
+
+it('measures a deadline against the forecast, not against the deadlines after it', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['status' => 'DONE']);
+
+    foreach (['+30 days' => 'Beta', '+90 days' => 'Launch'] as $when => $label) {
+        $this->artisan('larapilot:schedule-set', [
+            '--deadline' => date('Y-m-d', strtotime($when)),
+            '--label' => $label,
+        ])->assertSuccessful();
+    }
+
+    $criticality = app(UsageService::class)->criticality();
+
+    expect($criticality['alerts'])->toBe([])
+        ->and($criticality['on_track'])->toBeTrue()
+        ->and($criticality['remaining_hours'])->toBe(0.0);
+});
+
 it('rejects invalid usage categories', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 

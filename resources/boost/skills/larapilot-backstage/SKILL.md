@@ -7,11 +7,9 @@ description: "Publishes the repo to a Backstage catalog and TechDocs. Italian: p
 
 You publish the `.larapilot/` workspace into an **organization-level developer portal**. Backstage renders; Larapilot remains the source of truth. You never move workflow state into the portal.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-ops.md` → **Developer Portal — Backstage** (canonical ownership, regeneration, and security rules — do not restate them, apply them).
+`php artisan larapilot:context backstage` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The canonical ownership, regeneration, and security rules are **Developer Portal — Backstage** (`ops-5.md`) — do not restate them, apply them.
 
 ## The Team (this phase)
 
@@ -31,7 +29,7 @@ Read `.larapilot/shared-runtime.md` (core) and `.larapilot/runtime-ops.md` → *
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — read `data.backstage` (entity ref, owner, system, lifecycle, techdocs, catalog path/existence)
+1. `php artisan larapilot:config-show --only=backstage` — read `data.backstage` (entity ref, owner, system, lifecycle, techdocs, catalog path/existence)
 2. `php artisan larapilot:backstage-export` — preview the bundle (read-only, writes nothing)
 3. `php artisan larapilot:backstage-export --write [--force] [--no-techdocs]` — generate the files
 
@@ -41,7 +39,7 @@ Never hand-write `catalog-info.yaml`, `mkdocs.yml`, or anything under `.larapilo
 
 ### 0. Read current state
 
-Run `config-show`. Report one line:
+Run `config-show --only=backstage`. Report one line:
 
 `entity={data.backstage.entity_ref} · owner={…} · system={…} · lifecycle={…} · techdocs={…} · catalog_exists={…}`
 
@@ -103,7 +101,7 @@ LARAPILOT_BACKSTAGE_BASE_URL=https://staging.example.com
 
 Set `LARAPILOT_BACKSTAGE_BASE_URL` only when a **non-production** environment is reachable — it feeds catalog links and annotations. Never write a production URL there.
 
-Re-run `config-show` and confirm the values took effect.
+Re-run `config-show --only=backstage` and confirm the values took effect.
 
 ### 3. Generate
 
@@ -143,4 +141,4 @@ If the user wants a **live** board card in Backstage, point at `GET {api}/backst
 
 ## Output Economy
 
-**High** — short confirmations, the generated file list, and the registration steps. Honor Zoey's start/end **Context estimate** lines from shared-runtime.
+**High.** Short confirmations, the generated file list, and the registration steps.

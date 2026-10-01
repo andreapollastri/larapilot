@@ -15,7 +15,8 @@ class SpecRequestChangesCommand extends LarapilotCommand
     protected $signature = 'larapilot:spec-request-changes
                             {code : Spec code}
                             {--file= : Feedback YAML or JSON file}
-                            {--include-feedback : Append blocking internal-feedback comments marked [blocks-merge]}';
+                            {--include-feedback : Append blocking internal-feedback comments marked [blocks-merge]}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Send a spec in REVIEW back to TODO with rework feedback';
 
@@ -70,7 +71,15 @@ class SpecRequestChangesCommand extends LarapilotCommand
             );
         }
 
+        $hookContext = $this->specHookContext($code, $spec, $config->status('todo'))
+            + ['feedback' => $feedbackMarkdown];
+
+        if (($blocked = $this->beforeHooks('spec.changes_requested', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $specs->requestChanges($code, $feedbackMarkdown);
+        $this->afterHooks('spec.changes_requested', $hookContext);
 
         return $this->success('request_changes_result', [
             'code' => $code,

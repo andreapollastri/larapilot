@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## The client quote document
 
 The downloadable quote is a **document written by `/larapilot-economics`**, like the PRD — so it speaks whatever language the PRD speaks, not only the languages Larapilot ships strings for.
@@ -47,7 +45,7 @@ When `product_model` is `saas`, or inception / PRD mention SaaS, subscription, M
 
 ## Skill contract
 
-1. `larapilot:config-show` — require `data.settings.account` ≠ `NONE` (else stop and send the user to `/larapilot-settings`).
+1. `larapilot:context economics` — require `data.settings.account` ≠ `NONE` (else stop and send the user to `/larapilot-settings`).
 2. `larapilot:economics-show` — current snapshot (empty profile still computes on catalogue defaults).
 3. AskQuestion: country → regime (from `data.regime.options`) → hourly rate / margin / overhead / discount / team size → product model → SaaS prices when SaaS.
 4. Persist with `larapilot:economics-set` (only answered keys). For a subscription product, research the market with Jennifer and Benjamin and persist it with `larapilot:economics-market-write`.

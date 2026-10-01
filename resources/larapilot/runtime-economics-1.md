@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Account mode
 
 `settings.account` in `.larapilot/config.yaml`:
@@ -134,4 +132,3 @@ sources:
 ```
 
 The dashboard shows the competitor table with its price trend, where the selected price line sits against the researched set (cheaper/pricier count, range, median, delta), the risks, and the sources. The file is stamped with the inputs fingerprint, so the dashboard marks the research **outdated** once the backlog moves on. Without the file the page says so and falls back to derived tiers and bent scenarios.
-

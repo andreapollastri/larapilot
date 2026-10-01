@@ -661,7 +661,10 @@ class FileManagerService
             $bytes /= 1024;
 
             if ($bytes < 1024 || $unit === 'GB') {
-                return rtrim(rtrim(number_format($bytes, $bytes < 10 ? 1 : 0, '.', ','), '0'), '.').' '.$unit;
+                // Only a decimal ".0" goes: the zeros of 20 or 100 are digits.
+                $label = number_format($bytes, $bytes < 10 ? 1 : 0, '.', ',');
+
+                return (str_ends_with($label, '.0') ? substr($label, 0, -2) : $label).' '.$unit;
             }
         }
 

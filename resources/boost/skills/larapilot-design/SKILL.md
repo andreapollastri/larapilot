@@ -7,17 +7,15 @@ description: "Writes HTML/CSS mockups under .larapilot/mockups/. Use for a mocku
 
 Create isolated frontend mockups as visual references for implementation.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context design` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`: **UX & Frontend Design** with accessibility (`ux-1.md`) and **Brand identity & assets** (`ux-2.md`). For public pages read `ux-3.md` (on demand): SEO structure, copy, marketing. Settings, paths, `data.project`, and `data.frontend` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core — **Output Economy** for `larapilot-design`), then `.larapilot/runtime-ux.md` (**UX & Frontend Design**, **Brand identity & assets**, **Accessibility**, **SEO Structure**).
-
-When `data.settings.decision_log` is `YES` (default), journal material user choices (design system, palette, typography, tone, animation scope) with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+When `data.settings.decision_log` is `YES`, journal material user choices (design system, palette, typography, tone, animation scope) with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## Output Economy
 
-**Moderate** — Elise explains stack and a11y choices briefly in character. Mockup `README.md` and checklists stay complete.
+**Moderate.** Elise explains stack and a11y choices briefly, in character. Mockup `README.md` and checklists stay complete (a11y, SEO, brand assets).
 
 ## The Team
 
@@ -37,9 +35,9 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — read `paths.mockups`, `paths.client_materials`, `paths.research`, `paths.design_systems`
-2. Read PRD (`paths.prd`) — especially `## Technical Architecture` (admin panel, CSS framework, Starter Kit variant)
-3. When `data.settings.decision_log` is `YES` (default), run `php artisan larapilot:decision-check --topic="design system" --value="<candidate>"` before switching away from a logged choice; after the gate settles, `php artisan larapilot:decision-log --topic="design system" --value="…" --source=askquestion --skill=larapilot-design [--spec=US-XXX] [--rationale="…"]` (and separate entries for custom aesthetic: palette, typography, tone when created from scratch)
+1. `paths.mockups`, `paths.client_materials`, `paths.research`, and `paths.design_systems` are in the `context` envelope
+2. `php artisan larapilot:prd-show --section="Technical Architecture"` — admin panel, CSS framework, Starter Kit variant; `--ids=` for the journeys and FRs the mockups serve. Never the whole PRD
+3. When `data.settings.decision_log` is `YES`, run `php artisan larapilot:decision-check --topic="design system" --value="<candidate>"` before switching away from a logged choice; after the gate settles, `php artisan larapilot:decision-log --topic="design system" --value="…" --source=askquestion --skill=larapilot-design [--spec=US-XXX] [--rationale="…"]` (and separate entries for custom aesthetic: palette, typography, tone when created from scratch)
 4. After the user picks a winning style among variants: `php artisan larapilot:mockup-choose-style US-XXX --style=filament` (writes `styles.yaml`, logs `mockup style` when the journal is on). Dashboard: `/larapilot/design` → open a screen → **Use this style**.
 
 ## Workflow
@@ -198,7 +196,7 @@ Copy the packaged sample, `{paths.design_systems}/{folder}/html/login.html`. Fil
 
 ### Elise — mobile first & responsive
 
-Every mockup follows **Mobile First** (see shared-runtime **Mobile first & responsive design**):
+Every mockup follows **Mobile First** (**Mobile first & responsive design**, `ux-1.md`):
 
 1. **Primary mockup at mobile width** (320–375 px) — layout, nav, and primary CTA defined here first
 2. **Desktop companion** — at least one key screen at 1280 px+ showing enhanced layout (columns, side nav, density) without extra complexity
@@ -212,11 +210,11 @@ README must include a **Responsive & navigation** section Alex and Anne use as c
 
 ### Elise — Laravel stack & aesthetic
 
-Boost `Application Info` → align to shared-runtime stack order: Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
+Boost `Application Info` → align to the stack order of **Technology preference** (`ux-1.md`): Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
 
 ### Elise — Filament admin mockups
 
-When the PRD `## Technical Architecture` records **Filament** as the panel choice (or the spec is explicitly for a Filament admin area), admin/control panel mockups **must** follow the packaged design system — read shared-runtime **Filament admin mockups** and:
+When the PRD `## Technical Architecture` records **Filament** as the panel choice (or the spec is explicitly for a Filament admin area), admin/control panel mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
 
 1. `{paths.design_systems}/filament/README.md` — rules and Figma links ([Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system), [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free))
 2. `{paths.design_systems}/filament/figma-sources.md` — merge index (which kit owns which frames)
@@ -230,7 +228,7 @@ When Filament is **not** chosen, design admin/dashboard screens in the project's
 
 ### Elise — Laravel Starter Kit mockups
 
-When the PRD `## Technical Architecture` records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI, admin/dashboard mockups **must** follow the packaged design system — read shared-runtime **Starter Kit app UI** and:
+When the PRD `## Technical Architecture` records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI, admin/dashboard mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
 
 1. `{paths.design_systems}/starter-kit/README.md` — rules and official kit links
 2. `{paths.design_systems}/starter-kit/sources.md` — variant index (React/Vue/Svelte/Livewire repos)
@@ -244,7 +242,7 @@ When a Starter Kit is **not** chosen, do not impose Flux/shadcn starter-kit patt
 
 ### Elise — Bootstrap 5 mockups
 
-When the PRD `## Technical Architecture` records **Bootstrap 5** for marketing or app UI, mockups **must** follow the packaged design system — read shared-runtime **Bootstrap 5 UI** and:
+When the PRD `## Technical Architecture` records **Bootstrap 5** for marketing or app UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
 
 1. `{paths.design_systems}/bootstrap-5/README.md` — rules and [Bootstrap 5.3 docs](https://getbootstrap.com/docs/5.3/)
 2. `{paths.design_systems}/bootstrap-5/sources.md` — component index
@@ -256,7 +254,7 @@ Use native Bootstrap components — **not** Filament, Starter Kit, or Nordic Tai
 
 ### Elise — Tailwind CSS mockups
 
-When the PRD records **Tailwind CSS** (without Filament, Starter Kit, or Bootstrap) for marketing or custom app UI, mockups **must** follow the packaged design system — read shared-runtime **Tailwind CSS UI** and:
+When the PRD records **Tailwind CSS** (without Filament, Starter Kit, or Bootstrap) for marketing or custom app UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
 
 1. `{paths.design_systems}/tailwind/README.md` — rules and [Tailwind docs](https://tailwindcss.com/docs)
 2. `{paths.design_systems}/tailwind/sources.md` — pattern index
@@ -267,7 +265,7 @@ Use **pure Tailwind utility classes** in HTML (CDN for mockups). Do not mix Fila
 
 ### Elise — AdminLTE mockups
 
-When the PRD `## Technical Architecture` records **[AdminLTE](https://adminlte.io/)** for admin/control panel UI, mockups **must** follow the packaged design system — read shared-runtime **AdminLTE admin UI** and:
+When the PRD `## Technical Architecture` records **[AdminLTE](https://adminlte.io/)** for admin/control panel UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
 
 1. `{paths.design_systems}/adminlte/README.md` — rules and [adminlte.io](https://adminlte.io/) links
 2. `{paths.design_systems}/adminlte/sources.md` — v4 docs, npm/Packagist, demo URLs

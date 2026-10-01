@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Conversation & Goal Challenge _(how the interview is run)_
 
 Discovery is a **conversation**, not a form. The failure mode of an interview driven by an agent is a rapid-fire questionnaire: options fired at the user, answers recorded, PRD written, nobody ever asked whether the thing is worth building. Larapilot's inception must not read like that.
@@ -28,4 +26,3 @@ Before a single functional requirement is written, the team has to understand *w
 Rules: **challenge the goal, never the person.** Say the uncomfortable thing once, clearly, with the reason — then accept the user's decision and move on; a repeated objection is nagging, not diligence. When the answers contradict each other (an MVP target with an enterprise feature list, a two-week deadline against a six-month scope, a free product with a paid support promise), name the contradiction and ask which side gives. **Jennifer** challenges positioning and competitors, **Benjamin** the market and the buyer, **Mark** the scope, **Aurora** the money — each in their own voice, none of them blocking.
 
 The challenge is recorded: promote the surviving answers into `## Vision` (what changes if it works), `## User Personas` (who has the problem), and `## MVP Scope` → `**Success signal:**` (how you will know in 90 days). Log the durable ones through the decision journal.
-

@@ -11,7 +11,8 @@ class PrdWriteCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:prd-write
                             {--file= : Path to PRD markdown file}
-                            {--content= : PRD markdown content}';
+                            {--content= : PRD markdown content}
+                            {--skill-hooks-done= : Skill hooks of the before phase already run, comma-separated (settings.hooks)}';
 
     protected $description = 'Persist PRD markdown to the configured path';
 
@@ -37,7 +38,14 @@ class PrdWriteCommand extends LarapilotCommand
             return $this->failure('E_INVALID_INPUT', 'PRD content is empty.', $this->exitForCode('E_INVALID_INPUT'), 'Pass --file, --content, or pipe markdown via stdin.');
         }
 
+        $hookContext = ['path' => $prd->path(), 'bytes' => strlen($content)];
+
+        if (($blocked = $this->beforeHooks('prd.written', $hookContext)) !== null) {
+            return $blocked;
+        }
+
         $prd->write($content);
+        $this->afterHooks('prd.written', $hookContext);
 
         return $this->success('write_result', [
             'path' => $prd->path(),

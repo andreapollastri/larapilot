@@ -20,8 +20,9 @@ class SettingsSetCommand extends LarapilotCommand
                             {--decision-log= : Decision journal + regression guard: YES (default) or NO}
                             {--code-history= : Per spec/task code change history: YES or NO (default NO)}
                             {--release-mode= : Semver release ledger + Gitflow release branches: YES or NO (default NO)}
-                            {--project-docs= : Living project documentation in _project_docs/: YES or NO (default NO)}
+                            {--project-docs= : Living project handbook in .larapilot/docs/handbook/: YES or NO (default NO)}
                             {--prior-art= : Prior-art search for existing open-source / packaged solutions at inception: YES (default) or NO}
+                            {--hooks= : Workflow hooks from .larapilot/hooks.yaml on the transitions of the loop: YES or NO (default NO)}
                             {--comments= : Internal feedback comments on dashboard/API: YES or NO (default NO)}
                             {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
                             {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
@@ -127,6 +128,7 @@ class SettingsSetCommand extends LarapilotCommand
             'release-mode' => ['release_mode', $config->allowedReleaseModeModes()],
             'project-docs' => ['project_docs', $config->allowedProjectDocsModes()],
             'prior-art' => ['prior_art', $config->allowedPriorArtModes()],
+            'hooks' => ['hooks', $config->allowedHooksModes()],
             'comments' => ['comments', $config->allowedCommentsModes()],
             'dashboard-auth' => ['dashboard_auth', $config->allowedDashboardAuthModes()],
             'api-auth' => ['api_auth', $config->allowedApiAuthModes()],
@@ -179,7 +181,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --hooks, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

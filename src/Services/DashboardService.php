@@ -203,6 +203,7 @@ class DashboardService
 
         return [
             'settings' => $data['settings'],
+            'hooks' => app(HookService::class)->listing(),
         ];
     }
 

@@ -1,94 +1,52 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
+## Multi-tenancy _(John owns — always evaluate pros & cons)_
 
-## Test Data — Factories & Seeders _(Alex owns)_
+When the product serves **multiple customers, workspaces, or isolated environments**, John **must** compare tenancy patterns in the PRD `## Technical Architecture` (or a linked ADR) — never assume single-tenant by default if the brief implies SaaS, agencies, or per-client isolation.
 
-Alex **always** maintains realistic, coherent demo data alongside domain code:
+| Pattern                         | How it works                                                                                                                                                                                                                     | Pros                                                                                                              | Cons                                                                                | Best when                                                                       |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| **A — Distributed monolith**    | **One repo**, same Laravel monolith **deployed to N servers** (or N Cipi/Forge sites); **custom subdomain** (or domain) per tenant; optional **central SSO** in front (Cloudflare Access, Keycloak, Auth0, Sanctum central IdP)   | Strong runtime isolation, per-tenant scaling, simple mental model, easy custom domains, blast-radius containment   | N deploy pipelines to patch, config drift if not automated, higher base infra cost   | Few–medium tenants, enterprise clients, strict isolation without microservices   |
+| **B — Row-level (`tenant_id`)** | Single deploy, single DB; `tenant_id` on rows; global scopes / middleware                                                                                                                                                          | Cheapest, fastest MVP, one migration path                                                                          | Weakest isolation, IDOR risk if scopes fail, noisy-neighbor on shared DB             | Many small tenants, early B2B SaaS, MVP validation                               |
+| **C — Database-per-tenant**     | Single deploy; separate DB (or connection) per tenant                                                                                                                                                                              | Strong data isolation, clean export/delete per tenant                                                              | Connection management, many DBs to migrate/backup                                    | Compliance-heavy (GDPR erasure), medium tenant count                             |
+| **D — Schema-per-tenant**       | Single DB, separate PostgreSQL schema per tenant                                                                                                                                                                                   | Balance of isolation and shared infra                                                                              | PostgreSQL-only, migration fan-out complexity                                        | Medium tenants on PostgreSQL                                                     |
+| **E — Package-driven**          | [stancl/tenancy](https://tenancyforlaravel.com/) or [spatie/laravel-multitenancy](https://github.com/spatie/laravel-multitenancy) — subdomain identification, bootstrapped tenant context                                          | Laravel-native, community patterns, less bespoke glue                                                              | Package constraints, learning curve                                                  | Greenfield multi-tenant Laravel with subdomain routing                           |
 
-1. **Factory per model** — every new or changed Eloquent model gets or updates `database/factories/{Model}Factory.php`. Use Faker for field values that reflect the **domain** (names, statuses, amounts, enums) — not generic `lorem` everywhere.
-2. **Factory states** — define `state()` / `sequence()` for meaningful variants (e.g. `inactive()`, `premium()`, `withOrders(3)`) so tests and seeders can express real scenarios.
-3. **Relationships** — factories must respect foreign keys and cardinality; use `for()` / `has()` / `afterCreating()` so related records stay consistent.
-4. **Seeders** — maintain `database/seeders/DatabaseSeeder.php` (and dedicated seeders when large) that compose factories into a **coherent initial dataset**: fixed demo users, cross-linked entities, volumes that exercise the UI (not empty tables, not random orphans).
-5. **Same-task updates** — any migration, model attribute, enum, or relationship change **must** update the matching factory and seeder in the **same task commit/PR** — never leave stale seed data.
-6. **Verify** — `php artisan migrate:fresh --seed` (or `sail artisan …` when the PRD chose Sail) must succeed and produce a meaningful environment before `task-done`.
+**John's decision rules:**
 
-Anne uses factories in tests; seeders are the canonical demo dataset for dev, onboarding, and staging. John plans entity tasks with factory/seeder deliverables; Robert checks factory/seeder presence in review. Alex also self-checks before `task-done`: no N+1 in the feature path, factories/seeders updated, tests green per `settings.testing`, Git discipline honored.
+1. **Always present at least two options** (typically **A** and **B** or **E**) with explicit trade-offs and Aurora cost notes.
+2. **Pattern A** — recommend when: few tenants, high isolation need, custom domains per client, or central SSO gateway. Document: subdomain DNS (per PRD edge provider), deploy automation (same artifact → N targets), env/secrets per instance, shared vs per-tenant DB choice.
+3. **Central SSO in front of A** — propose when tenants share an identity plane: OAuth/OIDC gateway, JWT to Laravel, or Socialite against a central IdP; use `*.127001.it` or `*.app.test` locally.
+4. **Never skip tenant context** in auth policies, queues, and file storage — every pattern needs explicit `TenantScope`, disk prefix, or connection resolver.
+5. Scale pattern choice to **delivery target**: MVP may start with **B** or **E** with a documented migration path to **A** or **C** for Enterprise.
 
-## Testing Standards _(Anne owns — gated by `settings.testing`)_
+Ownership: **John** selects and documents the pattern; **Andrew** validates Laravel-native tenancy packages; **Lars** reviews isolation and IDOR; **Violet** reviews data residency per tenant; **Jack** automates N-deploy or connection routing.
 
-Honor **`data.settings.testing`** from `config-show` (see **Project Settings** in the core). Delivery target may add domain cases **within** that bar — it must not upgrade `MINIMAL`/`NORMAL` into browser E2E.
+## Data Architecture _(Mike owns)_
 
-| `testing`     | Bar                                                                                                                                    |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------|
-| **`MINIMAL`** | Critical-path Pest/PHPUnit only (auth, payments, core API + key Form Request validation). No browser/E2E tooling.                       |
-| **`NORMAL`**  | Feature/unit/policy/API/queue tests scaled to delivery target (**default**). **No** Playwright, Dusk, Pest browser, or journey E2E.     |
-| **`BEST`**    | Full bar: `NORMAL` + integration (`Http::fake`), tenancy isolation when multi-tenant, primary-journey E2E, and **Responsive & UI testing** below. |
+**Mike** is the authority on **schema shape, database engine choice, relationships, migrations, and search/indexing**. John designs application architecture; Mike decides how data is stored and queried when the choice is material. They collaborate with **Jack** (ops/backups), **Aurora** (cost), **Lars** (injection, tenancy isolation, PII at rest), **Alex** (Eloquent usage), **Andrew** (Laravel idioms), **Sabrine** (legacy schema port), **Tom** (data ACs), and **Mark** (scope vs delivery target).
 
-Delivery-target hints **inside** the active bar: **MVP** — critical paths + Form Request validation. **V1 Complete** — above + policy tests, API contract tests, queue job tests. **Full Product / Enterprise** — above + integration tests; tenancy isolation when multi-tenant; **E2E only if `testing` is `BEST`**.
+### Decision lens
 
-Always: use **Pest** when the project already does; `php artisan test` in CI; no untested public API routes under `NORMAL`/`BEST`; Anne defines strategy in every plan; interleave test tasks with implementation, not all at the end. When automation cannot run reliably, Anne **documents manual test steps** for the human (**manual test handoff**) — allowed at every bar.
+Evaluate every non-trivial persistence choice against: **performance**, **usability** (query/API ergonomics), **maintainability**, **scalability**, **dev experience**, **cost**, and **security** — scaled to **Delivery Target** (MVP may accept a simpler model with a documented upgrade path; Enterprise must justify isolation, indexes, and operational load).
 
-### Responsive & UI testing _(Anne — **`settings.testing: BEST` only**)_
+### Tree / hierarchy patterns _(choose explicitly — never invent ad-hoc)_
 
-When `testing` is **`MINIMAL`** or **`NORMAL`**, skip automated viewport/browser suites; optional short **Manual tests recommended** notes are enough for UI specs.
+| Pattern | Pros | Cons | Prefer when |
+| ------- | ---- | ---- | ----------- |
+| **Adjacency List** (`parent_id`) | Simple writes, intuitive | Expensive deep reads without recursion/CTE | Shallow trees, frequent moves |
+| **Nested Sets** | Fast subtree reads | Expensive writes/rebuilds | Read-heavy catalogs, rare moves |
+| **Path Enumeration** / materialized path | Fast ancestors/descendants with `LIKE`/`ltree` | Path renames on move | Medium depth, PostgreSQL `ltree` available |
+| **Closure Table** | Flexible queries both ways | Extra table + write amplification | Complex graph-like hierarchies |
+| **Other** (graph DB, JSON document) | Domain-fit | Ops/skill cost | Only when relational fit is poor |
 
-When `testing` is **`BEST`**, Anne verifies UI across devices and resolutions:
+### Engine & search
 
-| Area                            | Requirement                                                                                                                                                     |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Viewport matrix**             | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight                             |
-| **Mobile First alignment**      | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths                                                       |
-| **Navigation**                  | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance)                                       |
-| **Responsive regression**       | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack    |
-| **Accessibility × responsive**  | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets                                                          |
-| **Lighthouse**                  | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs                                                           |
-| **Orientation / devices**       | When automatable, test landscape on mobile for primary screens; cover every device class the stack supports (phone, tablet, desktop, PWA/app shells in scope)    |
-| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms)                                        |
+1. **SQL first** for relational Laravel apps (MySQL/MariaDB/PostgreSQL per Jack/infra). Document engine-specific features (`jsonb`, `ltree`, full-text).
+2. **NoSQL / document / key-value** only with a clear access pattern (session/cache ≠ primary domain store unless justified).
+3. **Search engines** (Elasticsearch, OpenSearch, Meilisearch, Typesense, Scout drivers) when full-text/facet needs exceed SQL FTS — size cost with Aurora; never duplicate source of truth without sync strategy.
+4. **Migrations** — Mike owns migration design with Alex: one concern per migration, indexes with schema change, reversible when safe, data backfills as explicit tasks. No silent schema drift.
+5. Record choices in PRD `## Technical Architecture` (e.g. `**Data store:** PostgreSQL`, `**Hierarchy:** Closure Table`, `**Search:** Meilisearch via Scout`).
 
-Under **`BEST`**, Anne plans explicit **responsive test tasks** interleaved with UI implementation. Elise's mockup README breakpoint notes are the test contract. At review, Anne attaches automated evidence **and** a **Manual tests recommended** section when human verification is still required.
-
-## Versioning & Changelog
-
-- **Semantic Versioning** ([SemVer](https://semver.org/)): `MAJOR.MINOR.PATCH` — bump in `release/*` branches.
-- **`CHANGELOG.md`** at repo root — [Keep a Changelog](https://keepachangelog.com/) format (`Added`, `Changed`, `Fixed`, `Removed`, `Security`); update on every release; Unreleased section during development.
-- **Git tags** `vX.Y.Z` on `main` after each production release.
-- Laravel apps: align `composer.json` version or package release notes when shipping libraries.
-
-## Security Disclosure Files _(Lars imposes)_
-
-| File               | Location                          | Purpose                                                                                                                                 |
-| ------------------ | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------|
-| **`security.txt`** | `public/.well-known/security.txt` | [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116.html) — `Contact`, `Expires`, `Preferred-Languages`, `Policy` (link to SECURITY.md)   |
-| **`SECURITY.md`**  | Repository root                   | Coordinated disclosure policy, supported versions, response SLA, scope                                                                   |
-
-Ship gate: both files present and reachable on public apps (`https://domain/.well-known/security.txt`). Lars plans them when missing.
-
-## CI/CD Pipeline _(Jack imposes minimum gates; Sarah authors pipeline scripts)_
-
-Every project gets a pipeline scaffold (GitHub Actions, GitLab CI, Bitbucket Pipelines — match the host). **Jack** defines required stages and merge blockers; **Sarah** authors and maintains the YAML/jobs/shell steps and any helper scripts the pipeline calls.
-
-**Minimum stages:**
-
-```yaml
-# Conceptual minimum — adapt to host
-- lint: vendor/bin/pint --test  (or ./vendor/bin/pint --dirty)
-- analyse: vendor/bin/phpstan analyse --no-progress --memory-limit=1G  # Larastan level 5+ — never lower without human waiver
-- test: php artisan test --parallel
-- audit: composer audit
-- security: php artisan checkpoint:scan # when checkpoint installed
-- build: npm ci && npm run build # when Vite frontend exists
-- deploy: only from main/tags; Lars GO + Jack orchestration (Sarah writes deploy hook scripts when needed)
-```
-
-Rules: pipeline runs on every PR to `develop`/`main`; failing **Pint**, **Larastan (level 5+)**, tests, or `composer audit` block merge; deploy to production only after Lars ship GO (or explicit waiver). Involve **Sarah** on every plan/implement task that adds or changes workflow files, job scripts, or server-side shell.
-
-## Code quality gate _(Andrew + Jack — mandatory; Sarah when CI scripts change)_
-
-Every Larapilot project stays compatible with [Larastan](https://github.com/larastan/larastan) **level 5 or higher** and [Laravel Pint](https://laravel.com/docs/pint) formatting.
-
-- **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries for `larastan/larastan` + `laravel/pint`.
-- **`larapilot:quality`** runs Pint (check-only by default; `--fix` applies formatting) then Larastan analysis — use before review/merge and during implement.
-- **`larapilot:doctor`** fails healthy when Pint/Larastan config, level, or dev dependencies are missing.
-- **Never lower** `level` below 5 without an explicit human waiver recorded in the PRD or plan.
+Ownership: **Mike** decides; **John** integrates with app boundaries; **Alex** implements; **Anne** tests migration + query correctness; **Sabrine** ports legacy schemas; **Lars** reviews sensitive data paths.
 
 ## Vendor & Package Policy
 
@@ -108,3 +66,17 @@ Every candidate — **including** Spatie packages and Filament plugins — must 
 
 Ownership: **Sebastian** proposes vendor and service integrations; **Matt** owns hands-on delivery; **John** owns architectural fit; **Andrew** vets Laravel-ecosystem fit; **Lars** vets anything touching auth, uploads, or user data; **Aurora** notes cost implications per Budget Sensitivity.
 
+## Local development environment _(Jack / John own)_
+
+**Never impose a local stack by default.** **Jack** presents the options below via **AskQuestion** during inception (downstream skills ask only if the PRD omits the choice). Recommend the best fit for the team, OS, and services the PRD needs — do not default to Sail. Record the choice in the PRD under `## Technical Architecture` → `Local dev` so downstream skills honor it instead of re-imposing Docker.
+
+| Option                    | When to recommend                                                                                                                     |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------|
+| **Laravel Sail (Docker)** | Containerized parity with production, multiple services (MySQL, Redis, Mailpit, MinIO), reproducible onboarding for mixed OS teams     |
+| **Laravel Herd**          | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/)                                |
+| **Not defined yet**       | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap                                        |
+| **Other**                 | User names a specific alternative (Valet, WSL + native PHP, existing team stack, …)                                                    |
+
+After the choice: **Sail** — `composer require laravel/sail --dev` + `php artisan sail:install`; document `sail up` / `sail artisan …` in README ([Sail docs](https://laravel.com/docs/sail)). **Herd** — document Herd setup in README; use `*.test` domains where helpful. **Not defined yet** — README documents generic `php artisan` workflow only; **do not** add Sail/Herd install tasks until the user decides. **Other** — document the named stack; no Sail/Herd scaffolding unless chosen later.
+
+**Local URLs** _(optional second AskQuestion when multi-tenant, OAuth, or cookie domains matter)_ — besides `localhost`, `*.test`, and `/etc/hosts`, Jack may propose **[127001.it](https://127001.it/)** wildcard DNS (`*.127001.it` → `127.0.0.1`) for shareable dev URLs without hosts-file edits (e.g. `APP_URL=http://myapp.127001.it`).

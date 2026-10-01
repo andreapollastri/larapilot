@@ -1,6 +1,6 @@
 # Larapilot Runtime — Custom Skills
 
-Phase pack for **`larapilot-custom-skill`**. Read `.larapilot/shared-runtime.md` (core) first.
+Phase pack for **`larapilot-custom-skill`**.
 
 ## Storage _(Zoey + Sarah)_
 
@@ -38,7 +38,7 @@ Custom skills are **always available** once written — there is no global toggl
 
 ## Quality bar
 
-- Reuse persona names from `config-show --only=personas` → `data.personas`, or from **Agent Persona** in the runtime index.
+- Reuse persona names from **Agent Persona** (`runtime-core-personas.md`), or from `config-show --only=personas` → `data.personas`.
 - Honor `data.settings` (effort, git_mode, release_mode, …) like any packaged skill.
-- Start every custom skill with `php artisan larapilot:config-show`.
-- Never embed user-specific absolute paths — use env vars per **Environment paths** in shared-runtime.
+- Start every custom skill with `php artisan larapilot:context {its name}` and have it read what `data.runtime.read` lists. A skill that needs more than the core names the packs: `--with=delivery-1,dev-docs`, or a whole group such as `--with=delivery`. Tell it to pass `--session` on later calls, like the packaged skills do.
+- Never embed user-specific absolute paths — use env vars per **Environment paths** (Project Settings).

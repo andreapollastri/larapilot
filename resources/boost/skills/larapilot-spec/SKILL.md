@@ -7,23 +7,21 @@ description: "Creates or extends the backlog from a PRD. Use for a backlog, epic
 
 You create and extend the Larapilot backlog. Each spec body is a user story.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context spec` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`; `discovery-6.md` (on demand) when the PRD has no journeys or no domain model, or its Prior Art verdict is not `Build anyway`. Settings, paths, and `data.project` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-discovery.md` (**MoSCoW Prioritization**, **Delivery Target**, backlog mapping, **Domain Model & User Journeys**, **Requirement Quality**, **Non-Functional Requirements**, **Risks & Assumptions**, **Prior Art & Open-Source Alternatives**) and `.larapilot/runtime-ops.md` (**PRD Living Document**).
-
-When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
+When `data.settings.decision_log` is `YES`, journal material user choices with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## PRD
 
-Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature`; for a change to what the PRD already says (priorities, scope, wording, targets, missing sections), to `/larapilot-prd` (see **PRD Living Document** and **PRD Revision** in `runtime-ops.md`).
+Read the PRD — **do not write** to it. For scoped product additions with interview, direct the user to `/larapilot-feature`; for a change to what the PRD already says (priorities, scope, wording, targets, missing sections), to `/larapilot-prd`.
 
 **Coverage check** — after a bootstrap or an extend, run `php artisan larapilot:prd-impact` (no `--ids`): `data.uncovered_must` lists the `Must` FRs no spec cites. Each one gets a spec, or a line in chat saying why it waits. `data.untraced` journeys and NFRs are reported the same way.
 
 ## Output Economy
 
-**Moderate** — see `larapilot-spec` in shared-runtime. Chat: brief announce of bootstrap vs extend and priority choices. Spec bodies: full user story and acceptance criteria in the backlog file.
+**Moderate.** Chat: a brief announce of bootstrap vs extend and of the epic and priority choices. Spec bodies: the full user story and acceptance criteria in the backlog file — never shortened.
 
 ## The Team (this phase)
 
@@ -40,26 +38,26 @@ Read the PRD — **do not write** to it. For scoped product additions with inter
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:spec-list`
+1. `php artisan larapilot:spec-list` — codes, titles, epics, and `cites`: the PRD ids each spec names
+2. `php artisan larapilot:prd-show` — the outline first: sections with their size, every id with its title and MoSCoW
 3. `php artisan larapilot:validate-spec --file=...`
 4. `php artisan larapilot:spec-add --file=...`
 
 ## Routing
 
-- If `spec-list` returns empty `data.summary.codes` → **bootstrap backlog** from PRD
+- If `spec-list` returns `data.summary.count` 0 → **bootstrap backlog** from PRD
 - If backlog exists → **extend** with only the requested specs
 - For **one new feature/enhancement** with interactive discovery → prefer `/larapilot-feature`
 - For **bug reports** → prefer `/larapilot-bug` (Sophia triage)
 - For **one request that may be either** → prefer `/larapilot-triage`
 
-Read PRD from `data.paths.prd`. If missing, ask for path, content, or suggest `larapilot-inception`.
+A **bootstrap** reads the whole PRD from `data.paths.prd`, with the file-read tool: every FR becomes a spec or a deferral. An **extend** reads the outline and then `prd-show --ids=` for the FRs, journeys, and NFRs the new specs cite. When `data.project.prd` is `false`, ask for path, content, or suggest `larapilot-inception`.
 
-Read **`data.paths.client_materials`**, **`data.paths.legacy`**, and **`data.paths.research`** when present (see **Client Materials**, **Legacy Rewrite & Porting**, and **Reference Products & Sebastian Deepsearch** in shared-runtime). Trace specs to client doc sections and legacy parity rows; never ignore these inputs.
+Read **`data.paths.client_materials`**, **`data.paths.legacy`**, and **`data.paths.research`** when present (`discovery-3.md`, listed under `read` when those folders hold files). Trace specs to client doc sections and legacy parity rows; never ignore these inputs.
 
-Read the **delivery target** from `## MVP Scope` (see Delivery Target in shared-runtime). Scope the backlog to match — do not cap at MVP when the PRD says `V1 Complete`, `Full Product`, or `Enterprise`.
+The **delivery target** is `data.project.delivery_target` (**Delivery Target**, `discovery-4.md`). Scope the backlog to match — do not cap at MVP when the PRD says `V1 Complete`, `Full Product`, or `Enterprise`.
 
-Read **MoSCoW** on each `### FR-XXX` in `## Functional Requirements` (see **MoSCoW Prioritization** in shared-runtime). MoSCoW is the primary input for bootstrap/deferral; fall back to delivery target + `## MVP Scope` only when a tag is missing (legacy PRDs).
+Read **MoSCoW** on each `### FR-XXX` — the outline carries it (**MoSCoW Prioritization**, `discovery-4.md`). MoSCoW is the primary input for bootstrap/deferral; fall back to delivery target + `## MVP Scope` only when a tag is missing (legacy PRDs).
 
 Read the PRD sections a current inception writes — and say in one line when one is missing, because the backlog will be weaker for it:
 
@@ -72,9 +70,9 @@ Read the PRD sections a current inception writes — and say in one line when on
 | `## Risks & Assumptions` → open questions | An FR whose `**Depends on:**` cites `Q-XXX` gets that question written in the spec as `**Open questions**` — the spec is still created, the criterion reads "blocked by Q-XXX until …"; never guess the answer |
 | `**Prior Art:**` verdict | `Integrate as dependency` → glue and integration specs first, custom FRs after; `Build anyway` → the differentiator FRs (the ones the closest candidate lacks) lead the backlog |
 
-Read **`data.settings.backlog`** from `config-show` (see **Backlog granularity** in shared-runtime): it controls how finely scope is sliced into specs and epics (`LEAN` | `STANDARD` | `GRANULAR`). Under `LEAN`/`STANDARD` (default), prefer journey-level specs that cite multiple related `FR-XXX`; technical seams become plan tasks. Reuse existing epics from `spec-list` before proposing new ones.
+**`data.settings.backlog`** (**Backlog granularity**, Project Settings) controls how finely scope is sliced into specs and epics (`LEAN` | `STANDARD` | `GRANULAR`). Under `LEAN`/`STANDARD` (default), prefer journey-level specs that cite multiple related `FR-XXX`; technical seams become plan tasks. Reuse existing epics from `spec-list` before proposing new ones.
 
-Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) and adjust backlog depth:
+**Project Kind** is `data.project.kind`; adjust backlog depth:
 
 | Project Kind | Backlog behavior |
 | --- | --- |
@@ -85,14 +83,7 @@ Read **Project Kind** from `## MVP Scope` (see Project Kind in shared-runtime) a
 
 ## Bootstrap backlog (from PRD)
 
-Apply **MoSCoW** first (see shared-runtime), then delivery target:
-
-| MoSCoW | MVP | V1 Complete | Full Product / Enterprise |
-| --- | --- | --- | --- |
-| **Must** | Spec | Spec | Spec |
-| **Should** | Defer | Spec | Spec |
-| **Could** | Defer | Defer | Spec |
-| **Won't** | Skip | Skip | Skip |
+Apply **MoSCoW** first, then delivery target: the matrix of which FR becomes a spec at which target, and the default spec **priority** per MoSCoW tag, are **Backlog mapping** in `discovery-4.md` — written there once.
 
 | Delivery target | Backlog depth (when MoSCoW tags are missing — legacy PRDs) |
 | --- | --- |
@@ -101,7 +92,7 @@ Apply **MoSCoW** first (see shared-runtime), then delivery target:
 | **Full Product** | Cover every FR in `## Functional Requirements` — slice per `settings.backlog`: journey-level specs citing multiple related FRs (`LEAN`/`STANDARD`, default) or one spec per FR (`GRANULAR`) |
 | **Enterprise** | Full Product breadth + compliance, integrations, observability, and ops specs (same `settings.backlog` slicing) |
 
-Default spec **priority** from MoSCoW: **Must** → `HIGH` (compliance/security FRs → `CRITICAL`); **Should** → `MEDIUM`; **Could** → `LOW`. Cite `FR-XXX` and MoSCoW in the spec body when tracing to the PRD.
+Cite `FR-XXX` and MoSCoW in the spec body when tracing to the PRD.
 
 When extending an existing backlog, new specs must stay consistent with the PRD delivery target and FR MoSCoW tags.
 
@@ -165,9 +156,9 @@ Validate first, then `spec-add`. Delete temp file after CLI exits.
 - Keep specs INVEST-compliant and independently demonstrable
 - **Tom's quality bar:** every criterion is observable (a state, a number, a timing, a refusal); a criterion that restates the title is not a criterion. Use the Domain Model's names and states verbatim
 - Use Boost `Application Info` to align specs with installed packages (Livewire, Inertia, Pest, etc.)
-- When the PRD includes **admin/control panel** or authenticated dashboard features, scope those specs to the panel route recorded in the PRD: one spec per **functional admin area** (panel setup + related Filament resources / Starter Kit pages as plan tasks) by default; one spec per entity resource/page only under `settings.backlog: GRANULAR`. Stack follows the PRD choice: **Filament** when Filament was chosen; **Starter Kit** (dashboard, settings, auth layouts, Inertia/Livewire pages) when a [Laravel Starter Kit](https://laravel.com/starter-kits) variant was chosen; or standard Laravel (routes/controllers, Livewire/Inertia UI) for a custom panel. If the PRD does not record the choice, **ask the user** (Filament vs Starter Kit vs custom) per the Vendor & Package Policy in shared-runtime — recommend the best fit for the case and the option closest to the project mockups
-- Bootstrap / README specs honor the **local dev method** recorded in the PRD (Sail scaffold, Herd docs, generic `php artisan` when not defined yet, or other named stack). If the PRD omits it, **ask the user** per Local development environment in shared-runtime — never assume Sail
-- Infra / deploy specs honor **deploy platform**, **edge/CDN/WAF**, and **cloud** recorded in the PRD. If any is missing, **ask the user** per Infrastructure & Cloud in shared-runtime — never assume Cipi, Cloudflare, or AWS; recommend Cloudflare (public edge) and AWS (compute/data) only when feasible
+- When the PRD includes **admin/control panel** or authenticated dashboard features, scope those specs to the panel route recorded in the PRD: one spec per **functional admin area** (panel setup + related Filament resources / Starter Kit pages as plan tasks) by default; one spec per entity resource/page only under `settings.backlog: GRANULAR`. Stack follows the PRD choice: **Filament** when Filament was chosen; **Starter Kit** (dashboard, settings, auth layouts, Inertia/Livewire pages) when a [Laravel Starter Kit](https://laravel.com/starter-kits) variant was chosen; or standard Laravel (routes/controllers, Livewire/Inertia UI) for a custom panel. If the PRD does not record the choice, **ask the user** (Filament vs Starter Kit vs custom; **Vendor & Package Policy**, `delivery-3.md` on demand) — recommend the best fit for the case and the option closest to the project mockups
+- Bootstrap / README specs honor the **local dev method** recorded in the PRD (Sail scaffold, Herd docs, generic `php artisan` when not defined yet, or other named stack). If the PRD omits it, **ask the user** (**Local development environment**, `delivery-3.md` on demand) — never assume Sail
+- Infra / deploy specs honor **deploy platform**, **edge/CDN/WAF**, and **cloud** recorded in the PRD. If any is missing, **ask the user** (**Infrastructure & Cloud**, `ship-1.md` on demand) — never assume Cipi, Cloudflare, or AWS; recommend Cloudflare (public edge) and AWS (compute/data) only when feasible
 - When the PRD includes **competitor data porting** FRs (Sebastian's import/export integrations), keep them as first-class specs — importers from rival products and lock-in-free export are product features, not technical chores
 - **Legacy rewrite/port:** when `{paths.legacy}` or PRD **Project Origin** is legacy, bootstrap **parity and data-migration specs first** — one spec per legacy module/journey from `{paths.research}/legacy-parity.md` (merge small closely-related modules into one spec under `settings.backlog: LEAN`); acceptance criteria cite legacy behavior and migration verification (Anne)
 - **Reference products:** when `{paths.research}/reference-products/` exists, create specs for adopted features traced to deepsearch reports

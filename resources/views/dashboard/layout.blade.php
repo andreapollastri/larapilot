@@ -11,17 +11,20 @@
             ['route' => 'larapilot.dashboard.settings', 'active' => ['larapilot.dashboard.settings'], 'label' => 'Settings', 'icon' => 'settings'],
             ['route' => 'larapilot.dashboard.skills', 'active' => ['larapilot.dashboard.skill*'], 'label' => 'Skills', 'icon' => 'skills'],
             ['route' => 'larapilot.dashboard.files', 'active' => ['larapilot.dashboard.files*'], 'label' => 'File manager', 'icon' => 'files', 'when' => app(\Larapilot\Services\ConfigService::class)->fileManagerBrowsable()],
+            ['route' => 'larapilot.dashboard.database', 'active' => ['larapilot.dashboard.database*'], 'label' => 'Database', 'icon' => 'database', 'when' => app(\Larapilot\Services\ConfigService::class)->databaseViewerBrowsable()],
             ['route' => 'larapilot.dashboard.git', 'active' => ['larapilot.dashboard.git'], 'label' => 'Git', 'icon' => 'git'],
         ],
         'Insights' => [
             ['route' => 'larapilot.dashboard.usage', 'active' => ['larapilot.dashboard.usage'], 'label' => 'Usage', 'icon' => 'usage'],
             ['route' => 'larapilot.dashboard.economics', 'active' => ['larapilot.dashboard.economics*'], 'label' => 'Economics', 'icon' => 'economics'],
             ['route' => 'larapilot.dashboard.security', 'active' => ['larapilot.dashboard.security*'], 'label' => 'Security', 'icon' => 'shield'],
+            ['route' => 'larapilot.dashboard.sbom', 'active' => ['larapilot.dashboard.sbom*'], 'label' => 'SBOM', 'icon' => 'package'],
             ['route' => 'larapilot.dashboard.errors', 'active' => ['larapilot.dashboard.errors*'], 'label' => 'Errors', 'icon' => 'bug'],
         ],
         'Reference' => [
             ['route' => 'larapilot.api.docs', 'active' => ['larapilot.api.*'], 'label' => 'API', 'icon' => 'api'],
             ['route' => 'larapilot.dashboard.docs', 'active' => ['larapilot.dashboard.docs'], 'label' => 'Docs', 'icon' => 'docs'],
+            ['route' => 'larapilot.dashboard.about', 'active' => ['larapilot.dashboard.about'], 'label' => 'About', 'icon' => 'about'],
         ],
     ];
 @endphp
@@ -83,6 +86,7 @@
             --heat-4: #1f6f55;
             --shadow: 0 1px 2px rgba(23, 33, 43, 0.04);
             --shadow-lg: 0 16px 40px rgba(23, 33, 43, 0.12);
+            --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23586776' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
             --radius: 14px;
             --radius-sm: 10px;
             --radius-xs: 7px;
@@ -130,6 +134,7 @@
                 --heat-4: #63c4a0;
                 --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                 --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+                --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f9dab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
             }
         }
 
@@ -170,6 +175,7 @@
             --heat-4: #63c4a0;
             --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+            --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f9dab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -608,6 +614,18 @@
             .field input[type="search"],
             .field input[type="text"],
             .field select { min-height: 36px; padding: 6px 11px; font-size: 0.875rem; }
+        }
+
+        /* the native arrow sits flush against a custom border: draw our own chevron instead */
+        select:not([multiple]):not([size]) {
+            -webkit-appearance: none;
+            appearance: none;
+            padding-right: 34px;
+            background-image: var(--select-chevron);
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px 16px;
+            text-overflow: ellipsis;
         }
 
         .toolbar {

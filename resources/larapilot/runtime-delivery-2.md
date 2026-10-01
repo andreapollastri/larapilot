@@ -1,32 +1,10 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
-## CLI, Git Pipelines & Linux _(Sarah owns — steps in wherever these surfaces appear)_
-
-**Sarah** is the squad expert for **custom CLIs**, **Git in general**, **Git/forge automation**, **CI pipeline scripts**, and **Linux / terminal / server shell** work. She **must participate** whenever a plan or implement task touches any of those — not only when a dedicated "CLI tooling" FR exists. On merge/rebase conflicts, dirty history, or tricky Git recovery, **Sarah leads** the resolution (Alex owns the code content; Sarah owns the Git mechanics).
-
-| Surface | Sarah does | Partners with |
-| --- | --- | --- |
-| **Custom CLIs** | Decide Bash vs Go vs Artisan; write/maintain the tool | **Andrew** (Artisan vs external), **Albert** (usage docs) |
-| **Git (general)** | Conflict resolution, rebase vs merge, interactive rebase, cherry-pick, bisect, reflog recovery, history hygiene, submodule/worktree pitfalls | **Alex** (file content during conflicts), **Jack** (branch policy), **Robert** (rejects messy multi-task commits) |
-| **Git / forge automation** | Hooks, `gh`/`glab`/`az repos`/API scripts, branch helpers, release tagging scripts | **Jack** (Gitflow policy), **Alex** (per-task discipline) |
-| **CI pipelines** | Workflow YAML, job scripts, matrix runners, cache, artifacts | **Jack** (required gates / merge blockers), **Anne** (test commands), **Lars** (audit/security steps) |
-| **Linux / terminal / server** | Shell scripts, systemd units, cron, deploy hooks, SSH/rsync glue, VPS bootstrap | **Jack** (deploy platform & orchestration), **Lars** (secrets / hardening) |
-
-Stack defaults: **Shell/Bash** for thin wrappers and host automation; **Go** when the binary must be portable, fast, single-file, or used outside PHP runtime. Prefer Laravel Artisan for in-app commands; escalate to a standalone CLI when the tool must run without bootstrapping the full app, ship to many machines, or serve non-PHP consumers.
-
-Rules:
-
-1. Propose a CLI only when there is a recurring workflow (scaffold, doctor, migrate-helper, release, env bootstrap) — not for one-off chat instructions.
-2. Choose **Bash** for short, readable glue that calls `composer`/`php`/`git`/`docker`. Choose **Go** for cross-platform binaries, concurrent I/O, or tools distributed via GitHub Releases.
-3. On CI/pipeline or server-script tasks: Sarah drafts the scripts; Jack confirms gates, environments, and deploy orchestration; Lars reviews secret handling (no secrets in argv/logs/committed files).
-4. Coordinate with **Lucille** (time spent on tooling is logged under `feature` or `support`).
-5. Record in PRD/plan: tool/pipeline/script name, language, install path, and who runs it (dev / CI / ops).
-
 ## Git Workflow — Gitflow _(Jack owns policy — gated by `settings.git_mode`; Sarah owns Git mechanics & automation)_
 
-Honor **`data.settings.git_mode`** from `config-show` (see **Project Settings** in the core). When `NO_GITFLOW`, skip this section's branch/PR ceremony entirely.
-
-When `GITFLOW` or `GITFLOW_PUSH`, propose a **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgrade path):
+<!-- when: git_mode=NO_GITFLOW -->
+`git_mode` is **`NO_GITFLOW`**: no branch or PR ceremony. Commits go on the current branch, one per completed task, Conventional Commits preferred (`type(US-XXX): TASK-NN short summary`). **No** TASK-00 bootstrap, feature-branch mandate, or internal PR. **No push** unless the user asks. Run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes.
+<!-- end -->
+<!-- when: git_mode!=NO_GITFLOW -->
+A **clean Gitflow** (or GitHub Flow for solo MVP with a documented upgrade path):
 
 | Branch                      | Purpose                                                                                   |
 | --------------------------- | ------------------------------------------------------------------------------------------ |
@@ -36,19 +14,20 @@ When `GITFLOW` or `GITFLOW_PUSH`, propose a **clean Gitflow** (or GitHub Flow fo
 | `release/x.y.z`             | Release prep: version bump, changelog, final QA; merge → `main` + back-merge → `develop`   |
 | `hotfix/x.y.z`              | Urgent production fix; branch from `main`; merge → `main` + `develop`                      |
 
-Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required before merge; delete feature branches after merge; spec codes map to `feature/US-XXX-*` branch names when possible. Jack scaffolds branch protection and required PR checks in CI when Gitflow is active; **Sarah** handles Git mechanics (conflicts, rebase onto `develop`, history hygiene) and any supporting Git/forge automation (hooks, `gh`/`glab` helpers, release scripts).
+Rules: no direct commits to `main` or `develop`; PR/MR required before merge; delete feature branches after merge; spec codes map to `feature/US-XXX-*` branch names when possible. Jack scaffolds branch protection and required PR checks in CI; **Sarah** handles Git mechanics (conflicts, rebase onto `develop`, history hygiene) and any supporting Git/forge automation (hooks, `gh`/`glab` helpers, release scripts).
 
 ### Git discipline — per task _(Alex implements; Robert + Jack enforce; Sarah on Git mechanics & automation)_
 
-| `git_mode`         | Discipline                                                                                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`NO_GITFLOW`**   | Commits on the current branch; Conventional Commits preferred; **no** TASK-00 bootstrap, feature-branch mandate, or internal PR. **No push** unless the user asks.    |
-| **`GITFLOW`**      | Branch + atomic commits + prepare PR body/title locally (**default**). **Never auto-push**; remote PR open/update only if the user asks in-session.                   |
-| **`GITFLOW_PUSH`** | Same as `GITFLOW` **plus** push after each task commit and open/update the internal PR toward `develop`, or toward `release/x.y.z` when the spec is assigned to a release. |
+<!-- when: git_mode=GITFLOW -->
+`git_mode` is **`GITFLOW`**: branch + atomic commits + PR body and title prepared locally. **Never auto-push**; the remote PR is opened or updated only if the user asks in-session.
+<!-- end -->
+<!-- when: git_mode=GITFLOW_PUSH -->
+`git_mode` is **`GITFLOW_PUSH`**: branch + atomic commits, **plus** push after each task commit and open/update the internal PR toward `develop`, or toward `release/x.y.z` when the spec is assigned to a release.
+<!-- end -->
 
-| Rule                   | Requirement (`GITFLOW` / `GITFLOW_PUSH`)                                                                                                                                                    |
+| Rule                   | Requirement                                                                                                                                                                                  |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **TASK-00 bootstrap**  | When the spec has no open `feature/US-XXX-*` branch, the plan's **first task is TASK-00**. Unassigned: create the branch from `develop`. Assigned (`**Release:** x.y.z`): one command, `php artisan larapilot:release-feature --semver=x.y.z --spec=US-XXX --slug=…` (add `--push` only under `GITFLOW_PUSH`). **Omit TASK-00 entirely under `NO_GITFLOW`.** Body template in `.larapilot/task-templates.md` |
+| **TASK-00 bootstrap**  | When the spec has no open `feature/US-XXX-*` branch, the plan's **first task is TASK-00**. Unassigned: create the branch from `develop`. Assigned (`**Release:** x.y.z`): one command, `php artisan larapilot:release-feature --semver=x.y.z --spec=US-XXX --slug=…` (add `--push` only under `GITFLOW_PUSH`). Body template in `task-templates.md` |
 | **Branch**             | One `feature/US-XXX-short-desc` per spec. Unassigned specs branch from `develop`. A spec with `**Release:** x.y.z` uses `php artisan larapilot:release-feature` and merges into `release/x.y.z`. Never commit on `main`/`develop`. |
 | **Commit granularity** | **One atomic commit per completed task** (`TASK-01`, `TASK-02`, …) or per discrete **enhancement** / `Fix` unit — never batch unrelated tasks in one commit                                    |
 | **Commit message**     | [Conventional Commits](https://www.conventionalcommits.org/): `type(US-XXX): TASK-NN short summary` — types: `feat`, `fix`, `test`, `refactor`, `chore`; body may list files touched         |
@@ -56,13 +35,54 @@ Rules (Gitflow modes): no direct commits to `main` or `develop`; PR/MR required 
 | **PR lifecycle**       | Keep one PR per spec; merge to the PR base (`develop`, or `release/x.y.z` when the spec is assigned) only after human `larapilot-review` approval (or explicit waiver) |
 | **Hygiene**            | Unassigned branches: merge `develop` when drifted. Assigned branches: `php artisan larapilot:release-sync --semver=x.y.z` (**Sarah** leads conflict resolution). Run tests before every commit; update `CHANGELOG.md` Unreleased when user-facing behavior changes |
 
-**Optional remote forges (`settings.github` / `gitlab` / `bitbucket` / `azure`, default OFF):** orthogonal to `git_mode`. Enable the forge matching `origin`. When ON: use `gh` (GitHub), `glab` (GitLab MR), Bitbucket Cloud API, or `az repos` / Azure DevOps REST (Azure Repos PR); always print the PR/MR URL; run `larapilot:{github,gitlab,bitbucket,azure}-status` if unsure; notify `pr_opened` / `pr_updated` when notifications are enabled. When OFF, leave remote PR handling as today. Setup: `.larapilot/integrations.md`.
+Robert **rejects** implement handoff when commits span multiple tasks, messages omit spec/task ids, or factory/seeder updates are missing for touched models.
+<!-- end -->
+<!-- when: git_mode=GITFLOW -->
+A missing remote push or PR is **not** a reject reason.
+<!-- end -->
+<!-- when: git_mode=GITFLOW_PUSH -->
+He also rejects when the feature branch was never pushed, or no internal PR exists toward its base (`develop`, or `release/x.y.z` when the spec is assigned).
+<!-- end -->
 
-**Code change history (`settings.code_history`, default OFF):** when `data.settings.code_history` is `YES`, run `php artisan larapilot:code-log --spec=US-XXX --task=TASK-NN --skill=larapilot-implement` right after each `larapilot:task-done` (and once at `spec-review`). It reads the task's commit itself and records the touched files + line ranges into `.larapilot/code-history.yaml`. When OFF, skip it. Contract: **Code change history (`settings.code_history`)** in `shared-runtime.md`.
+<!-- when: forge=YES -->
+**Remote forge:** after a push, open or update the PR/MR with the forge that is ON and print its URL (**Remote forges**, Project Settings).
+<!-- end -->
 
-**Decision journal (`settings.decision_log`, default ON):** if the user redirects scope or changes a preference mid-implement, record it with `php artisan larapilot:decision-log --topic="…" --value="…" --source=chat --skill=larapilot-implement --spec=US-XXX`, and run `larapilot:decision-check` first when it reverses an earlier recorded choice (surface the conflict, then re-log with `--supersedes=<id>`).
+## Technical Documentation _(Albert owns)_
 
-Robert **rejects** implement handoff when (Gitflow modes): commits span multiple tasks, messages omit spec/task ids, factory/seeder updates are missing for touched models, or — under **`GITFLOW_PUSH` only** — the feature branch was never pushed / no internal PR exists toward its base (`develop`, or `release/x.y.z` when the spec is assigned). Under **`GITFLOW`**, a missing remote push/PR is **not** a reject reason.
+Every Larapilot project carries a **baseline technical documentation layer** by default — Albert never treats docs as optional at the project level — **except when `settings.effort` is `ECO`**, which defers the baseline and keeps OpenAPI and the developer domain docs.
+
+**Developer domain docs sit outside that gate**: they are written at every effort level, in every project, in English. Full contract: `.larapilot/runtime-dev-docs.md`.
+
+| Tier          | Always present                                                                                                        |
+| ------------- | -----------------------------------------------------------------------------------------------------------------------|
+| **Baseline**  | README (setup, local dev method per PRD, env vars, queue worker, scheduler, test commands), architecture overview, CHANGELOG discipline |
+| **Technical** | Developer-facing docs for APIs, webhooks, and domain modules touched by the backlog — **OpenAPI/Swagger** for every public or partner API (`public/openapi.yaml`, Scramble, or L5-Swagger); ship verifies the spec matches routes |
+| **Domain (devs)** | One Markdown file per domain/entity/feature under **`paths.dev_docs`** (default `.larapilot/docs/devs/`): functional flow, technical design, architectural choices with rejected alternatives, key decisions and invariants. **English only, never deferred — including under `ECO`.** Written in the same spec that changes the behavior |
+| **Extended**  | Diagram sets (draw.io/Mermaid), runbooks, admin handbooks, **PDF client tutorials/manuals** — only when the user opts in per spec |
+
+Rules:
+
+1. **Inception** — Albert records the baseline doc set in the PRD; notes optional extended deliverables without assuming them globally.
+2. **Spec approval (`larapilot-spec`)** — when presenting user stories for approval, **Albert proposes via AskQuestion** whether the spec needs **extended documentation** beyond the baseline. Default may be baseline-only; extended scope is explicit per spec. Under **`ECO`**: skip this AskQuestion entirely.
+3. **Plan** — explicit doc tasks per spec: baseline updates always; extended tasks only when approved.
+4. **Implement** — Albert writes or updates docs alongside code; never leaves API routes undocumented when OpenAPI is in scope; update docs in the same spec that changes the API or integration. **Always** update the touched domain files under `paths.dev_docs` before `spec-review` — a domain whose code moved while its doc did not is a **High** review finding. On a project where `data.dev_docs.documented` is `false`, the first change documents **every existing domain** first (**First-change catch-up**, `runtime-dev-docs-catchup.md`).
+5. **Ship / maintenance** — verify baseline completeness before release; keep docs in sync with **Sophia** on every maintenance release; flag stale OpenAPI, runbooks, or domain docs in review.
+
+<!-- when: effort=ECO -->
+### Effort gate — `ECO` docs deferral
+
+`settings.effort` is **`ECO`**:
+
+| Still required                                                                                                          | Deferred / skipped                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------|
+| Workflow artifacts: PRD, specs, plans, AC, review checklist                                                              | Albert baseline + extended doc tasks (README, architecture notes, runbooks)                                                       |
+| **OpenAPI/Swagger** when public/partner API routes change (`public/openapi.yaml`, Scramble, L5-Swagger, or equivalent)   | Diagrams, PDF manuals, Postman collections, doc-site polish                                                                       |
+| **Developer domain docs** under `paths.dev_docs` — same sections, terse prose (bullets and tables instead of narrative)   | Nothing in this folder is deferred — under `ECO` it gets shorter, never skipped                                                    |
+| Code comments only when needed to unblock the next task                                                                  | AskQuestion for extended docs; CHANGELOG narrative passes (a one-line Unreleased bump stays OK for a user-requested release)      |
+<!-- end -->
+
+Ownership: **Albert** owns technical documentation, developer domain docs (**always English** — Emily does not localize these), and client manuals (default **English**; localized editions with **Emily**); **Marika** owns product/marketing copy (not technical docs); **John** owns API design accuracy; **Alex** implements doc-site routes when applicable.
 
 ## Code Review Gate _(Robert owns — Sabrine on refactoring/porting)_
 
@@ -85,4 +105,3 @@ Robert **rejects** implement handoff when (Gitflow modes): commits span multiple
 | **Laravel idioms**    | Business logic in routes; Eloquent models leaked as public API contracts; queues skipped for slow I/O; factories/seeders stale for touched models                                                                                      |
 
 Robert **rejects** implement handoff (or asks for changes at review) when N+1 or clear SOLID/structure violations remain unfixed without an ADR/plan note explaining the trade-off.
-

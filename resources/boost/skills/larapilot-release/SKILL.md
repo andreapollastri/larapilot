@@ -7,11 +7,9 @@ description: "Manages semver releases and Gitflow release branches. Requires rel
 
 Manage the **release ledger** and Gitflow **release branches** when `data.settings.release_mode` is `YES`. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-release.md` (full contract). When shipping, also load `.larapilot/runtime-ship.md`.
+`php artisan larapilot:context release` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The contract is `release.md`. When the release is shipped in this session, read `ship-2.md` (on demand) or hand over to `/larapilot-ship`.
 
 ## Gate
 
@@ -29,22 +27,21 @@ If `data.settings.release_mode` is `NO`, stop and suggest `/larapilot-settings` 
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:release-list` `{--status=}`
-3. `php artisan larapilot:release-add` `{--semver=} {--title=} {--status=} {--specs=} {--branch=}` — status `in_progress` also cuts `release/x.y.z` (no checkout)
-4. `php artisan larapilot:release-set` `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--shipped-at=}` — moving to `in_progress` cuts the branch (no checkout)
-5. `php artisan larapilot:release-cut` `{--semver=} {--no-checkout} {--push}` — create `release/x.y.z` from `develop` and check it out
-6. `php artisan larapilot:release-feature` `{--semver=} {--spec=} {--slug=} {--no-checkout} {--push}` — `feature/US-XXX-*` from that release
-7. `php artisan larapilot:release-sync` `{--semver=}` — merge `develop` into the release branch
-8. `php artisan larapilot:release-ship` `{--semver=} {--push}` — merge to `main`, tag `vX.Y.Z`, back-merge `develop`, mark shipped
-9. `php artisan larapilot:release-import` `{--dry-run}` — rebuild shipped releases from Git semver tags
-10. `php artisan larapilot:spec-list` — assign specs, read progress
+1. `php artisan larapilot:release-list` `{--status=}`
+2. `php artisan larapilot:release-add` `{--semver=} {--title=} {--status=} {--specs=} {--branch=}` — status `in_progress` also cuts `release/x.y.z` (no checkout)
+3. `php artisan larapilot:release-set` `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--shipped-at=}` — moving to `in_progress` cuts the branch (no checkout)
+4. `php artisan larapilot:release-cut` `{--semver=} {--no-checkout} {--push}` — create `release/x.y.z` from `develop` and check it out
+5. `php artisan larapilot:release-feature` `{--semver=} {--spec=} {--slug=} {--no-checkout} {--push}` — `feature/US-XXX-*` from that release
+6. `php artisan larapilot:release-sync` `{--semver=}` — merge `develop` into the release branch
+7. `php artisan larapilot:release-ship` `{--semver=} {--push}` — merge to `main`, tag `vX.Y.Z`, back-merge `develop`, mark shipped. When `data.settings.hooks` is `YES` it runs the hooks of `release.shipped` (`hooks.md`): a refusal with `details.hooks` means nothing was merged — fix it or report it; a skill it names runs first, then `--skill-hooks-done=`; the skills under `data.hooks.after.skills` run before the release is reported
+8. `php artisan larapilot:release-import` `{--dry-run}` — rebuild shipped releases from Git semver tags
+9. `php artisan larapilot:spec-list` — assign specs, read progress
 
 ## Workflow
 
 ### 0. Load state
 
-Run `config-show` + `release-list`. Zoey posts the start **Context estimate** line. Show open releases (`planned` / `in_progress`) in a short table.
+Run `context` + `release-list`. Zoey posts the start **Context estimate** line. Show open releases (`planned` / `in_progress`) in a short table.
 
 ### 1. AskQuestion — intent (max 3 per round)
 
@@ -62,13 +59,13 @@ Run `config-show` + `release-list`. Zoey posts the start **Context estimate** li
 
 ### 2. Roadmap proposal (Sarah)
 
-When `roadmap` or new project planning: present Sarah's table per **Sarah's Release-Evolution Proposal** in `runtime-release.md`, then AskQuestion to confirm versions/titles/scope before any `release-add`.
+When `roadmap` or new project planning: present Sarah's table per **Sarah's Release-Evolution Proposal** (`release.md`), then AskQuestion to confirm versions/titles/scope before any `release-add`.
 
 Inputs: `spec-list`, backlog shape, `effort`, Lucille schedule when `lucille=YES`.
 
 ### 3. Gitflow (when `git_mode` is GITFLOW or GITFLOW_PUSH)
 
-Sarah runs the commands in `runtime-release.md`. She does not type `git checkout -b`, `git merge`, or `git tag` for this flow.
+Sarah runs the commands in `release.md`. She does not type `git checkout -b`, `git merge`, or `git tag` for this flow.
 
 - `release-add` / `release-set` to `in_progress` cuts `release/x.y.z` without switching
 - `release-cut` checks that branch out

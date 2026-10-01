@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Web Launch Checks _(public sites only)_
 
 Skip for APIs, admin-only apps, or CLI tools with no public web presence. Document findings in `.larapilot/docs/launch/{release-id}.md` when issues are found.

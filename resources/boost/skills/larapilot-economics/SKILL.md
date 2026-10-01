@@ -7,15 +7,13 @@ description: "Builds the Economics quote: tax, rate, discount, market, packaging
 
 Calibrate **who is selling the work** and produce a **real quote**: client price, tax, net to owner, maintenance, and — for SaaS — ARR, customers to break even, hosting, and a 36-month forecast.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `.larapilot/runtime-economics.md`.
+`php artisan larapilot:context economics` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The contract is `economics-1.md` and `economics-2.md`; **Account** is in Project Settings.
 
 ## Output Economy
 
-**High** — Aurora speaks in numbers and short tables. Honor Zoey's start/end **Context estimate** lines.
+**High.** Aurora speaks in numbers and short tables.
 
 ## The Team
 
@@ -31,7 +29,7 @@ Read `.larapilot/shared-runtime.md` — **Account (`settings.account`)**, then `
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — `data.settings.account` must be `FREELANCE` or `COMPANY`
+1. `data.settings.account` in the `context` envelope must be `FREELANCE` or `COMPANY`
 2. `php artisan larapilot:economics-show` — current snapshot
 3. Persist answers with `php artisan larapilot:economics-set` (only answered flags)
 4. Persist the researched market with `php artisan larapilot:economics-market-write` (Jennifer + Benjamin, step 3 below)
@@ -50,7 +48,7 @@ php artisan larapilot:settings-set --account=FREELANCE
 
 ### 0. Load
 
-Run `config-show` + `economics-show`. One-line status:
+Run `context` + `economics-show`. One-line status:
 
 `account={…} · country={…} · regime={…} · rate={…} {currency} · product={…}`
 

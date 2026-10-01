@@ -868,7 +868,7 @@ it('ships a skill that downloads the findings and hands them to triage', functio
         ->toContain('--aikido=NO');
 
     expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Aikido (`settings.aikido`)')
-        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-aikido` and `larapilot-boogle` do the same.')
+        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-aikido` and `larapilot-error` do the same.')
         ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-aikido`**')
         ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Aikido (`settings.aikido`)')
         ->and((string) file_get_contents($root.'/boost/guidelines/core.blade.php'))->toContain('`larapilot-aikido`');

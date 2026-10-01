@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Project Kind
 
 The **first interview layer** in **`larapilot-inception`**. **Mark** asks before delivery target, budget, or deep architecture (via **AskQuestion**, right after the team intro). The choice switches the rest of discovery and is persisted in the PRD under `## MVP Scope` as:
@@ -57,7 +55,7 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 1. **Delivery target** — all four options (`MVP` … `Enterprise`)
 2. **Budget Sensitivity** (Aurora) — same round or right after
 3. **John** — when SaaS, B2B platform, or tenant isolation is plausible, ask multi-tenancy via **AskQuestion** (see **Multi-tenancy** in `runtime-delivery.md`)
-4. **John + Joe** — **Frontend Topology** via AskQuestion (**before** admin-panel route when UI is in scope): `Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend` — never assume (see **Frontend Topology** below)
+4. **John + Joe** — **Frontend Topology** via AskQuestion (**before** admin-panel route when UI is in scope): `Laravel-coupled` | `SPA-in-Laravel` | `API + external frontend` — never assume (**Frontend Topology**, `runtime-discovery-5.md`)
 5. **John** — admin/control panel or authenticated dashboard: **Filament** vs **[Laravel Starter Kit](https://laravel.com/starter-kits)** (Livewire/Flux, React, Vue, or Svelte) vs **custom** when applicable — never assume one route; skip Starter Kit SPA variants when topology is `API + external frontend`
 6. **Mike** — data architecture (SQL/NoSQL, tree patterns, search) when persistence is non-trivial — see **Data Architecture** in `runtime-delivery.md`
 7. **Sarah** — custom CLI (Shell/Bash or Go), Git/forge automation, CI pipeline scripts, and Linux/terminal/server scripting whenever those surfaces are in scope — see **CLI, Git Pipelines & Linux** in `runtime-delivery.md`
@@ -118,4 +116,3 @@ All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work.
 | **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. **Package** → skip UI mockups unless the package ships UI components; then design the package demo/minisite only. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
 | **`larapilot-frontend-companion`** | Used in the **Laravel workspace** when topology is **`API + external frontend`** — link `frontend.repo_path`, scan existing FE code, orchestrate `repo: frontend` implement |
 | **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release. **Package** → Packagist/private publish checklist, semver tag, docs site, consumer upgrade notes |
-

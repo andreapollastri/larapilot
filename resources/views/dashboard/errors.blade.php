@@ -313,7 +313,7 @@
                             <li><strong>Honeybadger</strong> — <code>--errors-provider=honeybadger</code></li>
                             <li><strong>AWS CloudWatch Logs</strong> — read with the AWS CLI · <code>--errors-provider=cloudwatch</code></li>
                         </ul>
-                        <p class="hint" style="margin: 8px 0 0">Turn it on with <code>php artisan larapilot:settings-set --errors=YES --errors-provider=…</code>. What each tracker needs in <code>.env</code> is in <code>.larapilot/integrations.md</code> → Production errors.</p>
+                        <p class="hint" style="margin: 8px 0 0">Turn it on with <code>/larapilot-error</code>, which asks which tracker to read — Boogle or one of these — or with <code>php artisan larapilot:settings-set --errors=YES --errors-provider=…</code>. What each tracker needs in <code>.env</code> is in <code>.larapilot/integrations.md</code> → Production errors.</p>
                     </details>
                 @endif
                 @if ($project)
@@ -352,7 +352,7 @@
                             <li>{{ $line }}</li>
                         @endforeach
                     </ul>
-                    <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>php artisan larapilot:boogle-status</code></p>
+                    <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>php artisan larapilot:errors-status</code></p>
                 </section>
             @endif
         @elseif ($enabled)
@@ -463,13 +463,13 @@
                                     <h4>Decision</h4>
                                     <p>
                                         @if ($item['returned'])
-                                            Fixed by <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a> and closed in {{ $providerLabel }} on {{ $when($item['resolved_at']) }}, then thrown again. The fix did not hold: run <code>/larapilot-boogle</code> to hand it to triage again.
+                                            Fixed by <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a> and closed in {{ $providerLabel }} on {{ $when($item['resolved_at']) }}, then thrown again. The fix did not hold: run <code>/larapilot-error</code> to hand it to triage again.
                                         @elseif ($item['state'] === 'in_backlog')
-                                            In the backlog as <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a>{{ $item['spec_status'] ? ', now '.$item['spec_status'] : '' }}. Once the fix is released, close it in {{ $providerLabel }}: <code>php artisan larapilot:boogle-resolve {{ ltrim($item['codes'][0] ?? $item['key'], '#') }}</code>
+                                            In the backlog as <a href="{{ $item['spec_url'] }}">{{ $item['spec'] }}</a>{{ $item['spec_status'] ? ', now '.$item['spec_status'] : '' }}. Once the fix is released, close it in {{ $providerLabel }}: <code>php artisan larapilot:errors-resolve {{ ltrim($item['codes'][0] ?? $item['key'], '#') }}</code>
                                         @elseif ($item['state'] === 'ignored')
                                             Left as it is: {{ $item['reason'] }}
                                         @else
-                                            None yet. Run <code>/larapilot-boogle</code> to hand it to triage.
+                                            None yet. Run <code>/larapilot-error</code> to hand it to triage.
                                         @endif
                                     </p>
                                 </div>
@@ -535,7 +535,7 @@
             @endif
 
             <p class="footer-note" style="margin: 0; text-align: left">
-                Decisions are kept in <code>{{ $read['ledger'] }}</code>. The user, the query string, and the payload of a request stay in {{ $providerLabel }}: this page shows the exception, the place in the code, and the route. Turn errors into work with <code>/larapilot-boogle</code>.
+                Decisions are kept in <code>{{ $read['ledger'] }}</code>. The user, the query string, and the payload of a request stay in {{ $providerLabel }}: this page shows the exception, the place in the code, and the route. Turn errors into work with <code>/larapilot-error</code>.
             </p>
         @endif
     </div>

@@ -143,9 +143,13 @@ it('delegates autopilot plan and implement to one spec worker at a time', functi
     $autopilot = file_get_contents($root.'/resources/boost/skills/larapilot-autopilot/SKILL.md');
     $guideline = file_get_contents($root.'/resources/boost/guidelines/core.blade.php');
 
-    expect($subagents)->toContain('### Spec worker (autopilot)')
+    $worker = file_get_contents($root.'/resources/larapilot/runtime-spec-worker.md');
+
+    // The worker contract is its own file: only autopilot and its workers read it.
+    expect($worker)->toContain('## Spec worker (autopilot)')
+        ->and($worker)->toContain('no AskQuestion')
         ->and($subagents)->toContain('Never parallelize specs')
-        ->and($subagents)->toContain('no AskQuestion')
+        ->and($subagents)->not->toContain('### Spec worker (autopilot)')
         ->and($subagents)->not->toContain('does not fork implement/plan');
 
     expect($autopilot)->toContain('One spec worker at a time')

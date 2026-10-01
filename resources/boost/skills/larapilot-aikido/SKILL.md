@@ -7,11 +7,9 @@ description: "Downloads the open security findings of Aikido for this repository
 
 You bring the findings of **Aikido** into the workflow. Aikido scans the repository on its side; you download what it found, have the user **confirm finding by finding**, group what they chose into **resolution groups** by kind and fix, then hand each group to `larapilot-triage`. You run no scanner, and you write no spec and no code yourself.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step.
-
-Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. The skill a finding ends up in loads its own packs.
+`php artisan larapilot:context aikido` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. It lists the every-skill files only: the skill a finding ends up in runs its own `context` call with this session.
 
 ## Output Economy
 
@@ -28,16 +26,15 @@ Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. The skill
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show --only=settings,paths`
-2. `php artisan larapilot:aikido-status` — setting, credentials, repository, last scan, `hints`
-3. `php artisan larapilot:aikido-issues --new --report` — findings with no decision; writes `{paths.security}/aikido.md`
-4. `php artisan larapilot:aikido-plan --ids=24,31` — groups confirmed ids by kind and fix (secrets never merge)
-5. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them; leaves a note in Aikido
-6. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why; **ignores it in Aikido** with that reason
-7. `php artisan larapilot:aikido-scan` — ask Aikido to scan again
-8. `php artisan larapilot:aikido-repos` · `--use={id}` — which repository of Aikido this project is
-9. `php artisan larapilot:aikido-push` — tell Aikido the decisions it was not told
-10. `php artisan larapilot:aikido-register` — `{paths.security}/aikido-register.md`: open, resolved, ignored with reason, for the client
+1. `php artisan larapilot:aikido-status` — setting, credentials, repository, last scan, `hints`
+2. `php artisan larapilot:aikido-issues --new --report` — findings with no decision; writes `{paths.security}/aikido.md`
+3. `php artisan larapilot:aikido-plan --ids=24,31` — groups confirmed ids by kind and fix (secrets never merge)
+4. `php artisan larapilot:aikido-link 24,25 --spec=US-012` — the spec that fixes them; leaves a note in Aikido
+5. `php artisan larapilot:aikido-link 40 --waive --reason="…"` — accepted as it is, and why; **ignores it in Aikido** with that reason
+6. `php artisan larapilot:aikido-scan` — ask Aikido to scan again
+7. `php artisan larapilot:aikido-repos` · `--use={id}` — which repository of Aikido this project is
+8. `php artisan larapilot:aikido-push` — tell Aikido the decisions it was not told
+9. `php artisan larapilot:aikido-register` — `{paths.security}/aikido-register.md`: open, resolved, ignored with reason, for the client
 
 Never call the Aikido API yourself and never hand-write `.larapilot/aikido.yaml` — always the CLI.
 

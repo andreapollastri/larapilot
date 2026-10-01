@@ -1,10 +1,10 @@
 # Larapilot Runtime — Release
 
-Phase pack for **`larapilot-release`**, and for the release-touching steps of **`inception`**, **`adopt`**, **`feature`**, **`plan`**, and **`ship`**. Read `.larapilot/shared-runtime.md` (core) first.
+Phase pack for **`larapilot-release`**, and for the release-touching steps of **`inception`**, **`adopt`**, **`feature`**, **`plan`**, **`implement`**, and **`ship`**.
 
 ## Gate _(Zoey enforces)_
 
-Honor **`data.settings.release_mode`** from `config-show` (see **Project Settings** in the core). When `NO` (**default**), ignore this entire pack: no release ledger, no `release/*` branch obligations, no release questions in any skill. Everything behaves exactly as before.
+Honor **`data.settings.release_mode`** (**Release mode**, Project Settings). When `NO` (**default**), ignore this entire pack: no release ledger, no `release/*` branch obligations, no release questions in any skill. Everything behaves exactly as before.
 
 ## Release Ledger Contract _(Jack owns policy; Sarah owns Git mechanics)_
 

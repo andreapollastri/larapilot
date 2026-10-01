@@ -7,6 +7,7 @@ namespace Larapilot\Tests;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Testing\PendingCommand;
 use Larapilot\LarapilotServiceProvider;
+use Larapilot\Support\EnvWriter;
 use Larapilot\Tests\Support\PendingCommandWithCleanup;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -76,6 +77,26 @@ abstract class TestCase extends OrchestraTestCase
         }
 
         $this->ensureProjectComposerJson();
+        $this->forgetFrontendRepository();
+    }
+
+    /**
+     * A frontend repository an earlier test linked stays in `.env` and in the
+     * environment of the process; every test starts without one.
+     */
+    protected function forgetFrontendRepository(): void
+    {
+        $env = base_path('.env');
+
+        foreach (['LARAPILOT_FRONTEND_REPO_PATH' => 'repo_path', 'LARAPILOT_FRONTEND_WORKSPACE_PATH' => 'workspace_path'] as $key => $setting) {
+            if (is_file($env) && str_contains((string) file_get_contents($env), $key.'=')) {
+                EnvWriter::set($key, '');
+            }
+
+            putenv($key);
+            unset($_ENV[$key], $_SERVER[$key]);
+            $this->app['config']->set('larapilot.frontend.'.$setting, null);
+        }
     }
 
     protected function ensureProjectComposerJson(): void

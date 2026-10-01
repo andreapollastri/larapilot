@@ -22,7 +22,7 @@ use Larapilot\Support\AtomicFile;
  * logs on CloudWatch — and a driver reads it back. Larapilot puts the
  * occurrences together into bugs — the same exception at the same line,
  * or the group the tracker made — and says what was already decided
- * about each. Turning a bug into work is the job of `/larapilot-boogle`,
+ * about each. Turning a bug into work is the job of `/larapilot-error`,
  * which hands it to triage.
  *
  * What an occurrence says about a person stays in the tracker: the

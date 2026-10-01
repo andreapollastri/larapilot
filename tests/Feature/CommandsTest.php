@@ -454,6 +454,7 @@ it('persists project settings via settings-set', function (): void {
         'release_mode' => 'NO',
         'project_docs' => 'NO',
         'prior_art' => 'NO',
+        'hooks' => 'NO',
         'errors_provider' => '',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)

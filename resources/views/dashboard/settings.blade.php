@@ -148,6 +148,54 @@
 
     .option-guide li.is-current .option-id { color: var(--accent-strong); }
 
+    .hook-events {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 10px;
+    }
+
+    .hook-event {
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+    }
+
+    .hook-event-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.78rem;
+    }
+
+    .hook-event-head code { color: var(--text-2); font-weight: 600; }
+
+    .hook-event ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+        font-size: 0.83rem;
+    }
+
+    .hook-event li { overflow-wrap: anywhere; }
+
+    .hook-phase {
+        display: inline-block;
+        min-width: 3.4rem;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .hook-findings { margin: 0; padding-left: 18px; color: var(--danger); font-size: 0.83rem; }
+
     .option-current {
         display: inline-block;
         margin-left: 6px;
@@ -248,6 +296,14 @@
                     'NO' => 'Skip the round; the PRD records Prior Art: Not checked.',
                 ],
             ],
+            'hooks' => [
+                'label' => 'Workflow hooks',
+                'description' => 'Your own commands and skills on the transitions of the loop — plan saved, spec started, task done, review, approval, rework, release, ship — defined in .larapilot/hooks.yaml. LARAPILOT_HOOKS_ENABLED=false turns them off on one machine.',
+                'options' => [
+                    'NO' => 'No hook runs; hooks.yaml is kept for when they are turned on (default).',
+                    'YES' => 'A before hook that fails blocks the transition; an after hook is reported; a skill hook is run by the agent at that moment.',
+                ],
+            ],
             'code_history' => [
                 'label' => 'Code change history',
                 'description' => 'Per spec/task log of files and line ranges touched, derived from the task git commit into .larapilot/code-history.yaml.',
@@ -266,7 +322,7 @@
             ],
             'project_docs' => [
                 'label' => 'Project docs',
-                'description' => 'Living technical and functional handbook under _project_docs/, maintained incrementally when material changes land.',
+                'description' => 'Living technical and functional handbook under .larapilot/docs/handbook/, maintained incrementally when material changes land.',
                 'options' => [
                     'YES' => 'Albert maintains chapters and diagrams; bootstrap from history if enabled mid-project.',
                     'NO' => 'No handbook obligation (default).',
@@ -317,7 +373,7 @@
                 'description' => 'Reads the open errors of the running application from the tracker named in errors_provider. Credentials stay in .env — see .larapilot/integrations.md → Production errors.',
                 'options' => [
                     'NO' => 'No tracker is read (default).',
-                    'YES' => '/larapilot-boogle downloads the errors, has you confirm them, groups them with errors-plan, and hands each group to triage; /larapilot/errors shows them.',
+                    'YES' => '/larapilot-error downloads the errors, has you confirm them, groups them with errors-plan, and hands each group to triage; /larapilot/errors shows them.',
                 ],
             ],
             'errors_provider' => [
@@ -412,6 +468,7 @@
     @php
         $settingGroups = [
             'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve'],
+            'Automation' => ['hooks'],
             'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'project_docs', 'comments'],
             'Business' => ['account'],
             'Security' => ['dashboard_auth', 'api_auth', 'security_scan', 'aikido'],
@@ -502,6 +559,57 @@
                                     </li>
                                 @endforeach
                             </ul>
+
+                            @if ($key === 'hooks' && is_array($hooks ?? null))
+                                <div class="hook-events">
+                                    <p class="setting-desc">
+                                        @if (($hooks['count'] ?? 0) === 0)
+                                            No hook is defined in <code>{{ $hooks['path'] }}</code> yet.
+                                        @else
+                                            {{ $hooks['count'] }} {{ $hooks['count'] === 1 ? 'hook' : 'hooks' }} in <code>{{ $hooks['path'] }}</code>{{ $hooks['active'] ? '.' : '' }}
+                                            @if (! $hooks['active'])
+                                                — {{ ($hooks['setting'] ?? 'NO') === 'YES' ? 'not run on this machine (LARAPILOT_HOOKS_ENABLED=false).' : 'not run while this setting is NO.' }}
+                                            @endif
+                                        @endif
+                                        Check the file with <code>php artisan larapilot:hook-list</code>.
+                                    </p>
+
+                                    @php $hookErrors = array_values(array_filter($hooks['findings'] ?? [], static fn (array $finding): bool => ($finding['severity'] ?? '') === 'error')); @endphp
+                                    @if ($hookErrors !== [])
+                                        <ul class="hook-findings" aria-label="Errors in the hooks file">
+                                            @foreach ($hookErrors as $finding)
+                                                <li><code>{{ $finding['path'] }}</code> — {{ $finding['message'] }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    @foreach ($hooks['events'] ?? [] as $event => $phases)
+                                        <div class="hook-event">
+                                            <div class="hook-event-head"><code>{{ $event }}</code><span>{{ $phases['fired_by'] }}</span></div>
+                                            <ul>
+                                                @foreach (['before', 'after'] as $phase)
+                                                    @foreach ($phases[$phase] ?? [] as $hook)
+                                                        <li>
+                                                            <span class="hook-phase">{{ $phase }}</span>
+                                                            @if ($hook['kind'] === 'skill')
+                                                                skill <code>/{{ $hook['skill'] }}</code>
+                                                            @else
+                                                                <code>{{ $hook['run'] }}</code>
+                                                            @endif
+                                                            @if ($hook['name'] !== $hook['run'] && $hook['name'] !== '/'.$hook['skill'])
+                                                                — {{ $hook['name'] }}
+                                                            @endif
+                                                            @if ($phase === 'before' && ! $hook['blocking'])
+                                                                (warns, never blocks)
+                                                            @endif
+                                                        </li>
+                                                    @endforeach
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </article>
                     @endforeach
                 </div>

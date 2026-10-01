@@ -7,13 +7,13 @@ description: "Triages a bug into a fix spec or a rework. Italian: bug, errore, n
 
 You triage a **bug** on an existing project and route it into the Larapilot workflow — never fix code directly in this skill.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context bug` — with `--session={token}` when this conversation already holds one (a triage handoff does), `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. On a **requirement gap** only, read `discovery-7.md` (on demand): **Requirement Quality** and **Non-Functional Requirements**.
 
-Read `.larapilot/shared-runtime.md` (core), then `.larapilot/runtime-ops.md` (**PRD Living Document**, **Maintenance & Support**), `.larapilot/runtime-delivery.md` (Gitflow `hotfix/*`), and `.larapilot/runtime-dev-docs.md` — a fix that changes a domain's behavior updates that domain's file under `{paths.dev_docs}` in the same change, and when `data.dev_docs.documented` is `false` the fix first brings the whole project level (**First-change catch-up**). On a **requirement gap** only, also read `.larapilot/runtime-discovery-7.md` (**Requirement Quality**, **Non-Functional Requirements**) — the part directly, not the discovery index.
+This skill writes no code. A fix that changes a domain's behavior updates that domain's developer doc: the fix spec carries the criterion, and implement applies it.
 
-When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice. When `data.settings.code_history` is `YES` (default OFF), run `php artisan larapilot:code-log` after each `task-done`. Contracts in `shared-runtime.md`.
+When `data.settings.decision_log` is `YES`, journal material user choices with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## Output Economy
 
@@ -34,14 +34,13 @@ When `data.settings.decision_log` is `YES` (default), journal material user choi
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show`
-2. `php artisan larapilot:diagnostics` — optional runtime snapshot (status, health checks, redacted log tail); also via MCP `diagnostics` or `GET /larapilot/api/diagnostics` when the dashboard is browsable
-3. `php artisan larapilot:spec-list`
-4. `php artisan larapilot:spec-show US-XXX` — when mapping to an existing spec
-5. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec, or re-issue of an open spec with added criteria (same code, **no `status` key**)
-6. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on a spec in `REVIEW`, the only status it accepts
-7. Read PRD when severity, scope, or **requirement gap** is unclear
-8. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”); `php artisan larapilot:prd-impact --ids=FR-XXX` lists the other specs that rest on the promise being clarified
+1. `php artisan larapilot:diagnostics` — optional runtime snapshot (status, health checks, redacted log tail); also via MCP `diagnostics` or `GET /larapilot/api/diagnostics` when the dashboard is browsable
+2. `php artisan larapilot:spec-list` — titles, statuses, and `cites`: the PRD ids each spec names
+3. `php artisan larapilot:spec-show US-XXX --fields=id` — when mapping to an existing spec: the body with its criteria, tasks reduced to ids
+4. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec, or re-issue of an open spec with added criteria (same code, **no `status` key**)
+5. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on a spec in `REVIEW`, the only status it accepts
+6. `php artisan larapilot:prd-show --ids=FR-XXX` — the promise the defect is measured against; the outline (no option) finds the id. Never the whole PRD
+7. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”); `php artisan larapilot:prd-impact --ids=FR-XXX` lists the other specs that rest on the promise being clarified
 
 Append normalized intake to `{paths.support}/intake.md` (create parent dirs if needed).
 
@@ -53,11 +52,11 @@ Append normalized intake to `{paths.support}/intake.md` (create parent dirs if n
 
 When the session arrives with a **Triage handoff** block, take it as answers already given:
 
-- The every-skill runtime rows are loaded and Zoey's start line is posted — do not repeat either. Post the end line and the single `usage-log`, counting what triage read
+- `context bug --session={token}` lists only what triage did not read, and Zoey's start line is posted — repeat neither. Post the end line and the single `usage-log`, counting what triage read
 - `request` is the report — do not restate it or ask for it again
 - `maps to` answers **Maps to existing spec?** in Round 2; `evidence` answers **Promise broken**
 - `verdict: Bug — requirement gap` answers Round 4 as **Product requirement gap** — confirm it in one line instead of asking
-- A **Production error** block under `evidence`: environment is production and the reproduction starts from `request` and `where`, so ask neither; severity from `thrown` and the route, not from the user. Quote `codes`, `class`, and `where` in the intake entry and in the fix spec, with a test that throws the same exception before the fix. Never ask who the user of the request was. `larapilot-boogle` records the link to the spec
+- A **Production error** block under `evidence`: environment is production and the reproduction starts from `request` and `where`, so ask neither; severity from `thrown` and the route, not from the user. Quote `codes`, `class`, and `where` in the intake entry and in the fix spec, with a test that throws the same exception before the fix. Never ask who the user of the request was. `larapilot-error` records the link to the spec
 - An **Aikido finding** block under `evidence`: severity is Aikido's and environment is the repository, so ask neither. Quote `ids`, `severity`, and `cves` in the intake entry and in the fix spec, and write `fix` as the remedy to verify, with an acceptance criterion that Aikido no longer reports the finding. `larapilot-aikido` records the link to the spec
 
 With or without a handoff: when reproduction shows nothing ever promised this behavior, say so in one line and hand over to `larapilot-feature` instead of writing a fix spec. Hand over once, on new evidence only — never against a verdict the user settled.
@@ -66,7 +65,7 @@ With or without a handoff: when reproduction shows nothing ever promised this be
 
 ### 0. Context load
 
-Run `config-show` and `spec-list`. When the report mentions production/staging errors, stack traces, or “check the logs”, run `larapilot:diagnostics` (or MCP diagnostics) and cite relevant redacted lines in intake — do not paste secrets. Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
+Run `context` and `spec-list`. When the report mentions production/staging errors, stack traces, or “check the logs”, run `larapilot:diagnostics` (or MCP diagnostics) and cite relevant redacted lines in intake — do not paste secrets. Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
 
 **Already reported?** When intake already holds the same defect, add one `Occurrences` line to that entry (date, environment, reporter) and route to the spec it names — no second entry, no second spec. A defect that returns after its fix shipped is a **regression**: new entry, `**Related:**` the fix spec, severity one step up.
 
@@ -154,7 +153,7 @@ When the user chose **Product requirement gap**:
 
 ### 4. Fix spec body (new bug)
 
-Reuse the existing **Maintenance** epic from `spec-list` when one exists — create it once, never a new epic per fix (see **Epic consolidation** in shared-runtime).
+Reuse the existing **Maintenance** epic from `spec-list` when one exists — create it once, never a new epic per fix (**Epic consolidation**, Project Settings).
 
 ```yaml
 specs:

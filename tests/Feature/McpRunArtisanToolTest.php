@@ -114,6 +114,7 @@ it('refuses the options that write a file, and writes nothing', function (string
     'usage-report --output' => ['larapilot:usage-report', ['--output' => 'usage.md'], '--output'],
     'aikido-issues --report' => ['larapilot:aikido-issues', ['--report' => true], '--report'],
     'aikido-repos --use' => ['larapilot:aikido-repos', ['--use' => '12'], '--use'],
+    'errors-list --report' => ['larapilot:errors-list', ['--new' => true, '--report' => true], '--report'],
     'boogle-errors --report' => ['larapilot:boogle-errors', ['--new' => true, '--report' => true], '--report'],
     'an option set to false' => ['larapilot:quality', ['--fix' => false], '--fix'],
     'a parameter of a command that takes none' => ['larapilot:github-status', ['--fix' => true], '--fix'],
@@ -165,8 +166,11 @@ it('leaves out every option that writes, and nothing else', function (): void {
         'larapilot:usage-report' => ['--output'],
         'larapilot:aikido-issues' => ['--report'],
         'larapilot:aikido-repos' => ['--use', '--forget'],
+        'larapilot:errors-list' => ['--report'],
         'larapilot:boogle-errors' => ['--report'],
         'larapilot:quality' => ['--fix'],
         'larapilot:backstage-export' => ['--write', '--force', '--catalog', '--mkdocs', '--no-techdocs', '--file'],
+        'larapilot:upgrade-check' => ['--report'],
+        'larapilot:sbom' => ['--write'],
     ]);
 });

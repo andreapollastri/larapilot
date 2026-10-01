@@ -8,9 +8,32 @@ class GitService
 {
     protected ?bool $isRepository = null;
 
+    /**
+     * Another repository than the Laravel one — the linked frontend, for a
+     * `repo: frontend` task. Null reads the project root.
+     */
+    protected ?string $root = null;
+
     public function __construct(
         protected ConfigService $config,
     ) {}
+
+    /**
+     * The same questions, asked of another repository.
+     */
+    public function at(string $root): static
+    {
+        $clone = clone $this;
+        $clone->root = rtrim($root, '/\\');
+        $clone->isRepository = null;
+
+        return $clone;
+    }
+
+    protected function root(): string
+    {
+        return $this->root ?? $this->config->projectRoot();
+    }
 
     public function isRepository(): bool
     {
@@ -966,7 +989,7 @@ class GitService
      */
     public function run(string ...$args): array
     {
-        $command = array_merge(['git', '-C', $this->config->projectRoot()], $args);
+        $command = array_merge(['git', '-C', $this->root()], $args);
         $process = proc_open($command, [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],
@@ -997,7 +1020,7 @@ class GitService
 
     protected function git(string ...$args): ?string
     {
-        $command = 'git -C '.escapeshellarg($this->config->projectRoot()).' ';
+        $command = 'git -C '.escapeshellarg($this->root()).' ';
 
         foreach ($args as $arg) {
             $command .= escapeshellarg($arg).' ';

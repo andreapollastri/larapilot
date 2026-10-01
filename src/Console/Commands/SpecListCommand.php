@@ -10,14 +10,18 @@ use Larapilot\Support\LarapilotCommand;
 class SpecListCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:spec-list
-                            {--status= : Filter by workflow status}';
+                            {--status= : Filter by workflow status}
+                            {--full : Every field of every spec, bodies and status history included}';
 
     protected $description = 'List backlog specs and summary metadata';
 
     public function handle(SpecService $specs): int
     {
-        $data = $specs->list($this->option('status'));
+        $status = $this->option('status');
 
-        return $this->success('spec_list', $data);
+        return $this->success(
+            'spec_list',
+            $this->option('full') ? $specs->list($status) : $specs->overview($status)
+        );
     }
 }

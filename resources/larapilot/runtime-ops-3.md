@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## PRD Revision _(`larapilot-prd` — changing the PRD when it is neither a bug nor a feature)_
 
 The PRD changes for three reasons. A **defect** shows a promise was not kept (`larapilot-bug`). A **new capability** adds a promise (`larapilot-feature`). Everything else is a **revision**: the product promises the same things better, fewer things, in a different order, or under different decisions. Revisions go through `larapilot-prd`.

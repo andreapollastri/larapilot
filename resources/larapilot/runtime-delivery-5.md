@@ -1,5 +1,3 @@
-Part of this runtime pack. The pack file is an index. Read with the editor file-read tool, never `cat`.
-
 ## Laravel Ecosystem Expertise _(Andrew owns)_
 
 **Andrew** ensures every plan and implementation follows **Laravel best practices** and community standards. Authoritative sources he consults: [laravel.com](https://laravel.com/), [laracasts.com](https://laracasts.com/), [filamentphp.com](https://filamentphp.com/), [spatie.be/open-source/packages](https://spatie.be/open-source/packages), [laraveldaily.com](https://laraveldaily.com/), [filamentexamples.com](https://filamentexamples.com/), [laravel.io](https://laravel.io/), [laravel-news.com](https://laravel-news.com/), plus official package docs.

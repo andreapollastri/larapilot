@@ -29,10 +29,15 @@ return [
         'code_history' => false,
         // Release mode — semver release ledger + Gitflow release branches. OFF by default.
         'release_mode' => false,
-        // Living project documentation in _project_docs/ — OFF by default.
+        // Living project handbook in .larapilot/docs/handbook/ — OFF by default.
         'project_docs' => false,
         // Prior-art search for existing open-source / packaged solutions at inception — ON by default.
         'prior_art' => true,
+        // Workflow hooks (.larapilot/hooks.yaml) — the project's own commands and skills,
+        // attached to the moments of the loop: plan saved, spec started, task done, review,
+        // approval, rework, release, ship. A `before` hook that fails blocks the transition;
+        // an `after` hook is reported. OFF by default; nothing runs until set true.
+        'hooks' => false,
         // Internal feedback comments on the dashboard, JSON API, and
         // `larapilot:spec-comment` — OFF by default; set true to enable.
         'comments' => false,
@@ -60,7 +65,7 @@ return [
         // only reads the result, with the credentials under `aikido` below.
         'aikido' => false,
         // Read the errors of production from one tracker — OFF by default. When true,
-        // /larapilot-boogle downloads the open errors, has you confirm them, groups them
+        // /larapilot-error downloads the open errors, has you confirm them, groups them
         // with larapilot:errors-plan, and hands each group to /larapilot-triage;
         // /larapilot/errors shows them. The tracker is `errors_provider` below.
         'errors' => false,
@@ -68,7 +73,8 @@ return [
         // `--errors=YES --errors-provider=boogle`, and the two are kept in step.
         'boogle' => false,
         // One of: boogle, sentry, bugsnag, flare, datadog, rollbar, honeybadger,
-        // cloudwatch. Credentials live under `errors` and `boogle` below, from .env.
+        // cloudwatch — /larapilot-error asks which when none is set. Credentials live
+        // under `errors` and `boogle` below, from .env.
         'errors_provider' => '',
         // Optional remote forges + chat notifications — all OFF by default.
         'github' => false,
@@ -202,10 +208,20 @@ return [
 
     // External frontend repository (when PRD topology is API + external frontend).
     // Absolute path lives in LARAPILOT_FRONTEND_REPO_PATH (.env) — never commit user paths.
-    // Stack label persists in .larapilot/config.yaml via larapilot:frontend-set.
+    // Stack, projects and mode persist in .larapilot/config.yaml via larapilot:frontend-set.
     'frontend' => [
         'repo_path' => env('LARAPILOT_FRONTEND_REPO_PATH'),
+        // The workspace the frontend builds in, when it is neither the repo
+        // nor one of its parent folders (an app kept in its own repository and
+        // built inside a shared monorepo). Machine path: .env only.
+        'workspace_path' => env('LARAPILOT_FRONTEND_WORKSPACE_PATH'),
         'stack' => null,
+        // Workspace projects of this product when the repo is a monorepo
+        // (Nx, Angular CLI, pnpm / yarn / npm workspaces, Turborepo, …).
+        'projects' => [],
+        // driven: Larapilot writes the frontend from this workspace.
+        // handoff: the frontend team builds it from larapilot:frontend-brief.
+        'mode' => 'driven',
     ],
 
     'paths' => [
@@ -230,7 +246,8 @@ return [
         'decisions' => '.larapilot/decisions.yaml',
         'code_history' => '.larapilot/code-history.yaml',
         'releases' => '.larapilot/releases.yaml',
-        'project_docs' => '_project_docs/',
+        // Living project handbook (settings.project_docs).
+        'project_docs' => '.larapilot/docs/handbook/',
         'custom_skills' => '.larapilot/skills/',
         'economics' => '.larapilot/economics.yaml',
         'economics_snapshot' => '.larapilot/economics.snapshot.yaml',
@@ -238,6 +255,23 @@ return [
         // PRD language. Absent = the built-in template renders the download.
         'economics_quote' => '.larapilot/docs/quote.md',
         'economics_market' => '.larapilot/economics.market.yaml',
+        // Briefs for the frontend team when frontend.mode is handoff.
+        'frontend_briefs' => '.larapilot/docs/frontend-briefs/',
+        // Readiness reports and upgrade reports of /larapilot-laravel-upgrade,
+        // /larapilot-php-upgrade, and /larapilot-db-upgrade.
+        'upgrades' => '.larapilot/docs/upgrades/',
+        // Workflow hooks (settings.hooks) — committed, so the team shares them.
+        'hooks' => '.larapilot/hooks.yaml',
+    ],
+
+    // Workflow hooks — the project-level switch is `settings.hooks`; this is the
+    // machine-level one. LARAPILOT_HOOKS_ENABLED=false runs no hook on this
+    // machine (a CI runner, a teammate without the tools a hook calls), whatever
+    // the project says. `timeout` is the default in seconds for a hook that sets
+    // none; a hook may raise it up to one hour.
+    'hooks' => [
+        'enabled' => env('LARAPILOT_HOOKS_ENABLED', true),
+        'timeout' => (int) env('LARAPILOT_HOOKS_TIMEOUT', 300),
     ],
 
     // Optional deployment kill-switch for internal feedback. Project-level
@@ -487,6 +521,31 @@ return [
         // Largest single upload, in kilobytes. PHP's upload_max_filesize and
         // post_max_size still apply, and win when they are lower.
         'max_upload_kb' => (int) env('LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB', 51200),
+    ],
+
+    // Database viewer on the dashboard (/larapilot/database): the tables and
+    // views of the application's database, their structure, and their rows,
+    // read through Laravel's schema and query builders — MySQL, MariaDB,
+    // PostgreSQL, SQLite, and SQL Server alike. It only reads. The same gate
+    // as the file manager: never in production, open in local/development/
+    // testing, and elsewhere only when `dashboard_auth` is ON.
+    'database_viewer' => [
+        'enabled' => env('LARAPILOT_DATABASE_VIEWER', true),
+        // The connection to read; empty means the default (DB_CONNECTION).
+        'connection' => env('LARAPILOT_DATABASE_VIEWER_CONNECTION'),
+        'per_page' => (int) env('LARAPILOT_DATABASE_VIEWER_PER_PAGE', 50),
+        // Columns whose values are shown as asterisks, and never searched,
+        // sorted, or filtered on. Case-insensitive shell patterns.
+        'masked_columns' => [
+            '*password*',
+            'remember_token',
+            'token',
+            '*_token',
+            '*secret*',
+            'two_factor_recovery_codes',
+            '*api_key*',
+            '*private_key*',
+        ],
     ],
 
     'workflow' => [

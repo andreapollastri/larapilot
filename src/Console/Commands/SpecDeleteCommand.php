@@ -29,7 +29,7 @@ class SpecDeleteCommand extends LarapilotCommand
 
         return $this->success('spec_delete_result', [
             'code' => $code,
-            'summary' => $specs->list()['summary'],
+            'summary' => $specs->overview()['summary'],
         ]);
     }
 }

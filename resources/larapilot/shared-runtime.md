@@ -1,40 +1,46 @@
 # Larapilot Shared Runtime (Index)
 
-This file is the index. It is not the rules. Load it with the editor **file-read tool**. Never `cat`, `head`, or `sed` a runtime file.
+This file is the index. It is not the rules, and a skill does not read it to start.
+
+## Context protocol
+
+At activation a skill runs **`php artisan larapilot:context {skill}`** and reads what `data.runtime.read` lists, from `data.runtime.dir`. Those files are compiled for the project: the rules its settings call for, and none of the others. A later call in the same conversation passes `--session={data.session}` and lists only what is new; after the conversation was compacted, it passes `--fresh`. Contract: **Context and the session cache** in `runtime-core-cli.md`.
 
 ## Read protocol (mandatory)
 
-1. A truncated preview, an "output saved to" path, or a byte cap means the load **failed**. Read the remainder before any other step. Do not plan, do not call the next command, do not write code.
-2. Read only the rows for the active skill. If that file is an index, read **every part it names**. Do not stop after the index, and do not skip a part.
-3. Each section file is under 15 KB so one file-read returns it whole. If your tool still truncates, the load failed — go back to step 1.
+1. Load a runtime file with the editor **file-read tool**. Never `cat`, `head`, or `sed` one.
+2. A truncated preview, an "output saved to" path, or a byte cap means the load **failed**. Read the remainder before any other step. Do not plan, do not call the next command, do not write code.
+3. Read all of `read`, none of `loaded`, and an `on_demand` file only when its `when` comes true. Each file is under 15 KB so one file-read returns it whole.
 
-## Every skill
+## Without `larapilot:context`
 
-| File | What it holds |
+Only when the command cannot run. Read the three every-skill files, then the part that holds each heading the active skill cites — a pack index maps its headings to its parts. These are the files as the package ships them, with every value of every setting between `<!-- when: … -->` markers: apply the block that matches `config-show` → `data.settings`.
+
+| File | Who reads it |
 | --- | --- |
-| `.larapilot/runtime-core-cli.md` | CLI contract, selective envelopes, worktree, Boost |
-| `.larapilot/runtime-core-settings.md` | Effort, backlog, git, testing, account, auto-approve, Lucille, decision log, code history |
-| `.larapilot/runtime-core-economy.md` | Output Economy, including the implement status line |
-
-Read `.larapilot/runtime-core-settings-2.md` only when `config-show` reports `YES` for release mode, project docs, comments, dashboard auth, API auth, security scan, a forge, or notifications.
-
-## When the skill needs them
-
-| File | Read for |
-| --- | --- |
-| `.larapilot/runtime-core-language.md` | Any skill that writes a PRD, spec, or user-facing copy |
-| `.larapilot/runtime-core-personas.md` | Inception, adopt, feature, spec, custom-skill. Other skills already name their cast |
-| `.larapilot/runtime-core-subagents.md` | Plan, implement, review, adopt, autopilot |
-| `.larapilot/runtime-delivery.md` | Plan, implement, review, bug. Autopilot only when it runs plan and implement inline. A delegating autopilot parent does not read this index or its parts |
-| `.larapilot/runtime-discovery.md` | Inception, adopt, feature, spec, frontend-companion. Index — read every part |
-| `.larapilot/runtime-ux.md` | Design, plan when the spec has UI, ship. Index |
+| `.larapilot/runtime-core-cli.md` | Every skill. CLI contract, context and session cache, slices, worktree, Boost, non-negotiables |
+| `.larapilot/runtime-core-settings.md` | Every skill. Effort, backlog, git, testing, account, auto-approve, Lucille, decision journal, prior art, code history |
+| `.larapilot/runtime-core-economy.md` | Every skill. Output Economy, Zoey's context estimate |
+| `.larapilot/runtime-core-settings-2.md` | Every skill, for the opt-in toggles that are `YES`: release mode, project docs, comments, security scan, Aikido, production errors, forges, notifications |
+| `.larapilot/runtime-core-language.md` | Skills that write a PRD, a spec, a plan, or mockups |
+| `.larapilot/runtime-core-personas.md` | Inception, adopt, feature, spec, custom-skill. Other skills name their cast |
+| `.larapilot/runtime-core-subagents.md` | Plan, implement, adopt, autopilot |
+| `.larapilot/runtime-spec-worker.md` | Autopilot, and plan or implement when they run as its worker |
+| `.larapilot/runtime-delivery.md` | Plan, implement, review. Index |
+| `.larapilot/runtime-dev-docs.md` | Plan, implement, review, ship, adopt |
+| `.larapilot/runtime-dev-docs-catchup.md` | Implement and adopt, on a project with code and no domain docs |
+| `.larapilot/task-templates.md` | Plan |
+| `.larapilot/runtime-discovery.md` | Inception, adopt, feature, spec, prd, frontend-companion. Index |
+| `.larapilot/runtime-frontend.md` | Frontend-companion, plan, implement, review, once an external frontend repository is linked |
+| `.larapilot/runtime-frontend-angular.md`, `.larapilot/runtime-frontend-react.md`, `.larapilot/runtime-frontend-vue.md`, `.larapilot/runtime-frontend-svelte.md` | The same skills, for the stack `frontend-scan` lists under `playbooks` |
+| `.larapilot/runtime-ux.md` | Design; plan and implement on a spec with UI; ship on public sites. Index |
 | `.larapilot/runtime-ship.md` | Ship. Index |
-| `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, tracker, backstage; every skill when `lucille` is `YES`, except a delegating autopilot parent (one `usage-log` from Output Economy) and triage (the skill it hands off to logs). Index — read every part |
-| `.larapilot/runtime-dev-docs.md` | Implement, review, ship, adopt, bug. Autopilot only when inline, same condition as delivery |
+| `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, tracker, backstage. Index, one part per audience |
 | `.larapilot/runtime-economics.md` | Economics; settings when `account` is not `NONE`. Index |
-| `.larapilot/runtime-release.md` | Release, and any skill when `release_mode` is `YES` |
-| `.larapilot/runtime-project-docs.md` | Project-docs, and any skill when `project_docs` is `YES` |
+| `.larapilot/runtime-release.md` | Release; inception, adopt, feature, plan, implement, and ship when `release_mode` is `YES` |
+| `.larapilot/runtime-project-docs.md` | Project-docs; implement, review, and ship when `project_docs` is `YES` |
+| `.larapilot/runtime-hooks.md` | Inception, adopt, feature, bug, prd, spec, plan, implement, review, autopilot, ship, release when `hooks` is `YES`: what a hook that blocks or asks for a skill means. Settings and custom-skill on demand |
+| `.larapilot/runtime-upgrade.md` | Laravel-upgrade, php-upgrade, db-upgrade. Index: the Upgrade Protocol, the Laravel ladder and package playbooks, PHP and database playbooks |
 | `.larapilot/runtime-custom-skills.md` | Custom-skill |
-| `.larapilot/task-templates.md` | Plan and implement. Autopilot only when inline |
 
-`larapilot-settings` and `larapilot-frontend-companion` use the every-skill rows plus the row above that names them. `larapilot-triage` uses the every-skill rows only: the skill it hands off to reads its own rows. `larapilot-aikido` and `larapilot-boogle` do the same. `larapilot-prd` and `larapilot-bug` read single `runtime-discovery-N.md` parts, named in the skill, instead of the discovery index. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the tables above that holds that heading.
+`larapilot-triage` uses the every-skill rows only: the skill it hands off to reads its own rows. `larapilot-aikido` and `larapilot-error` do the same. So does `larapilot-vendor-check`. A delegating autopilot parent does not read the delivery packs, the dev-docs packs, or `task-templates`: its workers do. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the table above that holds that heading.

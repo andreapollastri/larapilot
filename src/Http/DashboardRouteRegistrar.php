@@ -6,7 +6,9 @@ namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\DashboardController;
+use Larapilot\Http\Controllers\DatabaseViewerController;
 use Larapilot\Http\Controllers\FileManagerController;
+use Larapilot\Http\Controllers\StackController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
 use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
@@ -84,6 +86,9 @@ class DashboardRouteRegistrar
                 Route::get('/plan', [DashboardController::class, 'plan'])
                     ->name('larapilot.dashboard.plan');
 
+                Route::get('/plan/plan.md', [DashboardController::class, 'planDownload'])
+                    ->name('larapilot.dashboard.plan.download');
+
                 Route::get('/usage', [DashboardController::class, 'usage'])
                     ->name('larapilot.dashboard.usage');
 
@@ -113,6 +118,33 @@ class DashboardRouteRegistrar
 
                 Route::post('/security/repository', [DashboardController::class, 'chooseSecurityRepository'])
                     ->name('larapilot.dashboard.security.repository');
+
+                Route::get('/security/checkpoint', [StackController::class, 'checkpoint'])
+                    ->name('larapilot.dashboard.security.checkpoint');
+
+                Route::post('/security/checkpoint/scan', [StackController::class, 'runCheckpoint'])
+                    ->name('larapilot.dashboard.security.checkpoint.scan');
+
+                Route::get('/security/checkpoint.md', [StackController::class, 'checkpointReport'])
+                    ->name('larapilot.dashboard.security.checkpoint.report');
+
+                Route::get('/sbom', [StackController::class, 'sbom'])
+                    ->name('larapilot.dashboard.sbom');
+
+                Route::get('/sbom/sbom.md', [StackController::class, 'sbomMarkdown'])
+                    ->name('larapilot.dashboard.sbom.download');
+
+                Route::get('/sbom/sbom.cdx.json', [StackController::class, 'sbomCyclonedx'])
+                    ->name('larapilot.dashboard.sbom.cyclonedx');
+
+                Route::get('/sbom/vendor-audit.md', [StackController::class, 'vendorAuditReport'])
+                    ->name('larapilot.dashboard.sbom.report');
+
+                Route::post('/sbom/audit', [StackController::class, 'runVendorAudit'])
+                    ->name('larapilot.dashboard.sbom.audit');
+
+                Route::get('/about', [StackController::class, 'about'])
+                    ->name('larapilot.dashboard.about');
 
                 Route::get('/errors', [DashboardController::class, 'errors'])
                     ->name('larapilot.dashboard.errors');
@@ -145,6 +177,18 @@ class DashboardRouteRegistrar
                     ->name('larapilot.dashboard.spec.comments.store');
 
                 self::registerFileManager();
+
+                Route::get('/database', [DatabaseViewerController::class, 'index'])
+                    ->name('larapilot.dashboard.database');
+
+                Route::get('/database.sql', [DatabaseViewerController::class, 'dump'])
+                    ->name('larapilot.dashboard.database.dump');
+
+                // A table is found by name in what the connection lists, so
+                // any name it holds is allowed here and nothing else is read.
+                Route::get('/database/{table}', [DatabaseViewerController::class, 'table'])
+                    ->where('table', '.+')
+                    ->name('larapilot.dashboard.database.table');
             });
 
         Route::middleware($embedded)

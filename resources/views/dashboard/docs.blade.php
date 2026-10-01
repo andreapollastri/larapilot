@@ -212,7 +212,9 @@
                 <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
                 <div class="flow-step"><strong>Triage</strong><span><code>/larapilot-triage</code> — bug or feature? classifies the request and hands off</span></div>
                 <div class="flow-step"><strong>Aikido</strong><span><code>/larapilot-aikido</code> — downloads the security findings, has you confirm them, groups them by fix, hands each group to triage</span></div>
-                <div class="flow-step"><strong>Production errors</strong><span><code>/larapilot-boogle</code> — downloads the open errors from the tracker of the project, has you confirm them, groups them by place, hands each group to triage</span></div>
+                <div class="flow-step"><strong>Production errors</strong><span><code>/larapilot-error</code> — asks which tracker to read (Boogle, Sentry, …) when none is set, downloads the open errors, has you confirm them, groups them by place, hands each group to triage</span></div>
+                <div class="flow-step"><strong>Vulnerable dependencies</strong><span><code>/larapilot-vendor-check</code> — checks every package (Composer, frontend, companion) against OSV.dev, has you confirm each one, then updates it, hands it to triage, or waives it; <a href="{{ route('larapilot.dashboard.sbom') }}">SBOM</a></span></div>
+                <div class="flow-step"><strong>Upgrades</strong><span><code>/larapilot-laravel-upgrade</code>, <code>/larapilot-php-upgrade</code>, <code>/larapilot-db-upgrade</code> — readiness report and criticalities first, then one step at a time on its own branch; versions and support windows on <a href="{{ route('larapilot.dashboard.about') }}">About</a></span></div>
                 <div class="flow-step"><strong>PRD revision</strong><span><code>/larapilot-prd</code> — change the PRD when it is neither: sharpen, re-scope, re-decide, upgrade</span></div>
                 <div class="flow-step"><strong>Autopilot</strong><span><code>/larapilot-autopilot</code> — one spec at a time; plan and implement in a fresh worker when effort is not ECO</span></div>
                 <div class="flow-step"><strong>Settings</strong><span><code>/larapilot-settings</code> → <code>config.yaml</code></span></div>
@@ -221,7 +223,7 @@
 
         <section class="card docs-panel">
             <h2>Flow branches by project settings</h2>
-            <p class="sub">Every skill reads <code>data.settings</code> from <code>larapilot:config-show</code> before acting. Highlights below reflect your current <code>.larapilot/config.yaml</code> (ON settings marked).</p>
+            <p class="sub">Every skill reads <code>data.settings</code> from <code>larapilot:context</code> before acting. Highlights below reflect your current <code>.larapilot/config.yaml</code> (ON settings marked).</p>
 
             <ul class="branch-list">
                 <li @class(['is-on' => ($s['effort'] ?? 'STANDARD') === 'ECO'])>
@@ -264,19 +266,22 @@
                     <strong>Release mode = YES</strong> — semver ledger in <code>releases.yaml</code>. Gitflow cuts <code>release/x.y.z</code>, opens feature branches from it, and ships with <code>release-ship</code>.
                 </li>
                 <li @class(['is-on' => $isYes($s['project_docs'] ?? 'NO')])>
-                    <strong>Project docs = YES</strong> — Albert maintains living handbook in <code>_project_docs/</code> after material changes.
+                    <strong>Project docs = YES</strong> — Albert maintains a living handbook in <code>.larapilot/docs/handbook/</code>, after material changes.
+                </li>
+                <li @class(['is-on' => $isYes($s['hooks'] ?? 'NO')])>
+                    <strong>Hooks = YES</strong> — the commands and skills of <code>.larapilot/hooks.yaml</code> run on the transitions: a <code>before</code> hook that fails blocks <code>spec-start</code>, <code>task-done</code>, <code>spec-review</code>, <code>spec-approve</code>, …; an <code>after</code> hook is reported.
                 </li>
                 <li @class(['is-on' => $isYes($s['comments'] ?? 'NO')])>
                     <strong>Comments = YES</strong> — dashboard spec feedback UI, API comments, and larapilot:spec-comment until DONE.
                 </li>
                 <li @class(['is-on' => $isYes($s['security_scan'] ?? 'NO')])>
-                    <strong>Security scan = YES</strong> — <code>/larapilot-review</code> runs <code>checkpoint:scan</code>; FAIL findings block until fixed or waived.
+                    <strong>Security scan = YES</strong> — <code>/larapilot-review</code> and <code>/larapilot-ship</code> run <code>larapilot:checkpoint-scan</code>; FAIL findings block until fixed or waived. The last scan is on <a href="{{ route('larapilot.dashboard.security.checkpoint') }}">Security → Checkpoint</a>.
                 </li>
                 <li @class(['is-on' => $isYes($s['aikido'] ?? 'NO')])>
                     <strong>Aikido = YES</strong> — <code>/larapilot-aikido</code> hands the findings of Aikido to triage; <code>/larapilot-ship</code> stops on the ones that are open and not waived.
                 </li>
                 <li @class(['is-on' => $isYes($s['errors'] ?? $s['boogle'] ?? 'NO')])>
-                    <strong>Errors = YES</strong> — <code>/larapilot-boogle</code> reads the tracker named in <code>errors_provider</code> (Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, CloudWatch), has you confirm the bugs, runs <code>errors-plan</code>, and hands each group to triage; <code>/larapilot/errors</code> shows them.
+                    <strong>Errors = YES</strong> — <code>/larapilot-error</code> reads the tracker named in <code>errors_provider</code> (Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, CloudWatch), has you confirm the bugs, runs <code>errors-plan</code>, and hands each group to triage; <code>/larapilot/errors</code> shows them.
                 </li>
                 <li @class(['is-on' => $isYes($s['notifications'] ?? 'NO')])>
                     <strong>Notifications = YES</strong> — Slack/Discord/Telegram fan-out when channels are configured in <code>.env</code>.
@@ -286,7 +291,7 @@
 
         <section class="card docs-panel">
             <h2>Skills &amp; outputs</h2>
-            <p class="sub">Invoke skills as slash commands in Cursor (Laravel Boost). Each skill loads <code>.larapilot/shared-runtime.md</code> plus the runtime packs it needs.</p>
+            <p class="sub">Invoke skills as slash commands in Cursor (Laravel Boost). Each skill opens with <code>larapilot:context</code>: the runtime files it needs, compiled for these settings, once per conversation.</p>
 
             <div class="table-wrap">
             <table class="skills-table">
@@ -311,14 +316,19 @@
                     <tr><td><code>/larapilot-review</code></td><td>DONE or rework feedback</td><td>🛡️ Robert · 🧪 Anne · 🔐 Lars</td></tr>
                     <tr><td><code>/larapilot-ship</code> <span class="skill-optional">optional</span></td><td>Security gate + deploy + launch checks</td><td>🚀 Jack · 🔐 Lars · ⚖️ Violet</td></tr>
                     <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
-                    <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td><code>_project_docs/</code> handbook</td><td>📝 Albert</td></tr>
+                    <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td>Handbook in <code>.larapilot/docs/handbook/</code></td><td>📝 Albert</td></tr>
                     <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
                     <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Client quote, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>
                     <tr><td><code>/larapilot-usage</code></td><td>Ledger query and Markdown report — token charts on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>, schedule and Gantt on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a></td><td>📒 Lucille · 🤖 Zoey</td></tr>
+                    <tr><td><code>/larapilot-schedule</code></td><td>Re-plan: order, estimates, epic deadlines, and milestones against the forecast on <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a>, with a dry run first</td><td>📒 Lucille · 💎 Mark · 📐 John</td></tr>
                     <tr><td><code>/larapilot-autopilot</code></td><td>Batch implement → review loop</td><td>🔧 Alex · 🛡️ Robert · 🤖 Zoey</td></tr>
-                    <tr><td><code>/larapilot-frontend-companion</code></td><td>Link external FE repo via <code>.env</code></td><td>✨ Joe · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-frontend-companion</code></td><td>Link the external FE repo or monorepo (path in <code>.env</code>, target projects), follow its agent rules, hand off to its team</td><td>✨ Joe · 🔗 Matt</td></tr>
                     <tr><td><code>/larapilot-aikido</code></td><td>Confirm findings, <code>aikido-plan</code> groups by fix, handoff to <code>/larapilot-triage</code>; report in <code>docs/security/aikido.md</code>, decisions in <code>aikido.yaml</code> and told to Aikido (a waiver ignores the finding there); <code>aikido-register</code> writes the register for the client</td><td>🔐 Lars · 🎧 Sophia · 🔗 Matt</td></tr>
-                    <tr><td><code>/larapilot-boogle</code></td><td>Confirm bugs, <code>errors-plan</code> groups by place, handoff to <code>/larapilot-triage</code>; report in <code>docs/support/errors.md</code>, decisions in <code>boogle.yaml</code></td><td>🎧 Sophia · 🧪 Anne · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-error</code></td><td>Choose the tracker, confirm bugs, <code>errors-plan</code> groups by place, handoff to <code>/larapilot-triage</code>; report in <code>docs/support/errors.md</code>, decisions in <code>boogle.yaml</code></td><td>🎧 Sophia · 🧪 Anne · 🔗 Matt</td></tr>
+                    <tr><td><code>/larapilot-vendor-check</code></td><td><code>vendor-audit</code> against OSV.dev, confirm package by package, update now or handoff to <code>/larapilot-triage</code> or waive; report in <code>docs/security/vendor-audit.md</code>, decisions in <code>vendor-audit.yaml</code>, SBOM in Markdown and CycloneDX — <a href="{{ route('larapilot.dashboard.sbom') }}">SBOM</a></td><td>🔐 Lars · 🎧 Sophia · 🔧 Alex</td></tr>
+                    <tr><td><code>/larapilot-laravel-upgrade</code></td><td>Readiness report (<code>upgrade-check --laravel=</code>), then one major at a time: dependencies, the upgrade guide, Filament, Nova, Livewire, Inertia; upgrade report in <code>docs/upgrades/</code></td><td>👾 Andrew · 🔧 Alex · ✨ Joe · 🧪 Anne</td></tr>
+                    <tr><td><code>/larapilot-php-upgrade</code></td><td>Readiness report (<code>upgrade-check --php=</code>), the suite on the target PHP, dependencies, deprecated code, every pin (Docker, CI, Vapor), the server runbook</td><td>👾 Andrew · ⌨️ Sarah · 🚀 Jack</td></tr>
+                    <tr><td><code>/larapilot-db-upgrade</code></td><td>Readiness report (<code>upgrade-check --db=</code>), portable SQL and configuration, a local rehearsal on the target engine, the data and cutover runbook</td><td>🗄️ Mike · 🔄 Sabrine · 🚀 Jack</td></tr>
                     <tr><td><code>/larapilot-tracker</code></td><td>Linear/Jira/… mirror in <code>tracker.yaml</code></td><td>🔗 Matt · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-backstage</code></td><td>Backstage catalog + TechDocs</td><td>📝 Albert · 🚀 Jack</td></tr>
                     <tr><td><code>/larapilot-custom-skill</code></td><td>User skill under <code>.larapilot/skills/</code> — listed on the <a href="{{ route('larapilot.dashboard.skills') }}">Skills</a> page</td><td>🤖 Zoey · ⌨️ Sarah</td></tr>
@@ -363,7 +373,7 @@
                     <tr><td>⌨️ Sarah</td><td>CLI &amp; Git expert — conflicts, release branches, forge CLIs, pipeline scripts</td></tr>
                     <tr><td>🔐 Lars</td><td>Security — OWASP, dashboard/API auth, checkpoint scan gate, Aikido findings and waivers</td></tr>
                     <tr><td>🎨 Elise · ✨ Joe</td><td>UX &amp; Frontend — design systems, mockups, responsive/WCAG UI</td></tr>
-                    <tr><td>📝 Albert</td><td>Tech Writer — OpenAPI, diagrams, <code>_project_docs/</code> when enabled</td></tr>
+                    <tr><td>📝 Albert</td><td>Tech Writer — OpenAPI, diagrams, the handbook when enabled</td></tr>
                     <tr><td>📒 Lucille</td><td>Project tracking — token/hour ledger on Usage, deadlines and Gantt on Plan (default ON)</td></tr>
                     <tr><td>🤖 Zoey</td><td>AI Guru — prompt sharpening, output economy, sub-agent orchestration (every skill)</td></tr>
                     <tr><td>🔄 Sabrine</td><td>Legacy porting — brownfield inventory, parity checks</td></tr>

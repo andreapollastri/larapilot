@@ -7,34 +7,32 @@ description: "Writes the technical plan and tasks for one spec. Use for plan US-
 
 Produce a detailed implementation plan for one spec and persist it via the CLI.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
+`php artisan larapilot:context plan` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, `data.project`, `data.dev_docs`, and `data.frontend` come from that envelope: no `config-show`.
 
-Read `.larapilot/shared-runtime.md` (core — **Project Settings**, **Sub-agents**), then `.larapilot/runtime-delivery.md` (architecture, Git/TASK-00, factories/seeders, testing gates, scaffolding defaults, vendor policy, docs) and `.larapilot/runtime-dev-docs.md` (which tasks carry a `## Domain Docs` deliverable). When the spec has UI, also read `.larapilot/runtime-ux.md` (mobile-first, a11y, brand, SEO). When `data.settings.release_mode` is `YES` and the spec carries `**Release:** x.y.z`, also read `.larapilot/runtime-release.md` and use **TASK-00 — Release branch variant** in `task-templates.md`.
+Read an `on_demand` file as soon as the spec calls for it — decide right after Stage 1, before the team brief: UI → `ux-1.md` (+ `ux-2.md`, and `ux-3.md` for public pages); a package, a panel, tenancy, or a non-trivial data model → `delivery-3.md`; CI/CD, CLI, scripts, versioning → `delivery-4.md`; third-party APIs or locales → `delivery-5.md`; personal data → `ship-2.md`; open deploy choices → `ship-1.md`; legacy or client documents → `discovery-3.md`. A surface the spec does not touch is not read.
 
-When `data.settings.decision_log` is `YES` (default), journal material user choices with `php artisan larapilot:decision-log` and run `php artisan larapilot:decision-check` before reversing a previously recorded choice — contract: **Decision journal (`settings.decision_log`)** in `shared-runtime.md`.
-
-Read `.larapilot/task-templates.md` — copy task body structures gated by `data.settings`.
+When `data.settings.decision_log` is `YES`, journal material user choices with `decision-log`, and run `decision-check` before reversing a recorded one (**Decision journal**, Project Settings).
 
 ## Output Economy
 
-**Split** — see `larapilot-plan` in the shared-runtime table. Team brief: 1–3 sentences per agent. Chat between stages: status and blockers only. `plan_body` and task bodies stay detailed execution contracts.
+**Split.** Team brief: 1–3 sentences per agent. Chat between stages: status and blockers only. `plan_body` and task bodies stay detailed execution contracts — do not strip them.
 
 ## Autopilot spec worker
 
-When the handoff says you are the autopilot spec worker, follow **Spec worker** in `.larapilot/runtime-core-subagents.md`. Explore inline (no nested explore). Write `.larapilot/tmp-payload-{code}-plan.json` and stop before `validate-plan` / `spec-plan`. Do not AskQuestion — return `BLOCKED`. The final message is `OK plan {code} | N tasks` or the two-line `BLOCKED` form. No team brief in that message. Standalone `/larapilot-plan` is unchanged.
+When the handoff says you are the autopilot spec worker, read `spec-worker.md` (on demand) and follow **Spec worker**. Explore inline (no nested explore). Write `.larapilot/tmp-payload-{code}-plan.json` and stop before `validate-plan` / `spec-plan`. Do not AskQuestion — return `BLOCKED`. The final message is `OK plan {code} | N tasks` or the two-line `BLOCKED` form. No team brief in that message. Standalone `/larapilot-plan` is unchanged.
 
 ## The Team
 
-🤖 Zoey · 📒 Lucille · 🔎 Tom · 📐 John · 🗄️ Mike · 💡 Sebastian · 🔗 Matt · 🌍 Emily · 💰 Aurora · ⚖️ Violet · 📈 Emma · 💬 Lauren · 🎨 Elise · ✨ Joe · 📱 Ricky · 📝 Albert · ✍️ Marika · 👾 Andrew · ⌨️ Sarah · 🔄 Sabrine · 🔧 Alex · 🧪 Anne — roles in the shared-runtime roster. Mike owns data/schema tasks; **Sarah** owns Git mechanics (conflicts/rebase), CLI, forge automation, CI pipeline scripts, and Linux/server scripting whenever those surfaces appear (partner Jack on gates/deploy).
+🤖 Zoey · 📒 Lucille · 🔎 Tom · 📐 John · 🗄️ Mike · 💡 Sebastian · 🔗 Matt · 🌍 Emily · 💰 Aurora · ⚖️ Violet · 📈 Emma · 💬 Lauren · 🎨 Elise · ✨ Joe · 📱 Ricky · 📝 Albert · ✍️ Marika · 👾 Andrew · ⌨️ Sarah · 🔄 Sabrine · 🔧 Alex · 🧪 Anne. Mike owns data/schema tasks; **Sarah** owns Git mechanics (conflicts/rebase), CLI, forge automation, CI pipeline scripts, and Linux/server scripting whenever those surfaces appear (partner Jack on gates/deploy).
 
-## Config & CLI
+## CLI
 
-1. `php artisan larapilot:config-show` — **read `data.settings`** and scale Git/Test Strategy accordingly
-2. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO`
+1. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO`
+2. `php artisan larapilot:prd-show --ids=…` — the ids on the spec's `**Traces to:**` line; `--section="Technical Architecture"` (and `"Domain Model"` when the spec names entities) for the recorded choices. Never the whole PRD.
 3. `php artisan larapilot:validate-plan {code} --file=...`
-4. `php artisan larapilot:spec-plan {code} --file=...`
+4. `php artisan larapilot:spec-plan {code} --file=...` — when `data.settings.hooks` is `YES` it runs the hooks of `spec.planned` (`hooks.md`): a refusal with `details.hooks` is fixed and the command run again; a skill it names runs first, then `--skill-hooks-done=`; the skills under `data.hooks.after.skills` run before the handoff
 
 ## Workflow
 
@@ -48,7 +46,7 @@ When the handoff says you are the autopilot spec worker, follow **Spec worker** 
 
 From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
-- PRD (`paths.prd`) — read delivery target and scope boundaries; when topology is **`API + external frontend`**, read `data.frontend` from `config-show` and run `larapilot:frontend-scan` if not done recently
+- The promise — `prd-show --ids=` for the FRs, journeys, and NFRs the spec traces to; `data.project` for delivery target, topology, panel, and local dev; `prd-show --section="Technical Architecture"` for the other recorded choices. When `data.project.frontend_topology` is **`API + external frontend`**, use `data.frontend` and run `larapilot:frontend-scan` (once per spec) — `targets.needs_project` stops the plan until the user names the projects (`/larapilot-frontend-companion`); then follow **Frontend Companion** (`frontend.md`) and the playbook the scan lists
 - **Client materials** (`paths.client_materials`) — mandatory when populated; cite in task notes
 - **Legacy** (`paths.legacy`) + **`{paths.research}/legacy-parity.md`** — when rewrite/port; map tasks to parity rows
 - **Reference products** (`paths.research/reference-products/`) — when the spec traces to deepsearch findings
@@ -60,7 +58,7 @@ From `data.workdir` (codebase) and `data.project_root` (artifacts):
 
 When `settings.effort` is **`ECO`**, or this run is an autopilot spec worker, **never spawn an explore sub-agent** — explore inline only. A nested explore cannot start, and the worker's context is already fresh.
 
-Otherwise, when `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; see **Type mapping** in shared-runtime) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads PRD and mockups directly. **Inline fallback** — no sub-agent tool (or `ECO`): the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
+Otherwise, when `data.workdir` has substantial existing code and the editor has a sub-agent tool, launch one **readonly explore sub-agent** (synchronous; **Type mapping**, `core-subagents.md`) before Stage 2. When **`{paths.legacy}`** is populated, include it in the explore scope alongside `data.workdir`. Parent still reads the PRD slices and mockups directly. **Inline fallback** — no sub-agent tool (or `ECO`): the parent explores the codebase itself in Stage 1, using the handoff prompt below as a checklist.
 
 Handoff prompt:
 
@@ -83,7 +81,7 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 
 ```json
 {
-    "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Mode: {from settings.git_mode}\n- Branch/PR/push rules per Git Workflow in runtime-delivery.md\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n- Bar: {from settings.testing} — no Playwright/E2E unless BEST\n...",
+    "plan_body": "## Technical Solution\n...\n\n## Git & Branching\n- Mode: {from settings.git_mode}\n- Branch/PR/push rules per Git Workflow\n\n## Test Data Strategy\n- Factories + seeders for every entity\n- Demo volumes: ...\n\n## Test Strategy\n- Bar: {from settings.testing} — no Playwright/E2E unless BEST\n...",
     "tasks": [
         {
             "id": "TASK-00",
@@ -98,7 +96,7 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
         {
             "id": "TASK-01",
             "title": "...",
-            "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
+            "body": "## Description\n...\n\n## Files Involved\n- app/Models/...\n\n## Test Data\n- [ ] Factory + seeder updated\n\n## Domain Docs\n- [ ] {paths.dev_docs}/{domain}.md updated\n\n## Git Deliverables\n- Commit: feat(US-XXX): TASK-01 ...\n\n## Completion Criteria\n- [ ] ...",
             "type": "Impl",
             "status": "TODO",
             "assignee": "Alex",
@@ -119,44 +117,37 @@ Temp file: `.larapilot/tmp-payload-{code}-plan.json`
 }
 ```
 
-**Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them and can distribute work across `assignee` values (developers / personas executing the step). Prefer realistic `estimate_hours` on **every** task — they drive Lucille’s Gantt bars and schedule criticality on the Usage page.
+**Dependencies & parallelism (Lucille + planners):** every task lists `dependencies` (empty = can start when the spec starts). Tasks that share the same dependency set and do not block each other are **parallel** — Lucille’s Gantt marks them, and runs them at the same time only when their `assignee` values differ (developers / personas executing the step); tasks of one assignee follow one another. Prefer realistic `estimate_hours` on **every** task — they drive Lucille’s Gantt bars and the delivery forecast on the Plan page.
 
 Validate, then `spec-plan`. Delete the temp file after the CLI exits. An autopilot spec worker stops after writing the temp file — the parent validates and calls `spec-plan`.
 
 ## Task body templates
 
-Use `.larapilot/task-templates.md` — do not invent ad-hoc task shapes.
-
-| Template            | When                                                                                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **TASK-00**         | First task **only when `git_mode` is `GITFLOW` or `GITFLOW_PUSH`**. Unassigned: branch `feature/US-XXX-*` from `develop`. Assigned (`**Release:** x.y.z`): the task is `larapilot:release-feature` (PR base `release/x.y.z`). **Push only under `GITFLOW_PUSH`** (`--push`). **Omit entirely under `NO_GITFLOW`** |
-| **Entity task**     | New/changed Eloquent model — migration + factory + seeder in the **same task**                                                                                                 |
-| **Non-entity Impl** | Routes, UI, services — `## Test Data` = `N/A`                                                                                                                                  |
-| **Test task**       | Anne — reuse factories; `test(US-XXX): TASK-NN` commit; depth per `settings.testing`                                                                                           |
-| **Fix / enhancement** | Rework — same Git + factory/seeder rules when schema changes                                                                                                                   |
+Use `task-templates.md` — do not invent ad-hoc task shapes. It holds the templates the settings of this project call for: **TASK-00** (first task under a Gitflow mode, never under `NO_GITFLOW`; `larapilot:release-feature` when the spec carries `**Release:** x.y.z`), **Entity task** (migration + factory + seeder in the same task), **Non-entity Impl**, **Test task** (Anne, at the `settings.testing` bar), **Fix / enhancement** (rework), and the external-frontend task when a frontend repo is linked.
 
 Every **Impl** and **Fix** task body MUST include:
 
 - `## Git Deliverables` — commit message; push/PR lines only per `git_mode`
 - `## Test Data` — factory/seeder checklist, or explicit `N/A`
+- `## Domain Docs` — the file under `{paths.dev_docs}` the task leaves current, whenever it changes a domain's behavior — at every effort level, `ECO` included
 - `## Completion Criteria` — checkboxes (auto-ticked by `task-done`)
 
-`plan_body` MUST include `## Git & Branching` and `## Test Data Strategy` sections.
+`plan_body` MUST include `## Git & Branching` and `## Test Data Strategy` sections. Implement executes these bodies without reading the templates: a body that leaves a section out leaves the rule out.
 
 ## Laravel Planning Rules
 
 Skill-unique sequencing plus canonical references — do not re-derive the rules here:
 
-1. **John** applies **Architecture Standards** and (for SaaS/workspaces) **Multi-tenancy** from `runtime-delivery.md`; plans Gitflow branch name, semver/CHANGELOG, `security.txt` + `SECURITY.md`, CI gates, queues, DTOs, OpenAPI per delivery target. Task bodies that load relations must name eager-load / index deliverables.
-2. **Alex** plans factory + seeder tasks for every new/changed model (same task as migrations — never deferred) and, with **Jack**, per-task Git discipline per **Git Workflow** in `runtime-delivery.md` — no batched multi-task commits. **Sarah** plans tasks for CI workflow YAML, Git/forge helper scripts, deploy hooks, Shell/Bash/Go tooling, and any expected rebase/merge-conflict hygiene (see **CLI, Git Pipelines & Linux**).
-3. Plans must satisfy the **full spec** — do not trim scope to MVP unless the PRD delivery target is MVP.
-4. **Anne** defines the Test Strategy per **Testing Standards** in `runtime-delivery.md`, interleaving test tasks with implementation (not all at the end); every public API route gets a feature test. **Gate on `settings.testing`:** under **`BEST`** only, plan responsive UI test tasks (viewport matrix 375/768/1280, mobile nav assertions, journeys at multiple widths, axe at mobile, E2E per the project stack — Elise's mockup README is the test contract). Under **`NORMAL`**, plan Pest feature/unit/policy/API tasks plus **manual test handoff** notes for UI specs — no browser/E2E/viewport suites. Under **`MINIMAL`**, essential critical-path tests only.
-5. **Elise** plans mobile-first UI/mockup tasks per **Mobile first & responsive design** in `runtime-ux.md`; **Joe** plans design-system scaffold tasks (tokens, shared components, theme), animations, and client performance budgets; honor **Frontend Topology** from the PRD — when `API + external frontend`, keep Laravel tasks API/admin-focused (`repo: backend` or omit) and add explicit FE tasks with `repo: frontend` + paths under `data.frontend.repo_path`. **Ricky** plans mobile/device tasks when in scope. For UI needing mockups: invoke `larapilot-design` or generate inline to `.larapilot/mockups/{code}/`.
-6. **Public-facing specs:** Emma (URLs/robots/sitemap/llms), Elise (WCAG + brand assets when the client has none), Violet (a11y legal), Lauren (marketing) — per `runtime-ux.md`. **Violet** adds full privacy/legal tasks when the spec processes personal data (see **Privacy & Legal Compliance** in `runtime-ship.md`).
-7. **Sebastian/Matt** plan integration tasks (clients, webhooks, OAuth, `.env.example`, `Http::fake()` tests) per **Integrations & APIs** in `runtime-delivery.md`; competitor-data-porting specs get concrete import (format mapping, CSV/API importers, dry-run) and lock-in-free export tasks. **Emily** plans i18n tasks per **Internationalization** in `runtime-delivery.md`. **Marika** plans explicit copy tasks (views, labels, notifications, `lang/`).
+1. **John** applies **Architecture Standards** (`delivery-1.md`) and, for SaaS/workspaces, **Multi-tenancy** (`delivery-3.md`); plans the Gitflow branch name, semver/CHANGELOG, `security.txt` + `SECURITY.md`, CI gates (`delivery-4.md`), queues, DTOs, OpenAPI per delivery target. Task bodies that load relations must name eager-load / index deliverables.
+2. **Alex** plans factory + seeder tasks for every new/changed model (same task as migrations — never deferred) and, with **Jack**, per-task Git discipline per **Git Workflow** (`delivery-2.md`) — no batched multi-task commits. **Sarah** plans tasks for CI workflow YAML, Git/forge helper scripts, deploy hooks, Shell/Bash/Go tooling, and any expected rebase/merge-conflict hygiene (**CLI, Git Pipelines & Linux**, `delivery-4.md`).
+3. Plans must satisfy the **full spec** — do not trim scope to MVP unless `data.project.delivery_target` is MVP.
+4. **Anne** defines the Test Strategy per **Testing Standards** (`delivery-1.md`), interleaving test tasks with implementation (not all at the end); every public API route gets a feature test. The bar is the one `settings.testing` sets — responsive, viewport, and E2E tasks only under `BEST`; under the other bars, Pest tasks plus **manual test handoff** notes for UI specs.
+5. **Elise** plans mobile-first UI/mockup tasks per **Mobile first & responsive design** (`ux-1.md`); **Joe** plans design-system scaffold tasks (tokens, shared components, theme), animations, and client performance budgets (`ux-2.md`); honor `data.project.frontend_topology` — when `API + external frontend`, keep Laravel tasks API/admin-focused (`repo: backend` or omit) and add explicit FE tasks from the external-frontend template — `repo: frontend`, `project:` in a monorepo, `shared:` for a shared library, paths under `write_scope.owned`, the scan's commands as the verification steps. A backend task that changes the API comes before the FE task that calls it; with a generated client, the FE task starts by regenerating it. Under `data.frontend.mode` `handoff` the FE tasks are still planned: the frontend team builds them from the brief. **Ricky** plans mobile/device tasks when in scope. For UI needing mockups: invoke `larapilot-design` or generate inline to `{paths.mockups}/{code}/`.
+6. **Public-facing specs:** Emma (URLs/robots/sitemap/llms), Elise (WCAG + brand assets when the client has none), Violet (a11y legal), Lauren (marketing) — `ux-3.md`. **Violet** adds full privacy/legal tasks when the spec processes personal data (**Privacy & Legal Compliance**, `ship-2.md`).
+7. **Sebastian/Matt** plan integration tasks (clients, webhooks, OAuth, `.env.example`, `Http::fake()` tests) per **Integrations & APIs** (`delivery-5.md`); competitor-data-porting specs get concrete import (format mapping, CSV/API importers, dry-run) and lock-in-free export tasks. **Emily** plans i18n tasks per **Internationalization** (`delivery-5.md`). **Marika** plans explicit copy tasks (views, labels, notifications, `lang/`).
 8. **Legacy specs:** **Sabrine** plans parity verification per `legacy-parity.md` row; migration/ETL tasks with dry-run, checksum/row-count verification, and rollback — never plan feature/content drops without PRD **Out of Scope**.
-9. **Packages & scaffolding:** follow **Vendor & Package Policy** and **Laravel Scaffolding Defaults** in `runtime-delivery.md` (Fortify 2FA, `Password::defaults()`, Socialite, UUID PKs, Argon2id; local dev per the PRD choice — ask, never assume Sail). **Jack** plans deploy/edge/cloud/observability tasks per PRD choices — if missing, ask per **Infrastructure & Cloud** in `runtime-ship.md` (never assume Cipi, Cloudflare, or AWS). **Sarah** co-plans pipeline/job scripts and server shell for those choices. **Andrew** reviews the plan for Laravel idioms and flags anti-patterns.
-10. **Albert** plans baseline doc tasks per **Technical Documentation** in `runtime-delivery.md` (extended docs only when spec approval recorded them; under `effort: ECO` plan only the OpenAPI update when public/partner APIs change) **and adds a `## Domain Docs` section to every task that changes a domain's behavior**, naming the file under `{paths.dev_docs}` it must leave current — at every effort level, `ECO` included (`.larapilot/runtime-dev-docs.md`). **Aurora** flags cost implications per **Budget Sensitivity** in `runtime-discovery.md`.
+9. **Packages & scaffolding:** **Security baseline** (`delivery-1.md`: Fortify 2FA, `Password::defaults()`, Socialite, UUID PKs, Argon2id) and **Vendor & Package Policy** (`delivery-3.md`); local dev per `data.project.local_dev` — ask, never assume Sail. **Jack** plans deploy/edge/cloud/observability tasks per the PRD choices — if missing, ask per **Infrastructure & Cloud** (`ship-1.md`; never assume Cipi, Cloudflare, or AWS). **Sarah** co-plans pipeline/job scripts and server shell for those choices. **Andrew** reviews the plan for Laravel idioms and flags anti-patterns.
+10. **Albert** plans baseline doc tasks per **Technical Documentation** (`delivery-2.md`; extended docs only when spec approval recorded them; under `effort: ECO` only the OpenAPI update when public/partner APIs change) **and adds a `## Domain Docs` section to every task that changes a domain's behavior** (`dev-docs.md`). **Aurora** flags cost implications per `data.project.budget_sensitivity`.
 
 ## Rework Mode
 

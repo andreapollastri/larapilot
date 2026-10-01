@@ -13,6 +13,7 @@ class ScheduleSetCommand extends LarapilotCommand
                             {--deadline= : YYYY-MM-DD delivery date}
                             {--label=Deadline : Milestone label}
                             {--status=on_track : on_track|at_risk|delayed|done}
+                            {--release= : Release the deadline is for (X.Y.Z): it is measured against the forecast of that release, not of the whole backlog}
                             {--note= : Note for the deadline or a free-standing schedule note}
                             {--note-only : Record a schedule note without a deadline}';
 
@@ -46,6 +47,7 @@ class ScheduleSetCommand extends LarapilotCommand
                 'label' => $this->option('label'),
                 'status' => $this->option('status'),
                 'note' => $this->option('note'),
+                'release' => $this->option('release'),
             ]);
 
             return $this->success('schedule_deadline', [

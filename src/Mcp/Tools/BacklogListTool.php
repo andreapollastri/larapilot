@@ -15,14 +15,14 @@ use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 #[IsReadOnly]
 class BacklogListTool extends Tool
 {
-    protected string $description = 'List Larapilot backlog specs with optional status filter. Returns spec codes, titles, priorities, and workflow status.';
+    protected string $description = 'List Larapilot backlog specs with optional status filter. Returns spec codes, titles, priorities, workflow status, and the PRD ids each spec cites — never the bodies: read one spec with the spec tool.';
 
     public function __construct(protected SpecService $specs) {}
 
     public function handle(Request $request): Response
     {
         $status = $request->string('status')->toString() ?: null;
-        $data = $this->specs->list($status);
+        $data = $this->specs->overview($status);
 
         return Response::json($data);
     }

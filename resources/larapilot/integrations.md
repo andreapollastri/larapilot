@@ -483,9 +483,11 @@ Brings the errors the running application throws into the workflow. OFF by defau
 
 ### Choose the tracker
 
+`/larapilot-error` asks which one, Boogle included, when none is set — or name it yourself:
+
 ```bash
 php artisan larapilot:settings-set --errors=YES --errors-provider=sentry
-php artisan larapilot:boogle-status
+php artisan larapilot:errors-status
 ```
 
 | Provider | The application sends with | Larapilot reads | One row is | Closes from Larapilot |
@@ -506,7 +508,7 @@ php artisan larapilot:boogle-status
 
 ### What goes in `.env`
 
-Always a credential that **reads** the tracker — never the key the application reports with (`SENTRY_LARAVEL_DSN`, `BUGSNAG_API_KEY`, `FLARE_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The variables of each tracker are in its section below, and `boogle-status` names every one that is missing. Two are shared:
+Always a credential that **reads** the tracker — never the key the application reports with (`SENTRY_LARAVEL_DSN`, `BUGSNAG_API_KEY`, `FLARE_KEY`, `ROLLBAR_TOKEN`, `HONEYBADGER_API_KEY`). The variables of each tracker are in its section below, and `errors-status` names every one that is missing. Two are shared:
 
 ```dotenv
 LARAPILOT_ERRORS_CACHE=300     # seconds the dashboard keeps what it read
@@ -515,16 +517,17 @@ LARAPILOT_ERRORS_TIMEOUT=15    # seconds a call to the tracker may take
 
 ### When ON
 
-- `/larapilot-boogle` — the skill keeps its name, whichever the tracker — downloads the open errors, writes `{paths.support}/errors.md`, has you confirm each bug (resolve, ignore with a reason, or skip), groups the confirmed codes with `larapilot:errors-plan` (alias `larapilot:boogle-plan`), and hands each group to `/larapilot-triage`. The spec that fixes it is recorded with `larapilot:boogle-link`.
+- `/larapilot-error` — the same skill for every tracker; it asks which one when none is set — downloads the open errors, writes `{paths.support}/errors.md`, has you confirm each bug (resolve, ignore with a reason, or skip), groups the confirmed codes with `larapilot:errors-plan`, and hands each group to `/larapilot-triage`. The spec that fixes it is recorded with `larapilot:errors-link`.
 - `/larapilot/errors` shows the bugs, how many times each was thrown, and what was decided. **Download report (.md)** saves the report.
-- `.larapilot/boogle.yaml` keeps the decisions — the file keeps its name too. Commit it, so a bug handed to the backlog on one machine is not handed over again on another, nor the next time it is thrown.
-- `larapilot:boogle-resolve` closes an error in the tracker once its fix is released, where the tracker allows it. An error closed this way and thrown again is shown as **back after the fix**.
+- `.larapilot/boogle.yaml` keeps the decisions — the file keeps its name, whichever the tracker. Commit it, so a bug handed to the backlog on one machine is not handed over again on another, nor the next time it is thrown.
+- `larapilot:errors-resolve` closes an error in the tracker once its fix is released, where the tracker allows it. An error closed this way and thrown again is shown as **back after the fix**.
+- `larapilot:boogle-status`, `boogle-errors`, `boogle-plan`, `boogle-link`, and `boogle-resolve` are the old names of `errors-status`, `errors-list`, `errors-plan`, `errors-link`, and `errors-resolve`, and still answer.
 
 ### What it never does
 
 - It never calls a tracker while `errors` is `NO`.
 - It never reads the user, the query string, or the payload of a request into a file, a report, the cache, or the chat. It keeps the exception, the message with addresses and long secrets masked, the file and line, the method and the path.
-- It never writes to a tracker by itself: `boogle-resolve` runs when the user asks, and is not allowed through the MCP tool. `larapilot:errors-plan` only reads, and is.
+- It never writes to a tracker by itself: `errors-resolve` runs when the user asks, and is not allowed through the MCP tool. `larapilot:errors-plan` only reads, and is.
 - It never leaves an error as it is. Only the user does, with a reason of at least a sentence.
 
 Laravel Nightwatch is not among the trackers: it publishes no API to read exceptions with.
@@ -547,12 +550,12 @@ LARAPILOT_BOOGLE_PROJECT=                          # id or title in Boogle; empt
 
 ```bash
 php artisan larapilot:settings-set --errors=YES --errors-provider=boogle   # or --boogle=YES
-php artisan larapilot:boogle-status
+php artisan larapilot:errors-status
 ```
 
 - What is open is `OPEN` and `READ` in Boogle: seen is not fixed. Codes are the ones of Boogle (`#BUG12`).
 - Boogle also watches uptime: the times the application did not answer (`#OUT…`) are listed apart, as **outages**, and handed to triage only when asked.
-- `boogle-resolve` closes every open occurrence of the bug as `FIXED` (`--status=DONE` for the other word Boogle has), with the spec that fixed it in the history.
+- `errors-resolve` closes every open occurrence of the bug as `FIXED` (`--status=DONE` for the other word Boogle has), with the spec that fixed it in the history.
 - The key and the token of a project, which Boogle sends with the list of projects, are never kept: they are compared with `BOOGLE_PROJECT_KEY` and dropped.
 
 The token reads **every project** of that Boogle, because Boogle gives tokens to users and not to projects. Keep it in `.env` and in the secrets of the CI.
@@ -566,7 +569,7 @@ LARAPILOT_SENTRY_PROJECT=                # or SENTRY_PROJECT — the slug of the
 LARAPILOT_SENTRY_URL=https://sentry.io   # a self-hosted Sentry, or a region such as https://de.sentry.io
 ```
 
-Reads the unresolved issues of the project, the ones thrown the most first, a hundred at most. Codes are the short ids of Sentry (`SHOP-1A`). `boogle-resolve` marks the issue resolved.
+Reads the unresolved issues of the project, the ones thrown the most first, a hundred at most. Codes are the short ids of Sentry (`SHOP-1A`). `errors-resolve` marks the issue resolved.
 
 ## Bugsnag (`errors_provider: bugsnag`)
 
@@ -576,7 +579,7 @@ LARAPILOT_BUGSNAG_PROJECT_ID=     # Project settings → General
 LARAPILOT_BUGSNAG_PROJECT_NAME=   # optional: the title of the report
 ```
 
-Reads the open errors of the project over the Data Access API, a hundred at most. `boogle-resolve` marks the error fixed.
+Reads the open errors of the project over the Data Access API, a hundred at most. `errors-resolve` marks the error fixed.
 
 ## Flare (`errors_provider: flare`)
 
@@ -586,7 +589,7 @@ LARAPILOT_FLARE_PROJECT_ID=
 LARAPILOT_FLARE_PROJECT_NAME=     # optional: the title of the report
 ```
 
-Reads the errors of the [Flare](https://flareapp.io/) project and leaves out the ones resolved or snoozed there. `boogle-resolve` resolves the error.
+Reads the errors of the [Flare](https://flareapp.io/) project and leaves out the ones resolved or snoozed there. `errors-resolve` resolves the error.
 
 ## Datadog (`errors_provider: datadog`)
 
@@ -599,7 +602,7 @@ LARAPILOT_DATADOG_SOURCE=error_tracking  # or logs
 LARAPILOT_DATADOG_TRACK=trace            # the track of Error Tracking: trace (APM), logs, or rum
 ```
 
-With `error_tracking`, reads the open issues of the service in [Datadog](https://www.datadoghq.com/) Error Tracking over the last two weeks; `boogle-resolve` sets the issue to resolved. With `logs`, reads the error logs of the service (`status:error`) over the last two weeks from Log Management, one row for each throw, and nothing is closed from Larapilot.
+With `error_tracking`, reads the open issues of the service in [Datadog](https://www.datadoghq.com/) Error Tracking over the last two weeks; `errors-resolve` sets the issue to resolved. With `logs`, reads the error logs of the service (`status:error`) over the last two weeks from Log Management, one row for each throw, and nothing is closed from Larapilot.
 
 ## Rollbar (`errors_provider: rollbar`)
 
@@ -608,7 +611,7 @@ LARAPILOT_ROLLBAR_ACCESS_TOKEN=   # a project access token: scope read; write to
 LARAPILOT_ROLLBAR_PROJECT_NAME=   # optional: the title of the report
 ```
 
-Reads the active items of the project the token belongs to. Codes are the numbers of the items (`#RB57`). `boogle-resolve` resolves the item.
+Reads the active items of the project the token belongs to. Codes are the numbers of the items (`#RB57`). `errors-resolve` resolves the item.
 
 ## Honeybadger (`errors_provider: honeybadger`)
 
@@ -618,7 +621,7 @@ LARAPILOT_HONEYBADGER_PROJECT_ID=     # as in the address of the page of the pro
 LARAPILOT_HONEYBADGER_PROJECT_NAME=   # optional: the title of the report
 ```
 
-Reads the faults that are neither resolved nor ignored, the most frequent first, a hundred at most. `boogle-resolve` marks the fault resolved.
+Reads the faults that are neither resolved nor ignored, the most frequent first, a hundred at most. `errors-resolve` marks the fault resolved.
 
 ## AWS CloudWatch Logs (`errors_provider: cloudwatch`)
 
@@ -633,7 +636,7 @@ No key of AWS is kept by Larapilot: it runs `aws logs filter-log-events` with th
 
 ## Security scan (`settings.security_scan`)
 
-Folds a **static Laravel security scan** into `/larapilot-review` and the pre-ship gate. OFF by default. Larapilot does **not** bundle a scanner and never runs one on its own — the scan happens only when this setting is `YES` **and** the optional dev package is installed.
+Folds a **static Laravel security scan** into `/larapilot-review` and the pre-ship gate. OFF by default. Larapilot does **not** bundle a scanner and never runs one on its own: the setting makes review and ship run it; otherwise it runs when someone asks — `php artisan larapilot:checkpoint-scan`, or *Run the scan* on the dashboard (**Security → Checkpoint**).
 
 Backed by [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) (MIT) — 26 static checks (secrets, SQLi/XSS/CSRF/SSRF/path-traversal patterns, crypto, session/cookie config, EOL PHP/Laravel) plus `composer` / `npm` dependency auditing, via `php artisan checkpoint:scan`.
 
@@ -659,9 +662,26 @@ php artisan vendor:publish --tag=checkpoint-config
 
 ### When ON
 
-- `/larapilot-review` runs `php artisan checkpoint:scan --json` and folds the results into the review:
+- `/larapilot-review` runs `php artisan larapilot:checkpoint-scan` (Checkpoint's `checkpoint:scan --json`, kept for the dashboard) and folds the results into the review:
   - `FAIL` → **review blocker**. Fix it, or record an explicit waiver with `php artisan larapilot:decision-log` before `/larapilot-ship`.
   - `WARN` → review note, surfaced but non-blocking.
 - If the package is **not installed**, the review skill stops and asks the user to `composer require --dev andreapollastri/checkpoint` (or to turn the setting back OFF).
 - Owned by **Lars** (Security Expert), together with `dashboard_auth` and `api_auth`.
 - checkpoint ships its own GitHub Actions / GitLab CI scaffold (`checkpoint:scan` in CI) — use that for pipeline enforcement rather than re-wrapping it here.
+
+### On the dashboard
+
+**Security → Checkpoint** shows the last scan whatever the setting: the verdict, the checks by area (dependencies, configuration, code), each finding with its suppression hash, and the trend of the scans. The result stays in `.larapilot/cache/checkpoint/` on the machine that ran it — out of git, because the details can quote code. `php artisan larapilot:checkpoint-scan` takes `--only=` / `--skip=` (check names), `--report` (`{paths.security}/checkpoint.md`), `--cached`, and `--gate` (`--fail-on-warn`).
+
+## SBOM and vulnerable dependencies (OSV.dev)
+
+No setting: the SBOM is read from the lockfiles, and the vulnerability check runs only when asked.
+
+- **`php artisan larapilot:sbom`** — every package of `composer.lock`, of the JavaScript lockfile of this repository (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lock`), and of the frontend companion when one is linked (its own lockfile, or the workspace's in a monorepo): version, direct or transitive, production or development, license, package URL. `--write=md|cyclonedx|both` saves `sbom.md` and `sbom.cdx.json` (CycloneDX 1.5) under `{paths.security}`.
+- **`php artisan larapilot:vendor-audit`** — sends the name and the version of each package, nothing else, to [OSV.dev](https://osv.dev) (`POST /v1/querybatch`, then `GET /v1/vulns/{id}`): the GitHub advisories, FriendsOfPHP, and npm. No account, no key. Each advisory comes with its severity (the advisory's word, else its CVSS 3 score), its CVE aliases, and the version that fixes it. The answer is cached in `.larapilot/cache/vendor-audit.json`; advisories in `.larapilot/cache/osv/`. `--gate` exits 1 on an open advisory at `--fail-on` (default `high`) or above; `--report` writes `{paths.security}/vendor-audit.md`.
+- **`php artisan larapilot:vendor-link {ids} --spec=US-012 | --waive --reason="…" | --clear`** — the decisions, in `.larapilot/vendor-audit.yaml` with the trend of the checks: commit it.
+- **`/larapilot-vendor-check`** runs the check, has the user confirm package by package, and updates, hands to triage, or waives. `/larapilot-ship` runs `vendor-audit --gate`. The dashboard page **SBOM** shows it all and exports Markdown and CycloneDX.
+
+## Upgrade readiness (Packagist)
+
+**`php artisan larapilot:upgrade-check --laravel=13 | --php=8.4 | --db=pgsql:17`** reads `composer.lock` and asks Packagist (`https://repo.packagist.org/p2/{vendor}/{package}.json`, the public metadata Composer itself reads) which release of each direct dependency supports the target. Answers are cached for a day in `.larapilot/cache/packagist/`; `--offline` reads the lock only. A package served from a private repository (Nova, Spark, a Satis) is reported as `private`: Packagist cannot see it. Composer has the last word: the check lists the `--dry-run` that asks it. Used by `/larapilot-laravel-upgrade`, `/larapilot-php-upgrade`, and `/larapilot-db-upgrade`; the dashboard page **About** shows the versions and their support windows.

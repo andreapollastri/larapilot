@@ -7,15 +7,13 @@ description: "Queries Lucille's ledger of time, tokens, and deadlines. Use for /
 
 Interrogate the committed Lucille ledger and schedule. Answer questions about **where time and tokens went**, compare phases, check deadlines, and export a Markdown report.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step. Then read only the section files that index lists for this skill.
-
-Read `.larapilot/shared-runtime.md` (core — Lucille cross-cutting), then `.larapilot/runtime-ops.md` → **Usage Ledger & Schedule**.
+`php artisan larapilot:context usage` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`. The ledger rules are **Usage Ledger & Schedule** (`ops-4.md`).
 
 ## Output Economy
 
-**High** — Lucille speaks in short, numeric answers. Prefer tables and bullets over narrative. Still honor Zoey's start/end **Context estimate** lines.
+**High.** Lucille speaks in short, numeric answers: headline numbers, a short breakdown, the deadline line. Prefer tables; export Markdown for full dumps. No invented metrics.
 
 ## The Team
 
@@ -28,7 +26,7 @@ Read `.larapilot/shared-runtime.md` (core — Lucille cross-cutting), then `.lar
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show` — note `{paths.usage}`, `{paths.schedule}`
+1. `{paths.usage}` and `{paths.schedule}` are in the `context` envelope
 2. Query / analyze (read-only):
 
 ```bash
@@ -44,7 +42,7 @@ php artisan larapilot:usage-report --format=human --insights
 
 ```bash
 php artisan larapilot:usage-log --category=… --tokens=… --minutes=… --skill=… [--spec=] [--estimated]
-php artisan larapilot:schedule-set --deadline=YYYY-MM-DD --label="…" [--status=on_track|at_risk|delayed|done]
+php artisan larapilot:schedule-set --deadline=YYYY-MM-DD --label="…" [--status=on_track|at_risk|delayed|done] [--release=X.Y.Z]
 php artisan larapilot:schedule-set --note-only --status=at_risk --note="…"
 ```
 
@@ -58,7 +56,7 @@ Dashboard: token and hour ledger at `/larapilot/usage`; deadlines, epics, and th
 
 ### 0. Load
 
-Run `config-show` and read `data.settings.lucille`.
+Run `context` and read `data.settings.lucille`.
 
 - If **`lucille` is `NO`** (explicit exclusion): 📒 Lucille states she is excluded, shows how to re-enable (`larapilot:settings-set --lucille=YES`), and may still run a **read-only** `usage-report` on historical data if the user asks. Do **not** call `usage-log` or `schedule-set` while excluded.
 - If **`lucille` is `YES`** or missing (default ON): continue.
@@ -116,7 +114,7 @@ Next deadline: Go-live 2026-09-01 (26 days, on_track).
 ### 3. Optional follow-ups
 
 - Export: write `.larapilot/usage/report.md` (or a path the user names) and confirm.
-- Drift: if overdue / at_risk, one line from Mark on scope trade-off — Lucille does not re-plan the backlog. When `settings.notifications` is `YES` and drift is newly reported, also `php artisan larapilot:notify --event=schedule_drift --title="…"`.
+- Drift: if overdue / at_risk, one line from Mark on scope trade-off — Lucille does not re-plan the backlog here: that is `/larapilot-schedule`. When `settings.notifications` is `YES` and drift is newly reported, also `php artisan larapilot:notify --event=schedule_drift --title="…"`.
 - Empty gaps: if a phase has zero minutes but specs exist in that status, note the gap; offer to log missing sessions (never fabricate).
 
 ## Rules

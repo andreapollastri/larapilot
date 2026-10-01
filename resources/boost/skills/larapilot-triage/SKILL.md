@@ -7,11 +7,9 @@ description: "Classifies a request as a bug or a new feature, then hands it to l
 
 You are the **front door** for a request on an existing project. You decide whether it is a **bug** or a **feature**, then activate `larapilot-bug` or `larapilot-feature` and let that skill run its own workflow. You write no spec, no PRD edit, no intake entry, and no code.
 
-## Shared Runtime
+## Context
 
-Obey **Read protocol** in `.larapilot/shared-runtime.md`: file-read tool only, never `cat` / `head` / `sed`. A truncated preview is a failed load — read the remainder before any other step.
-
-Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. Do not read `runtime-ops`, `runtime-discovery`, `runtime-delivery`, or `runtime-dev-docs` here: the target skill loads its own packs, and the branch you do not take would be paid for nothing.
+`php artisan larapilot:context triage` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`: it lists the **every-skill rows** only. Do not read `runtime-ops`, `runtime-discovery`, `runtime-delivery`, or `runtime-dev-docs` here: the target skill runs its own `context` call with this session, and the branch you do not take would be paid for nothing.
 
 ## Output Economy
 
@@ -28,11 +26,10 @@ Read `.larapilot/shared-runtime.md` and the **every-skill rows** only. Do not re
 
 ## Config & CLI
 
-1. `php artisan larapilot:config-show --only=settings,paths`
-2. `php artisan larapilot:spec-list`
+1. `php artisan larapilot:spec-list` — titles, statuses, and `cites`: the PRD ids each spec names
+2. `php artisan larapilot:prd-show` — the outline, every `FR-` with its title; then `--ids=FR-XXX` for the one FR that matches. Never load the whole PRD
 3. `php artisan larapilot:spec-show US-XXX --fields=id` — only the spec that matches: the body with its acceptance criteria, tasks reduced to ids
-4. PRD at `data.paths.prd` — search the `### FR-` headings with the editor search tool, then read only the FR that matches. Never load the whole PRD
-5. `php artisan larapilot:decision-log --skill=larapilot-triage` — only when the user settled the verdict and `data.settings.decision_log` is `YES`
+4. `php artisan larapilot:decision-log --skill=larapilot-triage` — only when the user settled the verdict and `data.settings.decision_log` is `YES`
 
 ## Preconditions
 
@@ -55,7 +52,7 @@ Wording is a hint, never the verdict. "It does not work" about something nobody 
 
 ### 0. Context load
 
-Run the `config-show` slice and `spec-list`. Restate the request in one line. Ask for detail only when the request is empty.
+Run `context` and `spec-list`. Restate the request in one line. Ask for detail only when the request is empty.
 
 ### 1. Split (Sophia)
 
@@ -63,7 +60,7 @@ When one message carries several requests, list them and classify each. Hand off
 
 ### 2. Evidence (Tom + Mark)
 
-Match the request against `spec-list` titles and the PRD `### FR-` headings. Open at most one spec and one FR. Open application code only when backlog and PRD are both silent and one search settles whether the capability exists at all — reproducing a defect belongs to `larapilot-bug`.
+Match the request against `spec-list` titles and the `prd-show` outline. Open at most one spec and one FR. Open application code only when backlog and PRD are both silent and one search settles whether the capability exists at all — reproducing a defect belongs to `larapilot-bug`.
 
 ### 3. Verdict
 
@@ -94,9 +91,9 @@ The target skill takes the block as answers already given. Zoey's start line is 
 
 A request with an **Aikido finding** block is measured like any other, with one rule: a known vulnerability in shipped code is a **Bug** when an FR or an NFR names security for that area, a **Bug — requirement gap** otherwise. Do not ask about the verdict. Put the block under `evidence` in the **Triage handoff**, unchanged.
 
-## Handoff from `larapilot-boogle`
+## Handoff from `larapilot-error`
 
-A **Production error** block (from `/larapilot-boogle`) is an exception the running application threw — often several codes in one group: evidence that something broke, not the verdict. Apply the promise test to what the user was doing (`request`, `where`). Do not ask about the verdict. Put the block under `evidence`, unchanged.
+A **Production error** block (from `/larapilot-error`) is an exception the running application threw — often several codes in one group: evidence that something broke, not the verdict. Apply the promise test to what the user was doing (`request`, `where`). Do not ask about the verdict. Put the block under `evidence`, unchanged.
 
 ## Other exits
 
@@ -111,7 +108,7 @@ No handoff. Say where the request belongs in one line and stop.
 | Several stories for the backlog | `/larapilot-spec` |
 | A question, a how-to, or a project setting | Answer it, or `/larapilot-settings`. No spec |
 
-On these exits post Zoey's end line and, when `data.settings.lucille` is `YES`, `usage-log --category=support --skill=larapilot-triage`.
+On these exits post Zoey's end line and, when `data.settings.lucille` is `YES`, run the `usage_log` command of the envelope.
 
 ## Output Boundaries
 

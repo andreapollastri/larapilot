@@ -82,6 +82,39 @@ class ChoicesService
     }
 
     /**
+     * The answers every skill asks the PRD for, without opening it: what the
+     * PRD says today wins over the snapshot, so a PRD edited by hand is not
+     * read stale. Only what was answered is returned.
+     *
+     * @return array<string, string>
+     */
+    public function brief(): array
+    {
+        $choices = array_replace($this->read(), $this->fromPrd());
+        $brief = [];
+
+        foreach ([
+            'kind' => 'project_kind',
+            'origin' => 'project_origin',
+            'delivery_target' => 'delivery_target',
+            'business_model' => 'business_model',
+            'budget_sensitivity' => 'budget_sensitivity',
+            'frontend_topology' => 'frontend_topology',
+            'admin_panel' => 'admin_panel',
+            'local_dev' => 'local_dev',
+            'deploy_platform' => 'deploy_platform',
+        ] as $label => $key) {
+            $value = $choices[$key] ?? null;
+
+            if (is_string($value) && trim($value) !== '') {
+                $brief[$label] = trim($value);
+            }
+        }
+
+        return $brief;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function dashboard(): array
@@ -101,6 +134,7 @@ class ChoicesService
             'release_mode' => $this->config->allowedReleaseModeModes(),
             'project_docs' => $this->config->allowedProjectDocsModes(),
             'prior_art' => $this->config->allowedPriorArtModes(),
+            'hooks' => $this->config->allowedHooksModes(),
             'comments' => $this->config->allowedCommentsModes(),
             'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
             'api_auth' => $this->config->allowedApiAuthModes(),

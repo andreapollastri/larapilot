@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\Support\SpecBlockers;
+
 /**
  * Markdown downloads for the dashboard: the board as it stands, one spec
  * with everything attached to it, and the PRD file itself. The words stay
@@ -257,6 +259,286 @@ class DashboardExportService
         $title = is_array($spec) ? $this->slug((string) ($spec['title'] ?? ''), '') : '';
 
         return $code.($title !== '' ? '-'.substr($title, 0, 60) : '').'.md';
+    }
+
+    /**
+     * The plan as the Plan page shows it: the forecast, the milestones, the
+     * delivery order, then every epic with its stories and their tasks.
+     */
+    public function plan(): string
+    {
+        $data = $this->dashboard->plan();
+        $gantt = is_array($data['gantt'] ?? null) ? $data['gantt'] : [];
+        $criticality = is_array($data['criticality'] ?? null) ? $data['criticality'] : [];
+        $specs = [];
+
+        foreach ($this->specs->allSpecs() as $spec) {
+            $specs[(string) ($spec['code'] ?? '')] = $spec;
+        }
+
+        $bars = [];
+
+        // A planned spec is drawn as its tasks: its window is theirs.
+        foreach (is_array($gantt['bars'] ?? null) ? $gantt['bars'] : [] as $bar) {
+            if (! is_array($bar)) {
+                continue;
+            }
+
+            if (($bar['type'] ?? '') === 'spec') {
+                $bars[(string) $bar['id']] = $bar;
+
+                continue;
+            }
+
+            if (($bar['type'] ?? '') !== 'task') {
+                continue;
+            }
+
+            $code = explode('·', (string) $bar['id'])[0];
+            $open = strtoupper((string) ($bar['status'] ?? '')) !== 'DONE' ? (float) ($bar['estimate_hours'] ?? 0) : 0.0;
+            $current = $bars[$code] ?? ['start' => $bar['start'], 'end' => $bar['end'], 'remaining_hours' => 0.0, 'depends_on' => $bar['spec_depends_on'] ?? []];
+
+            $bars[$code] = [
+                'start' => min((string) $current['start'], (string) $bar['start']),
+                'end' => max((string) $current['end'], (string) $bar['end']),
+                'remaining_hours' => (float) $current['remaining_hours'] + $open,
+                'depends_on' => $current['depends_on'],
+            ];
+        }
+
+        $done = 0;
+        $points = 0;
+        $donePoints = 0;
+        $tasks = 0;
+        $doneTasks = 0;
+
+        foreach ($specs as $code => $spec) {
+            $specPoints = max(0, (int) ($spec['points'] ?? 0));
+            $progress = $this->plans->taskProgress($code);
+            $isDone = strtoupper((string) ($spec['status'] ?? '')) === 'DONE';
+            $done += $isDone ? 1 : 0;
+            $points += $specPoints;
+            $donePoints += $isDone ? $specPoints : 0;
+            $tasks += (int) ($progress['total'] ?? 0);
+            $doneTasks += (int) ($progress['done'] ?? 0);
+        }
+
+        $epics = is_array($gantt['epics'] ?? null) ? $gantt['epics'] : [];
+        $title = $this->projectTitle();
+        $lines = ['# Plan'.($title !== '' ? ' — '.$title : ''), ''];
+        $lines[] = 'Epics, user stories, tasks, and the delivery forecast as they stood on '.now()->format('Y-m-d H:i').'.';
+        $lines[] = '';
+        $lines[] = '## Summary';
+        $lines[] = '';
+        $lines[] = '| Measure | Value |';
+        $lines[] = '| --- | ---: |';
+        $lines[] = '| Epics | '.count($epics).' |';
+        $lines[] = '| User stories | '.count($specs).' ('.$done.' done) |';
+        $lines[] = '| Story points | '.$points.' ('.$donePoints.' done) |';
+        $lines[] = '| Tasks | '.$tasks.' ('.$doneTasks.' done) |';
+        $lines[] = '| Remaining | '.((int) ($criticality['remaining_points'] ?? 0)).' SP · ~'.$this->number((float) ($criticality['remaining_hours'] ?? 0)).' h · ~'.$this->number((float) ($criticality['forecast_work_days'] ?? 0)).' work-days |';
+        $lines[] = '| Forecast end | '.$this->dash((string) ($criticality['forecast_end'] ?? '')).' |';
+
+        $assumptions = is_array($gantt['assumptions'] ?? null) ? $gantt['assumptions'] : [];
+
+        if ($assumptions !== []) {
+            $lines[] = '';
+            $lines[] = '_The forecast queues open work from today, one story at a time in delivery order: '.$this->number((float) ($assumptions['hours_per_day'] ?? 6)).' working hours a day, Monday to Friday; a story with no plan counts '.$this->number((float) ($assumptions['hours_per_point'] ?? 4)).' h per story point._';
+        }
+
+        $alerts = is_array($criticality['alerts'] ?? null) ? $criticality['alerts'] : [];
+
+        if ($alerts !== []) {
+            $lines[] = '';
+            $lines[] = '## Alerts';
+            $lines[] = '';
+
+            foreach ($alerts as $alert) {
+                $lines[] = '- **'.$this->inline((string) ($alert['label'] ?? 'Alert')).'**'.(! empty($alert['date']) ? ' ('.$alert['date'].')' : '').' — '.$this->inline((string) ($alert['message'] ?? ''));
+            }
+        }
+
+        $milestones = is_array($gantt['milestones'] ?? null) ? $gantt['milestones'] : [];
+
+        if ($milestones !== []) {
+            $lines[] = '';
+            $lines[] = '## Milestones';
+            $lines[] = '';
+            $lines[] = '| Milestone | Date | Status | Release | Note |';
+            $lines[] = '| --- | --- | --- | --- | --- |';
+
+            foreach ($milestones as $milestone) {
+                $lines[] = '| '.implode(' | ', [
+                    $this->cell((string) ($milestone['label'] ?? '')),
+                    $this->cell($this->dash((string) ($milestone['date'] ?? ''))),
+                    $this->cell(str_replace('_', ' ', (string) ($milestone['status'] ?? 'on_track'))),
+                    $this->cell($this->dash((string) ($milestone['release'] ?? ''))),
+                    $this->cell($this->dash((string) ($milestone['note'] ?? ''))),
+                ]).' |';
+            }
+        }
+
+        $queue = array_values(array_filter(
+            array_map('strval', is_array($gantt['queue'] ?? null) ? $gantt['queue'] : []),
+            static fn (string $code): bool => isset($specs[$code])
+        ));
+
+        if ($queue !== []) {
+            $lines[] = '';
+            $lines[] = '## Delivery order';
+            $lines[] = '';
+            $lines[] = '| # | Story | Status | Priority | Forecast | Remaining | Blocked by |';
+            $lines[] = '| ---: | --- | --- | --- | --- | ---: | --- |';
+
+            foreach ($queue as $position => $code) {
+                $spec = $specs[$code];
+                $bar = $bars[$code] ?? [];
+
+                $lines[] = '| '.implode(' | ', [
+                    (string) ($position + 1),
+                    $this->cell($code.' — '.(string) ($spec['title'] ?? 'Untitled')),
+                    $this->cell($this->dash((string) ($spec['status'] ?? ''))),
+                    $this->cell($this->dash((string) ($spec['priority'] ?? ''))),
+                    $this->window($bar),
+                    isset($bar['remaining_hours']) ? $this->number((float) $bar['remaining_hours']).' h' : '—',
+                    $this->cell($this->dash(implode(', ', array_map('strval', is_array($bar['depends_on'] ?? null) ? $bar['depends_on'] : [])))),
+                ]).' |';
+            }
+        }
+
+        $listed = [];
+
+        foreach ($epics as $epic) {
+            $codes = array_values(array_filter(
+                array_map('strval', is_array($epic['spec_codes'] ?? null) ? $epic['spec_codes'] : []),
+                static fn (string $code): bool => isset($specs[$code])
+            ));
+            $listed = array_merge($listed, $codes);
+
+            $lines[] = '';
+            $lines[] = '## '.$this->inline((string) ($epic['code'] ?? 'EPIC')).' — '.$this->inline((string) ($epic['title'] ?? ''));
+            $lines[] = '';
+
+            if (trim((string) ($epic['objective'] ?? '')) !== '') {
+                $lines[] = $this->inline((string) $epic['objective']);
+                $lines[] = '';
+            }
+
+            $lines[] = '- **Story points:** '.((int) ($epic['done_points'] ?? 0)).' of '.((int) ($epic['points'] ?? 0)).' done';
+            $lines[] = '- **Forecast:** '.$this->window(['start' => $epic['start'] ?? null, 'end' => $epic['forecast_end'] ?? null]);
+
+            if (! empty($epic['deadline'])) {
+                $lines[] = '- **Deadline:** '.$epic['deadline'];
+            }
+
+            $lines = array_merge($lines, $this->planStories($codes, $specs, $bars));
+        }
+
+        $loose = array_values(array_diff(array_keys($specs), $listed));
+
+        if ($loose !== []) {
+            $lines[] = '';
+            $lines[] = '## Stories without an epic';
+            $lines = array_merge($lines, $this->planStories($loose, $specs, $bars));
+        }
+
+        if ($specs === []) {
+            $lines[] = '';
+            $lines[] = '_The backlog is empty. Write the stories with `/larapilot-spec`._';
+        }
+
+        return rtrim(implode("\n", $lines))."\n";
+    }
+
+    public function planFilename(): string
+    {
+        return $this->slug($this->projectTitle(), 'larapilot').'-plan-'.now()->format('Y-m-d').'.md';
+    }
+
+    /**
+     * The stories of one epic: a table, then the tasks of each planned one.
+     *
+     * @param  list<string>  $codes
+     * @param  array<string, array<string, mixed>>  $specs
+     * @param  array<string, array<string, mixed>>  $bars
+     * @return list<string>
+     */
+    protected function planStories(array $codes, array $specs, array $bars): array
+    {
+        $lines = ['', '| Story | Status | Priority | Points | Release | Blocked by | Tasks | Forecast |', '| --- | --- | --- | ---: | --- | --- | --- | --- |'];
+
+        foreach ($codes as $code) {
+            $spec = $specs[$code];
+            $progress = $this->plans->taskProgress($code);
+            $release = $spec['release'] ?? null;
+            $release = is_array($release) ? (string) ($release['version'] ?? $release['name'] ?? '') : (string) $release;
+
+            // The template writes the release as a line of the body.
+            if (trim($release) === '' && preg_match('/\*\*Release:?\*\*:?\s*([^\n*]+)/i', (string) ($spec['body'] ?? ''), $line) === 1) {
+                $release = trim($line[1]);
+            }
+
+            $blocked = SpecBlockers::read((string) ($spec['body'] ?? '')) ?? [];
+
+            $lines[] = '| '.implode(' | ', [
+                $this->cell($code.' — '.(string) ($spec['title'] ?? 'Untitled')),
+                $this->cell($this->dash((string) ($spec['status'] ?? ''))),
+                $this->cell($this->dash((string) ($spec['priority'] ?? ''))),
+                max(0, (int) ($spec['points'] ?? 0)) > 0 ? (string) (int) $spec['points'] : '—',
+                $this->cell($this->dash($release)),
+                $this->cell($this->dash(implode(', ', $blocked))),
+                (int) ($progress['total'] ?? 0) > 0 ? ((int) $progress['done']).' of '.((int) $progress['total']) : '—',
+                $this->window($bars[$code] ?? []),
+            ]).' |';
+        }
+
+        foreach ($codes as $code) {
+            $plan = $this->plans->read($code);
+            $planTasks = is_array($plan['tasks'] ?? null) ? array_values(array_filter($plan['tasks'], 'is_array')) : [];
+
+            if ($planTasks === []) {
+                continue;
+            }
+
+            $lines[] = '';
+            $lines[] = '### '.$code.' — '.$this->inline((string) ($specs[$code]['title'] ?? 'Untitled'));
+            $lines[] = '';
+            $lines[] = '| Task | Title | Status | Type | Assignee | Estimate | Depends on |';
+            $lines[] = '| --- | --- | --- | --- | --- | ---: | --- |';
+
+            foreach ($planTasks as $task) {
+                $dependencies = array_map('strval', is_array($task['dependencies'] ?? null) ? $task['dependencies'] : []);
+
+                $lines[] = '| '.implode(' | ', [
+                    $this->cell((string) ($task['id'] ?? '')),
+                    $this->cell((string) ($task['title'] ?? '')),
+                    $this->isDone($task) ? 'DONE' : $this->cell($this->dash((string) ($task['status'] ?? 'TODO'))),
+                    $this->cell($this->dash((string) ($task['type'] ?? ''))),
+                    $this->cell($this->dash((string) ($task['assignee'] ?? ''))),
+                    (float) ($task['estimate_hours'] ?? 0) > 0 ? $this->number((float) $task['estimate_hours']).' h' : '—',
+                    $this->cell($this->dash(implode(', ', $dependencies))),
+                ]).' |';
+            }
+        }
+
+        return $lines;
+    }
+
+    /**
+     * `2026-10-01 → 2026-10-07`, or a dash.
+     *
+     * @param  array<string, mixed>  $bar
+     */
+    protected function window(array $bar): string
+    {
+        $start = is_string($bar['start'] ?? null) ? substr($bar['start'], 0, 10) : '';
+        $end = is_string($bar['end'] ?? null) ? substr($bar['end'], 0, 10) : '';
+
+        if ($start === '' && $end === '') {
+            return '—';
+        }
+
+        return $start === $end || $end === '' ? $start : ($start !== '' ? $start.' → '.$end : $end);
     }
 
     public function prd(): ?string

@@ -138,8 +138,8 @@
     .plan-tools .field:first-child { flex-basis: 100%; }
 
     @media (min-width: 860px) {
-        .plan-tools .field { flex: 0 1 190px; }
-        .plan-tools .field:first-child { flex: 0 1 260px; }
+        .plan-tools .field { flex: 0 1 164px; }
+        .plan-tools .field:first-child { flex: 0 1 240px; }
     }
 
     .plan-tools .check {
@@ -227,17 +227,16 @@
 
     .scale {
         position: relative;
-        height: 36px;
+        height: 40px;
     }
 
     .tick {
         position: absolute;
         top: 0;
         bottom: 0;
-        transform: translateX(-50%);
         display: flex;
         align-items: flex-end;
-        padding-bottom: 6px;
+        padding: 0 6px 6px;
         color: var(--muted);
         font-size: 0.7rem;
         font-variant-numeric: tabular-nums;
@@ -248,12 +247,18 @@
     .tick::before {
         content: '';
         position: absolute;
-        left: 50%;
+        left: 0;
         top: 0;
         bottom: 0;
         width: 1px;
         background: var(--border);
     }
+
+    /* a label the edge of the chart would cut keeps its line and drops its text */
+    .tick.end { padding: 0; font-size: 0; }
+
+    .chart.is-fit .tick.minor,
+    .chart.is-fit .gridline.minor { display: none; }
 
     .today-flag {
         position: absolute;
@@ -266,9 +271,10 @@
 
     .today-flag span {
         position: absolute;
-        top: 4px;
+        top: 3px;
         left: 4px;
         padding: 0 5px;
+        line-height: 1.3;
         border-radius: 4px;
         background: var(--surface);
         color: var(--danger);
@@ -284,6 +290,12 @@
     .gantt-row.is-epic .label-col { background: color-mix(in srgb, var(--accent) 5%, var(--surface)); font-weight: 600; }
     .gantt-row.is-spec .label-col { padding-left: 28px; }
     .gantt-row.is-task .label-col { padding-left: 46px; }
+
+    /* delivery order: the epics step aside and the specs read as one queue */
+    .seq-only { display: none; }
+    .chart.is-sequence .seq-only { display: inline; }
+    .chart.is-sequence .gantt-row.is-spec .label-col { padding-left: 12px; }
+    .chart.is-sequence .gantt-row.is-task .label-col { padding-left: 30px; }
 
     .gantt-row.is-lane .label-col {
         color: var(--muted);
@@ -434,12 +446,24 @@
     .diamond.delayed { background: var(--danger-fill); }
     .diamond.done { background: var(--status-todo); }
 
+    /* what a bar says stays in the row for a screen reader; the eye gets it from .plan-tip,
+       which floats over the chart where a row would cut it */
     .tip {
         position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .plan-tip {
+        position: fixed;
+        top: 0;
         left: 0;
-        bottom: calc(100% + 8px);
+        z-index: 60;
         width: max-content;
-        max-width: 280px;
+        max-width: min(280px, calc(100vw - 16px));
         padding: 9px 11px;
         border-radius: var(--radius-xs);
         background: var(--text);
@@ -447,25 +471,21 @@
         font-size: 0.75rem;
         line-height: 1.4;
         font-weight: 450;
-        white-space: normal;
         box-shadow: var(--shadow-lg);
-        opacity: 0;
         pointer-events: none;
-        transform: translateY(4px);
-        transition: opacity 0.12s ease, transform 0.12s ease;
-        z-index: 5;
     }
 
-    .bar:hover .tip,
-    .bar:focus-visible .tip,
-    .diamond:hover .tip,
-    .diamond:focus-visible .tip,
-    .deadline:hover .tip {
-        opacity: 1;
-        transform: none;
-    }
+    .plan-tip[hidden] { display: none; }
 
-    .tip strong { display: block; font-weight: 600; margin-bottom: 2px; }
+    .plan-tip strong { display: block; font-weight: 600; margin-bottom: 2px; }
+
+    .forecast-note {
+        margin: 12px 0 0;
+        max-width: 96ch;
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.5;
+    }
 
     .legend {
         display: flex;
@@ -602,6 +622,29 @@
             }
         };
 
+        // "6 – 13 Oct", with the year only when it is not this one
+        $range = function (?string $from, ?string $to) use ($pretty): string {
+            if (! $from || ! $to) {
+                return $pretty($from ?: $to);
+            }
+
+            try {
+                $a = new \DateTimeImmutable(substr($from, 0, 10));
+                $b = new \DateTimeImmutable(substr($to, 0, 10));
+            } catch (\Exception) {
+                return $from.' → '.$to;
+            }
+
+            $year = fn (\DateTimeImmutable $day): string => $day->format('Y') === date('Y') ? '' : ' '.$day->format('Y');
+
+            return match (true) {
+                $a == $b => $b->format('j M').$year($b),
+                $a->format('Y-m') === $b->format('Y-m') => $a->format('j').' – '.$b->format('j M').$year($b),
+                $a->format('Y') === $b->format('Y') => $a->format('j M').' – '.$b->format('j M').$year($b),
+                default => $a->format('j M').$year($a).' – '.$b->format('j M').$year($b),
+            };
+        };
+
         $statusClass = function (string $status): string {
             $s = strtolower($status);
 
@@ -696,6 +739,14 @@
             }
         }
 
+        // fitted to the card there is room for about nine labels: the rest are minor
+        $tickStep = (int) max(1, ceil(count($ticks) / 9));
+
+        foreach ($ticks as $index => $tick) {
+            $ticks[$index]['minor'] = $index % $tickStep !== 0;
+            $ticks[$index]['end'] = $tick['offset'] > 90;
+        }
+
         $today = new \DateTimeImmutable('today');
         $todayOffset = null;
 
@@ -715,6 +766,8 @@
             default => 6,
         };
         $trackMin = max(560, (int) round($span * $dayPx));
+        // a plan wider than the card opens fitted to it, and zooms in on request
+        $zoomable = $trackMin > 960;
 
         $tasksBySpec = [];
         $specBars = [];
@@ -773,7 +826,7 @@
             }
             $status = is_array($specBar)
                 ? (string) ($specBar['status'] ?? 'TODO')
-                : (string) ($tasks[0]['status'] ?? 'TODO');
+                : (string) ($tasks[0]['spec_status'] ?? $tasks[0]['status'] ?? 'TODO');
 
             return [
                 'code' => $code,
@@ -788,6 +841,9 @@
                 'hours' => $hours > 0 ? round($hours, 1) : null,
                 'tasks' => $tasks,
                 'leaf' => $tasks === [],
+                'blocked_by' => is_array($specBar)
+                    ? ($specBar['depends_on'] ?? [])
+                    : ($tasks[0]['spec_depends_on'] ?? []),
             ];
         };
 
@@ -814,9 +870,11 @@
                 $claimed[$code] = true;
             }
 
-            $epicStatus = ! empty($epic['deadline']) && ! empty($epic['forecast_end']) && $epic['forecast_end'] > $epic['deadline']
-                ? 'AT RISK'
-                : 'PLANNED';
+            $epicStatus = match (true) {
+                ! empty($epic['done']) => 'DONE',
+                ! empty($epic['deadline']) && ! empty($epic['forecast_end']) && $epic['forecast_end'] > $epic['deadline'] => 'AT RISK',
+                default => 'PLANNED',
+            };
 
             $groups[] = [
                 'id' => (string) $epic['code'],
@@ -841,6 +899,8 @@
                 $tasksBySpec[$code] ?? []
             );
         }
+
+        usort($looseChildren, fn (array $a, array $b): int => [$a['start'], $a['end']] <=> [$b['start'], $b['end']]);
 
         if ($looseChildren !== []) {
             $looseStart = null;
@@ -876,12 +936,19 @@
         }
 
         $taskCount = 0;
+        // where each spec falls when the epics are set aside and the work reads as one queue
+        $sequence = [];
 
         foreach ($groups as $group) {
             foreach ($group['children'] as $child) {
                 $taskCount += count($child['tasks']);
+                $sequence[$child['code']] = [$child['start'], $child['end']];
             }
         }
+
+        asort($sequence);
+        $sequence = array_flip(array_keys($sequence));
+        $hoursPerDay = (float) ($gantt['assumptions']['hours_per_day'] ?? 6);
 
         $hasChart = $groups !== [] || $milestones !== [];
         $critical = collect($alerts)->contains(fn ($alert) => ($alert['level'] ?? '') === 'critical');
@@ -903,11 +970,14 @@
         <header class="page-head">
             <div>
                 <h2>Plan</h2>
-                <p class="sub">Epics, deadlines, and a dependency-aware Gantt from specs and plans. Token spend stays on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>.</p>
+                <p class="sub">Epics, deadlines, and the delivery forecast: a dependency-aware Gantt from specs and plans. Token spend stays on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>.</p>
             </div>
-            <div @class(['health', $healthClass])>
-                <span class="dot" aria-hidden="true"></span>
-                {{ $healthLabel }}
+            <div class="page-actions">
+                <div @class(['health', $healthClass])>
+                    <span class="dot" aria-hidden="true"></span>
+                    {{ $healthLabel }}
+                </div>
+                <a class="btn ghost" href="{{ route('larapilot.dashboard.plan.download') }}" title="Epics, user stories, tasks, milestones, and the forecast, as one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download plan (.md)</a>
             </div>
         </header>
 
@@ -925,7 +995,7 @@
             <div class="card metric">
                 <div class="metric-label">Forecast end</div>
                 <div class="metric-value is-date">{{ $pretty($criticality['forecast_end'] ?? null) }}</div>
-                <div class="metric-note">from remaining effort, not the calendar window</div>
+                <div class="metric-note">the day the last open spec is done</div>
             </div>
             <div class="card metric">
                 <div class="metric-label">Scope</div>
@@ -952,7 +1022,7 @@
             <div class="milestones" aria-label="Milestones">
                 @foreach ($milestones as $milestone)
                     <article @class(['milestone-card', $milestone['status'] ?? 'on_track'])>
-                        <div class="date">{{ $pretty($milestone['date'] ?? null) }}</div>
+                        <div class="date">{{ $pretty($milestone['date'] ?? null) }}@if (! empty($milestone['release'])) · release {{ $milestone['release'] }}@endif</div>
                         <strong>{{ $milestone['label'] ?? 'Deadline' }}</strong>
                         <span class="state">{{ $milestoneLabel((string) ($milestone['status'] ?? 'on_track')) }}</span>
                         @if (! empty($milestone['note']))
@@ -993,6 +1063,22 @@
                             <option value="risk">At risk</option>
                         </select>
                     </label>
+                    @if (count($sequence) > 1)
+                        <label class="field">View
+                            <select id="plan-order">
+                                <option value="epic">By epic</option>
+                                <option value="sequence">Delivery order</option>
+                            </select>
+                        </label>
+                    @endif
+                    @if ($zoomable)
+                        <label class="field">Zoom
+                            <select id="plan-zoom">
+                                <option value="fit">Whole plan</option>
+                                <option value="detail">Detail</option>
+                            </select>
+                        </label>
+                    @endif
                     @if ($taskCount > 0)
                         <label class="check">
                             <input type="checkbox" id="plan-tasks" checked>
@@ -1003,12 +1089,12 @@
                 </div>
 
                 <div class="chart-scroll">
-                    <div class="chart" style="--track: {{ $trackMin }}px;">
+                    <div @class(['chart', 'is-fit' => $zoomable]) style="--track: {{ $zoomable ? 560 : $trackMin }}px;" data-track="{{ $trackMin }}">
                         <div class="gantt-head">
                             <div class="label-col">Schedule</div>
                             <div class="scale">
                                 @foreach ($ticks as $tick)
-                                    <span class="tick" style="left: {{ $tick['offset'] }}%;">{{ $tick['label'] }}</span>
+                                    <span @class(['tick', 'minor' => $tick['minor'], 'end' => $tick['end']]) style="left: {{ $tick['offset'] }}%;">{{ $tick['label'] }}</span>
                                 @endforeach
                                 @if ($todayOffset !== null)
                                     <span class="today-flag" style="left: {{ $todayOffset }}%;"><span>Today</span></span>
@@ -1021,7 +1107,7 @@
                                 <div class="label-col">Milestones</div>
                                 <div class="track">
                                     @foreach ($ticks as $tick)
-                                        <span class="gridline" style="left: {{ $tick['offset'] }}%;"></span>
+                                        <span @class(['gridline', 'minor' => $tick['minor']]) style="left: {{ $tick['offset'] }}%;"></span>
                                     @endforeach
                                     @if ($todayOffset !== null)
                                         <span class="today-line" style="left: {{ $todayOffset }}%;"></span>
@@ -1099,7 +1185,7 @@
                                 </div>
                                 <div class="track">
                                     @foreach ($ticks as $tick)
-                                        <span class="gridline" style="left: {{ $tick['offset'] }}%;"></span>
+                                        <span @class(['gridline', 'minor' => $tick['minor']]) style="left: {{ $tick['offset'] }}%;"></span>
                                     @endforeach
                                     @if ($todayOffset !== null)
                                         <span class="today-line" style="left: {{ $todayOffset }}%;"></span>
@@ -1136,6 +1222,7 @@
                                     data-kind="spec"
                                     data-epic="{{ $epicId }}"
                                     data-spec="{{ $child['code'] }}"
+                                    data-seq="{{ $sequence[$child['code']] ?? 0 }}"
                                     data-leaf="{{ $child['leaf'] ? '1' : '0' }}"
                                     data-search="{{ $specSearch }}"
                                     data-status="{{ $child['status_class'] }}"
@@ -1145,8 +1232,12 @@
                                         <div class="name">
                                             <span class="title">{{ $child['label'] }}</span>
                                             <span class="meta">
+                                                <span class="seq-only">{{ $group['loose'] ? 'No epic' : ($epic['code'] ?? '') }} ·</span>
                                                 {{ $statusLabel($child['status']) }}
-                                                · {{ $pretty($child['start']) }} → {{ $pretty($child['end']) }}
+                                                · {{ $range($child['start'], $child['end']) }}
+                                                @if ($child['blocked_by'] !== [] && $child['status_class'] !== 'done')
+                                                    · after {{ implode(', ', $child['blocked_by']) }}
+                                                @endif
                                                 @if ($child['hours'])
                                                     · {{ $child['hours'] }} h
                                                 @endif
@@ -1158,7 +1249,7 @@
                                     </div>
                                     <div class="track">
                                         @foreach ($ticks as $tick)
-                                            <span class="gridline" style="left: {{ $tick['offset'] }}%;"></span>
+                                            <span @class(['gridline', 'minor' => $tick['minor']]) style="left: {{ $tick['offset'] }}%;"></span>
                                         @endforeach
                                         @if ($todayOffset !== null)
                                             <span class="today-line" style="left: {{ $todayOffset }}%;"></span>
@@ -1174,6 +1265,9 @@
                                                     @endif
                                                     @if ($child['hours'])
                                                         <br>{{ $child['hours'] }} h estimated
+                                                    @endif
+                                                    @if ($child['blocked_by'] !== [])
+                                                        <br>After {{ implode(', ', $child['blocked_by']) }}
                                                     @endif
                                                 </span>
                                             </div>
@@ -1191,12 +1285,19 @@
                                             implode(' ', $task['depends_on'] ?? []),
                                         ])));
                                         $deps = is_array($task['depends_on'] ?? null) ? $task['depends_on'] : [];
+                                        $taskMeta = array_filter([
+                                            $task['assignee'] ?? null,
+                                            ! empty($task['parallel']) ? 'parallel' : null,
+                                            $deps !== [] ? 'after '.implode(', ', $deps) : null,
+                                            ! empty($task['estimate_hours']) ? $task['estimate_hours'].' h' : null,
+                                        ]);
                                     @endphp
                                     <div
                                         class="gantt-row is-task"
                                         data-kind="task"
                                         data-epic="{{ $epicId }}"
                                         data-spec="{{ $child['code'] }}"
+                                        data-seq="{{ $sequence[$child['code']] ?? 0 }}"
                                         data-leaf="1"
                                         data-search="{{ $taskSearch }}"
                                         data-status="{{ $taskStatus }}"
@@ -1205,25 +1306,12 @@
                                         <div class="label-col">
                                             <div class="name">
                                                 <span class="title">{{ $task['label'] ?? '' }}</span>
-                                                <span class="meta">
-                                                    @if (! empty($task['assignee']))
-                                                        {{ $task['assignee'] }}
-                                                    @endif
-                                                    @if (! empty($task['parallel']))
-                                                        · parallel
-                                                    @endif
-                                                    @if ($deps !== [])
-                                                        · after {{ implode(', ', $deps) }}
-                                                    @endif
-                                                    @if (! empty($task['estimate_hours']))
-                                                        · {{ $task['estimate_hours'] }} h
-                                                    @endif
-                                                </span>
+                                                <span class="meta">{{ implode(' · ', $taskMeta) }}</span>
                                             </div>
                                         </div>
                                         <div class="track">
                                             @foreach ($ticks as $tick)
-                                                <span class="gridline" style="left: {{ $tick['offset'] }}%;"></span>
+                                                <span @class(['gridline', 'minor' => $tick['minor']]) style="left: {{ $tick['offset'] }}%;"></span>
                                             @endforeach
                                             @if ($todayOffset !== null)
                                                 <span class="today-line" style="left: {{ $todayOffset }}%;"></span>
@@ -1251,6 +1339,14 @@
                         @endforeach
                     </div>
                 </div>
+
+                <p class="forecast-note">
+                    Open work is queued from today, one spec at a time: what is in progress first, then by priority, and never before the specs it is blocked by — a spec that blocks a more urgent one is as urgent as it.
+                    A working day is {{ $hoursPerDay }} h, Monday to Friday; a spec with no plan counts {{ (float) ($gantt['assumptions']['hours_per_point'] ?? 4) }} h for each story point.
+                    Tasks overlap only when they have different assignees. Done work sits on the days the ledger recorded it. <code>/larapilot-schedule</code> re-plans the order and the dates.
+                </p>
+
+                <div class="plan-tip" id="plan-tip" aria-hidden="true" hidden></div>
 
                 <div class="legend" aria-label="Legend">
                     <span><i class="epic"></i> Epic window</span>
@@ -1321,7 +1417,11 @@
 @push('scripts')
 <script>
 (() => {
-    const rows = Array.from(document.querySelectorAll('.gantt-row[data-kind]'));
+    const chart = document.querySelector('.chart');
+    if (!chart) return;
+
+    const rows = Array.from(chart.querySelectorAll('.gantt-row[data-kind]'));
+    const order = document.getElementById('plan-order');
     const q = document.getElementById('plan-q');
     const assignee = document.getElementById('plan-assignee');
     const status = document.getElementById('plan-status');
@@ -1329,6 +1429,7 @@
     const count = document.getElementById('plan-count');
 
     const needle = () => (q && q.value ? q.value.trim().toLowerCase() : '');
+    const sequenced = () => !!order && order.value === 'sequence';
 
     const passesAssignee = (row) => {
         if (!assignee || assignee.value === '') return true;
@@ -1361,6 +1462,7 @@
     const render = () => {
         const term = needle();
         const detail = !tasksToggle || tasksToggle.checked;
+        const flat = sequenced();
         const collapsed = new Set(rows.filter((row) => row.dataset.kind === 'epic' && row.dataset.open === '0').map((row) => row.dataset.epic));
         const visible = new Set();
         const leaves = rows.filter((row) => row.dataset.leaf === '1');
@@ -1397,7 +1499,8 @@
 
             let show = visible.has(row);
             if (row.dataset.kind === 'task' && !detail) show = false;
-            if ((row.dataset.kind === 'spec' || row.dataset.kind === 'task') && collapsed.has(row.dataset.epic)) show = false;
+            if (row.dataset.kind === 'epic' && flat) show = false;
+            if ((row.dataset.kind === 'spec' || row.dataset.kind === 'task') && !flat && collapsed.has(row.dataset.epic)) show = false;
             row.hidden = !show;
             if (show) shown += 1;
         });
@@ -1423,7 +1526,81 @@
         el.addEventListener('change', render);
     });
 
+    // Delivery order lifts the specs out of their epics, each with its tasks behind it.
+    const arrange = () => {
+        const flat = sequenced();
+        const list = flat
+            ? rows.filter((row) => row.dataset.seq !== undefined).sort((a, b) => a.dataset.seq - b.dataset.seq)
+            : rows;
+
+        chart.classList.toggle('is-sequence', flat);
+        list.forEach((row) => chart.appendChild(row));
+        render();
+    };
+
+    if (order) order.addEventListener('change', arrange);
+
+    // Whatever the zoom, the chart opens on today, not on the day the project began.
+    const scroller = chart.closest('.chart-scroll');
+    const flag = chart.querySelector('.today-flag');
+    const zoom = document.getElementById('plan-zoom');
+
+    const focus = () => {
+        if (scroller && flag) scroller.scrollLeft = Math.max(0, flag.offsetLeft - 64);
+    };
+
+    if (zoom) {
+        zoom.addEventListener('change', () => {
+            const fit = zoom.value === 'fit';
+            chart.classList.toggle('is-fit', fit);
+            chart.style.setProperty('--track', (fit ? 560 : chart.dataset.track) + 'px');
+            focus();
+        });
+    }
+
+    // One tooltip for every bar, placed against the window so no row clips it.
+    const tip = document.getElementById('plan-tip');
+
+    const showTip = (mark, x) => {
+        const source = mark.querySelector('.tip');
+        if (!tip || !source) return;
+
+        tip.innerHTML = source.innerHTML;
+        tip.hidden = false;
+
+        const box = mark.getBoundingClientRect();
+        const edge = scroller ? scroller.getBoundingClientRect().left + chart.querySelector('.label-col').offsetWidth : 0;
+        const left = Math.min(Math.max(x ?? Math.max(box.left, edge), 8), window.innerWidth - tip.offsetWidth - 8);
+        const above = box.top - tip.offsetHeight - 8;
+
+        tip.style.left = Math.max(8, left) + 'px';
+        tip.style.top = (above >= 8 ? above : box.bottom + 8) + 'px';
+    };
+
+    const hideTip = () => {
+        if (tip) tip.hidden = true;
+    };
+
+    const marked = (event) => (event.target instanceof Element ? event.target.closest('.bar, .diamond, .deadline') : null);
+
+    chart.addEventListener('mouseover', (event) => {
+        const mark = marked(event);
+        if (mark) showTip(mark, event.clientX + 12);
+    });
+    chart.addEventListener('mouseout', (event) => {
+        const mark = marked(event);
+        if (mark && !mark.contains(event.relatedTarget)) hideTip();
+    });
+    chart.addEventListener('focusin', (event) => {
+        const mark = marked(event);
+        if (mark) showTip(mark);
+    });
+    chart.addEventListener('focusout', hideTip);
+    if (scroller) scroller.addEventListener('scroll', hideTip, { passive: true });
+    window.addEventListener('scroll', hideTip, { passive: true });
+
     render();
+    focus();
 })();
 </script>
 @endpush
