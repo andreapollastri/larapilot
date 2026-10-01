@@ -2,7 +2,7 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [5.0.0] - 2026-10-01
+## [5.0.0] - 2026-10-02
 
 ### Breaking
 
