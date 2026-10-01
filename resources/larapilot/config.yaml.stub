@@ -63,6 +63,11 @@ paths:
   research: .larapilot/research/
   design_systems: .larapilot/design-systems/
   internal_feedback: .larapilot/internal-feedback/
+  usage: .larapilot/usage/
+  choices: .larapilot/choices.yaml
+  schedule: .larapilot/usage/schedule.yaml
+  decisions: .larapilot/decisions.yaml
+  code_history: .larapilot/code-history.yaml
   releases: .larapilot/releases.yaml
   project_docs: .larapilot/docs/handbook/
   custom_skills: .larapilot/skills/

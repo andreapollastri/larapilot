@@ -294,7 +294,7 @@ Fix: {one-line from rework feedback}
 <!-- when: frontend=external -->
 ## Frontend task — external repo (`repo: frontend`)
 
-Use when **Frontend Topology** is `API + external frontend` and the task implements UI in the configured FE repo. Set `"repo": "frontend"` on the task in the plan JSON, `"project": "<name>"` when `frontend-scan` reports a monorepo, and `"shared": ["<library>"]` when the task must change a library in `write_scope.shared`. Paths are relative to `data.frontend.repo_path`. Fill the braces from `frontend-scan` — never from habit — and follow **Frontend Companion** (`frontend.md`).
+Use when **Frontend Topology** is `API + external frontend` and the task implements UI in the configured FE repo. Set `"repo": "frontend"` on the task in the plan JSON, `"project": "<name>"` when `frontend-scan` reports a monorepo, and `"shared": ["<library>"]` when the task must change a library in `write_scope.shared`. Paths are relative to the scan's `root` (the workspace; `repo_path` only when the repository is its own workspace). Fill the braces from `frontend-scan` — never from habit — and follow **Frontend Companion** (`frontend.md`).
 
 ```markdown
 ## Description
@@ -319,7 +319,7 @@ Use when **Frontend Topology** is `API + external frontend` and the task impleme
 - [ ] Lint, tests, and build green for the project and what depends on it
 
 ## Git Deliverables
-- Repo: frontend (`git -C {data.frontend.repo_path} …`) — its hooks run, never `--no-verify`
+- Repo: frontend (`git -C {git_root} …` — `target_projects[].git_root` when set, else `git.root` of the scan) — its hooks run, never `--no-verify`
 - Commit: `git.commits.pattern` from the scan, in the language and style of its `samples`, with `US-XXX TASK-NN` in the subject — in `git_root` when the project has one
 - Push: {only if `GITFLOW_PUSH`; else **skip**}
 - PR: {remote update only if `GITFLOW_PUSH`}

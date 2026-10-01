@@ -49,11 +49,12 @@ Never hand-edit `backlog.yaml`, a plan, or `schedule.yaml`. Never use `spec-add`
     {"label": "0.2.0 Beta", "date": "2026-12-04", "release": "0.2.0"},
     {"id": "3c785c2588c6", "remove": true}
   ],
-  "note": "Re-planned on the forecast: go-live moved to 2027-03-12"
+  "note": "Re-planned on the forecast: go-live moved to 2027-03-12",
+  "status": "at_risk"
 }
 ```
 
-Every list is optional, and a row carries only what changes. `blocked_by: []` writes `**Blocked by:** -`; `deadline: null` on an epic removes it; a deadline with no `id` is new. A deadline that names a `release` is measured against the last spec of that release; one that names none, against the last spec of the backlog — so only the last date of the project goes without one. Priorities: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`. Statuses: `on_track`, `at_risk`, `delayed`, `done`. One wrong row and nothing is written: the findings of the error name the row.
+Every list is optional, and a row carries only what changes. `blocked_by: []` writes `**Blocked by:** -`; `deadline: null` on an epic removes it; a deadline with no `id` is new. A deadline that names a `release` is measured against the last spec of that release; one that names none, against the last spec of the backlog — so only the last date of the project goes without one. Priorities: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`. Statuses: `on_track`, `at_risk`, `delayed`, `done`. The top-level `status` is the one the `note` is filed under (default `on_track`): a note about a slip says `at_risk` or `delayed`. One wrong row and nothing is written: the findings of the error name the row.
 
 ## Preconditions
 

@@ -4,13 +4,13 @@
 
 Install the official Laravel companion: `composer require cipi/agent` ([docs](https://cipi.sh/docs/agent)).
 
-| Capability     | How                                                                    |
-| -------------- | ------------------------------------------------------------------------|
-| Webhook deploy | `POST /cipi/webhook` — push triggers `.deploy-trigger` → Deployer       |
-| Health check   | `GET /cipi/health` — app, DB, cache, queue, deploy commit               |
-| MCP (optional) | `php artisan cipi:service mcp --enable` — remote deploy, logs, health   |
-| Status         | `php artisan cipi:status` — verify `CIPI_*` env vars and connectivity   |
-| Webhook token  | `cipi deploy {app} --webhook` on the server                             |
+| Capability | How |
+| --- | --- |
+| Webhook deploy | `POST /cipi/webhook` — push triggers `.deploy-trigger` → Deployer |
+| Health check | `GET /cipi/health` — app, DB, cache, queue, deploy commit |
+| MCP (optional) | `php artisan cipi:service mcp --enable` — remote deploy, logs, health |
+| Status | `php artisan cipi:status` — verify `CIPI_*` env vars and connectivity |
+| Webhook token | `cipi deploy {app} --webhook` on the server |
 
 On Cipi-managed servers, `cipi app create` injects required `.env` variables. After adding `cipi/agent`, commit, push, and run one manual deploy (`cipi deploy {app}`) before the webhook route is live.
 
@@ -64,14 +64,14 @@ On Cipi-managed servers, `cipi app create` injects required `.env` variables. Af
 
 ### Troubleshooting
 
-| Symptom                  | Likely cause            | Fix                                                    |
-| ------------------------ | ----------------------- | --------------------------------------------------------|
-| Webhook 404 (Cipi)       | Agent not deployed yet  | Run `cipi deploy {app}` after adding `cipi/agent`        |
-| Webhook 403 (Cipi)       | Secret mismatch         | Re-sync token via `cipi deploy {app} --webhook`          |
-| 200 but no deploy (Cipi) | Branch filtered         | Check `CIPI_DEPLOY_BRANCH`                               |
-| Forge/Ploi deploy fails  | Script or permissions   | Check deploy log; verify `storage/` writable             |
-| K8s CrashLoopBackOff     | Missing env or migration | Check pod logs; run migration Job first                 |
-| 500 after deploy         | Config cache stale      | `php artisan config:clear && php artisan config:cache`   |
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| Webhook 404 (Cipi) | Agent not deployed yet | Run `cipi deploy {app}` after adding `cipi/agent` |
+| Webhook 403 (Cipi) | Secret mismatch | Re-sync token via `cipi deploy {app} --webhook` |
+| 200 but no deploy (Cipi) | Branch filtered | Check `CIPI_DEPLOY_BRANCH` |
+| Forge/Ploi deploy fails | Script or permissions | Check deploy log; verify `storage/` writable |
+| K8s CrashLoopBackOff | Missing env or migration | Check pod logs; run migration Job first |
+| 500 after deploy | Config cache stale | `php artisan config:clear && php artisan config:cache` |
 
 ## Security Assessment _(Oliver red team → Lars OWASP gate)_
 
@@ -94,18 +94,18 @@ Report to `{paths.security}/red-team-{release-id}.md` with severity (Critical|Hi
 
 Pre-deploy assessment mapped to **OWASP Top 10 (2021)** and Laravel-specific vectors:
 
-| ID  | Focus                                                                                                                                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| A01 | Broken access control — policies, gates, route middleware, IDOR                                                                                                                |
-| A02 | Cryptographic failures — `APP_KEY`, HTTPS, secrets at rest                                                                                                                     |
-| A03 | Injection — SQL, mass assignment, Blade/command injection                                                                                                                      |
-| A04 | Insecure design — missing rate limits, unsafe defaults                                                                                                                         |
-| A05 | Security misconfiguration — `APP_DEBUG`, exposed `.env`, CORS, **WAF/CDN** per PRD edge choice (or equivalent) on public traffic                                               |
-| A06 | Vulnerable components — `composer audit`, outdated packages                                                                                                                    |
-| A07 | Auth failures — session fixation, password reset, **2FA enabled** (Fortify TOTP), `Password::defaults()` with `uncompromised()`, Argon2id hashing                              |
-| A08 | Software/data integrity — webhook signatures, deploy token handling                                                                                                            |
-| A09 | Logging & monitoring — auth failures, deploy events logged; **observability stack** live (Nightwatch, CloudWatch, or equivalent)                                               |
-| A10 | SSRF — outbound HTTP from user-controlled input                                                                                                                                |
+| ID | Focus |
+| --- | --- |
+| A01 | Broken access control — policies, gates, route middleware, IDOR |
+| A02 | Cryptographic failures — `APP_KEY`, HTTPS, secrets at rest |
+| A03 | Injection — SQL, mass assignment, Blade/command injection |
+| A04 | Insecure design — missing rate limits, unsafe defaults |
+| A05 | Security misconfiguration — `APP_DEBUG`, exposed `.env`, CORS, **WAF/CDN** per PRD edge choice (or equivalent) on public traffic |
+| A06 | Vulnerable components — `composer audit`, outdated packages |
+| A07 | Auth failures — session fixation, password reset, **2FA enabled** (Fortify TOTP), `Password::defaults()` with `uncompromised()`, Argon2id hashing |
+| A08 | Software/data integrity — webhook signatures, deploy token handling |
+| A09 | Logging & monitoring — auth failures, deploy events logged; **observability stack** live (Nightwatch, CloudWatch, or equivalent) |
+| A10 | SSRF — outbound HTTP from user-controlled input |
 
 Also: use Boost `Database Schema` and code review for access-control and injection checks; confirm new entities use UUID primary keys unless the PRD documents an exception. `composer audit` and the scans the settings turn on — Aikido, `checkpoint:scan`, the error tracker — are Phase 2 of `/larapilot-ship`.
 
@@ -137,16 +137,16 @@ Write the assessment to `{paths.security}/{release-id}.md`:
 
 **Violet** evaluates **every legal and privacy surface** from inception through ship, and runs the full launch gate when the app processes personal data:
 
-| Area                                 | Violet checks                                                                                                                                     |
-| ------------------------------------ | -----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Legal pages**                      | Privacy policy, Terms of Service, Cookie Policy — reachable, dated, localized when required                                                            |
-| **Consent**                          | Cookie banner, granular opt-in/opt-out, marketing consent separate from essential cookies; lawful basis documented per data collection point           |
-| **Data subject rights**              | Access, rectification, erasure, portability, objection — flows documented and operational                                                              |
-| **Anonymization & pseudonymization** | PII minimization in analytics, logs, and exports; hashing where identification is not required                                                         |
-| **Retention**                        | Defined periods for user data, logs, backups, audit trails; automated pruning where possible (align with `config/logging.php` and pruning jobs)        |
-| **Processors & transfers**           | DPA status, subprocessor list, EU residency, SCCs for non-EU transfers                                                                                 |
-| **Children / special categories**    | Heightened safeguards when applicable                                                                                                                  |
-| **Marketing opt-out**                | Opt-out mechanisms for marketing email and non-essential tracking                                                                                      |
-| **Digital accessibility**            | EAA / EN 301 549 / national law conformance documented; **accessibility statement** page reachable when required — coordinate with **Elise** + **Emma** |
+| Area | Violet checks |
+| --- | --- |
+| **Legal pages** | Privacy policy, Terms of Service, Cookie Policy — reachable, dated, localized when required |
+| **Consent** | Cookie banner, granular opt-in/opt-out, marketing consent separate from essential cookies; lawful basis documented per data collection point |
+| **Data subject rights** | Access, rectification, erasure, portability, objection — flows documented and operational |
+| **Anonymization & pseudonymization** | PII minimization in analytics, logs, and exports; hashing where identification is not required |
+| **Retention** | Defined periods for user data, logs, backups, audit trails; automated pruning where possible (align with `config/logging.php` and pruning jobs) |
+| **Processors & transfers** | DPA status, subprocessor list, EU residency, SCCs for non-EU transfers |
+| **Children / special categories** | Heightened safeguards when applicable |
+| **Marketing opt-out** | Opt-out mechanisms for marketing email and non-essential tracking |
+| **Digital accessibility** | EAA / EN 301 549 / national law conformance documented; **accessibility statement** page reachable when required — coordinate with **Elise** + **Emma** |
 
 Violet works with **Lars** on security controls that implement privacy (encryption, access control, breach logging) and with **Aurora** when compliance tooling has cost implications. At ship, Violet issues PASS / issues for launch blockers. **Emma/Lauren** ensure tracking respects consent; **Emily** aligns legal pages and consent copy per locale.

@@ -155,7 +155,8 @@ class ScheduleService
             $status = (string) ($deadline['status'] ?? 'on_track');
             $release = trim((string) ($deadline['release'] ?? '')) ?: null;
             // A milestone that names a release waits for that release, not for the whole backlog.
-            $target = ($release !== null ? $this->usage->releaseForecast($release, $gantt) : null) ?? $forecastEnd;
+            $releaseEnd = $release !== null ? $this->usage->releaseForecast($release, $gantt) : null;
+            $target = $releaseEnd ?? $forecastEnd;
 
             $deadlines[] = [
                 'id' => (string) ($deadline['id'] ?? ''),
@@ -163,6 +164,7 @@ class ScheduleService
                 'date' => $date,
                 'status' => $status,
                 'release' => $release,
+                'release_empty' => $release !== null && $releaseEnd === null,
                 'forecast_end' => $target,
                 'slip_days' => $status !== 'done' && $target !== null && $this->isDate($date)
                     ? $this->daysPast($date, $target)
@@ -617,6 +619,12 @@ class ScheduleService
             $id = trim((string) ($row['id'] ?? ''));
             $position = null;
 
+            if ($id === '' && ($row['remove'] ?? false) === true) {
+                $findings[] = $this->finding('SCHEDULE_UNKNOWN_DEADLINE', 'error', $path.'.id', 'A removal names the milestone by its `id`.', 'Use an id of `schedule-show` → `deadlines`.');
+
+                continue;
+            }
+
             if ($id !== '') {
                 foreach ($milestones as $index => $milestone) {
                     if ((string) ($milestone['id'] ?? '') === $id) {
@@ -855,6 +863,16 @@ class ScheduleService
 
         foreach ($deadlines as $deadline) {
             $dated = true;
+
+            if ($deadline['date'] === '') {
+                $findings[] = $this->finding('SCHEDULE_INVALID_DATE', 'error', (string) $deadline['label'], $deadline['label'].' has a date the forecast cannot read: it is measured against nothing.', 'Set its `date` as YYYY-MM-DD under `deadlines[]`.');
+
+                continue;
+            }
+
+            if ($deadline['release'] !== null && $deadline['release_empty'] && $deadline['status'] !== 'done') {
+                $findings[] = $this->finding('SCHEDULE_RELEASE_EMPTY', 'warning', (string) $deadline['label'], $deadline['label'].' names release '.$deadline['release'].', which has no spec in the chart: it is measured against the whole backlog.', 'Add specs to the release (`release-add`), or point the milestone at the release it is for.');
+            }
 
             if ($deadline['status'] === 'on_track' && ($deadline['slip_days'] > 0 || $deadline['overdue'])) {
                 $findings[] = $this->finding('SCHEDULE_STALE_STATUS', 'warning', (string) $deadline['label'], $deadline['label'].' ('.$deadline['date'].') says on_track, and '.($deadline['overdue'] ? 'the date is past.' : ($deadline['release'] !== null ? 'release '.$deadline['release'] : 'the backlog').' is forecast for '.$deadline['forecast_end'].', '.$deadline['slip_days'].' days after it.'), 'Move its `date`, name the `release` it is for, or set its `status` to at_risk or delayed, under `deadlines[]`.');

@@ -21,6 +21,7 @@ class RunArtisanTool extends Tool
      * @var list<string>
      */
     protected array $allowed = [
+        'larapilot:context',
         'larapilot:config-show',
         'larapilot:spec-list',
         'larapilot:spec-show',
@@ -56,9 +57,11 @@ class RunArtisanTool extends Tool
         'larapilot:backstage-export',
         'larapilot:tracker-status',
         'larapilot:hook-list',
+        'larapilot:schedule-show',
         'larapilot:stack',
         'larapilot:upgrade-check',
         'larapilot:sbom',
+        'larapilot:vendor-audit',
     ];
 
     /**
@@ -72,6 +75,8 @@ class RunArtisanTool extends Tool
      * @var array<string, list<string>>
      */
     protected array $parameters = [
+        // The session cache it keeps is derived and git-ignored: a read.
+        'larapilot:context' => ['skill', '--session', '--fresh', '--with'],
         'larapilot:config-show' => ['--only'],
         'larapilot:spec-list' => ['--status', '--full'],
         'larapilot:spec-show' => ['code', '--task', '--fields'],
@@ -99,10 +104,12 @@ class RunArtisanTool extends Tool
         'larapilot:frontend-rules' => ['--file', '--project', '--path'],
         'larapilot:backstage-export' => ['--api-base'],
         'larapilot:hook-list' => ['--event'],
+        'larapilot:schedule-show' => ['--only'],
         'larapilot:tracker-status' => ['--ping'],
         'larapilot:stack' => ['--only', '--no-db'],
         'larapilot:upgrade-check' => ['--laravel', '--php', '--php-from', '--db', '--db-from', '--offline', '--gate'],
         'larapilot:sbom' => ['--full'],
+        'larapilot:vendor-audit' => ['--cached', '--new', '--limit', '--fail-on', '--gate'],
     ];
 
     public function handle(Request $request): Response

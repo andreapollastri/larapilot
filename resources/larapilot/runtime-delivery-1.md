@@ -2,12 +2,12 @@
 
 John designs **scalable, complete products** whose depth matches the **delivery target** — never a throwaway MVP stack when the target is V1 Complete, Full Product, or Enterprise.
 
-| Delivery target  | Architecture depth                                                                                                                    |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP**          | Thin vertical slice: core domain model, minimal API surface if needed, queues only where sync would block UX                           |
-| **V1 Complete**  | Service boundaries, versioned HTTP API (Sanctum/Passport), queues for mail/webhooks/heavy work, structured logging                     |
-| **Full Product** | Full API catalog, rate limiting, Horizon/workers, event-driven integrations, DTOs at integration boundaries                            |
-| **Enterprise**   | Above plus audit trails, multi-tenant isolation, ADRs, **full observability** (metrics, traces, alerting), disaster-recovery posture   |
+| Delivery target | Architecture depth |
+| --- | --- |
+| **MVP** | Thin vertical slice: core domain model, minimal API surface if needed, queues only where sync would block UX |
+| **V1 Complete** | Service boundaries, versioned HTTP API (Sanctum/Passport), queues for mail/webhooks/heavy work, structured logging |
+| **Full Product** | Full API catalog, rate limiting, Horizon/workers, event-driven integrations, DTOs at integration boundaries |
+| **Enterprise** | Above plus audit trails, multi-tenant isolation, ADRs, **full observability** (metrics, traces, alerting), disaster-recovery posture |
 
 **Always apply when architecting and planning:**
 
@@ -87,16 +87,16 @@ Skip automated viewport/browser suites; optional short **Manual tests recommende
 <!-- when: testing=BEST -->
 Anne verifies UI across devices and resolutions:
 
-| Area                            | Requirement                                                                                                                                                     |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Viewport matrix**             | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight                             |
-| **Mobile First alignment**      | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths                                                       |
-| **Navigation**                  | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance)                                       |
-| **Responsive regression**       | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack    |
-| **Accessibility × responsive**  | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets                                                          |
-| **Lighthouse**                  | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs                                                           |
-| **Orientation / devices**       | When automatable, test landscape on mobile for primary screens; cover every device class the stack supports (phone, tablet, desktop, PWA/app shells in scope)    |
-| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms)                                        |
+| Area | Requirement |
+| --- | --- |
+| **Viewport matrix** | UI/e2e tests exercise at least **375 px (mobile)**, **768 px (tablet)**, and **1280 px (desktop)** — add 320 px when layout is tight |
+| **Mobile First alignment** | Tests must fail if primary navigation, CTAs, or forms are hidden, clipped, or unreachable at mobile widths |
+| **Navigation** | Assert mobile menu open/close, keyboard access to nav links, and wayfinding on deep pages (breadcrumbs or back affordance) |
+| **Responsive regression** | Critical user journeys (auth, checkout, create/edit flows) run at multiple viewports in Pest browser, Laravel Dusk, or Playwright — match the project's stack |
+| **Accessibility × responsive** | Run axe (or equivalent) at **mobile viewport** — not desktop only; verify focus order and touch targets |
+| **Lighthouse** | Emma's mobile Lighthouse gate (Accessibility ≥ 90) is part of Anne's test evidence for public UI specs |
+| **Orientation / devices** | When automatable, test landscape on mobile for primary screens; cover every device class the stack supports (phone, tablet, desktop, PWA/app shells in scope) |
+| **No desktop-only assumptions** | Never assert layout using desktop-only selectors without also covering the mobile DOM (e.g. collapsed nav, stacked forms) |
 
 Anne plans explicit **responsive test tasks** interleaved with UI implementation. Elise's mockup README breakpoint notes are the test contract. At review, Anne attaches automated evidence **and** a **Manual tests recommended** section when human verification is still required.
 <!-- end -->

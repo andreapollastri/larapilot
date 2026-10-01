@@ -14,27 +14,27 @@ The **first interview layer** in **`larapilot-inception`**. **Mark** asks before
 `Website Type` is recorded **only** when Project Kind is **Website**; omit the line otherwise.
 `Package Origin` (and related package fields under `## Technical Architecture`) are recorded **only** when Project Kind is **Package**.
 
-| Kind            | Meaning                                                                          | Discovery depth                                                                                 |
-| --------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Personal**    | Solo side project, portfolio, learning experiment, or internal tool for oneself  | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
-| **Website**     | Public-facing site: showcase, portal, blog, store, landing, docs                 | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2               |
-| **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows              | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance          |
-| **Package**     | PHP / Laravel Composer package (new or existing) for reuse across apps           | Package workflow — origin, standards, distribution, versioning, docs/minisite; lean product UI  |
+| Kind | Meaning | Discovery depth |
+| --- | --- | --- |
+| **Personal** | Solo side project, portfolio, learning experiment, or internal tool for oneself | Lean interview — MVP-first; several business personas stay silent unless the user triggers them |
+| **Website** | Public-facing site: showcase, portal, blog, store, landing, docs | Emma, Lauren, and Elise lead; website type shapes FRs; delivery target in round 2 |
+| **Application** | Product, SaaS, B2B/B2C app, or platform with accounts and workflows | Full discovery — delivery target, multi-tenancy, admin panel, integrations, compliance |
+| **Package** | PHP / Laravel Composer package (new or existing) for reuse across apps | Package workflow — origin, standards, distribution, versioning, docs/minisite; lean product UI |
 
 ### Branching rules _(inception)_
 
 **Personal** — skip or lighten unless the user explicitly asks:
 
-| Persona                       | Behavior                                                                                                              |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Jennifer, Benjamin, Sebastian | Silent — no market positioning, enterprise research, or competitor porting                                            |
-| Lauren                        | Silent — no SEM/campaigns                                                                                             |
-| Aurora                        | Do **not** run a budget round — record **`Budget Sensitivity: Relaxed`** in the PRD unless the user wants **Tracked** |
-| Oliver                        | Defer red-team notes to ship only                                                                                     |
-| Sophia                        | One line under Future Phases                                                                                          |
-| Emily                         | Only if the user mentions multiple locales                                                                            |
-| John                          | Pragmatic Laravel stack — no multi-tenancy deep-dive unless asked                                                     |
-| Mark                          | Vision, problem, users, scope — keep it short                                                                         |
+| Persona | Behavior |
+| --- | --- |
+| Jennifer, Benjamin, Sebastian | Silent — no market positioning, enterprise research, or competitor porting |
+| Lauren | Silent — no SEM/campaigns |
+| Aurora | Do **not** run a budget round — record **`Budget Sensitivity: Relaxed`** in the PRD unless the user wants **Tracked** |
+| Oliver | Defer red-team notes to ship only |
+| Sophia | One line under Future Phases |
+| Emily | Only if the user mentions multiple locales |
+| John | Pragmatic Laravel stack — no multi-tenancy deep-dive unless asked |
+| Mark | Vision, problem, users, scope — keep it short |
 
 Delivery target AskQuestion offers **`MVP`** and **`V1 Complete`** only. If the user insists on **Full Product** or **Enterprise**, honor it — do not block.
 
@@ -73,7 +73,7 @@ Skip or minimize: **Benjamin** (enterprise), **multi-tenancy** (unless **Portal*
 Then drive the **Package professional workflow** (persist answers under `## Technical Architecture` → `### Package`):
 
 | Topic | Owner | Ask / decide |
-| ----- | ----- | ------------ |
+| --- | --- | --- |
 | Namespace, package name (`vendor/name`), Laravel version constraints | **Andrew** + **John** | Never assume Packagist name is free — verify |
 | Public API surface, Service Provider, facades, config publish | **Andrew** + **John** | Idiomatic Laravel package layout |
 | Data / migrations shipped by the package | **Mike** + **Andrew** | Optional migrations, schema ownership, upgrade path |
@@ -110,9 +110,9 @@ Before writing the PRD, check all four. If one is still missing, ask it then. If
 
 All skills read **Project Kind** from the PRD (`paths.prd`) before scoping work. If missing, infer from `## MVP Scope` / `## Technical Architecture` content or ask once.
 
-| Skill                              | Adjustment                                                                                                                                                                                                                                                                                                |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`larapilot-spec`**               | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Package** → package-surface specs first (API, provider, tests, CI, docs, release). **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
-| **`larapilot-design`**             | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. **Package** → skip UI mockups unless the package ships UI components; then design the package demo/minisite only. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
+| Skill | Adjustment |
+| --- | --- |
+| **`larapilot-spec`** | **Personal** → leanest backlog (one spec per core journey). **Website** → SEO/discoverability and content-route specs early. **Application** → full FR coverage per delivery target. **Package** → package-surface specs first (API, provider, tests, CI, docs, release). **Legacy** → parity/migration specs first (**Sabrine**). **All** → honor FR **MoSCoW** tags when bootstrapping |
+| **`larapilot-design`** | **Personal** → minimal mockup set. **Website** → public pages + brand assets + copy (**Marika**). **Application** → flows + admin when applicable; **Joe** for animation scope; **Ricky** for mobile/app scope. **Package** → skip UI mockups unless the package ships UI components; then design the package demo/minisite only. When topology is **`API + external frontend`**, mockups still live in the Laravel `.larapilot/mockups/` (contract for both repos); Joe implements in the linked FE folder |
 | **`larapilot-frontend-companion`** | Used in the **Laravel workspace** when topology is **`API + external frontend`** — link `frontend.repo_path`, scan existing FE code, orchestrate `repo: frontend` implement |
-| **`larapilot-ship`**               | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release. **Package** → Packagist/private publish checklist, semver tag, docs site, consumer upgrade notes |
+| **`larapilot-ship`** | **Personal** → lighter launch gate. **Website** → Emma/Lauren web checks mandatory. **Application** → full security + ops gate; when split FE, confirm OpenAPI contract + FE path configured before release. **Package** → Packagist/private publish checklist, semver tag, docs site, consumer upgrade notes |

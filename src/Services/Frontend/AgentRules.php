@@ -96,7 +96,7 @@ final class AgentRules
             $directory = $depth === 0 ? '' : implode('/', array_slice($segments, 0, $depth));
             $absolute = $directory === '' ? $workspace : $workspace.'/'.$directory;
 
-            foreach (scandir($absolute) ?: [] as $entry) {
+            foreach (@scandir($absolute) ?: [] as $entry) {
                 $path = ($directory === '' ? '' : $directory.'/').$entry;
 
                 if (is_file($absolute.'/'.$entry) && RepoIndex::interesting($path) && ! in_array($entry, ['package.json', 'project.json', 'generators.json'], true)) {

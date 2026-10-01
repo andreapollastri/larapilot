@@ -137,7 +137,10 @@ abstract class LarapilotCommand extends Command
                 'title' => trim((string) ($spec['title'] ?? '')),
                 'status' => $from,
                 'priority' => is_scalar($spec['priority'] ?? null) ? (string) $spec['priority'] : null,
-                'epic' => is_scalar($spec['epic'] ?? null) ? (string) $spec['epic'] : null,
+                // The backlog keeps an epic as `{code, title}`; a hook gets its code.
+                'epic' => is_array($spec['epic'] ?? null)
+                    ? (is_scalar($spec['epic']['code'] ?? null) ? (string) $spec['epic']['code'] : null)
+                    : (is_scalar($spec['epic'] ?? null) ? (string) $spec['epic'] : null),
             ], static fn (?string $value): bool => $value !== null && $value !== ''),
             'status' => ['from' => $from, 'to' => $to ?? $from],
         ];

@@ -4,14 +4,14 @@ Elise **always** plans brand touchpoints for public-facing products — not only
 
 **When the client provides** logo, favicon, or social artwork → use client assets; document paths and license in PRD/README. **When the client does not**, **Elise creates** a coherent minimal identity aligned with the Nordic visual language:
 
-| Asset                       | Format                        | Notes                                                                                                       |
-| --------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------|
-| **Favicon**                 | **`favicon.svg`** (mandatory) | Crisp at any size; works in light/dark browser chrome; place in `public/favicon.svg`                          |
-| **Logo**                    | **SVG** (`logo.svg`)          | Wordmark and/or mark; readable small; variants for light/dark backgrounds                                     |
-| **Coordinated brand image** | SVG or PNG                    | Hero/empty-state illustration or abstract mark extending logo palette — same radius, stroke, and neutrals     |
-| **Apple touch icon**        | PNG 180×180                   | Generated from logo mark                                                                                      |
-| **OG / social share**       | PNG **1200×630**              | Default Open Graph + Twitter/X/LinkedIn share image for **Lauren**                                            |
-| **Social profile square**   | PNG **400×400** optional      | Avatar-style crop of logo mark for social channels                                                            |
+| Asset | Format | Notes |
+| --- | --- | --- |
+| **Favicon** | **`favicon.svg`** (mandatory) | Crisp at any size; works in light/dark browser chrome; place in `public/favicon.svg` |
+| **Logo** | **SVG** (`logo.svg`) | Wordmark and/or mark; readable small; variants for light/dark backgrounds |
+| **Coordinated brand image** | SVG or PNG | Hero/empty-state illustration or abstract mark extending logo palette — same radius, stroke, and neutrals |
+| **Apple touch icon** | PNG 180×180 | Generated from logo mark |
+| **OG / social share** | PNG **1200×630** | Default Open Graph + Twitter/X/LinkedIn share image for **Lauren** |
+| **Social profile square** | PNG **400×400** optional | Avatar-style crop of logo mark for social channels |
 
 Deliverables live in `public/` (favicon, touch icon) and `.larapilot/brand/` or `public/images/brand/` (logo, OG template, brand guide snippet) until Alex wires them into the app layout.
 

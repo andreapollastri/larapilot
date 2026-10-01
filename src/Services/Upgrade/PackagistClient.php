@@ -29,6 +29,11 @@ class PackagistClient
      */
     protected array $memory = [];
 
+    /**
+     * The message of the first connection failure of this run, when there was one.
+     */
+    protected ?string $unreachable = null;
+
     public function __construct(protected ConfigService $config) {}
 
     /**
@@ -57,6 +62,12 @@ class PackagistClient
             return $this->memory[$package] = $cached;
         }
 
+        // One failed connection is enough: the other packages of the run
+        // would each wait for the same timeout to learn the same thing.
+        if ($this->unreachable !== null) {
+            throw new \RuntimeException('Packagist could not be reached: '.$this->unreachable);
+        }
+
         try {
             $response = Http::acceptJson()
                 ->timeout(20)
@@ -64,6 +75,8 @@ class PackagistClient
                 ->withUserAgent('larapilot (+https://github.com/andreapollastri/larapilot)')
                 ->get(self::BASE_URL.$package.'.json');
         } catch (\Throwable $e) {
+            $this->unreachable = $e->getMessage();
+
             throw new \RuntimeException('Packagist could not be reached: '.$e->getMessage(), 0, $e);
         }
 
@@ -77,7 +90,10 @@ class PackagistClient
             throw new \RuntimeException('Packagist answered '.$response->status().' for '.$package.'.');
         }
 
-        $versions = $response->json('packages.'.$package);
+        // Not `json('packages.'.$package)`: a name with a dot in it
+        // (`mtdowling/jmespath.php`) would be read as a deeper path.
+        $decoded = $response->json();
+        $versions = is_array($decoded) ? ($decoded['packages'][$package] ?? null) : null;
         $releases = is_array($versions) ? $this->stable(self::expand($versions)) : [];
 
         $this->toCache($package, $releases);

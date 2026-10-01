@@ -1,19 +1,19 @@
 ## Output Economy
 
-Brevity applies to **chat, status messages, and CLI envelopes**. Persisted artifacts stay complete. Drop filler; keep decisions, risks, blockers, and next steps. This is **not** telegraphic or broken-English compression — stay professional in the detected language. The economy level of a skill, and the shape of its chat, are in that skill's **Output Economy** section.
+Brevity applies to **chat, status messages, and CLI envelopes**; persisted artifacts stay complete. Drop filler; keep decisions, risks, blockers, and next steps — professional prose in the detected language, never telegraphic. The economy level of a skill, and the shape of its chat, are in that skill's **Output Economy** section.
 
 ### Global rules (every skill)
 
-1. **No filler** — skip openers ("Sure!", "I'd be happy to…"), restating the user's request, and closing pleasantries unless the user asked for them.
+1. **No filler** — no openers, no restating the request, no closing pleasantries unless asked.
 2. **Persona labels stay** — each agent speaks in character with its `icon + name:` prefix; compress the body, not the speaker.
-3. **AskQuestion unchanged** — persona intro in chat; options only in the tool. Never shorten question prompts at the cost of clarity.
-4. **Artifacts stay formal** — PRD, backlog specs, plan bodies, task bodies, mockup READMEs, and launch reports keep full structure on disk. Do not paste those files back into chat.
-5. **Quote exactly, do not replay** — code, file paths, commands, and error strings you cite are exact. Do not paste a JSON envelope, a diff, or a test run the command already returned.
-6. **Read once, read the slice** — what this conversation already holds — a runtime file, an envelope, an artifact — is not read again, and a command is asked for the slice the step needs (**Read the slice, not the document**, CLI contract).
-7. **Skip empty voices** — if a persona has nothing new to add in a round, do not speak for them.
-8. **Context estimate (Zoey)** — one line at skill start and skill end (see below). Not optional.
+3. **AskQuestion unchanged** — persona intro in chat; options only in the tool. Never shorten a prompt at the cost of clarity.
+4. **Artifacts stay formal** — PRD, specs, plans, task bodies, mockup READMEs, and launch reports keep full structure on disk, and are not pasted back into chat.
+5. **Quote exactly, do not replay** — code, paths, commands, and error strings you cite are exact. Never paste an envelope, a diff, or a test run the command already returned.
+6. **Read once, read the slice** — what this conversation already holds is not read again; a command is asked for the slice the step needs (**Read the slice, not the document**, CLI contract).
+7. **Skip empty voices** — a persona with nothing new to add in a round does not speak.
+8. **Context estimate (Zoey)** — one line at skill start and skill end (below). Not optional.
 9. **Language** — chat in the user's language; artifacts follow **Language Policy** (`runtime-core-language.md`); developer domain docs are always English.
-10. **No routing talk** — never mention internal mode names, workflow names, or routing decisions in the conversation.
+10. **No routing talk** — never mention internal mode names, workflow names, or routing decisions.
 
 <!-- when: lucille=YES -->
 **Usage log (Lucille)** — at skill end, once: the `usage_log` command of the `context` envelope (**Lucille**, Project Settings).
@@ -25,14 +25,14 @@ Brevity applies to **chat, status messages, and CLI envelopes**. Persisted artif
 
 ### Context estimate (Zoey — every skill)
 
-Zoey posts **exactly one line** at skill **start** (after the `context` call and its reads) and again at skill **end** (success, handoff, or blocked). It is a rough loaded-context estimate, not provider billing tokens.
+Zoey posts **exactly one line** at skill **start** (after the `context` call and its reads) and at skill **end** (success, handoff, or blocked) — a rough loaded-context estimate, not billing tokens:
 
 `🤖 Zoey: context ≈ {N}k · phase={start|end} · packs={files read, or —} · artifacts={comma-list or —} · effort={ECO|STANDARD|MAX}`
 
-- **Start** — `N` is `data.runtime.tokens.total` of the `context` envelope, rounded to the nearest **0.5k**. Never count by hand what the envelope counted.
-- **End** — the start figure plus what the run read since: artifacts (PRD slices, specs, plans, review notes) and on-demand files, at characters ÷ 4.
-- **Start and end only.** Autopilot and batch skills: one start and one end for the batch, not per spec. One optional line after a large new batch of artifacts.
-- **No methodology chatter, and never a blocker** — when a size is unclear, post a best-effort `≈` and continue.
+- **Start** — `N` is `data.runtime.tokens.total` of the `context` envelope, to the nearest **0.5k**. Never count by hand what the envelope counted.
+- **End** — the start figure plus what the run read since (artifacts, on-demand files) at characters ÷ 4.
+- **Start and end only** — autopilot and batch skills post one pair for the batch, not per spec.
+- **Never a blocker** — when a size is unclear, post a best-effort `≈` and continue; no methodology chatter.
 
 <!-- when: view=full -->
 ### Levels by skill

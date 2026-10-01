@@ -116,6 +116,7 @@ final class NxGraph
                 'projects' => $projects,
                 'dependencies' => $dependencies,
             ], JSON_UNESCAPED_SLASHES));
+            RepoFiles::forget($cacheFile);
         }
 
         return ['ok' => true, 'cached' => false, 'projects' => $projects, 'dependencies' => $dependencies];
@@ -162,7 +163,12 @@ final class NxGraph
                 },
                 'tags' => array_values(array_filter(is_array($data['tags'] ?? null) ? $data['tags'] : [], 'is_string')),
                 'targets' => $targets,
+                // The node data is the whole project configuration: what the
+                // file path reads from project.json is here too.
+                'implicit' => array_values(array_filter(is_array($data['implicitDependencies'] ?? null) ? $data['implicitDependencies'] : [], 'is_string')),
                 'package' => is_string($data['metadata']['js']['packageName'] ?? null) ? $data['metadata']['js']['packageName'] : null,
+                'prefix' => is_string($data['prefix'] ?? null) ? $data['prefix'] : null,
+                'generators' => is_array($data['generators'] ?? null) ? $data['generators'] : [],
             ];
         }
 

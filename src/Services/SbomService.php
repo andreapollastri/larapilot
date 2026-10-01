@@ -25,7 +25,7 @@ class SbomService
      *
      * @var list<string>
      */
-    public const STRONG_COPYLEFT = ['GPL', 'AGPL', 'SSPL', 'EUPL', 'OSL', 'CPAL', 'RPL'];
+    public const STRONG_COPYLEFT = ['GPL', 'AGPL', 'SSPL', 'EUPL', 'OSL', 'CPAL', 'RPL', 'CC-BY-SA'];
 
     /**
      * @var list<string>
@@ -338,6 +338,11 @@ class SbomService
         $upper = strtoupper(trim($license, '() '));
 
         if ($upper === '' || in_array($upper, ['UNLICENSED', 'PROPRIETARY', 'SEE LICENSE IN LICENSE', 'NONE', 'UNKNOWN'], true) || str_starts_with($upper, 'SEE LICENSE')) {
+            return 'unknown';
+        }
+
+        // A non-commercial Creative Commons clause is not an open-source license.
+        if (str_starts_with($upper, 'CC-') && str_contains($upper, '-NC')) {
             return 'unknown';
         }
 

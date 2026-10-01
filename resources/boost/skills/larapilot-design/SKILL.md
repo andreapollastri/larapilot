@@ -169,7 +169,7 @@ After the gate:
 3. For **user-added** folders, treat them like packaged systems: copy/link `tokens.css`, map screens to `html/` catalog if present
 4. For **NEW_CUSTOM**, define tokens in README (colors, type scale, radius, spacing, motion) before `index.html`
 
-Then continue with mockup work (Rules below). Sections **Elise — Filament / Starter Kit / …** apply when the gate selected (or skipped to) that system.
+Then continue with mockup work (Rules below). **Elise — packaged design systems** applies when the gate selected (or skipped to) one of them.
 
 ## Rules
 
@@ -212,69 +212,19 @@ README must include a **Responsive & navigation** section Alex and Anne use as c
 
 Boost `Application Info` → align to the stack order of **Technology preference** (`ux-1.md`): Blade → Livewire → Tailwind → Bootstrap → Vue → Flux/Filament.
 
-### Elise — Filament admin mockups
+### Elise — packaged design systems
 
-When the PRD `## Technical Architecture` records **Filament** as the panel choice (or the spec is explicitly for a Filament admin area), admin/control panel mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
+When the gate selected (or skipped to) a packaged system, its mockups **must** follow that folder under `{paths.design_systems}/` — per **Design systems** (`ux-1.md`). Every folder has the same shape: `README.md` (rules and official links), `sources.md` (the index of what the folder was built from; `figma-sources.md` for Filament), `components.md`, `html/` (packaged static screens: start from the `index.html` catalog and copy/adapt), and, where listed, `tokens.css` to copy into the mockup folder.
 
-1. `{paths.design_systems}/filament/README.md` — rules and Figma links ([Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system), [UI Kit Free](https://www.figma.com/community/file/1417716904167561805/filament-3-free))
-2. `{paths.design_systems}/filament/figma-sources.md` — merge index (which kit owns which frames)
-3. `{paths.design_systems}/filament/tokens.css` — copy into mockup folder as `filament-tokens.css`
-4. `{paths.design_systems}/filament/components.md` — shell, tables, forms, actions
-5. `{paths.design_systems}/filament/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
+| System | Folder | Tokens copied as | Visual language — and what **not** to mix in |
+| --- | --- | --- | --- |
+| **Filament** (PRD panel choice, or an explicit Filament admin area) | `filament/` | `filament-tokens.css` | Light sidebar, topbar, sections, slate primary — not Nordic minimal on admin screens |
+| **Laravel Starter Kit** (`livewire` / `react` / `vue` / `svelte`, authenticated app UI) | `starter-kit/` | `starter-kit-tokens.css` | Light sidebar, Instrument Sans, neutral primary, shadcn/Flux patterns — not Filament, not Nordic minimal on authenticated screens |
+| **Bootstrap 5** (marketing or Bootstrap app UI) | `bootstrap-5/` | `bootstrap-tokens.css` | Native Bootstrap components — not Filament, Starter Kit, or Tailwind-only patterns |
+| **Tailwind CSS** (no panel, no Bootstrap) | `tailwind/` | — | Pure utility classes in HTML (CDN for mockups) — no Filament or Starter Kit shells |
+| **AdminLTE** (admin / control panel) | `adminlte/` | — | AdminLTE v4: dark sidebar, `small-box`, Bootstrap Icons, `data-lte-toggle` plugins — not Filament, Starter Kit, or Nordic minimal |
 
-Use Filament's visual language (light sidebar, topbar, sections, slate primary by default) — **not** the Nordic minimal aesthetic on admin screens. Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the Filament panel.
-
-When Filament is **not** chosen, design admin/dashboard screens in the project's visual language; mockups inform the panel-route decision downstream (per Vendor & Package Policy), not the other way around.
-
-### Elise — Laravel Starter Kit mockups
-
-When the PRD `## Technical Architecture` records a **[Laravel Starter Kit](https://laravel.com/starter-kits)** variant (`livewire`, `react`, `vue`, or `svelte`) for authenticated app UI, admin/dashboard mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
-
-1. `{paths.design_systems}/starter-kit/README.md` — rules and official kit links
-2. `{paths.design_systems}/starter-kit/sources.md` — variant index (React/Vue/Svelte/Livewire repos)
-3. `{paths.design_systems}/starter-kit/tokens.css` — copy into mockup folder as `starter-kit-tokens.css`
-4. `{paths.design_systems}/starter-kit/components.md` — sidebar/header shell, auth layouts, settings
-5. `{paths.design_systems}/starter-kit/html/` — packaged static screens (start from `index.html` catalog; copy/adapt into project mockups)
-
-Use the kit's visual language (light sidebar, Instrument Sans, neutral primary, shadcn/Flux patterns) — **not** the Filament design system and not Nordic minimal on authenticated screens. Public-facing pages in the same spec keep Nordic minimal unless scoped as part of the authenticated shell.
-
-When a Starter Kit is **not** chosen, do not impose Flux/shadcn starter-kit patterns from this section.
-
-### Elise — Bootstrap 5 mockups
-
-When the PRD `## Technical Architecture` records **Bootstrap 5** for marketing or app UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
-
-1. `{paths.design_systems}/bootstrap-5/README.md` — rules and [Bootstrap 5.3 docs](https://getbootstrap.com/docs/5.3/)
-2. `{paths.design_systems}/bootstrap-5/sources.md` — component index
-3. `{paths.design_systems}/bootstrap-5/tokens.css` — copy into mockup folder as `bootstrap-tokens.css`
-4. `{paths.design_systems}/bootstrap-5/components.md` — app shell, marketing sections, forms
-5. `{paths.design_systems}/bootstrap-5/html/` — packaged static screens (start from `index.html` catalog)
-
-Use native Bootstrap components — **not** Filament, Starter Kit, or Nordic Tailwind-only patterns on Bootstrap-scoped screens.
-
-### Elise — Tailwind CSS mockups
-
-When the PRD records **Tailwind CSS** (without Filament, Starter Kit, or Bootstrap) for marketing or custom app UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
-
-1. `{paths.design_systems}/tailwind/README.md` — rules and [Tailwind docs](https://tailwindcss.com/docs)
-2. `{paths.design_systems}/tailwind/sources.md` — pattern index
-3. `{paths.design_systems}/tailwind/components.md` — utility-class layouts for site + app
-4. `{paths.design_systems}/tailwind/html/` — packaged static screens (start from `index.html` catalog)
-
-Use **pure Tailwind utility classes** in HTML (CDN for mockups). Do not mix Filament or Starter Kit shells on Tailwind-scoped screens.
-
-### Elise — AdminLTE mockups
-
-When the PRD `## Technical Architecture` records **[AdminLTE](https://adminlte.io/)** for admin/control panel UI, mockups **must** follow the packaged design system — per **Design systems** (`ux-1.md`) and:
-
-1. `{paths.design_systems}/adminlte/README.md` — rules and [adminlte.io](https://adminlte.io/) links
-2. `{paths.design_systems}/adminlte/sources.md` — v4 docs, npm/Packagist, demo URLs
-3. `{paths.design_systems}/adminlte/components.md` — `app-wrapper`, sidebar, widgets, tables
-4. `{paths.design_systems}/adminlte/html/` — packaged static screens (start from `index.html` catalog)
-
-Use AdminLTE v4 visual language (dark sidebar, `small-box`, Bootstrap Icons, `data-lte-toggle` plugins) — **not** Filament, Starter Kit, or Nordic minimal on admin screens.
-
-When AdminLTE is **not** chosen, do not impose AdminLTE patterns from this section.
+Public-facing pages in the same spec keep Nordic minimal unless the PRD scopes them as part of the panel or the authenticated shell. A system that was **not** chosen imposes nothing: admin screens then follow the project's visual language, and the mockups inform the panel-route decision downstream (**Vendor & Package Policy**), not the other way around.
 
 Default aesthetic for public UI: **Nordic minimal, modern, elegant**. **Dark + light** unless user opts out.
 

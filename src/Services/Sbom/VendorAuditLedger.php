@@ -27,6 +27,11 @@ class VendorAuditLedger
 
     private const HISTORY = 30;
 
+    /**
+     * @var array{0: string, 1: array<string, mixed>}|null
+     */
+    protected ?array $parsed = null;
+
     public function __construct(protected ConfigService $config) {}
 
     public function path(): string
@@ -115,9 +120,18 @@ class VendorAuditLedger
     protected function read(): array
     {
         $path = $this->path();
+        clearstatcache(false, $path);
 
         if (! is_file($path)) {
             return [];
+        }
+
+        // Parsed once per state of the file: a summary asks for the
+        // decisions and the history back to back.
+        $stamp = filemtime($path).':'.filesize($path);
+
+        if ($this->parsed !== null && $this->parsed[0] === $stamp) {
+            return $this->parsed[1];
         }
 
         try {
@@ -126,7 +140,9 @@ class VendorAuditLedger
             return [];
         }
 
-        return is_array($parsed) ? $parsed : [];
+        $this->parsed = [$stamp, is_array($parsed) ? $parsed : []];
+
+        return $this->parsed[1];
     }
 
     /**
@@ -148,6 +164,7 @@ class VendorAuditLedger
                 ."# Written by php artisan larapilot:vendor-audit and larapilot:vendor-link: commit it.\n";
 
             AtomicFile::write($path, $header.Yaml::dump($state, 4, 2, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE));
+            $this->parsed = null;
         });
     }
 }

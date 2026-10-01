@@ -87,6 +87,7 @@ class FrontendService
      */
     public function scan(?string $path = null, ?array $projects = null, bool $useCli = true, bool $fresh = false, bool $full = false): array
     {
+        RepoFiles::reset();
         $resolved = $this->resolveRoot($path);
 
         if (isset($resolved['error'])) {
@@ -128,17 +129,19 @@ class FrontendService
             }
 
             $own = $project['root'] === '.' ? [] : WorkspaceInspector::dependencies(RepoFiles::json($root.'/'.$project['root'].'/package.json'));
-            $profile = $profiler->profile($project, $own + $rootDependencies);
+            $projectGit = RepoGit::toplevel($index->absolute((string) $project['root']));
+            $gitRoot = $projectGit !== null && $projectGit !== ($workspaceGit ?? $root) ? $projectGit : null;
+            // A project that is a repository of its own has its history there.
+            $profile = $profiler->profile($project + ['git_root' => $gitRoot], $own + $rootDependencies);
             $package = WorkspaceInspector::FRAMEWORK_PACKAGES[$project['stack'] ?? ''] ?? null;
             $version = $package !== null ? $inspector->version($package, (string) $project['root']) : null;
             $sample = array_merge($sample, $inspector->sourceFiles($project, 600));
             $projectCommands = $commands->forProject($project);
-            $projectGit = RepoGit::toplevel($index->absolute((string) $project['root']));
 
             $targetProjects[] = array_filter([
                 'name' => $name,
                 'root' => $project['root'],
-                'git_root' => $projectGit !== null && $projectGit !== ($workspaceGit ?? $root) ? $projectGit : null,
+                'git_root' => $gitRoot,
                 'source_root' => $project['source_root'],
                 'type' => $project['type'],
                 'tags' => $project['tags'] === [] ? null : $project['tags'],
@@ -341,7 +344,8 @@ class FrontendService
                 + $answer;
         }
 
-        $workspace = (new WorkspaceInspector($root, $index))->inspect(false);
+        // The graph decides the write scope; the stacks play no part here.
+        $workspace = (new WorkspaceInspector($root, $index))->inspect(false, false, true, false);
         $requested = $projects ?? ($resolved['configured'] ? $this->config->frontend()['projects'] : []);
 
         if ($requested === [] && $location['project_root'] !== null) {
@@ -400,7 +404,8 @@ class FrontendService
     {
         $root = WorkspaceLocator::locate($repository, $workspacePath)['root'];
         $index = RepoIndex::build($root);
-        $workspace = (new WorkspaceInspector($root, $index))->inspect(false);
+        // Names, roots, and types: neither the graph nor the stacks.
+        $workspace = (new WorkspaceInspector($root, $index))->inspect(false, false, false, false);
         $projects = [];
 
         foreach ($workspace['projects'] as $name => $project) {
@@ -729,7 +734,7 @@ class FrontendService
 
             $built = false;
 
-            foreach (scandir($index->absolute($directory)) ?: [] as $entry) {
+            foreach (@scandir($index->absolute($directory)) ?: [] as $entry) {
                 $built = $built || preg_match('/^(bundles|fesm\d{4}|esm\d{4}|esm5|fesm5|umd)$/', $entry) === 1;
             }
 
@@ -784,6 +789,9 @@ class FrontendService
             );
         } elseif (in_array($location['source'] ?? null, ['ancestor', 'configured'], true) && ($location['project_root'] ?? null) === null && $targets['resolved'] === []) {
             $warnings[] = 'The linked workspace does not hold this repository: name its project with frontend-set --project=<name>.';
+        } elseif (($location['source'] ?? null) === 'repository' && ($location['signals'] ?? []) !== []) {
+            // It builds by itself, but something in it points outside.
+            $warnings[] = 'This repository looks like one project of a workspace kept elsewhere ('.implode('; ', $location['signals']).'), yet it has a package.json of its own and no workspace was found around it. If it builds inside a monorepo, link it with php artisan larapilot:frontend-set --workspace=/absolute/path.';
         }
 
         foreach ($targetProjects as $project) {

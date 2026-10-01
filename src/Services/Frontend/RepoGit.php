@@ -18,7 +18,9 @@ final class RepoGit
      */
     public static function run(string $root, array $arguments, int $timeout = 20): ?string
     {
-        $process = new Process(array_merge(['git', '-C', $root], $arguments), null, ['GIT_TERMINAL_PROMPT' => '0'], null, $timeout);
+        // Reads only: no index refresh, so an editor's git is never told
+        // "another git process seems to be running".
+        $process = new Process(array_merge(['git', '-C', $root], $arguments), null, ['GIT_TERMINAL_PROMPT' => '0', 'GIT_OPTIONAL_LOCKS' => '0'], null, $timeout);
 
         try {
             $process->run();

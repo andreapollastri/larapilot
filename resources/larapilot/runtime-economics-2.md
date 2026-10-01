@@ -2,7 +2,7 @@
 
 The downloadable quote is a **document written by `/larapilot-economics`**, like the PRD — so it speaks whatever language the PRD speaks, not only the languages Larapilot ships strings for.
 
-| | |
+|  |  |
 | --- | --- |
 | File | `.larapilot/docs/quote.md` (`paths.economics_quote`) |
 | Written by | `php artisan larapilot:economics-quote-write --file=… --lang=…` |

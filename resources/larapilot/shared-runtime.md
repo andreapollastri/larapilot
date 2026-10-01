@@ -14,7 +14,7 @@ At activation a skill runs **`php artisan larapilot:context {skill}`** and reads
 
 ## Without `larapilot:context`
 
-Only when the command cannot run. Read the three every-skill files, then the part that holds each heading the active skill cites — a pack index maps its headings to its parts. These are the files as the package ships them, with every value of every setting between `<!-- when: … -->` markers: apply the block that matches `config-show` → `data.settings`.
+Only when the command cannot run. Read the four every-skill files, then the part that holds each heading the active skill cites — a pack index maps its headings to its parts. These are the files as the package ships them, with every value of every setting between `<!-- when: … -->` markers: apply the block that matches `config-show` → `data.settings`.
 
 | File | Who reads it |
 | --- | --- |
@@ -35,7 +35,7 @@ Only when the command cannot run. Read the three every-skill files, then the par
 | `.larapilot/runtime-frontend-angular.md`, `.larapilot/runtime-frontend-react.md`, `.larapilot/runtime-frontend-vue.md`, `.larapilot/runtime-frontend-svelte.md` | The same skills, for the stack `frontend-scan` lists under `playbooks` |
 | `.larapilot/runtime-ux.md` | Design; plan and implement on a spec with UI; ship on public sites. Index |
 | `.larapilot/runtime-ship.md` | Ship. Index |
-| `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, tracker, backstage. Index, one part per audience |
+| `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, schedule, tracker, backstage. Index, one part per audience |
 | `.larapilot/runtime-economics.md` | Economics; settings when `account` is not `NONE`. Index |
 | `.larapilot/runtime-release.md` | Release; inception, adopt, feature, plan, implement, and ship when `release_mode` is `YES` |
 | `.larapilot/runtime-project-docs.md` | Project-docs; implement, review, and ship when `project_docs` is `YES` |

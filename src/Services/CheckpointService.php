@@ -111,22 +111,24 @@ class CheckpointService
             throw new \RuntimeException('Checkpoint is not installed: composer require --dev '.self::PACKAGE);
         }
 
-        $parameters = ['--json' => true];
-
-        if ($only !== []) {
-            $parameters['--only'] = implode(',', $only);
-        }
-
-        if ($skip !== []) {
-            $parameters['--skip'] = implode(',', $skip);
-        }
-
         $started = microtime(true);
 
         try {
             // Run on an output of its own: Artisan::call() would take the
             // place of the last output of whoever called this command.
             $command = Artisan::all()['checkpoint:scan'];
+            $definition = $command->getDefinition();
+            $parameters = ['--json' => true];
+
+            // A Checkpoint that does not know the option must not be handed it.
+            if ($only !== [] && $definition->hasOption('only')) {
+                $parameters['--only'] = implode(',', $only);
+            }
+
+            if ($skip !== [] && $definition->hasOption('skip')) {
+                $parameters['--skip'] = implode(',', $skip);
+            }
+
             $buffer = new BufferedOutput;
             $exit = $command->run(new ArrayInput($parameters), $buffer);
             $output = $buffer->fetch();
@@ -162,7 +164,9 @@ class CheckpointService
      */
     public function parse(string $output): ?array
     {
-        $start = strpos($output, '[');
+        // The list opens at `[{` (or `[]`): a progress line before it may
+        // carry a bracket of its own (`[3/26]`, `[OK]`, an ANSI escape).
+        $start = preg_match('/\[\s*[{\]]/', $output, $m, PREG_OFFSET_CAPTURE) === 1 ? (int) $m[0][1] : false;
         $end = strrpos($output, ']');
 
         if ($start === false || $end === false || $end < $start) {
@@ -170,6 +174,11 @@ class CheckpointService
         }
 
         $decoded = json_decode(substr($output, $start, $end - $start + 1), true);
+
+        // A trailing `]` of some later line: walk back to the one that closes the list.
+        while (! is_array($decoded) && ($end = strrpos(substr($output, 0, $end), ']')) !== false && $end > $start) {
+            $decoded = json_decode(substr($output, $start, $end - $start + 1), true);
+        }
 
         if (! is_array($decoded)) {
             return null;

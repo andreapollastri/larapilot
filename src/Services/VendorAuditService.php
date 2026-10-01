@@ -154,7 +154,9 @@ class VendorAuditService
 
         foreach ($result['findings'] as $finding) {
             $decision = $decisions[$finding['id']] ?? null;
-            $finding['state'] = is_array($decision) ? (string) ($decision['state'] ?? 'open') : 'open';
+            // The ledger is edited by hand: a state it does not know is an open one.
+            $state = is_array($decision) ? (string) ($decision['state'] ?? 'open') : 'open';
+            $finding['state'] = in_array($state, ['open', VendorAuditLedger::IN_BACKLOG, VendorAuditLedger::WAIVED], true) ? $state : 'open';
             $finding['reason'] = is_array($decision) ? ($decision['reason'] ?? null) : null;
             $finding['spec'] = is_array($decision) ? ($decision['spec'] ?? null) : null;
             $severity = in_array($finding['severity'], self::SEVERITIES, true) ? $finding['severity'] : 'unknown';
@@ -236,6 +238,7 @@ class VendorAuditService
         $threshold = $rank[$failOn] ?? 1;
         $blocking = [];
         $warning = 0;
+        $unrated = 0;
 
         foreach ($summary['findings'] as $finding) {
             if ($finding['state'] === VendorAuditLedger::WAIVED) {
@@ -248,6 +251,7 @@ class VendorAuditService
                 $blocking[] = $finding['id'];
             } else {
                 $warning++;
+                $unrated += $finding['severity'] === 'unknown' ? 1 : 0;
             }
         }
 
@@ -259,7 +263,8 @@ class VendorAuditService
             'blocking' => array_values(array_unique($blocking)),
             'summary' => match ($verdict) {
                 'FAIL' => count(array_unique($blocking)).' open vulnerabilit'.(count(array_unique($blocking)) === 1 ? 'y' : 'ies').' at '.$failOn.' or above.',
-                'WARN' => $warning.' open vulnerabilit'.($warning === 1 ? 'y' : 'ies').' below '.$failOn.'.',
+                // An unrated advisory is not below the threshold: it has no rating. Say so.
+                'WARN' => $warning.' open vulnerabilit'.($warning === 1 ? 'y' : 'ies').' below '.$failOn.($unrated > 0 ? ' ('.$unrated.' unrated: read the advisor'.($unrated === 1 ? 'y' : 'ies').')' : '').'.',
                 default => 'No open vulnerability in the dependencies.',
             },
         ];

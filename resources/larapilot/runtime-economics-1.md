@@ -50,7 +50,7 @@ Profile keys:
 
 `/larapilot/economics` is a console, not a report. Every dropdown at the top of the page — hourly rate, margin, discount, team size, overhead, maintenance, account type, country, regime, VAT, how it is sold, list price, price line, market scenario, churn, growth, planning customers — recomputes the whole page, the charts, and the downloadable quote.
 
-| | |
+|  |  |
 | --- | --- |
 | Where it computes | Server side, through the same `EconomicsService::snapshot()` the CLI uses — the tax engine is never reimplemented in the browser |
 | How | Each change fetches `/larapilot/economics/panel` with the changed values as query parameters and swaps the panel; without JavaScript the same form submits to `/larapilot/economics` |

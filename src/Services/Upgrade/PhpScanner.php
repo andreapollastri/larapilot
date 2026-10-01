@@ -140,7 +140,9 @@ class PhpScanner
             $iterator = new \RecursiveIteratorIterator(
                 new \RecursiveCallbackFilterIterator(
                     new \RecursiveDirectoryIterator($root.'/'.$folder, \FilesystemIterator::SKIP_DOTS),
-                    static fn (\SplFileInfo $file): bool => ! in_array($file->getFilename(), ['vendor', 'node_modules', '.git', 'storage', 'cache'], true)
+                    // `bootstrap/cache` is compiled output; an `app/Cache` folder is code.
+                    static fn (\SplFileInfo $file): bool => ! in_array($file->getFilename(), ['vendor', 'node_modules', '.git', 'storage'], true)
+                        && ! ($file->getFilename() === 'cache' && basename(dirname($file->getPathname())) === 'bootstrap')
                 )
             );
 

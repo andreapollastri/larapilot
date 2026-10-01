@@ -5,7 +5,7 @@
 ### Paths
 
 | Artifact | Default path | Purpose |
-| -------- | ------------ | ------- |
+| --- | --- | --- |
 | Ledger (append-only) | `{paths.usage}/ledger.jsonl` | One JSON object per line — date/time, user, category, tokens, minutes, skill, optional spec |
 | Schedule | `{paths.schedule}` (`.larapilot/usage/schedule.yaml`) | Deadlines, milestones, delay notes |
 | Choices snapshot | `{paths.choices}` (`.larapilot/choices.yaml`) | Structured inception/settings decisions for the dashboard |

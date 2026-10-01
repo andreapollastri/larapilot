@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Larapilot\LarapilotServiceProvider;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\ContextManifest;
+use Larapilot\Support\FileLock;
 use Larapilot\Support\SharedRuntime;
 
 /**
@@ -254,9 +256,24 @@ class ContextService
             return $this->compiled[$key];
         }
 
+        $sources = $this->sources();
+
+        // The output depends on the facts and on the sources alone: when
+        // neither changed since the last compile, the files on disk hold.
+        $stamp = $key.'|'.$this->sourcesStamp($sources);
+        $index = $this->runtimePath().'/.index.json';
+        $stored = is_file($index) ? json_decode((string) file_get_contents($index), true) : null;
+
+        if (is_array($stored) && ($stored['stamp'] ?? null) === $stamp && is_array($stored['packs'] ?? null) && $this->compiledFilesPresent($stored['packs'])) {
+            // A file an older version left behind is still swept.
+            $this->prune(array_column($stored['packs'], 'file'));
+
+            return $this->compiled[$key] = $stored['packs'];
+        }
+
         $files = [];
 
-        foreach ($this->sources() as $pack => $path) {
+        foreach ($sources as $pack => $path) {
             $source = (string) file_get_contents($path);
             $files[$pack.'.md'] = [$pack, self::filter($source, $facts)];
 
@@ -288,8 +305,40 @@ class ContextService
 
         $this->ignoreCache();
         $this->prune(array_column($packs, 'file'));
+        AtomicFile::write($index, (string) json_encode(['stamp' => $stamp, 'packs' => $packs], JSON_UNESCAPED_SLASHES));
 
         return $this->compiled[$key] = $packs;
+    }
+
+    /**
+     * What tells one state of the sources from another: their paths, sizes,
+     * and modification times, and the version of the package that ships them.
+     *
+     * @param  array<string, string>  $sources
+     */
+    protected function sourcesStamp(array $sources): string
+    {
+        $parts = [LarapilotServiceProvider::VERSION];
+
+        foreach ($sources as $pack => $path) {
+            $parts[] = $pack.':'.(int) @filemtime($path).':'.(int) @filesize($path);
+        }
+
+        return sha1(implode("\n", $parts));
+    }
+
+    /**
+     * @param  array<string, mixed>  $packs
+     */
+    protected function compiledFilesPresent(array $packs): bool
+    {
+        foreach ($packs as $pack) {
+            if (! is_array($pack) || ! is_string($pack['file'] ?? null) || ! is_file($this->runtimePath().'/'.$pack['file'])) {
+                return false;
+            }
+        }
+
+        return $packs !== [];
     }
 
     /**
@@ -558,10 +607,23 @@ class ContextService
      */
     protected function remember(string $token, array $files): void
     {
-        AtomicFile::write(
-            $this->sessionsPath().'/'.$token.'.json',
-            (string) json_encode(['updated' => time(), 'files' => $files], JSON_UNESCAPED_SLASHES)
-        );
+        $path = $this->sessionsPath().'/'.$token.'.json';
+
+        if (! is_dir(dirname($path))) {
+            @mkdir(dirname($path), 0755, true);
+        }
+
+        // Two workers of one conversation may share the token: what one
+        // read is merged with what the other holds, not written over.
+        FileLock::withLock($path, function () use ($path, $files): void {
+            $stored = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
+            $held = is_array($stored) && is_array($stored['files'] ?? null) ? array_map('strval', $stored['files']) : [];
+
+            AtomicFile::write(
+                $path,
+                (string) json_encode(['updated' => time(), 'files' => $files + $held], JSON_UNESCAPED_SLASHES)
+            );
+        });
     }
 
     protected function forgetOldSessions(): void
@@ -651,7 +713,8 @@ class ContextService
         $project = ['prd' => $facts['prd'] === 'present'];
 
         if ($project['prd']) {
-            $project['prd_tokens'] = self::tokens((string) $this->prd->read());
+            // An estimate from the size on disk: the PRD is not opened for it.
+            $project['prd_tokens'] = (int) ceil((int) @filesize($this->prd->path()) / 4);
         }
 
         $metrics = $this->specs->metrics();

@@ -20,9 +20,12 @@ final class ComposerFiles
     private ?array $json;
 
     /**
-     * @var array<string, mixed>|null
+     * The lock is read the first time something asks for it: it is the
+     * heavy file, and the name of the project does not need it.
+     *
+     * @var array<string, mixed>|null|false false until read
      */
-    private ?array $lock;
+    private array|null|false $lock = false;
 
     /**
      * @var array<string, array<string, mixed>>|null
@@ -32,7 +35,6 @@ final class ComposerFiles
     public function __construct(private readonly string $root)
     {
         $this->json = self::decode($root.'/composer.json');
-        $this->lock = self::decode($root.'/composer.lock');
     }
 
     public function root(): string
@@ -47,7 +49,19 @@ final class ComposerFiles
 
     public function hasLock(): bool
     {
-        return $this->lock !== null;
+        return $this->lock() !== null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function lock(): ?array
+    {
+        if ($this->lock === false) {
+            $this->lock = self::decode($this->root.'/composer.lock');
+        }
+
+        return $this->lock;
     }
 
     /**
@@ -98,7 +112,7 @@ final class ComposerFiles
      */
     public function lockPlatformPhp(): ?string
     {
-        $php = $this->lock['platform-overrides']['php'] ?? $this->lock['platform']['php'] ?? null;
+        $php = $this->lock()['platform-overrides']['php'] ?? $this->lock()['platform']['php'] ?? null;
 
         return is_string($php) && $php !== '' ? $php : null;
     }
@@ -140,7 +154,7 @@ final class ComposerFiles
         $installed = [];
 
         foreach (['packages' => false, 'packages-dev' => true] as $section => $dev) {
-            foreach (is_array($this->lock[$section] ?? null) ? $this->lock[$section] : [] as $package) {
+            foreach (is_array($this->lock()[$section] ?? null) ? $this->lock()[$section] : [] as $package) {
                 if (! is_array($package) || ! is_string($package['name'] ?? null)) {
                     continue;
                 }

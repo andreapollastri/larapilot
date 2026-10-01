@@ -30,15 +30,15 @@ Two classes:
 
 ### Where sub-agents are used
 
-| Skill                     | Sub-agent                     | When                                                        | Role                                              |
-| ------------------------- | ----------------------------- | ----------------------------------------------------------- | ---------------------------------------------------|
-| **`larapilot-adopt`**     | Codebase explore _(optional)_ | Step 1, large or unfamiliar repo                             | readonly structure/inventory mapping                |
-| **`larapilot-plan`**      | Codebase explore _(optional)_ | Stage 1, large or unfamiliar `data.workdir`                  | readonly codebase mapping                           |
-| **`larapilot-implement`** | Robert + Lars                 | Phase 2, after all tasks `task-done`                         | readonly code review + security review, parallel    |
-| **`larapilot-review`**    | —                             | Reads parent-written `{paths.review}/{code}.md` if present   | no spawn                                            |
-| **`larapilot-autopilot`** | Spec worker (plan)            | `TODO` spec, editor can spawn a writer                       | writes the plan file; no CLI transition             |
-| **`larapilot-autopilot`** | Spec worker (implement)       | after parent `spec-start`                                    | Phase 0–1 only: code, tests, commits                |
-| **`larapilot-autopilot`** | Robert + Lars                 | after the implement worker returns `OK`                      | same readonly Phase 2 as implement, parent launches |
+| Skill | Sub-agent | When | Role |
+| --- | --- | --- | --- |
+| **`larapilot-adopt`** | Codebase explore _(optional)_ | Step 1, large or unfamiliar repo | readonly structure/inventory mapping |
+| **`larapilot-plan`** | Codebase explore _(optional)_ | Stage 1, large or unfamiliar `data.workdir` | readonly codebase mapping |
+| **`larapilot-implement`** | Robert + Lars | Phase 2, after all tasks `task-done` | readonly code review + security review, parallel |
+| **`larapilot-review`** | — | Reads parent-written `{paths.review}/{code}.md` if present | no spawn |
+| **`larapilot-autopilot`** | Spec worker (plan) | `TODO` spec, editor can spawn a writer | writes the plan file; no CLI transition |
+| **`larapilot-autopilot`** | Spec worker (implement) | after parent `spec-start` | Phase 0–1 only: code, tests, commits |
+| **`larapilot-autopilot`** | Robert + Lars | after the implement worker returns `OK` | same readonly Phase 2 as implement, parent launches |
 
 No other skill spawns one.
 

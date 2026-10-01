@@ -172,5 +172,6 @@ it('leaves out every option that writes, and nothing else', function (): void {
         'larapilot:backstage-export' => ['--write', '--force', '--catalog', '--mkdocs', '--no-techdocs', '--file'],
         'larapilot:upgrade-check' => ['--report'],
         'larapilot:sbom' => ['--write'],
+        'larapilot:vendor-audit' => ['--report'],
     ]);
 });

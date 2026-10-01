@@ -6,19 +6,11 @@ The values are `data.settings` in the `context` envelope. Change one only with *
 Persisted in `.larapilot/config.yaml` under `settings:`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`. Boolean settings are stored as `true`/`false`; the `settings-set` flag and every envelope express them as `YES`/`NO`.
 <!-- end -->
 
-### Environment paths (never commit user-specific absolute paths)
+### Environment paths
 
-Machine-specific absolute paths **must not** appear in committed YAML or skill examples. They live in `.env` and come back through the envelope:
-
-| Concern | Env key | Set via |
-| --- | --- | --- |
-| External frontend repo | `LARAPILOT_FRONTEND_REPO_PATH` | `/larapilot-frontend-companion` or `larapilot:frontend-set --path=…` (writes `.env`) |
-
-When a skill needs a path that is missing from env, **AskQuestion** (or chat) until the user provides it, then persist with the matching CLI command and continue. Never embed `/Users/…` style examples in artifacts.
+Machine-specific absolute paths never appear in committed YAML, skill examples, or artifacts: they live in `.env` and come back through the envelope (the external frontend repo is `LARAPILOT_FRONTEND_REPO_PATH`, written by `larapilot:frontend-set --path=…`). A path missing from env is asked for (**AskQuestion** or chat), persisted with its CLI command, and only then used.
 
 ### Effort (`settings.effort`)
-
-Controls token economy and process depth across all skills.
 
 <!-- when: effort=ECO -->
 - **`ECO`** — Token economy. **Never spawn sub-agents** (explore, Robert, Lars, or any other) — always stay in the parent session with inline checklists. **Lucille is disabled automatically** when you switch to `ECO` (`settings.lucille` → `NO`) — no usage-log, no deadline interviews, no schedule-drift prompts. **Re-enable Lucille anytime** with `/larapilot-settings` or `php artisan larapilot:settings-set --lucille=YES` (ECO can stay selected). **Defer documentation theater** — no Albert baseline/extended doc tasks, no PDF/diagrams/runbooks, no README rewrites, no AskQuestion for extended docs — **except OpenAPI/Swagger: still update when public/partner API routes change**, and **except developer domain docs under `.larapilot/docs/devs/`, which are never deferred** — terse prose, same sections (**Technical Documentation**, `runtime-dev-docs.md`). Skip optional deepsearch, Oliver red-team, and non-essential persona rounds. Prefer one-voice summaries. No E2E/browser planning. Implement: task → code → minimal tests → commit (per git_mode) → next. Review: short checklist only. Workflow artifacts (PRD/spec/plan/AC) still required.
@@ -36,7 +28,7 @@ Zoey may remind the team once per skill that `effort` is not `STANDARD`. Do not 
 
 ### Backlog granularity (`settings.backlog`)
 
-Controls how many specs and epics `larapilot-spec` / `larapilot-feature` / `larapilot-bug` create for the same PRD scope. It changes **spec cardinality only** — never coverage: deferred/merged scope must stay traceable via `FR-XXX` citations in spec bodies and plan tasks. MoSCoW × delivery target still decides *what* enters the backlog; `backlog` decides *how finely* it is sliced.
+How finely `larapilot-spec` / `larapilot-feature` / `larapilot-bug` slice the same PRD scope. It changes **spec cardinality only** — never coverage: merged or deferred scope stays traceable via `FR-XXX` citations in spec bodies and plan tasks. MoSCoW × delivery target still decides *what* enters the backlog.
 
 <!-- when: backlog=LEAN -->
 - **`LEAN`** — Fewest possible specs: one spec per **end-to-end user journey**, merging all related FRs into it (each cited as `Traces to: FR-XXX, FR-YYY`). Technical seams, per-entity admin resources, and per-locale i18n work are **always plan tasks**, never separate specs. Single epic per product area; target ≤ 5 epics total.
@@ -48,9 +40,7 @@ Controls how many specs and epics `larapilot-spec` / `larapilot-feature` / `lara
 - **`GRANULAR`** — Fine-grained backlog: one spec per FR is acceptable; splitting along Laravel seams, Filament resource-per-entity, and i18n per-locale is allowed when it aids parallelization or review. Multi-epic backlog expected. Use for large teams or when specs map to individual PR assignments.
 <!-- end -->
 
-**Epic consolidation (all values):** before proposing a new `EP-XXX`, read existing epics from `spec-list` and reuse the closest match. Create a new epic only when no existing epic reasonably covers the product area — never one epic per spec, and never duplicate an existing epic under a new title. Maintenance/fix specs reuse the existing Maintenance epic when present.
-
-**Epics are first-class delivery containers** (beyond individual US specs): every epic must carry a clear **objective** (outcome in one sentence) and, when the project has dates, an epic **deadline** (`YYYY-MM-DD`). Lucille uses these with schedule milestones to forecast effort and flag temporal criticality on the Plan dashboard. Mark owns epic titles/objectives; Lucille owns deadline realism and Gantt drift.
+**Epic consolidation (all values):** before proposing a new `EP-XXX`, read the epics `spec-list` has and reuse the closest match; a new epic only when none covers the product area — never one per spec, never a duplicate under a new title. Fix specs reuse the Maintenance epic when present. Every epic carries an **objective** (one sentence) and, when the project has dates, a **deadline** (`YYYY-MM-DD`) Lucille forecasts against. Mark owns titles and objectives; Lucille deadline realism and Gantt drift.
 
 ### Git mode (`settings.git_mode`)
 
@@ -127,12 +117,10 @@ Stored as an enum string (`NONE` / `FREELANCE` / `COMPANY`) — not a boolean (`
 
 ### Decision journal (`settings.decision_log`) — opt-out, default ON
 
-An append-only, timestamped record of every **explicit user decision** across all phases — both fixed-choice **AskQuestion** answers and free-text directives/preferences ("the background must be orange", "no soft-delete", "drop German for v1"). Persisted to `.larapilot/decisions.yaml` (never rewritten in place — a reversal is a new entry pointing at the one it supersedes).
+An append-only, timestamped record of every **explicit user decision** — **AskQuestion** answers and free-text directives ("the background must be orange", "no soft-delete") — in `.larapilot/decisions.yaml`; a reversal is a new entry pointing at the one it supersedes.
 
 <!-- when: decision_log=YES -->
-- **`YES`** — **Default.** After the user commits a material choice, record it: `php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=<skill> [--spec=US-XXX] [--rationale="…"]`. **Before** recording a value on a topic that might already carry a decision, first run `php artisan larapilot:decision-check --topic="…" --value="…"`; when `data.has_regression` is `true`, surface the earlier choice(s) from `data.conflicts` via **AskQuestion** ("on {ts date} you chose **{old}** for {label}; confirm **{new}** supersedes it") and only then re-run `decision-log` with `--supersedes=<id>` of the entry being overridden. Never silently overwrite an earlier decision; never hand-edit `decisions.yaml`.
-
-Topic is matched case-insensitively (normalized + substring), so keep `--topic` stable and specific ("primary background color", not "color"). `--source=askquestion` for AskQuestion answers, `--source=chat` for free-text directives.
+- **`YES`** — **Default.** After the user commits a material choice: `php artisan larapilot:decision-log --topic="…" --value="…" --source=askquestion|chat --skill=<skill> [--spec=US-XXX] [--rationale="…"]`. On a topic that may already carry a decision, run `php artisan larapilot:decision-check --topic="…" --value="…"` first; when `data.has_regression` is `true`, surface `data.conflicts` via **AskQuestion** ("on {ts date} you chose **{old}** for {label}; confirm **{new}** supersedes it"), then `decision-log` with `--supersedes=<id>`. Never silently overwrite a decision; never hand-edit `decisions.yaml`. Topics match case-insensitively by substring: keep `--topic` stable and specific ("primary background color", not "color").
 <!-- end -->
 <!-- when: decision_log=NO -->
 - **`NO`** — **Excluded.** Skills must not call `decision-log` / `decision-check`. Any existing `.larapilot/decisions.yaml` stays readable.

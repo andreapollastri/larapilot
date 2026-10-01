@@ -10,12 +10,12 @@ During **`larapilot-inception`**, Mark asks the user to choose a **delivery targ
 
 **Lucille** asks in the same early rounds (skippable) whether there are **delivery deadlines** or fixed milestones (go-live, demo, compliance date). Persist via `php artisan larapilot:schedule-set` into `{paths.schedule}` and mirror a one-line summary in the PRD (`**Deadlines:** …` under `## MVP Scope` when known). See **Usage Ledger & Schedule** in `runtime-ops.md`.
 
-| Target           | Meaning                                                                       | Backlog & delivery behavior                                                                                                                    |
-| ---------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **MVP**          | Smallest demonstrable slice to validate the core hypothesis                   | `larapilot-spec` creates a lean backlog; defer non-essential FRs explicitly                                                                    |
-| **V1 Complete**  | Polished first release: core journey + essential secondary features           | Broader backlog than MVP; still bounded to a shippable V1                                                                                      |
-| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts          | `larapilot-spec` covers all FRs; spec/epic count follows `settings.backlog` (journey-level specs citing multiple FRs under `LEAN`/`STANDARD`)  |
-| **Enterprise**   | Full product plus compliance, integrations, scale, and operational readiness  | Same breadth as Full Product, with enterprise-grade NFRs and launch criteria                                                                   |
+| Target | Meaning | Backlog & delivery behavior |
+| --- | --- | --- |
+| **MVP** | Smallest demonstrable slice to validate the core hypothesis | `larapilot-spec` creates a lean backlog; defer non-essential FRs explicitly |
+| **V1 Complete** | Polished first release: core journey + essential secondary features | Broader backlog than MVP; still bounded to a shippable V1 |
+| **Full Product** | Entire vision from `## Functional Requirements` — no artificial cuts | `larapilot-spec` covers all FRs; spec/epic count follows `settings.backlog` (journey-level specs citing multiple FRs under `LEAN`/`STANDARD`) |
+| **Enterprise** | Full product plus compliance, integrations, scale, and operational readiness | Same breadth as Full Product, with enterprise-grade NFRs and launch criteria |
 
 Rules for all skills:
 
@@ -38,12 +38,12 @@ During **`larapilot-inception`**, **Mark** assigns MoSCoW while drafting `## Fun
 
 Use the English labels **Must**, **Should**, **Could**, **Won't** in every locale — MoSCoW is a standard acronym; requirement text stays in the detected artifact language.
 
-| Label      | Meaning                                                                                             |
-| ---------- | --------------------------------------------------------------------------------------------------- |
-| **Must**   | Non-negotiable for the chosen delivery target — launch fails without it                             |
-| **Should** | Important but not vital for the current target — include when target is **V1 Complete** or broader  |
-| **Could**  | Desirable if time/budget allows — defer unless target is **Full Product** or **Enterprise**         |
-| **Won't**  | Explicitly out of this release — document in `### Out of Scope`, not cancelled forever              |
+| Label | Meaning |
+| --- | --- |
+| **Must** | Non-negotiable for the chosen delivery target — launch fails without it |
+| **Should** | Important but not vital for the current target — include when target is **V1 Complete** or broader |
+| **Could** | Desirable if time/budget allows — defer unless target is **Full Product** or **Enterprise** |
+| **Won't** | Explicitly out of this release — document in `### Out of Scope`, not cancelled forever |
 
 When to tag: **all projects** — every `### FR-XXX` gets a `**MoSCoW:**` line. **Personal** — lean tagging is fine (mostly Must and Won't). **MVP / V1 Complete** — Mark must negotiate Must vs Should vs Could in the interview. **Full Product / Enterprise** — default surviving FRs to **Must**; use **Could** only for genuinely optional polish; **Won't** only with user consent.
 
@@ -53,12 +53,12 @@ Alignment with `## MVP Scope`: **Must** FRs → reflected in `### In Scope`; **S
 
 When bootstrapping from the PRD, read each FR's MoSCoW tag (fallback: infer from delivery target and `## MVP Scope` when a tag is missing — legacy PRDs).
 
-| MoSCoW     | MVP                              | V1 Complete           | Full Product / Enterprise |
-| ---------- | -------------------------------- | --------------------- | ------------------------- |
-| **Must**   | Create spec                      | Create spec           | Create spec               |
-| **Should** | Defer → Future Phases            | Create spec           | Create spec               |
-| **Could**  | Defer → Future Phases            | Defer → Future Phases | Create spec               |
-| **Won't**  | Skip — verify `### Out of Scope` | Skip                  | Skip                      |
+| MoSCoW | MVP | V1 Complete | Full Product / Enterprise |
+| --- | --- | --- | --- |
+| **Must** | Create spec | Create spec | Create spec |
+| **Should** | Defer → Future Phases | Create spec | Create spec |
+| **Could** | Defer → Future Phases | Defer → Future Phases | Create spec |
+| **Won't** | Skip — verify `### Out of Scope` | Skip | Skip |
 
 Default backlog **Priority** from MoSCoW when creating specs: **Must** → `HIGH` (compliance/security-critical FRs → `CRITICAL`); **Should** → `MEDIUM`; **Could** → `LOW`. Tom/Mark may override per spec.
 
@@ -74,10 +74,10 @@ Budget is a default lens, not a mandatory gate. During **`larapilot-inception`**
 **Budget Sensitivity:** Tracked | Relaxed
 ```
 
-| Mode                    | Meaning                                  | Business-lens behavior (Aurora, Benjamin, Jennifer)                                                                                                                                                                                                        |
-| ----------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tracked** _(default)_ | Budget is an active constraint           | Aurora sizes infra and services against the stated budget; cost concerns can reshape or block technical choices                                                                                                                                            |
-| **Relaxed**             | The user opted out of budget evaluation  | Validation is **loosened, never removed**: no cost-based vetoes, no budget interrogation — but business figures still flag order-of-magnitude cost risks, vendor lock-in, and choices that are expensive to reverse, as short advisory notes (1–2 lines)   |
+| Mode | Meaning | Business-lens behavior (Aurora, Benjamin, Jennifer) |
+| --- | --- | --- |
+| **Tracked** _(default)_ | Budget is an active constraint | Aurora sizes infra and services against the stated budget; cost concerns can reshape or block technical choices |
+| **Relaxed** | The user opted out of budget evaluation | Validation is **loosened, never removed**: no cost-based vetoes, no budget interrogation — but business figures still flag order-of-magnitude cost risks, vendor lock-in, and choices that are expensive to reverse, as short advisory notes (1–2 lines) |
 
 Rules for all skills:
 

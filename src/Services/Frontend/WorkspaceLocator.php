@@ -42,28 +42,45 @@ final class WorkspaceLocator
             'signals' => [],
         ];
 
+        $configured = is_string($configured) && trim($configured) !== '' ? rtrim(trim($configured), '/\\') : null;
+
+        // A workspace the user linked is honoured whatever the repository
+        // looks like — the setting is for the case the signals miss.
+        if ($configured !== null && ! is_dir($configured)) {
+            $here['signals'][] = 'the linked workspace does not exist: '.$configured.' (frontend-set --workspace= again, or --clear-workspace)';
+            $signals = array_merge($signals, $here['signals']);
+        } elseif ($configured !== null && (realpath($configured) ?: $configured) !== (realpath($repository) ?: $repository)) {
+            $root = rtrim(realpath($configured) ?: $configured, '/');
+            $inside = str_starts_with($repository.'/', $root.'/');
+
+            return [
+                'root' => $root,
+                'source' => 'configured',
+                'detached' => true,
+                'project_root' => $inside ? substr($repository, strlen($root) + 1) : null,
+                'expected_root' => self::expectedRoot($repository),
+                'signals' => $signals,
+            ];
+        }
+
         if ($signals === [] || self::isWorkspace($repository, false)) {
             return $here;
         }
 
         $found = null;
 
-        if (is_string($configured) && $configured !== '' && is_dir($configured)) {
-            $found = [realpath($configured) ?: rtrim($configured, '/\\'), 'configured'];
-        } else {
-            foreach (self::ancestors($repository) as $ancestor) {
-                if (self::isWorkspace($ancestor, false)) {
-                    $found = [$ancestor, 'ancestor'];
+        foreach (self::ancestors($repository) as $ancestor) {
+            if (self::isWorkspace($ancestor, false)) {
+                $found = [$ancestor, 'ancestor'];
 
-                    break;
-                }
+                break;
             }
         }
 
         // A repository with its own package.json still builds by itself when
-        // no workspace is around it.
+        // no workspace is around it; what pointed outside is kept for the warning.
         if ($found === null && is_file($repository.'/package.json')) {
-            return $here;
+            return ['signals' => $signals] + $here;
         }
 
         $expected = self::expectedRoot($repository);

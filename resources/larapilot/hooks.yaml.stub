@@ -5,6 +5,9 @@
 # (php artisan larapilot:settings-set --hooks=YES), and nothing runs on a
 # machine where LARAPILOT_HOOKS_ENABLED=false.
 #
+# This file is committed: every `run:` line executes on each developer's
+# machine. Review a change to it in a PR as you would a Makefile.
+#
 # Events, and the command that fires each one:
 #   prd.written             larapilot:prd-write             the PRD is saved
 #   spec.added              larapilot:spec-add              stories enter the backlog

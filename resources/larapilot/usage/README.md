@@ -3,7 +3,7 @@
 Committed metrics for AI tokens and wall-clock time spent on this project.
 
 | File | Purpose |
-| ---- | ------- |
+| --- | --- |
 | `ledger.jsonl` | Append-only JSON lines (do not rewrite history) |
 | `schedule.yaml` | Deadlines and milestones |
 

@@ -17,11 +17,11 @@ For **every public-facing website**, Emma owns structural SEO — not only meta 
 
 ### Mandatory files _(keep current)_
 
-| File              | Location                                           | Purpose                                                                                                             |
-| ----------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------|
-| **`robots.txt`**  | `public/robots.txt` or dynamic route               | Crawl rules; reference sitemap URL; block staging/admin paths                                                         |
-| **`sitemap.xml`** | `public/sitemap.xml` or generated route/command    | All public indexable URLs; `lastmod` when content changes; split sitemap index when >50k URLs                         |
-| **`llms.txt`**    | `public/llms.txt` or `public/.well-known/llms.txt` | LLM/crawler guidance (allowed paths, site summary, contact) — structural counterpart to `robots.txt` for AI agents    |
+| File | Location | Purpose |
+| --- | --- | --- |
+| **`robots.txt`** | `public/robots.txt` or dynamic route | Crawl rules; reference sitemap URL; block staging/admin paths |
+| **`sitemap.xml`** | `public/sitemap.xml` or generated route/command | All public indexable URLs; `lastmod` when content changes; split sitemap index when >50k URLs |
+| **`llms.txt`** | `public/llms.txt` or `public/.well-known/llms.txt` | LLM/crawler guidance (allowed paths, site summary, contact) — structural counterpart to `robots.txt` for AI agents |
 
 Rules:
 

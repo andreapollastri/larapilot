@@ -270,9 +270,14 @@ class DatabaseViewerService
         }
 
         if ($search !== '' && $searchable !== []) {
-            $query->where(function (Builder $query) use ($searchable, $operator, $search): void {
+            // `%`, `_` are wildcards to LIKE: a search for `50%` means those
+            // three characters. `!` escapes them on every driver here.
+            $term = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $search).'%';
+            $grammar = $connection->getQueryGrammar();
+
+            $query->where(function (Builder $query) use ($searchable, $operator, $term, $grammar): void {
                 foreach ($searchable as $column) {
-                    $query->orWhere($column, $operator, '%'.$search.'%');
+                    $query->orWhereRaw($grammar->wrap($column).' '.$operator." ? escape '!'", [$term]);
                 }
             });
         }

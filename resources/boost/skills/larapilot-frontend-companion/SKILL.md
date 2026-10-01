@@ -25,7 +25,7 @@ The FE repo holds application code only — no mirrored PRD, no Larapilot workfl
 
 ## Context
 
-`php artisan larapilot:context frontend-companion` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`, and an `on_demand` file only when its `when` comes true. Settings, paths, `data.project`, and `data.frontend` (`repo_path`, `stack`, `projects`, `mode`) come from that envelope: no `config-show`. The rules are **Frontend Topology** (`discovery-5.md`) and **Frontend Companion** (`frontend.md`).
+`php artisan larapilot:context frontend-companion` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`, and an `on_demand` file only when its `when` comes true. Settings, paths, `data.project`, and `data.frontend` (`repo_path`, `workspace_path`, `stack`, `projects`, `mode`, `configured`) come from that envelope: no `config-show`. The rules are **Frontend Topology** (`discovery-5.md`) and **Frontend Companion** (`frontend.md`).
 
 ## The Team
 
@@ -69,7 +69,7 @@ Report in a few lines: workspace and package manager, target projects with stack
 
 ### 3. Load the frontend team's rules
 
-Read every `rules.must_read` file, in order, with the file-read tool (paths relative to `data.frontend.repo_path`), and the playbook files under `playbooks`. Before writing any file: `php artisan larapilot:frontend-rules --file=<path> [--file=…]`. The protocol and the precedence are **Frontend Companion** (`frontend.md`) — the FE repo's rules win on code.
+Read every `rules.must_read` file, in order, with the file-read tool (paths relative to the scan's `root` — the workspace, which is `repo_path` only when the repository is its own workspace), and the playbook files under `playbooks`. Before writing any file: `php artisan larapilot:frontend-rules --file=<path> [--file=…]`. The protocol and the precedence are **Frontend Companion** (`frontend.md`) — the FE repo's rules win on code.
 
 ### 4. Deliver from Laravel
 
@@ -77,7 +77,7 @@ Read every `rules.must_read` file, in order, with the file-read tool (paths rela
 
 - Backend tasks → Laravel (`repo: backend` or default)
 - UI tasks → `repo: frontend`, `project:` in a monorepo, `shared:` when a shared library changes; paths under `data.frontend.repo_path`
-- FE git: `git -C {repo_path} …`, hooks on, `{code} TASK-NN` in the subject · FE checks: `target_projects[].commands` and `commands.affected` from the scan — never a guessed `npm test`
+- FE git: `git -C {git_root}` — `target_projects[].git_root` when set, else `git.root` from the scan — hooks on, `{code} TASK-NN` in the subject · FE checks: `target_projects[].commands` and `commands.affected` from the scan — never a guessed `npm test`
 - `handoff` → `php artisan larapilot:frontend-brief {code}`; give the user the `prompt` line. The FE team reports its commits; `task-done` links them.
 
 ## Output Boundaries

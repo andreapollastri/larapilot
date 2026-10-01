@@ -91,6 +91,19 @@ final class WorkspaceInspector
     protected const IMPORT_SCAN_PER_PROJECT = 800;
 
     /**
+     * Source files one walk of a project folder keeps, the most any caller
+     * asks for: the profile of a target project.
+     */
+    protected const SOURCE_WALK_FILES = 1500;
+
+    /**
+     * The source walks already done, by folder.
+     *
+     * @var array<string, array{files: list<string>, truncated: bool, limit: int}>
+     */
+    protected array $sourceWalks = [];
+
+    /**
      * @var array<string, mixed>|null
      */
     protected ?array $rootPackage;
@@ -110,14 +123,19 @@ final class WorkspaceInspector
     }
 
     /**
+     * `$dependencies` false skips the import scan that draws the graph from
+     * the files (a name lookup needs no graph); `$stacks` false skips the
+     * framework and target checks of every project.
+     *
      * @return array<string, mixed>
      */
-    public function inspect(bool $useCli = true, bool $fresh = false): array
+    public function inspect(bool $useCli = true, bool $fresh = false, bool $dependencies = true, bool $stacks = true): array
     {
         $kind = $this->kind();
         $nxJson = $kind === 'nx' ? (RepoFiles::json($this->root.'/nx.json') ?? []) : [];
         $graph = ['source' => 'files', 'cached' => false, 'error' => null, 'targets_complete' => true];
         $projects = null;
+        $withDependencies = $dependencies;
         $dependencies = [];
 
         if ($kind === 'nx' && $useCli && $this->nx !== null) {
@@ -148,7 +166,7 @@ final class WorkspaceInspector
                 $graph['targets_complete'] = $complete;
             }
 
-            $dependencies = $this->staticDependencies($projects);
+            $dependencies = $withDependencies ? $this->staticDependencies($projects) : [];
             $graph['source'] = in_array($kind, ['single', 'nx-project'], true) ? 'none' : 'files';
         }
 
@@ -161,8 +179,8 @@ final class WorkspaceInspector
         $rootDependencies = self::dependencies($this->rootPackage);
 
         foreach ($projects as $name => $project) {
-            $projects[$name]['stack'] = $this->stack($project, $rootDependencies, false);
-            $projects[$name]['unavailable'] = $this->unavailableTargets($project, $rootDependencies);
+            $projects[$name]['stack'] = $stacks ? $this->stack($project, $rootDependencies, false) : null;
+            $projects[$name]['unavailable'] = $stacks ? $this->unavailableTargets($project, $rootDependencies) : [];
         }
 
         return [
@@ -203,8 +221,9 @@ final class WorkspaceInspector
             return 'rush';
         }
 
-        // One Nx project whose workspace is not here.
-        if (is_file($this->root.'/project.json') && $this->rootPackage === null) {
+        // One Nx project whose workspace is not here — with or without a
+        // package.json of its own (per-app dependencies, or just a name).
+        if (is_file($this->root.'/project.json') && ($this->rootPackage === null || $this->workspaceGlobs() === [])) {
             return 'nx-project';
         }
 
@@ -711,17 +730,29 @@ final class WorkspaceInspector
             $absolute = $this->index->absolute($base);
         }
 
-        $walk = RepoFiles::walk(
-            $absolute,
-            static fn (string $path): bool => preg_match('/\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|vue|svelte|astro|html|scss|sass|less|css|styl)$/', $path) === 1,
-            8,
-            40000,
-            $limit
-        );
+        // One walk per folder, in the order the walk found the files, serves
+        // every limit asked for it: the first N of that order, sorted, is
+        // exactly what a walk capped at N would have returned.
+        $cached = $this->sourceWalks[$base] ?? null;
+
+        if ($cached === null || ($cached['limit'] < $limit && $cached['truncated'])) {
+            $walk = RepoFiles::walk(
+                $absolute,
+                static fn (string $path): bool => preg_match('/\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|vue|svelte|astro|html|scss|sass|less|css|styl)$/', $path) === 1,
+                8,
+                40000,
+                max($limit, self::SOURCE_WALK_FILES),
+                false
+            );
+            $cached = $this->sourceWalks[$base] = ['files' => $walk['files'], 'truncated' => $walk['truncated'], 'limit' => max($limit, self::SOURCE_WALK_FILES)];
+        }
+
+        $files = array_slice($cached['files'], 0, $limit);
+        sort($files);
 
         return array_map(
             static fn (string $file): string => $base === '.' ? $file : $base.'/'.$file,
-            $walk['files']
+            $files
         );
     }
 
@@ -1505,17 +1536,24 @@ final class WorkspaceInspector
     protected function fingerprint(): string
     {
         $parts = [];
-        $files = array_merge(
-            $this->index->named('project.json'),
-            $this->index->named('package.json'),
-            ['nx.json', 'tsconfig.base.json', 'pnpm-workspace.yaml', 'pnpm-lock.yaml', 'yarn.lock', 'package-lock.json', 'bun.lock']
-        );
+        $files = ['nx.json', 'tsconfig.base.json', 'pnpm-workspace.yaml', 'pnpm-lock.yaml', 'yarn.lock', 'package-lock.json', 'bun.lock'];
+
+        // The manifests, and the tool configs the Nx plugins infer targets
+        // from: a vitest.config.ts added in the working tree is a new target.
+        foreach ($this->index->files as $file) {
+            $base = basename($file);
+
+            if ($base === 'project.json' || $base === 'package.json' || preg_match('/^(vite|vitest|jest|playwright|cypress|next|nuxt|remix|webpack|rspack|rollup|eslint|tsconfig|storybook)[.\w-]*\.(ts|mts|cts|js|mjs|cjs|json)$/', $base) === 1) {
+                $files[] = $file;
+            }
+        }
 
         foreach ($files as $file) {
             $path = $this->root.'/'.$file;
+            $mtime = @filemtime($path);
 
-            if (is_file($path)) {
-                $parts[] = $file.':'.filemtime($path).':'.filesize($path);
+            if ($mtime !== false) {
+                $parts[] = $file.':'.$mtime.':'.(int) @filesize($path);
             }
         }
 

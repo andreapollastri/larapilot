@@ -65,9 +65,19 @@ class HookService
     protected const OUTPUT_BYTES = 4000;
 
     /**
+     * The most of a hook's output that is held in memory and written to its log.
+     */
+    protected const LOG_BYTES = 2 * 1024 * 1024;
+
+    /**
      * @var list<string>
      */
     protected const KEYS = ['name', 'run', 'skill', 'timeout', 'blocking'];
+
+    /**
+     * @var array{0: string, 1: array{exists: bool, ok: bool, hooks: array<string, array<string, list<array{name: string, kind: string, run: string|null, skill: string|null, timeout: int, blocking: bool}>>>, findings: list<array{code: string, severity: string, path: string, message: string, hint: string}>}}|null
+     */
+    protected ?array $definitions = null;
 
     public function __construct(
         protected ConfigService $config,
@@ -112,7 +122,17 @@ class HookService
     public function definitions(): array
     {
         $path = $this->config->hooksPath();
+        clearstatcache(false, $path);
         $exists = is_file($path);
+
+        // Parsed once per state of the file: a transition fires `before`
+        // and `after`, and every `skill:` hook is looked up on disk.
+        $stamp = $exists ? $path.':'.filemtime($path).':'.filesize($path) : $path.':none';
+
+        if ($this->definitions !== null && $this->definitions[0] === $stamp) {
+            return $this->definitions[1];
+        }
+
         $hooks = [];
         $findings = [];
 
@@ -120,12 +140,14 @@ class HookService
             $hooks = $this->parse((string) file_get_contents($path), $findings);
         }
 
-        return [
+        $this->definitions = [$stamp, [
             'exists' => $exists,
             'ok' => ! in_array('error', array_column($findings, 'severity'), true),
             'hooks' => $hooks,
             'findings' => $findings,
-        ];
+        ]];
+
+        return $this->definitions[1];
     }
 
     /**
@@ -531,6 +553,11 @@ class HookService
         try {
             $process->run(static function (string $type, string $buffer) use (&$output): void {
                 $output .= $buffer;
+
+                // A chatty hook (a verbose test run) is kept by its tail, not whole.
+                if (strlen($output) > self::LOG_BYTES) {
+                    $output = "[... earlier output dropped ...]\n".substr($output, -intdiv(self::LOG_BYTES, 2));
+                }
             });
         } catch (ProcessTimedOutException) {
             $timedOut = true;

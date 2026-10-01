@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Larapilot\Services\ProjectStackService;
+use Larapilot\Services\Stack\VersionPins;
 use Larapilot\Services\Upgrade\PackagistClient;
 use Larapilot\Support\Cvss;
 use Larapilot\Support\SupportPolicy;
@@ -179,6 +180,11 @@ it('expands the minified metadata of Packagist the way Composer does', function 
 });
 
 it('tells what the project runs on, from the lock and the files around it', function (): void {
+    // Testbench 8 leaves the default on a `database.sqlite` file that does not
+    // exist, and Laravel 10 refuses to open it; the probe must see a live DB.
+    config()->set('database.connections.stack_probe_target', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('database.default', 'stack_probe_target');
+
     $this->artisan('larapilot:install')->assertSuccessful();
     upgradeProject();
     file_put_contents(base_path('Dockerfile'), "FROM php:8.2-fpm-alpine\nRUN docker-php-ext-install pdo_mysql\n");
@@ -321,4 +327,76 @@ it('checks a database switch and a MySQL upgrade against the code', function ():
         ->and(array_column($upgrade['database']['scan']['findings'], 'id'))->toContain('mysql84-native-password')
         ->and($upgrade['verdict'])->toBe('blocked')
         ->and($upgrade['counts']['blocker'])->toBe(1);
+
+    // The version `larapilot:stack` reports, patch included, is taken back.
+    expect(upgradeCheck(['--db' => 'mysql:8.4', '--db-from' => 'mysql:8.0.36'])['database']['from'])->toMatchArray(['engine' => 'mysql', 'version' => '8.0.36']);
+
+    // `mysql:8` would read as 8.0, the cycle past its end of life.
+    expect(Artisan::call('larapilot:upgrade-check', ['--db' => 'mysql:8']))->toBe(2)
+        ->and(Artisan::output())->toContain('versioned by minor');
+});
+
+it('reads the edges the real world has: dotted names, matrices, floors, and files of SQL', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    upgradeProject(['mtdowling/jmespath.php' => '^2.7', 'agnostic/tool' => '^1.0', 'missing/from-lock' => '^1.0']);
+
+    // Two packages the lock must know about for this check.
+    $lock = json_decode((string) file_get_contents(base_path('composer.lock')), true);
+    $lock['packages'][] = ['name' => 'mtdowling/jmespath.php', 'version' => '2.7.0', 'version_normalized' => '2.7.0.0', 'type' => 'library', 'license' => ['MIT'], 'require' => ['php' => '^7.2.5 || ^8.0', 'illuminate/support' => '^12.0'], 'description' => 'jmespath'];
+    $lock['packages'][] = ['name' => 'agnostic/tool', 'version' => '1.0.0', 'version_normalized' => '1.0.0.0', 'type' => 'library', 'license' => ['MIT'], 'require' => ['php' => '^8.1', 'illuminate/support' => '^12.0'], 'description' => 'tool'];
+    file_put_contents(base_path('composer.lock'), json_encode($lock, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    $p2 = static fn (string $name, array $versions): array => ['minified' => 'composer/2.0', 'packages' => [$name => $versions]];
+
+    Http::fake([
+        // A name with a dot in it is not a path into the answer.
+        'repo.packagist.org/p2/mtdowling/jmespath.php.json' => Http::response($p2('mtdowling/jmespath.php', [
+            ['name' => 'mtdowling/jmespath.php', 'version' => '2.8.0', 'version_normalized' => '2.8.0.0', 'require' => ['php' => '^8.1', 'illuminate/support' => '^12.0|^13.0']],
+        ])),
+        // A new major that dropped its Laravel dependency cannot refuse Laravel.
+        'repo.packagist.org/p2/agnostic/tool.json' => Http::response($p2('agnostic/tool', [
+            ['name' => 'agnostic/tool', 'version' => '2.0.0', 'version_normalized' => '2.0.0.0', 'require' => ['php' => '^8.2']],
+            ['version' => '1.0.0', 'version_normalized' => '1.0.0.0', 'require' => ['php' => '^8.1', 'illuminate/support' => '^12.0']],
+        ])),
+        'repo.packagist.org/*' => Http::response('', 404),
+    ]);
+
+    $dependencies = collect(upgradeCheck(['--laravel' => '13'])['laravel']['dependencies'])->keyBy('name');
+
+    expect($dependencies['mtdowling/jmespath.php'])->toMatchArray(['verdict' => 'update', 'candidate' => '2.8.0'])
+        ->and($dependencies['agnostic/tool'])->toMatchArray(['verdict' => 'bump', 'candidate' => '2.0.0'])
+        // Asked for but not installed: a row, not a silence.
+        ->and($dependencies['missing/from-lock'])->toMatchArray(['verdict' => 'unknown', 'installed' => null]);
+
+    // A CI matrix that lists the target is not behind it; one that does not, is.
+    @mkdir(base_path('.github/workflows'), 0755, true);
+    file_put_contents(base_path('.github/workflows/matrix-fixture.yml'), "jobs:\n  tests:\n    strategy:\n      matrix:\n        php: [8.2, 8.3, 8.4]\n        node-version: [18, 20]\n");
+    file_put_contents(base_path('.github/workflows/old-fixture.yml'), "jobs:\n  tests:\n    strategy:\n      matrix:\n        php: ['8.2', '8.3']\n");
+
+    $pins = (new VersionPins)->scan(base_path(), ['php', 'node']);
+    $behind = array_column(VersionPins::behind($pins, 'php', '8.4'), 'file');
+
+    expect(array_column(array_filter($pins, static fn (array $pin): bool => $pin['file'] === '.github/workflows/matrix-fixture.yml' && $pin['kind'] === 'php'), 'value'))->toBe(['8.2', '8.3', '8.4'])
+        ->and($behind)->toContain('.github/workflows/old-fixture.yml')
+        ->and($behind)->not->toContain('.github/workflows/matrix-fixture.yml');
+
+    // `engines.node` is a floor: no Node support verdict, no false end-of-life alert.
+    file_put_contents(base_path('package.json'), json_encode(['name' => 'shop', 'engines' => ['node' => '>=18'], 'devDependencies' => ['vite' => '^6.0']]));
+
+    expect(app(ProjectStackService::class)->facts(['frontend'], false)['frontend'])->toMatchArray(['node' => '>=18', 'node_support' => null]);
+
+    // A `.sql` file is raw SQL on every line.
+    @mkdir(base_path('database/seeders'), 0755, true);
+    file_put_contents(base_path('database/seeders/legacy.sql'), "SELECT GROUP_CONCAT(name) FROM `users`;\n");
+
+    $switch = upgradeCheck(['--db' => 'pgsql:17', '--db-from' => 'mysql:8.0']);
+    $files = [];
+
+    foreach ($switch['database']['scan']['findings'] as $finding) {
+        foreach ($finding['occurrences'] as $occurrence) {
+            $files[] = $occurrence['file'];
+        }
+    }
+
+    expect($files)->toContain('database/seeders/legacy.sql');
 });

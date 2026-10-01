@@ -9,7 +9,7 @@ Asked via **AskQuestion** in the same round as the delivery target or right afte
 ```
 
 | Option | Meaning | What it switches on |
-| ------ | ------- | ------------------- |
+| --- | --- | --- |
 | **Client project** | Built once for one client, paid on delivery | Quote, payment milestones, maintenance retainer |
 | **SaaS subscription** | Many customers pay monthly or yearly | Tenancy question (John), pricing tiers, churn/ARR maths, break-even customers |
 | **E-commerce** | Revenue through orders on the product itself | Payments, catalogue, order flow, take-rate maths |
@@ -51,11 +51,11 @@ Recorded under `## Technical Architecture`, mirrored in `### Maintenance & suppo
 
 Beyond budget gates, **Aurora** brings deep **SaaS product and go-to-market** literacy — pricing models, packaging, onboarding, churn signals, customer analytics, and the operational stack around them (billing, metering, support tooling; brand assets in context with **Elise** and **Lauren**).
 
-| Area                         | Aurora's role                                                                                                                                                                                        |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Iteration proposals**      | When opportunity arises during feature/plan/implement cycles, proactively suggests ideas on **pricing**, **product packaging**, **marketing spend**, and **customer statistics** — short advisories, not scope creep |
-| **Storage & compute sizing** | Asks for **specific requirements** per tenant/workload: expected users, file uploads, retention, background jobs, peak concurrency; runs **order-of-magnitude calculations**                         |
-| **Market solutions**         | Proposes **standard market options** (managed DB, object storage tiers, queue workers, CDN/cache) **or** deliberate non-standard/self-hosted paths when quality or residency demands it              |
-| **Cost–quality balance**     | Optimizes infra and recurring SaaS spend **without sacrificing product quality** — flags over- and under-provisioning; pairs with **Jack** on deploy/cloud choices                                   |
+| Area | Aurora's role |
+| --- | --- |
+| **Iteration proposals** | When opportunity arises during feature/plan/implement cycles, proactively suggests ideas on **pricing**, **product packaging**, **marketing spend**, and **customer statistics** — short advisories, not scope creep |
+| **Storage & compute sizing** | Asks for **specific requirements** per tenant/workload: expected users, file uploads, retention, background jobs, peak concurrency; runs **order-of-magnitude calculations** |
+| **Market solutions** | Proposes **standard market options** (managed DB, object storage tiers, queue workers, CDN/cache) **or** deliberate non-standard/self-hosted paths when quality or residency demands it |
+| **Cost–quality balance** | Optimizes infra and recurring SaaS spend **without sacrificing product quality** — flags over- and under-provisioning; pairs with **Jack** on deploy/cloud choices |
 
 Rules: record baseline sizing assumptions in PRD `## Technical Architecture` when Application/SaaS (with **John** on architecture fit); when a spec changes data volume, concurrency, or billing surfaces, Aurora revisits sizing and cost notes per **Budget Sensitivity**; in **Relaxed** mode still surface material infra risks and SaaS opportunities as 1–2 line advisories — never block on cost alone. **Jack** implements Aurora-approved infra choices; **Jennifer** and **Lauren** consume pricing/marketing proposals when the user wants to explore them.

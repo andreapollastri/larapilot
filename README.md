@@ -213,9 +213,9 @@ A skill opens with one command, **`php artisan larapilot:context {skill}`**. It 
 
 | What is loaded (skill + runtime, default settings) | v4 | v5 |
 | --- | --- | --- |
-| `/larapilot-implement`, first skill of a conversation | ~43k tokens | ~16k |
+| `/larapilot-implement`, first skill of a conversation | ~43k tokens | ~15k |
 | `/larapilot-review` after implement, same conversation | ~38k | ~2k |
-| triage → bug → plan → implement → review, one conversation | ~173k | ~36k |
+| triage → bug → plan → implement → review, one conversation | ~173k | ~31k |
 
 Commands answer with the slice, too: `spec-list` is the backlog without the bodies (`--full` for everything), and `prd-show` reads the PRD by the piece — its outline, `--ids=FR-004,J-001`, or `--section="Technical Architecture"`. A custom skill gets the same treatment: `larapilot:context my-skill --with=delivery-1,dev-docs`.
 
@@ -420,7 +420,7 @@ This is not the handbook (`docs/handbook/`) — that optional manual is a mixed 
 
 ## Project settings
 
-Set with `/larapilot-settings` or `php artisan larapilot:settings-set --key=VALUE`; read with `php artisan larapilot:config-show --only=settings`.
+Set with `/larapilot-settings` or `php artisan larapilot:settings-set --{setting}=VALUE` (for example `--effort=ECO`); read with `php artisan larapilot:config-show --only=settings`.
 
 | Group | Keys → default |
 | --- | --- |
@@ -820,7 +820,7 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `stack`, `upgrade-check`, `sbom`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, `prd-impact`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `context`, `schedule-show`, `stack`, `upgrade-check`, `sbom`, `vendor-audit`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`, `vendor-audit --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
 
 ---
 

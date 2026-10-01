@@ -4,11 +4,11 @@ During **`larapilot-inception`**, **John** and **Joe** **must** ask **Frontend T
 
 ### Options (never assume)
 
-| Value                         | Meaning                                                                                | Typical stack in this Laravel repo                                                  |
-| ----------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **`Laravel-coupled`**         | UI lives in the same Laravel repo                                                      | Blade, Livewire, Inertia + Vue/React/Svelte, Filament, Flux                          |
-| **`SPA-in-Laravel`**          | SPA (or SPA islands) built with Vite **inside** this Laravel repo                       | React / Vue / Angular / Svelte (or Starter Kit Inertia variants) served by Laravel   |
-| **`API + external frontend`** | Laravel exposes **API (+ optional admin)** only; the primary UI is another repository   | Sanctum/Passport API, OpenAPI; optional Filament admin for ops                       |
+| Value | Meaning | Typical stack in this Laravel repo |
+| --- | --- | --- |
+| **`Laravel-coupled`** | UI lives in the same Laravel repo | Blade, Livewire, Inertia + Vue/React/Svelte, Filament, Flux |
+| **`SPA-in-Laravel`** | SPA (or SPA islands) built with Vite **inside** this Laravel repo | React / Vue / Angular / Svelte (or Starter Kit Inertia variants) served by Laravel |
+| **`API + external frontend`** | Laravel exposes **API (+ optional admin)** only; the primary UI is another repository | Sanctum/Passport API, OpenAPI; optional Filament admin for ops |
 
 Record in PRD `## Technical Architecture`:
 

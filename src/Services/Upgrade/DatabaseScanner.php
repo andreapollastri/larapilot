@@ -89,14 +89,16 @@ class DatabaseScanner
             $lines = preg_split('/\R/', (string) file_get_contents($path)) ?: [];
             $isMigration = str_contains($relative, 'migrations/');
             $isConfig = str_starts_with($relative, 'config/');
-            $isInfra = ! str_ends_with($relative, '.php');
+            // A `.sql` file is raw SQL on every line, not infrastructure.
+            $isSql = str_ends_with($relative, '.sql');
+            $isInfra = ! $isSql && ! str_ends_with($relative, '.php');
 
             foreach ($lines as $index => $line) {
                 if (trim($line) === '') {
                     continue;
                 }
 
-                $raw = preg_match(self::RAW, $line) === 1;
+                $raw = $isSql || preg_match(self::RAW, $line) === 1;
 
                 foreach ($rules as $id => $rule) {
                     $scope = $rule['scope'];

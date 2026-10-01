@@ -418,8 +418,8 @@ class UsageService
         $label = trim((string) ($attributes['label'] ?? 'Deadline'));
         $date = trim((string) ($attributes['deadline'] ?? ''));
 
-        if ($date === '' || preg_match('/^\d{4}-\d{2}-\d{2}/', $date) !== 1) {
-            throw new \InvalidArgumentException('deadline must be a date (YYYY-MM-DD).');
+        if ($date === '' || PlanDate::day($date) === null) {
+            throw new \InvalidArgumentException('deadline must be a real date (YYYY-MM-DD).');
         }
 
         $deadline = [

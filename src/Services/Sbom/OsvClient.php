@@ -63,6 +63,25 @@ class OsvClient
 
             foreach ($chunk as $index => $query) {
                 $vulns = is_array($answers[$index]['vulns'] ?? null) ? $answers[$index]['vulns'] : [];
+                $token = $answers[$index]['next_page_token'] ?? null;
+
+                // A package with more advisories than one page holds (lodash,
+                // axios) continues on the next pages; bounded, in case of a loop.
+                for ($page = 0; is_string($token) && $token !== '' && $page < 10; $page++) {
+                    try {
+                        $more = $this->http()->post(self::BASE_URL.'query', [
+                            'package' => ['name' => $query['name'], 'ecosystem' => $query['ecosystem']],
+                            'version' => $query['version'],
+                            'page_token' => $token,
+                        ])->json();
+                    } catch (\Throwable) {
+                        break;
+                    }
+
+                    $vulns = array_merge($vulns, is_array($more['vulns'] ?? null) ? $more['vulns'] : []);
+                    $token = $more['next_page_token'] ?? null;
+                }
+
                 $results[] = array_values(array_filter(array_map(static fn (mixed $vuln): ?array => is_array($vuln) && is_string($vuln['id'] ?? null)
                     ? ['id' => $vuln['id'], 'modified' => is_string($vuln['modified'] ?? null) ? $vuln['modified'] : null]
                     : null, $vulns)));

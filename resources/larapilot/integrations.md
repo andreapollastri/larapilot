@@ -303,9 +303,9 @@ php artisan larapilot:settings-set --api-auth=YES
 
 | `api_auth` | `LARAPILOT_API_TOKEN` set | Result |
 | --- | --- | --- |
-| `NO` (default) | no  | Reads open in dev/staging; writes refused outside `local`/`development`/`testing`. |
+| `NO` (default) | no | Reads open in dev/staging; writes refused outside `local`/`development`/`testing`. |
 | `NO` (default) | yes | Every request (read + write) must carry the token. |
-| `YES` | no  | **HTTP 503** — the API fails closed until the token is configured. |
+| `YES` | no | **HTTP 503** — the API fails closed until the token is configured. |
 | `YES` | yes | Every request (read + write) must carry the token. |
 
 ### Calling the API (client side)

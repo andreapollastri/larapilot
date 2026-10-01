@@ -272,12 +272,10 @@ class ProjectStackService
         $probe = 'larapilot_stack_probe';
         $driver = (string) ($settings['driver'] ?? '');
 
-        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+        // Laravel's Postgres DSN carries no `connect_timeout`; every PDO
+        // driver here reads ATTR_TIMEOUT as the seconds to wait for the server.
+        if (in_array($driver, ['mysql', 'mariadb', 'pgsql', 'sqlsrv'], true)) {
             $settings['options'] = (is_array($settings['options'] ?? null) ? $settings['options'] : []) + [\PDO::ATTR_TIMEOUT => 3];
-        }
-
-        if ($driver === 'pgsql') {
-            $settings['connect_timeout'] = $settings['connect_timeout'] ?? 3;
         }
 
         config(['database.connections.'.$probe => $settings]);
@@ -296,7 +294,9 @@ class ProjectStackService
                 // nothing was opened
             }
 
-            config(['database.connections.'.$probe => null]);
+            // Unset, not null: a null entry would stay in the list of
+            // connections for the rest of a long-lived (Octane) process.
+            config()->offsetUnset('database.connections.'.$probe);
         }
     }
 
@@ -460,7 +460,9 @@ class ProjectStackService
             'package_manager' => $this->packageManager($root, $package),
             'node' => $node,
             'node_running' => null,
-            'node_support' => $node !== null ? SupportPolicy::status('node', $node) : null,
+            // `engines.node` is usually a floor or a range (`>=18`, `^20 || ^22`):
+            // only an exact pin names the version the project runs on.
+            'node_support' => $node !== null && preg_match('/^v?\d+(\.\d+)*$|^lts\//i', $node) === 1 ? SupportPolicy::status('node', $node) : null,
             'stack' => $frameworks,
             'dependencies' => count($dependencies),
             'companion' => [

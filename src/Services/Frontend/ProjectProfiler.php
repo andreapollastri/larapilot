@@ -76,7 +76,7 @@ final class ProjectProfiler
                     default => [],
                 }
             ))),
-            'exemplars' => $this->exemplars($family, $files, (string) $project['root']),
+            'exemplars' => $this->exemplars($family, $files, (string) $project['root'], is_string($project['git_root'] ?? null) ? $project['git_root'] : null),
             'tests' => [
                 'spec_files' => count(array_filter($files, static fn (string $file): bool => preg_match('/\.(spec|test)\.[cm]?[jt]sx?$/', $file) === 1)),
                 'generators_skip' => in_array('skipTests=true', array_map(
@@ -518,14 +518,21 @@ final class ProjectProfiler
      * @param  list<string>  $files
      * @return list<array{kind: string, path: string, related?: list<string>}>
      */
-    protected function exemplars(string $family, array $files, string $root): array
+    protected function exemplars(string $family, array $files, string $root, ?string $gitRoot = null): array
     {
         $known = array_flip($files);
         $candidates = [];
 
-        foreach (RepoGit::recentFiles($this->root, $root) as $recent) {
-            if (isset($known[$recent])) {
-                $candidates[$recent] = true;
+        // A project that is a repository of its own is ignored by the
+        // workspace's git: its history is read where it lives, and the
+        // paths are put back under the project root.
+        $recent = $gitRoot !== null
+            ? array_map(static fn (string $file): string => ($root === '.' ? '' : $root.'/').$file, RepoGit::recentFiles($gitRoot, '.'))
+            : RepoGit::recentFiles($this->root, $root);
+
+        foreach ($recent as $file) {
+            if (isset($known[$file])) {
+                $candidates[$file] = true;
             }
         }
 

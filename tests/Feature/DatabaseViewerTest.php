@@ -413,6 +413,61 @@ it('keeps a dump restorable when a hidden column is unique', function (): void {
         ->and(implode('', $tokens))->not->toContain('aaaa');
 });
 
+it('dumps every row of a table with no primary key, once each', function (): void {
+    viewerDatabase();
+
+    // A pivot with only a unique index, and a log with nothing at all.
+    Schema::create('role_user', function (Blueprint $table): void {
+        $table->unsignedInteger('role_id');
+        $table->unsignedInteger('user_id');
+        $table->unique(['role_id', 'user_id']);
+    });
+    Schema::create('events_log', function (Blueprint $table): void {
+        $table->string('event');
+        $table->text('payload')->nullable();
+    });
+
+    $rows = [];
+
+    for ($i = 1; $i <= 2500; $i++) {
+        $rows[] = ['role_id' => $i % 7, 'user_id' => $i];
+    }
+
+    foreach (array_chunk($rows, 500) as $chunk) {
+        DB::table('role_user')->insert($chunk);
+    }
+
+    DB::table('events_log')->insert([
+        ['event' => 'a', 'payload' => '50% off_season'],
+        ['event' => 'b', 'payload' => null],
+        ['event' => 'a', 'payload' => '50% off_season'],
+    ]);
+
+    $sql = $this->get('/larapilot/database.sql')->assertOk()->streamedContent();
+
+    $copy = new PDO('sqlite::memory:');
+    $copy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $copy->exec($sql);
+
+    expect((int) $copy->query('select count(*) from role_user')->fetchColumn())->toBe(2500)
+        ->and((int) $copy->query('select count(distinct user_id) from role_user')->fetchColumn())->toBe(2500)
+        ->and((int) $copy->query('select count(*) from events_log')->fetchColumn())->toBe(3)
+        ->and($sql)->toContain('-- Dump complete.');
+});
+
+it('searches for a wildcard character as the character it is', function (): void {
+    viewerDatabase();
+    DB::table('posts')->insert([
+        ['user_id' => 1, 'title' => '50% off', 'published' => true],
+        ['user_id' => 1, 'title' => 'a_b', 'published' => true],
+        ['user_id' => 1, 'title' => '500 items', 'published' => true],
+        ['user_id' => 1, 'title' => 'axb', 'published' => true],
+    ]);
+
+    $this->get('/larapilot/database/posts?q=50%25')->assertOk()->assertSee('50% off')->assertDontSee('500 items');
+    $this->get('/larapilot/database/posts?q=a_b')->assertOk()->assertSee('a_b')->assertDontSee('axb');
+});
+
 it('offers no dump when the database cannot be read or the page is off', function (): void {
     config()->set('database.connections.unreachable', [
         'driver' => 'pgsql',

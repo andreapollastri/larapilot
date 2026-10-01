@@ -1,29 +1,53 @@
 name: tests
 
+# Skills and runtime packs under resources/ are covered by the suite, so only
+# the files no test reads are left out.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "netlify.toml"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "netlify.toml"
+
+# A newer push to the same branch supersedes the run in flight.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COMPOSER_NO_INTERACTION: 1
+  COMPOSER_NO_AUDIT: 1
+  COMPOSER_PROCESS_TIMEOUT: 0
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
+      # The lowest and the highest PHP each Laravel line supports; the
+      # versions in between add minutes, not coverage.
       matrix:
         include:
           - php: "8.1"
             laravel: "10.*"
             testbench: "8.*"
-          - php: "8.2"
+          - php: "8.3"
             laravel: "10.*"
             testbench: "8.*"
           - php: "8.2"
             laravel: "11.*"
             testbench: "9.*"
-          - php: "8.3"
-            laravel: "10.*"
-            testbench: "8.*"
           - php: "8.3"
             laravel: "11.*"
             testbench: "9.*"
@@ -48,7 +72,18 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo_sqlite, sqlite3
           coverage: none
+          tools: composer:v2
+
+      - name: Composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ runner.os }}-php${{ matrix.php }}-laravel${{ matrix.laravel }}-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ matrix.php }}-laravel${{ matrix.laravel }}-
+            composer-${{ runner.os }}-php${{ matrix.php }}-
 
       - name: Install dependencies
         run: |
@@ -67,15 +102,17 @@ jobs:
           elif [[ "${{ matrix.laravel }}" == 10.* || "${{ matrix.laravel }}" == 11.* ]]; then
             composer config --json policy.advisories.ignore '["laravel/framework"]'
           fi
-          composer require "illuminate/support:${{ matrix.laravel }}" --no-interaction --no-update
-          composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
-          composer update --prefer-dist --no-interaction --no-progress
+          composer require "illuminate/support:${{ matrix.laravel }}" --no-update
+          composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-update
+          composer update --prefer-dist --no-progress --no-scripts
+          composer dump-autoload --classmap-authoritative
 
       - name: Run tests
         run: vendor/bin/pest --ci
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: Lint & static analysis
 
     steps:
@@ -84,10 +121,28 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
+          extensions: dom, curl, libxml, mbstring, zip
           coverage: none
+          tools: composer:v2
+
+      - name: Composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ runner.os }}-lint-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ runner.os }}-lint-
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-interaction --no-progress
+        run: |
+          composer update --prefer-dist --no-progress --no-scripts
+          composer dump-autoload --classmap-authoritative
+
+      - name: PHPStan result cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/phpstan
+          key: phpstan-${{ github.sha }}
+          restore-keys: phpstan-
 
       - name: Pint
         run: vendor/bin/pint --test

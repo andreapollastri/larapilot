@@ -15,7 +15,7 @@ Applies when **Frontend Topology** is `API + external frontend` and `data.fronte
 | `write_scope` | `owned` roots: write. `shared`: other applications depend on it. `vendored`: built third-party code copied in — never edit. Anything else belongs to another team. |
 | `rules` | The repository's agent rules, and under `inherited` those of the workspace around it — section 2. |
 | `git` | Where the frontend commits go (`root`), its base branch, and `commits`: how the team writes subjects — section 7. |
-| `commands` | `affected`, `format_check`, `install`, `show_project`. |
+| `commands` | `affected`, `format`, `format_check`, `install`, `show_project`. |
 | `generators` | `local` (the team's own) before `collections`; `defaults` are the team's choices. |
 | `api_client` | Generated client or hand-written calls — section 5. |
 | `playbooks` | Read each file listed: defaults for the stack and its version. |

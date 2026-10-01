@@ -197,9 +197,19 @@ class UpgradeService
     protected function laravel(ComposerFiles $composer, array $current, string $target, string $php, bool $phpChanges, bool $offline, array &$warnings): array
     {
         $from = (string) $current['laravel']['major'];
+
+        // A branch install (`dev-master`) has no major: the framework that runs does.
+        if ($from === '') {
+            $from = (string) SupportPolicy::cycle('laravel', app()->version());
+        }
+
+        if ($from === '') {
+            throw new \InvalidArgumentException('The installed Laravel ('.$current['laravel']['version'].') is not a tagged release: install one, then check again.');
+        }
+
         $criticalities = [];
 
-        if ($from !== '' && (int) $target <= (int) $from) {
+        if ((int) $target <= (int) $from) {
             throw new \InvalidArgumentException('The project is on Laravel '.$current['laravel']['version'].': name a newer major than '.$from.'.');
         }
 
@@ -318,6 +328,20 @@ class UpgradeService
             $package = $installed[$name] ?? null;
 
             if ($package === null) {
+                // A path repository not installed, a replaced package, a stale
+                // lock: not a verdict, but not a silence either.
+                $rows[] = [
+                    'name' => $name,
+                    'installed' => null,
+                    'constraint' => $direct['constraint'],
+                    'dev' => $direct['dev'],
+                    'verdict' => 'unknown',
+                    'reason' => 'Required by composer.json but not in composer.lock.',
+                    'action' => 'Run composer install (or composer update '.$name.') and check again.',
+                    'candidate' => null,
+                    'source' => 'composer.json',
+                ];
+
                 continue;
             }
 
@@ -496,7 +520,8 @@ class UpgradeService
             if ($laravel !== null) {
                 $constraints = $this->releaseLaravelConstraints($package, $release);
 
-                if ($constraints === null || ! $this->allows($constraints, $laravel)) {
+                // A release that does not constrain Laravel cannot refuse it.
+                if ($constraints !== null && ! $this->allows($constraints, $laravel)) {
                     continue;
                 }
             }
@@ -855,7 +880,7 @@ class UpgradeService
             $lines[] = '| --- | --- | --- | --- | --- | --- |';
 
             foreach ($laravel['dependencies'] as $dependency) {
-                $lines[] = '| '.$dependency['name'].($dependency['dev'] ? ' _(dev)_' : '').' | '.$dependency['installed'].' | `'.$dependency['constraint'].'` | '.$dependency['verdict'].' | '.($dependency['candidate'] ?? '—').' | '.$this->cell($dependency['reason']).' |';
+                $lines[] = '| '.$dependency['name'].($dependency['dev'] ? ' _(dev)_' : '').' | '.($dependency['installed'] ?? '—').' | `'.$dependency['constraint'].'` | '.$dependency['verdict'].' | '.($dependency['candidate'] ?? '—').' | '.$this->cell($dependency['reason']).' |';
             }
 
             $lines[] = '';
@@ -1121,7 +1146,8 @@ class UpgradeService
             return null;
         }
 
-        if (preg_match('/^([a-z]+)(?:[:@ ]v?(\d+(?:\.\d+)?))?$/i', trim($value), $m) !== 1) {
+        // Up to a patch: `larapilot:stack` reports `8.0.36`, and the skill feeds it back.
+        if (preg_match('/^([a-z]+)(?:[:@ ]v?(\d+(?:\.\d+){0,2}))?$/i', trim($value), $m) !== 1) {
             throw new \InvalidArgumentException('--db takes an engine and a version, like pgsql:17, mysql:8.4, or mariadb:11.4.');
         }
 
@@ -1131,7 +1157,15 @@ class UpgradeService
             throw new \InvalidArgumentException('Unknown database engine "'.$m[1].'": use mysql, mariadb, pgsql, sqlite, or sqlsrv.');
         }
 
-        return ['engine' => $engine, 'version' => $m[2] ?? null];
+        $version = $m[2] ?? null;
+
+        // MySQL and MariaDB are versioned by minor: `mysql:8` would read as 8.0,
+        // the cycle past its end of life, when 8.4 is probably what is meant.
+        if ($version !== null && ! str_contains($version, '.') && in_array($engine, ['mysql', 'mariadb'], true)) {
+            throw new \InvalidArgumentException(SupportPolicy::label($engine).' is versioned by minor: name it, like '.$engine.':'.SupportPolicy::latest($engine).'.');
+        }
+
+        return ['engine' => $engine, 'version' => $version];
     }
 
     protected function cell(string $text): string

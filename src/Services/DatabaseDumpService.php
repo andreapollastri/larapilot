@@ -141,6 +141,8 @@ class DatabaseDumpService
         $order = [];
         $unique = [];
 
+        $uniqueOrder = [];
+
         foreach ($this->attempt(fn (): array => $schema->getIndexes($table['key'])) as $index) {
             $indexed = array_values(array_map('strval', (array) ($index['columns'] ?? [])));
 
@@ -150,7 +152,21 @@ class DatabaseDumpService
 
             if (! empty($index['primary']) || ! empty($index['unique'])) {
                 $unique = array_merge($unique, $indexed);
+                $uniqueOrder = $uniqueOrder === [] ? $indexed : $uniqueOrder;
             }
+        }
+
+        // Pages are read with OFFSET: without an order the engine may hand
+        // the same row twice and another never. A unique index orders as
+        // well as a key; SQLite and Postgres have a row address to fall on.
+        $order = $order !== [] ? $order : $uniqueOrder;
+
+        if ($order === []) {
+            $order = match ($this->driver) {
+                'sqlite' => ['rowid'],
+                'pgsql' => ['ctid'],
+                default => [],
+            };
         }
 
         foreach ($this->attempt(fn (): array => $schema->getColumns($table['key'])) as $column) {
@@ -213,39 +229,52 @@ class DatabaseDumpService
         $written = 0;
         $batch = [];
         $bytes = 0;
-        $page = 1;
 
-        do {
-            $query = $this->connection->table($table['key']);
+        $flush = function (object|array $record) use ($plan, $head, &$written, &$batch, &$bytes): void {
+            $record = (array) $record;
+            $values = [];
 
-            foreach ($plan['order'] as $column) {
-                $query->orderBy($column);
+            foreach ($plan['columns'] as $column) {
+                $values[] = $column['hidden']
+                    ? $this->hiddenLiteral($column, $written + 1)
+                    : $this->literal($record[$column['name']] ?? null, $column['binary']);
             }
 
-            $records = $query->forPage($page++, self::ROWS_PER_READ)->get()->all();
+            $tuple = '('.implode(', ', $values).')';
+            $batch[] = $tuple;
+            $bytes += strlen($tuple);
+            $written++;
 
-            foreach ($records as $record) {
-                $record = (array) $record;
-                $values = [];
-
-                foreach ($plan['columns'] as $column) {
-                    $values[] = $column['hidden']
-                        ? $this->hiddenLiteral($column, $written + 1)
-                        : $this->literal($record[$column['name']] ?? null, $column['binary']);
-                }
-
-                $tuple = '('.implode(', ', $values).')';
-                $batch[] = $tuple;
-                $bytes += strlen($tuple);
-                $written++;
-
-                if (count($batch) >= self::ROWS_PER_INSERT || $bytes >= self::BYTES_PER_INSERT) {
-                    $this->statement($head."\n".implode(",\n", $batch));
-                    $batch = [];
-                    $bytes = 0;
-                }
+            if (count($batch) >= self::ROWS_PER_INSERT || $bytes >= self::BYTES_PER_INSERT) {
+                $this->statement($head."\n".implode(",\n", $batch));
+                $batch = [];
+                $bytes = 0;
             }
-        } while (count($records) === self::ROWS_PER_READ);
+        };
+
+        if ($plan['order'] === []) {
+            // A heap with no key and no unique index (MySQL, SQL Server):
+            // OFFSET pages have no stable order, so it is read in one pass.
+            foreach ($this->connection->table($table['key'])->cursor() as $record) {
+                $flush($record);
+            }
+        } else {
+            $page = 1;
+
+            do {
+                $query = $this->connection->table($table['key']);
+
+                foreach ($plan['order'] as $column) {
+                    $query->orderBy($column);
+                }
+
+                $records = $query->forPage($page++, self::ROWS_PER_READ)->get()->all();
+
+                foreach ($records as $record) {
+                    $flush($record);
+                }
+            } while (count($records) === self::ROWS_PER_READ);
+        }
 
         if ($batch !== []) {
             $this->statement($head."\n".implode(",\n", $batch));
@@ -834,7 +863,8 @@ class DatabaseDumpService
             $quoted = "'".str_replace("'", "''", in_array($this->driver, ['mysql', 'mariadb'], true) ? str_replace('\\', '\\\\', $string) : $string)."'";
         }
 
-        return $this->driver === 'sqlsrv' ? 'N'.$quoted : $quoted;
+        // pdo_sqlsrv already answers `N'…'` under UTF-8; a second N would not parse.
+        return $this->driver === 'sqlsrv' && ! str_starts_with($quoted, 'N\'') ? 'N'.$quoted : $quoted;
     }
 
     protected function bytes(string $bytes): string

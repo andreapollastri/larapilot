@@ -33,13 +33,23 @@ final class RepoFiles
     public const WALK_LIMIT = 150000;
 
     /**
+     * Manifests already decoded in this process: a scan asks for the root
+     * `package.json` and the `nx.json` dozens of times. An entry is kept
+     * while the file keeps its size and modification time.
+     *
+     * @var array<string, array{0: int|false, 1: int|false, 2: array<string, mixed>|null}>
+     */
+    protected static array $json = [];
+
+    /**
      * Every file under the root a callback accepts, as paths relative to the
-     * root with forward slashes, in a stable order.
+     * root with forward slashes — sorted, or in the order the walk found
+     * them when the caller sorts after taking its share.
      *
      * @param  callable(string): bool  $accept  Receives the relative path of a file.
      * @return array{files: list<string>, truncated: bool}
      */
-    public static function walk(string $root, callable $accept, int $maxDepth = 10, int $limit = self::WALK_LIMIT, int $maxFiles = PHP_INT_MAX): array
+    public static function walk(string $root, callable $accept, int $maxDepth = 10, int $limit = self::WALK_LIMIT, int $maxFiles = PHP_INT_MAX, bool $sort = true): array
     {
         $root = rtrim($root, '/\\');
         $files = [];
@@ -94,7 +104,9 @@ final class RepoFiles
             }
         }
 
-        sort($files);
+        if ($sort) {
+            sort($files);
+        }
 
         return ['files' => $files, 'truncated' => $truncated];
     }
@@ -104,19 +116,56 @@ final class RepoFiles
      */
     public static function json(string $path): ?array
     {
+        clearstatcache(false, $path);
+        $size = @filesize($path);
+        $mtime = @filemtime($path);
+
+        if (isset(self::$json[$path]) && self::$json[$path][0] === $size && self::$json[$path][1] === $mtime) {
+            return self::$json[$path][2];
+        }
+
         $content = self::read($path);
+        $decoded = null;
 
-        if ($content === null) {
-            return null;
+        if ($content !== null) {
+            // A manifest saved on Windows may open with a byte-order mark.
+            if (str_starts_with($content, "\xEF\xBB\xBF")) {
+                $content = substr($content, 3);
+            }
+
+            $decoded = json_decode($content, true);
+
+            if (! is_array($decoded)) {
+                $decoded = json_decode(self::stripJsonComments($content), true);
+            }
         }
 
-        $decoded = json_decode($content, true);
+        $decoded = is_array($decoded) ? $decoded : null;
 
-        if (! is_array($decoded)) {
-            $decoded = json_decode(self::stripJsonComments($content), true);
+        if (count(self::$json) >= 2000) {
+            self::$json = [];
         }
 
-        return is_array($decoded) ? $decoded : null;
+        self::$json[$path] = [$size, $mtime, $decoded];
+
+        return $decoded;
+    }
+
+    /**
+     * Drop what is remembered about a file this process just wrote.
+     */
+    public static function forget(string $path): void
+    {
+        unset(self::$json[$path]);
+        clearstatcache(true, $path);
+    }
+
+    /**
+     * Forget every manifest: a scan starts from the files as they are now.
+     */
+    public static function reset(): void
+    {
+        self::$json = [];
     }
 
     /**

@@ -22,6 +22,10 @@ class ScheduleApplyCommand extends LarapilotCommand
     public function handle(ScheduleService $schedule): int
     {
         if ((bool) $this->option('repair')) {
+            if (is_string($this->option('file')) && $this->option('file') !== '') {
+                return $this->failure('E_INVALID_INPUT', '--repair takes no --file: run the repair, then apply the re-plan.', $this->exitForCode('E_INVALID_INPUT'));
+            }
+
             return $this->success('schedule_repair', $schedule->repair((bool) $this->option('dry-run')));
         }
 

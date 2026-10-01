@@ -614,35 +614,35 @@ it('keeps what a skill loads at activation within its budget', function (): void
     // Tokens of the runtime files read on a project with default settings,
     // from a session that holds nothing. Raise a ceiling only on purpose.
     $ceilings = [
-        'triage' => 4800,
-        'aikido' => 4800,
-        'error' => 4800,
-        'vendor-check' => 4800,
-        'laravel-upgrade' => 9300,
-        'php-upgrade' => 9600,
-        'db-upgrade' => 9600,
-        'settings' => 4800,
-        'backstage' => 5700,
-        'tracker' => 5700,
-        'project-docs' => 5700,
-        'frontend-companion' => 5700,
-        'schedule' => 4800,
-        'usage' => 6200,
-        'release' => 7000,
-        'custom-skill' => 7500,
-        'autopilot' => 7700,
-        'bug' => 8400,
-        'review' => 9100,
-        'prd' => 9100,
-        'economics' => 10100,
-        'design' => 10700,
-        'ship' => 11200,
-        'spec' => 12000,
-        'feature' => 13700,
-        'implement' => 14400,
-        'plan' => 16400,
-        'inception' => 16500,
-        'adopt' => 19600,
+        'triage' => 4100,
+        'aikido' => 4100,
+        'error' => 4100,
+        'vendor-check' => 4100,
+        'laravel-upgrade' => 8600,
+        'php-upgrade' => 8900,
+        'db-upgrade' => 8900,
+        'settings' => 4100,
+        'backstage' => 4900,
+        'tracker' => 4900,
+        'project-docs' => 5000,
+        'frontend-companion' => 5100,
+        'schedule' => 4100,
+        'usage' => 5500,
+        'release' => 6200,
+        'custom-skill' => 6500,
+        'autopilot' => 6700,
+        'bug' => 6700,
+        'review' => 7500,
+        'prd' => 7700,
+        'economics' => 9100,
+        'design' => 8800,
+        'ship' => 9200,
+        'spec' => 10200,
+        'feature' => 11300,
+        'implement' => 12300,
+        'plan' => 14100,
+        'inception' => 13700,
+        'adopt' => 16500,
     ];
 
     expect(array_keys($ceilings))->toEqualCanonicalizing(packagedSkills());
@@ -663,7 +663,7 @@ it('keeps what a skill loads at activation within its budget', function (): void
         $chain += skillContext($skill, ['--session' => $session])['runtime']['tokens']['read'];
     }
 
-    expect($chain)->toBeLessThan(16000)
+    expect($chain)->toBeLessThan(14500)
         ->and(skillContext('review', ['--session' => $session])['runtime']['tokens']['read'])->toBe(0);
 });
 

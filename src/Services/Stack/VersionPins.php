@@ -217,15 +217,24 @@ class VersionPins
             $found[] = ['php', $m[1]];
         }
 
-        if (preg_match('/\bphp-version\s*:\s*\[?\s*[\'"]?(\d+\.\d+)/i', $line, $m) === 1) {
+        // A CI matrix (`php: [8.2, 8.3, 8.4]`) pins every version it lists.
+        if (preg_match('/\bphp(?:-version)?\s*:\s*\[([^\]]*)\]/i', $line, $m) === 1) {
+            foreach (preg_split('/\s*,\s*/', trim($m[1])) ?: [] as $entry) {
+                if (preg_match('/^[\'"]?(\d+\.\d+)/', trim($entry), $n) === 1) {
+                    $found[] = ['php', $n[1]];
+                }
+            }
+        } elseif (preg_match('/\bphp-version\s*:\s*[\'"]?(\d+\.\d+)/i', $line, $m) === 1) {
             $found[] = ['php', $m[1]];
         }
 
-        if (preg_match('/^\s*-?\s*php\s*:\s*\[\s*[\'"]?(\d+\.\d+)/i', $line, $m) === 1) {
-            $found[] = ['php', $m[1]];
-        }
-
-        if (preg_match('/\bnode-version\s*:\s*\[?\s*[\'"]?(\d+(?:\.\d+)*|lts\/\*)/i', $line, $m) === 1) {
+        if (preg_match('/\bnode-version\s*:\s*\[([^\]]*)\]/i', $line, $m) === 1) {
+            foreach (preg_split('/\s*,\s*/', trim($m[1])) ?: [] as $entry) {
+                if (preg_match('/^[\'"]?(\d+(?:\.\d+)*|lts\/\*)/i', trim($entry), $n) === 1) {
+                    $found[] = ['node', $n[1]];
+                }
+            }
+        } elseif (preg_match('/\bnode-version\s*:\s*[\'"]?(\d+(?:\.\d+)*|lts\/\*)/i', $line, $m) === 1) {
             $found[] = ['node', $m[1]];
         }
 
@@ -321,13 +330,10 @@ class VersionPins
      */
     public static function behind(array $pins, string $kind, string $version): array
     {
-        return array_values(array_filter($pins, static function (array $pin) use ($kind, $version): bool {
-            if ($pin['kind'] !== $kind) {
-                return false;
-            }
-
+        // null when the value is not a version; true when it disagrees with the target.
+        $disagrees = static function (array $pin) use ($version): ?bool {
             if (preg_match('/(\d+)(?:\.(\d+))?/', $pin['value'], $m) !== 1 || preg_match('/(\d+)(?:\.(\d+))?/', $version, $t) !== 1) {
-                return false;
+                return null;
             }
 
             // Compare at the precision the pin is written with: `node:20` is a major.
@@ -341,6 +347,22 @@ class VersionPins
             }
 
             return version_compare($pinned, $target, '!=');
+        };
+
+        // A line that lists several versions (a CI matrix) is not behind
+        // when the target is one of them.
+        $agreeing = [];
+
+        foreach ($pins as $pin) {
+            if ($pin['kind'] === $kind && $disagrees($pin) === false) {
+                $agreeing[$pin['file'].':'.$pin['line']] = true;
+            }
+        }
+
+        return array_values(array_filter($pins, static function (array $pin) use ($kind, $agreeing, $disagrees): bool {
+            return $pin['kind'] === $kind
+                && ! isset($agreeing[$pin['file'].':'.$pin['line']])
+                && $disagrees($pin) === true;
         }));
     }
 }

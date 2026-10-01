@@ -14,7 +14,7 @@ Persist project-wide Larapilot settings into `.larapilot/config.yaml`. All other
 The option labels of every round are in this skill. Read more only when the user asks for it:
 
 - **What a value changes, in detail** — `core-settings.full.md` and `core-settings-2.full.md` (on demand): every value of every setting.
-- **Setting up** a forge, a bot, dashboard or API auth, Aikido, an error tracker, or the security scan — `.larapilot/integrations.md` is 33 KB: search its `## ` heading with the editor search tool and read that section only.
+- **Setting up** a forge, a bot, dashboard or API auth, Aikido, an error tracker, or the security scan — `.larapilot/integrations.md` is large (about 36 KB): search its `## ` heading with the editor search tool and read that section only.
 - **Economics** — `economics-1.md`, in `read` when `account` is not `NONE`, on demand when the user turns it on.
 
 A setting saved here changes what the other skills are given: their next `context` call lists the files that changed.

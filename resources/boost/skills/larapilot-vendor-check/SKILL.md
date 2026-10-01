@@ -120,7 +120,7 @@ Run `vendor-audit --report` again (the lockfiles changed: a fresh check, not `--
 
 - No spec, PRD edit, or plan here — triage and the skill it hands to write them
 - Never `npm audit fix --force`, `composer update` without a package, `--ignore-platform-reqs`, or a manual edit of a lockfile
-- Never waive, and never pick the severity: OSV.dev and the advisory decide it
+- Never waive, and never pick the severity: OSV.dev and the advisory decide it. `unknown` means unrated — no CVSS 3 vector and no severity word (advisories published with CVSS 4 only, some FriendsOfPHP ones): it never blocks the gate on its own, so open the advisory and tell the user what it says
 - A package `in_backlog` still counts for the gate until the update is merged and the check says so
 - Do not paste every advisory in chat; name the report
 

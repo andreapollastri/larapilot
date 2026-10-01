@@ -2,13 +2,13 @@
 
 When the product serves **multiple customers, workspaces, or isolated environments**, John **must** compare tenancy patterns in the PRD `## Technical Architecture` (or a linked ADR) — never assume single-tenant by default if the brief implies SaaS, agencies, or per-client isolation.
 
-| Pattern                         | How it works                                                                                                                                                                                                                     | Pros                                                                                                              | Cons                                                                                | Best when                                                                       |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| **A — Distributed monolith**    | **One repo**, same Laravel monolith **deployed to N servers** (or N Cipi/Forge sites); **custom subdomain** (or domain) per tenant; optional **central SSO** in front (Cloudflare Access, Keycloak, Auth0, Sanctum central IdP)   | Strong runtime isolation, per-tenant scaling, simple mental model, easy custom domains, blast-radius containment   | N deploy pipelines to patch, config drift if not automated, higher base infra cost   | Few–medium tenants, enterprise clients, strict isolation without microservices   |
-| **B — Row-level (`tenant_id`)** | Single deploy, single DB; `tenant_id` on rows; global scopes / middleware                                                                                                                                                          | Cheapest, fastest MVP, one migration path                                                                          | Weakest isolation, IDOR risk if scopes fail, noisy-neighbor on shared DB             | Many small tenants, early B2B SaaS, MVP validation                               |
-| **C — Database-per-tenant**     | Single deploy; separate DB (or connection) per tenant                                                                                                                                                                              | Strong data isolation, clean export/delete per tenant                                                              | Connection management, many DBs to migrate/backup                                    | Compliance-heavy (GDPR erasure), medium tenant count                             |
-| **D — Schema-per-tenant**       | Single DB, separate PostgreSQL schema per tenant                                                                                                                                                                                   | Balance of isolation and shared infra                                                                              | PostgreSQL-only, migration fan-out complexity                                        | Medium tenants on PostgreSQL                                                     |
-| **E — Package-driven**          | [stancl/tenancy](https://tenancyforlaravel.com/) or [spatie/laravel-multitenancy](https://github.com/spatie/laravel-multitenancy) — subdomain identification, bootstrapped tenant context                                          | Laravel-native, community patterns, less bespoke glue                                                              | Package constraints, learning curve                                                  | Greenfield multi-tenant Laravel with subdomain routing                           |
+| Pattern | How it works | Pros | Cons | Best when |
+| --- | --- | --- | --- | --- |
+| **A — Distributed monolith** | **One repo**, same Laravel monolith **deployed to N servers** (or N Cipi/Forge sites); **custom subdomain** (or domain) per tenant; optional **central SSO** in front (Cloudflare Access, Keycloak, Auth0, Sanctum central IdP) | Strong runtime isolation, per-tenant scaling, simple mental model, easy custom domains, blast-radius containment | N deploy pipelines to patch, config drift if not automated, higher base infra cost | Few–medium tenants, enterprise clients, strict isolation without microservices |
+| **B — Row-level (`tenant_id`)** | Single deploy, single DB; `tenant_id` on rows; global scopes / middleware | Cheapest, fastest MVP, one migration path | Weakest isolation, IDOR risk if scopes fail, noisy-neighbor on shared DB | Many small tenants, early B2B SaaS, MVP validation |
+| **C — Database-per-tenant** | Single deploy; separate DB (or connection) per tenant | Strong data isolation, clean export/delete per tenant | Connection management, many DBs to migrate/backup | Compliance-heavy (GDPR erasure), medium tenant count |
+| **D — Schema-per-tenant** | Single DB, separate PostgreSQL schema per tenant | Balance of isolation and shared infra | PostgreSQL-only, migration fan-out complexity | Medium tenants on PostgreSQL |
+| **E — Package-driven** | [stancl/tenancy](https://tenancyforlaravel.com/) or [spatie/laravel-multitenancy](https://github.com/spatie/laravel-multitenancy) — subdomain identification, bootstrapped tenant context | Laravel-native, community patterns, less bespoke glue | Package constraints, learning curve | Greenfield multi-tenant Laravel with subdomain routing |
 
 **John's decision rules:**
 
@@ -31,7 +31,7 @@ Evaluate every non-trivial persistence choice against: **performance**, **usabil
 ### Tree / hierarchy patterns _(choose explicitly — never invent ad-hoc)_
 
 | Pattern | Pros | Cons | Prefer when |
-| ------- | ---- | ---- | ----------- |
+| --- | --- | --- | --- |
 | **Adjacency List** (`parent_id`) | Simple writes, intuitive | Expensive deep reads without recursion/CTE | Shallow trees, frequent moves |
 | **Nested Sets** | Fast subtree reads | Expensive writes/rebuilds | Read-heavy catalogs, rare moves |
 | **Path Enumeration** / materialized path | Fast ancestors/descendants with `LIKE`/`ltree` | Path renames on move | Medium depth, PostgreSQL `ltree` available |
@@ -70,12 +70,12 @@ Ownership: **Sebastian** proposes vendor and service integrations; **Matt** owns
 
 **Never impose a local stack by default.** **Jack** presents the options below via **AskQuestion** during inception (downstream skills ask only if the PRD omits the choice). Recommend the best fit for the team, OS, and services the PRD needs — do not default to Sail. Record the choice in the PRD under `## Technical Architecture` → `Local dev` so downstream skills honor it instead of re-imposing Docker.
 
-| Option                    | When to recommend                                                                                                                     |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------|
-| **Laravel Sail (Docker)** | Containerized parity with production, multiple services (MySQL, Redis, Mailpit, MinIO), reproducible onboarding for mixed OS teams     |
-| **Laravel Herd**          | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/)                                |
-| **Not defined yet**       | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap                                        |
-| **Other**                 | User names a specific alternative (Valet, WSL + native PHP, existing team stack, …)                                                    |
+| Option | When to recommend |
+| --- | --- |
+| **Laravel Sail (Docker)** | Containerized parity with production, multiple services (MySQL, Redis, Mailpit, MinIO), reproducible onboarding for mixed OS teams |
+| **Laravel Herd** | macOS/Windows, native PHP/nginx, no Docker overhead — see [herd.laravel.com](https://herd.laravel.com/) |
+| **Not defined yet** | Brownfield, unknown team setup, or defer local-stack scaffolding until implementation bootstrap |
+| **Other** | User names a specific alternative (Valet, WSL + native PHP, existing team stack, …) |
 
 After the choice: **Sail** — `composer require laravel/sail --dev` + `php artisan sail:install`; document `sail up` / `sail artisan …` in README ([Sail docs](https://laravel.com/docs/sail)). **Herd** — document Herd setup in README; use `*.test` domains where helpful. **Not defined yet** — README documents generic `php artisan` workflow only; **do not** add Sail/Herd install tasks until the user decides. **Other** — document the named stack; no Sail/Herd scaffolding unless chosen later.
 
