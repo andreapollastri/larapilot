@@ -1627,9 +1627,39 @@ class ConfigService
     }
 
     /**
-     * The gate the file manager, the database viewer, and the log viewer
-     * share: the dashboard is browsable, the tool is not switched off, and
-     * the machine is a developer's own or the dashboard asks for a sign-in.
+     * Whether the Laravel page of the dashboard is available. Same rule as
+     * the file manager, the database viewer, and the log viewer: never in
+     * production, open on a developer machine, and behind the dashboard
+     * sign-in anywhere else — it shows the mail the application sent.
+     */
+    public function laravelViewerBrowsable(): bool
+    {
+        return $this->protectedToolBrowsable('laravel_viewer');
+    }
+
+    /**
+     * Whether the outgoing mail (`mail`) or the dumps (`dumps`) are kept for
+     * the Laravel page. Never where the page is not served. With the setting
+     * left empty, only on a developer's own machine — and not while the
+     * tests of the project run, which would fill the folder with theirs.
+     */
+    public function laravelViewerRecords(string $what): bool
+    {
+        $setting = config("larapilot.laravel_viewer.{$what}");
+        $automatic = $setting === null || $setting === '';
+
+        if ($automatic ? ! app()->environment(['local', 'development']) : ! filter_var($setting, FILTER_VALIDATE_BOOL)) {
+            return false;
+        }
+
+        return $this->laravelViewerBrowsable();
+    }
+
+    /**
+     * The gate the file manager, the database viewer, the log viewer, and
+     * the Laravel page share: the dashboard is browsable, the tool is not
+     * switched off, and the machine is a developer's own or the dashboard
+     * asks for a sign-in.
      */
     protected function protectedToolBrowsable(string $tool): bool
     {

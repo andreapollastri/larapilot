@@ -1171,6 +1171,20 @@
             </section>
         @endif
 
+        @if (is_array($effort['built'] ?? null))
+            <section class="card panel" id="eco-built">
+                <h4>{{ $t('s2.built.title') }}</h4>
+                <p class="hint" style="margin:0">
+                    {{ $t('s2.built.line', [
+                        'specs' => $effort['built']['specs'] ?? 0,
+                        'quoted' => $hours($effort['built']['quoted_hours'] ?? 0),
+                        'build' => $effort['built']['build_display'] ?? '',
+                    ]) }}
+                    <a href="{{ route('larapilot.dashboard.usage') }}#actuals-panel">{{ $t('s2.built.link') }}</a>
+                </p>
+            </section>
+        @endif
+
         <details class="card eco-fold" data-fold="hours">
             <summary>{{ $t('show.hours') }}</summary>
             <section class="panel">

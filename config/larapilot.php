@@ -566,6 +566,29 @@ return [
         'scan_mb' => (int) env('LARAPILOT_LOG_VIEWER_SCAN_MB', 32),
     ],
 
+    // Laravel on the dashboard (/larapilot/laravel): how the framework is set
+    // up and what it is doing — the drivers in use, what is cached, the
+    // scheduled tasks, the jobs that wait and the ones that failed — and what
+    // the application sent and dumped: the outgoing mail and every dump() and
+    // dd(), kept in storage/larapilot to be read on the page. The same gate as
+    // the file manager: never in production, open in local/development/
+    // testing, and elsewhere only when `dashboard_auth` is ON.
+    'laravel_viewer' => [
+        'enabled' => env('LARAPILOT_LARAVEL_VIEWER', true),
+        // Keep the outgoing mail. Empty means on a developer's own machine
+        // (local, development) and nowhere else: a mail carries reset links
+        // and personal data. true keeps it wherever the page is served,
+        // false never.
+        'mail' => env('LARAPILOT_LARAVEL_VIEWER_MAIL'),
+        // Keep what dump() and dd() print, by the same rule.
+        'dumps' => env('LARAPILOT_LARAVEL_VIEWER_DUMPS'),
+        // How many mails and how many dumps are kept; the oldest go first.
+        'keep' => (int) env('LARAPILOT_LARAVEL_VIEWER_KEEP', 100),
+        // The folder they are kept in; empty means storage/larapilot. A path
+        // that is not absolute is taken from the root of the project.
+        'path' => env('LARAPILOT_LARAVEL_VIEWER_PATH'),
+    ],
+
     'workflow' => [
         'statuses' => [
             'todo' => 'TODO',

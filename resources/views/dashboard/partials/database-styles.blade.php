@@ -53,6 +53,36 @@
 
     .db-schema { color: var(--muted); font-weight: 450; }
 
+    /* ---- tables / diagram, rows / structure ---- */
+    .db-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+
+    .db-tabs a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 36px;
+        padding: 0 13px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--text-2);
+        font-size: 0.84rem;
+        font-weight: 550;
+        text-decoration: none;
+    }
+
+    .db-tabs a .icon { width: 15px; height: 15px; color: var(--muted); }
+    .db-tabs a:hover { border-color: var(--border-strong); color: var(--text); }
+
+    .db-tabs a[aria-current] {
+        border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        font-weight: 600;
+    }
+
+    .db-tabs a[aria-current] .icon { color: var(--accent); }
+
     /* ---- the list of tables ---- */
     .db-list { overflow: hidden; }
     .db-list-tools { padding: 12px 14px; border-bottom: 1px solid var(--border); }

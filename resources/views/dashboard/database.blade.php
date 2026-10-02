@@ -50,6 +50,24 @@
             </div>
         </div>
 
+        @php
+            // An empty database has nothing to draw, and every migration still to run.
+            $view = ($view ?? 'tables') === 'diagram' && $objects === [] ? 'tables' : ($view ?? 'tables');
+        @endphp
+
+        <nav class="db-tabs" aria-label="Database">
+            <a href="{{ route('larapilot.dashboard.database') }}" @if ($view === 'tables') aria-current="page" @endif>@include('larapilot::dashboard.partials.icon', ['name' => 'table'])Tables</a>
+            @if ($objects !== [])
+                <a href="{{ route('larapilot.dashboard.database', ['view' => 'diagram']) }}" @if ($view === 'diagram') aria-current="page" @endif>@include('larapilot::dashboard.partials.icon', ['name' => 'merge'])Diagram</a>
+            @endif
+            <a href="{{ route('larapilot.dashboard.database', ['view' => 'migrations']) }}" @if ($view === 'migrations') aria-current="page" @endif>@include('larapilot::dashboard.partials.icon', ['name' => 'layers'])Migrations</a>
+        </nav>
+
+        @if ($view === 'diagram')
+            @include('larapilot::dashboard.partials.database-diagram')
+        @elseif ($view === 'migrations')
+            @include('larapilot::dashboard.partials.database-migrations', $migrations)
+        @else
         <section class="card db-list" aria-label="Tables and views">
             @if ($objects === [])
                 <div class="empty">
@@ -93,6 +111,7 @@
                 </div>
             @endif
         </section>
+        @endif
     @endif
 @endsection
 

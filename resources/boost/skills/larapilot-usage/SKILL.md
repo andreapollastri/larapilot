@@ -77,7 +77,8 @@ Map the user ask to one mode (AskQuestion only when ambiguous; max 1 round, skip
 | --- | --- | --- |
 | **Overview** | "quanto abbiamo speso / riepilogo" | `--insights` |
 | **By phase** | "tempo in analisi vs implementazione" | `--insights` then compare `top_categories` / `by_category` |
-| **By story** | "US-012 quanto ci ha messo" | `--spec=US-012 --insights` |
+| **By story** | "US-012 quanto ci ha messo" | `--spec=US-012 --insights` — `insights.actuals.specs[0]`: estimate, build, wait in review, reworks, tokens |
+| **Estimate vs build** | "quanto ci abbiamo messo rispetto alle stime" | `--insights` → `insights.actuals` (`totals`, and the 20 newest delivered specs) |
 | **By person** | "tempo di Andrea" | `--user=andrea --insights` |
 | **By period** | "agosto", "ultima settimana" | `--from=` `--to=` `--insights` |
 | **Schedule** | "siamo in ritardo?", "scadenze" | use `insights.deadlines` + `at_risk_or_delayed` |
@@ -96,8 +97,9 @@ Structure:
 1. **Headline numbers** — entries · hours · tokens as `K` when ≥ 1000 (filtered scope stated in one clause). Prefer hours, not minutes.
 2. **Breakdown** — top categories with share %; hot specs when relevant.
 3. **Schedule** — next deadline, days until, any `at_risk` / `delayed` / overdue; mention epic deadline slips from `insights.criticality` when present.
-4. **Zoey caveat** — if the user compares Zoey `context ≈ Nk` to Lucille totals, explain via `insights.zoey` (loaded context ≠ ledger spend). If `estimated_entry_count` is high, note that many rows are estimates.
-5. **Pointer** — dashboard `/larapilot/usage` for tokens, `/larapilot/plan` for the Gantt and deadlines, and/or the exported MD path when useful.
+4. **Estimate vs build** — when asked, from `insights.actuals`: estimated hours, build time, `ratio` (null under three timed specs — then say so, give no ratio). Say what the figures are: the estimate is the agent's own, before the PM/QA buffer; build is the time `IN PROGRESS`, pauses included; nobody's review hours are in it. Never call it time or money saved.
+5. **Zoey caveat** — if the user compares Zoey `context ≈ Nk` to Lucille totals, explain via `insights.zoey` (loaded context ≠ ledger spend). If `estimated_entry_count` is high, note that many rows are estimates.
+6. **Pointer** — dashboard `/larapilot/usage` for tokens, `/larapilot/plan` for the Gantt and deadlines, and/or the exported MD path when useful.
 
 Keep chat under ~12 lines unless the user asked for a full dump. For full dumps, prefer `--format=md` + `--output=` and summarize.
 

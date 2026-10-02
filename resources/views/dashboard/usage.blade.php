@@ -110,6 +110,58 @@
     }
 
     .reason-list li { margin: 3px 0; }
+
+    .actuals-figures {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 20px;
+        margin: 14px 0 18px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    @media (min-width: 860px) {
+        .actuals-figures { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    .actuals-figures .metric-value.is-lead { color: var(--accent-strong); }
+
+    .actuals {
+        width: 100%;
+        min-width: 620px;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+    }
+
+    .actuals th,
+    .actuals td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: right;
+        vertical-align: top;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .actuals th {
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 650;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .actuals th:first-child,
+    .actuals td:first-child { min-width: 180px; text-align: left; white-space: normal; }
+
+    .actuals tbody tr:hover { background: var(--surface-2); }
+    .actuals .spec-title { display: block; margin-top: 2px; color: var(--text-2); }
+    .actuals .chips { margin-top: 6px; }
+    .actuals .chip { padding: 1px 8px; font-size: 0.7rem; }
+    .actuals .bar-track { width: 96px; height: 4px; margin: 7px 0 0 auto; }
+    .actuals .bar-fill.is-over { background: var(--warn-fill); }
+    .actuals .is-blank { color: var(--muted); }
+    .usage-panel .actuals-note { margin: 14px 0 0; }
 </style>
 @endpush
 
@@ -136,6 +188,13 @@
 
             return rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') ?: '0';
         };
+        $actuals = is_array($actuals ?? null) ? $actuals : [];
+        $actualRows = is_array($actuals['specs'] ?? null) ? $actuals['specs'] : [];
+        $actualTotals = is_array($actuals['totals'] ?? null) ? $actuals['totals'] : [];
+        $actualLimit = 50;
+        $doneLabel = $actuals['statuses']['done'] ?? 'DONE';
+        $inProgressLabel = $actuals['statuses']['in_progress'] ?? 'IN PROGRESS';
+        $plainHours = fn (float|int $hours): string => rtrim(rtrim(number_format((float) $hours, 1, '.', ''), '0'), '.') ?: '0';
         $logged = function (mixed $stamp): string {
             $stamp = (string) $stamp;
 
@@ -175,6 +234,115 @@
             <div class="metric-value">{{ $summary['total_hours'] ?? 0 }}</div>
         </div>
     </div>
+
+    <section class="card panel usage-panel" id="actuals-panel">
+        <h3>Estimate vs build</h3>
+        @if ($actualRows === [])
+            <div class="empty" style="padding: 24px 12px;">No spec delivered yet. A spec shows here once it is {{ $doneLabel }}, with the time it spent {{ $inProgressLabel }}.</div>
+        @else
+            <p class="hint">
+                {{ $actualTotals['delivered'] ?? 0 }} of {{ $actualTotals['backlog'] ?? 0 }} specs delivered
+                · {{ $actualTotals['timed'] ?? 0 }} with a build time
+            </p>
+            <div class="actuals-figures">
+                <div>
+                    <div class="metric-label">Estimated</div>
+                    <div class="metric-value">{{ $plainHours($actualTotals['estimate_hours'] ?? 0) }} h</div>
+                    <div class="metric-note">Hours of the plans, for the specs with a build time</div>
+                </div>
+                <div>
+                    <div class="metric-label">Build</div>
+                    <div class="metric-value">{{ $actualTotals['build_display'] ?? '—' }}</div>
+                    <div class="metric-note">Time spent {{ $inProgressLabel }}, pauses included</div>
+                </div>
+                <div>
+                    <div class="metric-label">Estimate ÷ build</div>
+                    <div class="metric-value is-lead">{{ $actualTotals['ratio_display'] ?? '—' }}</div>
+                    <div class="metric-note">
+                        @if (($actualTotals['ratio_display'] ?? null) === null)
+                            Given from {{ $actualTotals['min_timed_specs'] ?? 3 }} specs with a build time
+                        @else
+                            An estimate the agent wrote, not hours a person worked
+                        @endif
+                    </div>
+                </div>
+                <div>
+                    <div class="metric-label">Tokens</div>
+                    <div class="metric-value">{{ $formatTokens((int) ($actualTotals['tokens'] ?? 0)) }}</div>
+                    <div class="metric-note">Logged for {{ $actualTotals['specs_with_tokens'] ?? 0 }} of {{ $actualTotals['delivered'] ?? 0 }} delivered specs</div>
+                </div>
+            </div>
+            <div class="table-wrap">
+            <table class="actuals" id="actuals-table">
+                <thead>
+                    <tr>
+                        <th>Spec</th>
+                        <th>Estimate</th>
+                        <th>Build</th>
+                        <th>Ratio</th>
+                        <th>In review</th>
+                        <th>Tokens</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (array_slice($actualRows, 0, $actualLimit) as $row)
+                        @php
+                            $estimateMinutes = ((float) ($row['estimate_hours'] ?? 0)) * 60;
+                            $share = ($row['build_minutes'] ?? null) !== null && $estimateMinutes > 0
+                                ? ((float) $row['build_minutes']) / $estimateMinutes * 100
+                                : null;
+                        @endphp
+                        <tr>
+                            <td>
+                                <a href="{{ route('larapilot.dashboard.spec', ['code' => $row['code']]) }}"><strong>{{ $row['code'] }}</strong></a>
+                                <span class="spec-title">{{ $row['title'] }}</span>
+                                @if (($row['reworks'] ?? 0) > 0 || ($row['restarts'] ?? 0) > 0 || ($row['estimate_from'] ?? 'plan') !== 'plan' || empty($row['timed']))
+                                    <span class="chips">
+                                        @if (($row['reworks'] ?? 0) > 0)
+                                            <span class="chip stale" title="Review sent it back for changes">sent back ×{{ $row['reworks'] }}</span>
+                                        @endif
+                                        @if (($row['restarts'] ?? 0) > 0)
+                                            <span class="chip stale" title="It left {{ $inProgressLabel }} without reaching review, and was started again">started over ×{{ $row['restarts'] }}</span>
+                                        @endif
+                                        @if (($row['estimate_from'] ?? 'plan') === 'points')
+                                            <span class="chip" title="No plan: the estimate is the story points">from story points</span>
+                                        @elseif (($row['estimate_from'] ?? 'plan') === 'unsized')
+                                            <span class="chip" title="No plan and no story points: counted at the default size">default size</span>
+                                        @endif
+                                        @if (empty($row['timed']))
+                                            <span class="chip" title="The backlog holds no {{ $inProgressLabel }} step for this spec">no build time</span>
+                                        @endif
+                                    </span>
+                                @endif
+                            </td>
+                            <td>{{ $plainHours($row['estimate_hours'] ?? 0) }} h</td>
+                            <td @class(['is-blank' => $share === null])>
+                                {{ $row['build_display'] ?? '—' }}
+                                @if ($share !== null)
+                                    <div class="bar-track" title="The build is {{ $share < 1 ? 'under 1' : (int) round($share) }}% of the estimate">
+                                        <div @class(['bar-fill', 'is-over' => $share > 100]) style="width: {{ max(2, min(100, (int) round($share))) }}%"></div>
+                                    </div>
+                                @endif
+                            </td>
+                            <td @class(['is-blank' => ($row['ratio_display'] ?? null) === null])>{{ $row['ratio_display'] ?? '—' }}</td>
+                            <td @class(['is-blank' => ($row['review_display'] ?? null) === null])>{{ $row['review_display'] ?? '—' }}</td>
+                            <td @class(['is-blank' => ($row['tokens'] ?? 0) <= 0])>{{ ($row['tokens'] ?? 0) > 0 ? $formatTokens((int) $row['tokens']) : '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            </div>
+            <p class="hint actuals-note">
+                @if (count($actualRows) > $actualLimit)
+                    The {{ $actualLimit }} newest of {{ count($actualRows) }} delivered specs; the report holds them all.
+                @endif
+                <strong>Estimate</strong> is the hours of the plan's tasks, or the story points of a spec with no plan, before the PM/QA buffer.
+                <strong>Build</strong> is the time between <code>spec-start</code> and <code>spec-review</code>: the spec was {{ $inProgressLabel }}, whether or not someone was working.
+                <strong>In review</strong> is the wait until {{ $doneLabel }}, not the time a person spent reviewing.
+                <strong>Tokens</strong> are the ledger entries logged with <code>--spec</code>.
+            </p>
+        @endif
+    </section>
 
     <section class="card panel usage-panel">
         <h3>Zoey vs Lucille</h3>

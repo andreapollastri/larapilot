@@ -47,6 +47,15 @@
     @case('logs')
         <rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9.5 3 2.5-3 2.5M12.5 14.5H17"/>
         @break
+    @case('laravel')
+        <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>
+        @break
+    @case('clock')
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+        @break
+    @case('mail')
+        <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>
+        @break
     @case('layers')
         <path d="m12 4 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4M4 16l8 4 8-4"/>
         @break

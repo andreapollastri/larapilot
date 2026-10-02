@@ -41,6 +41,7 @@ class UsageService
         protected SpecService $specs,
         protected PlanService $plans,
         protected ReleaseService $releases,
+        protected SpecActualsService $specActuals,
     ) {}
 
     public function usageDirectory(): string
@@ -280,6 +281,45 @@ class UsageService
     }
 
     /**
+     * What every delivered spec was estimated at and what it took to build,
+     * with the tokens the ledger holds for it.
+     *
+     * @return array{specs: list<array<string, mixed>>, totals: array<string, mixed>, statuses: array<string, string>}
+     */
+    public function actuals(): array
+    {
+        return $this->specActuals->snapshot($this->summary()['by_spec']);
+    }
+
+    /**
+     * The same answer for a skill: the totals, and the newest delivered specs
+     * in the few fields a sentence needs — or the one spec that was asked for.
+     *
+     * @return array{totals: array<string, mixed>, specs: list<array<string, mixed>>}
+     */
+    protected function actualsInsight(?string $spec = null): array
+    {
+        $actuals = $this->actuals();
+        $rows = $spec !== null
+            ? array_filter($actuals['specs'], static fn (array $row): bool => strcasecmp((string) $row['code'], $spec) === 0)
+            : array_slice($actuals['specs'], 0, 20);
+
+        return [
+            'totals' => $actuals['totals'],
+            'specs' => array_values(array_map(static fn (array $row): array => [
+                'code' => $row['code'],
+                'estimate_hours' => $row['estimate_hours'],
+                'build' => $row['build_display'],
+                'ratio' => $row['ratio'],
+                'in_review' => $row['review_display'],
+                'reworks' => $row['reworks'],
+                'restarts' => $row['restarts'],
+                'tokens' => $row['tokens'],
+            ], $rows)),
+        ];
+    }
+
+    /**
      * High-signal answers for Lucille's interrogation skill.
      *
      * @param  array<string, mixed>  $filters
@@ -366,6 +406,7 @@ class UsageService
             )),
             'criticality' => $this->criticality($gantt),
             'zoey' => $this->zoeyReconciliation(),
+            'actuals' => $this->actualsInsight($this->normalizeSpec($filters['spec'] ?? null)),
             'gantt' => $gantt,
         ];
     }
@@ -594,6 +635,12 @@ class UsageService
             );
         }
 
+        // The build times belong to the whole project: a filtered ledger would
+        // set them beside tokens that are only a part of what a spec took.
+        if ($summary['filters'] === []) {
+            array_push($lines, ...$this->actualsMarkdown());
+        }
+
         $lines[] = '';
         $lines[] = '## Schedule';
         $lines[] = '';
@@ -650,6 +697,66 @@ class UsageService
         $lines[] = '';
 
         return implode(PHP_EOL, $lines);
+    }
+
+    /**
+     * The delivered specs as a section of the report: what each was estimated
+     * at, the time it spent IN PROGRESS, and what the ledger holds for it.
+     *
+     * @return list<string>
+     */
+    protected function actualsMarkdown(): array
+    {
+        $actuals = $this->actuals();
+        $totals = $actuals['totals'];
+
+        if ($actuals['specs'] === []) {
+            return [];
+        }
+
+        $lines = [
+            '',
+            '## Estimate vs build',
+            '',
+            sprintf(
+                '%d of %d specs delivered, %d with a build time. Estimate %s h · build %s · %s · tokens %s on %d %s.',
+                $totals['delivered'],
+                $totals['backlog'],
+                $totals['timed'],
+                $totals['estimate_hours'],
+                $totals['build_display'],
+                $totals['ratio_display'] ?? 'no ratio under '.$totals['min_timed_specs'].' timed specs',
+                $this->formatTokens((int) $totals['tokens']),
+                $totals['specs_with_tokens'],
+                $totals['specs_with_tokens'] === 1 ? 'spec' : 'specs'
+            ),
+            '',
+            '_Estimate: plan task hours, or story points without a plan, before the PM/QA buffer. Build: time spent IN PROGRESS, pauses included._',
+            '',
+            '| Spec | Estimate | Build | Ratio | In review | Tokens | Notes |',
+            '| ---- | -------- | ----- | ----- | --------- | ------ | ----- |',
+        ];
+
+        foreach ($actuals['specs'] as $row) {
+            $notes = array_filter([
+                $row['reworks'] > 0 ? 'sent back ×'.$row['reworks'] : null,
+                $row['restarts'] > 0 ? 'started over ×'.$row['restarts'] : null,
+                $row['estimate_from'] !== 'plan' ? 'estimate from '.($row['estimate_from'] === 'points' ? 'story points' : 'the default size') : null,
+            ]);
+
+            $lines[] = sprintf(
+                '| %s | %s h | %s | %s | %s | %s | %s |',
+                str_replace('|', '\\|', (string) $row['code']),
+                $row['estimate_hours'],
+                $row['build_display'] ?? '—',
+                $row['ratio_display'] ?? '—',
+                $row['review_display'] ?? '—',
+                ($row['tokens'] ?? 0) > 0 ? $this->formatTokens((int) $row['tokens']) : '—',
+                $notes === [] ? '' : implode(' · ', $notes)
+            );
+        }
+
+        return $lines;
     }
 
     /**
@@ -1229,6 +1336,7 @@ class UsageService
             'gantt' => $gantt,
             'criticality' => $this->criticality($gantt),
             'zoey' => $this->zoeyReconciliation(),
+            'actuals' => $this->actuals(),
             'entries' => $entries,
             'entry_users' => $users,
             'entry_categories' => self::CATEGORIES,

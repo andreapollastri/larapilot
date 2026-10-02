@@ -7,6 +7,7 @@ namespace Larapilot\Services;
 use Larapilot\Support\ArtifactLanguage;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\EconomicsStrings;
+use Larapilot\Support\EffortEstimate;
 use Larapilot\Support\TaxCatalog;
 use Larapilot\Support\TaxEngine;
 use Symfony\Component\Yaml\Yaml;
@@ -23,7 +24,7 @@ class EconomicsService
     /**
      * Size assumed for a spec that carries neither a plan nor story points.
      */
-    public const DEFAULT_SPEC_POINTS = 3;
+    public const DEFAULT_SPEC_POINTS = EffortEstimate::DEFAULT_SPEC_POINTS;
 
     /**
      * Floor for a project with an empty backlog, before scope multipliers.
@@ -881,6 +882,11 @@ class EconomicsService
             $lines[] = '- **'.$label.':** '.$formatted;
         }
 
+        $built = $data['effort']['built'] ?? null;
+        if (is_array($built)) {
+            $lines[] = '- **Delivered so far:** '.$built['specs'].' specs with a build time, '.$built['quoted_hours'].' h in this quote, built in '.$built['build_display'].' (time in progress, pauses included)';
+        }
+
         $tax = is_array($data['tax'] ?? null) ? $data['tax'] : [];
         if ($tax !== []) {
             $lines[] = '';
@@ -1255,11 +1261,7 @@ class EconomicsService
     protected function effortModel(array $inception, array $profile): array
     {
         $settings = $this->config->settings();
-        $settingHoursPerPoint = match ($settings['effort'] ?? 'STANDARD') {
-            'ECO' => 3.0,
-            'MAX' => 5.5,
-            default => 4.0,
-        };
+        $settingHoursPerPoint = EffortEstimate::settingHoursPerPoint((string) ($settings['effort'] ?? 'STANDARD'));
 
         $rows = $this->specEffortRows();
 
@@ -1280,12 +1282,7 @@ class EconomicsService
             }
         }
 
-        // Plans are the strongest estimate the project has. Once enough of the
-        // backlog is planned, the rest of the story points convert at the rate
-        // those plans actually imply instead of the generic effort constant.
-        $calibratedHoursPerPoint = $plannedSpecs >= 2 && $plannedPoints >= 5 && $plannedHours > 0
-            ? min(12.0, max(0.5, round($plannedHours / $plannedPoints, 2)))
-            : null;
+        $calibratedHoursPerPoint = EffortEstimate::calibratedHoursPerPoint($plannedHours, $plannedPoints, $plannedSpecs);
 
         $hoursPerPoint = $calibratedHoursPerPoint ?? $settingHoursPerPoint;
 
@@ -1297,17 +1294,12 @@ class EconomicsService
         $deliveredBase = 0.0;
 
         foreach ($rows as $row) {
-            if ($row['plan_hours'] > 0) {
-                $hours = $row['plan_hours'];
-                $from = 'plan';
-            } elseif ($row['points'] > 0) {
-                $hours = $row['points'] * $hoursPerPoint;
-                $from = 'points';
+            ['hours' => $hours, 'from' => $from] = EffortEstimate::specHours($row['plan_hours'], $row['points'], $hoursPerPoint);
+
+            if ($from === 'points') {
                 $unplannedPoints += $row['points'];
                 $hoursFromPoints += $hours;
-            } else {
-                $hours = self::DEFAULT_SPEC_POINTS * $hoursPerPoint;
-                $from = 'unsized';
+            } elseif ($from === 'unsized') {
                 $unsizedSpecs++;
                 $hoursFromPoints += $hours;
             }
@@ -1406,11 +1398,36 @@ class EconomicsService
             'capacity_hours_year' => round($capacityYear, 1),
             'person_years' => $personYears,
             'actual_hours' => round($actualHours, 1),
+            'built' => $rows === [] ? null : $this->builtSoFar($scopeMultiplier * $buffer),
             'warnings' => $this->effortWarnings($source, $unsizedSpecs, $personYears, $calibratedHoursPerPoint, $settingHoursPerPoint),
             'breakdown' => $breakdown,
             'by_epic' => $this->groupEffort($breakdown, 'epic', $scopeMultiplier * $buffer, (float) $profile['hourly_rate']),
             'by_release' => $this->groupEffort($breakdown, 'release', $scopeMultiplier * $buffer, (float) $profile['hourly_rate']),
             'notes' => $this->effortNotes($source, $calibratedHoursPerPoint !== null),
+        ];
+    }
+
+    /**
+     * The delivered specs that carry a build time: the hours the quote counts
+     * for them, and the time they spent in progress. It stays on the internal
+     * pages — the client quote never names it.
+     *
+     * @return array{specs: int, estimate_hours: float, quoted_hours: float, build_hours: float, build_display: string}|null
+     */
+    protected function builtSoFar(float $factor): ?array
+    {
+        $totals = $this->usage->actuals()['totals'];
+
+        if ((int) ($totals['timed'] ?? 0) < 1) {
+            return null;
+        }
+
+        return [
+            'specs' => (int) $totals['timed'],
+            'estimate_hours' => (float) $totals['estimate_hours'],
+            'quoted_hours' => round(((float) $totals['estimate_hours']) * $factor, 1),
+            'build_hours' => (float) $totals['build_hours'],
+            'build_display' => (string) $totals['build_display'],
         ];
     }
 

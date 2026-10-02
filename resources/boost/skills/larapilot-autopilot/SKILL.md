@@ -11,7 +11,7 @@ Batch-run `larapilot-plan` and `larapilot-implement` across eligible specs. Opti
 
 `php artisan larapilot:context autopilot` — with `--session={token}` when this conversation already holds one, `--fresh` after a compaction. Read every file under `data.runtime.read`, none under `loaded`. Settings, paths, and `data.project` come from that envelope: no `config-show`.
 
-When this session delegates to a spec worker, that is all it reads: the core, `core-subagents.md`, and `spec-worker.md`. Do not read `runtime-delivery` or its parts, `runtime-dev-docs`, `task-templates`, the PRD, or `larapilot-implement` — each worker runs its own `context` call, and that context dies with it. Delivery target is `data.project.delivery_target`. Phase 2 uses **Review handoff** in `core-subagents.md`. One `usage-log` at batch end.
+When this session delegates to a spec worker, that is all it reads: the core, `core-subagents.md`, and `spec-worker.md`. Do not read `runtime-delivery` or its parts, `runtime-dev-docs`, `task-templates`, the PRD, or `larapilot-implement` — each worker runs its own `context` call, and that context dies with it. Delivery target is `data.project.delivery_target`. Phase 2 uses **Review handoff** in `core-subagents.md`. One `usage-log` at batch end — with `--spec=` when the batch was one spec.
 
 When `effort` is `ECO`, the envelope already lists what plan and implement read, because this session runs them inline. When the editor has no writing sub-agent, run `larapilot:context plan --session={token}` and `larapilot:context implement --session={token}` before the first spec, for the same reason.
 

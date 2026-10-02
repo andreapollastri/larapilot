@@ -6,6 +6,7 @@ namespace Larapilot;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Larapilot\Console\Commands\AikidoIssuesCommand;
@@ -137,6 +138,9 @@ use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\Laravel\DumpRecorder;
+use Larapilot\Services\Laravel\MailRecorder;
+use Larapilot\Services\LaravelViewerService;
 use Larapilot\Services\LogViewerService;
 use Larapilot\Services\MetricsService;
 use Larapilot\Services\MockupPackageService;
@@ -160,7 +164,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '5.0.1';
+    public const VERSION = '5.0.2';
 
     public function register(): void
     {
@@ -220,6 +224,9 @@ class LarapilotServiceProvider extends ServiceProvider
         // It remembers what it read of a file, and what the visitor may open:
         // for one request, not for the life of a worker.
         $this->app->scoped(LogViewerService::class);
+        $this->app->scoped(LaravelViewerService::class);
+        $this->app->singleton(MailRecorder::class);
+        $this->app->singleton(DumpRecorder::class);
         $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
@@ -335,11 +342,30 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapilot');
 
         $this->registerApiRateLimiter();
+        $this->registerLaravelRecorders();
 
         MockupRouteRegistrar::register();
         MockupAssetsRouteRegistrar::register();
         DashboardRouteRegistrar::register();
         ApiRouteRegistrar::register();
+    }
+
+    /**
+     * What the Laravel page of the dashboard reads back: the mail the
+     * application sends and what `dump()` and `dd()` print. Both are put
+     * in place here and decide whether to keep anything when the moment
+     * comes — on a developer's own machine, unless the config says
+     * otherwise — so a request that sends and dumps nothing pays nothing.
+     */
+    protected function registerLaravelRecorders(): void
+    {
+        if ($this->app->environment('production')) {
+            return;
+        }
+
+        $this->app['events']->listen(MessageSent::class, [MailRecorder::class, 'handle']);
+
+        DumpRecorder::install();
     }
 
     /**

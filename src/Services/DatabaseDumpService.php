@@ -44,11 +44,7 @@ class DatabaseDumpService
      */
     public function filename(): string
     {
-        $database = $this->viewer->describe()['database'];
-        $database = pathinfo($database, PATHINFO_FILENAME) ?: $this->viewer->connectionName();
-        $database = trim((string) preg_replace('/[^A-Za-z0-9._-]+/', '-', $database), '-.') ?: 'database';
-
-        return $database.'-'.Carbon::now()->format('Y-m-d-His').'.sql';
+        return $this->viewer->fileName().'-'.Carbon::now()->format('Y-m-d-His').'.sql';
     }
 
     /**

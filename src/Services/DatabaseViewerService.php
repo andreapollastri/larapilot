@@ -90,6 +90,18 @@ class DatabaseViewerService
     }
 
     /**
+     * The database as the start of a file name: what a download of it is
+     * called, before the date and the extension.
+     */
+    public function fileName(): string
+    {
+        $database = $this->describe()['database'];
+        $database = pathinfo($database, PATHINFO_FILENAME) ?: $this->connectionName();
+
+        return trim((string) preg_replace('/[^A-Za-z0-9._-]+/', '-', $database), '-.') ?: 'database';
+    }
+
+    /**
      * Every table and view, with the totals the page leads with.
      *
      * @return array{connection: array{name: string, driver: string, driver_label: string, database: string, host: string|null}, objects: list<array{key: string, name: string, raw: string, schema: string|null, kind: string, size: int|null, comment: string|null, size_label: string|null}>, tables: int, views: int, size_label: string|null, schemas: bool, error: string|null}
@@ -169,24 +181,12 @@ class DatabaseViewerService
         }
 
         $connection = $this->connection();
-        $schema = $connection->getSchemaBuilder();
-        $isTable = $object['kind'] === 'table';
-
-        $indexes = $isTable ? $this->attempt(fn (): array => $schema->getIndexes($key)) : [];
-        $foreignKeys = $isTable ? $this->attempt(fn (): array => $schema->getForeignKeys($key)) : [];
-        $primary = [];
-
-        foreach ($indexes as $index) {
-            if (! empty($index['primary'])) {
-                $primary = array_values(array_map('strval', (array) $index['columns']));
-                break;
-            }
-        }
+        ['columns' => $described, 'indexes' => $indexes, 'foreign_keys' => $foreignKeys, 'primary' => $primary] = $this->structure($key, $object['kind'] === 'table');
 
         $references = $this->references($foreignKeys, $overview['objects']);
         $columns = [];
 
-        foreach ($this->attempt(fn (): array => $schema->getColumns($key)) as $column) {
+        foreach ($described as $column) {
             $name = (string) $column['name'];
             $typeName = strtolower((string) ($column['type_name'] ?? ''));
 
@@ -224,6 +224,72 @@ class DatabaseViewerService
         ];
 
         return $data + $this->rows($connection, $key, $columns, $primary, $options);
+    }
+
+    /**
+     * Every table and view with its columns and where its foreign keys
+     * point — the structure alone, no rows: what the diagram draws.
+     *
+     * @return array{connection: array{name: string, driver: string, driver_label: string, database: string, host: string|null}, objects: list<array<string, mixed>>, tables: int, views: int, size_label: string|null, schemas: bool, error: string|null, schema: list<array{key: string, name: string, schema: string|null, kind: string, columns: list<array{name: string, type: string, primary: bool, foreign: bool}>, foreign_keys: list<array{name: string|null, columns: list<string>, table: string, key: string|null, foreign_columns: list<string>, on_update: string|null, on_delete: string|null}>}>}
+     */
+    public function schema(): array
+    {
+        $overview = $this->overview() + ['schema' => []];
+
+        if ($overview['error'] !== null) {
+            return $overview;
+        }
+
+        foreach ($overview['objects'] as $object) {
+            ['columns' => $described, 'foreign_keys' => $foreignKeys, 'primary' => $primary] = $this->structure($object['key'], $object['kind'] === 'table');
+
+            $foreignKeys = $this->foreignKeyRows($foreignKeys, $overview['objects']);
+            $foreign = array_merge([], ...array_column($foreignKeys, 'columns'));
+
+            $overview['schema'][] = [
+                'key' => $object['key'],
+                'name' => $object['name'],
+                'schema' => $object['schema'],
+                'kind' => $object['kind'],
+                'columns' => array_map(static fn (array $column): array => [
+                    'name' => (string) $column['name'],
+                    'type' => (string) ($column['type'] ?? $column['type_name'] ?? ''),
+                    'primary' => in_array((string) $column['name'], $primary, true),
+                    'foreign' => in_array((string) $column['name'], $foreign, true),
+                ], $described),
+                'foreign_keys' => $foreignKeys,
+            ];
+        }
+
+        return $overview;
+    }
+
+    /**
+     * What the schema builder says of one table or view: its columns, its
+     * indexes, its foreign keys, and the columns of its primary key.
+     *
+     * @return array{columns: list<array<string, mixed>>, indexes: list<array<string, mixed>>, foreign_keys: list<array<string, mixed>>, primary: list<string>}
+     */
+    protected function structure(string $key, bool $isTable): array
+    {
+        $schema = $this->connection()->getSchemaBuilder();
+
+        $indexes = $isTable ? $this->attempt(fn (): array => $schema->getIndexes($key)) : [];
+        $primary = [];
+
+        foreach ($indexes as $index) {
+            if (! empty($index['primary'])) {
+                $primary = array_values(array_map('strval', (array) $index['columns']));
+                break;
+            }
+        }
+
+        return [
+            'columns' => $this->attempt(fn (): array => $schema->getColumns($key)),
+            'indexes' => $indexes,
+            'foreign_keys' => $isTable ? $this->attempt(fn (): array => $schema->getForeignKeys($key)) : [],
+            'primary' => $primary,
+        ];
     }
 
     /**

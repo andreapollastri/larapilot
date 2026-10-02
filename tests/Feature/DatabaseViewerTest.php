@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardAuthService;
+use Larapilot\Services\DatabaseDiagramPdfWriter;
+use Larapilot\Services\DatabaseDiagramService;
+use Larapilot\Services\DatabaseMigrationService;
 use Larapilot\Services\DatabaseViewerService;
 
 /**
@@ -179,6 +182,309 @@ it('describes the structure of a table', function (): void {
         ->assertOk()
         ->assertSee('users_email_unique', false)
         ->assertSee('Values hidden', false);
+});
+
+it('draws the database as a diagram, a line for each foreign key', function (): void {
+    viewerDatabase();
+
+    $this->get('/larapilot/database')
+        ->assertOk()
+        ->assertSee('/larapilot/database?view=diagram', false)
+        ->assertDontSee('data-db-erd-svg', false);
+
+    $html = $this->get('/larapilot/database?view=diagram')
+        ->assertOk()
+        ->assertSee('data-db-erd-svg', false)
+        ->assertSee('data-table="users"', false)
+        ->assertSee('data-table="posts"', false)
+        ->assertSee('data-table="published_posts"', false)
+        ->assertSee('data-from="posts" data-to="users"', false)
+        ->assertSee('posts.user_id → users.id', false)
+        ->assertSee('/larapilot/database/posts', false)
+        ->assertSee('remember_token', false)
+        ->assertSee('1 foreign key', false)
+        // the structure, never a row
+        ->assertDontSee('Ada Lovelace', false)
+        ->assertDontSee('hash-of-ada-s3cret', false)
+        ->getContent();
+
+    expect(substr_count($html, 'class="db-erd-edge"'))->toBe(1);
+
+    // Keys only: the columns no key touches are counted, not drawn.
+    $this->get('/larapilot/database?view=diagram&columns=keys')
+        ->assertOk()
+        ->assertSee('user_id', false)
+        ->assertSee('+ 7 columns', false)
+        ->assertDontSee('remember_token', false);
+});
+
+it('stands a table to the right of the ones it points at', function (): void {
+    $table = static fn (string $key, array $columns, array $points = []): array => [
+        'key' => $key,
+        'name' => $key,
+        'kind' => 'table',
+        'columns' => array_map(static fn (string $column): array => [
+            'name' => $column,
+            'type' => 'integer',
+            'primary' => $column === 'id',
+            'foreign' => isset($points[$column]),
+        ], $columns),
+        'foreign_keys' => array_map(static fn (string $column, string $to): array => [
+            'columns' => [$column],
+            'key' => $to,
+            'foreign_columns' => ['id'],
+        ], array_keys($points), array_values($points)),
+    ];
+
+    $diagram = app(DatabaseDiagramService::class)->layout([
+        $table('comments', ['id', 'post_id', 'user_id', 'body'], ['post_id' => 'posts', 'user_id' => 'users']),
+        $table('posts', ['id', 'user_id', 'title'], ['user_id' => 'users']),
+        $table('users', ['id', 'name', 'team_id'], ['team_id' => 'teams']),
+        // a circle, and a table that points at itself: neither goes round for ever
+        $table('teams', ['id', 'owner_id', 'parent_id'], ['owner_id' => 'users', 'parent_id' => 'teams']),
+        $table('cache', ['key', 'value']),
+        $table('orphans', ['id', 'gone_id'], ['gone_id' => 'not_in_the_database']),
+    ]);
+
+    $nodes = array_column($diagram['nodes'], null, 'key');
+
+    expect($nodes['posts']['x'])->toBeGreaterThan($nodes['users']['x'] + $nodes['users']['w'])
+        ->and($nodes['comments']['x'])->toBeGreaterThan($nodes['posts']['x'] + $nodes['posts']['w'])
+        ->and($diagram['edges'])->toHaveCount(6)
+        ->and($diagram['related'])->toBe(4)
+        // no foreign key reaches them: under the rest, with their own heading
+        ->and($nodes['cache']['y'])->toBeGreaterThan($nodes['comments']['y'] + $nodes['comments']['h'])
+        ->and($nodes['orphans']['y'])->toBe($nodes['cache']['y'])
+        ->and($diagram['labels'][0]['text'])->toBe('No foreign key');
+
+    // Every box is inside the drawing and none lies over another.
+    foreach ($nodes as $a) {
+        expect($a['x'] + $a['w'])->toBeLessThanOrEqual($diagram['width'])
+            ->and($a['y'] + $a['h'])->toBeLessThanOrEqual($diagram['height']);
+
+        foreach ($nodes as $b) {
+            if ($a['key'] !== $b['key']) {
+                $apart = $b['x'] >= $a['x'] + $a['w'] || $a['x'] >= $b['x'] + $b['w'] || $b['y'] >= $a['y'] + $a['h'] || $a['y'] >= $b['y'] + $b['h'];
+
+                expect($apart)->toBeTrue($a['key'].' lies over '.$b['key']);
+            }
+        }
+    }
+
+    // A line leaves the foreign key's own row and ends on the row it references.
+    $edge = collect($diagram['edges'])->firstWhere('label', 'posts.user_id → users.id');
+    $row = collect($nodes['posts']['rows'])->firstWhere('name', 'user_id');
+    $target = collect($nodes['users']['rows'])->firstWhere('name', 'id');
+
+    expect($edge['y'])->toBe($row['y'])
+        ->and($edge['x'])->toBe($nodes['posts']['x'])
+        ->and($edge['path'])->toEndWith(($nodes['users']['x'] + $nodes['users']['w']).' '.$target['y']);
+});
+
+it('does not draw a database of too many tables', function (): void {
+    viewerDatabase();
+
+    $viewer = Mockery::mock(DatabaseViewerService::class);
+    $viewer->shouldReceive('overview')->andReturn([
+        'connection' => app(DatabaseViewerService::class)->describe(),
+        'objects' => array_fill(0, DatabaseDiagramService::LIMIT + 1, ['key' => 't', 'name' => 't', 'kind' => 'table']),
+        'tables' => DatabaseDiagramService::LIMIT + 1,
+        'views' => 0,
+        'size_label' => null,
+        'schemas' => false,
+        'error' => null,
+    ]);
+    $viewer->shouldNotReceive('schema');
+
+    expect((new DatabaseDiagramService($viewer))->diagram()['diagram'])->toBeNull();
+});
+
+/**
+ * What a PDF of the diagram draws, after checking the file holds together:
+ * every object where the table at its end says it is.
+ */
+function diagramDrawing(string $pdf): string
+{
+    expect($pdf)->toStartWith('%PDF-1.4')->toEndWith("%%EOF\n")
+        ->and(preg_match('/startxref\n(\d+)\n%%EOF/', $pdf, $start))->toBe(1)
+        ->and(substr($pdf, (int) $start[1], 4))->toBe('xref')
+        ->and(preg_match_all('/^(\d{10}) 00000 n $/m', $pdf, $entries))->toBe(7);
+
+    foreach ($entries[1] as $index => $offset) {
+        expect(substr($pdf, (int) $offset, strlen(($index + 1).' 0 obj')))->toBe(($index + 1).' 0 obj');
+    }
+
+    expect(preg_match('/\/Length (\d+) \/Filter \/FlateDecode >>\nstream\n(.*)\nendstream/s', $pdf, $stream))->toBe(1)
+        ->and(strlen($stream[2]))->toBe((int) $stream[1]);
+
+    return (string) gzuncompress($stream[2]);
+}
+
+it('downloads the diagram as a PDF of one page', function (): void {
+    viewerDatabase();
+
+    $this->get('/larapilot/database?view=diagram')
+        ->assertOk()
+        ->assertSee('/larapilot/database-diagram.pdf"', false)
+        ->assertSee('Download PDF', false);
+
+    $this->get('/larapilot/database?view=diagram&columns=keys')
+        ->assertOk()
+        ->assertSee('/larapilot/database-diagram.pdf?columns=keys', false);
+
+    $response = $this->get('/larapilot/database-diagram.pdf')->assertOk();
+
+    expect($response->headers->get('Content-Type'))->toBe('application/pdf')
+        ->and($response->headers->get('Content-Disposition'))->toContain('attachment')->toContain('-diagram-')->toContain('.pdf');
+
+    $pdf = (string) $response->getContent();
+    $drawing = diagramDrawing($pdf);
+
+    expect($pdf)->toContain('/Count 1')->toContain('/BaseFont /Courier')
+        ->and($drawing)->toContain('(users) Tj')
+        ->toContain('(posts) Tj')
+        ->toContain('(user_id) Tj')
+        ->toContain('(remember_token) Tj')
+        ->toContain('(published_posts) Tj')
+        ->toContain('(VIEW) Tj')
+        ->toContain('2 tables')
+        ->toContain('1 foreign key')
+        // one line, with its arrow and the dot where it leaves the column
+        ->and(substr_count($drawing, ' c S'))->toBe(1)
+        // the structure, never a row
+        ->and($drawing)->not->toContain('Ada')->not->toContain('s3cret');
+
+    $drawing = diagramDrawing((string) $this->get('/larapilot/database-diagram.pdf?columns=keys')->assertOk()->getContent());
+
+    expect($drawing)->toContain('(user_id) Tj')
+        ->toContain('(+ 7 columns) Tj')
+        ->not->toContain('remember_token');
+});
+
+it('writes into the PDF only what its fonts can say, on a page a reader can open', function (): void {
+    $node = [
+        'key' => 'a', 'label' => 'a(b)\\c è 日本', 'kind' => 'table', 'x' => 24, 'y' => 24, 'w' => 200, 'h' => 58, 'head' => 30,
+        'rows' => [['name' => 'id', 'label' => 'id', 'type' => 'integer', 'mark' => 'PK', 'foreign' => false, 'y' => 68]],
+    ];
+
+    $pdf = app(DatabaseDiagramPdfWriter::class)->write(['width' => 40000, 'height' => 900, 'nodes' => [$node], 'edges' => [], 'labels' => []], 'shop (live)');
+    $drawing = diagramDrawing($pdf);
+
+    expect($drawing)->toContain('(a\\(b\\)\\\\c '."\xE8".' ??) Tj')
+        ->and($pdf)->toContain('/Title (shop \\(live\\))')
+        // a page is at most 200 inches a side
+        ->and(preg_match('/\/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]/', $pdf, $box))->toBe(1)
+        ->and((float) $box[1])->toBeLessThanOrEqual(14400.0)
+        ->and((float) $box[2])->toBeGreaterThan(0.0);
+});
+
+it('offers no PDF when there is nothing to draw or the page is off', function (): void {
+    config()->set('database.connections.empty', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('database.default', 'empty');
+    DB::purge('empty');
+
+    $this->get('/larapilot/database-diagram.pdf')
+        ->assertRedirect('/larapilot/database')
+        ->assertSessionHas('larapilot_error');
+
+    config()->set('larapilot.database_viewer.enabled', false);
+
+    $this->get('/larapilot/database-diagram.pdf')->assertNotFound();
+});
+
+it('lists the migrations that ran and the ones still to run', function (): void {
+    viewerDatabase();
+
+    $folder = sys_get_temp_dir().'/larapilot-migrations-'.uniqid();
+    mkdir($folder);
+
+    foreach (['2024_01_10_090000_create_orders_table', '2024_02_20_090000_add_total_to_orders_table', '2024_03_30_090000_create_invoices_table'] as $name) {
+        file_put_contents($folder.'/'.$name.'.php', '<?php // '.$name);
+    }
+
+    $migrator = app('migrator');
+    $migrator->path($folder);
+
+    try {
+        // Before the first `migrate`: no table, so every file is still to run.
+        $this->get('/larapilot/database')->assertOk()->assertSee('/larapilot/database?view=migrations', false);
+
+        $this->get('/larapilot/database?view=migrations')
+            ->assertOk()
+            ->assertSee('Create orders table', false)
+            ->assertSee('2024_01_10_090000_create_orders_table', false)
+            ->assertSee('is not there yet', false)
+            ->assertDontSee('badge-done">Ran<', false);
+
+        $status = app(DatabaseMigrationService::class)->status();
+
+        expect($status['installed'])->toBeFalse()
+            ->and($status['ran'])->toBe(0)
+            ->and($status['pending'])->toBeGreaterThanOrEqual(3);
+
+        $migrator->getRepository()->createRepository();
+        $migrator->getRepository()->log('2024_01_10_090000_create_orders_table', 1);
+        $migrator->getRepository()->log('2024_02_20_090000_add_total_to_orders_table', 2);
+        $migrator->getRepository()->log('2023_12_01_090000_create_legacy_table', 1);
+        $migrator->getRepository()->log('0001_01_01_000009_create_first_table', 1);
+
+        $status = app(DatabaseMigrationService::class)->status();
+        $byName = array_column($status['migrations'], null, 'name');
+
+        expect($status['installed'])->toBeTrue()
+            ->and($status['error'])->toBeNull()
+            ->and($status['ran'])->toBe(2)
+            ->and($status['missing'])->toBe(2)
+            // Laravel's own are numbered from year 1: an order, not a day
+            ->and($byName['0001_01_01_000009_create_first_table'])->toMatchArray(['date' => null, 'title' => 'Create first table'])
+            ->and($status['batch'])->toBe(2)
+            ->and($byName['2024_01_10_090000_create_orders_table'])->toMatchArray(['state' => 'ran', 'batch' => 1, 'date' => '2024-01-10', 'title' => 'Create orders table'])
+            ->and($byName['2024_02_20_090000_add_total_to_orders_table'])->toMatchArray(['state' => 'ran', 'batch' => 2])
+            ->and($byName['2024_03_30_090000_create_invoices_table'])->toMatchArray(['state' => 'pending', 'batch' => null])
+            ->and($byName['2023_12_01_090000_create_legacy_table'])->toMatchArray(['state' => 'missing', 'batch' => 1, 'path' => null])
+            // what is still to run comes first
+            ->and($status['migrations'][0]['state'])->toBe('pending')
+            ->and(array_search('ran', array_column($status['migrations'], 'state'), true))->toBeGreaterThanOrEqual($status['pending']);
+
+        $html = $this->get('/larapilot/database?view=migrations')
+            ->assertOk()
+            ->assertSee('badge-done">Ran<', false)
+            ->assertSee('badge-in-progress">Pending<', false)
+            ->assertSee('Ran · file gone', false)
+            ->assertSee('Batch 2', false)
+            ->assertSee('as batch 3', false)
+            ->assertSee('2 ran', false)
+            ->assertDontSee('is not there yet', false)
+            ->getContent();
+
+        expect(strpos($html, '2024_03_30_090000_create_invoices_table'))->toBeLessThan(strpos($html, '2024_02_20_090000_add_total_to_orders_table'))
+            ->and(strpos($html, '2024_02_20_090000_add_total_to_orders_table'))->toBeLessThan(strpos($html, '2024_01_10_090000_create_orders_table'));
+
+        // Nothing was migrated by looking.
+        expect(Schema::hasTable('orders'))->toBeFalse()
+            ->and(DB::table('migrations')->count())->toBe(4);
+    } finally {
+        array_map('unlink', glob($folder.'/*.php') ?: []);
+        rmdir($folder);
+    }
+});
+
+it('offers the migrations of a database with no table yet, and no diagram', function (): void {
+    config()->set('database.connections.empty', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('database.default', 'empty');
+    DB::purge('empty');
+
+    $this->get('/larapilot/database')
+        ->assertOk()
+        ->assertSee('The database has no tables yet', false)
+        ->assertSee('/larapilot/database?view=migrations', false)
+        ->assertDontSee('/larapilot/database?view=diagram', false);
+
+    $this->get('/larapilot/database?view=diagram')
+        ->assertOk()
+        ->assertSee('The database has no tables yet', false);
+
+    $this->get('/larapilot/database?view=migrations')->assertOk();
 });
 
 it('reads a view like a table', function (): void {

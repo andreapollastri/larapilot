@@ -1729,7 +1729,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.1</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.2</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -5044,7 +5044,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.0.1 released 2026-10-02</span>
+<span class="comment"># latest   : 5.0.2 released 2026-10-02</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -8061,6 +8061,28 @@ php artisan larapilot:schedule-apply --file=.larapilot/tmp-payload-schedule.json
             <code>--insights</code>. Formats: <code>json</code> · <code>md</code> · <code>human</code>.
           </p>
 
+          <h4>Estimate vs build</h4>
+          <p>The Usage page opens with what the delivered specs took. For every spec that is
+            <code>DONE</code>: the hours it was <strong>estimated</strong> at — the hours of its plan's tasks, its
+            story points when it has no plan, before the PM/QA buffer: the same estimate Economics prices — the
+            time it took to <strong>build</strong>, how long it then waited <strong>in review</strong>, and the
+            <strong>tokens</strong> the ledger holds for it. A spec that review sent back, or that was started over,
+            says so. Above the table: the estimated hours, the build time, and how many times the first holds the
+            second — given from three specs with a build time, since one spec proves nothing.
+          </p>
+          <p>The times are not logged by anyone: <code>spec-start</code>, <code>spec-review</code>, and
+            <code>spec-approve</code> already write the moment of every step in the backlog, and the page reads
+            them. So they cost no tokens, and they are there with Lucille off. What they are is worth keeping in
+            mind. <strong>Build</strong> is the time the spec was <code>IN PROGRESS</code>, pauses included: a
+            session left open overnight counts the night. <strong>In review</strong> is a wait, not the hours
+            someone spent reviewing. And the estimate is the agent's own. The figure says how the plans compare
+            with the builds; it does not say what a person would have taken. Only the tokens come from the ledger,
+            which is why Lucille logs with <code>--spec=</code> whenever a session works one spec.
+          </p>
+          <p>The same figures: a section of <code>report.md</code>, <code>insights.actuals</code> in
+            <code>usage-report --insights</code>, <code>build</code> in <code>GET /larapilot/api/metrics</code>,
+            and one line on Economics — for you, never in the client quote.</p>
+
           <h4>When Lucille is OFF</h4>
           <p><code>usage-log</code> refuses writes. <code>/larapilot-usage</code> states she is excluded and may still
             run a read-only report on historical data. Re-enable:
@@ -8069,7 +8091,7 @@ php artisan larapilot:schedule-apply --file=.larapilot/tmp-payload-schedule.json
             with <code>--effort=ECO</code>.
           </p>
 
-          <p>Dashboard: <code>/larapilot/usage</code> for tokens · <code>/larapilot/plan</code> for the Gantt and
+          <p>Dashboard: <code>/larapilot/usage</code> for tokens and estimate vs build · <code>/larapilot/plan</code> for the Gantt and
             deadlines · download <code>/larapilot/usage/report.md</code> (dev/staging only). MCP
             <code>RunArtisanTool</code> allows <code>larapilot:usage-report</code>.</p>
         </article>
@@ -10467,7 +10489,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>The tables and views of the database in <code>.env</code>, whatever the driver — MySQL,
                     MariaDB, PostgreSQL, SQLite, SQL Server. Open one for its rows, a page at a time, with sort,
                     search, and a foreign key that leads to the row it points at; or for its structure: columns,
-                    indexes, foreign keys. <strong>Download SQL</strong> dumps the whole database.
+                    indexes, foreign keys. <strong>Diagram</strong> draws the tables and the foreign keys
+                    between them; <strong>Migrations</strong> lists the ones that ran and the ones still to
+                    run. <strong>Download SQL</strong> dumps the whole database.
                     <strong>Read only</strong>; passwords and tokens are never shown</td>
                 </tr>
                 <tr>
@@ -10478,6 +10502,17 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     where it was thrown, and the frames of your own code apart from the framework's.
                     <strong>Download log</strong> for the file. <strong>Read only</strong>; passwords, tokens, and
                     keys are shown as <code>[REDACTED]</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Laravel</strong></td>
+                  <td><code>/larapilot/laravel</code></td>
+                  <td>How the framework is set up in the application and what it is doing, in five tabs.
+                    <strong>Overview</strong>: the drivers in use and what is cached. <strong>Schedule</strong>:
+                    the scheduled tasks, the next one due first. <strong>Queue</strong>: the jobs that wait, are
+                    delayed, or are held by a worker, and the ones that failed. <strong>Mail</strong>: the mail
+                    the application sent, as it left. <strong>Dumps</strong>: what <code>dump()</code> and
+                    <code>dd()</code> printed, with the line that dumped it. Nothing of the application is
+                    changed</td>
                 </tr>
                 <tr>
                   <td><strong>Git</strong></td>
@@ -10704,6 +10739,33 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               as hex with its size, <code>NULL</code> as <code>NULL</code>.</li>
             <li><strong>Structure</strong>: the columns with type, null, default, primary key, auto increment,
               and comment; the indexes; the foreign keys with what happens on update and on delete.</li>
+            <li><strong>Diagram</strong> is the second view of the list
+              (<code>/larapilot/database?view=diagram</code>): a box for each table with its columns —
+              <code>PK</code>, <code>FK</code>, the type — and a line for each foreign key, from the column to
+              the one it references, with an arrow on that end. A table stands to the right of the tables it
+              points at, so the ones everything depends on are on the left; the tables and views no foreign key
+              touches are in rows below. <strong>Keys only</strong> leaves the keys in each box and counts the
+              other columns. A click on a table keeps it, its lines, and the tables at their other end lit, and
+              dims the rest; its name opens it. <code>−</code>, <code>+</code>, and <strong>Fit</strong> zoom,
+              as Ctrl or ⌘ with the wheel does; a drag moves around. The diagram is drawn on the server as
+              plain SVG — no library, nothing fetched from outside — so it reads without scripts too, and it
+              shows the structure alone, never a row. It is drawn for up to 300 tables and views.
+              <strong>Download PDF</strong> saves the diagram as it is shown — all columns or keys only — as
+              <code>/larapilot/database-diagram.pdf</code>: one page as large as the drawing, in vectors, so
+              it stays sharp at any zoom and prints on whatever paper it is scaled to, with the database, the
+              driver, the counts, and the day on top. The file is written by Larapilot itself, with the two
+              Courier fonts every PDF reader has: no PDF library is installed, and a name with letters outside
+              Western European shows a <code>?</code> for each of them.</li>
+            <li><strong>Migrations</strong> is the third view
+              (<code>/larapilot/database?view=migrations</code>): which migrations ran and which are still to
+              run, as <code>php artisan migrate:status</code> tells it — the files of the application and of
+              its packages against the <code>migrations</code> table of the connection. The pending ones come
+              first, then the ones that ran with their batch, the newest first, each with the day it was
+              written; a migration that ran from a file that is no longer there is marked
+              <strong>Ran · file gone</strong>. Before the first <code>migrate</code> the table is not there
+              and every file is pending — the page says so — and it is offered on a database with no table
+              yet. A field narrows the list by name, state, or package. Nothing is run from the dashboard:
+              the page names the command, <code>php artisan migrate</code>, and the batch it would be.</li>
             <li><strong>Credentials are never shown.</strong> A column named like a password, a token, or a secret
               — <code>password</code>, <code>remember_token</code>, <code>*_token</code>, <code>*secret*</code>,
               <code>two_factor_recovery_codes</code>, <code>*api_key*</code>, <code>*private_key*</code> — is
@@ -10788,6 +10850,65 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               project; <code>LARAPILOT_LOG_VIEWER=false</code> removes the page.</li>
             <li><strong>For the skills</strong>, <code>php artisan larapilot:logs</code> reads the same files —
               see <a href="#deep-dive-api-diagnostics">Diagnostics and logs</a>.</li>
+          </ul>
+
+          <h4 id="deep-dive-dashboard-laravel">Laravel</h4>
+          <p><code>/larapilot/laravel</code> shows how the framework is set up in the application and what it is
+            doing now. Five tabs; nothing of the application is changed from any of them — no cache is cleared,
+            no job retried, no mail sent again.</p>
+          <ul>
+            <li><strong>Overview.</strong> Five numbers that lead to the other tabs — scheduled tasks, jobs
+              waiting, failed jobs, mail kept, dumps kept — then two panels. <strong>Drivers</strong>: for the
+              database, the cache, the session, the queue, the mail, the filesystem, broadcasting, logging, and
+              hashing (Scout and Octane when installed), the store, connection, or mailer in use, its driver,
+              and what says where it points — host and port, bucket, table, prefix — never a password or a key.
+              A driver that keeps nothing is said so: with <code>sync</code> a job runs inside the request, with
+              <code>log</code> a mail reaches nobody. <strong>Caches</strong>: whether the configuration, the
+              routes, and the events are cached, how many views are compiled, and the cache of the application
+              — its store, whether it answers, and how much it holds where that can be counted
+              (<code>file</code>, <code>database</code>) — each with the artisan command that builds it and the
+              one that empties it. On a developer's machine a cached configuration carries a warning: a change
+              to <code>.env</code> is not read until it is cleared.</li>
+            <li><strong>Schedule.</strong> The tasks of the scheduler as
+              <code>php artisan schedule:list</code> prints them, read from <code>routes/console.php</code>,
+              <code>withSchedule()</code>, or the console kernel: the command, the description, the cron
+              expression, the next run, and its options — no overlap, one server, background, in maintenance,
+              the environments it is limited to. A task that does not run in this environment is greyed. The
+              page cannot tell whether the cron of the server calls <code>schedule:run</code>.</li>
+            <li><strong>Queue.</strong> On the default connection — or another one of
+              <code>config/queue.php</code>, a click away — how many jobs wait, are delayed, or are held by a
+              worker, queue by queue, and the first 50 jobs in the order a worker takes them: class, queue,
+              state, attempts, since when. The jobs are listed for the <code>database</code> and
+              <code>redis</code> drivers — on Redis the queues are the one of the connection, the ones Horizon
+              is told to work, and any other that holds a job; SQS, Beanstalkd, and the others give the numbers
+              only. <strong>Failed jobs</strong> lists the last 50 with the first line of the exception, secrets
+              redacted, and the <code>queue:retry</code> command for each; open batches are counted.</li>
+            <li><strong>Mail.</strong> Every mail the application sends is kept and listed, the newest first:
+              subject, recipients, the mailable or notification that built it, the request or command it was
+              sent during. A mail opens on its headers, the names and sizes of its attachments — not the files
+              — and the message: the HTML inside a frame that runs no script, where a link opens in a new tab,
+              and the plain text. It listens to what Laravel says it sent, so it works with every mailer,
+              <code>log</code> and <code>array</code> included, and changes nothing of the mail or of where it
+              goes.</li>
+            <li><strong>Dumps.</strong> What <code>dump()</code> and <code>dd()</code> printed, the newest
+              first: the value as text, the file and line that dumped it — the Blade template, for a dump in a
+              view — and the request or command it happened in. A dump still shows where it always did; here it
+              stays to be read, also when it came from a job, an API call, or a response nobody saw. While
+              Laravel Herd is watching the dumps it takes them all, and the page says so.</li>
+            <li><strong>Where they are kept.</strong> The last 100 mails and the last 100 dumps
+              (<code>LARAPILOT_LARAVEL_VIEWER_KEEP</code>) sit in <code>storage/larapilot/</code>, a folder that
+              ignores itself in git (<code>LARAPILOT_LARAVEL_VIEWER_PATH</code> moves it). <strong>Forget them
+              all</strong> empties a list. They are kept <strong>on a developer's own machine only</strong> —
+              <code>local</code> and <code>development</code>, and not while the tests of the project run: a
+              mail carries reset links and personal data, a dump whatever the code was holding.
+              <code>LARAPILOT_LARAVEL_VIEWER_MAIL=true</code> or
+              <code>LARAPILOT_LARAVEL_VIEWER_DUMPS=true</code> keeps them wherever the page is served;
+              <code>false</code> never.</li>
+            <li><strong>Local by default.</strong> Like the file manager, the page is open in
+              <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
+              is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
+              <code>YES</code>, and answers <code>404</code> otherwise.
+              <code>LARAPILOT_LARAVEL_VIEWER=false</code> removes the page.</li>
           </ul>
 
           <h4>Board</h4>
@@ -11250,7 +11371,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><strong>Where the hours come from</strong></td>
                   <td>What the price rests on</td>
                   <td>Hours by release or by epic as bars, then every user story with the source of its
-                    hours</td>
+                    hours. Once a spec is delivered, one line for you alone: the hours the quote counts for the
+                    delivered specs and the time the agent took to build them — never in the client quote</td>
                 </tr>
                 <tr>
                   <td><strong>The market</strong></td>
@@ -11455,8 +11577,10 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/metrics</code></td>
-                  <td>Delivery snapshot — backlog completion, plan/task progress, and (when the Lucille ledger is on)
-                    an effort-timing block: tracked hours, tokens, first/last activity
+                  <td>Delivery snapshot — backlog completion, plan/task progress, (when the Lucille ledger is on)
+                    an effort-timing block: tracked hours, tokens, first/last activity, and <code>build</code>:
+                    the hours the delivered specs were estimated at beside the time they spent
+                    <code>IN PROGRESS</code>
                   </td>
                 </tr>
                 <tr>
@@ -11721,7 +11845,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.0.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.0.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

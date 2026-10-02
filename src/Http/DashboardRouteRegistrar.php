@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\DashboardController;
 use Larapilot\Http\Controllers\DatabaseViewerController;
 use Larapilot\Http\Controllers\FileManagerController;
+use Larapilot\Http\Controllers\LaravelViewerController;
 use Larapilot\Http\Controllers\LogViewerController;
 use Larapilot\Http\Controllers\StackController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
@@ -188,6 +189,9 @@ class DashboardRouteRegistrar
                 Route::get('/database.sql', [DatabaseViewerController::class, 'dump'])
                     ->name('larapilot.dashboard.database.dump');
 
+                Route::get('/database-diagram.pdf', [DatabaseViewerController::class, 'diagram'])
+                    ->name('larapilot.dashboard.database.diagram');
+
                 // A table is found by name in what the connection lists, so
                 // any name it holds is allowed here and nothing else is read.
                 Route::get('/database/{table}', [DatabaseViewerController::class, 'table'])
@@ -202,6 +206,33 @@ class DashboardRouteRegistrar
                 Route::get('/logs/{file}', [LogViewerController::class, 'show'])
                     ->where('file', '.+')
                     ->name('larapilot.dashboard.logs.file');
+
+                Route::get('/laravel', [LaravelViewerController::class, 'index'])
+                    ->name('larapilot.dashboard.laravel');
+
+                Route::get('/laravel/schedule', [LaravelViewerController::class, 'schedule'])
+                    ->name('larapilot.dashboard.laravel.schedule');
+
+                Route::get('/laravel/queue', [LaravelViewerController::class, 'queue'])
+                    ->name('larapilot.dashboard.laravel.queue');
+
+                Route::get('/laravel/mail', [LaravelViewerController::class, 'mail'])
+                    ->name('larapilot.dashboard.laravel.mail');
+
+                Route::post('/laravel/mail/clear', [LaravelViewerController::class, 'clearMail'])
+                    ->name('larapilot.dashboard.laravel.mail.clear');
+
+                // A mail is found by id in what the folder lists; an id is
+                // digits and hex, so it is never read as a path.
+                Route::get('/laravel/mail/{id}', [LaravelViewerController::class, 'message'])
+                    ->where('id', '[0-9a-f]{26}')
+                    ->name('larapilot.dashboard.laravel.mail.message');
+
+                Route::get('/laravel/dumps', [LaravelViewerController::class, 'dumps'])
+                    ->name('larapilot.dashboard.laravel.dumps');
+
+                Route::post('/laravel/dumps/clear', [LaravelViewerController::class, 'clearDumps'])
+                    ->name('larapilot.dashboard.laravel.dumps.clear');
             });
 
         Route::middleware($embedded)

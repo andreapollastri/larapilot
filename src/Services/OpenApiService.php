@@ -633,6 +633,23 @@ class OpenApiService
                                 'description' => 'null when the Lucille usage ledger is off',
                                 'additionalProperties' => true,
                             ],
+                            'build' => [
+                                'type' => 'object',
+                                'nullable' => true,
+                                'description' => 'The delivered specs: the hours they were estimated at beside the time they spent IN PROGRESS (pauses included), read from the status history of the backlog. `estimate_to_build` is null under three timed specs.',
+                                'properties' => [
+                                    'specs_delivered' => ['type' => 'integer'],
+                                    'specs_timed' => ['type' => 'integer'],
+                                    'estimate_hours' => ['type' => 'number'],
+                                    'build_hours' => ['type' => 'number'],
+                                    'estimate_to_build' => ['type' => 'number', 'nullable' => true],
+                                    'review_wait_hours' => ['type' => 'number'],
+                                    'reworks' => ['type' => 'integer'],
+                                    'restarts' => ['type' => 'integer'],
+                                    'tokens' => ['type' => 'integer'],
+                                    'specs_with_tokens' => ['type' => 'integer'],
+                                ],
+                            ],
                         ],
                     ],
                     'SpecDetailResponse' => [

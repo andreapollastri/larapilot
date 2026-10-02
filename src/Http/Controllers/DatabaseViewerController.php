@@ -7,8 +7,13 @@ namespace Larapilot\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DatabaseDiagramPdfWriter;
+use Larapilot\Services\DatabaseDiagramService;
 use Larapilot\Services\DatabaseDumpService;
+use Larapilot\Services\DatabaseMigrationService;
 use Larapilot\Services\DatabaseViewerService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -18,14 +23,37 @@ class DatabaseViewerController
         protected ConfigService $config,
         protected DatabaseViewerService $database,
         protected DatabaseDumpService $dumps,
+        protected DatabaseDiagramService $diagrams,
+        protected DatabaseMigrationService $migrations,
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->guard();
 
-        return view('larapilot::dashboard.database', $this->database->overview() + [
+        if ($request->query('view') === 'migrations') {
+            $overview = $this->database->overview();
+
+            return view('larapilot::dashboard.database', $overview + [
+                'credentials_allowed' => $this->credentialsAllowed(),
+                'view' => 'migrations',
+                'migrations' => $overview['error'] === null ? $this->migrations->status() : null,
+            ]);
+        }
+
+        if ($request->query('view') !== 'diagram') {
+            return view('larapilot::dashboard.database', $this->database->overview() + [
+                'credentials_allowed' => $this->credentialsAllowed(),
+            ]);
+        }
+
+        $keysOnly = $request->query('columns') === 'keys';
+
+        return view('larapilot::dashboard.database', $this->diagrams->diagram($keysOnly) + [
             'credentials_allowed' => $this->credentialsAllowed(),
+            'view' => 'diagram',
+            'keys_only' => $keysOnly,
+            'limit' => DatabaseDiagramService::LIMIT,
         ]);
     }
 
@@ -56,6 +84,38 @@ class DatabaseViewerController
             }, $credentials);
         }, $this->dumps->filename(), [
             'Content-Type' => 'application/sql; charset=UTF-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * The diagram as a PDF: one page as large as the drawing.
+     */
+    public function diagram(Request $request, DatabaseDiagramPdfWriter $pdf): Response|RedirectResponse
+    {
+        $this->guard();
+
+        $data = $this->diagrams->diagram($request->query('columns') === 'keys');
+
+        if ($data['diagram'] === null || $data['diagram']['nodes'] === []) {
+            return redirect()
+                ->route('larapilot.dashboard.database')
+                ->with('larapilot_error', 'There is no diagram of this database to download.');
+        }
+
+        $name = $this->database->fileName();
+        $relations = count($data['diagram']['edges']);
+        $note = implode(' · ', array_filter([
+            $data['connection']['driver_label'],
+            number_format($data['tables']).' '.($data['tables'] === 1 ? 'table' : 'tables'),
+            $data['views'] > 0 ? number_format($data['views']).' '.($data['views'] === 1 ? 'view' : 'views') : null,
+            number_format($relations).' '.($relations === 1 ? 'foreign key' : 'foreign keys'),
+            Carbon::now()->format('Y-m-d'),
+        ]));
+
+        return response($pdf->write($data['diagram'], $name.' — database diagram', $note), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$name.'-diagram-'.Carbon::now()->format('Y-m-d').'.pdf"',
             'Cache-Control' => 'no-store',
         ]);
     }
