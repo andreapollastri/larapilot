@@ -198,18 +198,45 @@ class LogViewerService
     }
 
     /**
-     * Dashboard URL of a file. Each segment is encoded on its own, so a
-     * name with `#`, `?`, or `%` in it stays one path.
+     * One file, by its place in the address of the page: its name without
+     * the `.log`.
+     *
+     * @return array{key: string, name: string, absolute: string, size: int, size_label: string, modified: int, modified_label: string, current: bool}|null
+     */
+    public function locate(string $path): ?array
+    {
+        foreach ($this->files() as $file) {
+            if ($this->path($file['key']) === $path) {
+                return $file;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Dashboard URL of a file, without its `.log`: a web server may refuse
+     * an address that ends in it, or look for a file of its own there, and
+     * never hand it to the application. Each segment is encoded on its own,
+     * so a name with `#`, `?`, or `%` in it stays one path.
      *
      * @param  array<string, scalar|null>  $query
      */
     public function url(string $key, array $query = []): string
     {
-        $encoded = implode('/', array_map('rawurlencode', explode('/', $key)));
+        $encoded = implode('/', array_map('rawurlencode', explode('/', $this->path($key))));
         $url = str_replace('__FILE__', $encoded, route('larapilot.dashboard.logs.file', ['file' => '__FILE__']));
         $query = array_filter($query, static fn ($value): bool => $value !== null && $value !== '');
 
         return $query === [] ? $url : $url.'?'.http_build_query($query);
+    }
+
+    /**
+     * Every file of the list ends in `.log`, in whatever case.
+     */
+    protected function path(string $key): string
+    {
+        return substr($key, 0, -4);
     }
 
     /**

@@ -9,8 +9,11 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\DatabaseDiagramPdfWriter;
 use Larapilot\Services\DatabaseDiagramService;
+use Larapilot\Services\DatabaseDumpService;
+use Larapilot\Services\DatabaseMigrationExportService;
 use Larapilot\Services\DatabaseMigrationService;
 use Larapilot\Services\DatabaseViewerService;
+use Larapilot\Support\ZipStream;
 
 /**
  * An in-memory SQLite database with the shape of a small application:
@@ -57,6 +60,77 @@ function viewerDatabase(string $prefix = ''): void
     ]);
 
     DB::statement('create view '.$prefix.'published_posts as select id, title from '.$prefix.'posts where published = 1');
+}
+
+/**
+ * What a zip holds, by path — read with the extension, which the writer
+ * of the package does without.
+ *
+ * @return array<string, string>
+ */
+function unzipped(string $bytes): array
+{
+    $file = (string) tempnam(sys_get_temp_dir(), 'lp-zip-');
+    file_put_contents($file, $bytes);
+
+    $zip = new ZipArchive;
+    $files = [];
+
+    try {
+        expect($zip->open($file, ZipArchive::CHECKCONS))->toBeTrue();
+
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $files[(string) $zip->getNameIndex($index)] = (string) $zip->getFromIndex($index);
+        }
+
+        $zip->close();
+    } finally {
+        unlink($file);
+    }
+
+    return $files;
+}
+
+/**
+ * An empty database beside the one the viewer reads, and the default
+ * from here on: where the migrations and the seeders of a download run.
+ */
+function emptyDatabase(string $prefix = ''): void
+{
+    config()->set('database.connections.copy', [
+        'driver' => 'sqlite',
+        'database' => ':memory:',
+        'prefix' => $prefix,
+        'foreign_key_constraints' => true,
+    ]);
+    config()->set('database.default', 'copy');
+    DB::purge('copy');
+}
+
+/**
+ * The lines Blueprint is given for columns as a driver describes them.
+ *
+ * @param  list<array<string, mixed>>  $columns
+ * @param  array<string, list<string>>  $enums
+ * @return list<string>
+ */
+function blueprintLines(string $driver, array $columns, array $enums = []): array
+{
+    $export = new class(app(DatabaseViewerService::class), app(DatabaseDumpService::class), app(DatabaseMigrationService::class)) extends DatabaseMigrationExportService
+    {
+        public function lines(string $driver, array $columns, array $enums): array
+        {
+            return $this->columns(['columns' => $columns], $driver, $enums, []);
+        }
+    };
+
+    return $export->lines($driver, array_map(static fn (array $column): array => $column + [
+        'nullable' => false,
+        'default' => null,
+        'auto_increment' => false,
+        'comment' => null,
+        'generation' => null,
+    ], $columns), $enums);
 }
 
 it('lists the tables and views of the connection in .env', function (): void {
@@ -793,4 +867,531 @@ it('offers no dump when the database cannot be read or the page is off', functio
     config()->set('larapilot.database_viewer.enabled', false);
 
     $this->get('/larapilot/database.sql')->assertNotFound();
+});
+
+it('shows the statement that creates a table, with its indexes, and the one of a view', function (): void {
+    viewerDatabase();
+
+    $this->get('/larapilot/database/users?tab=structure')
+        ->assertOk()
+        ->assertSee('Create statement', false)
+        ->assertSee('Copy SQL', false)
+        ->assertSee('CREATE TABLE &quot;users&quot; (&quot;id&quot; integer primary key autoincrement not null', false)
+        ->assertSee('CREATE UNIQUE INDEX &quot;users_email_unique&quot; on &quot;users&quot; (&quot;email&quot;);', false)
+        // What builds it, not what empties it or fills it.
+        ->assertDontSee('DROP TABLE', false)
+        ->assertDontSee('sqlite_sequence', false);
+
+    $this->get('/larapilot/database/published_posts?tab=structure')
+        ->assertOk()
+        ->assertSee('Create statement', false)
+        ->assertSee('CREATE VIEW published_posts as select id, title from posts where published = 1;', false);
+
+    // The rows tab does not ask the database for it.
+    $this->get('/larapilot/database/users')->assertOk()->assertDontSee('Create statement', false);
+
+    $dumps = app(DatabaseDumpService::class);
+
+    expect($dumps->definition('posts'))->toHaveCount(1)
+        ->and($dumps->definition('posts')[0])->toStartWith('CREATE TABLE "posts"')->not->toEndWith(';')
+        ->and($dumps->definition('no_such_table'))->toBe([]);
+});
+
+it('offers each row as an INSERT statement, without what the page hides', function (): void {
+    viewerDatabase();
+    DB::table('posts')->where('id', 1)->update(['title' => "It's \"quoted\"; with a \\ backslash"]);
+
+    $html = $this->get('/larapilot/database/users')
+        ->assertOk()
+        ->assertSee('Copy as JSON', false)
+        ->assertSee('data-db-insert>Copy as SQL INSERT</button>', false)
+        ->assertDontSee('hash-of-ada-s3cret', false)
+        ->assertDontSee('remember-ada-token', false)
+        ->getContent();
+
+    preg_match('#<script type="application/json" id="db-rows">(.*?)</script>#s', $html, $match);
+    $statements = json_decode($match[1], true)['sql'];
+
+    expect($statements)->toHaveCount(3)
+        ->and($statements[0])->toContain('-- Left out, as the page hides them: password, remember_token')
+        ->toContain('INSERT INTO "users" ("id", "name", "email", "password", "remember_token", "bio", "settings", "avatar") VALUES')
+        ->toContain("(1, 'Ada Lovelace', 'ada@example.test', '', NULL, NULL, '{\"theme\":\"dark\",\"beta\":true}', X'89504E470D0A1A0A0000');");
+
+    preg_match('#<script type="application/json" id="db-rows">(.*?)</script>#s', $this->get('/larapilot/database/posts')->assertOk()->getContent(), $match);
+    $posts = json_decode($match[1], true)['sql'];
+
+    // Into a database with the same tables and no rows: each statement puts its row back.
+    $copy = new PDO('sqlite::memory:');
+    $copy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $copy->exec($this->get('/larapilot/database-export/sql?only=structure')->assertOk()->streamedContent());
+
+    foreach ([...$statements, ...$posts] as $statement) {
+        $copy->exec($statement);
+    }
+
+    expect((int) $copy->query('select count(*) from users')->fetchColumn())->toBe(3)
+        ->and($copy->query('select avatar from users where id = 1')->fetchColumn())->toBe("\x89PNG\r\n\x1a\n\x00\x00")
+        ->and($copy->query('select password from users where id = 1')->fetchColumn())->toBe('')
+        ->and($copy->query('select title from posts where id = 1')->fetchColumn())->toBe("It's \"quoted\"; with a \\ backslash");
+
+    // The second page counts its rows from where it starts, and a view takes no INSERT.
+    config()->set('larapilot.database_viewer.per_page', 2);
+
+    preg_match('#<script type="application/json" id="db-rows">(.*?)</script>#s', $this->get('/larapilot/database/users?page=2')->assertOk()->getContent(), $match);
+
+    expect(json_decode($match[1], true)['sql'])->toHaveCount(1)
+        ->and(json_decode($match[1], true)['sql'][0])->toContain("(3, 'Alan Turing'");
+
+    $this->get('/larapilot/database/published_posts')->assertOk()->assertSee('Copy as JSON', false)->assertDontSee('data-db-insert>', false);
+
+    expect(app(DatabaseDumpService::class)->inserts(app(DatabaseViewerService::class)->objects()['users'], [['id' => 9, 'name' => str_repeat('x', 300000)]]))->toBe([null]);
+});
+
+it('downloads the structure alone, with no rows', function (): void {
+    viewerDatabase();
+
+    $this->get('/larapilot/database')
+        ->assertOk()
+        ->assertSee('action="http://localhost/larapilot/database-export/sql"', false)
+        ->assertSee('Other formats', false)
+        ->assertSee('SQL, structure only', false)
+        ->assertSee('name="only" value="structure"', false)
+        ->assertSee('formaction="http://localhost/larapilot/database-export/migrations"', false)
+        ->assertSee('formaction="http://localhost/larapilot/database-export/seeders"', false);
+
+    $response = $this->get('/larapilot/database-export/sql?only=structure')->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))->toContain('attachment')->toContain('-structure-')->toContain('.sql');
+
+    $sql = $response->streamedContent();
+
+    expect($sql)->toContain('no rows — the structure alone')
+        ->toContain('CREATE TABLE "users"')
+        ->toContain('CREATE UNIQUE INDEX "users_email_unique"')
+        ->toContain('CREATE VIEW published_posts')
+        ->toContain('-- After the tables')
+        ->toContain('-- Dump complete.')
+        ->not->toContain('INSERT INTO')
+        ->not->toContain('Credentials:')
+        ->not->toContain('Ada Lovelace')
+        ->not->toContain('sqlite_sequence');
+
+    $copy = new PDO('sqlite::memory:');
+    $copy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $copy->exec($sql);
+
+    expect((int) $copy->query('select count(*) from users')->fetchColumn())->toBe(0)
+        ->and((int) $copy->query('select count(*) from published_posts')->fetchColumn())->toBe(0)
+        ->and($copy->query('select "table" from pragma_foreign_key_list(\'posts\')')->fetchColumn())->toBe('users');
+
+    // The address the dump had before still answers, for both.
+    expect($this->get('/larapilot/database.sql?only=structure')->assertOk()->streamedContent())->not->toContain('INSERT INTO')
+        ->and($this->get('/larapilot/database-export/sql')->assertOk()->streamedContent())->toContain('INSERT INTO "users"')->toContain('every row');
+});
+
+it('takes the next AUTO_INCREMENT number out of a structure, and nothing else', function (): void {
+    $dumps = new class(app(DatabaseViewerService::class)) extends DatabaseDumpService
+    {
+        public function bare(string $driver, string $statement): string
+        {
+            $this->driver = $driver;
+
+            return $this->withoutCounter($statement);
+        }
+    };
+
+    $statement = "CREATE TABLE `users` (\n  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n  `note` varchar(255) DEFAULT 'AUTO_INCREMENT=5',\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4";
+
+    expect($dumps->bare('mysql', $statement))
+        ->toContain(') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4')
+        ->toContain('NOT NULL AUTO_INCREMENT,')
+        ->toContain("DEFAULT 'AUTO_INCREMENT=5'")
+        ->and($dumps->bare('pgsql', $statement))->toBe($statement);
+});
+
+it('writes a zip a reader opens, compressed or stored, a piece at a time', function (bool $deflate): void {
+    $bytes = '';
+    $zip = new ZipStream(static function (string $chunk) use (&$bytes): void {
+        $bytes .= $chunk;
+    }, $deflate);
+
+    $zip->add('database/migrations/a.php', "<?php\n\necho 'ciao';\n");
+    $zip->begin('database/seeders/Ünï.php');
+
+    for ($i = 0; $i < 2000; $i++) {
+        $zip->append('row '.$i."\n");
+    }
+
+    $zip->add('empty.txt', '');
+    $zip->finish();
+
+    $files = unzipped($bytes);
+
+    expect(array_keys($files))->toBe(['database/migrations/a.php', 'database/seeders/Ünï.php', 'empty.txt'])
+        ->and($files['database/migrations/a.php'])->toBe("<?php\n\necho 'ciao';\n")
+        ->and(substr_count($files['database/seeders/Ünï.php'], "\n"))->toBe(2000)
+        ->and($files['database/seeders/Ünï.php'])->toEndWith("row 1999\n")
+        ->and($files['empty.txt'])->toBe('')
+        ->and(strlen($bytes) < strlen($files['database/seeders/Ünï.php']))->toBe($deflate);
+})->with([true, false]);
+
+it('writes the structure as migrations that build it again', function (): void {
+    viewerDatabase();
+
+    // The table of Laravel itself is not for a migration to make.
+    Schema::create('migrations', function (Blueprint $table): void {
+        $table->id();
+        $table->string('migration');
+        $table->integer('batch');
+    });
+    Schema::create('role_user', function (Blueprint $table): void {
+        $table->unsignedInteger('role_id');
+        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+        $table->primary(['role_id', 'user_id']);
+        $table->index('user_id', 'by_user');
+    });
+
+    $response = $this->get('/larapilot/database-export/migrations')->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))->toContain('attachment')->toContain('-migrations-')->toContain('.zip')
+        ->and($response->headers->get('Content-Type'))->toBe('application/zip');
+
+    $files = unzipped($response->streamedContent());
+    $names = array_map(static fn (string $path): string => (string) preg_replace('#^database/migrations/\d{4}_\d{2}_\d{2}_#', '', $path), array_keys($files));
+
+    // A table after the ones it points at, the views last.
+    expect($names)->toBe([
+        '000001_create_users_table.php',
+        '000002_create_posts_table.php',
+        '000003_create_role_user_table.php',
+        '000004_create_views.php',
+    ]);
+
+    [$users, $posts, $pivot, $views] = array_values($files);
+
+    expect($users)->toContain("Schema::create('users', function (Blueprint \$table) {")
+        ->toContain('$table->id();')
+        ->toContain("\$table->string('name');")
+        ->toContain('$table->rememberToken();')
+        ->toContain("\$table->text('bio')->nullable();")
+        ->toContain("\$table->binary('avatar')->nullable();")
+        ->toContain("\$table->unique('email');")
+        ->toContain("Schema::dropIfExists('users');")
+        ->and($posts)->toContain("\$table->unsignedBigInteger('user_id');")
+        ->toContain("\$table->boolean('published')->default(false);")
+        ->toContain("\$table->foreign('user_id')->references('id')->on('users');")
+        ->and($pivot)->toContain("\$table->primary(['role_id', 'user_id']);")
+        ->toContain("\$table->index('user_id', 'by_user');")
+        ->toContain("\$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');")
+        ->and($views)->toContain("DB::unprepared('CREATE VIEW published_posts as select id, title from posts where published = 1');")
+        ->toContain('DROP VIEW IF EXISTS "published_posts"');
+
+    $describe = static function (string $connection): array {
+        $schema = Schema::connection($connection);
+        $tables = [];
+
+        foreach (['users', 'posts', 'role_user'] as $table) {
+            $tables[$table] = [
+                array_map(static fn (array $column): array => [$column['name'], $column['type'], $column['nullable'], $column['default'], $column['auto_increment']], $schema->getColumns($table)),
+                collect($schema->getIndexes($table))->map(static fn (array $index): array => [$index['name'], $index['columns'], $index['unique'], $index['primary']])->sortBy(0)->values()->all(),
+                array_map(static fn (array $key): array => [$key['columns'], $key['foreign_table'], $key['foreign_columns'], $key['on_delete']], $schema->getForeignKeys($table)),
+            ];
+        }
+
+        return $tables;
+    };
+
+    $source = $describe('viewer');
+
+    emptyDatabase();
+
+    $folder = sys_get_temp_dir().'/lp-migrations-'.bin2hex(random_bytes(6));
+    mkdir($folder);
+
+    try {
+        foreach ($files as $path => $contents) {
+            file_put_contents($folder.'/'.basename($path), $contents);
+            (require $folder.'/'.basename($path))->up();
+        }
+
+        // The same columns, indexes, and foreign keys, and the view reads.
+        expect($describe('copy'))->toBe($source)
+            ->and(DB::table('published_posts')->count())->toBe(0);
+
+        foreach (array_reverse(array_keys($files)) as $path) {
+            (require $folder.'/'.basename($path))->down();
+        }
+
+        expect(Schema::hasTable('users'))->toBeFalse();
+    } finally {
+        shell_exec('rm -rf '.escapeshellarg($folder));
+    }
+});
+
+it('makes a table before the ones that point at it, and keeps for last the keys that close a circle', function (): void {
+    viewerDatabase('app_');
+
+    // Two tables that point at each other: SQLite takes a key to a table that is not there yet.
+    Schema::create('teams', function (Blueprint $table): void {
+        $table->id();
+        $table->string('name');
+        $table->foreignId('owner_id')->nullable()->constrained('members');
+    });
+    Schema::create('members', function (Blueprint $table): void {
+        $table->id();
+        $table->foreignId('team_id')->constrained();
+        $table->foreignId('boss_id')->nullable()->constrained('members')->nullOnDelete();
+    });
+
+    $files = app(DatabaseMigrationExportService::class)->files();
+    $names = array_map(static fn (string $path): string => substr(basename($path), 18), array_keys($files));
+
+    expect($names)->toBe([
+        'create_users_table.php',
+        'create_posts_table.php',
+        'create_members_table.php',
+        'create_teams_table.php',
+        'add_foreign_keys.php',
+        'create_views.php',
+    ]);
+
+    [, , $members, $teams, $keys] = array_values($files);
+
+    // The prefix is Laravel's to add, and a name Laravel gives by itself is not written.
+    expect($members)->toContain("Schema::create('members'")
+        ->toContain("\$table->foreign('boss_id')->references('id')->on('members')->onDelete('set null');")
+        ->not->toContain("on('teams')")
+        ->and($teams)->toContain("\$table->foreign('owner_id')->references('id')->on('members');")
+        ->and($keys)->toContain("Schema::table('members', function (Blueprint \$table) {")
+        ->toContain("\$table->foreign('team_id')->references('id')->on('teams');")
+        ->toContain("\$table->dropForeign(['team_id']);")
+        ->and(array_values($files)[0])->toContain("\$table->unique('email');");
+});
+
+it('writes a column of another database with the Blueprint method that makes it', function (): void {
+    // As MariaDB describes them, through the mysql driver.
+    expect(blueprintLines('mysql', [
+        ['name' => 'id', 'type_name' => 'bigint', 'type' => 'bigint(20) unsigned', 'auto_increment' => true],
+        ['name' => 'legacy_id', 'type_name' => 'int', 'type' => 'int(11)', 'auto_increment' => true],
+        ['name' => 'role', 'type_name' => 'enum', 'type' => "enum('admin','editor','it''s')", 'default' => "'editor'"],
+        ['name' => 'balance', 'type_name' => 'decimal', 'type' => 'decimal(10,2)', 'default' => '0.00'],
+        ['name' => 'active', 'type_name' => 'tinyint', 'type' => 'tinyint(1)', 'default' => '1'],
+        ['name' => 'level', 'type_name' => 'smallint', 'type' => 'smallint(5) unsigned', 'default' => '1'],
+        ['name' => 'seen_at', 'type_name' => 'datetime', 'type' => 'datetime(3)', 'nullable' => true, 'default' => 'NULL'],
+        ['name' => 'verified_at', 'type_name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp()'],
+        ['name' => 'nick', 'type_name' => 'varchar', 'type' => 'varchar(40)', 'nullable' => true, 'default' => 'NULL', 'comment' => "It's short"],
+        // MySQL 8 reports the default of a text column bare.
+        ['name' => 'status', 'type_name' => 'varchar', 'type' => 'varchar(255)', 'default' => 'draft'],
+        ['name' => 'hash', 'type_name' => 'binary', 'type' => 'binary(16)'],
+        ['name' => 'words', 'type_name' => 'int', 'type' => 'int(11)', 'nullable' => true, 'default' => 'NULL', 'generation' => ['type' => 'stored', 'expression' => 'octet_length(`title`)']],
+        ['name' => 'place', 'type_name' => 'point', 'type' => 'point'],
+        ['name' => 'created_at', 'type_name' => 'timestamp', 'type' => 'timestamp', 'nullable' => true, 'default' => 'NULL'],
+        ['name' => 'updated_at', 'type_name' => 'timestamp', 'type' => 'timestamp', 'nullable' => true, 'default' => 'NULL'],
+        ['name' => 'deleted_at', 'type_name' => 'timestamp', 'type' => 'timestamp', 'nullable' => true, 'default' => 'NULL'],
+    ]))->toBe([
+        '$table->id();',
+        "\$table->integer('legacy_id')->autoIncrement();",
+        "\$table->enum('role', ['admin', 'editor', 'it\\'s'])->default('editor');",
+        "\$table->decimal('balance', 10, 2)->default('0.00');",
+        "\$table->boolean('active')->default(true);",
+        "\$table->unsignedSmallInteger('level')->default(1);",
+        "\$table->dateTime('seen_at', 3)->nullable();",
+        "\$table->timestamp('verified_at')->useCurrent();",
+        "\$table->string('nick', 40)->nullable()->comment('It\\'s short');",
+        "\$table->string('status')->default('draft');",
+        "\$table->binary('hash', 16, true);",
+        "\$table->integer('words')->storedAs('octet_length(`title`)')->nullable();",
+        '// `point` in the database.',
+        "\$table->geometry('place');",
+        '$table->timestamps();',
+        '$table->softDeletes();',
+    ]);
+
+    // As PostgreSQL describes them.
+    expect(blueprintLines('pgsql', [
+        ['name' => 'id', 'type_name' => 'int8', 'type' => 'bigint', 'default' => "nextval('users_id_seq'::regclass)", 'auto_increment' => true],
+        ['name' => 'role', 'type_name' => 'varchar', 'type' => 'character varying(255)', 'default' => "'editor'::character varying"],
+        ['name' => 'balance', 'type_name' => 'numeric', 'type' => 'numeric(10,2)', 'default' => "'0'::numeric"],
+        ['name' => 'active', 'type_name' => 'bool', 'type' => 'boolean', 'default' => 'true'],
+        ['name' => 'points', 'type_name' => 'int4', 'type' => 'integer', 'default' => "'-5'::integer"],
+        ['name' => 'country', 'type_name' => 'bpchar', 'type' => 'character(2)', 'default' => "'IT'::bpchar"],
+        ['name' => 'meta', 'type_name' => 'jsonb', 'type' => 'jsonb', 'default' => "'{}'::jsonb"],
+        ['name' => 'public_id', 'type_name' => 'uuid', 'type' => 'uuid', 'default' => 'gen_random_uuid()'],
+        ['name' => 'logged_at', 'type_name' => 'timestamp', 'type' => 'timestamp without time zone', 'nullable' => true],
+        ['name' => 'opens_at', 'type_name' => 'timestamptz', 'type' => 'timestamp(0) with time zone', 'default' => 'now()'],
+        ['name' => 'mood', 'type_name' => 'mood', 'type' => 'mood', 'nullable' => true],
+        ['name' => 'search', 'type_name' => 'tsvector', 'type' => 'tsvector', 'nullable' => true],
+        ['name' => 'created_at', 'type_name' => 'timestamp', 'type' => 'timestamp(0) without time zone', 'nullable' => true],
+        ['name' => 'updated_at', 'type_name' => 'timestamp', 'type' => 'timestamp(0) without time zone', 'nullable' => true],
+    ], ['mood' => ['happy', 'sad']]))->toBe([
+        '$table->id();',
+        "\$table->string('role')->default('editor');",
+        "\$table->decimal('balance', 10, 2)->default('0');",
+        "\$table->boolean('active')->default(true);",
+        "\$table->integer('points')->default(-5);",
+        "\$table->char('country', 2)->default('IT');",
+        "\$table->jsonb('meta')->default('{}');",
+        "\$table->uuid('public_id')->default(DB::raw('gen_random_uuid()'));",
+        "\$table->timestamp('logged_at', 6)->nullable();",
+        "\$table->timestampTz('opens_at')->useCurrent();",
+        '// The type `mood` of PostgreSQL: Laravel writes an enum as a string with a check.',
+        "\$table->enum('mood', ['happy', 'sad'])->nullable();",
+        '// `tsvector` in the database: Blueprint has no column of this type, so it is written as text.',
+        "\$table->text('search')->nullable();",
+        '$table->timestamps();',
+    ]);
+
+    // As SQL Server describes them: a default in brackets, a national length in bytes.
+    expect(blueprintLines('sqlsrv', [
+        ['name' => 'id', 'type_name' => 'int', 'type' => 'int', 'auto_increment' => true],
+        ['name' => 'name', 'type_name' => 'nvarchar', 'type' => 'nvarchar(510)', 'default' => "('draft')"],
+        ['name' => 'code', 'type_name' => 'nvarchar', 'type' => 'nvarchar(80)', 'default' => "(N'it''s')"],
+        ['name' => 'body', 'type_name' => 'nvarchar', 'type' => 'nvarchar(max)', 'nullable' => true],
+        ['name' => 'active', 'type_name' => 'bit', 'type' => 'bit', 'default' => '((1))'],
+        ['name' => 'points', 'type_name' => 'int', 'type' => 'int', 'default' => '((0))'],
+        ['name' => 'public_id', 'type_name' => 'uniqueidentifier', 'type' => 'uniqueidentifier', 'default' => '(newid())'],
+        ['name' => 'made_at', 'type_name' => 'datetime2', 'type' => 'datetime2', 'default' => '(getdate())'],
+    ]))->toBe([
+        "\$table->increments('id');",
+        "\$table->string('name')->default('draft');",
+        "\$table->string('code', 40)->default('it\\'s');",
+        "\$table->text('body')->nullable();",
+        "\$table->boolean('active')->default(true);",
+        "\$table->integer('points')->default(0);",
+        "\$table->uuid('public_id')->default(DB::raw('newid()'));",
+        "\$table->dateTime('made_at')->useCurrent();",
+    ]);
+});
+
+it('writes the rows as seeders that fill it again', function (): void {
+    viewerDatabase();
+    DB::table('posts')->delete();
+    DB::table('posts')->insert(['id' => 7, 'user_id' => 1, 'title' => "It's \"quoted\"; a \\ backslash, a \$dollar\r\nand a second line", 'published' => true]);
+    Schema::create('migrations', function (Blueprint $table): void {
+        $table->id();
+        $table->string('migration');
+        $table->integer('batch');
+    });
+    DB::table('migrations')->insert(['migration' => '0001_01_01_000000_create_users_table', 'batch' => 1]);
+    Schema::create('empty_things', function (Blueprint $table): void {
+        $table->id();
+    });
+
+    // Without the credentials, as the dump: nothing of a password is in the archive.
+    $response = $this->get('/larapilot/database-export/seeders')->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))->toContain('attachment')->toContain('-seeders-')->toContain('.zip');
+
+    $hidden = unzipped($response->streamedContent());
+
+    expect(implode("\n", $hidden))->not->toContain('hash-of-ada-s3cret')->not->toContain('remember-ada-token')
+        ->and($hidden['database/seeders/DatabaseDataSeeder.php'])->toContain('Passwords, tokens, and secrets were left out')->toContain('users.password')
+        ->and($hidden['database/seeders/UsersTableSeeder.php'])->toContain("'password' => '', 'remember_token' => null");
+
+    $files = unzipped($this->get('/larapilot/database-export/seeders?credentials=1')->assertOk()->streamedContent());
+
+    // A table after the ones it points at; none for an empty table, none for Laravel's own.
+    expect(array_keys($files))->toBe([
+        'database/seeders/UsersTableSeeder.php',
+        'database/seeders/PostsTableSeeder.php',
+        'database/seeders/DatabaseDataSeeder.php',
+    ]);
+
+    $entry = $files['database/seeders/DatabaseDataSeeder.php'];
+
+    expect($entry)->toContain('namespace Database\Seeders;')
+        ->toContain('php artisan db:seed --class=DatabaseDataSeeder')
+        ->toContain('Passwords, tokens, and secrets are in these files.')
+        ->and(strpos($entry, 'UsersTableSeeder::class'))->toBeLessThan(strpos($entry, 'PostsTableSeeder::class'))
+        ->and($files['database/seeders/UsersTableSeeder.php'])->toContain("DB::table('users')->insert([")
+        ->toContain("'password' => 'hash-of-ada-s3cret'")
+        ->toContain("\$this->bytes('".base64_encode("\x89PNG\r\n\x1a\n\x00\x00")."')")
+        // A carriage return is written out, so no editor changes it.
+        ->and($files['database/seeders/PostsTableSeeder.php'])->toContain('"It\'s \"quoted\"; a \\\\ backslash, a \$dollar\r\nand a second line"');
+
+    $rows = static fn (string $connection): array => [
+        DB::connection($connection)->table('users')->orderBy('id')->get()->map(static fn (object $row): array => (array) $row)->all(),
+        DB::connection($connection)->table('posts')->orderBy('id')->get()->map(static fn (object $row): array => (array) $row)->all(),
+    ];
+
+    $source = $rows('viewer');
+    $migrations = app(DatabaseMigrationExportService::class)->files();
+
+    emptyDatabase();
+
+    $folder = sys_get_temp_dir().'/lp-seeders-'.bin2hex(random_bytes(6));
+    mkdir($folder);
+
+    try {
+        foreach ($migrations as $path => $contents) {
+            file_put_contents($folder.'/'.basename($path), $contents);
+            (require $folder.'/'.basename($path))->up();
+        }
+
+        foreach ($files as $path => $contents) {
+            file_put_contents($folder.'/'.basename($path), $contents);
+            require_once $folder.'/'.basename($path);
+        }
+
+        $this->seed('Database\Seeders\DatabaseDataSeeder');
+
+        expect($rows('copy'))->toBe($source)
+            ->and(DB::table('users')->where('id', 1)->value('avatar'))->toBe("\x89PNG\r\n\x1a\n\x00\x00")
+            // The next row gets a number of its own.
+            ->and(DB::table('posts')->insertGetId(['user_id' => 2, 'title' => 'After the seed']))->toBe(8);
+    } finally {
+        shell_exec('rm -rf '.escapeshellarg($folder));
+    }
+});
+
+it('keeps the credentials out of the seeders on a shared host, whatever is asked', function (): void {
+    viewerDatabase();
+
+    $this->artisan('larapilot:install')->assertSuccessful();
+    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
+    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
+    $this->app['env'] = 'staging';
+
+    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
+
+    $this->get('/larapilot/database-export/seeders?credentials=1')->assertStatus(401);
+    $this->get('/larapilot/database-export/migrations')->assertStatus(401);
+    $this->get('/larapilot/database-export/sql?only=structure')->assertStatus(401);
+
+    $files = unzipped($this->get('/larapilot/database-export/seeders?credentials=1', $headers)->assertOk()->streamedContent());
+
+    expect(implode("\n", $files))->not->toContain('hash-of-ada-s3cret')
+        ->toContain('Passwords, tokens, and secrets were left out');
+});
+
+it('offers no migrations and no seeders when the database cannot be read or the page is off', function (): void {
+    config()->set('database.connections.bare', ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '']);
+    config()->set('database.default', 'bare');
+
+    // Nothing to write a migration for.
+    $this->get('/larapilot/database-export/migrations')
+        ->assertRedirect('/larapilot/database')
+        ->assertSessionHas('larapilot_error', 'The database has no table to write a migration for.');
+
+    config()->set('database.connections.unreachable', [
+        'driver' => 'pgsql',
+        'host' => '127.0.0.1',
+        'port' => 1,
+        'database' => 'shop',
+        'username' => 'shop',
+        'password' => 'secret',
+    ]);
+    config()->set('larapilot.database_viewer.connection', 'unreachable');
+
+    foreach (['sql', 'migrations', 'seeders'] as $export) {
+        $this->get('/larapilot/database-export/'.$export)
+            ->assertRedirect('/larapilot/database')
+            ->assertSessionHas('larapilot_error');
+    }
+
+    config()->set('larapilot.database_viewer.enabled', false);
+
+    foreach (['sql', 'migrations', 'seeders'] as $export) {
+        $this->get('/larapilot/database-export/'.$export)->assertNotFound();
+    }
 });

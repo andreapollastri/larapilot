@@ -186,8 +186,18 @@ class DashboardRouteRegistrar
                 Route::get('/database', [DatabaseViewerController::class, 'index'])
                     ->name('larapilot.dashboard.database');
 
-                Route::get('/database.sql', [DatabaseViewerController::class, 'dump'])
+                // No extension in these addresses: a web server may keep
+                // `.sql` and `.zip` for itself, as it does `.log`.
+                Route::get('/database-export/sql', [DatabaseViewerController::class, 'dump'])
                     ->name('larapilot.dashboard.database.dump');
+                // The address the dump had before.
+                Route::get('/database.sql', [DatabaseViewerController::class, 'dump']);
+
+                Route::get('/database-export/migrations', [DatabaseViewerController::class, 'migrations'])
+                    ->name('larapilot.dashboard.database.migrations');
+
+                Route::get('/database-export/seeders', [DatabaseViewerController::class, 'seeders'])
+                    ->name('larapilot.dashboard.database.seeders');
 
                 Route::get('/database-diagram.pdf', [DatabaseViewerController::class, 'diagram'])
                     ->name('larapilot.dashboard.database.diagram');
@@ -201,8 +211,9 @@ class DashboardRouteRegistrar
                 Route::get('/logs', [LogViewerController::class, 'index'])
                     ->name('larapilot.dashboard.logs');
 
-                // A log is found by name in what the folder lists, so any
-                // name it holds is allowed here and nothing else is opened.
+                // A log is found by name — without its `.log`, which some web
+                // servers keep for themselves — in what the folder lists, so
+                // any name it holds is allowed here and nothing else is opened.
                 Route::get('/logs/{file}', [LogViewerController::class, 'show'])
                     ->where('file', '.+')
                     ->name('larapilot.dashboard.logs.file');

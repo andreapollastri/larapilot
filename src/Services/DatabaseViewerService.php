@@ -327,6 +327,7 @@ class DatabaseViewerService
             'searchable' => $searchable !== [],
             'where' => $where,
             'is' => $is,
+            'records' => [],
         ];
 
         $query = $connection->table($key);
@@ -375,6 +376,9 @@ class DatabaseViewerService
         $result['from'] = $records === [] ? 0 : ($page - 1) * $perPage + 1;
         $result['to'] = $records === [] ? 0 : ($page - 1) * $perPage + count($records);
         $result['rows'] = array_map(fn (object $record): array => $this->row((array) $record, $columns), $records);
+        // As the database holds them, hidden values included: for what is
+        // written from them on the server, never for the page.
+        $result['records'] = array_map(static fn (object $record): array => (array) $record, $records);
 
         return $result;
     }

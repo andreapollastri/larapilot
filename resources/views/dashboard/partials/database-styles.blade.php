@@ -14,6 +14,48 @@
 
     .db-check input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 
+    /* ---- the other downloads ---- */
+    .db-more { position: relative; }
+    .db-more > summary { list-style: none; user-select: none; }
+    .db-more > summary::-webkit-details-marker { display: none; }
+    .db-more > summary .icon { width: 14px; height: 14px; transform: rotate(90deg); transition: transform 0.15s ease; }
+    .db-more[open] > summary .icon { transform: rotate(-90deg); }
+
+    .db-more-list {
+        position: absolute;
+        z-index: 20;
+        top: calc(100% + 6px);
+        right: 0;
+        display: grid;
+        gap: 2px;
+        width: min(320px, calc(100vw - 32px));
+        padding: 6px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .db-more-list button {
+        display: grid;
+        gap: 2px;
+        width: 100%;
+        padding: 9px 10px;
+        border: 0;
+        border-radius: var(--radius-xs);
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .db-more-list button:hover,
+    .db-more-list button:focus-visible { background: var(--surface-3); }
+    .db-more-list strong { font-size: 0.86rem; font-weight: 600; }
+    .db-more-list small { color: var(--muted); font-size: 0.78rem; line-height: 1.45; }
+    .db-more-list code { padding: 0; background: transparent; color: inherit; font-size: 0.74rem; }
+
     .db-conn { margin: -8px 0 20px; }
     .db-conn .chip { max-width: 100%; min-width: 0; }
     .db-conn .chip .icon { width: 15px; height: 15px; }

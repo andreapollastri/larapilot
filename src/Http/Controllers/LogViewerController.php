@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\LogViewerService;
@@ -39,17 +40,29 @@ class LogViewerController
         return $this->open($request, $file);
     }
 
-    public function show(Request $request, string $file): View|StreamedResponse
+    /**
+     * A file by its name without the `.log`. The address it had with the
+     * extension — a bookmark, a link in a ticket — leads to this one.
+     */
+    public function show(Request $request, string $file): View|StreamedResponse|RedirectResponse
     {
         $this->guard();
 
-        $found = $this->logs->find($file);
+        $found = $this->logs->locate($file);
 
-        if ($found === null) {
+        if ($found !== null) {
+            return $this->open($request, $found);
+        }
+
+        $named = $this->logs->find($file);
+
+        if ($named === null) {
             abort(404);
         }
 
-        return $this->open($request, $found);
+        $query = $request->getQueryString();
+
+        return redirect()->to($this->logs->url($named['key']).($query === null ? '' : '?'.$query));
     }
 
     /**

@@ -2,6 +2,31 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [5.0.3] - 2026-10-02
+
+### Added
+
+- **The statement that creates a table** — the **Structure** tab of a table on `/larapilot/database` closes with **Create statement**: the `CREATE TABLE` that builds it, then its indexes and its keys, in the SQL of the driver, with **Copy SQL**. It is what the dump writes for that table — MySQL's and MariaDB's own `SHOW CREATE TABLE`, the statement SQLite keeps with its indexes and triggers, PostgreSQL rebuilt from its catalogs with its sequences, constraints, and indexes, SQL Server from Laravel's schema builder. A view shows its `CREATE VIEW`.
+- **Copy as SQL INSERT** — the panel a row opens in has it beside **Copy as JSON**: the row as one `INSERT` statement of the driver, its columns named and its values written as the dump writes them — bytes as a hex literal, a quote doubled — ready to run on a database with the same table. A column the page hides goes out without its value, as in the dump, and the statement opens with a comment that names it. A row of more than 256 KB is left to the SQL download; a view has no such button.
+- **The structure alone, as SQL** — **Other formats**, beside **Download SQL**, opens three more downloads. **SQL, structure only** is the dump with no rows: the tables, their keys and indexes, and the views, with no sequence left at the number the rows had reached — MySQL's `AUTO_INCREMENT=` is taken off the table, SQLite's `sqlite_sequence` and PostgreSQL's `setval` are not written.
+- **The database as Laravel migrations** — **Laravel migrations** downloads a `.zip` to unpack in the root of a project: a file in `database/migrations` for each table, written with the Blueprint method that makes each column, its default, its comment, its indexes, and its foreign keys, and the shorthands Laravel has for the columns every table carries — `id()`, `timestamps()`, `softDeletes()`, `rememberToken()`. A table comes after the ones it points at; the foreign keys that close a circle are in a last migration of their own, and the views in one that runs their SQL. A name Laravel would give by itself — an index, a key — is not written. What Blueprint has no word for — a type of one database only, an index on an expression — is written as the nearest thing, with a comment on the line above. The `migrations` table is left out: Laravel makes it itself.
+- **The rows as Laravel seeders** — **Laravel seeders** downloads a `.zip` with a class in `database/seeders` for each table that holds rows and `DatabaseDataSeeder`, which calls them in the order of the migrations: `php artisan db:seed --class=DatabaseDataSeeder`, on tables that are there and empty. Bytes are kept through base64 and a carriage return is written out, so the files stay text an editor does not change; on PostgreSQL the next id is set after the rows and the foreign keys are let wait until every table is filled, so two tables that point at each other go in. Passwords and tokens are left out as in the dump, unless **Include passwords and tokens** is ticked on a developer's machine. The archive is written while it downloads, a table at a time from one snapshot, so a large table fills neither the memory nor the disk — by a zip writer of the package, with no temporary file and no need of the `zip` extension.
+- **One reading for every driver** — the migrations and the seeders come from what Laravel's schema builder reports, so they are the same from MySQL, MariaDB, PostgreSQL, SQLite, and SQL Server, and what one database wrote runs on another: an integer of SQLite is written as wide as it is, and a column that points at a key as the key is, where the database has no unsigned type. A view and a generated column stay the SQL of the database they came from.
+
+### Changed
+
+- **A log has its address without `.log`** — `/larapilot/logs/laravel.log` is now `/larapilot/logs/laravel`, and a file in a folder `/larapilot/logs/archive/laravel-2026-09-30`. Some web servers refuse an address that ends in `.log`, or look for a file of their own there, and never hand the request to the application: the page of the log answered an error of the server. Every link of the page, the form of the filters, and **Download log** use the new address; the one with the extension leads to it, with what it asked for, wherever the server lets it through. The name of the file on the page and of the download are unchanged.
+- **The downloads of the database have no extension in their address** — for the same reason, **Download SQL** is at `/larapilot/database-export/sql`, beside `/migrations` and `/seeders`. `/larapilot/database.sql` still answers.
+- **A hidden number in a dump is `0`, not an empty string** — a column the viewer hides that holds a number and cannot be `NULL` was written as `''`, which MySQL in strict mode refuses on the way back in.
+
+### Fixed
+
+- **The mailable of a mail was not named on Laravel 10** — the **Mail** tab of the Laravel page says which mailable built a mail from what Laravel adds to the message, and Laravel 10 does not add it: the column was empty there, and the suite failed on the two Laravel 10 jobs of the pipeline. The recorder now finds the mailable that is sending up the call stack, where the event is fired from.
+
+### Docs
+
+- Site / package version **v5.0.3**. README (**Database**, **Logs**, dashboard pages) and `docs/index.html` (the Database and Logs pages) describe the create statement, **Copy as SQL INSERT**, **Other formats** with its three downloads, and the address of a log.
+
 ## [5.0.2] - 2026-10-02
 
 ### Added

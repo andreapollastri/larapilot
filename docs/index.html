@@ -1729,7 +1729,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.2</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.3</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -5044,7 +5044,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.0.2 released 2026-10-02</span>
+<span class="comment"># latest   : 5.0.3 released 2026-10-02</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -10491,7 +10491,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     search, and a foreign key that leads to the row it points at; or for its structure: columns,
                     indexes, foreign keys. <strong>Diagram</strong> draws the tables and the foreign keys
                     between them; <strong>Migrations</strong> lists the ones that ran and the ones still to
-                    run. <strong>Download SQL</strong> dumps the whole database.
+                    run. <strong>Download SQL</strong> dumps the whole database; <strong>Other formats</strong> gives its
+                    structure alone, Laravel migrations, and seeders with its rows.
                     <strong>Read only</strong>; passwords and tokens are never shown</td>
                 </tr>
                 <tr>
@@ -10735,10 +10736,16 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <li><strong>Rows</strong>: 50 to a page (<code>LARAPILOT_DATABASE_VIEWER_PER_PAGE</code>), ordered by the
               primary key. A click on a column sorts by it; the search looks in the text columns, without regard
               to case. A value in a foreign key column is a link to the row it points at. A click on a row opens
-              it whole: long text in full, JSON indented, <strong>Copy as JSON</strong>. A binary value is shown
-              as hex with its size, <code>NULL</code> as <code>NULL</code>.</li>
+              it whole: long text in full, JSON indented, <strong>Copy as JSON</strong>, and
+              <strong>Copy as SQL INSERT</strong> — the row as one <code>INSERT</code> statement of the driver,
+              its columns named and its values written as the dump writes them, ready to run on a database with
+              the same table; a hidden column goes out without its value, and the statement says which. A binary
+              value is shown as hex with its size, <code>NULL</code> as <code>NULL</code>.</li>
             <li><strong>Structure</strong>: the columns with type, null, default, primary key, auto increment,
-              and comment; the indexes; the foreign keys with what happens on update and on delete.</li>
+              and comment; the indexes; the foreign keys with what happens on update and on delete; and the
+              <strong>create statement</strong> — the <code>CREATE TABLE</code>, or <code>CREATE VIEW</code>,
+              that builds it, with its indexes and keys, in the SQL of the driver, with a button to copy it. It
+              is the statement the dump writes for that table.</li>
             <li><strong>Diagram</strong> is the second view of the list
               (<code>/larapilot/database?view=diagram</code>): a box for each table with its columns —
               <code>PK</code>, <code>FK</code>, the type — and a line for each foreign key, from the column to
@@ -10792,7 +10799,36 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>hidden-1</code>, <code>hidden-2</code>, … where a unique index holds the column, so the file
               still restores — and the head of the file names them. <strong>Include passwords and tokens</strong> puts them in, and is offered only in
               <code>local</code>, <code>development</code>, and <code>testing</code> — on a shared host they never
-              leave the server, sign-in or not.</li>
+              leave the server, sign-in or not. The seeders follow the same rule, and
+              <strong>Copy as SQL INSERT</strong> never carries them.</li>
+            <li><strong>Other formats</strong>, beside <strong>Download SQL</strong>, gives the database three
+              more ways:
+              <ul>
+                <li><strong>SQL, structure only</strong> — the same file with no rows: the tables, their keys
+                  and indexes, and the views, and no sequence left at the number the rows had reached.</li>
+                <li><strong>Laravel migrations</strong> — a <code>.zip</code> to unpack in the root of a
+                  project: a file in <code>database/migrations</code> for each table, written with the
+                  Blueprint method that makes each column — <code>id()</code>, <code>timestamps()</code>,
+                  <code>softDeletes()</code>, <code>rememberToken()</code> where a table carries them — its
+                  indexes, and its foreign keys. A table comes after the ones it points at; the keys that
+                  close a circle are in a last migration of their own, and the views in one that runs their
+                  SQL. What Blueprint has no word for — a type of one database only, an index on an
+                  expression — is written as the nearest thing, with a comment on the line above. The
+                  <code>migrations</code> table is left out: Laravel makes it itself.</li>
+                <li><strong>Laravel seeders</strong> — a <code>.zip</code> with a class in
+                  <code>database/seeders</code> for each table that holds rows, and
+                  <code>DatabaseDataSeeder</code>, which calls them in the order of the migrations:
+                  <code>php artisan db:seed --class=DatabaseDataSeeder</code>, on tables that are there and
+                  empty. Bytes are kept through base64, the next id is set on PostgreSQL, where the foreign
+                  keys are let wait until every table is filled, and the archive is written while it
+                  downloads, so a large table fills neither the memory nor the disk.</li>
+              </ul>
+              The migrations and the seeders are read from Laravel's schema builder, so they are the same from
+              every driver, and what one database wrote runs on another — but for a view and a generated
+              column, which are the SQL of the database they came from. The downloads are at
+              <code>/larapilot/database-export/sql</code>, <code>/migrations</code>, and
+              <code>/seeders</code>, with no extension, since a web server may keep <code>.sql</code> and
+              <code>.zip</code> for itself; <code>/larapilot/database.sql</code> still answers.</li>
             <li><strong>Local by default.</strong> Like the file manager, the page is open in
               <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
               is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
@@ -10805,7 +10841,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
 
           <h4 id="deep-dive-dashboard-logs">Logs</h4>
           <p><code>/larapilot/logs</code> reads what the application wrote to <code>storage/logs</code>: every
-            <code>.log</code> file, the one Laravel writes to now opened first. It reads, and never writes.</p>
+            <code>.log</code> file, the one Laravel writes to now opened first. It reads, and never writes. A
+            file has its address without the extension — <code>/larapilot/logs/laravel</code> for
+            <code>laravel.log</code> — because a web server may refuse an address that ends in
+            <code>.log</code>, or look for a file of its own there; the address with it leads to the one
+            without.</p>
           <ul>
             <li><strong>Entries, not lines.</strong> An entry is what Laravel wrote between one
               <code>[date] env.LEVEL:</code> and the next, its stack trace included; the newest comes first. Each
@@ -11845,7 +11885,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.0.2 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.0.3 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

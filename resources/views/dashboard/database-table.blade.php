@@ -277,6 +277,33 @@
     .db-def .db-notes small { display: block; flex-basis: 100%; }
     .db-def-empty { margin: 0; padding: 18px 16px; color: var(--muted); font-size: 0.86rem; }
 
+    .db-create-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-right: 12px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .db-structure .db-create-head h3 { border-bottom: 0; }
+
+    .db-sql {
+        margin: 0;
+        padding: 14px 16px;
+        max-height: 60vh;
+        overflow: auto;
+        background: var(--surface-2);
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        scrollbar-width: thin;
+    }
+
+    .db-sql code { padding: 0; background: transparent; color: var(--text); font: inherit; white-space: inherit; }
+
     /* ---- one row ---- */
     .db-modal {
         width: min(calc(100vw - 32px), 760px);
@@ -296,13 +323,14 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        flex-wrap: wrap;
+        gap: 10px 12px;
         padding: 16px 18px;
         border-bottom: 1px solid var(--border);
     }
 
     .db-modal h3 { margin: 0; font-size: 1.05rem; }
-    .db-modal-actions { display: flex; gap: 8px; }
+    .db-modal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .db-modal-body { margin: 0; padding: 6px 18px 18px; overflow-y: auto; }
 
     .db-modal dt {
@@ -509,6 +537,20 @@
                             @endif
                         </section>
                     @endunless
+
+                    <section class="card" aria-labelledby="db-create-title">
+                        <div class="db-create-head">
+                            <h3 id="db-create-title">Create statement</h3>
+                            @if ($definition !== [])
+                                <button type="button" class="btn ghost small" data-db-copy-text="db-create-sql" data-label="Copy SQL">Copy SQL</button>
+                            @endif
+                        </div>
+                        @if ($definition === [])
+                            <p class="db-def-empty">The driver did not give the statement that creates this {{ $isView ? 'view' : 'table' }}.</p>
+                        @else
+                            <pre class="db-sql" id="db-create-sql" tabindex="0"><code>{{ implode(";\n\n", $definition) }};</code></pre>
+                        @endif
+                    </section>
                 </div>
             @else
                 @if ($searchable || $where !== null)
@@ -622,6 +664,9 @@
                             <h3 id="db-row-title">Row</h3>
                             <div class="db-modal-actions">
                                 <button type="button" class="btn ghost small" data-db-copy>Copy as JSON</button>
+                                @if ($inserts !== [])
+                                    <button type="button" class="btn ghost small" data-db-insert>Copy as SQL INSERT</button>
+                                @endif
                                 <button type="button" class="btn small" data-db-close>Close</button>
                             </div>
                         </header>
@@ -631,6 +676,8 @@
                     <script type="application/json" id="db-rows">{!! json_encode([
                         'from' => $from,
                         'types' => $types,
+                        // One statement for each row, what the page hides left out; null for a row too large to copy.
+                        'sql' => $inserts,
                         'rows' => array_map(static fn (array $row): array => array_map(
                             static fn (array $cell): array => [$cell['column'], $cell['kind'], $cell['full']],
                             $row
@@ -657,6 +704,29 @@
             wide.addEventListener?.('change', sync);
         });
 
+        const copyText = async (button, text, label) => {
+            try {
+                await navigator.clipboard.writeText(text);
+                button.textContent = 'Copied';
+            } catch (error) {
+                button.textContent = 'Copy failed';
+            }
+
+            setTimeout(() => {
+                button.textContent = label;
+            }, 1600);
+        };
+
+        document.querySelectorAll('[data-db-copy-text]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const target = document.getElementById(button.dataset.dbCopyText);
+
+                if (target) {
+                    copyText(button, target.textContent, button.dataset.label || 'Copy');
+                }
+            });
+        });
+
         const source = document.getElementById('db-rows');
         const dialog = document.getElementById('db-row-dialog');
 
@@ -667,7 +737,9 @@
         const data = JSON.parse(source.textContent || '{}');
         const fields = dialog.querySelector('[data-db-fields]');
         const title = dialog.querySelector('#db-row-title');
+        const insert = dialog.querySelector('[data-db-insert]');
         let current = null;
+        let statement = null;
 
         const open = (index) => {
             const row = (data.rows || [])[index];
@@ -677,6 +749,13 @@
             }
 
             current = row;
+            statement = (data.sql || [])[index] || null;
+
+            if (insert) {
+                insert.disabled = !statement;
+                insert.title = statement ? '' : 'This row is too large to copy as one statement: the SQL download holds it.';
+            }
+
             title.textContent = 'Row ' + ((data.from || 1) + index).toLocaleString();
             fields.textContent = '';
 
@@ -723,7 +802,7 @@
 
         const copy = dialog.querySelector('[data-db-copy]');
 
-        copy.addEventListener('click', async () => {
+        copy.addEventListener('click', () => {
             if (!current) {
                 return;
             }
@@ -742,16 +821,13 @@
                 }
             });
 
-            try {
-                await navigator.clipboard.writeText(JSON.stringify(record, null, 2));
-                copy.textContent = 'Copied';
-            } catch (error) {
-                copy.textContent = 'Copy failed';
-            }
+            copyText(copy, JSON.stringify(record, null, 2), 'Copy as JSON');
+        });
 
-            setTimeout(() => {
-                copy.textContent = 'Copy as JSON';
-            }, 1600);
+        insert?.addEventListener('click', () => {
+            if (statement) {
+                copyText(insert, statement, 'Copy as SQL INSERT');
+            }
         });
     })();
 </script>

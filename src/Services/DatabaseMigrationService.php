@@ -126,7 +126,10 @@ class DatabaseMigrationService
         return (str_starts_with($folder.'/', $base) ? substr($folder.'/', strlen($base)) : $folder.'/').basename($path);
     }
 
-    protected function table(): string
+    /**
+     * The table Laravel keeps the migrations that ran in.
+     */
+    public function table(): string
     {
         $table = config('database.migrations');
         $table = is_array($table) ? ($table['table'] ?? null) : $table;

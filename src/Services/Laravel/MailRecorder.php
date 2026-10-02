@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services\Laravel;
 
+use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Mail\Events\MessageSent;
 use Larapilot\Services\ConfigService;
 use Symfony\Component\Mime\Address;
@@ -21,6 +22,9 @@ class MailRecorder
 {
     /** The most that is kept of a body, in bytes. */
     protected const BODY = 2097152;
+
+    /** How far up the call stack the mailable is looked for. */
+    protected const STACK = 60;
 
     protected RecordStore $store;
 
@@ -132,6 +136,14 @@ class MailRecorder
         foreach (['__laravel_notification', '__laravel_mailable'] as $key) {
             if (is_string($data[$key] ?? null) && $data[$key] !== '') {
                 return $data[$key];
+            }
+        }
+
+        // Laravel 10 does not name the mailable. The event is fired while
+        // it sends, so it is the one up the call stack.
+        foreach (debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, self::STACK) as $frame) {
+            if (($frame['object'] ?? null) instanceof Mailable) {
+                return $frame['object']::class;
             }
         }
 

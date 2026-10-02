@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Generator;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Carbon;
 use Throwable;
@@ -18,6 +19,9 @@ use Throwable;
  * the rows; SQL Server and any other driver from Laravel's schema builder.
  * The file is written a piece at a time and read inside one snapshot, so
  * a large database neither fills the memory nor comes out half-updated.
+ *
+ * The same reading serves what else is made of the database: the statement
+ * that creates one table, on its page, and the rows of the seeders.
  */
 class DatabaseDumpService
 {
@@ -29,6 +33,9 @@ class DatabaseDumpService
 
     /** Rows read from the database at a time. */
     protected const ROWS_PER_READ = 1000;
+
+    /** A row larger than this is not offered as a statement to copy. */
+    protected const BYTES_PER_COPY = 262144;
 
     protected Connection $connection;
 
@@ -42,9 +49,9 @@ class DatabaseDumpService
     /**
      * The name of the file: the database and the moment it was taken.
      */
-    public function filename(): string
+    public function filename(bool $rows = true): string
     {
-        return $this->viewer->fileName().'-'.Carbon::now()->format('Y-m-d-His').'.sql';
+        return $this->viewer->fileName().($rows ? '' : '-structure').'-'.Carbon::now()->format('Y-m-d-His').'.sql';
     }
 
     /**
@@ -52,29 +59,23 @@ class DatabaseDumpService
      * `$credentials` off, a column the viewer hides goes out as NULL, or
      * as an empty string when it cannot be NULL — and as a placeholder of
      * its own on each row when a unique index holds it, so the file still
-     * goes back in.
+     * goes back in. With `$rows` off the file builds the tables and the
+     * views and fills none.
      *
      * @param  callable(string): void  $write
      * @return array{tables: int, views: int, rows: int, hidden: list<string>}
      */
-    public function dump(callable $write, bool $credentials = false): array
+    public function dump(callable $write, bool $credentials = false, bool $rows = true): array
     {
         $this->write = $write;
-        $this->connection = $this->viewer->connection();
-        $this->driver = $this->connection->getDriverName();
 
-        $objects = array_values(array_filter(
-            $this->viewer->objects(),
-            // SQLite: the main database, not what is attached to it.
-            fn (array $object): bool => $this->driver !== 'sqlite' || in_array($object['schema'], [null, 'main'], true)
-        ));
-        $tables = array_values(array_filter($objects, static fn (array $object): bool => $object['kind'] === 'table'));
-        $views = array_values(array_filter($objects, static fn (array $object): bool => $object['kind'] === 'view'));
+        $tables = $this->tables();
+        $views = $this->views();
 
         $plans = [];
         $hidden = [];
 
-        foreach ($tables as $table) {
+        foreach ($rows ? $tables : [] as $table) {
             $plans[$table['key']] = $plan = $this->plan($table, $credentials);
 
             foreach ($plan['hidden'] as $column) {
@@ -84,31 +85,127 @@ class DatabaseDumpService
 
         $summary = ['tables' => count($tables), 'views' => count($views), 'rows' => 0, 'hidden' => $hidden];
 
-        $this->header($summary, $credentials);
+        $this->header($summary, $credentials, $rows);
+
+        $this->within(function () use ($tables, $views, $plans, $rows, &$summary): void {
+            try {
+                $structure = $this->structure($tables, $views);
+
+                foreach ($structure['before'] as $statement) {
+                    $this->statement($statement);
+                }
+
+                foreach ($structure['tables'] as $key => $parts) {
+                    $this->comment('Table '.$key);
+
+                    foreach ([...$parts['drop'], ...$parts['create']] as $statement) {
+                        // The next id belongs to the rows, and there are none.
+                        $this->statement($rows ? $statement : $this->withoutCounter($statement));
+                    }
+                }
+
+                foreach ($rows ? $tables : [] as $table) {
+                    $summary['rows'] += $this->rows($table, $plans[$table['key']]);
+                }
+
+                $this->comment($rows ? 'After the rows' : 'After the tables');
+
+                $after = [
+                    ...array_merge([], ...array_column($structure['tables'], 'after')),
+                    ...array_merge([], ...array_column($structure['tables'], 'foreign')),
+                    ...($rows ? $structure['values']() : []),
+                    ...array_values($structure['views']()),
+                ];
+
+                foreach ($after as $statement) {
+                    $this->statement($statement);
+                }
+
+                $this->footer();
+            } catch (Throwable $e) {
+                $this->out("\n-- The dump stopped here, so this file is incomplete:\n-- ".str_replace("\n", "\n-- ", trim($e->getMessage()))."\n");
+            }
+        });
+
+        return $summary;
+    }
+
+    /**
+     * The statements that build one table or view, as the dump writes
+     * them: the table, then its constraints and indexes, then its foreign
+     * keys. None when the driver gives none.
+     *
+     * @return list<string>
+     */
+    public function definition(string $key): array
+    {
+        try {
+            $this->open();
+
+            $object = $this->viewer->objects()[$key] ?? null;
+
+            if ($object === null) {
+                return [];
+            }
+
+            if ($object['kind'] === 'view') {
+                $statements = [$this->structure([], [$object])['views']()[$key] ?? ''];
+            } else {
+                $parts = $this->structure([$object], [])['tables'][$key] ?? ['create' => [], 'after' => [], 'foreign' => []];
+                $statements = [...$parts['create'], ...$parts['after'], ...$parts['foreign']];
+            }
+        } catch (Throwable) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(static fn (string $statement): string => rtrim(trim($statement), ';'), $statements), static fn (string $statement): bool => $statement !== ''));
+    }
+
+    /**
+     * The statement that creates each view, by the key of the view.
+     *
+     * @return array<string, string>
+     */
+    public function viewDefinitions(): array
+    {
+        return $this->structure([], $this->views())['views']();
+    }
+
+    /**
+     * The tables a dump holds, in the order of their names.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function tables(): array
+    {
+        return $this->listed('table');
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function views(): array
+    {
+        return $this->listed('view');
+    }
+
+    /**
+     * Run `$read` inside one read-only snapshot, where the driver gives
+     * one: the rows of the last table are as old as those of the first.
+     *
+     * @template TRead
+     *
+     * @param  callable(): TRead  $read
+     * @return TRead
+     */
+    public function within(callable $read): mixed
+    {
+        $this->open();
 
         $snapshot = $this->snapshot();
 
         try {
-            $after = match ($this->driver) {
-                'mysql', 'mariadb' => $this->mysqlStructure($tables, $views),
-                'sqlite' => $this->sqliteStructure($tables, $views),
-                'pgsql' => $this->pgsqlStructure($tables, $views),
-                default => $this->genericStructure($tables, $views),
-            };
-
-            foreach ($tables as $table) {
-                $summary['rows'] += $this->rows($table, $plans[$table['key']]);
-            }
-
-            $this->comment('After the rows');
-
-            foreach ($after() as $statement) {
-                $this->statement($statement);
-            }
-
-            $this->footer();
-        } catch (Throwable $e) {
-            $this->out("\n-- The dump stopped here, so this file is incomplete:\n-- ".str_replace("\n", "\n-- ", trim($e->getMessage()))."\n");
+            return $read();
         } finally {
             if ($snapshot) {
                 try {
@@ -118,18 +215,39 @@ class DatabaseDumpService
                 }
             }
         }
+    }
 
-        return $summary;
+    protected function open(): void
+    {
+        $this->connection = $this->viewer->connection();
+        $this->driver = $this->connection->getDriverName();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    protected function listed(string $kind): array
+    {
+        $this->open();
+
+        return array_values(array_filter(
+            $this->viewer->objects(),
+            // SQLite: the main database, not what is attached to it.
+            fn (array $object): bool => $object['kind'] === $kind
+                && ($this->driver !== 'sqlite' || in_array($object['schema'], [null, 'main'], true))
+        ));
     }
 
     /**
      * What one table needs to have its rows written.
      *
      * @param  array<string, mixed>  $table
-     * @return array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}
+     * @return array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}
      */
-    protected function plan(array $table, bool $credentials): array
+    public function plan(array $table, bool $credentials): array
     {
+        $this->open();
+
         $schema = $this->connection->getSchemaBuilder();
         $columns = [];
         $hidden = [];
@@ -189,6 +307,7 @@ class DatabaseDumpService
                 'hidden' => $hide,
                 // Two rows cannot share one value under a unique index.
                 'distinct' => $hide && in_array($name, $unique, true),
+                'serial' => ! empty($column['auto_increment']),
             ];
         }
 
@@ -202,8 +321,66 @@ class DatabaseDumpService
     }
 
     /**
+     * The rows of a table as the database holds them, one at a time, in an
+     * order that stays the same from one reading to the next.
+     *
      * @param  array<string, mixed>  $table
-     * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}  $plan
+     * @param  array{order: list<string>}  $plan
+     * @return Generator<int, array<string, mixed>>
+     */
+    public function records(array $table, array $plan): Generator
+    {
+        if ($plan['order'] === []) {
+            // A heap with no key and no unique index (MySQL, SQL Server):
+            // OFFSET pages have no stable order, so it is read in one pass.
+            foreach ($this->connection->table($table['key'])->cursor() as $record) {
+                yield (array) $record;
+            }
+
+            return;
+        }
+
+        $page = 1;
+
+        do {
+            $query = $this->connection->table($table['key']);
+
+            foreach ($plan['order'] as $column) {
+                $query->orderBy($column);
+            }
+
+            $records = $query->forPage($page++, self::ROWS_PER_READ)->get()->all();
+
+            foreach ($records as $record) {
+                yield (array) $record;
+            }
+        } while (count($records) === self::ROWS_PER_READ);
+    }
+
+    /**
+     * What a hidden column holds in place of its value: NULL, or nothing
+     * when it cannot be NULL. Under a unique index every row gets a value
+     * of its own instead — the same one twice would refuse the restore,
+     * and SQL Server takes NULL only once.
+     *
+     * @param  array{nullable: bool, numeric: bool, distinct: bool}  $column
+     */
+    public function hiddenValue(array $column, int $row): int|string|null
+    {
+        if ($column['distinct'] && (! $column['nullable'] || $this->driver === 'sqlsrv')) {
+            return $column['numeric'] ? $row : 'hidden-'.$row;
+        }
+
+        if ($column['nullable']) {
+            return null;
+        }
+
+        return $column['numeric'] ? 0 : '';
+    }
+
+    /**
+     * @param  array<string, mixed>  $table
+     * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>, order: list<string>, hidden: list<string>, identity: bool, overriding: bool}  $plan
      */
     protected function rows(array $table, array $plan): int
     {
@@ -212,8 +389,7 @@ class DatabaseDumpService
         }
 
         $target = $this->table($table);
-        $names = implode(', ', array_map(fn (array $column): string => $this->quote($column['name']), $plan['columns']));
-        $head = 'INSERT INTO '.$target.' ('.$names.')'.($plan['overriding'] ? ' OVERRIDING SYSTEM VALUE' : '').' VALUES';
+        $head = $this->insertHead($table, $plan);
         $identityInsert = $this->driver === 'sqlsrv' && $plan['identity'];
 
         $this->comment('Rows of '.$table['key']);
@@ -226,17 +402,8 @@ class DatabaseDumpService
         $batch = [];
         $bytes = 0;
 
-        $flush = function (object|array $record) use ($plan, $head, &$written, &$batch, &$bytes): void {
-            $record = (array) $record;
-            $values = [];
-
-            foreach ($plan['columns'] as $column) {
-                $values[] = $column['hidden']
-                    ? $this->hiddenLiteral($column, $written + 1)
-                    : $this->literal($record[$column['name']] ?? null, $column['binary']);
-            }
-
-            $tuple = '('.implode(', ', $values).')';
+        foreach ($this->records($table, $plan) as $record) {
+            $tuple = $this->tuple($plan, $record, $written + 1);
             $batch[] = $tuple;
             $bytes += strlen($tuple);
             $written++;
@@ -246,30 +413,6 @@ class DatabaseDumpService
                 $batch = [];
                 $bytes = 0;
             }
-        };
-
-        if ($plan['order'] === []) {
-            // A heap with no key and no unique index (MySQL, SQL Server):
-            // OFFSET pages have no stable order, so it is read in one pass.
-            foreach ($this->connection->table($table['key'])->cursor() as $record) {
-                $flush($record);
-            }
-        } else {
-            $page = 1;
-
-            do {
-                $query = $this->connection->table($table['key']);
-
-                foreach ($plan['order'] as $column) {
-                    $query->orderBy($column);
-                }
-
-                $records = $query->forPage($page++, self::ROWS_PER_READ)->get()->all();
-
-                foreach ($records as $record) {
-                    $flush($record);
-                }
-            } while (count($records) === self::ROWS_PER_READ);
         }
 
         if ($batch !== []) {
@@ -284,20 +427,112 @@ class DatabaseDumpService
     }
 
     /**
-     * What a hidden column holds in the dump: NULL, or an empty string when
-     * it cannot be NULL. Under a unique index every row gets a value of its
-     * own instead — an empty string twice would refuse the restore, and SQL
-     * Server takes NULL only once.
+     * Each of `$records` as an INSERT statement of its own, written the
+     * way the dump writes a row — the columns named, the values as
+     * literals of the driver, what the viewer hides left out. Null for a
+     * row too large to be copied.
      *
-     * @param  array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool}  $column
+     * @param  array<string, mixed>  $table
+     * @param  list<array<string, mixed>>  $records
+     * @return list<string|null>
      */
-    protected function hiddenLiteral(array $column, int $row): string
+    public function inserts(array $table, array $records, int $from = 1): array
     {
-        if ($column['distinct'] && (! $column['nullable'] || $this->driver === 'sqlsrv')) {
-            return $column['numeric'] ? (string) $row : $this->literal('hidden-'.$row, $column['binary']);
+        try {
+            $plan = $this->plan($table, false);
+
+            if ($plan['columns'] === []) {
+                return [];
+            }
+
+            $target = $this->table($table);
+            $head = ($plan['hidden'] === [] ? '' : '-- Left out, as the page hides them: '.implode(', ', $plan['hidden'])."\n")
+                .$this->insertHead($table, $plan);
+            $identityInsert = $this->driver === 'sqlsrv' && $plan['identity'];
+            $inserts = [];
+
+            foreach (array_values($records) as $index => $record) {
+                $statement = $head."\n".$this->tuple($plan, $record, $from + $index).';';
+
+                if ($identityInsert) {
+                    $statement = 'SET IDENTITY_INSERT '.$target." ON;\n".$statement."\nSET IDENTITY_INSERT ".$target.' OFF;';
+                }
+
+                $inserts[] = strlen($statement) > self::BYTES_PER_COPY ? null : $statement;
+            }
+
+            return $inserts;
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $table
+     * @param  array{columns: list<array{name: string}>, overriding: bool}  $plan
+     */
+    protected function insertHead(array $table, array $plan): string
+    {
+        $names = implode(', ', array_map(fn (array $column): string => $this->quote($column['name']), $plan['columns']));
+
+        return 'INSERT INTO '.$this->table($table).' ('.$names.')'.($plan['overriding'] ? ' OVERRIDING SYSTEM VALUE' : '').' VALUES';
+    }
+
+    /**
+     * The values of one row, in the order of the columns of the plan.
+     *
+     * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>}  $plan
+     * @param  array<string, mixed>  $record
+     */
+    protected function tuple(array $plan, array $record, int $row): string
+    {
+        $values = [];
+
+        foreach ($plan['columns'] as $column) {
+            if ($column['hidden']) {
+                $value = $this->hiddenValue($column, $row);
+                $values[] = $this->literal($value, $column['binary'] && is_string($value) && $value !== '');
+            } else {
+                $values[] = $this->literal($record[$column['name']] ?? null, $column['binary']);
+            }
         }
 
-        return $column['nullable'] ? 'NULL' : $this->literal('');
+        return '('.implode(', ', $values).')';
+    }
+
+    // ---- the structure ----
+
+    /**
+     * What builds the tables and the views, in the pieces a dump puts in
+     * order: what comes before any table, then for each table what drops
+     * it, what creates it, what has to wait for the rows — its constraints
+     * and indexes — and its foreign keys, which wait for every table. The
+     * numbers the sequences are at and the views are read when asked for,
+     * after the rows.
+     *
+     * @param  list<array<string, mixed>>  $tables
+     * @param  list<array<string, mixed>>  $views
+     * @return array{before: list<string>, tables: array<string, array{drop: list<string>, create: list<string>, after: list<string>, foreign: list<string>}>, values: callable(): list<string>, views: callable(): array<string, string>}
+     */
+    protected function structure(array $tables, array $views): array
+    {
+        return match ($this->driver) {
+            'mysql', 'mariadb' => $this->mysqlStructure($tables, $views),
+            'sqlite' => $this->sqliteStructure($tables, $views),
+            'pgsql' => $this->pgsqlStructure($tables, $views),
+            default => $this->genericStructure($tables, $views),
+        };
+    }
+
+    /**
+     * MySQL writes the next AUTO_INCREMENT number among the options of the
+     * table, on the line that closes it.
+     */
+    protected function withoutCounter(string $statement): string
+    {
+        return in_array($this->driver, ['mysql', 'mariadb'], true)
+            ? (string) preg_replace('/^(\)[^\n]*?) AUTO_INCREMENT=\d+/m', '$1', $statement)
+            : $statement;
     }
 
     // ---- MySQL and MariaDB ----
@@ -305,29 +540,40 @@ class DatabaseDumpService
     /**
      * @param  list<array<string, mixed>>  $tables
      * @param  list<array<string, mixed>>  $views
-     * @return callable(): list<string>
+     * @return array{before: list<string>, tables: array<string, array{drop: list<string>, create: list<string>, after: list<string>, foreign: list<string>}>, values: callable(): list<string>, views: callable(): array<string, string>}
      */
-    protected function mysqlStructure(array $tables, array $views): callable
+    protected function mysqlStructure(array $tables, array $views): array
     {
-        foreach ($views as $view) {
-            $this->statement('DROP VIEW IF EXISTS '.$this->table($view));
-        }
+        $structure = [
+            'before' => array_map(fn (array $view): string => 'DROP VIEW IF EXISTS '.$this->table($view), $views),
+            'tables' => [],
+            'values' => static fn (): array => [],
+            'views' => function () use ($views): array {
+                $definitions = [];
+
+                foreach ($views as $view) {
+                    // A view keeps the account that made it only where that account exists.
+                    $definitions[(string) $view['key']] = (string) preg_replace(
+                        '/\s+DEFINER\s*=\s*`(?:[^`]|``)*`@`(?:[^`]|``)*`/',
+                        '',
+                        $this->secondColumn('SHOW CREATE VIEW '.$this->table($view))
+                    );
+                }
+
+                return $definitions;
+            },
+        ];
 
         foreach ($tables as $table) {
-            $this->comment('Table '.$table['key']);
-            $this->statement('DROP TABLE IF EXISTS '.$this->table($table));
-            $this->statement($this->secondColumn('SHOW CREATE TABLE '.$this->table($table)));
+            $structure['tables'][(string) $table['key']] = [
+                'drop' => ['DROP TABLE IF EXISTS '.$this->table($table)],
+                'create' => [$this->secondColumn('SHOW CREATE TABLE '.$this->table($table))],
+                'after' => [],
+                'foreign' => [],
+            ];
         }
 
-        return fn (): array => array_map(
-            // A view keeps the account that made it only where that account exists.
-            fn (array $view): string => (string) preg_replace(
-                '/\s+DEFINER\s*=\s*`(?:[^`]|``)*`@`(?:[^`]|``)*`/',
-                '',
-                $this->secondColumn('SHOW CREATE VIEW '.$this->table($view))
-            ),
-            $views
-        );
+        return $structure;
     }
 
     protected function secondColumn(string $sql): string
@@ -342,57 +588,66 @@ class DatabaseDumpService
     /**
      * @param  list<array<string, mixed>>  $tables
      * @param  list<array<string, mixed>>  $views
-     * @return callable(): list<string>
+     * @return array{before: list<string>, tables: array<string, array{drop: list<string>, create: list<string>, after: list<string>, foreign: list<string>}>, values: callable(): list<string>, views: callable(): array<string, string>}
      */
-    protected function sqliteStructure(array $tables, array $views): callable
+    protected function sqliteStructure(array $tables, array $views): array
     {
-        $tableNames = array_column($tables, 'raw');
-        $viewNames = array_column($views, 'raw');
+        $tableKeys = array_column($tables, 'key', 'raw');
+        $viewKeys = array_column($views, 'key', 'raw');
         $master = $this->connection->select(
             "select type, name, tbl_name, sql from sqlite_master where sql is not null and name not like 'sqlite\\_%' escape '\\' "
             ."order by case type when 'table' then 0 when 'index' then 1 when 'trigger' then 2 else 3 end, rowid"
         );
 
-        $later = [];
-
-        foreach ($views as $view) {
-            $this->statement('DROP VIEW IF EXISTS '.$this->table($view));
-        }
+        $created = [];
+        $definitions = [];
 
         foreach ($master as $entry) {
             $entry = (array) $entry;
             $type = (string) $entry['type'];
+            $name = (string) $entry['name'];
+            $owner = (string) $entry['tbl_name'];
 
-            if ($type === 'table' && in_array($entry['name'], $tableNames, true)) {
-                $this->comment('Table '.$entry['name']);
-                $this->statement('DROP TABLE IF EXISTS '.$this->quote((string) $entry['name']));
-                $this->statement((string) $entry['sql']);
-            } elseif (($type === 'index' || $type === 'trigger') && in_array($entry['tbl_name'], $tableNames, true)) {
-                $later[] = (string) $entry['sql'];
-            } elseif ($type === 'view' && in_array($entry['name'], $viewNames, true)) {
-                $later[] = (string) $entry['sql'];
+            if ($type === 'table' && isset($tableKeys[$name])) {
+                $created[(string) $tableKeys[$name]] = [
+                    'drop' => ['DROP TABLE IF EXISTS '.$this->quote($name)],
+                    'create' => [(string) $entry['sql']],
+                    'after' => [],
+                    'foreign' => [],
+                ];
+            } elseif (($type === 'index' || $type === 'trigger') && isset($tableKeys[$owner], $created[(string) $tableKeys[$owner]])) {
+                // A trigger would fire on every row of the dump: it waits for them.
+                $created[(string) $tableKeys[$owner]]['after'][] = (string) $entry['sql'];
+            } elseif ($type === 'view' && isset($viewKeys[$name])) {
+                $definitions[(string) $viewKeys[$name]] = (string) $entry['sql'];
             }
         }
 
-        return function () use ($tableNames, $later): array {
-            // The next AUTOINCREMENT number of each table.
-            $sequence = $this->connection->select("select name from sqlite_master where type = 'table' and name = 'sqlite_sequence'") !== []
-                ? array_values(array_filter(
-                    array_map(static fn (object $row): array => (array) $row, $this->connection->select('select name, seq from sqlite_sequence')),
-                    static fn (array $row): bool => in_array($row['name'], $tableNames, true)
-                ))
-                : [];
+        $names = array_keys($tableKeys);
 
-            if ($sequence === []) {
-                return $later;
-            }
+        return [
+            'before' => array_map(fn (array $view): string => 'DROP VIEW IF EXISTS '.$this->table($view), $views),
+            'tables' => $created,
+            'values' => function () use ($names): array {
+                // The next AUTOINCREMENT number of each table.
+                $sequence = $this->connection->select("select name from sqlite_master where type = 'table' and name = 'sqlite_sequence'") !== []
+                    ? array_values(array_filter(
+                        array_map(static fn (object $row): array => (array) $row, $this->connection->select('select name, seq from sqlite_sequence')),
+                        static fn (array $row): bool => in_array($row['name'], $names, true)
+                    ))
+                    : [];
 
-            return [
-                'DELETE FROM "sqlite_sequence" WHERE "name" IN ('.implode(', ', array_map(fn (array $row): string => $this->literal($row['name']), $sequence)).')',
-                'INSERT INTO "sqlite_sequence" ("name", "seq") VALUES '.implode(', ', array_map(fn (array $row): string => '('.$this->literal($row['name']).', '.$this->literal($row['seq']).')', $sequence)),
-                ...$later,
-            ];
-        };
+                if ($sequence === []) {
+                    return [];
+                }
+
+                return [
+                    'DELETE FROM "sqlite_sequence" WHERE "name" IN ('.implode(', ', array_map(fn (array $row): string => $this->literal($row['name']), $sequence)).')',
+                    'INSERT INTO "sqlite_sequence" ("name", "seq") VALUES '.implode(', ', array_map(fn (array $row): string => '('.$this->literal($row['name']).', '.$this->literal($row['seq']).')', $sequence)),
+                ];
+            },
+            'views' => static fn (): array => $definitions,
+        ];
     }
 
     // ---- PostgreSQL ----
@@ -405,18 +660,19 @@ class DatabaseDumpService
      *
      * @param  list<array<string, mixed>>  $tables
      * @param  list<array<string, mixed>>  $views
-     * @return callable(): list<string>
+     * @return array{before: list<string>, tables: array<string, array{drop: list<string>, create: list<string>, after: list<string>, foreign: list<string>}>, values: callable(): list<string>, views: callable(): array<string, string>}
      */
-    protected function pgsqlStructure(array $tables, array $views): callable
+    protected function pgsqlStructure(array $tables, array $views): array
     {
         $version = (int) $this->connection->scalar('show server_version_num');
+        $before = [];
 
         foreach ($views as $view) {
-            $this->statement('DROP VIEW IF EXISTS '.$this->table($view).' CASCADE');
+            $before[] = 'DROP VIEW IF EXISTS '.$this->table($view).' CASCADE';
         }
 
         foreach ($tables as $table) {
-            $this->statement('DROP TABLE IF EXISTS '.$this->table($table).' CASCADE');
+            $before[] = 'DROP TABLE IF EXISTS '.$this->table($table).' CASCADE';
         }
 
         $enums = array_map(static fn (object $row): array => (array) $row, $this->connection->select(
@@ -432,26 +688,23 @@ class DatabaseDumpService
 
         foreach ($schemas as $schema) {
             if ($schema !== '' && $schema !== 'public') {
-                $this->statement('CREATE SCHEMA IF NOT EXISTS '.$this->quote($schema));
+                $before[] = 'CREATE SCHEMA IF NOT EXISTS '.$this->quote($schema);
             }
         }
 
         foreach ($enums as $enum) {
             $type = $this->quote((string) $enum['schema'], (string) $enum['name']);
-            $this->statement('DROP TYPE IF EXISTS '.$type.' CASCADE');
-            $this->statement('CREATE TYPE '.$type.' AS ENUM ('.$enum['labels'].')');
+            $before[] = 'DROP TYPE IF EXISTS '.$type.' CASCADE';
+            $before[] = 'CREATE TYPE '.$type.' AS ENUM ('.$enum['labels'].')';
         }
 
-        $constraints = [];
-        $indexes = [];
-        $foreign = [];
+        $created = [];
         $sequences = [];
 
         foreach ($tables as $table) {
             [$owner, $name] = [(string) $table['schema'], (string) $table['raw']];
             $qualified = $this->table($table);
-
-            $this->comment('Table '.$table['key']);
+            $parts = ['drop' => [], 'create' => [], 'after' => [], 'foreign' => []];
 
             $owned = array_map(static fn (object $row): array => (array) $row, $this->connection->select(
                 'select sn.nspname as schema, s.relname as name, a.attname as "column", d.deptype as kind from pg_depend d '
@@ -466,7 +719,7 @@ class DatabaseDumpService
             // A serial column's default names its sequence: it has to exist first.
             foreach ($owned as $sequence) {
                 if ($sequence['kind'] === 'a') {
-                    $this->statement('CREATE SEQUENCE IF NOT EXISTS '.$this->quote((string) $sequence['schema'], (string) $sequence['name']));
+                    $parts['create'][] = 'CREATE SEQUENCE IF NOT EXISTS '.$this->quote((string) $sequence['schema'], (string) $sequence['name']);
                 }
             }
 
@@ -496,11 +749,11 @@ class DatabaseDumpService
                 return $definition.($column['notnull'] ? ' NOT NULL' : '');
             }, $columns);
 
-            $this->statement('CREATE TABLE '.$qualified." (\n    ".implode(",\n    ", $definitions)."\n)");
+            $parts['create'][] = 'CREATE TABLE '.$qualified." (\n    ".implode(",\n    ", $definitions)."\n)";
 
             foreach ($owned as $sequence) {
                 if ($sequence['kind'] === 'a') {
-                    $this->statement('ALTER SEQUENCE '.$this->quote((string) $sequence['schema'], (string) $sequence['name']).' OWNED BY '.$this->quote($owner, $name, (string) $sequence['column']));
+                    $parts['create'][] = 'ALTER SEQUENCE '.$this->quote((string) $sequence['schema'], (string) $sequence['name']).' OWNED BY '.$this->quote($owner, $name, (string) $sequence['column']);
                 }
 
                 $sequences[] = [$this->quote((string) $sequence['schema'], (string) $sequence['name']), $qualified, (string) $sequence['column']];
@@ -516,11 +769,13 @@ class DatabaseDumpService
                 $constraint = (array) $constraint;
                 $sql = 'ALTER TABLE ONLY '.$qualified.' ADD CONSTRAINT '.$this->quote((string) $constraint['name']).' '.$constraint['definition'];
 
-                if ($constraint['type'] === 'f') {
-                    $foreign[] = $sql;
-                } else {
-                    $constraints[] = $sql;
-                }
+                $parts[$constraint['type'] === 'f' ? 'foreign' : 'after'][] = $sql;
+            }
+
+            $comment = $table['comment'] ?? null;
+
+            if (is_string($comment) && $comment !== '') {
+                $parts['after'][] = 'COMMENT ON TABLE '.$qualified.' IS '.$this->literal($comment);
             }
 
             foreach ($this->connection->select(
@@ -530,40 +785,43 @@ class DatabaseDumpService
                 ."(select 1 from pg_constraint con where con.conindid = ix.indexrelid and con.conrelid = ix.indrelid and con.contype in ('p', 'u', 'x'))",
                 [$owner, $name]
             ) as $index) {
-                $indexes[] = (string) ((array) $index)['definition'];
+                $parts['after'][] = (string) ((array) $index)['definition'];
             }
 
-            $comment = $table['comment'] ?? null;
-
-            if (is_string($comment) && $comment !== '') {
-                $constraints[] = 'COMMENT ON TABLE '.$qualified.' IS '.$this->literal($comment);
-            }
+            $created[(string) $table['key']] = $parts;
         }
 
-        return function () use ($views, $constraints, $indexes, $foreign, $sequences): array {
-            $values = [];
+        return [
+            'before' => $before,
+            'tables' => $created,
+            'values' => function () use ($sequences): array {
+                $values = [];
 
-            foreach ($sequences as [$sequence, $table, $column]) {
-                $state = (array) ($this->connection->selectOne('select last_value, is_called from '.$sequence) ?? []);
+                foreach ($sequences as [$sequence, $table, $column]) {
+                    $state = (array) ($this->connection->selectOne('select last_value, is_called from '.$sequence) ?? []);
 
-                if (isset($state['last_value'])) {
-                    $values[] = 'SELECT pg_catalog.setval(pg_get_serial_sequence('.$this->literal($table).', '.$this->literal($column).'), '
-                        .(int) $state['last_value'].', '.(! empty($state['is_called']) ? 'true' : 'false').')';
+                    if (isset($state['last_value'])) {
+                        $values[] = 'SELECT pg_catalog.setval(pg_get_serial_sequence('.$this->literal($table).', '.$this->literal($column).'), '
+                            .(int) $state['last_value'].', '.(! empty($state['is_called']) ? 'true' : 'false').')';
+                    }
                 }
-            }
 
-            $definitions = [];
+                return $values;
+            },
+            'views' => function () use ($views): array {
+                $definitions = [];
 
-            foreach ($views as $view) {
-                $definition = (string) $this->connection->scalar(
-                    'select pg_get_viewdef(c.oid, true) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = ? and c.relname = ?',
-                    [(string) $view['schema'], (string) $view['raw']]
-                );
-                $definitions[] = 'CREATE OR REPLACE VIEW '.$this->table($view).' AS '.rtrim(trim($definition), ';');
-            }
+                foreach ($views as $view) {
+                    $definition = (string) $this->connection->scalar(
+                        'select pg_get_viewdef(c.oid, true) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = ? and c.relname = ?',
+                        [(string) $view['schema'], (string) $view['raw']]
+                    );
+                    $definitions[(string) $view['key']] = 'CREATE OR REPLACE VIEW '.$this->table($view).' AS '.rtrim(trim($definition), ';');
+                }
 
-            return [...$constraints, ...$indexes, ...$foreign, ...$values, ...$definitions];
-        };
+                return $definitions;
+            },
+        ];
     }
 
     /**
@@ -590,21 +848,22 @@ class DatabaseDumpService
      *
      * @param  list<array<string, mixed>>  $tables
      * @param  list<array<string, mixed>>  $views
-     * @return callable(): list<string>
+     * @return array{before: list<string>, tables: array<string, array{drop: list<string>, create: list<string>, after: list<string>, foreign: list<string>}>, values: callable(): list<string>, views: callable(): array<string, string>}
      */
-    protected function genericStructure(array $tables, array $views): callable
+    protected function genericStructure(array $tables, array $views): array
     {
         $schema = $this->connection->getSchemaBuilder();
-        $later = [];
-        $foreign = [];
+        $created = [];
         $raw = [];
 
-        foreach ($tables as $table) {
-            $raw[$table['schema'].'.'.$table['raw']] = $table;
+        foreach ($this->viewer->objects() as $object) {
+            if ($object['kind'] === 'table') {
+                $raw[$object['schema'].'.'.$object['raw']] = $object;
+            }
         }
 
         foreach ($tables as $table) {
-            $this->comment('Table '.$table['key']);
+            $parts = ['drop' => [], 'create' => [], 'after' => [], 'foreign' => []];
             $definitions = [];
 
             foreach ($this->attempt(fn (): array => $schema->getColumns($table['key'])) as $column) {
@@ -649,7 +908,7 @@ class DatabaseDumpService
                 if (! empty($index['primary'])) {
                     $definitions[] = 'PRIMARY KEY ('.$columns.')';
                 } else {
-                    $later[] = 'CREATE '.(! empty($index['unique']) ? 'UNIQUE ' : '').'INDEX '.$this->quote((string) $index['name']).' ON '.$this->table($table).' ('.$columns.')';
+                    $parts['after'][] = 'CREATE '.(! empty($index['unique']) ? 'UNIQUE ' : '').'INDEX '.$this->quote((string) $index['name']).' ON '.$this->table($table).' ('.$columns.')';
                 }
             }
 
@@ -659,7 +918,7 @@ class DatabaseDumpService
                     ? $this->table($target)
                     : $this->quote(...array_values(array_filter([(string) ($key['foreign_schema'] ?? ''), (string) ($key['foreign_table'] ?? '')], static fn (string $part): bool => $part !== '')));
 
-                $foreign[] = 'ALTER TABLE '.$this->table($table).' ADD '
+                $parts['foreign'][] = 'ALTER TABLE '.$this->table($table).' ADD '
                     .(! empty($key['name']) ? 'CONSTRAINT '.$this->quote((string) $key['name']).' ' : '')
                     .'FOREIGN KEY ('.implode(', ', array_map(fn (mixed $column): string => $this->quote((string) $column), (array) $key['columns'])).') '
                     .'REFERENCES '.$references.' ('.implode(', ', array_map(fn (mixed $column): string => $this->quote((string) $column), (array) $key['foreign_columns'])).')'
@@ -667,24 +926,30 @@ class DatabaseDumpService
                     .(! empty($key['on_update']) ? ' ON UPDATE '.strtoupper((string) $key['on_update']) : '');
             }
 
-            $this->statement('CREATE TABLE '.$this->table($table)." (\n    ".implode(",\n    ", $definitions)."\n)");
+            $parts['create'][] = 'CREATE TABLE '.$this->table($table)." (\n    ".implode(",\n    ", $definitions)."\n)";
+            $created[(string) $table['key']] = $parts;
         }
 
-        return function () use ($views, $later, $foreign): array {
-            $definitions = [];
-            $listed = $this->attempt(fn (): array => $this->connection->getSchemaBuilder()->getViews());
+        return [
+            'before' => [],
+            'tables' => $created,
+            'values' => static fn (): array => [],
+            'views' => function () use ($views): array {
+                $definitions = [];
+                $listed = $this->attempt(fn (): array => $this->connection->getSchemaBuilder()->getViews());
 
-            foreach ($views as $view) {
-                foreach ($listed as $row) {
-                    if (($row['name'] ?? null) === $view['raw'] && (($row['schema'] ?? null) === $view['schema'] || $view['schema'] === null)) {
-                        $definition = trim((string) ($row['definition'] ?? ''));
-                        $definitions[] = preg_match('/^create\s/i', $definition) === 1 ? $definition : 'CREATE VIEW '.$this->table($view).' AS '.$definition;
+                foreach ($views as $view) {
+                    foreach ($listed as $row) {
+                        if (($row['name'] ?? null) === $view['raw'] && (($row['schema'] ?? null) === $view['schema'] || $view['schema'] === null)) {
+                            $definition = trim((string) ($row['definition'] ?? ''));
+                            $definitions[(string) $view['key']] = preg_match('/^create\s/i', $definition) === 1 ? $definition : 'CREATE VIEW '.$this->table($view).' AS '.$definition;
+                        }
                     }
                 }
-            }
 
-            return [...$later, ...$foreign, ...$definitions];
-        };
+                return $definitions;
+            },
+        ];
     }
 
     // ---- writing ----
@@ -692,7 +957,7 @@ class DatabaseDumpService
     /**
      * @param  array{tables: int, views: int, rows: int, hidden: list<string>}  $summary
      */
-    protected function header(array $summary, bool $credentials): void
+    protected function header(array $summary, bool $credentials, bool $rows = true): void
     {
         $connection = $this->viewer->describe();
         $where = $connection['database'].($connection['host'] !== null ? ' @ '.$connection['host'] : '');
@@ -709,14 +974,15 @@ class DatabaseDumpService
             'Driver:      '.$connection['driver_label'],
             'Database:    '.$where.' (connection '.$connection['name'].')',
             'Made:        '.Carbon::now()->utc()->format('Y-m-d H:i:s').' UTC',
-            'Contents:    '.$summary['tables'].' '.($summary['tables'] === 1 ? 'table' : 'tables').', '.$summary['views'].' '.($summary['views'] === 1 ? 'view' : 'views').', every row',
+            'Contents:    '.$summary['tables'].' '.($summary['tables'] === 1 ? 'table' : 'tables').', '.$summary['views'].' '.($summary['views'] === 1 ? 'view' : 'views').', '.($rows ? 'every row' : 'no rows — the structure alone'),
         ];
 
-        if ($credentials) {
+        // With no row there is no value to leave out.
+        if ($rows && $credentials) {
             $lines[] = 'Credentials: included — passwords, tokens, and secrets are in this file. Keep it private.';
-        } elseif ($summary['hidden'] === []) {
+        } elseif ($rows && $summary['hidden'] === []) {
             $lines[] = 'Credentials: no column holds any.';
-        } else {
+        } elseif ($rows) {
             $lines[] = 'Credentials: left out — written as NULL, or as an empty string where NULL is not allowed';
             $lines[] = '             (as hidden-N, one for each row, where the column is unique):';
 
@@ -770,8 +1036,8 @@ class DatabaseDumpService
     }
 
     /**
-     * One read-only snapshot for the whole file, where the driver gives
-     * one: the rows of the last table are as old as those of the first.
+     * Opens the snapshot `within()` reads in. False when the driver gives
+     * none, or refuses it.
      */
     protected function snapshot(): bool
     {
@@ -827,6 +1093,11 @@ class DatabaseDumpService
         }
 
         if (is_resource($value)) {
+            // The page may have read the stream before the statement is written.
+            if (stream_get_meta_data($value)['seekable']) {
+                rewind($value);
+            }
+
             $value = (string) stream_get_contents($value);
         }
 

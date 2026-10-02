@@ -23,6 +23,23 @@
                     <span class="hint">Passwords and tokens are left out on a shared host.</span>
                 @endif
                 <button type="submit" class="btn">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download SQL</button>
+                <details class="db-more" data-db-more>
+                    <summary class="btn ghost">Other formats @include('larapilot::dashboard.partials.icon', ['name' => 'chevron'])</summary>
+                    <div class="db-more-list">
+                        <button type="submit" name="only" value="structure">
+                            <strong>SQL, structure only</strong>
+                            <small>The tables, their keys and indexes, and the views — no rows.</small>
+                        </button>
+                        <button type="submit" formaction="{{ route('larapilot.dashboard.database.migrations') }}">
+                            <strong>Laravel migrations</strong>
+                            <small>A .zip of migration files, one for each table, for <code>database/migrations</code>.</small>
+                        </button>
+                        <button type="submit" formaction="{{ route('larapilot.dashboard.database.seeders') }}">
+                            <strong>Laravel seeders</strong>
+                            <small>A .zip of seeder classes with every row, for <code>database/seeders</code>.</small>
+                        </button>
+                    </div>
+                </details>
             </form>
         @endif
     </header>
@@ -117,4 +134,25 @@
 
 @push('scripts')
 @include('larapilot::dashboard.partials.database-filter-script')
+<script>
+    (() => {
+        // The list of the other downloads closes on a choice, a click outside, and Escape.
+        document.querySelectorAll('[data-db-more]').forEach((menu) => {
+            document.addEventListener('click', (event) => {
+                if (!menu.contains(event.target) || event.target.closest('button')) {
+                    setTimeout(() => {
+                        menu.open = false;
+                    }, 0);
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && menu.open) {
+                    menu.open = false;
+                    menu.querySelector('summary').focus();
+                }
+            });
+        });
+    })();
+</script>
 @endpush

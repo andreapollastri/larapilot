@@ -98,12 +98,12 @@ it('lists the log files and opens the one the application writes to', function (
         ->assertSee('Logs', false)
         ->assertSee('<code>laravel.log</code>', false)
         ->assertSee('The application writes here', false)
-        ->assertSee('/larapilot/logs/worker.log', false)
-        ->assertSee('/larapilot/logs/archive/laravel-2026-09-30.log', false)
+        ->assertSee('/larapilot/logs/worker', false)
+        ->assertSee('/larapilot/logs/archive/laravel-2026-09-30', false)
         ->assertDontSee('notes.txt', false)
         ->assertSee('Disk almost full', false);
 
-    $this->get('/larapilot/logs/archive/laravel-2026-09-30.log')
+    $this->get('/larapilot/logs/archive/laravel-2026-09-30')
         ->assertOk()
         ->assertSee('Yesterday', false)
         ->assertDontSee('The application writes here', false);
@@ -332,7 +332,7 @@ it('reads a file that is not in the format of Laravel a line at a time', functio
         ->and($logs->read($file, ['level' => 'error', 'since' => '1h'])['entries'])->toHaveCount(3)
         ->and($logs->read($file, ['search' => 'syncstock'])['entries'])->toHaveCount(1);
 
-    $this->get('/larapilot/logs/worker.log')
+    $this->get('/larapilot/logs/worker')
         ->assertOk()
         ->assertSee('read a line at a time', false)
         ->assertSee('SyncStock', false)
@@ -419,7 +419,7 @@ it('finds every entry of a large file once, whatever the piece it falls in', fun
 it('downloads the log with the secrets redacted, or as written on a developer machine', function (): void {
     logFolder(['laravel.log' => sampleLog()]);
 
-    $response = $this->get('/larapilot/logs/laravel.log?download=1')->assertOk();
+    $response = $this->get('/larapilot/logs/laravel?download=1')->assertOk();
 
     expect($response->headers->get('Content-Disposition'))->toContain('attachment')->toContain('laravel.log')
         ->and($response->headers->get('Content-Type'))->toContain('text/plain');
@@ -433,7 +433,7 @@ it('downloads the log with the secrets redacted, or as written on a developer ma
         // Every line of the file is there, in the order it was written.
         ->and(substr_count($redacted, "\n"))->toBe(substr_count(sampleLog(), "\n"));
 
-    expect($this->get('/larapilot/logs/laravel.log?download=1&secrets=1')->assertOk()->streamedContent())->toBe(sampleLog());
+    expect($this->get('/larapilot/logs/laravel?download=1&secrets=1')->assertOk()->streamedContent())->toBe(sampleLog());
 
     $this->get('/larapilot/logs')
         ->assertOk()
@@ -447,10 +447,10 @@ it('downloads the log with the secrets redacted, or as written on a developer ma
 
     $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
 
-    $this->get('/larapilot/logs/laravel.log?download=1')->assertStatus(401);
+    $this->get('/larapilot/logs/laravel?download=1')->assertStatus(401);
 
     // On a shared host the secrets stay redacted, asked for or not.
-    expect($this->get('/larapilot/logs/laravel.log?download=1&secrets=1', $headers)->assertOk()->streamedContent())
+    expect($this->get('/larapilot/logs/laravel?download=1&secrets=1', $headers)->assertOk()->streamedContent())
         ->not->toContain('hunter2-do-not-show');
 
     $this->get('/larapilot/logs', $headers)
@@ -466,7 +466,7 @@ it('opens nothing that is not a log of the folder', function (): void {
     symlink(dirname($folder).'/outside-'.basename($folder).'.log', $folder.'/linked.log');
 
     try {
-        foreach (['missing.log', 'secret.txt', 'linked.log', '../outside-'.basename($folder).'.log', '..%2Foutside-'.basename($folder).'.log', '%2Fetc%2Fhosts'] as $name) {
+        foreach (['missing', 'missing.log', 'secret', 'secret.txt', 'linked', 'linked.log', '../outside-'.basename($folder), '../outside-'.basename($folder).'.log', '..%2Foutside-'.basename($folder), '..%2Foutside-'.basename($folder).'.log', '%2Fetc%2Fhosts'] as $name) {
             $this->get('/larapilot/logs/'.$name)->assertNotFound();
             $this->get('/larapilot/logs/'.$name.'?download=1')->assertNotFound();
         }
@@ -475,6 +475,32 @@ it('opens nothing that is not a log of the folder', function (): void {
     } finally {
         unlink(dirname($folder).'/outside-'.basename($folder).'.log');
     }
+});
+
+it('names a log in the address without its .log, and still answers the address that had it', function (): void {
+    logFolder([
+        'laravel.log' => sampleLog(),
+        'archive/Worker.LOG' => "plain line\n",
+        'archive/q#1 50%.log' => "another line\n",
+    ]);
+
+    // A web server may keep `.log` for itself: no link of the page ends in it.
+    $html = $this->get('/larapilot/logs')->assertOk()->getContent();
+
+    expect($html)->toContain('/larapilot/logs/archive/Worker"')
+        ->toContain('/larapilot/logs/archive/q%231%2050%25"')
+        ->toContain('action="http://localhost/larapilot/logs/laravel"')
+        ->and(preg_match('#/larapilot/logs/[^"?]*\.log["?]#i', $html))->toBe(0);
+
+    $this->get('/larapilot/logs/archive/Worker')->assertOk()->assertSee('plain line', false);
+    $this->get('/larapilot/logs/archive/q%231%2050%25')->assertOk()->assertSee('another line', false);
+
+    expect($this->get('/larapilot/logs/laravel?download=1')->assertOk()->headers->get('Content-Disposition'))->toContain('laravel.log');
+
+    // The address a bookmark kept leads to the new one, with what it asked for.
+    $this->get('/larapilot/logs/laravel.log')->assertRedirect('/larapilot/logs/laravel');
+    $this->get('/larapilot/logs/laravel.log?level=error&q=disk')->assertRedirect('/larapilot/logs/laravel?level=error&q=disk');
+    $this->get('/larapilot/logs/archive/Worker.LOG?download=1')->assertRedirect('/larapilot/logs/archive/Worker?download=1');
 });
 
 it('says so when there is no log yet', function (): void {
@@ -498,8 +524,8 @@ it('stays behind the dashboard sign-in on a shared environment', function (): vo
 
     $this->get('/larapilot')->assertOk()->assertDontSee('>Logs</a>', false);
     $this->get('/larapilot/logs')->assertNotFound();
-    $this->get('/larapilot/logs/laravel.log')->assertNotFound();
-    $this->get('/larapilot/logs/laravel.log?download=1')->assertNotFound();
+    $this->get('/larapilot/logs/laravel')->assertNotFound();
+    $this->get('/larapilot/logs/laravel?download=1')->assertNotFound();
 
     app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
     app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
@@ -519,14 +545,14 @@ it('hides the log viewer in production and when it is switched off', function ()
     config()->set('larapilot.log_viewer.enabled', false);
 
     $this->get('/larapilot/logs')->assertNotFound();
-    $this->get('/larapilot/logs/laravel.log')->assertNotFound();
+    $this->get('/larapilot/logs/laravel')->assertNotFound();
     $this->get('/larapilot')->assertOk()->assertDontSee('>Logs</a>', false);
 
     config()->set('larapilot.log_viewer.enabled', true);
     $this->app['env'] = 'production';
 
     $this->get('/larapilot/logs')->assertNotFound();
-    $this->get('/larapilot/logs/laravel.log?download=1')->assertNotFound();
+    $this->get('/larapilot/logs/laravel?download=1')->assertNotFound();
 });
 
 it('gives the skills the logs as lean entries, through artisan', function (): void {
@@ -736,14 +762,14 @@ it('redacts a secret that sits where an entry or a line is cut', function (): vo
 
     $this->get('/larapilot/logs')->assertOk()->assertDontSee('hunter2', false);
 
-    $download = $this->get('/larapilot/logs/laravel.log?download=1')->assertOk()->streamedContent();
+    $download = $this->get('/larapilot/logs/laravel?download=1')->assertOk()->streamedContent();
 
     expect($download)->not->toContain('hunter2')
         ->toContain('more bytes of this line left out: too long to check for secrets]')
         ->toContain('production.INFO: Last')
         ->and(substr_count($download, "\n"))->toBe(3)
         // As written, on a developer machine, every byte is there.
-        ->and($this->get('/larapilot/logs/laravel.log?download=1&secrets=1')->assertOk()->streamedContent() === $log)->toBeTrue();
+        ->and($this->get('/larapilot/logs/laravel?download=1&secrets=1')->assertOk()->streamedContent() === $log)->toBeTrue();
 });
 
 it('shows the start of an entry longer than the pieces a file is read in', function (): void {

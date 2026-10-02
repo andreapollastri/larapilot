@@ -13,9 +13,13 @@ use Larapilot\Services\ConfigService;
 use Larapilot\Services\DatabaseDiagramPdfWriter;
 use Larapilot\Services\DatabaseDiagramService;
 use Larapilot\Services\DatabaseDumpService;
+use Larapilot\Services\DatabaseMigrationExportService;
 use Larapilot\Services\DatabaseMigrationService;
+use Larapilot\Services\DatabaseSeederExportService;
 use Larapilot\Services\DatabaseViewerService;
+use Larapilot\Support\ZipStream;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class DatabaseViewerController
 {
@@ -25,6 +29,8 @@ class DatabaseViewerController
         protected DatabaseDumpService $dumps,
         protected DatabaseDiagramService $diagrams,
         protected DatabaseMigrationService $migrations,
+        protected DatabaseMigrationExportService $migrationFiles,
+        protected DatabaseSeederExportService $seederFiles,
     ) {}
 
     public function index(Request $request): View
@@ -58,18 +64,83 @@ class DatabaseViewerController
     }
 
     /**
-     * The whole database as one SQL file, written while it downloads.
+     * The whole database as one SQL file, written while it downloads —
+     * or its structure alone, with `only=structure`.
      */
     public function dump(Request $request): StreamedResponse|RedirectResponse
     {
         $this->guard();
 
-        $error = $this->database->overview()['error'];
+        if ($this->database->overview()['error'] !== null) {
+            return $this->unreadable();
+        }
 
-        if ($error !== null) {
+        $credentials = $request->boolean('credentials') && $this->credentialsAllowed();
+        $rows = $request->query('only') !== 'structure';
+
+        return response()->streamDownload(function () use ($credentials, $rows): void {
+            if (function_exists('set_time_limit')) {
+                @set_time_limit(0);
+            }
+
+            $this->dumps->dump(static function (string $chunk): void {
+                echo $chunk;
+            }, $credentials, $rows);
+        }, $this->dumps->filename($rows), [
+            'Content-Type' => 'application/sql; charset=UTF-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * The structure of the database as Laravel migrations, in a zip.
+     */
+    public function migrations(): StreamedResponse|RedirectResponse
+    {
+        $this->guard();
+
+        if ($this->database->overview()['error'] !== null) {
+            return $this->unreadable();
+        }
+
+        try {
+            $files = $this->migrationFiles->files();
+        } catch (Throwable) {
+            return $this->unreadable();
+        }
+
+        if ($files === []) {
             return redirect()
                 ->route('larapilot.dashboard.database')
-                ->with('larapilot_error', 'The database cannot be read, so there is nothing to download.');
+                ->with('larapilot_error', 'The database has no table to write a migration for.');
+        }
+
+        return response()->streamDownload(static function () use ($files): void {
+            $zip = new ZipStream(static function (string $chunk): void {
+                echo $chunk;
+            });
+
+            foreach ($files as $path => $contents) {
+                $zip->add($path, $contents);
+            }
+
+            $zip->finish();
+        }, $this->migrationFiles->filename(), [
+            'Content-Type' => 'application/zip',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * The rows of the database as Laravel seeders, in a zip written while
+     * it downloads.
+     */
+    public function seeders(Request $request): StreamedResponse|RedirectResponse
+    {
+        $this->guard();
+
+        if ($this->database->overview()['error'] !== null) {
+            return $this->unreadable();
         }
 
         $credentials = $request->boolean('credentials') && $this->credentialsAllowed();
@@ -79,11 +150,14 @@ class DatabaseViewerController
                 @set_time_limit(0);
             }
 
-            $this->dumps->dump(static function (string $chunk): void {
+            $zip = new ZipStream(static function (string $chunk): void {
                 echo $chunk;
-            }, $credentials);
-        }, $this->dumps->filename(), [
-            'Content-Type' => 'application/sql; charset=UTF-8',
+            });
+
+            $this->seederFiles->write($zip, $credentials);
+            $zip->finish();
+        }, $this->seederFiles->filename(), [
+            'Content-Type' => 'application/zip',
             'Cache-Control' => 'no-store',
         ]);
     }
@@ -143,9 +217,24 @@ class DatabaseViewerController
             ]);
         }
 
+        // The rows as the database holds them stay here: the page gets what is written from them.
+        $records = $data['records'] ?? [];
+        unset($data['records']);
+
+        $tab = $request->query('tab') === 'structure' ? 'structure' : 'rows';
+
         return view('larapilot::dashboard.database-table', $data + [
-            'tab' => $request->query('tab') === 'structure' ? 'structure' : 'rows',
+            'tab' => $tab,
+            'definition' => $tab === 'structure' ? $this->dumps->definition($table) : [],
+            'inserts' => $tab === 'rows' && $data['object']['kind'] === 'table' ? $this->dumps->inserts($data['object'], $records, max(1, (int) $data['from'])) : [],
         ]);
+    }
+
+    protected function unreadable(): RedirectResponse
+    {
+        return redirect()
+            ->route('larapilot.dashboard.database')
+            ->with('larapilot_error', 'The database cannot be read, so there is nothing to download.');
     }
 
     protected function text(Request $request, string $key): ?string
