@@ -1601,11 +1601,7 @@ class ConfigService
      */
     public function fileManagerBrowsable(): bool
     {
-        if (! $this->dashboardBrowsable() || ! (bool) config('larapilot.file_manager.enabled', true)) {
-            return false;
-        }
-
-        return app()->environment(['local', 'development', 'testing']) || $this->dashboardAuthEnabled();
+        return $this->protectedToolBrowsable('file_manager');
     }
 
     /**
@@ -1616,7 +1612,28 @@ class ConfigService
      */
     public function databaseViewerBrowsable(): bool
     {
-        if (! $this->dashboardBrowsable() || ! (bool) config('larapilot.database_viewer.enabled', true)) {
+        return $this->protectedToolBrowsable('database_viewer');
+    }
+
+    /**
+     * Whether the dashboard log viewer is available. Same rule as the file
+     * manager and the database viewer: never in production, open on a
+     * developer machine, and behind the dashboard sign-in anywhere else —
+     * a log names users, routes, and queries.
+     */
+    public function logViewerBrowsable(): bool
+    {
+        return $this->protectedToolBrowsable('log_viewer');
+    }
+
+    /**
+     * The gate the file manager, the database viewer, and the log viewer
+     * share: the dashboard is browsable, the tool is not switched off, and
+     * the machine is a developer's own or the dashboard asks for a sign-in.
+     */
+    protected function protectedToolBrowsable(string $tool): bool
+    {
+        if (! $this->dashboardBrowsable() || ! (bool) config("larapilot.{$tool}.enabled", true)) {
             return false;
         }
 

@@ -17,7 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * When no token is configured the behaviour depends on the `api_auth` project
  * setting:
- *   - `api_auth: true`  → the API fails closed (HTTP 503) until the token is set.
+ *   - `api_auth: true`  → the API fails closed (HTTP 503) until the token is
+ *     set, with a message that explains the setting and how to add the token.
  *   - `api_auth: false` → (default) reads stay open in the allowed environments
  *     and mutating requests are only allowed in local-style environments,
  *     because CSRF is disabled on this route group.
@@ -41,7 +42,7 @@ class EnsureApiAuthorized
         }
 
         if ($this->config->apiAuthEnabled()) {
-            abort(503, 'Larapilot API auth is enabled (settings.api_auth) but LARAPILOT_API_TOKEN is not set. Configure the token, or run: php artisan larapilot:settings-set --api-auth=NO');
+            return $this->tokenMissing($request);
         }
 
         if (! $request->isMethodSafe() && ! app()->environment(['local', 'development', 'testing'])) {
@@ -49,5 +50,23 @@ class EnsureApiAuthorized
         }
 
         return $next($request);
+    }
+
+    /**
+     * The setting is ON and the server has no token yet: the API stays closed
+     * and says what opens it. A browser that asks for a page — the API docs —
+     * gets the explanation as a page; every other client gets it as JSON.
+     */
+    protected function tokenMissing(Request $request): Response
+    {
+        if (in_array('text/html', $request->getAcceptableContentTypes(), true)) {
+            return response()->view('larapilot::dashboard.protected', ['area' => 'api'], 503);
+        }
+
+        return response()->json([
+            'message' => 'The Larapilot API is protected by a token (the api_auth project setting is ON) and no token has been set on this server yet. '
+                .'Add LARAPILOT_API_TOKEN to the .env of this server, then send it as "Authorization: Bearer <token>" or in the X-Larapilot-Token header — '
+                .'or lift the requirement with: php artisan larapilot:settings-set --api-auth=NO',
+        ], 503);
     }
 }

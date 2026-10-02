@@ -34,6 +34,7 @@ You bring the errors of production into the workflow. One tracker, `settings.err
 6. `php artisan larapilot:errors-link BUG12 --spec=US-012` — the spec that fixes the bug
 7. `php artisan larapilot:errors-link BUG12 --ignore --reason="…"` — left as it is, and why
 8. `php artisan larapilot:errors-resolve BUG12` — closes it in the tracker, once the fix is released
+9. `php artisan larapilot:logs --group --search="QueryException"` — the same exception in the logs of this machine
 
 The same commands for every tracker. Never call the API of a tracker yourself and never hand-write the ledger `.larapilot/boogle.yaml` — always the CLI.
 
@@ -134,7 +135,7 @@ One AskQuestion, skippable: `Start triage on these {g} groups?` → `Yes` · `Ad
 
 ### 7. Read the code first (Anne)
 
-For each group, open every `where` in the repository before the handoff. `in_vendor: true` → find the call in the application that leads there.
+For each group, open every `where` in the repository before the handoff. `in_vendor: true` → find the call in the application that leads there. Then, **every time**, `larapilot:logs --group --search="{class, short}"`: a match adds `logged: {where} ×{count}` to the block; none → go on.
 
 ### 8. Hand off to triage (Sophia)
 

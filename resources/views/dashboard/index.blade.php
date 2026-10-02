@@ -342,7 +342,8 @@
         </div>
         @if (($metrics['total'] ?? 0) > 0)
             <div class="page-actions">
-                <a class="btn ghost" id="board-download" href="{{ route('larapilot.dashboard.board.download') }}" data-base="{{ route('larapilot.dashboard.board.download') }}" title="The board as it is now, status by status, in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download status (.md)</span></a>
+                <a class="btn ghost" id="board-download" href="{{ route('larapilot.dashboard.board.download') }}" data-base="{{ route('larapilot.dashboard.board.download') }}" data-name="status" title="The board as it is now, status by status, in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download status (.md)</span></a>
+                <a class="btn ghost" id="board-epics-download" href="{{ route('larapilot.dashboard.board.epics') }}" data-base="{{ route('larapilot.dashboard.board.epics') }}" data-name="epics" title="Every epic with its story points, its user stories with theirs, and the tasks of each, as a Markdown outline">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download epics (.md)</span></a>
             </div>
         @endif
     </header>
@@ -477,7 +478,10 @@
         const count = document.getElementById('board-filter-count');
         const clear = document.getElementById('board-filter-clear');
         const bar = document.getElementById('board-tools-bar');
-        const download = document.getElementById('board-download');
+        const downloads = [
+            document.getElementById('board-download'),
+            document.getElementById('board-epics-download'),
+        ].filter(Boolean);
         const cards = [...board.querySelectorAll('.spec-card')];
         const columns = [...board.querySelectorAll('.column')];
         const metrics = {
@@ -529,12 +533,8 @@
             return true;
         };
 
-        // The download follows the filters: what is on screen is what is saved.
+        // The downloads follow the filters: what is on screen is what is saved.
         const syncDownload = () => {
-            if (!download) {
-                return;
-            }
-
             const params = new URLSearchParams();
             const values = {
                 q: (query.value || '').trim(),
@@ -550,13 +550,16 @@
             });
 
             const search = params.toString();
-            const label = download.querySelector('[data-label]');
 
-            download.href = download.dataset.base + (search ? '?' + search : '');
+            downloads.forEach((download) => {
+                const label = download.querySelector('[data-label]');
 
-            if (label) {
-                label.textContent = search ? 'Download filtered status (.md)' : 'Download status (.md)';
-            }
+                download.href = download.dataset.base + (search ? '?' + search : '');
+
+                if (label) {
+                    label.textContent = `Download ${search ? 'filtered ' : ''}${download.dataset.name} (.md)`;
+                }
+            });
         };
 
         const restore = () => {

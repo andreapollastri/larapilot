@@ -22,12 +22,41 @@ it('leaves the dashboard open when dashboard_auth is off (default)', function ()
     $this->get('/larapilot')->assertOk()->assertSee('US-001');
 });
 
-it('returns 500 when dashboard_auth is on but no users are configured', function (): void {
+it('stays closed and says how to add the first user when dashboard_auth is on with no users', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec();
     enableDashboardAuth();
 
-    $this->get('/larapilot')->assertStatus(500);
+    $this->get('/larapilot')
+        ->assertStatus(503)
+        ->assertHeaderMissing('WWW-Authenticate')
+        ->assertSee('This dashboard is protected')
+        ->assertSee('dashboard_auth')
+        ->assertSee('php artisan larapilot:dashboard-user add &lt;username&gt;', false)
+        ->assertSee('php artisan larapilot:settings-set --dashboard-auth=NO')
+        ->assertDontSee('US-001');
+
+    // Every page of the dashboard, not the board alone.
+    $this->get('/larapilot/settings')->assertStatus(503)->assertSee('This dashboard is protected');
+
+    $this->getJson('/larapilot')
+        ->assertStatus(503)
+        ->assertJsonPath('message', fn (string $message): bool => str_contains($message, 'dashboard_auth')
+            && str_contains($message, 'php artisan larapilot:dashboard-user add <username>'));
+});
+
+it('opens the sign-in as soon as the first user exists', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+    enableDashboardAuth();
+
+    $this->get('/larapilot')->assertStatus(503);
+
+    $this->artisan('larapilot:dashboard-user', ['action' => 'add', 'username' => 'andrea', '--password' => 's3cret-pass'])
+        ->assertSuccessful();
+
+    $this->get('/larapilot')->assertStatus(401);
+    $this->get('/larapilot', basicAuth('andrea', 's3cret-pass'))->assertOk()->assertSee('US-001');
 });
 
 it('challenges unauthenticated requests once a user exists', function (): void {

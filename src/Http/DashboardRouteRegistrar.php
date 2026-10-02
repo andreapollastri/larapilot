@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\DashboardController;
 use Larapilot\Http\Controllers\DatabaseViewerController;
 use Larapilot\Http\Controllers\FileManagerController;
+use Larapilot\Http\Controllers\LogViewerController;
 use Larapilot\Http\Controllers\StackController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
 use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
@@ -46,6 +47,9 @@ class DashboardRouteRegistrar
 
                 Route::get('/board.md', [DashboardController::class, 'boardDownload'])
                     ->name('larapilot.dashboard.board.download');
+
+                Route::get('/epics.md', [DashboardController::class, 'epicsDownload'])
+                    ->name('larapilot.dashboard.board.epics');
 
                 Route::get('/prd', [DashboardController::class, 'prd'])
                     ->name('larapilot.dashboard.prd');
@@ -189,6 +193,15 @@ class DashboardRouteRegistrar
                 Route::get('/database/{table}', [DatabaseViewerController::class, 'table'])
                     ->where('table', '.+')
                     ->name('larapilot.dashboard.database.table');
+
+                Route::get('/logs', [LogViewerController::class, 'index'])
+                    ->name('larapilot.dashboard.logs');
+
+                // A log is found by name in what the folder lists, so any
+                // name it holds is allowed here and nothing else is opened.
+                Route::get('/logs/{file}', [LogViewerController::class, 'show'])
+                    ->where('file', '.+')
+                    ->name('larapilot.dashboard.logs.file');
             });
 
         Route::middleware($embedded)

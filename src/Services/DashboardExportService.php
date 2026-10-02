@@ -7,9 +7,10 @@ namespace Larapilot\Services;
 use Larapilot\Support\SpecBlockers;
 
 /**
- * Markdown downloads for the dashboard: the board as it stands, one spec
- * with everything attached to it, and the PRD file itself. The words stay
- * the project's; only the frame around them is written here.
+ * Markdown downloads for the dashboard: the board as it stands, its epics
+ * as an outline, the plan, one spec with everything attached to it, and
+ * the PRD file itself. The words stay the project's; only the frame around
+ * them is written here.
  */
 class DashboardExportService
 {
@@ -31,20 +32,8 @@ class DashboardExportService
     {
         $board = $this->dashboard->board();
         $filters = $this->boardFilters($filters);
-        $columns = [];
-
-        foreach ($board['statusOrder'] as $status) {
-            if ($filters['status'] !== '' && $status !== $filters['status']) {
-                continue;
-            }
-
-            $columns[$status] = array_values(array_filter(
-                $board['columns'][$status] ?? [],
-                fn (array $spec): bool => $this->matchesBoardFilters($spec, $filters)
-            ));
-        }
-
-        $filtered = array_filter($filters, static fn (string $value): bool => $value !== '') !== [];
+        $columns = $this->boardColumns($board, $filters);
+        $filtered = $this->isFiltered($filters);
         $done = (string) ($board['workflow']['done'] ?? 'DONE');
         $wip = is_array($board['workflow']['wip'] ?? null) ? $board['workflow']['wip'] : [];
         $totals = ['specs' => 0, 'done' => 0, 'wip' => 0, 'points' => 0, 'done_points' => 0, 'tasks' => 0, 'done_tasks' => 0];
@@ -135,6 +124,114 @@ class DashboardExportService
     public function boardFilename(): string
     {
         return $this->slug($this->projectTitle(), 'larapilot').'-board-'.now()->format('Y-m-d').'.md';
+    }
+
+    /**
+     * The backlog as an outline: the project, every epic with its story
+     * points, its user stories with theirs, and under each planned story
+     * its tasks. A task is estimated in hours, so that is what it carries.
+     * `$filters` are the ones of the board: the outline holds the stories
+     * on screen, and an epic counts the points of those.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    public function epics(array $filters = []): string
+    {
+        $filters = $this->boardFilters($filters);
+        $epics = [];
+        $loose = [];
+
+        foreach ($this->boardColumns($this->dashboard->board(), $filters) as $specs) {
+            foreach ($specs as $spec) {
+                $code = trim((string) ($spec['epic']['code'] ?? ''));
+
+                if ($code === '') {
+                    $loose[] = $spec;
+
+                    continue;
+                }
+
+                $epics[$code] ??= ['title' => '', 'specs' => []];
+                $epics[$code]['specs'][] = $spec;
+
+                if ($epics[$code]['title'] === '') {
+                    $epics[$code]['title'] = $this->inline((string) ($spec['epic']['title'] ?? ''));
+                }
+            }
+        }
+
+        uksort($epics, 'strnatcasecmp');
+
+        $title = $this->projectTitle();
+        $lines = ['# '.($title !== '' ? $title : $this->inline((string) config('app.name', 'Project')))];
+
+        if ($this->isFiltered($filters)) {
+            $lines[] = '';
+            $lines[] = '**Filtered by:** '.$this->describeBoardFilters($filters).'.';
+        }
+
+        foreach ($epics as $code => $epic) {
+            $name = $epic['title'] !== '' && $epic['title'] !== (string) $code ? $code.' — '.$epic['title'] : (string) $code;
+            $lines = array_merge($lines, $this->epicOutline($name, $epic['specs']));
+        }
+
+        if ($loose !== []) {
+            $lines = array_merge($lines, $this->epicOutline('Stories without an epic', $loose));
+        }
+
+        if ($epics === [] && $loose === []) {
+            $lines[] = '';
+            $lines[] = $this->isFiltered($filters)
+                ? '_No story matches the filters._'
+                : '_The backlog is empty. Write the stories with `/larapilot-spec`._';
+        }
+
+        return implode("\n", $lines)."\n";
+    }
+
+    public function epicsFilename(): string
+    {
+        return $this->slug($this->projectTitle(), 'larapilot').'-epics-'.now()->format('Y-m-d').'.md';
+    }
+
+    /**
+     * One epic of the outline: its heading with the points of its stories,
+     * then each story with its own and the tasks of its plan.
+     *
+     * @param  list<array<string, mixed>>  $specs
+     * @return list<string>
+     */
+    protected function epicOutline(string $name, array $specs): array
+    {
+        usort($specs, static fn (array $left, array $right): int => strnatcasecmp((string) ($left['code'] ?? ''), (string) ($right['code'] ?? '')));
+
+        $points = array_sum(array_map(static fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)), $specs));
+        $lines = ['', '## '.$name.' ('.$points.' SP)'];
+
+        foreach ($specs as $spec) {
+            $code = (string) ($spec['code'] ?? '');
+            $specPoints = max(0, (int) ($spec['points'] ?? 0));
+
+            $lines[] = '';
+            $lines[] = '#### '.$code.' — '.$this->inline((string) ($spec['title'] ?? 'Untitled')).($specPoints > 0 ? ' ('.$specPoints.' SP)' : '');
+
+            $plan = $this->plans->read($code);
+            $tasks = is_array($plan['tasks'] ?? null) ? array_values(array_filter($plan['tasks'], 'is_array')) : [];
+
+            if ($tasks === []) {
+                continue;
+            }
+
+            $lines[] = '';
+
+            foreach ($tasks as $task) {
+                $hours = (float) ($task['estimate_hours'] ?? 0);
+
+                $lines[] = '- '.$this->inline((string) ($task['id'] ?? 'TASK')).' — '.$this->inline((string) ($task['title'] ?? 'Untitled')).($hours > 0 ? ' ('.$this->number($hours).' h)' : '');
+            }
+        }
+
+        return $lines;
     }
 
     /**
@@ -718,6 +815,39 @@ class DashboardExportService
             'epic' => $read('epic'),
             'status' => $read('status'),
         ];
+    }
+
+    /**
+     * The columns the filters leave on screen, in the order of the board.
+     *
+     * @param  array<string, mixed>  $board
+     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     * @return array<string, list<array<string, mixed>>>
+     */
+    protected function boardColumns(array $board, array $filters): array
+    {
+        $columns = [];
+
+        foreach ($board['statusOrder'] as $status) {
+            if ($filters['status'] !== '' && $status !== $filters['status']) {
+                continue;
+            }
+
+            $columns[$status] = array_values(array_filter(
+                $board['columns'][$status] ?? [],
+                fn (array $spec): bool => $this->matchesBoardFilters($spec, $filters)
+            ));
+        }
+
+        return $columns;
+    }
+
+    /**
+     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     */
+    protected function isFiltered(array $filters): bool
+    {
+        return array_filter($filters, static fn (string $value): bool => $value !== '') !== [];
     }
 
     /**

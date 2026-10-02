@@ -128,7 +128,7 @@ class DashboardUserCommand extends LarapilotCommand
             'auth_enabled' => $config->dashboardAuthEnabled(),
             'path' => $config->relativePath($auth->path()),
             'hint' => $users === [] && $config->dashboardAuthEnabled()
-                ? 'No users left while dashboard_auth is ON — the dashboard will return HTTP 500 until you add one or run: php artisan larapilot:settings-set --dashboard-auth=NO'
+                ? 'No users left while dashboard_auth is ON — the dashboard stays closed (HTTP 503) until you add one or run: php artisan larapilot:settings-set --dashboard-auth=NO'
                 : null,
         ]);
     }

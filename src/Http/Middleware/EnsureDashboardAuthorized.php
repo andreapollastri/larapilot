@@ -19,6 +19,9 @@ use Symfony\Component\HttpFoundation\Response;
  * When ON, every dashboard request must carry valid Basic Auth credentials
  * from `.larapilot/auth.yaml`. This gate is never wired onto the JSON API
  * (`/larapilot/api/*`, guarded by `LARAPILOT_API_TOKEN`) or the MCP server.
+ *
+ * With the setting ON and no user created yet the dashboard fails closed
+ * (HTTP 503) on a page that explains the setting and how to add the first user.
  */
 class EnsureDashboardAuthorized
 {
@@ -34,7 +37,7 @@ class EnsureDashboardAuthorized
         }
 
         if (! $this->auth->hasUsers()) {
-            abort(500, 'Larapilot dashboard auth is enabled but no users are configured. Run: php artisan larapilot:dashboard-user add <username>');
+            return $this->firstUserMissing($request);
         }
 
         $realm = str_replace('"', '', (string) config('larapilot.dashboard_route.auth.realm', 'Larapilot'));
@@ -60,5 +63,22 @@ class EnsureDashboardAuthorized
         return response('Authentication required.', 401, [
             'WWW-Authenticate' => sprintf('Basic realm="%s", charset="UTF-8"', $realm),
         ]);
+    }
+
+    /**
+     * The setting is ON and nobody can sign in yet: the dashboard stays closed
+     * and says what opens it, instead of failing with a bare server error.
+     */
+    protected function firstUserMissing(Request $request): Response
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'The Larapilot dashboard is protected by a sign-in (the dashboard_auth project setting is ON) and no user has been created yet. '
+                    .'Create the first one with: php artisan larapilot:dashboard-user add <username> — '
+                    .'or turn the sign-in off with: php artisan larapilot:settings-set --dashboard-auth=NO',
+            ], 503);
+        }
+
+        return response()->view('larapilot::dashboard.protected', ['area' => 'dashboard'], 503);
     }
 }

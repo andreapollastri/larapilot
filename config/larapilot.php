@@ -548,6 +548,24 @@ return [
         ],
     ],
 
+    // Log viewer on the dashboard (/larapilot/logs): the `.log` files of the
+    // application read as entries — newest first, by level, searched, the
+    // repeats counted — and downloaded. Secrets are redacted on screen and in
+    // the download. It only reads. The same gate as the file manager: never in
+    // production, open in local/development/testing, and elsewhere only when
+    // `dashboard_auth` is ON. `php artisan larapilot:logs` reads the same files
+    // for the skills and follows `diagnostics.enabled` instead.
+    'log_viewer' => [
+        'enabled' => env('LARAPILOT_LOG_VIEWER', true),
+        // The folder to read; empty means storage/logs. A path that is not
+        // absolute is taken from the root of the project.
+        'path' => env('LARAPILOT_LOG_VIEWER_PATH'),
+        'per_page' => (int) env('LARAPILOT_LOG_VIEWER_PER_PAGE', 50),
+        // How much of a file one request reads, from its end backwards, in
+        // megabytes. A larger file is read further with "Keep reading".
+        'scan_mb' => (int) env('LARAPILOT_LOG_VIEWER_SCAN_MB', 32),
+    ],
+
     'workflow' => [
         'statuses' => [
             'todo' => 'TODO',

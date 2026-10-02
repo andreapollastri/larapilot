@@ -209,7 +209,7 @@
             <h3>Side paths</h3>
             <div class="flow-steps">
                 <div class="flow-step"><strong>Feature</strong><span><code>/larapilot-feature</code> — new enhancement on brownfield</span></div>
-                <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec</span></div>
+                <div class="flow-step"><strong>Bug</strong><span><code>/larapilot-bug</code> — triage + fix spec; reads the logs of the application every time, with the secrets redacted. @if (Route::has('larapilot.dashboard.logs') && app(\Larapilot\Services\ConfigService::class)->logViewerBrowsable()) The same entries are on <a href="{{ route('larapilot.dashboard.logs') }}">Logs</a> @endif</span></div>
                 <div class="flow-step"><strong>Triage</strong><span><code>/larapilot-triage</code> — bug or feature? classifies the request and hands off</span></div>
                 <div class="flow-step"><strong>Aikido</strong><span><code>/larapilot-aikido</code> — downloads the security findings, has you confirm them, groups them by fix, hands each group to triage</span></div>
                 <div class="flow-step"><strong>Production errors</strong><span><code>/larapilot-error</code> — asks which tracker to read (Boogle, Sentry, …) when none is set, downloads the open errors, has you confirm them, groups them by place, hands each group to triage</span></div>

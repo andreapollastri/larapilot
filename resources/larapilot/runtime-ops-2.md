@@ -5,7 +5,7 @@ After specs reach **DONE** and the product is live, **Sophia** owns the support 
 | Responsibility | Sophia |
 | --- | --- |
 | **Bug intake** | Collect user/stakeholder reports; normalize into `{paths.support}/intake.md` (default `.larapilot/docs/support/`; dated files allowed) |
-| **Triage** | Severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature — severity maps to backlog priority: Critical → `CRITICAL`, High → `HIGH`, Medium → `MEDIUM`, Low → `LOW` |
+| **Triage** | The logs of the application first, every time (`larapilot:logs`, secrets redacted) — then severity (Critical/High/Medium/Low), reproduce steps, environment, affected spec/feature — severity maps to backlog priority: Critical → `CRITICAL`, High → `HIGH`, Medium → `MEDIUM`, Low → `LOW` |
 | **Routing** | Critical security → **Lars** + **Oliver** re-test; functional bugs → **`larapilot-bug`** (preferred) or `larapilot-spec` maintenance mode → `spec-add` / `spec-request-changes` rework; a report that may be a bug or a change request → **`larapilot-triage`** first |
 | **Documentation** | Keep README, OpenAPI, runbooks, and `CHANGELOG.md` current with every maintenance release |
 | **Software updates** | Coordinate dependency patches (`composer update`, security advisories) with **Lars** and **Jack**; feature maintenance with **Alex** via planned specs |

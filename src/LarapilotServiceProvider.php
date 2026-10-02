@@ -50,6 +50,7 @@ use Larapilot\Console\Commands\GitlabStatusCommand;
 use Larapilot\Console\Commands\HookListCommand;
 use Larapilot\Console\Commands\HookRunCommand;
 use Larapilot\Console\Commands\InstallCommand;
+use Larapilot\Console\Commands\LogsCommand;
 use Larapilot\Console\Commands\MetricsCommand;
 use Larapilot\Console\Commands\MockupChooseStyleCommand;
 use Larapilot\Console\Commands\NotifyCommand;
@@ -136,6 +137,7 @@ use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\InternalFeedbackService;
+use Larapilot\Services\LogViewerService;
 use Larapilot\Services\MetricsService;
 use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
@@ -158,7 +160,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '5.0.0';
+    public const VERSION = '5.0.1';
 
     public function register(): void
     {
@@ -215,6 +217,9 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(ReleaseFlowService::class);
         $this->app->singleton(CustomSkillService::class);
         $this->app->singleton(FileManagerService::class);
+        // It remembers what it read of a file, and what the visitor may open:
+        // for one request, not for the life of a worker.
+        $this->app->scoped(LogViewerService::class);
         $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
@@ -230,6 +235,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 UpdateCommand::class,
                 DoctorCommand::class,
                 DiagnosticsCommand::class,
+                LogsCommand::class,
                 FrontendSetCommand::class,
                 FrontendScanCommand::class,
                 FrontendRulesCommand::class,

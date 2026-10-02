@@ -216,7 +216,7 @@ Ask only the forge(s) that match the user's remote (skip others or leave NO).
 | `NO` | `NO — dashboard open in the allowed environments (default)` |
 | `YES` | `YES — HTTP Basic Auth; users managed via php artisan larapilot:dashboard-user` |
 
-When the user picks `YES`, remind once: they must create at least one user, or the dashboard returns HTTP 500. Never collect the password in chat — tell them to run `php artisan larapilot:dashboard-user add <username>` (it prompts securely) or pass `--password=`. Setup notes: `.larapilot/integrations.md`.
+When the user picks `YES`, remind once: they must create at least one user, or the dashboard stays closed (HTTP 503) on a notice that asks for one. Never collect the password in chat — tell them to run `php artisan larapilot:dashboard-user add <username>` (it prompts securely) or pass `--password=`. Setup notes: `.larapilot/integrations.md`.
 
 **7c. API auth** — make `LARAPILOT_API_TOKEN` mandatory on every `/larapilot/api/*` request (default OFF)
 

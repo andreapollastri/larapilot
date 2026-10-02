@@ -8,10 +8,12 @@
             ['route' => 'larapilot.dashboard.design', 'active' => ['larapilot.dashboard.design*'], 'label' => 'Design', 'icon' => 'design'],
         ],
         'Workspace' => [
+            ['route' => 'larapilot.dashboard.about', 'active' => ['larapilot.dashboard.about'], 'label' => 'About', 'icon' => 'about'],
             ['route' => 'larapilot.dashboard.settings', 'active' => ['larapilot.dashboard.settings'], 'label' => 'Settings', 'icon' => 'settings'],
             ['route' => 'larapilot.dashboard.skills', 'active' => ['larapilot.dashboard.skill*'], 'label' => 'Skills', 'icon' => 'skills'],
             ['route' => 'larapilot.dashboard.files', 'active' => ['larapilot.dashboard.files*'], 'label' => 'File manager', 'icon' => 'files', 'when' => app(\Larapilot\Services\ConfigService::class)->fileManagerBrowsable()],
             ['route' => 'larapilot.dashboard.database', 'active' => ['larapilot.dashboard.database*'], 'label' => 'Database', 'icon' => 'database', 'when' => app(\Larapilot\Services\ConfigService::class)->databaseViewerBrowsable()],
+            ['route' => 'larapilot.dashboard.logs', 'active' => ['larapilot.dashboard.logs*'], 'label' => 'Logs', 'icon' => 'logs', 'when' => app(\Larapilot\Services\ConfigService::class)->logViewerBrowsable()],
             ['route' => 'larapilot.dashboard.git', 'active' => ['larapilot.dashboard.git'], 'label' => 'Git', 'icon' => 'git'],
         ],
         'Insights' => [
@@ -24,7 +26,6 @@
         'Reference' => [
             ['route' => 'larapilot.api.docs', 'active' => ['larapilot.api.*'], 'label' => 'API', 'icon' => 'api'],
             ['route' => 'larapilot.dashboard.docs', 'active' => ['larapilot.dashboard.docs'], 'label' => 'Docs', 'icon' => 'docs'],
-            ['route' => 'larapilot.dashboard.about', 'active' => ['larapilot.dashboard.about'], 'label' => 'About', 'icon' => 'about'],
         ],
     ];
 @endphp

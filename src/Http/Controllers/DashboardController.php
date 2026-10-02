@@ -53,6 +53,16 @@ class DashboardController
         return $this->markdown($this->exports->board($request->query()), $this->exports->boardFilename());
     }
 
+    /**
+     * Epics, their stories, and the tasks of each, with the story points.
+     */
+    public function epicsDownload(Request $request): Response
+    {
+        $this->guard();
+
+        return $this->markdown($this->exports->epics($request->query()), $this->exports->epicsFilename());
+    }
+
     public function prd(): View
     {
         $this->guard();

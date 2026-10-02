@@ -112,11 +112,100 @@ it('offers no board download while the backlog is empty', function (): void {
 
     $this->get('/larapilot')
         ->assertOk()
-        ->assertDontSee('id="board-download"', false);
+        ->assertDontSee('id="board-download"', false)
+        ->assertDontSee('id="board-epics-download"', false);
 
     $this->get('/larapilot/board.md')
         ->assertOk()
         ->assertSee('| Specs | 0 |', false);
+
+    $this->get('/larapilot/epics.md')
+        ->assertOk()
+        ->assertSee('_The backlog is empty.', false);
+});
+
+it('downloads the epics as an outline of stories and tasks with their story points', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    app(PrdService::class)->write(exportPrd());
+
+    $this->artisan('larapilot:spec-add', ['--file' => payloadFile(['specs' => [
+        ['code' => 'US-001', 'title' => 'Sign in', 'priority' => 'HIGH', 'points' => 3, 'status' => 'TODO', 'epic' => ['code' => 'EP-002', 'title' => 'Access'], 'body' => validSpecBody()],
+        ['code' => 'US-002', 'title' => 'Reset the password', 'priority' => 'LOW', 'points' => 5, 'status' => 'TODO', 'epic' => ['code' => 'EP-002', 'title' => 'Access'], 'body' => validSpecBody()],
+        ['code' => 'US-003', 'title' => 'Send an invoice', 'priority' => 'HIGH', 'points' => 8, 'status' => 'TODO', 'epic' => ['code' => 'EP-001', 'title' => 'Billing'], 'body' => validSpecBody()],
+        ['code' => 'US-004', 'title' => 'Footer', 'priority' => 'LOW', 'points' => 1, 'status' => 'TODO', 'body' => validSpecBody()],
+    ]])])->assertSuccessful();
+
+    $plan = planPayload();
+    $plan['tasks'][0]['estimate_hours'] = 2.5;
+
+    $this->artisan('larapilot:spec-plan', ['code' => 'US-001', '--file' => payloadFile($plan, 'tmp-plan.yaml')])
+        ->assertSuccessful();
+
+    $this->get('/larapilot')
+        ->assertOk()
+        ->assertSee('/larapilot/epics.md', false)
+        ->assertSee('Download epics (.md)', false);
+
+    $response = $this->get('/larapilot/epics.md')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8');
+
+    expect($response->headers->get('Content-Disposition'))
+        ->toBe('attachment; filename="fjord-invoices-epics-'.now()->format('Y-m-d').'.md"');
+
+    // Epics by code, stories by code, the stories with no epic last; a task
+    // carries its hours, and nothing when it has no estimate.
+    expect($response->getContent())->toBe(<<<'MD'
+# Fjord Invoices
+
+## EP-001 — Billing (8 SP)
+
+#### US-003 — Send an invoice (8 SP)
+
+## EP-002 — Access (8 SP)
+
+#### US-001 — Sign in (3 SP)
+
+- TASK-01 — Create model (2.5 h)
+- TASK-02 — Write tests
+
+#### US-002 — Reset the password (5 SP)
+
+## Stories without an epic (1 SP)
+
+#### US-004 — Footer (1 SP)
+
+MD);
+});
+
+it('downloads the epics the filters leave on screen', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    $this->artisan('larapilot:spec-add', ['--file' => payloadFile(['specs' => [
+        ['code' => 'US-001', 'title' => 'Sign in', 'priority' => 'HIGH', 'points' => 3, 'status' => 'TODO', 'epic' => ['code' => 'EP-002', 'title' => 'Access'], 'body' => validSpecBody()],
+        ['code' => 'US-002', 'title' => 'Reset the password', 'priority' => 'LOW', 'points' => 5, 'status' => 'TODO', 'epic' => ['code' => 'EP-002', 'title' => 'Access'], 'body' => validSpecBody()],
+        ['code' => 'US-003', 'title' => 'Send an invoice', 'priority' => 'HIGH', 'points' => 8, 'status' => 'TODO', 'epic' => ['code' => 'EP-001', 'title' => 'Billing'], 'body' => validSpecBody()],
+    ]])])->assertSuccessful();
+
+    $filtered = $this->get('/larapilot/epics.md?epic=EP-002&priority=low')->assertOk()->getContent();
+
+    // An epic counts the points of the stories that are left.
+    expect($filtered)->toContain('**Filtered by:** priority “LOW”, epic “EP-002”.')
+        ->toContain('## EP-002 — Access (5 SP)')
+        ->toContain('#### US-002 — Reset the password (5 SP)')
+        ->not->toContain('US-001')
+        ->not->toContain('EP-001');
+
+    expect($this->get('/larapilot/epics.md?q=nothing-like-this')->assertOk()->getContent())
+        ->toContain('_No story matches the filters._');
+
+    $this->get('/larapilot/epics.md?q[]=x&epic[a]=b')->assertOk();
+
+    // With no PRD to take the title from, the project is the application.
+    expect($this->get('/larapilot/epics.md')->getContent())
+        ->toStartWith('# '.config('app.name')."\n")
+        ->and(app(DashboardExportService::class)->epicsFilename())
+        ->toBe('larapilot-epics-'.now()->format('Y-m-d').'.md');
 });
 
 it('downloads a whole spec with its plan, tasks, decisions, and comments', function (): void {
@@ -258,6 +347,7 @@ it('keeps the downloads behind the dashboard gate', function (): void {
     config()->set('larapilot.dashboard_route.enabled', false);
 
     $this->get('/larapilot/board.md')->assertNotFound();
+    $this->get('/larapilot/epics.md')->assertNotFound();
     $this->get('/larapilot/prd/prd.md')->assertNotFound();
     $this->get('/larapilot/specs/US-001/spec.md')->assertNotFound();
 });

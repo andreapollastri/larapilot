@@ -50,7 +50,8 @@ it('puts About, SBOM, and the plan download in the dashboard', function (): void
     $html = $this->get('/larapilot')->assertOk()->getContent();
 
     expect($html)->toContain('>SBOM</a>', '>About</a>')
-        ->and(strrpos($html, '>About</a>'))->toBeGreaterThan(strrpos($html, '>Docs</a>'))
+        ->and(strpos($html, '>About</a>'))->toBeGreaterThan(strpos($html, '>Design</a>'))
+        ->and(strpos($html, '>About</a>'))->toBeLessThan(strpos($html, '>Settings</a>'))
         ->and(strpos($html, '>SBOM</a>'))->toBeGreaterThan(strpos($html, '>Security</a>'));
 
     $this->get('/larapilot/plan')->assertOk()->assertSee('Download plan (.md)');

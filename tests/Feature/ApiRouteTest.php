@@ -333,7 +333,32 @@ it('fails closed when api_auth is on but no token is configured', function (): v
     app(ConfigService::class)->updateSettings(['api_auth' => 'YES']);
     config()->set('larapilot.api.token', null);
 
-    $this->getJson('/larapilot/api/board')->assertStatus(503);
+    $this->getJson('/larapilot/api/board')
+        ->assertStatus(503)
+        ->assertJsonPath('message', fn (string $message): bool => str_contains($message, 'api_auth')
+            && str_contains($message, 'LARAPILOT_API_TOKEN')
+            && str_contains($message, 'Authorization: Bearer <token>'));
+
+    // A client that names no format, as curl does, is an API client too.
+    $this->get('/larapilot/api/board', ['Accept' => '*/*'])
+        ->assertStatus(503)
+        ->assertHeader('Content-Type', 'application/json');
+});
+
+it('explains the missing token on a page when a browser opens the API', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec();
+
+    app(ConfigService::class)->updateSettings(['api_auth' => 'YES']);
+    config()->set('larapilot.api.token', null);
+
+    $this->get('/larapilot/api/docs', ['Accept' => 'text/html,application/xhtml+xml,*/*;q=0.8'])
+        ->assertStatus(503)
+        ->assertSee('This API is protected')
+        ->assertSee('api_auth')
+        ->assertSee('LARAPILOT_API_TOKEN=')
+        ->assertSee('php artisan larapilot:settings-set --api-auth=NO')
+        ->assertDontSee('swagger-ui');
 });
 
 it('leaves API reads open when api_auth is off and no token is set (default)', function (): void {

@@ -1729,7 +1729,7 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.0</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.1</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1806,7 +1806,7 @@
       <a class="sub" href="#deep-dive-economics">Economics</a>
       <a class="sub" href="#deep-dive-api">API</a>
       <a class="sub" href="#deep-dive-api-hardening">API hardening</a>
-      <a class="sub" href="#deep-dive-api-diagnostics">Diagnostics</a>
+      <a class="sub" href="#deep-dive-api-diagnostics">Diagnostics &amp; logs</a>
     </aside>
 
     <main class="docs-main">
@@ -3734,15 +3734,24 @@ body: |
             <pre><code>/larapilot-bug "SSO login fails on Safari"</code></pre>
           </div>
 
-          <p>Sophia triages with AskQuestion, logs to <code>support/intake.md</code>. Because the environment is
-            <strong>Production</strong> (or staging) and the report mentions login errors, she pulls a
-            <a href="#deep-dive-api-diagnostics">diagnostics</a> snapshot before routing — status, health checks, and a
-            <strong>redacted</strong> log tail. Secrets never land in chat or intake.
+          <p>Sophia triages with AskQuestion and logs to <code>support/intake.md</code>. Before the first
+            question she <strong>reads the logs of the application — every time</strong>, whatever the report says:
+            a defect told in words is often already written there, with its exception, its file, and its line.
+            <a href="#deep-dive-api-diagnostics"><code>larapilot:logs</code></a> gives them as entries with the
+            repeats counted and the secrets <strong>redacted</strong>, so nothing private lands in chat or intake.
           </p>
 
           <div class="chat-example">
             <p><span class="speaker">🎧 Sophia:</span> Report received — SSO works on Chrome, fails on Safari.
-              Let's classify and route.</p>
+              Reading the logs first.</p>
+            <div class="code-block">
+              <div class="code-block-header">Agent — the logs, every time</div>
+              <pre><code>php artisan larapilot:logs --group --level=warning --since=7d
+php artisan larapilot:logs --search="sso"</code></pre>
+            </div>
+            <p><span class="speaker">🎧 Sophia:</span> One thing stands out: <code>InvalidStateException</code> at
+              <code>app/Http/Controllers/SsoController.php:41</code>, 38 times in three days, the last an hour ago.
+              That goes into intake and into the fix spec. Now let's classify and route.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 1 (severity &amp; environment)</strong>
               <ol>
@@ -3753,17 +3762,15 @@ body: |
             </div>
             <p><em>You pick:</em> <strong>High</strong>, <strong>Production</strong>, <strong>Unsure</strong>
               (auth boundary — Lars will review).</p>
-            <p><span class="speaker">🎧 Sophia:</span> Production auth failure — pulling diagnostics (redacted logs)
-              before we route.</p>
+            <p><span class="speaker">🎧 Sophia:</span> Production auth failure — the logs name the place; the
+              health of the runtime rules out the infrastructure.</p>
             <div class="code-block">
-              <div class="code-block-header">Agent — diagnostics (any of these)</div>
-              <pre><code>php artisan larapilot:diagnostics --lines=80
-# or MCP diagnostics tool
-# or GET /larapilot/api/diagnostics?lines=80   (dev/staging only)</code></pre>
+              <div class="code-block-header">Agent — the health of the runtime</div>
+              <pre><code>php artisan larapilot:diagnostics --no-logs</code></pre>
             </div>
             <p><span class="speaker">🎧 Sophia:</span> Checks look healthy (<code>database</code> /
-              <code>storage_writable</code> ok). Log tail shows OAuth callback noise — cookies/state look suspicious;
-              no secrets in the redacted lines. Citing that in intake.</p>
+              <code>storage_writable</code> ok), so it is the code: the OAuth state does not survive the redirect
+              on Safari.</p>
             <div class="wizard">
               <strong>AskQuestion — Round 2 (reproduction)</strong>
               <ol>
@@ -3791,33 +3798,36 @@ body: |
           </div>
 
           <div class="code-block">
-            <div class="code-block-header">GET /larapilot/api/diagnostics?lines=80 (excerpt)</div>
+            <div class="code-block-header">php artisan larapilot:logs --search="sso" (excerpt)</div>
             <pre><code>{
-  "collected_at": "2026-07-15T09:12:00+00:00",
-  "app": { "env": "local", "laravel_version": "13.x", "…" : "…" },
-  "checks": {
-    "storage_writable": { "ok": true, "detail": "…" },
-    "database": { "ok": true, "detail": "…" },
-    "…" : "…"
+  "file": { "name": "laravel.log", "size": "4.2 MB", "modified": "2026-07-15 09:11:40" },
+  "redacted": true,
+  "holds": {
+    "levels": { "error": 41, "warning": 12, "info": 2380 },
+    "from": "2026-07-01 00:00:04", "to": "2026-07-15 09:11:40", "whole_file": true
   },
-  "healthy": true,
-  "logs": {
-    "redacted": true,
-    "entries": [
-      "[2026-07-15] local.ERROR: Socialite callback failed … cookie=… [REDACTED]",
-      "[2026-07-15] local.WARNING: OAuth state mismatch for Safari UA …"
-    ]
-  }
+  "filters": { "search": "sso" },
+  "entries": [
+    {
+      "time": "2026-07-15 08:14:02", "level": "error", "env": "production",
+      "message": "Invalid state: the OAuth state does not match",
+      "class": "Laravel\\Socialite\\Two\\InvalidStateException",
+      "where": "app/Http/Controllers/SsoController.php:41",
+      "frames": [
+        "app/Http/Controllers/SsoController.php:41 Laravel\\Socialite\\Two\\AbstractProvider->user()"
+      ]
+    }
+  ]
 }</code></pre>
           </div>
-          <p>Same payload via <code>php artisan larapilot:diagnostics</code> (CLI envelope) or the MCP
-            <code>diagnostics</code> tool. API only where the dashboard is browsable — never in production; use CLI/MCP
-            against a staging/local app that can reproduce, or export logs carefully. Toggle with
-            <code>LARAPILOT_DIAGNOSTICS_ENABLED</code>. Full reference:
-            <a href="#deep-dive-api-diagnostics">Diagnostics</a>.
+          <p>The command answers with what the file holds, then the entries: when, what, and
+            <strong>where</strong> — a path of the server read as a file of the repository — with the frames of the
+            application and not the sixty of the framework under them. The logs are the ones of the machine the
+            command runs on: <code>env</code> says which environment wrote them, and nothing logged is an answer too.
+            Full reference: <a href="#deep-dive-api-diagnostics">Diagnostics and logs</a>.
           </p>
 
-          <p>Sophia appends a normalized entry to the support log (including a short diagnostics note):</p>
+          <p>Sophia appends a normalized entry to the support log, with what the logs said:</p>
 
           <div class="code-block">
             <div class="code-block-header">.larapilot/docs/support/intake.md (excerpt)</div>
@@ -3827,7 +3837,7 @@ body: |
 - **Severity:** High
 - **Environment:** Production
 - **Summary:** SSO login fails on Safari; works on Chrome
-- **Diagnostics:** healthy=true; log tail (redacted) shows OAuth state/cookie mismatch on Safari UA
+- **Logs:** InvalidStateException at app/Http/Controllers/SsoController.php:41 ×38, last 2026-07-15 08:14:02 (production)
 - **Steps to reproduce:**
   1. Open app in Safari 17+
   2. Click "Sign in with Google"
@@ -3905,12 +3915,12 @@ body: |
           <dl class="walkthrough-grid">
             <div>
               <dt>You do</dt>
-              <dd>Describe the defect; answer triage wizard; allow diagnostics on staging/local when asked</dd>
+              <dd>Describe the defect; answer the triage wizard</dd>
             </div>
             <div>
               <dt>Agent does</dt>
-              <dd>Runs diagnostics (CLI / MCP / API); cites redacted evidence in
-                <code>support/intake.md</code>; routes rework or fix spec</dd>
+              <dd>Reads the logs every time (<code>larapilot:logs</code>, secrets redacted); cites what they
+                say in <code>support/intake.md</code>; routes rework or fix spec</dd>
             </div>
             <div>
               <dt>Next step</dt>
@@ -5034,7 +5044,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.0.0 released 2026-10-01</span>
+<span class="comment"># latest   : 5.0.1 released 2026-10-02</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -5532,17 +5542,19 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
               <span class="skill-badge">bug triage</span>
               <div class="skill-body">
                 <h3><code>/larapilot-bug "…"</code></h3>
-                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. When the report
-                  mentions production/staging errors or logs, agents pull
-                  <a href="#deep-dive-api-diagnostics">diagnostics</a> (redacted).</p>
+                <p>Sophia-led triage → fix spec or rework route. PRD updated only on requirement gaps. The agent
+                  <strong>reads the logs of the application every time</strong>, whatever the report says —
+                  <a href="#deep-dive-api-diagnostics"><code>larapilot:logs</code></a>, the repeats counted and the
+                  secrets redacted — and quotes the exception, its place, and how many times it was thrown.</p>
                 <p>Every fix quotes the <strong>promise broken</strong> — an FR done-means, an acceptance criterion,
                   or an NFR target — so "fixed" has a definition. The route follows the status of the story:
                   <code>spec-request-changes</code> in REVIEW only, a re-issue through <code>spec-add</code> for TODO
                   and PLANNED, a new fix spec for DONE. A defect already in the intake log gains an occurrence, not a
                   second story.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> or
-                  <code>larapilot:spec-request-changes</code> — plus <code>larapilot:diagnostics</code> for runtime
-                  evidence and <code>larapilot:prd-impact</code> on a requirement gap.
+                  <code>larapilot:spec-request-changes</code> — plus <code>larapilot:logs</code> every time,
+                  <code>larapilot:diagnostics</code> for the health of the runtime, and
+                  <code>larapilot:prd-impact</code> on a requirement gap.
                 </p>
               </div>
             </div>
@@ -6701,8 +6713,10 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
               &lt;username&gt;}</code> — <code>add</code> prompts for the password (or takes <code>--password=</code>).</li>
             <li>Failed sign-ins are rate-limited per IP
               (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 30/min). With the setting ON and
-              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 500</code>.</li>
-            <li>The <strong>File manager</strong> and <strong>Database</strong> pages go further: outside
+              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 503</code>: every page
+              shows a notice that the area is protected by this setting and gives the command that creates the first
+              user. <code>auth.yaml</code> is git-ignored, so a fresh clone or a deploy starts on that notice.</li>
+            <li>The <strong>File manager</strong>, <strong>Database</strong>, and <strong>Logs</strong> pages go further: outside
               <code>local</code>/<code>development</code>/<code>testing</code> they answer <code>404</code> until
               this setting is <code>YES</code>.</li>
             <li>Enable with <code>php artisan larapilot:settings-set --dashboard-auth=YES</code>. Serve over HTTPS on
@@ -6725,7 +6739,9 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
               <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> — must carry the token as
               <code>Authorization: Bearer &lt;token&gt;</code> or <code>X-Larapilot-Token: &lt;token&gt;</code>. With the
               setting ON and <strong>no</strong> <code>LARAPILOT_API_TOKEN</code> configured the API fails closed with
-              <code>HTTP 503</code>; a wrong or missing token is <code>HTTP 401</code>.</li>
+              <code>HTTP 503</code> and says why — a JSON <code>message</code> that names the setting and tells how to
+              add the token, or the same explanation as a page when a browser opens the API docs; a wrong or missing
+              token is <code>HTTP 401</code>.</li>
             <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Enable with
               <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup + <code>curl</code> /
               Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> →
@@ -8193,7 +8209,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>User</code> model; the file is added to <code>.gitignore</code> automatically.</li>
             <li>Env: <code>LARAPILOT_DASHBOARD_AUTH_REALM</code>, <code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>
               (failed sign-ins per minute per IP, default 30; <code>0</code> disables throttling).</li>
-            <li><code>dashboard_auth=YES</code> with no users → dashboard fails closed (<code>HTTP 500</code>). Serve over
+            <li><code>dashboard_auth=YES</code> with no users → dashboard fails closed (<code>HTTP 503</code>) on a notice
+              that tells how to add the first one. Serve over
               HTTPS on shared hosts.</li>
           </ul>
           <p>Settings table: <a href="#deep-dive-dashboard-auth">Dashboard auth</a>.</p>
@@ -10051,9 +10068,12 @@ php artisan larapilot:doctor --human                                  # a table 
                 </tr>
                 <tr>
                   <td>Runtime</td>
-                  <td><code>larapilot:diagnostics</code> (<code>--lines=</code>, <code>--no-logs</code>)</td>
-                  <td><code>/larapilot-bug</code>, local triage — see <a
-                      href="#deep-dive-api-diagnostics">Diagnostics</a></td>
+                  <td><code>larapilot:logs</code> (<code>--group</code>, <code>--level=</code>,
+                    <code>--search=</code>, <code>--since=</code>, <code>--limit=</code>, <code>--files</code>,
+                    <code>--file=</code>) · <code>larapilot:diagnostics</code> (<code>--lines=</code>,
+                    <code>--no-logs</code>)</td>
+                  <td><code>/larapilot-bug</code> and <code>/larapilot-error</code>, local triage — see <a
+                      href="#deep-dive-api-diagnostics">Diagnostics and logs</a></td>
                 </tr>
                 <tr>
                   <td>PRD &amp; discovery</td>
@@ -10269,7 +10289,7 @@ php artisan larapilot:doctor --human                                  # a table 
                     <code>decision-check</code>, <code>code-history</code>, the four forge <code>*-status</code> probes,
                     <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>prd-impact</code>,
                     <code>prd-show</code>, <code>doctor</code>,
-                    <code>diagnostics</code>, <code>quality</code>, <code>frontend-scan</code>,
+                    <code>diagnostics</code>, <code>logs</code>, <code>quality</code>, <code>frontend-scan</code>,
                     <code>frontend-rules</code>, <code>backstage-export</code>, <code>tracker-status</code>, <code>hook-list</code>, <code>context</code>, <code>schedule-show</code>, <code>stack</code>, <code>upgrade-check</code>, <code>sbom</code>, <code>vendor-audit</code>, <code>aikido-status</code> /
                     <code>aikido-issues</code> / <code>aikido-plan</code> / <code>aikido-repos</code>,
                     <code>errors-status</code> /
@@ -10300,8 +10320,8 @@ php artisan larapilot:doctor --human                                  # a table 
             quotes — then drill into spec detail between skill sessions.
             With <code>comments=YES</code> you can also post <strong>internal feedback</strong> from the spec page
             (dev/staging only), the <strong>File manager</strong> uploads and organizes the material the skills
-            read, and <strong>Database</strong> shows the tables of the application and what is in them —
-            workflow state still changes only via skills/CLI.</p>
+            read, <strong>Database</strong> shows the tables of the application and what is in them, and
+            <strong>Logs</strong> reads what it logged — workflow state still changes only via skills/CLI.</p>
 
           <h4>Served by your Laravel app</h4>
           <ul>
@@ -10388,8 +10408,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td><strong>Board</strong></td>
                   <td><code>/larapilot</code></td>
                   <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> →
-                    <span class="status status-done">DONE</span>), and the status as it stands in one Markdown file
-                    (<code>/larapilot/board.md</code>)
+                    <span class="status status-done">DONE</span>), the status as it stands in one Markdown file
+                    (<code>/larapilot/board.md</code>), and the epics as an outline of stories and tasks
+                    (<code>/larapilot/epics.md</code>)
                   </td>
                 </tr>
                 <tr>
@@ -10448,6 +10469,15 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     search, and a foreign key that leads to the row it points at; or for its structure: columns,
                     indexes, foreign keys. <strong>Download SQL</strong> dumps the whole database.
                     <strong>Read only</strong>; passwords and tokens are never shown</td>
+                </tr>
+                <tr>
+                  <td><strong>Logs</strong></td>
+                  <td><code>/larapilot/logs</code></td>
+                  <td>The log files of the application read as entries, the newest first: by level, by period,
+                    searched, or with the repeats counted — one row for each thing logged. An exception shows
+                    where it was thrown, and the frames of your own code apart from the framework's.
+                    <strong>Download log</strong> for the file. <strong>Read only</strong>; passwords, tokens, and
+                    keys are shown as <code>[REDACTED]</code></td>
                 </tr>
                 <tr>
                   <td><strong>Git</strong></td>
@@ -10711,6 +10741,55 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>config/database.php</code>; <code>LARAPILOT_DATABASE_VIEWER=false</code> removes the page.</li>
           </ul>
 
+          <h4 id="deep-dive-dashboard-logs">Logs</h4>
+          <p><code>/larapilot/logs</code> reads what the application wrote to <code>storage/logs</code>: every
+            <code>.log</code> file, the one Laravel writes to now opened first. It reads, and never writes.</p>
+          <ul>
+            <li><strong>Entries, not lines.</strong> An entry is what Laravel wrote between one
+              <code>[date] env.LEVEL:</code> and the next, its stack trace included; the newest comes first. Each
+              one shows its level and message and, for an exception, the class, <strong>where it was
+              thrown</strong> as a file of the project — a path of the server is read as the file it is in this
+              checkout — the exception that caused it, and the context as indented JSON.</li>
+            <li><strong>Your code apart from the framework's.</strong> A stack opens on the frames of the
+              application; the ones of the framework and the packages are one click away. A file that is in the
+              checkout opens in the file manager.</li>
+            <li><strong>By level, by period, by words.</strong> A level returns itself and every one more severe
+              (<em>Error and worse</em>), and the count of each level sits above the list. The search wants every
+              word, in any case; quotes keep a phrase together, and a class name is found with its backslashes
+              as the page shows them or as the log doubles them. The period is the last hour, day, week, or
+              month.</li>
+            <li><strong>Repeats counted</strong> turns the list into one row for each thing logged — the same
+              message with its numbers, ids, and quoted values taken out, or the same exception thrown from the
+              same line — with how many times and since when, the most repeated first. <strong>Every time it was
+              logged</strong> goes back to the entries of that one. A log where nothing repeats is counted up to
+              10,000 different things, and the page says so.</li>
+            <li><strong>Any size.</strong> A file is read from its end backwards — 32 MB for a request
+              (<code>LARAPILOT_LOG_VIEWER_SCAN_MB</code>), 50 entries to a page
+              (<code>LARAPILOT_LOG_VIEWER_PER_PAGE</code>) — so the newest entries of a log of gigabytes come at
+              once. <strong>Older</strong> and <strong>Keep reading older</strong> go further back, and a page
+              stays the same however much is written after it. Of an entry longer than 16 KB the start is shown,
+              with its real size. A file that is not in Laravel's format, such as the output of a worker, is read
+              a line at a time.</li>
+            <li><strong>Secrets are never shown.</strong> Passwords, tokens, keys, cookies, and
+              <code>Authorization</code> headers are <code>[REDACTED]</code> on screen, a value written as JSON
+              (<code>"password":"…"</code>) included, and a search never finds one. Under such a key the value is
+              hidden whatever it is — a string, the list a header comes as, a number — and so is the JSON of a
+              request body logged as text; a line the redaction cannot check is hidden whole.
+              <strong>Download log</strong> gives the file redacted the same way, with a line longer than 1 MB cut
+              at that size; <strong>Secrets as written</strong> gives it as it is, and is
+              offered only in <code>local</code>, <code>development</code>, and <code>testing</code> — on a shared
+              host they never leave the server, sign-in or not.</li>
+            <li><strong>Local by default.</strong> Like the file manager, the page is open in
+              <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
+              is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
+              <code>YES</code>, and answers <code>404</code> otherwise. Only the <code>.log</code> files of the
+              folder are opened, three folders deep, and a symlink is never followed.
+              <code>LARAPILOT_LOG_VIEWER_PATH</code> reads another folder — absolute, or from the root of the
+              project; <code>LARAPILOT_LOG_VIEWER=false</code> removes the page.</li>
+            <li><strong>For the skills</strong>, <code>php artisan larapilot:logs</code> reads the same files —
+              see <a href="#deep-dive-api-diagnostics">Diagnostics and logs</a>.</li>
+          </ul>
+
           <h4>Board</h4>
           <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. A search field and
             priority, epic, and status filters narrow the columns; the counts follow whatever is still visible.
@@ -10719,8 +10798,12 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             a merge-request link when the story is <span class="status status-done">DONE</span>. That link sits beside
             the card target, so the board does not leave a blank card next to a merged story.
             <strong>Download status (.md)</strong> saves the board as it stands — a summary, specs and story points
-            by status, then every spec with its priority, points, epic, task progress, and merge commit. With a
-            filter on, the file holds what is on screen and says which filter produced it.</p>
+            by status, then every spec with its priority, points, epic, task progress, and merge commit.
+            <strong>Download epics (.md)</strong> saves the same stories as an outline: the project as the title,
+            each epic with the story points of its stories, each user story with its own, and under a planned story
+            its tasks — a task is estimated in hours, so that is what it carries. Epics and stories come in the
+            order of their codes, the stories with no epic last. With a filter on, either file holds what is on
+            screen and says which filter produced it; an epic then counts the points of the stories that are left.</p>
 
           <h4>PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later
@@ -11497,11 +11580,74 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
 
         <!-- Diagnostics -->
         <article class="deep-dive-sub" id="deep-dive-api-diagnostics">
-          <h3>Diagnostics</h3>
-          <p class="lead">Read-only app status for <code>/larapilot-bug</code> and local debugging. Same dashboard gate as the rest
-            of the API (never in production). Disable with <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> (returns
-            <code>404</code>).
+          <h3>Diagnostics and logs</h3>
+          <p class="lead">What the running application says about itself, for <code>/larapilot-bug</code>,
+            <code>/larapilot-error</code>, and local debugging: the <strong>logs</strong> read as entries, and the
+            <strong>health</strong> of the runtime. Both only read, and both redact secrets.
+            <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> turns both off.
           </p>
+
+          <h4>Logs</h4>
+          <p><code>php artisan larapilot:logs</code> reads the log files of the application the way the
+            <a href="#deep-dive-dashboard-logs">Logs</a> page of the dashboard does, and answers with what an agent
+            needs: when, what, the exception and <strong>where it was thrown</strong>, and the frames of the
+            application. <code>/larapilot-bug</code> runs it <strong>every time</strong>, whatever the report says;
+            <code>/larapilot-error</code> runs it for every group it hands to triage.</p>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Option</th>
+                  <th>What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--group</code></td>
+                  <td>One row for each thing logged, with how many times and since when — the most repeated
+                    first. Without it the entries come one by one, the newest first</td>
+                </tr>
+                <tr>
+                  <td><code>--level=warning</code></td>
+                  <td>That level and every one more severe: <code>debug</code>, <code>info</code>,
+                    <code>notice</code>, <code>warning</code>, <code>error</code>, <code>critical</code>,
+                    <code>alert</code>, <code>emergency</code></td>
+                </tr>
+                <tr>
+                  <td><code>--search="…"</code></td>
+                  <td>Every word must be in the entry, in any case; quotes keep a phrase together. A value that is
+                    redacted is never found</td>
+                </tr>
+                <tr>
+                  <td><code>--since=7d</code></td>
+                  <td>Minutes, hours, or days back (<code>30m</code>, <code>1h</code>, <code>7d</code>), or a date
+                    (<code>2026-10-02</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>--limit=</code></td>
+                  <td>20 by default, 100 at most</td>
+                </tr>
+                <tr>
+                  <td><code>--files</code> · <code>--file=</code></td>
+                  <td>The log files there are · another one than the file the application writes to now. A file that
+                    is not in Laravel's format has no levels and no dates: <code>--level</code> and
+                    <code>--since</code> are left out, and the answer says so</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>The answer opens with what the file holds — the count of each level and the period it covers — and
+            says <code>whole_file: false</code> when the file is larger than
+            <code>LARAPILOT_LOG_VIEWER_SCAN_MB</code> (32) and only its end was read. With no log, or nothing that
+            matches, it answers with an empty list: nothing logged is a finding too. Through MCP it is
+            <code>RunArtisanTool</code> → <code>larapilot:logs</code>. The command needs no token and is not gated
+            by the dashboard; it reads the folder of the Logs page (<code>LARAPILOT_LOG_VIEWER_PATH</code>).</p>
+
+          <h4>Health of the runtime</h4>
+          <p>App status and health checks, with a tail of the log. Same dashboard gate as the rest of the API
+            (never in production); <code>LARAPILOT_DIAGNOSTICS_ENABLED=false</code> returns <code>404</code>.</p>
 
           <div class="table-card">
             <table>
@@ -11575,7 +11721,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.0.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.0.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

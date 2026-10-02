@@ -267,7 +267,7 @@ LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS=30          # failed sign-ins per minute p
 
 ### Notes
 
-- With `dashboard_auth=YES` and **no** users configured, the dashboard returns **HTTP 500** (fail-closed) until a user is added or the setting is turned back OFF.
+- With `dashboard_auth=YES` and **no** users configured, the dashboard stays closed (**HTTP 503**) until a user is added or the setting is turned back OFF. Every page shows the same notice instead: the area is protected by the `dashboard_auth` setting, and `php artisan larapilot:dashboard-user add <username>` creates the first user. `auth.yaml` is git-ignored, so a fresh clone or a deploy starts here — add the user on each host.
 - Basic Auth transmits credentials on every request — always serve the dashboard over **HTTPS** on shared/staging hosts.
 - The dashboard is still never served in `production` regardless of this setting.
 
@@ -305,7 +305,7 @@ php artisan larapilot:settings-set --api-auth=YES
 | --- | --- | --- |
 | `NO` (default) | no | Reads open in dev/staging; writes refused outside `local`/`development`/`testing`. |
 | `NO` (default) | yes | Every request (read + write) must carry the token. |
-| `YES` | no | **HTTP 503** — the API fails closed until the token is configured. |
+| `YES` | no | **HTTP 503** — the API fails closed until the token is configured, and the answer says so: the setting that protects it and how to add the token. |
 | `YES` | yes | Every request (read + write) must carry the token. |
 
 ### Calling the API (client side)
@@ -382,7 +382,7 @@ curl -sS -H "X-Larapilot-Token: $LARAPILOT_API_TOKEN" \
 ### Notes
 
 - `api_auth=YES` protects **every** endpoint in the group — `/board`, `/specs`, `/specs/{code}`, `/specs/{code}/comments`, `/prd`, `/metrics`, **`/diagnostics`**, `/backstage`, `/backstage/catalog-info.yaml`, `/openapi.json`, and the Swagger UI at `/docs`.
-- A wrong or missing token returns **HTTP 401**; with `api_auth=YES` and no `LARAPILOT_API_TOKEN` configured on the server the endpoints return **HTTP 503** (fail-closed).
+- A wrong or missing token returns **HTTP 401**; with `api_auth=YES` and no `LARAPILOT_API_TOKEN` configured on the server the endpoints return **HTTP 503** (fail-closed): a JSON `message` that names the `api_auth` setting and tells how to add the token, or the same explanation as a page when a browser opens the API docs.
 - The token is sent on every request — always serve the API over **HTTPS** on shared/staging hosts.
 - Call the API through a server-side proxy so the token never reaches browser code.
 - The `php artisan larapilot:diagnostics` **CLI** command and the MCP `diagnostics` tool are local and need no token — only the HTTP endpoint is gated.

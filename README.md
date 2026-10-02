@@ -148,7 +148,7 @@ Published by Laravel Boost after `php artisan boost:install`:
 | `/larapilot-adopt` | Reverse-engineer a PRD from an existing production codebase |
 | `/larapilot-spec` | MoSCoW backlog from the PRD |
 | `/larapilot-feature` | Mini-inception for one enhancement |
-| `/larapilot-bug` | Bug triage → fix spec or rework, with redacted diagnostics |
+| `/larapilot-bug` | Bug triage → fix spec or rework. Reads the logs of the application every time, secrets redacted |
 | `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
 | `/larapilot-aikido` | Downloads the open security findings of **Aikido**, confirms them with you, groups them by fix, and hands each group to `/larapilot-triage` (`aikido=YES`) |
 | `/larapilot-error` | Asks which tracker records the **errors of production** — Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — when none is set, downloads the open ones, confirms them with you, groups them by place in the code, and hands each group to `/larapilot-triage` (`errors=YES`) |
@@ -457,7 +457,7 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 
 | Page | URL | What you see |
 | --- | --- | --- |
-| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included |
+| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included; **Download epics (.md)** saves the same stories as an outline — the project, each epic with its story points, its user stories with theirs, and the tasks of each with their hours |
 | PRD | `/larapilot/prd` | Rendered PRD with a **search** that looks in the PRD and nowhere else, decision journal timeline, **Download PRD (.md)**, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
 | Inception | `/larapilot/inception` | Discovery choices snapshot |
 | Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
@@ -466,6 +466,7 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | Skills | `/larapilot/skills` | Every skill the agents of the project can run, whoever brought it — the project, Larapilot, another package, Laravel Boost, a hand that dropped it into the folder of an agent — with which agent has it. Click one to **read it**. Under them, **what the agents are told**: `CLAUDE.md`, `AGENTS.md`, and the rules around them, one part for each author |
 | File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
 | Database | `/larapilot/database` | The tables and views of the database in `.env`, whatever the driver — MySQL, MariaDB, PostgreSQL, SQLite, SQL Server. Rows a page at a time with sort, search, and foreign keys that lead to the row they point at; the structure of each table; **Download SQL** for a dump of the whole database. Read only; passwords and tokens are never shown |
+| Logs | `/larapilot/logs` | The log files of the application read as entries, the newest first: by level, by period, searched, or with the repeats counted — one row for each thing logged. An exception shows where it was thrown, and the frames of your own code apart from the framework's. **Download log** for the file. Read only; passwords, tokens, and keys are shown as `[REDACTED]` |
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report |
 | Security | `/larapilot/security` · `/larapilot/security/checkpoint` | Two tabs. **Aikido**: what Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of Aikido, the page asks which one the project is. Always in the menu; with `aikido` off it says what Aikido is and how to connect it. **Checkpoint**: the last scan of [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) — verdict, checks by area (dependencies, configuration, code), every finding with its suppression hash, the trend of the scans — with **Run the scan** and **Download report (.md)**; when the package is missing it says how to install it |
@@ -511,6 +512,19 @@ The dashboard follows the system theme; pin **light** or **dark** from the sideb
 - **Download SQL** writes the whole database as one `.sql` file in the dialect of its driver — structure, every row, then indexes, keys, sequences, and views — to restore with `mysql`, `psql -f`, `sqlite3`, or `sqlcmd`. MySQL, MariaDB, and SQLite give their own `CREATE` statements; PostgreSQL is rebuilt from its catalogs like `pg_dump` (schemas, enum types, serial and identity columns with their next value); SQL Server from Laravel's schema builder. Each table and view is dropped first if it exists. It is written while it downloads, from one read-only snapshot.
 - **The dump leaves credentials out**: the hidden columns are written as `NULL`, or `''` where `NULL` is not allowed — `hidden-1`, `hidden-2`, … where a unique index holds the column, so the file still restores — and listed at the top of the file. **Include passwords and tokens** puts them in — offered only in `local`, `development`, and `testing`.
 - **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_DATABASE_VIEWER_CONNECTION` reads another connection; `LARAPILOT_DATABASE_VIEWER=false` removes the page.
+
+### Logs
+
+`/larapilot/logs` reads what the application wrote to `storage/logs` — every `.log` file, the one Laravel writes to now opened first, or the newest when it writes to none of them. It reads, and never writes.
+
+- **Entries, not lines.** An entry is what Laravel wrote between one `[date] env.LEVEL:` and the next, its stack trace included; the newest comes first. Each one shows its level and message and, for an exception, the class, **where it was thrown** as a file of the project — a path of the server is read as the file it is in this checkout — the exception that caused it, and the context as indented JSON.
+- **Your code apart from the framework's.** A stack opens on the frames of the application; the ones of the framework and the packages are one click away. A file that is in the checkout opens in the file manager.
+- **By level, by period, by words.** A level returns itself and every one more severe (*Error and worse*), and the count of each level sits above the list. The search wants every word, in any case; quotes keep a phrase together, and a class name is found with its backslashes as the page shows them or as the log doubles them. The period is the last hour, day, week, or month.
+- **Repeats counted** turns the list into one row for each thing logged — the same message with its numbers, ids, and quoted values taken out, or the same exception thrown from the same line — with how many times and since when, the most repeated first. A log where nothing repeats is counted up to 10,000 different things, and the page says so.
+- **Any size.** A file is read from its end backwards — 32 MB for a request (`LARAPILOT_LOG_VIEWER_SCAN_MB`), 50 entries to a page (`LARAPILOT_LOG_VIEWER_PER_PAGE`) — so the newest entries of a log of gigabytes come at once; **Older** and **Keep reading older** go further back, and a page stays the same however much is written after it. A file that is not in Laravel's format, such as the output of a worker, is read a line at a time.
+- **Secrets are never shown.** Passwords, tokens, keys, cookies, and `Authorization` headers are `[REDACTED]` on screen, and a search never finds one. In a context written as JSON the value under such a key is hidden whatever it is — a string, the list a header comes as, a number — and so is the JSON of a request body logged as text. A line the redaction cannot check is hidden whole. **Download log** gives the file redacted the same way, with a line longer than 1 MB cut at that size; **Secrets as written** gives it as it is, and is offered only in `local`, `development`, and `testing`.
+- **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_LOG_VIEWER_PATH` reads another folder — absolute, or from the root of the project; `LARAPILOT_LOG_VIEWER=false` removes the page. Only the `.log` files of that folder are opened, three folders deep, and a symlink is never followed.
+- **For the skills**, `php artisan larapilot:logs` reads the same files — see [Diagnostics and logs](#diagnostics-and-logs-bug-triage). `/larapilot-bug` and `/larapilot-error` run it every time.
 
 ### JSON API
 
@@ -693,9 +707,22 @@ LARAPILOT_BOOGLE_PROJECT=                          # id or title; empty = found 
 - **Writing to the tracker is asked for.** `errors-resolve` is the only command that writes there; it runs when you say so, is not allowed through the MCP tool, and refuses where nothing can be closed — CloudWatch, and the logs of Datadog.
 - **On the dashboard**, `/larapilot/errors` shows every bug with how many times it was thrown and what was decided. A tracker that records every throw also gets the chart of the last two weeks, day by day.
 
-### Diagnostics (bug triage)
+### Diagnostics and logs (bug triage)
 
-A read-only runtime snapshot — app info, health checks (`storage_writable`, `cache`, `database`, `queue`, `log_file`), and a log tail with **secrets redacted** — that never mutates workflow state.
+**The logs, read for an agent.** `php artisan larapilot:logs` reads the log files of the application as entries, with **secrets redacted**: the message, the exception and where it was thrown, and the frames of the application — not the sixty of the framework under them. `/larapilot-bug` runs it **every time**, whatever the report says, and `/larapilot-error` for every group it hands to triage.
+
+| Option | What it does |
+| --- | --- |
+| `--group` | One row for each thing logged, with how many times and since when — the most repeated first |
+| `--level=warning` | That level and every one more severe |
+| `--search="…"` | Every word must be in the entry; quotes keep a phrase together. A redacted value is never found |
+| `--since=7d` | Minutes, hours, or days back (`30m`, `1h`, `7d`), or a date |
+| `--limit=` | 20 by default, 100 at most |
+| `--files` · `--file=` | The log files there are · another one than the file the application writes to now. A file that is not in Laravel's format has no levels and no dates: `--level` and `--since` are left out, and the answer says so |
+
+It answers with what the file holds — the count of each level and the period — before the entries, and with an empty list when nothing was logged. Also through the MCP `RunArtisanTool`; on the dashboard the same reader is the [Logs](#logs) page.
+
+**The health of the runtime.** A read-only snapshot — app info, health checks (`storage_writable`, `cache`, `database`, `queue`, `log_file`), and a log tail with **secrets redacted** — that never mutates workflow state. `LARAPILOT_DIAGNOSTICS_ENABLED=false` turns it off, and `larapilot:logs` with it.
 
 | Surface | How |
 | --- | --- |
@@ -816,11 +843,11 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`, `--local`) · `aikido-push` · `aikido-repos` (`--search=`, `--use=`, `--forget`) · `aikido-register` · `aikido-scan` |
 | Errors | `errors-status` · `errors-list` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` (`--codes=`) · `errors-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `errors-resolve` (`--status=FIXED\|DONE`, `--comment=`) — old names `boogle-status` · `boogle-errors` · `boogle-plan` · `boogle-link` · `boogle-resolve` |
 | Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` |
-| Runtime | `diagnostics` (`--lines=`, `--no-logs`) |
+| Runtime | `logs` (`--group`, `--level=`, `--search=`, `--since=`, `--limit=`, `--files`, `--file=`) · `diagnostics` (`--lines=`, `--no-logs`) |
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, `prd-impact`, the forge probes, the three validators, `doctor`, `diagnostics`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `context`, `schedule-show`, `stack`, `upgrade-check`, `sbom`, `vendor-audit`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`, `vendor-audit --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, `prd-impact`, the forge probes, the three validators, `doctor`, `diagnostics`, `logs`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `context`, `schedule-show`, `stack`, `upgrade-check`, `sbom`, `vendor-audit`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`, `vendor-audit --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
 
 ---
 

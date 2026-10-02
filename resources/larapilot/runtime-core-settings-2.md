@@ -55,7 +55,7 @@ Enable with `php artisan larapilot:settings-set --comments=YES`. Details: `.lara
 Optional HTTP Basic Auth on the `/larapilot` **dashboard UI only**. OFF by default: the dashboard stays open in the allowed environments exactly as before. **Never** gates `/larapilot/api/*` (that is `LARAPILOT_API_TOKEN`) or the MCP server.
 
 - **`NO`** — **Default.** Dashboard pages require no credentials.
-- **`YES`** — Every dashboard page requires a username + password from `.larapilot/auth.yaml`. With the setting ON and **no** users configured, the dashboard returns HTTP 500 until a user is added.
+- **`YES`** — Every dashboard page requires a username + password from `.larapilot/auth.yaml`. With the setting ON and **no** users configured, the dashboard stays closed (HTTP 503) on a notice that tells how to add the first user.
 
 Credentials are argon2id/bcrypt hashes only — no database, no `User` model. `.larapilot/auth.yaml` is added to `.gitignore` automatically and must never be committed. Manage users with `php artisan larapilot:dashboard-user {list|add|remove}` (the `add` action prompts for the password, or takes `--password=`). Failed sign-ins are throttled per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). Enable the gate with `php artisan larapilot:settings-set --dashboard-auth=YES`. Setup notes: `.larapilot/integrations.md`.
 
@@ -64,7 +64,7 @@ Credentials are argon2id/bcrypt hashes only — no database, no `User` model. `.
 Makes `LARAPILOT_API_TOKEN` **mandatory** on every `/larapilot/api/*` request — the JSON API **only**. OFF by default: the token is honoured when set but the read endpoints stay open in the allowed environments when it is not. **Never** gates the `/larapilot` dashboard UI (that is `settings.dashboard_auth`) or the MCP server. The API is never served in `production` regardless.
 
 - **`NO`** — **Default.** With `LARAPILOT_API_TOKEN` set, every request must carry it (bearer token or `X-Larapilot-Token`). With no token set, reads are open in the allowed environments and mutating requests are refused outside `local`/`development`/`testing`.
-- **`YES`** — Every request — reads **and** writes — must carry `LARAPILOT_API_TOKEN`. With the setting ON and **no** token configured, the API returns **HTTP 503** (fail-closed) until the token env var is set.
+- **`YES`** — Every request — reads **and** writes — must carry `LARAPILOT_API_TOKEN`. With the setting ON and **no** token configured, the API returns **HTTP 503** (fail-closed), with a message that tells how to add it, until the token env var is set.
 
 Enable the gate with `php artisan larapilot:settings-set --api-auth=YES`. Setup notes: `.larapilot/integrations.md`.
 <!-- end -->

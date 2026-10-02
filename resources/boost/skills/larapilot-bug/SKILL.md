@@ -34,13 +34,14 @@ When `data.settings.decision_log` is `YES`, journal material user choices with `
 
 ## Config & CLI
 
-1. `php artisan larapilot:diagnostics` — optional runtime snapshot (status, health checks, redacted log tail); also via MCP `diagnostics` or `GET /larapilot/api/diagnostics` when the dashboard is browsable
-2. `php artisan larapilot:spec-list` — titles, statuses, and `cites`: the PRD ids each spec names
-3. `php artisan larapilot:spec-show US-XXX --fields=id` — when mapping to an existing spec: the body with its criteria, tasks reduced to ids
-4. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec, or re-issue of an open spec with added criteria (same code, **no `status` key**)
-5. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on a spec in `REVIEW`, the only status it accepts
-6. `php artisan larapilot:prd-show --ids=FR-XXX` — the promise the defect is measured against; the outline (no option) finds the id. Never the whole PRD
-7. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”); `php artisan larapilot:prd-impact --ids=FR-XXX` lists the other specs that rest on the promise being clarified
+1. `php artisan larapilot:logs --group --level=warning --since=7d` — **every time**: what the application logged, one row for each thing with how many times, secrets redacted. `--search="…"` narrows it (every word must be there; quotes keep a phrase), without `--group` the entries come one by one, newest first; `--files` lists the logs, `--file=` reads another. Also through the MCP `RunArtisanTool`
+2. `php artisan larapilot:diagnostics --no-logs` — the health of storage, cache, database, and queue, when the report smells of infrastructure
+3. `php artisan larapilot:spec-list` — titles, statuses, and `cites`: the PRD ids each spec names
+4. `php artisan larapilot:spec-show US-XXX --fields=id` — when mapping to an existing spec: the body with its criteria, tasks reduced to ids
+5. `php artisan larapilot:validate-spec --file=...` + `spec-add` — new fix spec, or re-issue of an open spec with added criteria (same code, **no `status` key**)
+6. `php artisan larapilot:spec-request-changes US-XXX --file=...` — rework on a spec in `REVIEW`, the only status it accepts
+7. `php artisan larapilot:prd-show --ids=FR-XXX` — the promise the defect is measured against; the outline (no option) finds the id. Never the whole PRD
+8. **PRD gap only:** `php artisan larapilot:prd-write` + `validate-prd` — clarify parent FR per **PRD Living Document** (never add “fix FRs”); `php artisan larapilot:prd-impact --ids=FR-XXX` lists the other specs that rest on the promise being clarified
 
 Append normalized intake to `{paths.support}/intake.md` (create parent dirs if needed).
 
@@ -65,7 +66,17 @@ With or without a handoff: when reproduction shows nothing ever promised this be
 
 ### 0. Context load
 
-Run `context` and `spec-list`. When the report mentions production/staging errors, stack traces, or “check the logs”, run `larapilot:diagnostics` (or MCP diagnostics) and cite relevant redacted lines in intake — do not paste secrets. Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
+Run `context` and `spec-list`.
+
+**Read the logs — every time**, whatever the report says and before any question: a defect told in words is often already written there, with its exception, its file, and its line.
+
+1. `larapilot:logs --group --level=warning --since=7d` — what went wrong lately, the most repeated first
+2. `larapilot:logs --search="{a word of the report}"` — the route, the class, or the message the report names. Nothing back → `--since=30d`, then without `--level`
+3. What matches goes into the intake entry and the fix spec: `class`, `where`, `count`, the last `time`. Open the file at `where` before Round 2
+
+The logs are the ones of **this machine**, and `env` says which environment wrote them: a production defect may have left nothing here. Nothing logged is a finding too — write `nothing logged` and go on; never stop because the log is empty or missing. Values are redacted: never ask for one, and never quote a line that names a person.
+
+Read `{paths.support}/intake.md` if it exists. Scan open specs (`REVIEW`, `IN PROGRESS`, `PLANNED`, `TODO`) for likely matches.
 
 **Already reported?** When intake already holds the same defect, add one `Occurrences` line to that entry (date, environment, reporter) and route to the spec it names — no second entry, no second spec. A defect that returns after its fix shipped is a **regression**: new entry, `**Related:**` the fix spec, severity one step up.
 
@@ -120,6 +131,7 @@ Append to `{paths.support}/intake.md`:
 - **Steps to reproduce:** ...
 - **Expected / Actual:** ...
 - **Promise broken:** FR-XXX "…" | US-XXX criterion "…" | NFR-XXX target | none — requirement gap
+- **Logs:** {class} at {where} ×{count}, last {time} ({env}) | nothing logged
 - **Affected spec:** US-XXX | —
 - **Routed to:** spec-add US-YYY | spec-request-changes US-XXX | re-issued US-XXX | logged
 - **Security:** yes/no — Lars/Oliver tagged
@@ -173,6 +185,7 @@ specs:
       **Related:** US-YYY (the spec that shipped it, or the earlier fix on a regression)
       **Traces to:** J-XXX · FR-XXX · NFR-XXX
       **Promise broken:** {{FR done-means, criterion, or NFR target — quoted}}
+      **Logged:** {{class at where ×count — or nothing logged}}
 
       **User Story**
       As a [persona],
@@ -233,6 +246,8 @@ Offer:
 **Invoke:** `/larapilot-bug "SSO login fails on Safari"`
 
 **Context:** B2B app in production; `US-003` (SSO auth) DONE; Chrome OK, Safari fails after OAuth redirect.
+
+**Logs (step 0):** `larapilot:logs --search="sso"` → `InvalidStateException` at `app/Http/Controllers/SsoController.php:41` ×38 in three days, `env` production — quoted in intake and spec.
 
 **Round 1 (Sophia):** Severity **High**; environment **Production**; security **Unsure** → tag Lars/Oliver.
 
