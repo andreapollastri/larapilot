@@ -66,6 +66,17 @@ class FileManagerService
     protected const PROJECT_HEAVY = ['vendor', 'node_modules'];
 
     /**
+     * Folders of the project root that are never shown, wherever they sit:
+     * what the framework compiles and caches. `bootstrap/cache/config.php`
+     * holds every value of `.env` resolved, `storage/framework` the sessions
+     * and the cache of the application. Neither is code, and neither is for
+     * a visitor.
+     *
+     * @var list<string>
+     */
+    protected const PROJECT_RUNTIME = ['bootstrap/cache', 'storage/framework'];
+
+    /**
      * What stands in for every value of a file that holds credentials.
      */
     public const MASK = '*****************';
@@ -135,6 +146,7 @@ class FileManagerService
 
     public function __construct(
         protected ConfigService $config,
+        protected DiagnosticsService $diagnostics,
     ) {}
 
     /**
@@ -904,21 +916,50 @@ class FileManagerService
             }
         }
 
+        $directory = '/'.implode('/', $folders).'/';
+
+        foreach (self::PROJECT_RUNTIME as $runtime) {
+            if (str_contains($directory, '/'.$runtime.'/')) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     /**
-     * A folder of the project root whose name starts with a dot: the
-     * repository, Larapilot's own state, the settings of an editor. A file
-     * that starts with a dot is a project file like any other.
+     * A folder of the project root that is left out: one whose name starts
+     * with a dot — the repository, Larapilot's own state, the settings of
+     * an editor — or one the framework fills at runtime (PROJECT_RUNTIME).
+     * A file that starts with a dot is a project file like any other.
      *
-     * @param  array{key?: string}  $root
+     * @param  array{key?: string, absolute?: string}  $root
      */
     protected function isDotFolder(array $root, string $absolute): bool
     {
-        return $this->isProject($root)
-            && str_starts_with(basename($absolute), '.')
-            && is_dir($absolute);
+        if (! $this->isProject($root) || ! is_dir($absolute)) {
+            return false;
+        }
+
+        if (str_starts_with(basename($absolute), '.')) {
+            return true;
+        }
+
+        $base = isset($root['absolute']) ? realpath($root['absolute']) : false;
+
+        if ($base === false || ! str_starts_with($absolute, $base.DIRECTORY_SEPARATOR)) {
+            return false;
+        }
+
+        $relative = '/'.str_replace(DIRECTORY_SEPARATOR, '/', substr($absolute, strlen($base) + 1));
+
+        foreach (self::PROJECT_RUNTIME as $runtime) {
+            if (str_ends_with($relative, '/'.$runtime)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -937,8 +978,10 @@ class FileManagerService
     /**
      * How a file holds its secrets, going by its name: `env`, `json`,
      * `pairs`, `netrc`, `pgpass` for named values, `key` for a key, `data`
-     * for a database. Null for every other file. A template of an env file
-     * (`.env.example`) holds no secret.
+     * for a database, `log` for a log — a log quotes what the application
+     * was holding, so it is read through the redaction of the Logs page.
+     * Null for every other file. A template of an env file (`.env.example`)
+     * holds no secret.
      */
     protected function secretKind(string $name): ?string
     {
@@ -957,6 +1000,7 @@ class FileManagerService
         return match (true) {
             in_array($extension, self::KEY_EXTENSIONS, true) => 'key',
             in_array($extension, self::DATA_EXTENSIONS, true) => 'data',
+            $extension === 'log' => 'log',
             default => null,
         };
     }
@@ -965,7 +1009,8 @@ class FileManagerService
      * The content of a file that holds credentials with every value
      * replaced by the mask. Whatever is not recognised as the name of a
      * value is masked too: a line is shown only when it is known to be
-     * harmless.
+     * harmless. A log keeps its text, with the secrets it quotes redacted
+     * the way the Logs page redacts them.
      */
     protected function mask(string $absolute): ?string
     {
@@ -987,6 +1032,20 @@ class FileManagerService
 
         $content = (string) fread($handle, self::PREVIEW_BYTES);
         fclose($handle);
+
+        if ($kind === 'log') {
+            if ($content === '') {
+                return '';
+            }
+
+            if (str_contains($content, "\0") || (! mb_check_encoding($content, 'UTF-8') && ! $this->cutMidCharacter($content))) {
+                return self::MASK."\n";
+            }
+
+            $content = str_replace(["\r\n", "\r"], "\n", mb_convert_encoding($content, 'UTF-8', 'UTF-8'));
+
+            return implode("\n", array_map(fn (string $line): string => $this->diagnostics->redact($line), explode("\n", $content)));
+        }
 
         if (str_contains($content, "\0") || ! mb_check_encoding($content, 'UTF-8')) {
             return self::MASK."\n";
@@ -1101,11 +1160,13 @@ class FileManagerService
             'path' => $relative,
             'type' => $isDirectory ? 'directory' : 'file',
             'link' => $isLink,
-            // masked: shown with its values hidden. sealed: not shown at all.
+            // masked: shown with its values hidden. redacted: a log, shown
+            // with the secrets it quotes taken out. sealed: not shown at all.
             'masked' => $secret !== null && $secret !== 'data',
+            'redacted' => $secret === 'log',
             'sealed' => $secret === 'data',
             'extension' => $extension,
-            'kind' => $isLink ? 'link' : ($isDirectory ? 'directory' : ($secret !== null ? 'secret' : $this->kind($name))),
+            'kind' => $isLink ? 'link' : ($isDirectory ? 'directory' : ($secret !== null && $secret !== 'log' ? 'secret' : $this->kind($name))),
             'size' => $isDirectory || $isLink ? 0 : (int) @filesize($absolute),
             'size_label' => $isDirectory || $isLink ? '' : $this->formatBytes((int) @filesize($absolute)),
             'items' => $isDirectory ? $this->countChildren($root, $absolute) : 0,
@@ -1148,7 +1209,7 @@ class FileManagerService
     }
 
     /**
-     * @return array{kind: string, html: string|null, text: string|null, truncated: bool, masked: bool}
+     * @return array{kind: string, html: string|null, text: string|null, truncated: bool, masked: bool, redacted: bool}
      */
     protected function preview(string $absolute): array
     {
@@ -1158,12 +1219,12 @@ class FileManagerService
             $masked = $this->mask($absolute);
 
             return $masked === null
-                ? ['kind' => 'sealed', 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false]
-                : ['kind' => 'text', 'html' => null, 'text' => $masked, 'truncated' => (int) @filesize($absolute) > self::PREVIEW_BYTES, 'masked' => true];
+                ? ['kind' => 'sealed', 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false, 'redacted' => false]
+                : ['kind' => 'text', 'html' => null, 'text' => $masked, 'truncated' => (int) @filesize($absolute) > self::PREVIEW_BYTES, 'masked' => true, 'redacted' => $secret === 'log'];
         }
 
         $kind = $this->kind(basename($absolute));
-        $empty = ['kind' => $kind, 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false];
+        $empty = ['kind' => $kind, 'html' => null, 'text' => null, 'truncated' => false, 'masked' => false, 'redacted' => false];
 
         if (in_array($kind, ['image', 'pdf', 'archive'], true)) {
             return $empty;
@@ -1191,10 +1252,10 @@ class FileManagerService
         }
 
         if ($kind === 'markdown' && ! $truncated) {
-            return ['kind' => 'markdown', 'html' => Markdown::toHtml($content), 'text' => $content, 'truncated' => false, 'masked' => false];
+            return ['kind' => 'markdown', 'html' => Markdown::toHtml($content), 'text' => $content, 'truncated' => false, 'masked' => false, 'redacted' => false];
         }
 
-        return ['kind' => 'text', 'html' => null, 'text' => $content, 'truncated' => $truncated, 'masked' => false];
+        return ['kind' => 'text', 'html' => null, 'text' => $content, 'truncated' => $truncated, 'masked' => false, 'redacted' => false];
     }
 
     /**

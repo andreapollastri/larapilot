@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Larapilot — Spec-driven AI product workflow for Laravel</title>
-  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 22 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
+  <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 29 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -5337,8 +5337,8 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
         <!-- Skills -->
         <article class="deep-dive-sub" id="deep-dive-skills">
           <h3>Skills</h3>
-          <p class="lead"><strong>Twenty-two</strong> skills cover the life of a product: discovery, delivery,
-            changes after launch, ship, and the tools around them. Each one is a <code>SKILL.md</code> file that
+          <p class="lead"><strong>Twenty-nine</strong> skills cover the life of a product: discovery, delivery,
+            changes after launch, security and upgrades, ship, and the tools around them. Each one is a <code>SKILL.md</code> file that
             names the personas who speak, the steps they follow, and the commands they may call. Laravel Boost
             publishes them into your editor on <code>php artisan boost:install</code>.</p>
           <p>Your own skills live in <code>.larapilot/skills/</code> — see
@@ -6701,9 +6701,12 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
 
           <h4 id="deep-dive-dashboard-auth">Dashboard auth <span class="chip">opt-in</span></h4>
           <p><code>settings.dashboard_auth</code> (default <code>NO</code>) puts <strong>HTTP Basic Auth</strong> in front
-            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> only. It never gates
-            <code>/larapilot/api/*</code> (that stays <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the
-            dashboard is still never served in <code>production</code>.
+            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> and of the mockups at
+            <code>/mockups</code>. It never gates <code>/larapilot/api/*</code> (that stays
+            <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the dashboard is still never served in
+            <code>production</code>. On a shared <code>staging</code> host, turn it on before anything else: with the
+            setting OFF, the board, the PRD, the specs, the git history, and the security findings are open to whoever
+            reaches the host.
           </p>
           <ul>
             <li>Credentials are argon2id/bcrypt <strong>hashes</strong> in <code>.larapilot/auth.yaml</code> — no
@@ -10687,7 +10690,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               editor and by the skills, never from a web page: an upload into <code>public/</code> on a shared
               host would be code anyone signed in could run.</li>
             <li><strong>Folders that start with a dot are left out of Project</strong> — <code>.git</code>,
-              <code>.larapilot</code>, <code>.github</code>, <code>.idea</code>, at any depth. They are not
+              <code>.larapilot</code>, <code>.github</code>, <code>.idea</code>, at any depth — and so are the
+              caches of the framework, <code>bootstrap/cache/</code> and <code>storage/framework/</code>: a cached
+              configuration holds every value of <code>.env</code>. They are not
               listed, not counted, and answer <code>404</code> by address, a link that resolves into one
               included. <strong>Files that start with a dot are shown</strong>: <code>.env.example</code>,
               <code>.gitignore</code>, <code>.editorconfig</code>. <code>vendor/</code> and
@@ -10702,7 +10707,9 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               written over several lines are masked too. A key or a certificate (<code>.pem</code>,
               <code>.key</code>, <code>.p12</code>, <code>.pfx</code>, <code>id_rsa</code>, …) is one line of
               asterisks. A database (<code>.sqlite</code>, <code>.db</code>) is listed, and neither shown nor
-              downloaded.</li>
+              downloaded. A <code>.log</code> file is shown and downloaded with the passwords, tokens, and keys
+              it quotes replaced by <code>[REDACTED]</code>, as on the Logs page, which reads it whole, by
+              entries, where the file manager shows its first 256 KB.</li>
             <li><strong>Local by default.</strong> The file manager is open in <code>local</code>,
               <code>development</code>, and <code>testing</code>. On any other environment
               (<code>staging</code>) it is served only when

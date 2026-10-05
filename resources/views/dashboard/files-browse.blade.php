@@ -512,7 +512,7 @@
         <div class="page-actions">
             @if ($readOnly)
                 @if (! $is_directory && ! $file['sealed'])
-                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? 'Download, values hidden' : 'Download' }}</a>
+                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? ($file['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}</a>
                     @if (in_array($preview['kind'], ['image', 'pdf'], true))
                         <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open</a>
                     @endif
@@ -523,7 +523,7 @@
                 <button type="button" class="btn ghost" data-dialog="folder-dialog">@include('larapilot::dashboard.partials.icon', ['name' => 'folder-plus'])New folder</button>
             @else
                 @unless ($file['sealed'])
-                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? 'Download, values hidden' : 'Download' }}</a>
+                    <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? ($file['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}</a>
                 @endunless
                 @if (in_array($preview['kind'], ['image', 'pdf'], true))
                     <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open</a>
@@ -629,7 +629,9 @@
                                         @if ($entry['packaged'])
                                             <span class="entry-tag" title="Shipped with Larapilot. larapilot:update rewrites it — keep your own system in a folder beside it.">Packaged</span>
                                         @endif
-                                        @if ($entry['masked'])
+                                        @if ($entry['redacted'])
+                                            <span class="entry-tag" title="A log: shown with the passwords, tokens, and keys it quotes replaced by [REDACTED].">Secrets redacted</span>
+                                        @elseif ($entry['masked'])
                                             <span class="entry-tag" title="Holds credentials: the names of its keys are shown, every value is hidden.">Values hidden</span>
                                         @elseif ($entry['sealed'])
                                             <span class="entry-tag" title="A database: listed, neither shown nor downloaded from here.">Not shown</span>
@@ -640,7 +642,7 @@
                                 <span class="entry-date">{{ $when($entry['modified']) }}</span>
                                 <span class="entry-actions">
                                     @if (! $isFolder && ! $entry['link'] && ! $entry['sealed'])
-                                        <a class="row-btn" href="{{ $raw($entry['path'], true) }}" title="{{ $entry['masked'] ? 'Download, values hidden' : 'Download' }}" aria-label="Download {{ $entry['name'] }}{{ $entry['masked'] ? ', values hidden' : '' }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])</a>
+                                        <a class="row-btn" href="{{ $raw($entry['path'], true) }}" title="{{ $entry['masked'] ? ($entry['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}" aria-label="Download {{ $entry['name'] }}{{ $entry['masked'] ? ($entry['redacted'] ? ', secrets redacted' : ', values hidden') : '' }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])</a>
                                     @endif
                                     @unless ($readOnly)
                                     <button type="button" class="row-btn" data-dialog="rename-dialog" data-path="{{ $entry['path'] }}" data-name="{{ $entry['name'] }}" title="Rename" aria-label="Rename {{ $entry['name'] }}">@include('larapilot::dashboard.partials.icon', ['name' => 'pencil'])</button>
@@ -674,7 +676,9 @@
                     @elseif ($preview['kind'] === 'markdown')
                         <div class="preview-markdown markdown">{!! $preview['html'] !!}</div>
                     @elseif ($preview['kind'] === 'text')
-                        @if ($preview['masked'])
+                        @if ($preview['redacted'])
+                            <p class="preview-note is-masked">@include('larapilot::dashboard.partials.icon', ['name' => 'lock'])<span>This is a log. The passwords, tokens, and keys it quotes are replaced by <code>[REDACTED]</code>, here and in the download; the first 256 KB are shown. Read it whole, by entries, on the <a href="{{ route('larapilot.dashboard.logs') }}">Logs</a> page.</span></p>
+                        @elseif ($preview['masked'])
                             <p class="preview-note is-masked">@include('larapilot::dashboard.partials.icon', ['name' => 'lock'])<span>This file holds credentials. The names of its keys are shown; every value is replaced by <code>{{ \Larapilot\Services\FileManagerService::MASK }}</code>, here and in the download.</span></p>
                         @endif
                         @if ($preview['text'] === '')

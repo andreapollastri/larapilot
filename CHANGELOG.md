@@ -2,6 +2,25 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [Unreleased]
+
+### Security
+
+- **The mockups sit behind the dashboard sign-in** — `/mockups/*` and `/mockup-assets/*` were served with the `web` middleware alone: with `dashboard_auth` ON, a confidential mockup was still open to whoever had its address, on `staging` too. Both routes now run through the same HTTP Basic Auth as `/larapilot`, and answer with `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, and a `frame-ancestors 'self'` policy, as the dashboard does.
+- **The file manager leaves the caches of the framework out** — `bootstrap/cache/` and `storage/framework/` are no longer shown under Project, at any depth: a cached configuration (`config.php`) holds every value of `.env` in clear, which the manager had hidden only in `.env` itself. Their addresses answer `404`.
+- **A log is redacted in the file manager as on the Logs page** — a `.log` file opened or downloaded through the file manager showed its passwords, tokens, and keys as the application wrote them. It is now passed through the same redaction as `/larapilot/logs`, on screen and in the download, and tagged **Secrets redacted** in the listing.
+- **The security headers replace what was there** — the middleware appended `nosniff`, `Referrer-Policy`, and `X-Frame-Options` to a header already set, which gave a browser two values to choose from; it now sets them. Only `Content-Security-Policy` is appended, so a policy of the application stays whole.
+- **An orphan asset is looked up by its literal name** — a `tokens.css` or `logo.svg` requested from the wrong folder was found with `glob()` on its unescaped name; `*`, `?`, and `[` are now escaped, and every match is checked to lie inside the mockups folder before it is served.
+
+### Changed
+
+- **Smaller package** — `.gitattributes` leaves `docs/`, `tests/`, the CI workflows, and the tooling files out of the archive Composer installs; nothing of the runtime read them.
+- **The connector help says what it means** — `larapilot:install --connector` described `file` as "only in v1"; it says it is the only connector shipped.
+
+### Docs
+
+- README: **Security** names the **logs** and **Laravel** pages among the pages that answer `404` outside local/development/testing until `dashboard_auth` is `YES`, asks for the sign-in before a shared `staging` host sees the dashboard, notes `TrustProxies` for the per-IP limits, and documents the `.env`-only switches (`LARAPILOT_ENABLED`, `_DASHBOARD_ROUTE`, `_MOCKUPS_ROUTE`, `_API_AUDIT`). **File manager** describes the redacted logs and the folders left out. The site counts the twenty-nine skills where it still said twenty-two.
+
 ## [5.0.3] - 2026-10-02
 
 ### Added

@@ -12,7 +12,7 @@ use Larapilot\Support\SharedRuntime;
 class InstallCommand extends LarapilotCommand
 {
     protected $signature = 'larapilot:install
-                            {--connector=file : Active connector (file only in v1)}
+                            {--connector=file : Active connector (`file` is the only one shipped)}
                             {--force : Overwrite existing project config}
                             {--skip-composer : Scaffold quality files only; do not run composer require}';
 

@@ -1,2 +1,15 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Left out of the archive Composer installs: the package is src, config,
+# resources, and the documents that travel with it.
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.github/ export-ignore
+/.gitignore export-ignore
+/docs/ export-ignore
+/netlify.toml export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml export-ignore
+/testbench.yaml export-ignore
+/tests/ export-ignore

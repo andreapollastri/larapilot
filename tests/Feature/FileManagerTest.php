@@ -1003,6 +1003,83 @@ it('adds, renames, and deletes in the five material folders and nowhere else', f
     });
 });
 
+it('redacts a log of the project the way the Logs page does', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        mkdir($probe.'/storage/logs', 0755, true);
+        file_put_contents($probe.'/storage/logs/laravel.log', implode("\n", [
+            '[2026-10-01 10:00:00] production.ERROR: Payment failed for order 41 {"password":"do-not-leak-1","order":41}',
+            '[2026-10-01 10:00:01] production.INFO: Authorization: Bearer do-not-leak-2',
+            '[2026-10-01 10:00:02] production.INFO: APP_KEY=base64:do-not-leak-3-aaaaaaaaaaaaaaaaaaaaaaaa',
+            '[2026-10-01 10:00:03] production.INFO: Order 41 shipped',
+            '',
+        ]));
+
+        $this->get('/larapilot/files/project/lp-probe/storage/logs')
+            ->assertOk()
+            ->assertSee('laravel.log', false)
+            ->assertSee('Secrets redacted', false)
+            ->assertDontSee('do-not-leak', false);
+
+        $this->get('/larapilot/files/project/lp-probe/storage/logs/laravel.log')
+            ->assertOk()
+            ->assertSee('Payment failed for order 41', false)
+            ->assertSee('Order 41 shipped', false)
+            ->assertSee('[REDACTED]', false)
+            ->assertSee('This is a log.', false)
+            ->assertDontSee('do-not-leak', false);
+
+        $download = $this->get('/larapilot/files/raw/project/lp-probe/storage/logs/laravel.log?download=1')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8');
+
+        expect($download->headers->get('Content-Disposition'))->toContain('attachment')
+            ->and($download->getContent())->toContain('Order 41 shipped')
+            ->and($download->getContent())->toContain('[REDACTED]')
+            ->and($download->getContent())->not->toContain('do-not-leak');
+    });
+});
+
+it('leaves the caches of the framework out of the project', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    withProjectProbe(function (string $probe): void {
+        foreach (['bootstrap/cache', 'storage/framework/sessions', 'storage/framework/cache/data'] as $folder) {
+            mkdir($probe.'/'.$folder, 0755, true);
+            file_put_contents($probe.'/'.$folder.'/inside.php', '<?php return ["key" => "do-not-leak"];');
+        }
+
+        mkdir($probe.'/bootstrap/providers', 0755, true);
+        file_put_contents($probe.'/bootstrap/providers/app.php', '<?php return [];');
+        mkdir($probe.'/storage/app', 0755, true);
+        file_put_contents($probe.'/storage/app/upload.txt', 'an upload');
+
+        $this->get('/larapilot/files/project/lp-probe/bootstrap')
+            ->assertOk()
+            ->assertSee('providers', false)
+            ->assertDontSee('>cache<', false);
+
+        $this->get('/larapilot/files/project/lp-probe/storage')
+            ->assertOk()
+            ->assertSee('>app<', false)
+            ->assertDontSee('framework', false);
+
+        foreach ([
+            '/larapilot/files/project/lp-probe/bootstrap/cache',
+            '/larapilot/files/project/lp-probe/bootstrap/cache/inside.php',
+            '/larapilot/files/raw/project/lp-probe/bootstrap/cache/inside.php',
+            '/larapilot/files/project/lp-probe/storage/framework',
+            '/larapilot/files/project/lp-probe/storage/framework/sessions/inside.php',
+            '/larapilot/files/raw/project/lp-probe/storage/framework/cache/data/inside.php',
+        ] as $url) {
+            expect($this->get($url)->getStatusCode())->toBe(404, $url);
+        }
+
+        $this->get('/larapilot/files/raw/project/lp-probe/storage/app/upload.txt?download=1')->assertOk();
+    });
+});
+
 it('keeps the zeros of a whole size', function (): void {
     $files = app(FileManagerService::class);
 

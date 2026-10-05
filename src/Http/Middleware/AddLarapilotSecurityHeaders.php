@@ -26,21 +26,25 @@ class AddLarapilotSecurityHeaders
     {
         $response = $next($request);
 
-        $response->headers->set('X-Content-Type-Options', 'nosniff', false);
-        $response->headers->set('Referrer-Policy', 'no-referrer', false);
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Referrer-Policy', 'no-referrer');
 
         // The design viewer renders the presentation index inside an iframe on
         // the dashboard itself, so that one surface has to allow same-origin
         // framing — DENY makes the browser refuse to load it.
+        // The three single-valued headers replace what the application set:
+        // a browser given two X-Frame-Options takes the stricter, and the
+        // design viewer would be refused. Several CSP headers are all
+        // enforced, so that one is added beside the application's own.
         if ($surface === 'embed') {
-            $response->headers->set('X-Frame-Options', 'SAMEORIGIN', false);
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
             $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'", false);
 
             return $response;
         }
 
         if ($surface !== 'api') {
-            $response->headers->set('X-Frame-Options', 'DENY', false);
+            $response->headers->set('X-Frame-Options', 'DENY');
         }
 
         return $response;

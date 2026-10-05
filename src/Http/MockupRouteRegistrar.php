@@ -6,6 +6,8 @@ namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
 use Larapilot\Http\Controllers\MockupController;
+use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
+use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
 
 class MockupRouteRegistrar
@@ -17,7 +19,15 @@ class MockupRouteRegistrar
         }
 
         $prefix = trim((string) config('larapilot.mockups_route.prefix', 'mockups'), '/');
-        $middleware = config('larapilot.mockups_route.middleware', ['web']);
+
+        // A mockup is a page of the project shown to whoever may see the
+        // dashboard: the same sign-in, when it is on. The Design page frames
+        // it, so framing from this origin stays allowed.
+        $middleware = [
+            ...(array) config('larapilot.mockups_route.middleware', ['web']),
+            AddLarapilotSecurityHeaders::class.':embed',
+            EnsureDashboardAuthorized::class,
+        ];
 
         Route::middleware($middleware)
             ->prefix($prefix)

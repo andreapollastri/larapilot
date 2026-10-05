@@ -449,11 +449,13 @@ php artisan larapilot:settings-set --release-mode=YES --comments=YES
 
 The YAML wins for workflow settings; Laravel config only provides the defaults at install. Machine-specific paths (like an external frontend repo) live in `.env`, never in committed YAML.
 
+A few switches live in `.env` alone, because they decide what the package registers before any YAML is read: `LARAPILOT_ENABLED=false` keeps the package to its Artisan commands (no routes, no views, no MCP server, no recorders); `LARAPILOT_DASHBOARD_ROUTE=false` and `LARAPILOT_MOCKUPS_ROUTE=false` leave the dashboard and the mockups unregistered; `LARAPILOT_API_AUDIT=false` stops the audit log of the API (`LARAPILOT_API_AUDIT_FILE` moves it). Every other variable is documented beside its key in `config/larapilot.php`, and the ones of the integrations in `.larapilot/integrations.md` after install.
+
 ---
 
 ## Dashboard & API (dev/staging)
 
-Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — **never in production**.
+Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — **never in production**. On `staging` the board, the PRD, the specs, the git history, the security findings, and the production errors are open to whoever reaches the host until `dashboard_auth` is `YES`: on a shared staging host, create a user and turn the sign-in on before anything else ([Security](#security)). The mockups at `/mockups` follow the same sign-in.
 
 | Page | URL | What you see |
 | --- | --- | --- |
@@ -495,8 +497,8 @@ The dashboard follows the system theme; pin **light** or **dark** from the sideb
 | `./` — **Project** | The Laravel application itself: code, config, routes, tests. **Read only** |
 
 - **Adding, renaming, and deleting** files and folders work in the five material folders. **Project is read only**: you browse, preview, and download; the routes that write do not know the folder and the service refuses a write to it.
-- **Folders that start with a dot are left out of Project** — `.git`, `.larapilot`, `.github`, `.idea`, at any depth. Files that start with a dot are shown. `vendor/` and `node_modules/` can be opened and are left out of the count.
-- **Credentials show their keys, never their values.** `.env`, `.env.*`, `auth.json`, `.npmrc`, `.netrc`, `.pgpass` are shown with every value replaced by `*****************`, on screen and in the download; a template such as `.env.example` is shown as it is. A key or certificate is one line of asterisks; a database (`.sqlite`, `.db`) is listed and neither shown nor downloaded.
+- **Folders that start with a dot are left out of Project** — `.git`, `.larapilot`, `.github`, `.idea`, at any depth — and so are the caches of the framework, `bootstrap/cache/` and `storage/framework/`: a cached configuration holds every value of `.env`. Files that start with a dot are shown. `vendor/` and `node_modules/` can be opened and are left out of the count.
+- **Credentials show their keys, never their values.** `.env`, `.env.*`, `auth.json`, `.npmrc`, `.netrc`, `.pgpass` are shown with every value replaced by `*****************`, on screen and in the download; a template such as `.env.example` is shown as it is. A key or certificate is one line of asterisks; a database (`.sqlite`, `.db`) is listed and neither shown nor downloaded. A `.log` file is shown and downloaded with the passwords, tokens, and keys it quotes replaced by `[REDACTED]`, as on the [Logs](#logs) page — which reads a log whole, by entries, where the file manager shows its first 256 KB.
 - **A PDF is read in the page**: one page or two side by side, zoom, page jump, full screen. The reader is PDF.js from cdnjs, checked against its hash; where it cannot load, the file opens in its own tab.
 - **Upload a folder** and it keeps its structure; an existing file is kept unless **Replace existing files** is on. One file is limited by `LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB` (default 50 MB) and by PHP's `upload_max_filesize` / `post_max_size`, whichever is lower.
 - **Local by default.** The file manager is open in `local`, `development`, and `testing`. On any other environment (`staging`) it is served only when `dashboard_auth` is `YES` — client documents and legacy snapshots stay behind a sign-in.
@@ -627,9 +629,10 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 | **Aikido** — the findings of [Aikido](https://www.aikido.dev/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--aikido=YES` |
 | **Production errors** — what the running application throws, read from [Boogle](https://boogle.web.ap.it/), Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch, in triage and on the dashboard | OFF | a credential that reads the tracker in `.env`, then `--errors=YES --errors-provider=…` |
 
-- Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min). The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
+- Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min) — behind a load balancer or a CDN, make sure the application trusts the proxy (`TrustProxies`), or every visitor shares one address. The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
+- **Turn the sign-in on before a shared staging host sees the dashboard.** With `dashboard_auth` OFF, `staging` serves the board, the PRD, the specs, the git history, the security findings, and the production errors to whoever reaches the host. `larapilot:dashboard-user add` and `--dashboard-auth=YES` close it; the mockups at `/mockups` and their assets sit behind the same sign-in and are served with `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, and a `frame-ancestors 'self'` policy.
 - Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
-- The dashboard **file manager** and **database** pages are stricter than the rest of the UI: outside local/development/testing they answer `404` — reads and writes alike — until `dashboard_auth` is `YES`.
+- The dashboard **file manager**, **database**, **logs**, and **Laravel** pages are stricter than the rest of the UI: outside local/development/testing they answer `404` — reads and writes alike — until `dashboard_auth` is `YES`. Mail and dumps are recorded only in `local` and `development` unless `LARAPILOT_LARAVEL_VIEWER_MAIL` / `_DUMPS` say otherwise.
 - With `security_scan=YES`, review and ship run `larapilot:checkpoint-scan`: `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles the scanner; with the setting off it runs only when someone asks — the command, or **Run the scan** on the dashboard. The result stays in `.larapilot/cache/checkpoint/`, out of git: the details can quote code.
 
 ### Checkpoint and the SBOM

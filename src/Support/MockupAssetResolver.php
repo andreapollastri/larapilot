@@ -206,15 +206,19 @@ class MockupAssetResolver
             return null;
         }
 
-        foreach (glob($this->mockupsRoot().DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.$filename) ?: [] as $match) {
-            if (is_file($match)) {
-                return $match;
+        // The name is matched as written: `*`, `?`, `[` in it are characters,
+        // not patterns.
+        $pattern = str_replace(['\\', '*', '?', '['], ['\\\\', '\*', '\?', '\['], $filename);
+
+        foreach (glob($this->mockupsRoot().DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.$pattern) ?: [] as $match) {
+            if (($contained = $this->containedMockupFile($match)) !== null) {
+                return $contained;
             }
         }
 
-        foreach (glob($this->mockupsRoot().DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.$filename) ?: [] as $match) {
-            if (is_file($match)) {
-                return $match;
+        foreach (glob($this->mockupsRoot().DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.'*'.DIRECTORY_SEPARATOR.$pattern) ?: [] as $match) {
+            if (($contained = $this->containedMockupFile($match)) !== null) {
+                return $contained;
             }
         }
 
@@ -224,12 +228,28 @@ class MockupAssetResolver
 
         /** @var SplFileInfo $file */
         foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getFilename() === $filename) {
-                return $file->getPathname();
+            if ($file->isFile() && $file->getFilename() === $filename && ($contained = $this->containedMockupFile($file->getPathname())) !== null) {
+                return $contained;
             }
         }
 
         return $this->resolveDesignSystemsFileByBasename($filename);
+    }
+
+    /**
+     * A match under the mockups folder, resolved: a link that leads out of
+     * the folder is not served from it.
+     */
+    protected function containedMockupFile(string $match): ?string
+    {
+        $root = realpath($this->mockupsRoot());
+        $real = realpath($match);
+
+        if ($root === false || $real === false || ! is_file($real) || ! str_starts_with($real, $root.DIRECTORY_SEPARATOR)) {
+            return null;
+        }
+
+        return $real;
     }
 
     public function isAbsoluteReference(string $reference): bool
