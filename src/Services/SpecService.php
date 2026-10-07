@@ -10,6 +10,7 @@ use Larapilot\Support\FileLock;
 use Larapilot\Support\PlanDate;
 use Larapilot\Support\PrdIds;
 use Larapilot\Support\SpecCode;
+use Larapilot\Support\SpecStatusLine;
 use Symfony\Component\Yaml\Yaml;
 
 class SpecService
@@ -421,6 +422,7 @@ class SpecService
             }
 
             $spec['status'] = $status;
+            $spec['body'] = SpecStatusLine::write((string) ($spec['body'] ?? ''), $status);
             $spec['status_history'] = array_merge(
                 is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
                 [['status' => $status, 'at' => now()->toIso8601String()]]
@@ -451,7 +453,7 @@ class SpecService
 
             $todoStatus = $this->config->status('todo');
 
-            $spec['body'] = $body;
+            $spec['body'] = SpecStatusLine::write($body, $todoStatus);
             $spec['status'] = $todoStatus;
             $spec['rework'] = true;
             $spec['status_history'] = array_merge(
@@ -487,6 +489,7 @@ class SpecService
             $doneStatus = $this->config->status('done');
 
             $spec['status'] = $doneStatus;
+            $spec['body'] = SpecStatusLine::write((string) ($spec['body'] ?? ''), $doneStatus);
             $spec['status_history'] = array_merge(
                 is_array($spec['status_history'] ?? null) ? $spec['status_history'] : [],
                 [['status' => $doneStatus, 'at' => now()->toIso8601String()]]

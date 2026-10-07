@@ -7,6 +7,14 @@
   <meta name="description" content="Spec-driven Laravel workflow via Laravel Boost. 30 personas, 29 /larapilot-* skills plus your own custom skills, developer domain docs, Economics pricing tool, Lucille usage ledger, optional forges, trackers, Backstage and chat notifications." />
   <meta name="theme-color" content="#e03a2d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Larapilot — Spec-driven AI product workflow for Laravel" />
+  <meta property="og:description" content="From product idea to reviewed Laravel code: PRD, backlog, plans, code, and tests through /larapilot-* skills, and a dashboard your app serves at /larapilot." />
+  <meta property="og:url" content="https://larapilot.web.ap.it/" />
+  <meta property="og:image" content="https://larapilot.web.ap.it/img/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -237,23 +245,23 @@
       animation: rise 0.75s 0.08s ease both;
     }
 
-    .hero-content > p {
+    .hero-copy > p {
       color: rgba(241, 234, 230, 0.72);
       max-width: 36rem;
       font-size: 1.05rem;
       animation: rise 0.75s 0.14s ease both;
     }
 
-    .hero-content > p a {
+    .hero-copy > p a {
       color: var(--phosphor);
       font-weight: 600;
       text-decoration: none;
       border-bottom: 1px solid rgba(255, 143, 122, 0.35);
     }
 
-    .hero-content > p a:hover { border-bottom-color: var(--phosphor); }
+    .hero-copy > p a:hover { border-bottom-color: var(--phosphor); }
 
-    .hero-content > p code {
+    .hero-copy > p code {
       font-size: 0.88em;
       background: rgba(255, 255, 255, 0.08);
       padding: 0.12em 0.35em;
@@ -538,6 +546,10 @@
       padding: 0.12em 0.35em;
       border-radius: 3px;
     }
+
+    .docs-main :not(pre) > code { overflow-wrap: anywhere; }
+
+    .docs-main pre { overflow-x: auto; }
 
     .docs-main pre code {
       background: none;
@@ -1158,6 +1170,138 @@
 
     .cta-band p { margin-bottom: 1rem; color: var(--muted); }
 
+    /* Studio — the card wears Studio's own lime, not the coral of this site */
+    .studio-card {
+      --studio-ink: #111a08;
+      --studio-lime: #a3e635;
+      --studio-glow: #bef264;
+      position: relative;
+      margin: 1.35rem 0 1.6rem;
+      padding: 1.75rem 1.75rem 1.6rem;
+      background:
+        radial-gradient(120% 90% at 100% 0%, rgba(163, 230, 53, 0.16), transparent 60%),
+        var(--studio-ink);
+      color: #e7eedb;
+      border: 1px solid rgba(163, 230, 53, 0.28);
+      box-shadow: 0 30px 60px -36px rgba(17, 26, 8, 0.9);
+      overflow: hidden;
+    }
+
+    .studio-card-head {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .studio-card-head svg { width: 2.75rem; height: 2.75rem; flex-shrink: 0; }
+
+    .studio-card-brand {
+      display: block;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.6rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+    }
+
+    .studio-card-brand span { color: var(--studio-lime); }
+
+    .studio-card-kicker {
+      display: block;
+      margin-top: 0.3rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(190, 242, 100, 0.75);
+    }
+
+    .docs-main .studio-card h3 {
+      margin: 0 0 0.6rem;
+      font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+      letter-spacing: -0.03em;
+      color: #ffffff;
+    }
+
+    .docs-main .studio-card p,
+    .docs-main .studio-card li { color: rgba(231, 238, 219, 0.82); }
+
+    .docs-main .studio-card strong { color: #ffffff; }
+
+    .docs-main .studio-card code {
+      background: rgba(163, 230, 53, 0.12);
+      color: var(--studio-glow);
+    }
+
+    .docs-main .studio-card a:not(.btn) {
+      color: var(--studio-glow);
+      border-bottom-color: rgba(190, 242, 100, 0.35);
+    }
+
+    .studio-card-points {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem 1.5rem;
+      list-style: none;
+      margin: 1.25rem 0 1.4rem !important;
+    }
+
+    .docs-main .studio-card-points li {
+      margin: 0;
+      padding-left: 1.1rem;
+      position: relative;
+      font-size: 0.95rem;
+    }
+
+    .studio-card-points li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--studio-lime);
+    }
+
+    .studio-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .docs-main .studio-card a.btn { border: 1px solid transparent; }
+
+    .docs-main .studio-card a.btn-studio {
+      background: var(--studio-lime);
+      border-color: var(--studio-lime);
+      color: var(--studio-ink);
+    }
+
+    .docs-main .studio-card a.btn-studio:hover {
+      background: var(--studio-glow);
+      border-color: var(--studio-glow);
+    }
+
+    .docs-main .studio-card a.btn-ghost {
+      color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .docs-main .studio-card a.btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    @media (max-width: 720px) {
+      .studio-card { padding: 1.35rem 1.1rem 1.25rem; }
+      .studio-card-points { grid-template-columns: minmax(0, 1fr); }
+      .studio-card-actions .btn { flex: 1 1 100%; }
+    }
+
     footer {
       border-top: 1px solid var(--line);
       padding: 2rem 1.5rem 2.75rem;
@@ -1177,7 +1321,8 @@
 
     @media (max-width: 880px) {
       .docs {
-        grid-template-columns: 1fr;
+        /* minmax, not 1fr: a long command or path must not widen the page. */
+        grid-template-columns: minmax(0, 1fr);
         gap: 1.5rem;
         padding-top: 2.5rem;
       }
@@ -1671,6 +1816,208 @@
       .search-hit { animation: none; outline: 2px solid var(--signal); }
     }
 
+
+    /* Screenshots — taken on Fernway, the demo app of these pages */
+    .shot {
+      margin: 1.35rem 0 1.6rem;
+    }
+
+    .shot-frame {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--line);
+      box-shadow: 0 1px 0 rgba(28, 20, 18, 0.04), 0 22px 44px -30px rgba(28, 20, 18, 0.55);
+      overflow: hidden;
+    }
+
+    .shot-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.5rem 0.75rem;
+      background: #eef1f3;
+      border-bottom: 1px solid #dfe4e8;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: #5c6670;
+      white-space: nowrap;
+    }
+
+    .shot-bar i {
+      width: 0.58rem;
+      height: 0.58rem;
+      border-radius: 50%;
+      background: #cfd6dc;
+      flex-shrink: 0;
+    }
+
+    .shot-bar span {
+      min-width: 0;
+      margin-left: 0.6rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: zoom-in;
+    }
+
+    .shot figcaption {
+      margin-top: 0.65rem;
+      font-size: 0.93rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .shot figcaption strong { color: var(--ink-soft); }
+    .shot figcaption code { font-size: 0.85em; }
+
+    .shot-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      margin: 1.35rem 0 1.6rem;
+    }
+
+    .shot-row .shot { margin: 0; }
+
+    .shot-phones {
+      display: grid;
+      grid-template-columns: minmax(0, 1.9fr) minmax(0, 0.62fr) minmax(0, 0.62fr);
+      gap: 1.25rem;
+      align-items: end;
+      margin: 1.35rem 0 1.6rem;
+    }
+
+    .shot-phones .shot { margin: 0; }
+    .shot.phone .shot-frame { border-radius: 1.1rem; border: 6px solid var(--ink); }
+
+    /* Hero */
+    .hero-shot {
+      margin-top: 2.5rem;
+      max-width: 46rem;
+      animation: rise 0.85s 0.3s ease both;
+    }
+
+    .hero-shot .shot-frame {
+      border-color: rgba(255, 143, 122, 0.3);
+      box-shadow: 0 0 0 6px rgba(255, 143, 122, 0.06), 0 40px 80px -30px rgba(0, 0, 0, 0.85);
+    }
+
+    .hero-shot figcaption {
+      margin-top: 0.7rem;
+      font-size: 0.88rem;
+      color: rgba(241, 234, 230, 0.55);
+    }
+
+    .hero-shot figcaption a {
+      color: var(--phosphor);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 143, 122, 0.35);
+    }
+
+    @media (min-width: 1100px) {
+      .hero-content {
+        display: grid;
+        grid-template-columns: minmax(0, 33rem) minmax(0, 1fr);
+        gap: 3.5rem;
+        align-items: center;
+      }
+
+      .hero-shot {
+        margin: 0 -14rem 0 0;
+        max-width: none;
+      }
+    }
+
+    /* Tour */
+    .tour-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 1.25rem 0 0.25rem;
+    }
+
+    .tour-tabs button {
+      font: 600 0.9rem var(--sans);
+      color: var(--ink-soft);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 0.42rem 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .tour-tabs button:hover { border-color: var(--ink-soft); }
+
+    .tour-tabs button[aria-selected="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--white);
+    }
+
+    .tour-tabs button:focus-visible,
+    .shot img:focus-visible {
+      outline: 2px solid var(--signal);
+      outline-offset: 2px;
+    }
+
+    .tour-panel[hidden] { display: none; }
+
+    /* Lightbox */
+    .lightbox {
+      width: min(96vw, 1600px);
+      max-width: none;
+      max-height: 94vh;
+      margin: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .lightbox::backdrop { background: rgba(18, 14, 13, 0.86); }
+
+    .lightbox img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 86vh;
+      object-fit: contain;
+      background: var(--white);
+      cursor: zoom-out;
+    }
+
+    .lightbox p {
+      margin-top: 0.6rem;
+      color: rgba(241, 234, 230, 0.8);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .lightbox button {
+      position: absolute;
+      top: -2.4rem;
+      right: 0;
+      font: 600 0.9rem var(--sans);
+      color: var(--white);
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 720px) {
+      .shot-row { grid-template-columns: minmax(0, 1fr); }
+      .shot-phones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .shot-phones .shot:first-child { grid-column: 1 / -1; }
+      .shot-bar span { font-size: 0.68rem; }
+      .tour-tabs { gap: 0.3rem; }
+      .tour-tabs button { font-size: 0.84rem; padding: 0.32rem 0.6rem; }
+    }
   </style>
 </head>
 <body>
@@ -1716,7 +2063,9 @@
     </div>
     <div class="nav-links" id="nav-links">
       <a href="#quickstart">Quickstart</a>
+      <a href="#tour">Tour</a>
       <a href="#how-it-works">How to use</a>
+      <a href="#studio">Studio</a>
       <a href="#examples">Examples</a>
       <a href="#deep-dive">Deep Dive</a>
       <a class="nav-cta" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a>
@@ -1729,7 +2078,8 @@
   <header class="hero">
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.3</a></div>
+      <div class="hero-copy">
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.4</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -1745,6 +2095,14 @@
         <a class="btn btn-ghost" href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">View on GitHub</a>
       </div>
       <p class="hero-tagline">The agent proposes. <strong>You approve what ships.</strong> Human-in-the-loop, always.</p>
+      </div>
+      <figure class="shot hero-shot">
+        <div class="shot-frame">
+          <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot</span></div>
+          <img src="img/dashboard/board.webp" width="2160" height="1350" fetchpriority="high" decoding="async" alt="The Board page of the Larapilot dashboard: sixteen user stories of a demo app in five columns, from TODO to DONE">
+        </div>
+        <figcaption>The board of Fernway, a demo app built with Larapilot. <a href="#tour">Take the tour</a></figcaption>
+      </figure>
     </div>
     <div class="hero-terminal" aria-hidden="true">
       <div class="hero-terminal-inner" id="hero-terminal"></div>
@@ -1756,7 +2114,9 @@
       <div class="docs-nav-label">Start</div>
       <a href="#quickstart">Quickstart</a>
       <a href="#concepts">Concepts</a>
+      <a href="#tour">Tour</a>
       <a href="#how-it-works">How to use</a>
+      <a href="#studio">Studio</a>
       <a href="#v5">Version 5 vs 4</a>
 
       <div class="docs-nav-label">Examples</div>
@@ -2077,6 +2437,128 @@
           app serves at <code>/larapilot</code>, not in YAML.</p>
       </section>
 
+      <!-- Tour -->
+      <section class="doc-section" id="tour">
+        <div class="section-header">
+          <span class="section-label">Tour</span>
+          <h2>The dashboard, on a real app</h2>
+          <p>Every picture on this site comes from <strong>Fernway</strong>, a class-booking app for independent
+            gyms built for these pages with Larapilot itself: a PRD, sixteen stories in five epics, one release
+            shipped and one under way, three developers and a product owner, five weeks of commits. The pages
+            are what <code>/larapilot</code> serves on it — nothing redrawn. Click a picture to see it full size.</p>
+        </div>
+
+        <div class="tour" data-tour>
+          <div class="tour-tabs" role="tablist" aria-label="Dashboard pages">
+            <button type="button" role="tab" id="tour-tab-board" aria-controls="tour-board" aria-selected="true">Board</button>
+            <button type="button" role="tab" id="tour-tab-spec" aria-controls="tour-spec" aria-selected="false" tabindex="-1">Spec</button>
+            <button type="button" role="tab" id="tour-tab-plan" aria-controls="tour-plan" aria-selected="false" tabindex="-1">Plan</button>
+            <button type="button" role="tab" id="tour-tab-design" aria-controls="tour-design" aria-selected="false" tabindex="-1">Design</button>
+            <button type="button" role="tab" id="tour-tab-usage" aria-controls="tour-usage" aria-selected="false" tabindex="-1">Usage</button>
+            <button type="button" role="tab" id="tour-tab-economics" aria-controls="tour-economics" aria-selected="false" tabindex="-1">Economics</button>
+            <button type="button" role="tab" id="tour-tab-database-diagram" aria-controls="tour-database-diagram" aria-selected="false" tabindex="-1">Database</button>
+            <button type="button" role="tab" id="tour-tab-logs" aria-controls="tour-logs" aria-selected="false" tabindex="-1">Logs</button>
+            <button type="button" role="tab" id="tour-tab-laravel-mail" aria-controls="tour-laravel-mail" aria-selected="false" tabindex="-1">Laravel</button>
+            <button type="button" role="tab" id="tour-tab-git" aria-controls="tour-git" aria-selected="false" tabindex="-1">Git</button>
+          </div>
+          <figure class="shot tour-panel" id="tour-board" role="tabpanel" aria-labelledby="tour-tab-board">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot</span></div>
+              <img src="img/dashboard/board.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Board: sixteen stories by status, with points, priority, task progress, and merge commits">
+            </div>
+            <figcaption><strong>Board.</strong> Sixteen stories by status: three to do, two planned, two in progress, one waiting for review with a blocking comment, eight done with the merge that closed each one. <a href="#deep-dive-dashboard-board">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-spec" role="tabpanel" aria-labelledby="tour-tab-spec">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/specs/US-006</span></div>
+              <img src="img/dashboard/spec.webp" width="2160" height="1500" loading="lazy" decoding="async" alt="A spec in review: header, user story, acceptance criteria, and the mockup that covers it">
+            </div>
+            <figcaption><strong>Spec detail.</strong> US-006 in review, as the spec skill wrote it: header, story, acceptance criteria, then the mockup of the full class, the plan, the tasks, and the comments of the team. <a href="#deep-dive-dashboard-spec">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-plan" role="tabpanel" aria-labelledby="tour-tab-plan">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/plan</span></div>
+              <img src="img/dashboard/plan.webp" width="2160" height="1500" loading="lazy" decoding="async" alt="The Plan: milestones by release and a Gantt of epics and specs with a today marker">
+            </div>
+            <figcaption><strong>Plan.</strong> Release 0.1.0 shipped, so its milestone is done; 0.2.0 is on track for 16 October, with the waitlist in review and two stories under way today. <a href="#deep-dive-dashboard-plan">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-design" role="tabpanel" aria-labelledby="tour-tab-design">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/design</span></div>
+              <img src="img/dashboard/design.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Design gallery: live previews of the mockup screens of the member app">
+            </div>
+            <figcaption><strong>Design.</strong> The member booking flow drawn by <code>/larapilot-design</code>, every screen a live preview tagged with the stories it covers. <a href="#deep-dive-dashboard-design">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-usage" role="tabpanel" aria-labelledby="tour-tab-usage">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/usage</span></div>
+              <img src="img/dashboard/usage.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Usage: estimated hours against build time for every delivered spec">
+            </div>
+            <figcaption><strong>Usage.</strong> Lucille&#39;s ledger and <em>Estimate vs build</em>: the hours each delivered story was planned at, against the time it was in progress — read from the backlog, not logged by hand. <a href="#deep-dive-dashboard-usage">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-economics" role="tabpanel" aria-labelledby="tour-tab-economics">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/economics</span></div>
+              <img src="img/dashboard/economics.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Economics: the short answer on price, margin per customer, and break-even">
+            </div>
+            <figcaption><strong>Economics.</strong> Fernway priced as a subscription by a UK limited company: what the build costs, what one customer leaves each month, how many cover the bills. <a href="#deep-dive-dashboard-economics">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-database-diagram" role="tabpanel" aria-labelledby="tour-tab-database-diagram">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/database?view=diagram</span></div>
+              <img src="img/dashboard/database-diagram.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Database diagram: seventeen tables with their columns and foreign keys">
+            </div>
+            <figcaption><strong>Database.</strong> The seventeen tables of the app as a diagram, foreign keys drawn column to column — laid out on the server, plain SVG, also as a PDF. <a href="#deep-dive-dashboard-database">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-logs" role="tabpanel" aria-labelledby="tour-tab-logs">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/logs</span></div>
+              <img src="img/dashboard/logs.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Logs page with an exception opened on the frames of the application">
+            </div>
+            <figcaption><strong>Logs.</strong> An exception opened on where it was thrown in the application; the nineteen frames of the framework stay one click away. <a href="#deep-dive-dashboard-logs">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-laravel-mail" role="tabpanel" aria-labelledby="tour-tab-laravel-mail">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/laravel/mail</span></div>
+              <img src="img/dashboard/laravel-mail.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="A booking confirmation kept by the Laravel page: headers, mailable, request, and message">
+            </div>
+            <figcaption><strong>Laravel.</strong> A booking confirmation as it left the app: who it went to, the mailable that built it, the request that sent it, and the message in a frame that runs no script. <a href="#deep-dive-dashboard-laravel">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-git" role="tabpanel" aria-labelledby="tour-tab-git">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/git</span></div>
+              <img src="img/dashboard/git.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Git history: Gitflow branches, pull request merges, and commits tagged with their stories">
+            </div>
+            <figcaption><strong>Git.</strong> Gitflow as the history draws it: stories merged into <code>release/0.2.0</code> by pull request, two feature branches under way, every commit tagged with its story. <a href="#deep-dive-dashboard-git">More</a></figcaption>
+          </figure>
+        </div>
+
+        <h3>Light, dark, and a phone</h3>
+        <p>The dashboard follows the system theme, or the switch at the bottom of the sidebar, and every page
+          works at the width of a phone.</p>
+        <div class="shot-phones">
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot</span></div>
+              <img src="img/dashboard/board-dark.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Board in dark mode">
+            </div>
+            <figcaption>The board in dark mode.</figcaption>
+          </figure>
+          <figure class="shot phone">
+            <div class="shot-frame">
+              <img src="img/dashboard/board-mobile.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The Board on a phone">
+            </div>
+            <figcaption>The board on a phone.</figcaption>
+          </figure>
+          <figure class="shot phone">
+            <div class="shot-frame">
+              <img src="img/dashboard/spec-mobile.webp" width="780" height="1688" loading="lazy" decoding="async" alt="A spec on a phone">
+            </div>
+            <figcaption>A spec on a phone.</figcaption>
+          </figure>
+        </div>
+      </section>
+
       <!-- How it works -->
       <section class="doc-section" id="how-it-works">
         <div class="section-header">
@@ -2329,6 +2811,106 @@
         <p>Two MCP servers run beside the skills: <strong>Laravel Boost</strong> gives the agent Laravel context
           (docs search, schema, Tinker) and <strong>Larapilot</strong> gives it the workflow (backlog, specs,
           diagnostics, read-only Artisan). See <a href="#deep-dive-cli">Artisan CLI → MCP server</a>.</p>
+      </section>
+
+      <!-- Studio -->
+      <section class="doc-section" id="studio">
+        <div class="section-header">
+          <span class="section-label">Studio</span>
+          <h2>Larapilot for the whole team, in a browser</h2>
+          <p>Larapilot runs where your agent runs: an editor or a terminal. Not everyone on a product team opens one.
+            <strong>Studio</strong> puts the same skills, the same backlog, and the same approvals on a server,
+            behind a web page — for the product manager who decides, the developer who builds, and the client who
+            follows.</p>
+        </div>
+
+        <aside class="studio-card" aria-labelledby="studio-card-title">
+          <div class="studio-card-head">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <rect width="32" height="32" rx="7" fill="#111a08" stroke="rgba(163,230,53,0.35)" stroke-width="0.6" />
+              <g fill="#a3e635">
+                <circle cx="10.5" cy="17.5" r="5.5" />
+                <circle cx="17" cy="13" r="7" />
+                <circle cx="23.5" cy="17.5" r="5" />
+                <rect x="5" y="18.5" width="23.5" height="6.5" rx="3.25" />
+              </g>
+              <g fill="#111a08">
+                <circle cx="17" cy="9.2" r="1.1" />
+                <rect x="16.4" y="10" width="1.2" height="2.2" rx=".6" />
+                <rect x="9.9" y="15.2" width="1.8" height="3.2" rx=".8" />
+                <rect x="22.3" y="15.2" width="1.8" height="3.2" rx=".8" />
+                <rect x="11.8" y="12" width="10.4" height="9.2" rx="2.4" />
+              </g>
+              <g fill="#a3e635">
+                <circle cx="14.9" cy="15.6" r="1.25" />
+                <circle cx="19.1" cy="15.6" r="1.25" />
+                <rect x="14.6" y="18.4" width="4.8" height="1.15" rx=".575" />
+              </g>
+            </svg>
+            <div>
+              <span class="studio-card-brand">studio<span>.</span></span>
+              <span class="studio-card-kicker">By the author of Larapilot · Open source · MIT</span>
+            </div>
+          </div>
+          <h3 id="studio-card-title">Talk to your Laravel project. Approve what ships.</h3>
+          <p>One Ubuntu server, one script, one wildcard DNS record. Every person on the team gets a workspace on that
+            server — their clone, their database, <strong>their own Claude Code</strong> — and a chat that runs the
+            Larapilot skills of the project. You ask in plain words; Claude writes the story, plans it, implements it
+            on a branch, and opens the pull request, while the live preview of that branch sits beside the chat.
+            Nothing to install on a laptop but a browser.</p>
+          <ul class="studio-card-points">
+            <li><strong>The loop, as buttons.</strong> New idea, Feedback, Status, and Approve under the chat; every
+              <code>/larapilot-*</code> skill, and every skill of the project, typed as a slash command.</li>
+            <li><strong>The backlog beside the chat.</strong> Board, preview, changes, files, and a terminal in one
+              pane; the site of the project serves <code>/larapilot</code> to the team signed in to Studio.</li>
+            <li><strong>Projects born with Larapilot.</strong> A repository Studio creates gets Laravel, Laravel
+              Boost, and Larapilot, installed and committed; an existing one that runs Larapilot is cloned as it
+              is.</li>
+            <li><strong>Four roles, one Claude per person.</strong> Administrator, PM, developer, client. Each
+              conversation runs on that person's own Claude plan, so usage and cost stay attributable.</li>
+            <li><strong>The forges Larapilot knows.</strong> GitHub, GitLab, Bitbucket, or Azure DevOps. A push to the
+              deploy branch redeploys the site; every workspace has its own preview over HTTPS.</li>
+            <li><strong>It keeps itself current.</strong> Updates from its System page or every night, from the
+              stable releases or the beta channel.</li>
+          </ul>
+          <div class="studio-card-actions">
+            <a class="btn btn-studio" href="https://studio.web.ap.it/" target="_blank" rel="noopener">Discover
+              Studio →</a>
+            <a class="btn btn-ghost" href="https://studio.web.ap.it/#how-it-works" target="_blank" rel="noopener">See
+              a conversation</a>
+            <a class="btn btn-ghost" href="https://github.com/andreapollastri/studio" target="_blank"
+              rel="noopener">View on GitHub</a>
+          </div>
+        </aside>
+
+        <figure class="shot">
+          <div class="shot-frame">
+            <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>studio.dev.agency.test</span></div>
+            <img src="img/studio/chat.webp" width="2160" height="1440" loading="lazy" decoding="async" alt="Studio: a conversation where Claude writes and plans story US-014 with the Larapilot commands, then asks permission to run npm run build; the preview of the branch on the right">
+          </div>
+          <figcaption><strong>Studio.</strong> A PM asks for a date filter on the orders. Claude writes US-014 with
+            <code>larapilot:spec-add</code>, plans it with <code>larapilot:spec-plan</code>, implements it on its
+            branch, and asks before rebuilding the assets. On the right, the preview of that branch. From the
+            <a href="https://studio.web.ap.it/#how-it-works" target="_blank" rel="noopener">Studio docs</a>.</figcaption>
+        </figure>
+
+        <div class="install-commands">
+          <div class="install-commands-header">Terminal — a fresh Ubuntu 24.04 or 26.04 server</div>
+          <ol class="install-commands-list">
+            <li class="install-command">
+              <span class="install-command-num" aria-hidden="true">$</span>
+              <code class="install-command-text">wget -qO- https://raw.githubusercontent.com/andreapollastri/studio/refs/heads/main/installer/install.sh | sudo bash</code>
+              <button type="button" class="install-copy-btn"
+                data-copy="wget -qO- https://raw.githubusercontent.com/andreapollastri/studio/refs/heads/main/installer/install.sh | sudo bash"
+                title="Copy command">Copy</button>
+            </li>
+          </ol>
+        </div>
+        <p>The wizard asks for the domain, the DNS record to create, the first administrator, and the git provider,
+          then installs the newest release of Studio at <code>studio.&lt;your domain&gt;</code>. Larapilot needs
+          nothing more: install it in the project as the <a href="#quickstart">Quickstart</a> says, or let Studio
+          create the repository with it. Everything else is on
+          <a href="https://studio.web.ap.it/" target="_blank" rel="noopener">studio.web.ap.it</a>.</p>
       </section>
 
       <!-- Version 5 vs version 4 -->
@@ -5044,7 +5626,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.0.3 released 2026-10-02</span>
+<span class="comment"># latest   : 5.0.4 released 2026-10-07</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -8073,6 +8655,14 @@ php artisan larapilot:schedule-apply --file=.larapilot/tmp-payload-schedule.json
             says so. Above the table: the estimated hours, the build time, and how many times the first holds the
             second — given from three specs with a build time, since one spec proves nothing.
           </p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/usage</span></div>
+              <img src="img/dashboard/usage.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Estimate vs build on the Usage page">
+            </div>
+            <figcaption>On Fernway: the project, then each delivered story with its estimate, build time, ratio, wait in review, and tokens.</figcaption>
+          </figure>
           <p>The times are not logged by anyone: <code>spec-start</code>, <code>spec-review</code>, and
             <code>spec-approve</code> already write the moment of every step in the backlog, and the page reads
             them. So they cost no tokens, and they are there with Lucille off. What they are is worth keeping in
@@ -8152,6 +8742,14 @@ php artisan larapilot:upgrade-check --laravel=13 --offline    # the lock only, n
             scratch database and writes the data move (pgloader with sequences reset, counts to compare) and the
             cutover. The <strong>About</strong> page of the dashboard shows each version with its support window and
             the command that checks the next upgrade.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/about</span></div>
+              <img src="img/dashboard/about.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The About page: Laravel, PHP, and database versions with their support windows">
+            </div>
+            <figcaption>The About page of the dashboard: each version against its support window.</figcaption>
+          </figure>
         </article>
 
         <!-- Integrations -->
@@ -9537,6 +10135,14 @@ returned: false</code></pre>
             package URL. Nothing is installed or downloaded. <code>--write=both</code> saves <code>sbom.md</code> and
             <code>sbom.cdx.json</code> (CycloneDX 1.5) under <code>paths.security</code>.</p>
 
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/sbom</span></div>
+              <img src="img/dashboard/sbom.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The SBOM page: 148 Composer packages with licenses, checked against OSV.dev">
+            </div>
+            <figcaption>The 148 Composer packages of Fernway&#39;s lock file with their licenses, checked against OSV.dev: nothing open.</figcaption>
+          </figure>
+
           <h4 id="deep-dive-sbom-osv">Known vulnerabilities</h4>
           <div class="code-block">
             <div class="code-block-header">check, decide, gate</div>
@@ -10594,9 +11200,17 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             sidebar is a drawer behind the menu button. The dashboard follows the system theme, and the switch at the
             foot of the sidebar pins <strong>light</strong> or <strong>dark</strong> for that browser.</p>
 
-          <h4>File manager</h4>
+          <h4 id="deep-dive-dashboard-files">File manager</h4>
           <p><code>/larapilot/files</code> manages what you hand the skills before they start. It opens on five
             folders you can change, and on the project itself, which you can only read:</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/files</span></div>
+              <img src="img/dashboard/files.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The File manager: five workspace folders and the project, read-only">
+            </div>
+            <figcaption>Brand, client materials, design systems, legacy snapshots, and custom skills — and the project itself, read-only.</figcaption>
+          </figure>
           <div class="table-card">
             <table>
               <thead>
@@ -10728,11 +11342,28 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <li><code>LARAPILOT_FILE_MANAGER=false</code> removes the page.</li>
           </ul>
 
-          <h4>Database</h4>
+          <h4 id="deep-dive-dashboard-database">Database</h4>
           <p><code>/larapilot/database</code> shows the application's own database: the connection named by
             <code>DB_CONNECTION</code>, with the <code>DB_*</code> values in <code>.env</code>. Everything goes
             through Laravel's schema and query builders, so the page is the same on MySQL, MariaDB, PostgreSQL,
             SQLite, and SQL Server, and on any Laravel version Larapilot supports. It reads, and never writes.</p>
+
+<div class="shot-row">
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/database/bookings</span></div>
+                <img src="img/dashboard/database-table.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The rows of the bookings table, filtered and sorted">
+              </div>
+              <figcaption>The rows of <code>bookings</code>, filtered and sorted on the server.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/database?view=migrations</span></div>
+                <img src="img/dashboard/database-migrations.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Migrations: two pending, eight ran over seven batches">
+              </div>
+              <figcaption><strong>Migrations</strong>: two still to run, eight ran over seven batches.</figcaption>
+            </figure>
+          </div>
           <ul>
             <li><strong>The list</strong> opens on every table and view, with its size where the driver reports
               one, and the driver, the database, and the host on top — never the password. On MySQL and MariaDB
@@ -10853,6 +11484,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>laravel.log</code> — because a web server may refuse an address that ends in
             <code>.log</code>, or look for a file of its own there; the address with it leads to the one
             without.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/logs?view=groups</span></div>
+              <img src="img/dashboard/logs-repeats.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Repeats counted: one row for each thing logged, with how many times">
+            </div>
+            <figcaption><strong>Repeats counted</strong>: seventy entries become one row for each thing logged — seven times the same full class, twice the same Stripe key, redacted.</figcaption>
+          </figure>
           <ul>
             <li><strong>Entries, not lines.</strong> An entry is what Laravel wrote between one
               <code>[date] env.LEVEL:</code> and the next, its stack trace included; the newest comes first. Each
@@ -10903,6 +11542,37 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
           <p><code>/larapilot/laravel</code> shows how the framework is set up in the application and what it is
             doing now. Five tabs; nothing of the application is changed from any of them — no cache is cleared,
             no job retried, no mail sent again.</p>
+
+<div class="shot-row">
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/laravel</span></div>
+                <img src="img/dashboard/laravel.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Laravel overview: drivers and caches of the running application">
+              </div>
+              <figcaption><strong>Overview</strong>: the drivers and caches of the running app.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/laravel/queue</span></div>
+                <img src="img/dashboard/laravel-queue.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Queue tab: jobs waiting, delayed, and failed">
+              </div>
+              <figcaption><strong>Queue</strong>: jobs waiting, delayed, and failed on the database queue.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/laravel/schedule</span></div>
+                <img src="img/dashboard/laravel-schedule.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Schedule tab: the tasks of the scheduler with their next run">
+              </div>
+              <figcaption><strong>Schedule</strong>: the tasks as <code>schedule:list</code> reads them.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/laravel/dumps</span></div>
+                <img src="img/dashboard/laravel-dumps.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Dumps tab: values dumped in a controller and in a queued job">
+              </div>
+              <figcaption><strong>Dumps</strong>: what <code>dump()</code> printed in a controller and in a queued job.</figcaption>
+            </figure>
+          </div>
           <ul>
             <li><strong>Overview.</strong> Five numbers that lead to the other tabs — scheduled tasks, jobs
               waiting, failed jobs, mail kept, dumps kept — then two panels. <strong>Drivers</strong>: for the
@@ -10958,7 +11628,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>LARAPILOT_LARAVEL_VIEWER=false</code> removes the page.</li>
           </ul>
 
-          <h4>Board</h4>
+          <h4 id="deep-dive-dashboard-board">Board</h4>
           <p>Summary metrics at the top: total specs, done count, completion rate, and WIP. A search field and
             priority, epic, and status filters narrow the columns; the counts follow whatever is still visible.
             Each workflow column lists spec cards — code, title, epic, story points, priority, subtask progress bar,
@@ -10973,7 +11643,15 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             order of their codes, the stories with no epic last. With a filter on, either file holds what is on
             screen and says which filter produced it; an epic then counts the points of the stories that are left.</p>
 
-          <h4>PRD</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot</span></div>
+              <img src="img/dashboard/board.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Board: sixteen stories by status">
+            </div>
+            <figcaption>Fernway&#39;s board: each card with points, priority, task progress, mockup, comments, and the merge that closed it.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-prd">PRD</h4>
           <p>The living product document from <code>/larapilot-inception</code> (and later
             <code>/larapilot-feature</code>, <code>/larapilot-bug</code>, or <code>/larapilot-prd</code> updates). Headings become anchor links in the
             sidebar; the body is rendered Markdown — the same file skills write to <code>.larapilot/docs/PRD.md</code>.
@@ -10993,15 +11671,39 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <a href="#deep-dive-decision-log">Decision journal</a>.
           </p>
 
-          <h4>Inception</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/prd</span></div>
+              <img src="img/dashboard/prd.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The PRD page: sections in the sidebar and the rendered document">
+            </div>
+            <figcaption>The PRD of Fernway, its sections on the left and a search that looks in the PRD alone.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-inception">Inception</h4>
           <p>The discovery choices snapshot from <code>.larapilot/choices.yaml</code> — Project Kind, Delivery
             Target, Business Model, operations and support, topology, data store, and the other fixed choices
             inception persisted.</p>
 
-          <h4>Plan</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/inception</span></div>
+              <img src="img/dashboard/inception.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Inception page: the choices discovery fixed">
+            </div>
+            <figcaption>What discovery fixed: the kind of product, how it makes money, the stack, where it runs.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-plan">Plan</h4>
           <p>The schedule: epics, milestones, schedule criticality, and a dependency-aware Gantt with a time axis, a
             today marker, epic grouping, and filters for assignee, status, and task detail. Lucille's schedule notes
             appear when present.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/plan</span></div>
+              <img src="img/dashboard/plan.webp" width="2160" height="1500" loading="lazy" decoding="async" alt="The Plan: release milestones and the Gantt by epic">
+            </div>
+            <figcaption>Milestones by release — 0.1.0 shipped, so done — and the Gantt by epic, with tasks hidden.</figcaption>
+          </figure>
           <p>The Gantt is a <strong>forecast in sequence</strong>. Open work is queued from today, one spec at a
             time: what is in progress first, then by priority and code &mdash; the order of <code>spec-next</code>
             &mdash; and never before the specs named on its <code>**Blocked by:**</code> line; a spec that blocks a
@@ -11011,13 +11713,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             work sits in the past, on the days the ledger recorded for its spec. <strong>Forecast end</strong> is the
             day the last open spec is done. An epic deadline is measured against the last spec of the epic, a
             milestone that names a release (<code>schedule-set --release=0.2.0</code>) against the last spec of that
-            release, and any other milestone against the forecast end. <code>/larapilot-schedule</code> re-plans the
-            order and the dates.</p>
+            release, and any other milestone against the forecast end. A milestone that names a release is done
+            once that release is shipped: it is never reported overdue for a release already out.
+            <code>/larapilot-schedule</code> re-plans the order and the dates.</p>
           <p><strong>View</strong> switches between the specs grouped <em>by epic</em> and one queue in
             <em>delivery order</em>. A plan wider than the page opens as the <em>whole plan</em>;
             <strong>Zoom</strong> &rarr; <em>Detail</em> widens the days and opens on today.</p>
 
-          <h4>Design</h4>
+          <h4 id="deep-dive-dashboard-design">Design</h4>
           <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
             <code>/larapilot-design</code>. The page opens on <strong>every screen</strong>, flow by flow, each one
             a card with a live preview, its name, and its file; the entry screen of a flow is marked. A field
@@ -11036,10 +11739,26 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>styles.yaml</code> and logged in the decision journal, same as
             <code>larapilot:mockup-choose-style</code>.</p>
 
-          <h4>Settings</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/design</span></div>
+              <img src="img/dashboard/design.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Design gallery of the member app mockups">
+            </div>
+            <figcaption>Five screens of the member app, each tagged with the stories it covers.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-settings">Settings</h4>
           <p>Every project mode with its <code>config.yaml</code> key, current value, and what each option does —
             the same keys as <a href="#deep-dive-settings">Project settings</a>. Read-only: change them with
             <code>/larapilot-settings</code> or <code>larapilot:settings-set</code>.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/settings</span></div>
+              <img src="img/dashboard/settings.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Settings page: project modes with their values and options">
+            </div>
+            <figcaption>Gitflow, release mode, comments, and code history on; every other mode with what it would do.</figcaption>
+          </figure>
 
           <h4 id="deep-dive-dashboard-skills">Skills</h4>
           <p>Every skill the agents of the project can run, <strong>whoever brought it</strong>. The page
@@ -11047,6 +11766,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             skills it holds — and then lists the skills by where they come from. A field finds one by its
             name, its package, or a word of what it does. Opening the page re-registers the
             <a href="#deep-dive-custom-skills">custom skills</a> with Boost.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/skills</span></div>
+              <img src="img/dashboard/skills.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Skills page: agent folders, a custom skill, and the packaged skills">
+            </div>
+            <figcaption>Claude Code and Cursor read the skills here; <code>/studio-release-notes</code> is Fernway&#39;s own, the 29 below come with Larapilot.</figcaption>
+          </figure>
           <div class="table-card">
             <table>
               <thead>
@@ -11173,8 +11900,16 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>errors</code> off it says what Boogle is, how to connect it, and which other trackers can be
             read instead. Full chapter: <a href="#deep-dive-boogle">Production errors</a>.</p>
 
-          <h4>Git</h4>
+          <h4 id="deep-dive-dashboard-git">Git</h4>
           <p>Three views of the local repository. None of them calls GitHub, GitLab, or any remote API.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/git</span></div>
+              <img src="img/dashboard/git.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Git history graph with Gitflow branches and pull request merges">
+            </div>
+            <figcaption>The history of Fernway: stories merged into the release branch, one branch pushed and one only on this machine.</figcaption>
+          </figure>
           <ul>
             <li><strong>Contribution calendar</strong> — every commit on every local branch for the last 12
               months. The grid fills the panel width, <strong>today sits on the right</strong>, and the developer
@@ -11211,25 +11946,51 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             hotfixes, other — checked for colour-blind separation on both themes. Colour is never the only sign:
             every row names its branch.</p>
 
-          <h4>Usage</h4>
+          <h4 id="deep-dive-dashboard-usage">Usage</h4>
           <p>Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report at
             <code>/larapilot/usage/report.md</code> (same data as <code>larapilot:usage-report --insights</code>).
             Deadlines and the Gantt live on <strong>Plan</strong>. Reference: <a href="#deep-dive-usage">Usage &amp;
             Lucille</a>.</p>
 
-          <h4>Economics</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/usage</span></div>
+              <img src="img/dashboard/usage.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Usage: Estimate vs build for each delivered spec">
+            </div>
+            <figcaption>Eight delivered stories: estimated at 91.5 hours, built in about 27, one sent back once.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-economics">Economics</h4>
           <p>What the project costs, what the client pays, and what is left for you, written for someone who has
             never read a balance sheet — when <code>account</code> is <code>FREELANCE</code> or
             <code>COMPANY</code>. Full chapter: <a href="#deep-dive-economics">Economics</a>.</p>
 
-          <h4>Docs</h4>
+          <h4 id="deep-dive-dashboard-docs">Docs</h4>
           <p>The delivery loop, optional branches keyed off the current settings, every packaged skill with its
             primary output and lead personas, and the persona roster.</p>
 
-          <h4>Spec detail</h4>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/docs</span></div>
+              <img src="img/dashboard/docs.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Docs page: the delivery loop and its side paths">
+            </div>
+            <figcaption>The delivery loop and its side paths, as the settings of the project have them.</figcaption>
+          </figure>
+
+          <h4 id="deep-dive-dashboard-spec">Spec detail</h4>
           <p>Click any card to open <code>/larapilot/specs/{code}</code>:</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/specs/US-006</span></div>
+              <img src="img/dashboard/spec.webp" width="2160" height="1500" loading="lazy" decoding="async" alt="A spec in review with its header, story, criteria, and mockup">
+            </div>
+            <figcaption>US-006 in review: the header and the story line by line, as the spec template writes them, and the status the backlog holds.</figcaption>
+          </figure>
           <ul>
-            <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML</li>
+            <li><strong>User story</strong> — acceptance criteria and narrative from the spec YAML, each line as the
+              spec skill wrote it — the header, the blocker, the three lines of the story — and the
+              <code>**Status:**</code> of its header kept in step with the backlog at every change of status</li>
             <li><strong>Decision journal</strong> — entries for this spec from <code>.larapilot/decisions.yaml</code>
               (superseded context and regression guard)</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
@@ -11267,6 +12028,14 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             Both read one engine (<code>EconomicsService::snapshot()</code>), so they can never disagree.
             Everything below needs <code>settings.account</code> to be <code>FREELANCE</code> or
             <code>COMPANY</code> — on <code>NONE</code> the page says so and stops.</p>
+
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/economics</span></div>
+              <img src="img/dashboard/economics.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Economics page: the short answer and the figures behind it">
+            </div>
+            <figcaption>Fernway sold as a subscription by a UK limited company, at £49 a month.</figcaption>
+          </figure>
 
           <p><strong>How the skill runs.</strong> Short rounds, at most three questions each, current value
             always marked, skipped answers never re-asked:</p>
@@ -11673,6 +12442,13 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
               </tbody>
             </table>
           </div>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/api/docs</span></div>
+              <img src="img/dashboard/api-docs.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The API docs page: Swagger UI over the JSON API of the dashboard">
+            </div>
+            <figcaption><code>/larapilot/api/docs</code> on Fernway: every endpoint of the JSON API, to try in the browser.</figcaption>
+          </figure>
 
           <h4>Response shape</h4>
           <p>Plain JSON — not the <code>larapilot/v1</code> CLI envelope. Example from
@@ -11892,9 +12668,15 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.0.3 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.0.4 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Screenshot">
+    <form method="dialog"><button type="submit">Close</button></form>
+    <img alt="" />
+    <p></p>
+  </dialog>
 
   <script>
     (function () {
@@ -12506,6 +13288,57 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
       });
     })();
 
+
+    // Screenshots: the tabs of the tour, and any picture opened full size.
+    (function () {
+      const tour = document.querySelector("[data-tour]");
+      if (tour) {
+        const tabs = [...tour.querySelectorAll('[role="tab"]')];
+        const select = (tab, focus) => {
+          tabs.forEach((other) => {
+            const on = other === tab;
+            other.setAttribute("aria-selected", on ? "true" : "false");
+            other.tabIndex = on ? 0 : -1;
+            document.getElementById(other.getAttribute("aria-controls")).hidden = !on;
+          });
+          if (focus) tab.focus();
+        };
+        tabs.forEach((tab, index) => {
+          tab.addEventListener("click", () => select(tab, false));
+          tab.addEventListener("keydown", (event) => {
+            const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+            if (!step) return;
+            event.preventDefault();
+            select(tabs[(index + step + tabs.length) % tabs.length], true);
+          });
+        });
+        select(tabs[0], false);
+      }
+
+      const lightbox = document.getElementById("lightbox");
+      if (lightbox && typeof lightbox.showModal === "function") {
+        const big = lightbox.querySelector("img");
+        const caption = lightbox.querySelector("p");
+        document.querySelectorAll(".shot img").forEach((picture) => {
+          picture.tabIndex = 0;
+          const open = () => {
+            big.src = picture.currentSrc || picture.src;
+            big.alt = picture.alt;
+            const text = picture.closest("figure")?.querySelector("figcaption");
+            caption.textContent = text ? text.textContent.replace(/\s*More$/, "") : "";
+            lightbox.showModal();
+          };
+          picture.addEventListener("click", open);
+          picture.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              open();
+            }
+          });
+        });
+        lightbox.addEventListener("click", () => lightbox.close());
+      }
+    })();
   </script>
   <script async src="https://stats.misterdev.it/i/14ca8fd6-a511-4fa1-b61d-86e72f304866.js"></script>
   <noscript><img src="https://stats.misterdev.it/collect/pixel.gif?k=14ca8fd6-a511-4fa1-b61d-86e72f304866&p=/" width="1" height="1" /></noscript>

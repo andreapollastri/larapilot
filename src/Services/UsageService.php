@@ -361,14 +361,15 @@ class UsageService
             $date = (string) $deadline['date'];
             $days = (new DateTimeImmutable($date))->diff(new DateTimeImmutable($today))->days;
             $past = $date < $today;
+            $status = $this->deadlineStatus($deadline);
 
             $deadlineViews[] = [
                 'label' => (string) ($deadline['label'] ?? 'Deadline'),
                 'date' => $date,
-                'status' => (string) ($deadline['status'] ?? 'on_track'),
+                'status' => $status,
                 'note' => $deadline['note'] ?? null,
                 'days_until' => $past ? -$days : $days,
-                'overdue' => $past && ($deadline['status'] ?? '') !== 'done',
+                'overdue' => $past && $status !== 'done',
             ];
         }
 
@@ -495,6 +496,32 @@ class UsageService
         }
 
         return (string) $release['version'];
+    }
+
+    /**
+     * The status of a milestone, read with the release it names: a shipped
+     * release has met its milestone. Shipping never touched the schedule,
+     * so the milestone kept `on_track` and turned overdue the day after its
+     * date, on a release already out.
+     *
+     * @param  array<string, mixed>  $deadline
+     */
+    public function deadlineStatus(array $deadline): string
+    {
+        $status = (string) ($deadline['status'] ?? 'on_track');
+        $release = trim((string) ($deadline['release'] ?? ''));
+
+        if ($status === 'done' || $release === '') {
+            return $status;
+        }
+
+        try {
+            $found = $this->releases->find($release);
+        } catch (\InvalidArgumentException) {
+            return $status;
+        }
+
+        return ($found['status'] ?? null) === 'shipped' ? 'done' : $status;
     }
 
     /**
@@ -888,7 +915,7 @@ class UsageService
             }
 
             $date = PlanDate::day($deadline['date']);
-            $status = (string) ($deadline['status'] ?? 'on_track');
+            $status = $this->deadlineStatus($deadline);
 
             // A date that cannot be read is a finding of the re-plan, not an alert.
             if ($status === 'done' || $date === null) {
@@ -928,7 +955,9 @@ class UsageService
                 'label' => (string) ($deadline['label'] ?? 'Deadline'),
                 'date' => $date,
                 'message' => $overdue
-                    ? 'Overdue vs today — remaining ~'.round($forecastDays, 1).' work-days still open.'
+                    ? ($releaseEnd !== null
+                        ? 'Overdue vs today — release '.$release.' is forecast for '.$target.'.'
+                        : 'Overdue vs today — remaining ~'.round($forecastDays, 1).' work-days still open.')
                     : ($slipDays > 0
                         ? ($releaseEnd !== null
                             ? 'Release '.$release.' is forecast for '.$target.': '.$slipDays.' day(s) past this deadline.'
@@ -1272,7 +1301,7 @@ class UsageService
                 'id' => (string) ($deadline['id'] ?? ''),
                 'label' => (string) ($deadline['label'] ?? 'Deadline'),
                 'date' => PlanDate::day($deadline['date'] ?? null) ?? '',
-                'status' => (string) ($deadline['status'] ?? 'on_track'),
+                'status' => $this->deadlineStatus($deadline),
                 'note' => $deadline['note'] ?? null,
                 'release' => $deadline['release'] ?? null,
             ];

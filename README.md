@@ -6,6 +6,8 @@ Larapilot is a spec-driven workflow for Laravel projects, built on [Laravel Boos
 
 **The agent proposes. You approve what ships.** Human-in-the-loop, always.
 
+[![The Larapilot dashboard: the board of Fernway, the demo app of the documentation, sixteen stories from TODO to DONE](https://larapilot.web.ap.it/img/dashboard/board.webp)](https://larapilot.web.ap.it/#tour)
+
 📖 **Documentation:** [larapilot.web.ap.it](https://larapilot.web.ap.it) · [Use cases](https://larapilot.web.ap.it/#examples) · [Custom skills](https://larapilot.web.ap.it/#example-custom-skill) · [API](https://larapilot.web.ap.it/#deep-dive-api)
 
 ---
@@ -15,6 +17,7 @@ Larapilot is a spec-driven workflow for Laravel projects, built on [Laravel Boos
 - [Why Larapilot](#why-larapilot)
 - [Quickstart](#quickstart)
 - [The core loop](#the-core-loop)
+- [Studio — Larapilot for the whole team](#studio--larapilot-for-the-whole-team)
 - [Skills](#skills)
 - [Custom skills — your own slash commands](#custom-skills--your-own-slash-commands)
 - [Workflow hooks — your commands on the loop](#workflow-hooks--your-commands-on-the-loop)
@@ -135,6 +138,29 @@ Optional around the loop: `/larapilot-design` before plan · `/larapilot-ship` w
 **Git** follows `settings.git_mode` (default **`GITFLOW`, no auto-push**): one `feature/US-XXX-*` branch per story, one atomic Conventional Commit per plan task; push and remote PRs only under `GITFLOW_PUSH`. With `release_mode=YES`, stories can branch from `release/x.y.z` instead of `develop`. Details: [Git workflow](https://larapilot.web.ap.it/#deep-dive-gitflow).
 
 **Autopilot** chains plan + implement for several specs, one at a time. Under `STANDARD` or `MAX` each spec runs in a fresh writing sub-agent; your session keeps the CLI transitions, questions, and the Robert/Lars review. Under `ECO`, or in an editor without sub-agents, it stays inline. You still run `/larapilot-review` per story unless `auto_approve=YES`.
+
+---
+
+## Studio — Larapilot for the whole team
+
+Larapilot runs where your agent runs: an editor or a terminal. Not everyone on a product team opens one. **[Studio](https://studio.web.ap.it/)** — by the author of Larapilot, open source — puts the same skills, the same backlog, and the same approvals on a server, behind a web page: for the product manager who decides, the developer who builds, and the client who follows.
+
+One Ubuntu server, one script, one wildcard DNS record. Every person on the team gets a workspace on that server — their clone, their database, **their own Claude Code** — and a chat that runs the Larapilot skills of the project. You ask in plain words; Claude writes the story, plans it, implements it on a branch, and opens the pull request, while the live preview of that branch sits beside the chat.
+
+- **The loop, as buttons** — New idea, Feedback, Status, and Approve under the chat; every `/larapilot-*` skill, and every skill of the project, typed as a slash command.
+- **The backlog beside the chat** — Board, preview, changes, files, and a terminal in one pane; the site of the project serves `/larapilot` to the team signed in to Studio.
+- **Projects born with Larapilot** — a repository Studio creates gets Laravel, Laravel Boost, and Larapilot, installed and committed; an existing one that runs Larapilot is cloned as it is.
+- **Four roles, one Claude per person** — administrator, PM, developer, client; each conversation runs on that person's own Claude plan.
+- **The forges Larapilot knows** — GitHub, GitLab, Bitbucket, or Azure DevOps; a push to the deploy branch redeploys the site.
+
+[![Studio: Claude writes and plans US-014 with the Larapilot commands and asks before running npm run build; the preview of the branch on the right](https://larapilot.web.ap.it/img/studio/chat.webp)](https://studio.web.ap.it/#how-it-works)
+
+```bash
+# a fresh Ubuntu 24.04 or 26.04 server
+wget -qO- https://raw.githubusercontent.com/andreapollastri/studio/refs/heads/main/installer/install.sh | sudo bash
+```
+
+📖 **Studio:** [studio.web.ap.it](https://studio.web.ap.it/) · [See a conversation](https://studio.web.ap.it/#how-it-works) · [GitHub](https://github.com/andreapollastri/studio)
 
 ---
 
@@ -462,7 +488,7 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included; **Download epics (.md)** saves the same stories as an outline — the project, each epic with its story points, its user stories with theirs, and the tasks of each with their hours |
 | PRD | `/larapilot/prd` | Rendered PRD with a **search** that looks in the PRD and nowhere else, decision journal timeline, **Download PRD (.md)**, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
 | Inception | `/larapilot/inception` | Discovery choices snapshot |
-| Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
+| Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time; a milestone that names a release is done once that release is shipped. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
 | Design | `/larapilot/design` | Every screen first, as a card. A click opens that mockup as a site you browse, with **All screens** to come back; prev / next through every flow, style compare with **Use this style**, zip download |
 | Settings | `/larapilot/settings` | Every project mode with its options explained |
 | Skills | `/larapilot/skills` | Every skill the agents of the project can run, whoever brought it — the project, Larapilot, another package, Laravel Boost, a hand that dropped it into the folder of an agent — with which agent has it. Click one to **read it**. Under them, **what the agents are told**: `CLAUDE.md`, `AGENTS.md`, and the rules around them, one part for each author |
@@ -476,12 +502,20 @@ Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — 
 | SBOM | `/larapilot/sbom` | Every package the project ships — Composer, the JavaScript of the repository, and the frontend companion — from the lockfiles: version, direct or transitive, production or development, license (copyleft flagged), abandoned packages. **Check vulnerabilities** asks OSV.dev; the vulnerable packages come grouped with the version that fixes them and the command to run, and what was decided about each. Downloads: **SBOM (.md)**, **CycloneDX (.json)**, **Vulnerabilities (.md)** |
 | Errors | `/larapilot/errors` | What the running application threw, as the tracker of the project recorded it: one row for each bug, how many times it was thrown, and what was decided about it — day by day when the tracker records every throw. Always in the menu; with `errors` off it says what Boogle is, how to connect it, and which other trackers can be read instead |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
-| Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. **Download spec (.md)** saves all of it, tasks included, in one file |
+| Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. The story keeps its lines as written, and its `**Status:**` follows the backlog. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
 | Docs | `/larapilot/docs` | Delivery loop, packaged skills, persona roster |
 | About | `/larapilot/about` | What the project runs on: Laravel, PHP, the database server, Node — each with its upstream support window drawn as a bar (bug fixes, security fixes, today) and an alert when it is past or near its end — the project, PHP extensions and limits, connections, drivers, the packages that shape an upgrade (Filament, Nova, Livewire, Inertia, …), frontend, CI and deploy, and every file that pins a version |
 
 The dashboard follows the system theme; pin **light** or **dark** from the sidebar. Every page works on a phone.
+
+| Plan | Spec | Database |
+| --- | --- | --- |
+| [![The Plan: release milestones and the Gantt by epic](https://larapilot.web.ap.it/img/dashboard/plan.webp)](https://larapilot.web.ap.it/img/dashboard/plan.webp) | [![A spec in review with its story, criteria, and mockup](https://larapilot.web.ap.it/img/dashboard/spec.webp)](https://larapilot.web.ap.it/img/dashboard/spec.webp) | [![The diagram of the tables and their foreign keys](https://larapilot.web.ap.it/img/dashboard/database-diagram.webp)](https://larapilot.web.ap.it/img/dashboard/database-diagram.webp) |
+| **Logs** | **Laravel** | **Git** |
+| [![An exception opened on the frames of the application](https://larapilot.web.ap.it/img/dashboard/logs.webp)](https://larapilot.web.ap.it/img/dashboard/logs.webp) | [![A booking confirmation as the application sent it](https://larapilot.web.ap.it/img/dashboard/laravel-mail.webp)](https://larapilot.web.ap.it/img/dashboard/laravel-mail.webp) | [![The history graph with Gitflow branches](https://larapilot.web.ap.it/img/dashboard/git.webp)](https://larapilot.web.ap.it/img/dashboard/git.webp) |
+
+Taken on Fernway, the demo app of the documentation — more on the [tour](https://larapilot.web.ap.it/#tour).
 
 ### File manager
 

@@ -10,12 +10,23 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 
 class Markdown
 {
-    public static function toHtml(string $markdown): string
+    /**
+     * @param  bool  $lineBreaks  keep every line as written, as an issue or a
+     *                            comment does: a spec writes its header, its
+     *                            blocker, and each line of the user story on
+     *                            a line of its own, and one paragraph of them
+     *                            reads as a run-on sentence.
+     */
+    public static function toHtml(string $markdown, bool $lineBreaks = false): string
     {
         $options = [
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
         ];
+
+        if ($lineBreaks) {
+            $options['renderer'] = ['soft_break' => "<br />\n"];
+        }
 
         // GitHub flavour first: a PRD leans on tables and task lists, which
         // plain CommonMark prints as raw pipes and brackets.

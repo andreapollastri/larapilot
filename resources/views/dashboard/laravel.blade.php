@@ -62,7 +62,11 @@
                 @elseif ($failed['count'] === 0)
                     None failed.
                 @else
-                    Last: {{ $failed['jobs'][0]['job'] ?? '—' }}
+                    @php
+                        $lastFailed = (string) ($failed['jobs'][0]['job'] ?? '');
+                    @endphp
+                    {{-- The class name alone: a namespace broke mid-word in a card this narrow. --}}
+                    Last: <span title="{{ $lastFailed }}">{{ $lastFailed !== '' ? class_basename($lastFailed) : '—' }}</span>
                 @endif
             </div>
         </a>

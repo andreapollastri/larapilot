@@ -149,7 +149,7 @@ class DashboardService
             }
 
             $tasks[] = array_merge($task, [
-                'body_html' => Markdown::toHtml((string) ($task['body'] ?? '')),
+                'body_html' => Markdown::toHtml((string) ($task['body'] ?? ''), true),
             ]);
         }
 
@@ -158,13 +158,22 @@ class DashboardService
             'tasks' => $tasks,
             'workdir' => $data['workdir'],
             'mockups' => $this->mockups->forSpec($code),
-            'spec_html' => Markdown::toHtml((string) ($data['spec']['body'] ?? '')),
+            'spec_html' => Markdown::toHtml($this->withoutTitleLine((string) ($data['spec']['body'] ?? ''), $code), true),
             'plan_html' => is_array($plan)
                 ? Markdown::toHtml((string) ($plan['plan_body'] ?? ''))
                 : null,
             'feedback' => $this->feedback->forSpec($code, $data['spec']),
             'decisions' => $this->decisions($code),
         ];
+    }
+
+    /**
+     * The page names the spec above its body, so the `#### US-001: Title`
+     * line the spec template opens with would say it twice.
+     */
+    protected function withoutTitleLine(string $body, string $code): string
+    {
+        return preg_replace('/\A\s*#{1,6}[ \t]+'.preg_quote($code, '/').'\b[^\n]*\n?/', '', $body, 1) ?? $body;
     }
 
     /**

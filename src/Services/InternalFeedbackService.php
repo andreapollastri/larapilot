@@ -294,7 +294,7 @@ MD;
         }
 
         return array_merge($entry, [
-            'body_html' => Markdown::toHtml($body),
+            'body_html' => Markdown::toHtml($body, true),
             'preview' => $preview,
         ]);
     }

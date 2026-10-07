@@ -164,7 +164,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '5.0.3';
+    public const VERSION = '5.0.4';
 
     public function register(): void
     {

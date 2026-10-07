@@ -67,7 +67,7 @@ jobs:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -77,7 +77,7 @@ jobs:
           tools: composer:v2
 
       - name: Composer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ runner.os }}-php${{ matrix.php }}-laravel${{ matrix.laravel }}-${{ hashFiles('composer.json') }}
@@ -116,7 +116,7 @@ jobs:
     name: Lint & static analysis
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -126,7 +126,7 @@ jobs:
           tools: composer:v2
 
       - name: Composer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ runner.os }}-lint-${{ hashFiles('composer.json') }}
@@ -138,7 +138,7 @@ jobs:
           composer dump-autoload --classmap-authoritative
 
       - name: PHPStan result cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/phpstan
           key: phpstan-${{ github.sha }}

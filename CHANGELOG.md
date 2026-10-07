@@ -2,7 +2,7 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
-## [Unreleased]
+## [5.0.4] - 2026-10-07
 
 ### Security
 
@@ -16,10 +16,22 @@ All notable changes to `larapilot` will be documented in this file.
 
 - **Smaller package** — `.gitattributes` leaves `docs/`, `tests/`, the CI workflows, and the tooling files out of the archive Composer installs; nothing of the runtime read them.
 - **The connector help says what it means** — `larapilot:install --connector` described `file` as "only in v1"; it says it is the only connector shipped.
+- **Pest 5 in the test matrix** — `require-dev` accepts `pestphp/pest` `^5.0` beside 2, 3, and 4, so the PHP 8.4 and 8.5 jobs on Laravel 13 run on Pest 5 and PHPUnit 13; the suite passes on them unchanged. The pipeline checks out with `actions/checkout@v7` and caches with `actions/cache@v6`.
+
+### Fixed
+
+- **A spec reads as it was written** — the spec page ran the header, the `**Blocked by:**` line, and the three lines of the user story into one paragraph. The bodies of a spec, of a task, and of a comment now keep each line, as an issue or a comment does on a forge, and the `#### US-001: Title` line the template opens with is no longer repeated under the title of the page.
+- **The status in the body of a spec follows the backlog** — the skills write `**Status:** TODO` in the header of a spec and nothing changed it after: the spec page, the downloaded spec, and a tracker said TODO for a spec in review or done. Every change of status — plan, start, review, changes requested, approval — now writes it in the header too; a status quoted further down the body is left as it is.
+- **A shipped release no longer makes the plan late** — shipping a release never touched its milestone, so the milestone kept `on_track` and turned overdue the day after its date: the Plan said **Behind** for a release already out, and the alert counted the work-days of the whole backlog. A milestone that names a shipped release is now done — on the Plan, in `schedule-show`, and in `usage-report --insights` — and an overdue milestone of a release that is not out says when that release is forecast.
+- **The last failed job fits its card** — the **Failed jobs** number of the Laravel page broke the class of the job mid-word; it names the class, with the full name on hover.
 
 ### Docs
 
+- **Pictures of the dashboard, from a real app** — the site shows the dashboard: the board beside the title, a **Tour** of ten pages with light, dark, and phone, and a picture next to every page the Dashboard chapter describes, and in Usage, Economics, the SBOM, and the upgrades. They were taken on Fernway, a demo app built for the docs with Larapilot itself — a PRD, sixteen stories in five epics, a release shipped and one under way, five weeks of Gitflow history, a database, a log, mail, and a queue made by the app — each page as `/larapilot` serves it. A click opens a picture full size. The README opens on the board and shows six pages; a social card previews the site when its address is shared.
+- **Studio, Larapilot for the whole team** — a new **Studio** chapter on the site, in the menu and the top bar, and a section of the README present [Studio](https://studio.web.ap.it/): one Ubuntu server where every person of the team gets a workspace with their own Claude Code and a chat that runs the Larapilot skills of the project, the Board and the preview of the branch beside it. The site shows a conversation from Studio and the command that installs it.
+- **The site no longer scrolls sideways on a phone** — a long command in a code block without a frame, and a long path in a sentence, made the page wider than the screen at 390 px and at 1024 px.
 - README: **Security** names the **logs** and **Laravel** pages among the pages that answer `404` outside local/development/testing until `dashboard_auth` is `YES`, asks for the sign-in before a shared `staging` host sees the dashboard, notes `TrustProxies` for the per-IP limits, and documents the `.env`-only switches (`LARAPILOT_ENABLED`, `_DASHBOARD_ROUTE`, `_MOCKUPS_ROUTE`, `_API_AUDIT`). **File manager** describes the redacted logs and the folders left out. The site counts the twenty-nine skills where it still said twenty-two.
+- Site / package version **v5.0.4**.
 
 ## [5.0.3] - 2026-10-02
 

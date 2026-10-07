@@ -219,6 +219,34 @@ it('measures a milestone that names a release against that release', function ()
         ->and(array_column($data['findings'], 'path', 'code')['SCHEDULE_STALE_STATUS'])->toBe('Whole backlog');
 });
 
+it('counts the milestone of a shipped release as met, not overdue', function (): void {
+    scheduleBacklog([
+        scheduleSpec('US-001', ['status' => 'DONE']),
+        scheduleSpec('US-002', ['points' => 8]),
+    ]);
+
+    app(ConfigService::class)->updateSettings(['release_mode' => true]);
+    app(ReleaseService::class)->add('0.1.0', 'First', 'planned', ['US-001']);
+    app(ReleaseService::class)->add('0.2.0', 'Second', 'planned', ['US-002']);
+    $past = date('Y-m-d', strtotime('-10 days'));
+
+    $this->artisan('larapilot:schedule-set', ['--deadline' => $past, '--label' => 'Demo', '--release' => '0.1.0'])->assertSuccessful();
+    $this->artisan('larapilot:schedule-set', ['--deadline' => $past, '--label' => 'Beta', '--release' => '0.2.0'])->assertSuccessful();
+    app(ReleaseService::class)->set('0.1.0', ['status' => 'shipped']);
+
+    $data = scheduleRun('larapilot:schedule-show')['data'];
+    $deadlines = collect($data['deadlines'])->keyBy('label');
+    $alerts = collect($data['alerts'])->keyBy('label');
+    $milestones = collect(app(UsageService::class)->gantt()['milestones'])->keyBy('label');
+
+    expect($deadlines['Demo'])->toMatchArray(['status' => 'done', 'overdue' => false, 'slip_days' => 0])
+        ->and($deadlines['Beta']['overdue'])->toBeTrue()
+        ->and($alerts->keys()->all())->toBe(['Beta'])
+        ->and($alerts['Beta']['message'])->toContain('release 0.2.0 is forecast for')
+        ->and($milestones['Demo']['status'])->toBe('done')
+        ->and($milestones['Beta']['status'])->toBe('on_track');
+});
+
 it('realigns the schedule of an existing project when Larapilot is updated', function (): void {
     scheduleBacklog([
         scheduleSpec('US-001', ['epic' => ['code' => 'EP-001', 'title' => 'Core', 'objective' => 'Ship the core', 'deadline' => '2030-06-30']]),

@@ -143,14 +143,12 @@ class ReleaseService
 
         $needle = $this->normalizeVersion($version);
         $data = $this->read();
-        $found = false;
 
         foreach ($data['releases'] as $index => $release) {
             if ($this->normalizeVersion((string) ($release['version'] ?? '')) !== $needle) {
                 continue;
             }
 
-            $found = true;
             $current = $release;
 
             if (isset($partial['title'])) {
@@ -197,11 +195,7 @@ class ReleaseService
             return $current;
         }
 
-        if (! $found) {
-            throw new \InvalidArgumentException("Release {$needle} not found.");
-        }
-
-        throw new \RuntimeException('Release update failed.');
+        throw new \InvalidArgumentException("Release {$needle} not found.");
     }
 
     /**

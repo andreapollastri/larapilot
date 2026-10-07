@@ -65,3 +65,12 @@ it('renders tables and task lists', function (): void {
         ->toContain('type="checkbox"')
         ->not->toContain('| --- |');
 });
+
+it('keeps every line of an issue-like text when asked to', function (): void {
+    $markdown = "**Epic:** EP-001 | **Status:** TODO\n**Blocked by:** -\n\n**User Story**\nAs a member,\nI want to book a class";
+
+    expect(Markdown::toHtml($markdown))->not->toContain('<br')
+        ->and(Markdown::toHtml($markdown, true))
+        ->toContain("TODO<br />\n<strong>Blocked by:</strong> -")
+        ->toContain("As a member,<br />\nI want to book a class");
+});

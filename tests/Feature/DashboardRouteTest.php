@@ -320,6 +320,17 @@ it('shows spec detail with tasks', function (): void {
         ->assertSee('task-accordion', false);
 });
 
+it('shows a spec body line by line without repeating its title', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    addSpec(['body' => "#### US-001: Login\n\n**Epic:** EP-001 | **Priority:** HIGH | **Points:** 3 | **Status:** TODO\n**Blocked by:** -\n\n".validSpecBody()]);
+
+    $html = (string) $this->get('/larapilot/specs/US-001')->assertOk()->getContent();
+
+    expect($html)->not->toMatch('#<h4[^>]*>US-001: Login</h4>#')
+        ->and($html)->toContain("TODO<br />\n<strong>Blocked by:</strong> -")
+        ->and($html)->toContain("As a user,<br />\nI want to log in,");
+});
+
 it('links mockups to spec detail when HTML exists', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     addSpec();

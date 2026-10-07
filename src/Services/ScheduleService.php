@@ -152,7 +152,7 @@ class ScheduleService
 
         foreach ($inputs['schedule']['deadlines'] ?? [] as $deadline) {
             $date = PlanDate::day($deadline['date'] ?? null) ?? '';
-            $status = (string) ($deadline['status'] ?? 'on_track');
+            $status = $this->usage->deadlineStatus($deadline);
             $release = trim((string) ($deadline['release'] ?? '')) ?: null;
             // A milestone that names a release waits for that release, not for the whole backlog.
             $releaseEnd = $release !== null ? $this->usage->releaseForecast($release, $gantt) : null;

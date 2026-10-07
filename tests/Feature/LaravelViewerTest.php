@@ -312,7 +312,7 @@ it('shows the jobs that wait, the ones that are held, and the ones that failed',
     $this->get('/larapilot/laravel')
         ->assertOk()
         ->assertSee('Jobs waiting', false)
-        ->assertSee('Last: App\\Jobs\\ChargeCard', false);
+        ->assertSee('Last: <span title="App\\Jobs\\ChargeCard">ChargeCard</span>', false);
 });
 
 it('reads another connection when it is asked for, and only one that is configured', function (): void {

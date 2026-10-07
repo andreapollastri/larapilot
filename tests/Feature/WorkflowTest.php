@@ -155,3 +155,34 @@ it('blocks review and approval until tasks and blocking feedback are resolved', 
 
     expect(app(SpecService::class)->find('US-001')['status'])->toBe('DONE');
 });
+
+it('keeps the status line of the spec body in step with the backlog', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+
+    addSpec(['body' => "#### US-001: Login\n\n**Epic:** EP-001 | **Priority:** HIGH | **Points:** 3 | **Status:** TODO\n**Blocked by:** -\n\n".validSpecBody()."\n\n> From the ticket: **Status:** TODO\n"]);
+    $status = static fn (): string => (string) preg_replace('/^.*?\*\*Status:\*\* ([^|\n]+).*$/s', '$1', app(SpecService::class)->find('US-001')['body']);
+
+    planSpec();
+    expect($status())->toBe('PLANNED');
+
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    expect($status())->toBe('IN PROGRESS');
+
+    completeTasks();
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001'])->assertSuccessful();
+    expect($status())->toBe('REVIEW');
+
+    $this->artisan('larapilot:spec-request-changes', ['code' => 'US-001', '--file' => payloadFile(['markdown' => 'Handle the empty password.'], 'tmp-feedback.yaml')])->assertSuccessful();
+    expect($status())->toBe('TODO');
+
+    planSpec();
+    $this->artisan('larapilot:spec-start', ['code' => 'US-001'])->assertSuccessful();
+    $this->artisan('larapilot:spec-review', ['code' => 'US-001', '--force' => true])->assertSuccessful();
+    $this->artisan('larapilot:spec-approve', ['code' => 'US-001', '--force' => true])->assertSuccessful();
+
+    $body = app(SpecService::class)->find('US-001')['body'];
+
+    expect($status())->toBe('DONE')
+        ->and($body)->toContain('**Points:** 3 | **Status:** DONE')
+        ->and($body)->toContain('> From the ticket: **Status:** TODO');
+});
