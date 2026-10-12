@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Testing\TestResponse;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\FileManagerService;
 use Larapilot\Support\MockupAssetResolver;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 function material(string $relative, string $contents = 'x'): string
 {
@@ -407,6 +409,21 @@ function fileManagerZip(string $bytes): array
     return $files;
 }
 
+/**
+ * The bytes of a file the manager sends. A file on disk is read from there;
+ * a stream is read with streamedContent().
+ */
+function fileManagerBody(TestResponse $response): string
+{
+    $raw = $response->baseResponse;
+
+    if ($raw instanceof BinaryFileResponse) {
+        return (string) file_get_contents($raw->getFile()->getPathname());
+    }
+
+    return $response->streamedContent();
+}
+
 it('is for admins alone on a shared environment', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     material('brand/logo.png', 'png');
@@ -454,7 +471,9 @@ it('zips what a folder shows, and shows an env file as it is outside production'
 
     // Outside production the values of .env are shown and downloaded as they are.
     $this->get('/larapilot/files/client-materials/app/.env')->assertOk()->assertSee('hunter2-env', false)->assertDontSee('values hidden', false);
-    expect($this->get('/larapilot/files/raw/client-materials/app/.env?download=1')->assertOk()->streamedContent() ?: '')->toBeString();
+    $download = $this->get('/larapilot/files/raw/client-materials/app/.env?download=1')->assertOk();
+    expect($download->headers->get('Content-Disposition'))->toContain('attachment')
+        ->and(fileManagerBody($download))->toBe("APP_NAME=Fjord\nDB_PASSWORD=hunter2-env\n");
 
     $this->get('/larapilot/files/client-materials')->assertOk()->assertSee('Download zip', false)->assertSee('/larapilot/files/zip/client-materials', false);
 
