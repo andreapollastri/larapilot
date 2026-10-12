@@ -73,6 +73,34 @@ function withBoostJson(array $boost, callable $test): void
     }
 }
 
+/**
+ * Why this PHP and Laravel cannot install Boost 2, or null when they can.
+ * `boostTwoBlockedBy()` reports that before the constraint in composer.json.
+ */
+function boostTwoPlatformBlock(): ?string
+{
+    if (PHP_VERSION_ID < 80200) {
+        return 'PHP 8.2';
+    }
+
+    if (version_compare(app()->version(), BoostPackageService::BOOST_TWO_MIN_LARAVEL, '<')) {
+        return 'Laravel '.BoostPackageService::BOOST_TWO_MIN_LARAVEL;
+    }
+
+    return null;
+}
+
+function boostTwo(): PackagedSkillService
+{
+    return new class(app(ConfigService::class)) extends PackagedSkillService
+    {
+        public function boostPublishesSkills(): bool
+        {
+            return true;
+        }
+    };
+}
+
 function boostOne(): PackagedSkillService
 {
     $service = new class(app(ConfigService::class)) extends PackagedSkillService
@@ -245,12 +273,22 @@ it('keeps Boost 1 when Boost 2 cannot install', function (): void {
         }
     };
 
-    withComposerJson("{\n    \"require-dev\": {\n        \"laravel/boost\": \"^1.8\"\n    }\n}\n", function () use ($boost): void {
-        expect($boost->boostTwoBlockedBy())->toContain('^1.8');
+    $platform = boostTwoPlatformBlock();
+
+    withComposerJson("{\n    \"require-dev\": {\n        \"laravel/boost\": \"^1.8\"\n    }\n}\n", function () use ($boost, $platform): void {
+        expect($boost->boostTwoBlockedBy())->toContain($platform ?? '^1.8');
     });
 
-    withComposerJson("{\n    \"require-dev\": {\n        \"laravel/boost\": \"^1.8|^2.0\"\n    }\n}\n", function () use ($boost): void {
-        expect($boost->boostTwoBlockedBy())->toBeNull();
+    withComposerJson("{\n    \"require-dev\": {\n        \"laravel/boost\": \"^1.8|^2.0\"\n    }\n}\n", function () use ($boost, $platform): void {
+        $blocked = $boost->boostTwoBlockedBy();
+
+        if ($platform === null) {
+            expect($blocked)->toBeNull();
+
+            return;
+        }
+
+        expect($blocked)->toContain($platform);
     });
 
     $current = new class(app()) extends BoostPackageService
@@ -310,7 +348,7 @@ it('publishes the packaged skills itself when Boost publishes none', function ()
 });
 
 it('adds the package to the Boost 2 package list only when there is one', function (): void {
-    $skills = app(PackagedSkillService::class);
+    $skills = boostTwo();
 
     withBoostJson(['agents' => ['claude_code'], 'packages' => ['livewire/flux']], function () use ($skills): void {
         expect($skills->listInBoostJson())->toBe('packages')
@@ -383,7 +421,9 @@ it('never lets a custom skill take the name of a Larapilot or Boost skill', func
     expect(fn () => app(CustomSkillService::class)->write('larapilot-implement', $content))
         ->toThrow(InvalidArgumentException::class, 'is a skill of Larapilot');
 
-    expect(app(CustomSkillService::class)->reservedBy('infer-conventions'))->toBe('Laravel Boost');
+    if (app(PackagedSkillService::class)->boostPublishesSkills()) {
+        expect(app(CustomSkillService::class)->reservedBy('infer-conventions'))->toBe('Laravel Boost');
+    }
 
     $files = app(FileManagerService::class);
 

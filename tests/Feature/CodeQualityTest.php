@@ -14,9 +14,14 @@ it('scaffolds pint and larastan config on install', function (): void {
         ->and(base_path('pint.json'))->toBeFile();
 
     $composer = json_decode((string) file_get_contents(base_path('composer.json')), true);
+    $present = app(CodeQualityService::class)->status()['composer_require_dev'];
 
-    expect($composer['require-dev']['laravel/pint'] ?? null)->not->toBeNull()
-        ->and($composer['require-dev']['larastan/larastan'] ?? null)->not->toBeNull()
+    // Pint ships with this package, so the suite already has it installed and
+    // install leaves it out of composer.json. Larastan does not: it is declared.
+    expect($present[CodeQualityService::PINT_PACKAGE])->toBeTrue()
+        ->and($present[CodeQualityService::LARASTAN_PACKAGE])->toBeTrue()
+        ->and($composer['require-dev'][CodeQualityService::LARASTAN_PACKAGE] ?? null)
+        ->toBe(CodeQualityService::PACKAGE_CONSTRAINTS[CodeQualityService::LARASTAN_PACKAGE])
         ->and($composer['scripts']['lint'] ?? null)->toBe('pint')
         ->and($composer['scripts']['analyse'] ?? null)->toContain('phpstan analyse');
 });
