@@ -10,6 +10,16 @@ A Larapilot skill starts with **`php artisan larapilot:context {skill}`**. One e
 - Do not read what `runtime.loaded` lists, nor a file this conversation already read: it is still here.
 - Read a `runtime.on_demand` file only when its `when` comes true.
 - Pass `--session={data.session}` on every later `context` call of the conversation. After the conversation was compacted, pass `--fresh`: the token survives a summary, the rules do not.
+@php
+    try {
+        $larapilotArtisan = app(\Larapilot\Services\ConfigService::class)->artisanCommand();
+    } catch (\Throwable) {
+        $larapilotArtisan = 'php artisan';
+    }
+@endphp
+@if ($larapilotArtisan !== 'php artisan')
+- **Artisan runs as `{!! $larapilotArtisan !!}` in this project** — read every `php artisan …` of a Larapilot skill, runtime file, or hint as `{!! $larapilotArtisan !!} …`, the `context` call first; `data.artisan` says the same. The envelope paths are relative to the project root: read them from there.
+@endif
 
 The files are compiled for the project and hold only the rules its settings call for. Honor `data.settings` before planning or implementing, and never apply from memory a rule the files do not show. Outside a skill, load no Larapilot runtime file.
 
@@ -21,7 +31,7 @@ The files are compiled for the project and hold only the rules its settings call
 - A change to the PRD that is neither — sharpen, re-prioritize, re-scope, answer an open question, upgrade an older PRD → `larapilot-prd`. A PRD edited by hand → `larapilot-prd` to reconcile history, validation, and backlog
 - Backlog → `larapilot-spec`. Plan → `larapilot-plan`. Implement → `larapilot-implement`. Accept → `larapilot-review`
 - Mockups → `larapilot-design`. External frontend repo — a single app or a monorepo, its agent rules, a handoff to its team → `larapilot-frontend-companion`
-- Ship → `larapilot-ship`. Releases, when `release_mode` is YES → `larapilot-release`
+- Ship → `larapilot-ship`. Versions, when `release_mode` is YES — which story targets which version, where a version stands, its release notes, its release branch → `larapilot-release`; every other skill then works inside a version and names it (`.larapilot/runtime-versions.md`)
 - Upgrade Laravel → `larapilot-laravel-upgrade`, PHP → `larapilot-php-upgrade`, the database or its engine → `larapilot-db-upgrade`: each checks readiness first (`larapilot:upgrade-check`), reports the criticalities, and changes nothing until the user chooses. Vulnerable dependencies (CVE) and the SBOM → `larapilot-vendor-check`
 - Settings → `larapilot-settings`. Usage → `larapilot-usage`. Re-plan the order and the dates of delivery → `larapilot-schedule`. Quote → `larapilot-economics`
 - Tracker, Backstage, project handbook, custom skills → the matching `larapilot-*` skill

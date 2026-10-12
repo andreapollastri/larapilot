@@ -87,6 +87,7 @@ class ConfigService
 
         return [
             'project_root' => $this->projectRoot(),
+            'artisan' => $this->artisanCommand(),
             'connector' => $config['connector'] ?? 'file',
             'paths' => [
                 'prd' => $this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md'),
@@ -109,6 +110,7 @@ class ConfigService
                 'code_history' => $this->absolutePath($config['paths']['code_history'] ?? '.larapilot/code-history.yaml'),
                 'releases' => $this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml'),
                 'roadmap' => $this->absolutePath($config['paths']['roadmap'] ?? '.larapilot/roadmap.yaml'),
+                'release_notes' => $this->absolutePath($config['paths']['release_notes'] ?? '.larapilot/docs/releases/'),
                 'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? self::PROJECT_DOCS_PATH),
                 'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
                 'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
@@ -385,6 +387,7 @@ class ConfigService
      *     git_mode: string,
      *     testing: string,
      *     account: string,
+     *     quality_scope: string,
      *     auto_approve: string,
      *     lucille: string,
      *     decision_log: string,
@@ -427,6 +430,7 @@ class ConfigService
             'git_mode' => (string) $merged['git_mode'],
             'testing' => (string) $merged['testing'],
             'account' => $this->normalizeAccount($merged['account'] ?? 'NONE'),
+            'quality_scope' => $this->normalizeQualityScope($merged['quality_scope'] ?? 'ALL'),
         ];
 
         foreach ($boolDefaults as $key => $default) {
@@ -501,6 +505,7 @@ class ConfigService
      *     git_mode: string,
      *     testing: string,
      *     account: string,
+     *     quality_scope: string,
      *     auto_approve: bool,
      *     lucille: bool,
      *     decision_log: bool,
@@ -541,6 +546,7 @@ class ConfigService
             'git_mode' => (string) ($defaults['git_mode'] ?? 'GITFLOW'),
             'testing' => (string) ($defaults['testing'] ?? 'NORMAL'),
             'account' => $this->normalizeAccount($defaults['account'] ?? 'NONE'),
+            'quality_scope' => $this->normalizeQualityScope($defaults['quality_scope'] ?? 'ALL'),
         ];
 
         foreach ($boolDefaults as $key => $default) {
@@ -678,7 +684,11 @@ class ConfigService
                 continue;
             }
 
-            $settings[$key] = $key === 'account' ? $this->normalizeAccount($value) : $value;
+            $settings[$key] = match ($key) {
+                'account' => $this->normalizeAccount($value),
+                'quality_scope' => $this->normalizeQualityScope($value),
+                default => $value,
+            };
         }
 
         if (array_key_exists('boogle', $partial)) {
@@ -1074,7 +1084,8 @@ class ConfigService
             && in_array($settings['backlog'], $this->allowedBacklogModes(), true)
             && in_array($settings['git_mode'], $this->allowedGitModes(), true)
             && in_array($settings['testing'], $this->allowedTestingModes(), true)
-            && in_array($settings['account'], $this->allowedAccountModes(), true);
+            && in_array($settings['account'], $this->allowedAccountModes(), true)
+            && in_array($settings['quality_scope'], $this->allowedQualityScopes(), true);
 
         foreach (array_keys($this->booleanSettingDefaults()) as $key) {
             if (! in_array($settings[$key] ?? null, $this->allowedYesNoModes(), true)) {
@@ -1155,6 +1166,29 @@ class ConfigService
     public function allowedTestingModes(): array
     {
         return ['MINIMAL', 'NORMAL', 'BEST'];
+    }
+
+    /**
+     * What `larapilot:quality` checks: the whole repository, or the files
+     * the branch changed — the way into a codebase that was never formatted.
+     *
+     * @return list<string>
+     */
+    public function allowedQualityScopes(): array
+    {
+        return ['ALL', 'CHANGED'];
+    }
+
+    public function qualityScope(): string
+    {
+        return $this->settings()['quality_scope'];
+    }
+
+    public function normalizeQualityScope(mixed $value): string
+    {
+        $scope = strtoupper(trim((string) $value));
+
+        return in_array($scope, $this->allowedQualityScopes(), true) ? $scope : 'ALL';
     }
 
     /**
@@ -1387,6 +1421,107 @@ class ConfigService
         }
 
         return rtrim($this->projectRoot(), '/').'/'.ltrim($relative, '/');
+    }
+
+    /**
+     * Make sure the project `.gitignore` lists an entry, with a comment line
+     * above it. Best-effort: false when it was already there or the file
+     * cannot be written.
+     */
+    public function ensureGitignored(string $entry, string $comment): bool
+    {
+        $gitignore = rtrim($this->projectRoot(), '/\\').'/.gitignore';
+        $existing = is_file($gitignore) ? (string) file_get_contents($gitignore) : '';
+
+        foreach (preg_split('/\r\n|\r|\n/', $existing) ?: [] as $line) {
+            if (trim($line) === $entry || '/'.trim($line) === $entry) {
+                return false;
+            }
+        }
+
+        $prefix = ($existing !== '' && ! str_ends_with($existing, "\n")) ? "\n" : '';
+
+        return @file_put_contents($gitignore, $existing.$prefix."\n# ".$comment."\n".$entry."\n") !== false;
+    }
+
+    /**
+     * The payload files the skills write under `.larapilot/` and delete once
+     * a command has read them. A skill cut short leaves one behind: it is
+     * never committed.
+     */
+    public function ignoreTemporaryFiles(): bool
+    {
+        return $this->ensureGitignored('/.larapilot/tmp-*', 'Larapilot skill payloads (.larapilot/tmp-*) — temporary, never commit');
+    }
+
+    /**
+     * How an agent runs Artisan here: `LARAPILOT_ARTISAN`, else Sail when
+     * Boost was set up for it, else `php artisan`.
+     */
+    public function artisanCommand(): string
+    {
+        $configured = trim((string) config('larapilot.artisan', ''));
+
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        $boost = rtrim($this->projectRoot(), '/\\').'/boost.json';
+        $decoded = is_file($boost) ? json_decode((string) file_get_contents($boost), true) : null;
+
+        if (is_array($decoded) && ($decoded['sail'] ?? false) === true) {
+            $sail = trim((string) config('boost.executable_paths.sail', '')) ?: 'vendor/bin/sail';
+
+            return $sail.' artisan';
+        }
+
+        return 'php artisan';
+    }
+
+    /**
+     * Whether the envelopes give paths relative to the project root. `auto`
+     * says yes when Artisan runs in a container — through a command other
+     * than `php artisan`, or inside Sail — and the agent reads the files
+     * from the host, where `/var/www/html` does not exist.
+     */
+    public function agentPathsRelative(): bool
+    {
+        $mode = strtolower(trim((string) config('larapilot.agent_paths', 'auto')));
+
+        if ($mode === 'relative' || $mode === 'absolute') {
+            return $mode === 'relative';
+        }
+
+        if (getenv('REMOTE_CONTAINERS') === 'true') {
+            // A dev container: the agent runs in there too.
+            return false;
+        }
+
+        return $this->artisanCommand() !== 'php artisan' || getenv('LARAVEL_SAIL') === '1';
+    }
+
+    /**
+     * A value of an envelope with the project root taken out of every path
+     * it holds, when the envelopes speak in relative paths: the root itself
+     * becomes `.`.
+     */
+    public function forAgent(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            return array_map(fn (mixed $item): mixed => $this->forAgent($item), $value);
+        }
+
+        if (! is_string($value) || $value === '') {
+            return $value;
+        }
+
+        $root = rtrim($this->projectRoot(), '/\\');
+
+        if ($value === $root || $value === $root.'/') {
+            return '.';
+        }
+
+        return str_contains($value, $root.'/') ? str_replace($root.'/', '', $value) : $value;
     }
 
     public function relativePath(string $absolute): string

@@ -137,6 +137,10 @@
         $sprint = is_array($sprint ?? null) ? $sprint : ['hours_per_day' => 6.0, 'days_per_week' => 5, 'weeks' => 2, 'hours' => 60.0, 'source' => 'default'];
         $measured = is_array($measured ?? null) ? $measured : null;
         $epics = is_array($epics ?? null) ? $epics : [];
+        $versionRows = is_array($versions ?? null) ? $versions : [];
+        $scope = is_array($scope ?? null) ? $scope : ['enabled' => false, 'selected' => [], 'versions' => []];
+        $scoped = ($scope['selected'] ?? []) !== [];
+        $riskLabel = ['late' => 'Late', 'overdue' => 'Overdue', 'on_track' => 'On track'];
         $assumptions = is_array($assumptions ?? null) ? $assumptions : [];
         $isMeasured = ($ai['basis'] ?? 'model') === 'measured';
         $realistic = is_array($ai['realistic'] ?? null) ? $ai['realistic'] : [];
@@ -152,11 +156,21 @@
             <p class="sub">How long the backlog takes: one person on two-week sprints, and the same work with Larapilot. The points and statuses are the Board's; the hours a point stands for are the ones <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a> prices with.</p>
         </div>
         <div class="page-actions">
-            <a class="btn ghost" href="{{ route('larapilot.dashboard.forecast.report') }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report.md</a>
+            <a class="btn ghost" href="{{ route('larapilot.dashboard.forecast.report', $scoped ? ['version' => implode(',', $scope['selected'])] : []) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download {{ $scoped ? 'scoped ' : '' }}report.md</a>
         </div>
     </header>
 
-    @if (($specs['total'] ?? 0) === 0)
+    @if (($scope['enabled'] ?? false) && ($scope['versions'] ?? []) !== [])
+        @include('larapilot::dashboard.partials.version-scope', ['scope' => $scope, 'scopeRoute' => 'larapilot.dashboard.forecast'])
+    @endif
+
+    @if (($specs['total'] ?? 0) === 0 && $scoped)
+        <section class="card">
+            <div class="empty">
+                <p><strong>No story targets the versions in scope.</strong> <a href="{{ route('larapilot.dashboard.forecast', ['version' => 'all']) }}">Forecast every version</a>.</p>
+            </div>
+        </section>
+    @elseif (($specs['total'] ?? 0) === 0)
         <section class="card">
             <div class="empty">
                 <p><strong>No specs in the backlog yet.</strong> Once the backlog holds user stories with story points, this page says how many hours and sprints they take for one person, and what the same work takes with Larapilot.</p>
@@ -275,6 +289,62 @@
             </ul>
         </section>
 
+        @if ($versionRows !== [])
+            <section class="card panel forecast-panel" id="versions-panel">
+                <h3>By version</h3>
+                <p class="hint">What each version still needs, oldest first: story points, the hours left for one person and with Larapilot ({{ $isMeasured ? 'measured' : 'the realistic case' }}), the sprints left, and the day its last open story is forecast to land on the <a href="{{ route('larapilot.dashboard.plan') }}">Plan</a> against its milestone.</p>
+                <div class="table-wrap">
+                <table class="epics" id="versions-table">
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Specs</th>
+                            <th>SP</th>
+                            <th>Done</th>
+                            <th>Human left</th>
+                            <th>AI left</th>
+                            <th>Sprints left</th>
+                            <th>Forecast</th>
+                            <th>Milestone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($versionRows as $row)
+                            <tr>
+                                <td>
+                                    @if ($row['version'] === \Larapilot\Services\VersionService::NONE)
+                                        <span class="is-blank">No version</span>
+                                    @else
+                                        <strong><a href="{{ route('larapilot.dashboard.versions.show', ['version' => $row['version']]) }}">v{{ $row['version'] }}</a></strong>
+                                        <span class="epic-title">{{ $row['title'] }}{{ $row['title'] !== '' ? ' · ' : '' }}{{ str_replace('_', ' ', $row['status']) }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $row['specs'] }}</td>
+                                <td @class(['is-blank' => $row['points'] === 0])>{{ $row['points'] }}</td>
+                                <td @class(['is-blank' => $row['points_done'] === 0])>{{ $row['points_done'] }}</td>
+                                <td @class(['is-blank' => $row['points_remaining'] === 0])>{{ $n($row['human_hours_remaining']) }} h</td>
+                                <td @class(['is-blank' => $row['points_remaining'] === 0])>{{ $n($row['ai_hours_remaining']) }} h</td>
+                                <td @class(['is-blank' => $row['points_remaining'] === 0])>{{ $row['sprints_remaining'] }}</td>
+                                <td @class(['is-blank' => $row['forecast_end'] === null])>{{ $row['forecast_end'] ?? '—' }}</td>
+                                <td @class(['is-blank' => $row['milestone'] === null])>
+                                    @if (is_array($row['milestone']))
+                                        {{ $row['milestone']['date'] }}
+                                        @if ($row['risk'] !== null)
+                                            <span @class(['chip', 'stale' => in_array($row['risk'], ['late', 'overdue'], true), 'live' => $row['risk'] === 'on_track'])>{{ $riskLabel[$row['risk']] ?? $row['risk'] }}</span>
+                                        @endif
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                </div>
+                <p class="hint epics-note">Sprints are counted version by version and rounded up. The forecast day comes from the delivery chart, which orders open work by priority and blockers, not by version.</p>
+            </section>
+        @endif
+
         <section class="card panel forecast-panel" id="epics-panel">
             <h3>By epic</h3>
             <p class="hint">Story points, hours for one person, hours with Larapilot ({{ $isMeasured ? 'measured' : 'the realistic case' }}), and the sprints one person needs. The specs without an epic close the list.</p>
@@ -313,7 +383,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Whole backlog</td>
+                        <td>{{ $scoped ? 'Versions in scope' : 'Whole backlog' }}</td>
                         <td>{{ $specs['total'] }}</td>
                         <td>{{ $points['total'] }}</td>
                         <td>{{ $points['done'] }}</td>

@@ -117,6 +117,7 @@ final class AccessPolicy
             'prd' => ['label' => 'PRD', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.prd', 'larapilot.dashboard.prd.*']],
             'inception' => ['label' => 'Inception', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.inception']],
             'plan' => ['label' => 'Plan', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.plan', 'larapilot.dashboard.plan.*']],
+            'versions' => ['label' => 'Versions', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.versions', 'larapilot.dashboard.versions.*']],
             'roadmap' => ['label' => 'Roadmap', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.roadmap', 'larapilot.dashboard.roadmap.*', 'larapilot.roadmap.public']],
             'design' => ['label' => 'Design', 'roles' => $everyone, 'routes' => ['larapilot.dashboard.design', 'larapilot.dashboard.design.*', 'larapilot.mockups.*', 'larapilot.mockup-assets.*']],
             // Workspace — the project and the machine it runs on: the people who build it.

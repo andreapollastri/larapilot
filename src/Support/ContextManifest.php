@@ -85,6 +85,7 @@ final class ContextManifest
                     'discovery-8',
                     'discovery-3?client_materials=populated or legacy=populated',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'on_demand' => [
@@ -117,6 +118,7 @@ final class ContextManifest
                     'dev-docs',
                     'dev-docs-catchup',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'on_demand' => [
@@ -142,6 +144,7 @@ final class ContextManifest
                     'discovery-4',
                     'discovery-7',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'on_demand' => [
@@ -158,6 +161,7 @@ final class ContextManifest
                     'core-language',
                     'ops-1',
                     'ops-2',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'on_demand' => [
@@ -169,6 +173,7 @@ final class ContextManifest
 
             'triage' => [
                 'category' => 'support',
+                'read' => ['versions?release_mode=YES'],
                 'paths' => ['prd'],
             ],
 
@@ -250,6 +255,7 @@ final class ContextManifest
                     'discovery-4',
                     'discovery-7',
                     'discovery-3?client_materials=populated or legacy=populated or research=populated',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'on_demand' => [
@@ -270,6 +276,7 @@ final class ContextManifest
                     'dev-docs',
                     'task-templates',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'frontend?frontend=external',
                     'hooks?hooks=YES',
                 ],
@@ -303,6 +310,7 @@ final class ContextManifest
                     'dev-docs',
                     'dev-docs-catchup?dev_docs=undocumented',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'project-docs?project_docs=YES',
                     'frontend?frontend=external',
                     'hooks?hooks=YES',
@@ -330,6 +338,7 @@ final class ContextManifest
                 'read' => [
                     'delivery-2',
                     'dev-docs',
+                    'versions?release_mode=YES',
                     'project-docs?project_docs=YES',
                     'frontend?frontend=external',
                     'hooks?hooks=YES',
@@ -349,6 +358,7 @@ final class ContextManifest
                 'read' => [
                     'core-subagents?effort!=ECO',
                     'spec-worker?effort!=ECO',
+                    'versions?release_mode=YES',
                     'hooks?hooks=YES',
                 ],
                 'include' => [
@@ -381,6 +391,7 @@ final class ContextManifest
                     'ops-2',
                     'dev-docs',
                     'release?release_mode=YES',
+                    'versions?release_mode=YES',
                     'project-docs?project_docs=YES',
                     'hooks?hooks=YES',
                 ],
@@ -388,7 +399,7 @@ final class ContextManifest
                     'ship-1' => 'The PRD does not record the deploy platform, the edge, the cloud, or the observability stack.',
                     'ux-3' => 'Phase 5, public sites: SEO structure behind the launch checks.',
                 ],
-                'paths' => ['prd', 'security', 'launch', 'support', 'dev_docs', 'releases'],
+                'paths' => ['prd', 'security', 'launch', 'support', 'dev_docs', 'releases', 'release_notes'],
                 'slices' => ['dev_docs'],
             ],
 
@@ -414,6 +425,7 @@ final class ContextManifest
 
             'schedule' => [
                 'category' => 'planning',
+                'read' => ['versions?release_mode=YES'],
                 'on_demand' => [
                     'ops-4' => 'A deadline, a milestone, or the ledger behind the forecast is in question: Usage Ledger & Schedule.',
                 ],
@@ -433,11 +445,11 @@ final class ContextManifest
 
             'release' => [
                 'category' => 'other',
-                'read' => ['release', 'hooks?hooks=YES'],
+                'read' => ['release', 'versions?release_mode=YES', 'hooks?hooks=YES'],
                 'on_demand' => [
                     'ship-2' => 'The release is shipped in this session: deploy runbooks and the security gate.',
                 ],
-                'paths' => ['releases', 'prd'],
+                'paths' => ['releases', 'release_notes', 'prd'],
             ],
 
             'project-docs' => [

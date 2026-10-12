@@ -18,6 +18,7 @@ use Larapilot\Http\Controllers\LogViewerController;
 use Larapilot\Http\Controllers\RoadmapController;
 use Larapilot\Http\Controllers\StackController;
 use Larapilot\Http\Controllers\UsersController;
+use Larapilot\Http\Controllers\VersionsController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
 use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
@@ -149,6 +150,17 @@ class DashboardRouteRegistrar
 
                 Route::post('/roadmap/regenerate', [RoadmapController::class, 'regenerate'])
                     ->name('larapilot.dashboard.roadmap.regenerate');
+
+                Route::get('/versions', [VersionsController::class, 'index'])
+                    ->name('larapilot.dashboard.versions');
+
+                Route::get('/versions/{version}', [VersionsController::class, 'show'])
+                    ->where('version', 'v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?')
+                    ->name('larapilot.dashboard.versions.show');
+
+                Route::get('/versions/{version}/notes', [VersionsController::class, 'notes'])
+                    ->where('version', 'v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?')
+                    ->name('larapilot.dashboard.versions.notes');
 
                 Route::get('/forecast', [ForecastController::class, 'index'])
                     ->name('larapilot.dashboard.forecast');

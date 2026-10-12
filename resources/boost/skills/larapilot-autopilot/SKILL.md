@@ -55,7 +55,7 @@ Respect user filters:
 
 ## Execution
 
-Process specs one at a time in priority order (same ordering as `spec-next`). Follow **Spec worker** in `spec-worker.md` — that file is the contract. Do not re-derive it.
+Process specs one at a time in priority order (same ordering as `spec-next`: with release mode on, the version the work is on first). **One version at a time** (`versions.md`): when `data.release.current` has no open story left, stop the batch and hand over to `/larapilot-release` (notes, ship) instead of starting the next version — unless the user asked to run across versions. A story with no version is not started under release mode: list it as blocked on its version. Follow **Spec worker** in `spec-worker.md` — that file is the contract. Do not re-derive it.
 
 When `effort` is `ECO`, or the editor cannot spawn a writing sub-agent: run `larapilot-plan` and `larapilot-implement` inline in this session, including their own sub-agent rules (none under `ECO`).
 
@@ -63,7 +63,7 @@ Otherwise, for each spec: plan worker, then parent `validate-plan` / `spec-plan`
 
 After each spec:
 
-- Report progress in one line (Output Economy): code, status transition, task count, blocker if any
+- Report progress in one line (Output Economy): code, status transition, task count, blocker if any — and the version line under release mode
 - On blocker: log, skip or stop per policy. A `BLOCKED` return is an AskQuestion on this session, then resume or re-spawn with the decision — not a silent skip
 - When implement finishes at `REVIEW` and `auto_approve` is `YES`: one-line checklist (criteria met / tests / residual risk) then `spec-approve` in the same turn — never invent approval if Critical blockers remain; leave in `REVIEW` and report
 

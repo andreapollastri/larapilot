@@ -483,6 +483,7 @@ it('ships packs whose markers are balanced and name real settings', function ():
         'backlog' => $config->allowedBacklogModes(),
         'git_mode' => $config->allowedGitModes(),
         'testing' => $config->allowedTestingModes(),
+        'quality_scope' => $config->allowedQualityScopes(),
         'account' => $config->allowedAccountModes(),
     ] + array_intersect_key(ContextManifest::FACTS, array_flip(ContextManifest::MARKER_FACTS));
 
@@ -580,7 +581,7 @@ it('keeps the manifest, the skills, and the packs in step', function (): void {
             ));
         }
 
-        preg_match_all('/`((?:core|delivery|discovery|ops|ux|ship|economics|dev-docs|spec-worker|release|project-docs|custom-skills|task-templates|hooks)[a-z0-9-]*(?:\.full)?)\.md`/', $body, $files);
+        preg_match_all('/`((?:core|delivery|discovery|ops|ux|ship|economics|dev-docs|spec-worker|release|versions|project-docs|custom-skills|task-templates|hooks)[a-z0-9-]*(?:\.full)?)\.md`/', $body, $files);
 
         foreach (array_unique($files[1]) as $pack) {
             expect(in_array($pack, $reachable, true))->toBeTrue("{$skill}: {$pack}.md is not in its envelope");

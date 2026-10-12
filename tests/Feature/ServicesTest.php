@@ -80,6 +80,7 @@ it('exposes default project settings and updates them', function (): void {
         'git_mode' => 'GITFLOW',
         'testing' => 'NORMAL',
         'account' => 'NONE',
+        'quality_scope' => 'ALL',
         'auto_approve' => 'NO',
         'lucille' => 'YES',
         'decision_log' => 'YES',

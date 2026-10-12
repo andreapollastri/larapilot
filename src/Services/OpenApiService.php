@@ -38,6 +38,7 @@ class OpenApiService
             'tags' => [
                 ['name' => 'Board', 'description' => 'Kanban board overview'],
                 ['name' => 'Specs', 'description' => 'User stories (backlog specs)'],
+                ['name' => 'Versions', 'description' => 'The versions of the product: what each holds, has delivered, and is forecast to land'],
                 ['name' => 'Feedback', 'description' => 'Internal PM/dev comments on user stories'],
                 ['name' => 'PRD', 'description' => 'Product Requirements Document'],
                 ['name' => 'Backstage', 'description' => 'Software-catalog entities, TechDocs metadata, and a delivery snapshot for backstage.io'],
@@ -91,6 +92,13 @@ class OpenApiService
                                 'required' => false,
                                 'description' => 'Items per page (1-200)',
                                 'schema' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 200, 'default' => 50],
+                            ],
+                            [
+                                'name' => 'version',
+                                'in' => 'query',
+                                'required' => false,
+                                'description' => 'The stories of one or more versions, comma-separated; `none` for the stories no version claims',
+                                'schema' => ['type' => 'string', 'example' => '1.2.0,none'],
                             ],
                         ],
                         'responses' => [
@@ -168,6 +176,63 @@ class OpenApiService
                             ],
                             '404' => ['$ref' => '#/components/responses/NotFound'],
                             '422' => ['$ref' => '#/components/responses/UnprocessableEntity'],
+                        ],
+                    ],
+                ],
+                '/versions' => [
+                    'get' => [
+                        'tags' => ['Versions'],
+                        'summary' => 'List versions',
+                        'description' => 'Every version of the release ledger, oldest first: status, branch, the stories it holds (`specs`), '
+                            .'`counts` and `points` by state, `progress` (percent of the points delivered), `forecast_end` (the day its last open story ends on the delivery chart), '
+                            .'`milestone` and `risk` (`on_track`, `late`, `overdue`), and `deferred` stories. `current` is the version the work is on; `unassigned` the open stories no version claims.',
+                        'operationId' => 'listVersions',
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Versions',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'enabled' => ['type' => 'boolean'],
+                                                'release_mode' => ['type' => 'boolean'],
+                                                'current' => ['type' => ['object', 'null']],
+                                                'versions' => ['type' => 'array', 'items' => ['type' => 'object']],
+                                                'unassigned' => ['type' => 'object'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                '/versions/{version}' => [
+                    'get' => [
+                        'tags' => ['Versions'],
+                        'summary' => 'Show a version',
+                        'description' => 'One version as `/versions` lists it, with its `stories` (code, title, status, type, points, epic), its `epics`, and its release `notes` in Markdown.',
+                        'operationId' => 'showVersion',
+                        'parameters' => [
+                            [
+                                'name' => 'version',
+                                'in' => 'path',
+                                'required' => true,
+                                'description' => 'SemVer, with or without the leading `v`',
+                                'schema' => ['type' => 'string', 'example' => '1.2.0'],
+                            ],
+                        ],
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Version detail',
+                                'content' => [
+                                    'application/json' => [
+                                        'schema' => ['type' => 'object'],
+                                    ],
+                                ],
+                            ],
+                            '404' => ['$ref' => '#/components/responses/NotFound'],
                         ],
                     ],
                 ],

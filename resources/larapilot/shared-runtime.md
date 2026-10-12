@@ -38,9 +38,10 @@ Only when the command cannot run. Read the four every-skill files, then the part
 | `.larapilot/runtime-ops.md` | Feature, bug, prd, ship, usage, schedule, tracker, backstage. Index, one part per audience |
 | `.larapilot/runtime-economics.md` | Economics; settings when `account` is not `NONE`. Index |
 | `.larapilot/runtime-release.md` | Release; inception, adopt, feature, plan, implement, and ship when `release_mode` is `YES` |
+| `.larapilot/runtime-versions.md` | Inception, adopt, feature, triage, bug, spec, plan, implement, review, autopilot, schedule, release, ship when `release_mode` is `YES`: the version each step works inside |
 | `.larapilot/runtime-project-docs.md` | Project-docs; implement, review, and ship when `project_docs` is `YES` |
 | `.larapilot/runtime-hooks.md` | Inception, adopt, feature, bug, prd, spec, plan, implement, review, autopilot, ship, release when `hooks` is `YES`: what a hook that blocks or asks for a skill means. Settings and custom-skill on demand |
 | `.larapilot/runtime-upgrade.md` | Laravel-upgrade, php-upgrade, db-upgrade. Index: the Upgrade Protocol, the Laravel ladder and package playbooks, PHP and database playbooks |
 | `.larapilot/runtime-custom-skills.md` | Custom-skill |
 
-`larapilot-triage` uses the every-skill rows only: the skill it hands off to reads its own rows. `larapilot-security` and `larapilot-error` do the same. So does `larapilot-vendor-check`. A delegating autopilot parent does not read the delivery packs, the dev-docs packs, or `task-templates`: its workers do. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the table above that holds that heading.
+`larapilot-triage` uses the every-skill rows only, and the versions row: the skill it hands off to reads its own rows. `larapilot-security` and `larapilot-error` do the same. So does `larapilot-vendor-check`. A delegating autopilot parent does not read the delivery packs, the dev-docs packs, or `task-templates`: its workers do. One concept has one canonical file — reference it by file and heading, never re-paste it. A citation of the form `shared-runtime` → **Heading** means the file in the table above that holds that heading.

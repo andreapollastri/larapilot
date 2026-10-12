@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Mulberry &amp; Grand backoffice</title>
+<meta name="description" content="Group settings: a numbered index, the group profile, the five restaurants with their line bullets, service hours, notification switches, team and roles, the danger zone and a saved toast.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ny-mockup ny-body">
+<a class="ny-skip" href="#main">Skip to content</a>
+<div class="ny-app">
+<aside class="ny-rail" aria-label="Backoffice">
+<div class="ny-rail__brand"><a class="ny-logo" href="dashboard.html" aria-label="Mulberry &amp; Grand backoffice, tonight"><span class="ny-logo__mark" aria-hidden="true">&amp;</span><span class="ny-logo__text"><span class="ny-logo__word">Mulberry <em>&amp;</em> Grand</span><span class="ny-logo__sub">Backoffice</span></span></a><button type="button" class="ny-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="ny-i ny-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="ny-rail__nav" aria-label="Main">
+<p class="ny-rail__group"><span>Front of house</span><span>Mon 12</span></p>
+<a class="ny-nav-item" href="dashboard.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="ny-nav-item__label">Tonight</span><span class="ny-nav-item__count">412</span></a>
+<a class="ny-nav-item" href="resource-list.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="ny-nav-item__label">Reservations</span><span class="ny-nav-item__count">148</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="ny-nav-item__label">Guests</span><span class="ny-nav-item__count">3,906</span></a>
+<p class="ny-rail__group"><span>Kitchen</span><span>Five lines</span></p>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="ny-nav-item__label">Menus</span><span class="ny-nav-item__count">11</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg><span class="ny-nav-item__label">86 board</span><span class="ny-count ny-count--alarm" title="6 dishes sold out">6</span></a>
+<p class="ny-rail__group"><span>House</span><span>A M G L 7</span></p>
+<a class="ny-nav-item" href="empty-state.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span class="ny-nav-item__label">Venues</span><span class="ny-nav-item__count">5</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg><span class="ny-nav-item__label">Staff</span><span class="ny-nav-item__count">86</span></a>
+<a class="ny-nav-item is-active" aria-current="page" href="settings.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="ny-nav-item__label">Settings</span><span class="ny-nav-item__count"></span></a>
+</nav>
+<div class="ny-rail__foot">
+<p class="ny-rail__service"><span class="ny-dot ny-dot--live" aria-hidden="true"></span>Dinner service · all five lines open</p>
+<div class="ny-row ny-gap-12"><span class="ny-av ny-av--taxi ny-av--lg">RV</span><span class="ny-stack ny-stack--4 ny-fill"><span class="ny-strong ny-text-sm ny-truncate">Rosa Valentine</span><span class="ny-label">General manager</span></span><a class="ny-btn ny-btn--ghost ny-btn--sm ny-btn--icon" href="login.html" aria-label="Sign out"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="ny-topbar">
+<p class="ny-topbar__folio"><strong>Monday, October 12, 2026</strong><span>Late edition</span><span>6:42 PM</span></p>
+<div class="ny-topbar__search" role="search"><label class="ny-search"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="ny-search__input" type="search" placeholder="Search guests, reservations, dishes, staff"><span class="ny-kbd" aria-hidden="true">/</span></label></div>
+<div class="ny-topbar__actions">
+<a class="ny-topbar__btn" href="modal.html" aria-label="New reservation"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="ny-topbar__btn" href="#" aria-label="Notifications, 3 unread"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="ny-topbar__badge" aria-hidden="true">3</span></a>
+<button type="button" class="ny-topbar__btn" aria-label="Theme: follows the system"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="ny-main" id="main">
+<header class="ny-pagehead ny-dbl-bottom">
+<nav class="ny-pagehead__eyebrow ny-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="ny-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Settings</span></nav>
+<div><div class="ny-pagehead__title"><h1 class="ny-h1">Settings</h1><span class="ny-tag ny-tag--taxi">1 unsaved change</span></div><p class="ny-pagehead__dek">Group-wide. Changes reach all five restaurants at the next service and are written to the audit log.</p></div>
+<div class="ny-pagehead__actions"><a class="ny-btn ny-btn--ghost" href="#">Audit log</a><button type="button" class="ny-btn ny-btn--taxi"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Save changes</button></div>
+</header>
+<div class="ny-split">
+<nav class="ny-index" aria-label="Settings sections"><div class="ny-index__list">
+<a class="ny-index__item" href="#profile"><span class="ny-index__num">1.</span>Group profile<span></span></a>
+<a class="ny-index__item" href="#restaurants"><span class="ny-index__num">2.</span>Restaurants<span class="ny-nav-item__count">5</span></a>
+<a class="ny-index__item is-active" href="#hours" aria-current="true"><span class="ny-index__num">3.</span>Service hours<span class="ny-count ny-count--taxi">1</span></a>
+<a class="ny-index__item" href="#notify"><span class="ny-index__num">4.</span>Notifications<span></span></a>
+<a class="ny-index__item" href="#team"><span class="ny-index__num">5.</span>Team &amp; roles<span class="ny-nav-item__count">12</span></a>
+<a class="ny-index__item" href="#danger"><span class="ny-index__num ny-alarm-text">6.</span><span class="ny-alarm-text">Danger zone</span><span></span></a>
+</div></nav>
+<div class="ny-form">
+<section class="ny-formsec" id="profile" aria-labelledby="s1">
+<div class="ny-formsec__aside"><p class="ny-formsec__num" aria-hidden="true">No. 1</p><h2 id="s1" class="ny-formsec__title">Group profile</h2><p class="ny-formsec__desc">Printed on checks, gift cards and the footer of the public site.</p></div>
+<div class="ny-formsec__body">
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="p-legal">Legal name</label><input id="p-legal" class="ny-input" type="text" value="Mulberry &amp; Grand Hospitality LLC"></div>
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="p-trade">Trading as</label><input id="p-trade" class="ny-input" type="text" value="Mulberry &amp; Grand"></div>
+<div class="ny-field ny-fs-6"><label class="ny-field__label" for="p-addr">Office address</label><input id="p-addr" class="ny-input" type="text" value="156 Mulberry St, 3rd floor, New York, NY 10013"></div>
+<div class="ny-field ny-fs-2"><label class="ny-field__label" for="p-phone">Office phone</label><input id="p-phone" class="ny-input" type="text" value="(212) 555-0148"></div>
+<div class="ny-field ny-fs-2"><label class="ny-field__label" for="p-sla">Liquor license</label><input id="p-sla" class="ny-input ny-mono" type="text" value="SLA 1301-22874" readonly></div>
+<div class="ny-field ny-fs-2"><label class="ny-field__label" for="p-tz">Time zone</label><select id="p-tz" class="ny-select" disabled><option>New York (EDT)</option></select><p class="ny-help">The book runs on New York time.</p></div>
+</div>
+</section>
+
+<section class="ny-formsec" id="restaurants" aria-labelledby="s2">
+<div class="ny-formsec__aside"><p class="ny-formsec__num" aria-hidden="true">No. 2</p><h2 id="s2" class="ny-formsec__title">Restaurants</h2><p class="ny-formsec__desc">Each restaurant is a line: its bullet and letter follow it through the book, the charts and the rota.</p><a class="ny-arrowlink ny-mt-8" href="#">Add a restaurant <svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<div class="ny-formsec__body">
+<div class="ny-fs-6 ny-table-wrap"><table class="ny-table ny-table--inset">
+<caption class="visually-hidden">The five restaurants of the group</caption>
+<thead><tr><th scope="col">Line</th><th scope="col">Restaurant</th><th scope="col" class="ny-num">Covers</th><th scope="col">Tonight</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+<tbody>
+<tr><td><span class="ny-bullet ny-bullet--md ny-bullet--a">A</span></td><td><span class="ny-table__name">Astor Oyster Room</span><span class="ny-block ny-text-xs ny-muted">412 Lafayette St · raw bar</span></td><td class="ny-num">64</td><td><span class="ny-status ny-status--good">Open</span></td><td class="ny-table__actions"><a class="ny-link ny-text-sm" href="#">Edit<span class="visually-hidden"> Astor Oyster Room</span></a></td></tr>
+<tr><td><span class="ny-bullet ny-bullet--md ny-bullet--m">M</span></td><td><span class="ny-table__name">Mulberry Trattoria</span> <span class="ny-tag ny-tag--solid">Flagship</span><span class="ny-block ny-text-xs ny-muted">156 Mulberry St · red-sauce Italian</span></td><td class="ny-num">90</td><td><span class="ny-status ny-status--good">Open</span></td><td class="ny-table__actions"><a class="ny-link ny-text-sm" href="#">Edit<span class="visually-hidden"> Mulberry Trattoria</span></a></td></tr>
+<tr><td><span class="ny-bullet ny-bullet--md ny-bullet--g">G</span></td><td><span class="ny-table__name">Grand Street Grill</span><span class="ny-block ny-text-xs ny-muted">288 Grand St · chophouse</span></td><td class="ny-num">110</td><td><span class="ny-status ny-status--good">Open</span></td><td class="ny-table__actions"><a class="ny-link ny-text-sm" href="#">Edit<span class="visually-hidden"> Grand Street Grill</span></a></td></tr>
+<tr><td><span class="ny-bullet ny-bullet--md ny-bullet--l">L</span></td><td><span class="ny-table__name">Ludlow Counter</span><span class="ny-block ny-text-xs ny-muted">97 Ludlow St · all-day diner</span></td><td class="ny-num">48</td><td><span class="ny-status ny-status--delays">Short-staffed</span></td><td class="ny-table__actions"><a class="ny-link ny-text-sm" href="#">Edit<span class="visually-hidden"> Ludlow Counter</span></a></td></tr>
+<tr><td><span class="ny-bullet ny-bullet--md ny-bullet--7">7</span></td><td><span class="ny-table__name">Seventh Avenue Supper Club</span><span class="ny-block ny-text-xs ny-muted">61 Seventh Ave S · cocktails and supper</span></td><td class="ny-num">72</td><td><span class="ny-status ny-status--good">Open</span></td><td class="ny-table__actions"><a class="ny-link ny-text-sm" href="#">Edit<span class="visually-hidden"> Seventh Avenue Supper Club</span></a></td></tr>
+</tbody>
+<tfoot><tr><td></td><td>Five restaurants</td><td class="ny-num">384</td><td colspan="2" class="ny-muted">seats across the group</td></tr></tfoot>
+</table></div>
+</div>
+</section>
+
+<section class="ny-formsec" id="hours" aria-labelledby="s3">
+<div class="ny-formsec__aside"><p class="ny-formsec__num" aria-hidden="true">No. 3</p><h2 id="s3" class="ny-formsec__title">Service hours</h2><p class="ny-formsec__desc">Group defaults for dinner. A restaurant can override them on its own page.</p><p class="ny-mt-8"><span class="ny-tag ny-tag--taxi">1 unsaved change</span></p></div>
+<div class="ny-formsec__body">
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="h-first">First seating</label><select id="h-first" class="ny-select"><option>5:00 PM</option><option>5:30 PM</option><option>6:00 PM</option></select></div>
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="h-last">Last seating</label><select id="h-last" class="ny-select is-focus"><option>11:00 PM</option><option>10:30 PM</option><option>10:00 PM</option></select><p class="ny-help">Was 10:30 PM. Not saved yet.</p></div>
+<fieldset class="ny-field ny-fs-6"><legend class="ny-field__label">Table turn for a two-top</legend><div class="ny-seg"><label class="ny-seg__opt"><input type="radio" name="turn" value="75">75 min</label><label class="ny-seg__opt"><input type="radio" name="turn" value="90">90 min</label><label class="ny-seg__opt"><input type="radio" name="turn" value="105" checked>105 min</label><label class="ny-seg__opt"><input type="radio" name="turn" value="120">120 min</label></div><p class="ny-help">Four-tops get 30 minutes more. The Supper Club always books 150.</p></fieldset>
+<div class="ny-fs-6 ny-stack ny-stack--16">
+<label class="ny-switch"><input class="ny-switch__input" type="checkbox" role="switch" checked><span class="ny-check__text"><strong>Close the book at 3 PM on holidays</strong><small>Thanksgiving, Christmas Eve and New Year’s Eve go to the phone line only.</small></span></label>
+<label class="ny-switch"><input class="ny-switch__input" type="checkbox" role="switch"><span class="ny-check__text"><strong>Take walk-ins after last seating</strong><small>Bar seats only. Ludlow Counter always does.</small></span></label>
+</div>
+</div>
+</section>
+
+<section class="ny-formsec" id="notify" aria-labelledby="s4">
+<div class="ny-formsec__aside"><p class="ny-formsec__num" aria-hidden="true">No. 4</p><h2 id="s4" class="ny-formsec__title">Notifications</h2><p class="ny-formsec__desc">For you, Rosa. Each person sets their own.</p></div>
+<div class="ny-formsec__body"><div class="ny-fs-6 ny-stack ny-stack--16">
+<label class="ny-switch"><input class="ny-switch__input" type="checkbox" role="switch" checked><span class="ny-check__text"><strong>A party of eight or more books</strong><small>Text and the bell. Usually two or three a week.</small></span></label>
+<label class="ny-switch"><input class="ny-switch__input" type="checkbox" role="switch" checked><span class="ny-check__text"><strong>A dish goes on the 86 board before 8 PM</strong><small>So the floor can stop selling it before the second turn.</small></span></label>
+<label class="ny-switch"><input class="ny-switch__input" type="checkbox" role="switch" checked><span class="ny-check__text"><strong>No-shows pass 8% at any restaurant</strong><small>Checked at the end of each service.</small></span></label>
+</div></div>
+</section>
+
+<section class="ny-section ny-section--rule" id="team" aria-labelledby="s5">
+<div class="ny-section__head"><div class="ny-row ny-row--base ny-gap-16"><p class="ny-formsec__num" aria-hidden="true">No. 5</p><h2 id="s5" class="ny-formsec__title">Team &amp; roles</h2></div><a class="ny-btn ny-btn--sm" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="M19 16v6"/><path d="M22 19h-6"/></svg> Invite</a></div>
+<div class="ny-table-wrap"><table class="ny-table ny-table--inset">
+<caption class="visually-hidden">People with backoffice access</caption>
+<thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col">Restaurants</th><th scope="col">Two-factor</th><th scope="col" class="ny-num">Last active</th></tr></thead>
+<tbody>
+<tr><td><span class="ny-person-inline"><span class="ny-av ny-av--taxi">RV</span><span><strong class="ny-block">Rosa Valentine</strong><span class="ny-block ny-text-xs ny-muted">rosa.valentine@mulberryandgrand.com</span></span></span></td><td><span class="ny-tag ny-tag--solid">Owner &amp; GM</span></td><td><span class="ny-label ny-label--ink">All five</span></td><td><span class="ny-tag ny-tag--good"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> On</span></td><td class="ny-num">now</td></tr>
+<tr><td><span class="ny-person-inline"><span class="ny-av">MB</span><span><strong class="ny-block">Marco Bellini</strong><span class="ny-block ny-text-xs ny-muted">marco.bellini@mulberryandgrand.com</span></span></span></td><td><span class="ny-tag ny-tag--solid">General manager</span></td><td><span class="ny-bullets"><span class="ny-bullet ny-bullet--sm ny-bullet--m">M</span></span></td><td><span class="ny-tag ny-tag--good"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> On</span></td><td class="ny-num">3:58 PM</td></tr>
+<tr><td><span class="ny-person-inline"><span class="ny-av ny-av--paper">TR</span><span><strong class="ny-block">Tomás Rivera</strong><span class="ny-block ny-text-xs ny-muted">tomas.rivera@mulberryandgrand.com</span></span></span></td><td><span class="ny-tag">Chef de cuisine</span></td><td><span class="ny-bullets"><span class="ny-bullet ny-bullet--sm ny-bullet--g">G</span><span class="ny-bullet ny-bullet--sm ny-bullet--l">L</span></span></td><td><span class="ny-tag ny-tag--alarm"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Off</span></td><td class="ny-num">11:05 AM</td></tr>
+<tr><td><span class="ny-person-inline"><span class="ny-av ny-av--paper">+</span><span><strong class="ny-block">priya.natarajan@gmail.com</strong><span class="ny-block ny-text-xs ny-muted">Invited Oct. 9 by Rosa D.</span></span></span></td><td><span class="ny-tag ny-tag--muted">Accounts</span></td><td><span class="ny-muted">—</span></td><td><span class="ny-muted">—</span></td><td class="ny-num"><a class="ny-link" href="#">Resend</a></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="ny-formsec" id="danger" aria-labelledby="s7">
+<div class="ny-formsec__aside"><p class="ny-formsec__num ny-alarm-text" aria-hidden="true">No. 6</p><h2 id="s7" class="ny-formsec__title">Danger zone</h2><p class="ny-formsec__desc">Cannot be undone. Owners only.</p></div>
+<div class="ny-formsec__body"><div class="ny-fs-6 ny-stack ny-stack--12">
+<div class="ny-notice ny-notice--alarm"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16h.01"/><path d="M12 8v4"/><path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg><div class="ny-notice__body"><span class="ny-notice__title">Purge guest notes older than seven years</span><span>Removes allergies, preferences and visit notes for 2,118 guests who have not dined with us since 2019. Covers and checks stay for the accounts.</span></div><button type="button" class="ny-btn ny-btn--danger ny-btn--sm">Purge notes</button></div>
+</div></div>
+</section>
+</div>
+</div>
+<footer class="ny-mainfoot"><span>Mulberry &amp; Grand Hospitality LLC · 156 Mulberry St</span><span>Last changed 4:31 PM by Rosa Valentine</span></footer>
+<div class="ny-toasts" role="status"><div class="ny-toast"><svg class="ny-i ny-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><p class="ny-toast__title">Group profile saved</p><p class="ny-toast__text">4:31 PM · on checks from the next service</p></div><button type="button" class="ny-toast__close" aria-label="Dismiss"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div>
+</main>
+</div>
+</body>
+</html>

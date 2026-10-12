@@ -9,6 +9,19 @@ return [
 
     'connector' => env('LARAPILOT_CONNECTOR', 'file'),
 
+    // How an agent runs Artisan in this project. Empty: `vendor/bin/sail artisan`
+    // when Boost was set up for Sail (`"sail": true` in boost.json), `php artisan`
+    // otherwise. Set it when the commands run anywhere else, e.g.
+    // `docker compose exec app php artisan`. The Larapilot guideline and every
+    // envelope carry it, so the skills run their commands through it.
+    'artisan' => env('LARAPILOT_ARTISAN'),
+
+    // The paths in the JSON envelopes: `absolute`, `relative` to the project
+    // root, or `auto` — relative when Artisan runs through Sail or another
+    // container, whose paths (`/var/www/html/...`) the agent on the host
+    // cannot open.
+    'agent_paths' => env('LARAPILOT_AGENT_PATHS', 'auto'),
+
     'settings' => [
         'effort' => 'STANDARD',
         'backlog' => 'STANDARD',
@@ -17,6 +30,11 @@ return [
         // Account mode — NONE, FREELANCE, or COMPANY. Unlocks /larapilot/economics
         // quotes calibrated to country tax (forfettario, SRL, Ltd, …).
         'account' => 'NONE',
+        // What `larapilot:quality` checks — ALL (the whole repository) or CHANGED (the PHP
+        // files the branch changed against its base, plus the working tree). CHANGED is
+        // the way into a codebase that was never formatted; pair it with a PHPStan
+        // baseline (`larapilot:quality --baseline`).
+        'quality_scope' => 'ALL',
         'auto_approve' => false,
         // Lucille · Project tracking (usage ledger + schedule) is ON by default; set false to exclude explicitly.
         'lucille' => true,
@@ -283,6 +301,8 @@ return [
         'releases' => '.larapilot/releases.yaml',
         // Public product roadmap wording and token (.larapilot/roadmap.yaml).
         'roadmap' => '.larapilot/roadmap.yaml',
+        // Release notes of each version, one Markdown file per version (release-notes --write).
+        'release_notes' => '.larapilot/docs/releases/',
         // Living project handbook (settings.project_docs).
         'project_docs' => '.larapilot/docs/handbook/',
         'custom_skills' => '.larapilot/skills/',

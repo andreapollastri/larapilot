@@ -1023,12 +1023,27 @@
             </div>
     </header>
 
+    @if (($view['versions'] ?? []) !== [])
+        @include('larapilot::dashboard.partials.version-scope', [
+            'scope' => $scope,
+            'scopeRoute' => 'larapilot.dashboard.plan',
+            'scopeParams' => ($view['group'] ?? 'epic') !== ($view['default'] ?? 'epic') ? ['group' => $view['group']] : [],
+        ])
+    @endif
+
     @if (($view['group'] ?? 'epic') !== 'epic' && ($bands ?? []) !== [])
         <div class="bands">
             @foreach ($bands as $band)
                 <section class="card band">
                     <div class="band-head">
-                        <h3>{{ $band['label'] }}</h3>
+                        @if ($band['kind'] === 'version' && ! empty($band['version']))
+                            <h3><a href="{{ route('larapilot.dashboard.versions.show', ['version' => $band['version']]) }}">{{ $band['label'] }}</a></h3>
+                        @else
+                            <h3>{{ $band['label'] }}</h3>
+                        @endif
+                        @if (isset($band['progress']))
+                            <span class="band-sub">{{ $band['progress'] }}% delivered</span>
+                        @endif
                         @if ($band['sub'] !== null)
                             <span class="band-sub">{{ $band['sub'] }}</span>
                         @endif

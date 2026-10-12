@@ -110,7 +110,7 @@ For each entry of `alerts`, and each epic or deadline with `slip_days` above zer
 - **Defer scope** — name the specs and lower their priority; never delete one. A change of what the product promises goes to `/larapilot-prd`
 - **Keep the date and flag it** — status `at_risk` or `delayed`
 
-A date the client fixed is not moved: reorder, or defer scope.
+A date the client fixed is not moved: reorder, or defer scope. Under release mode, settle the dates version by version, oldest first (`versions.md`).
 
 Dates that are missing (`SCHEDULE_EPIC_NO_DEADLINE`, `SCHEDULE_NO_DATES`): propose a milestone for each release in `releases`, and a deadline for an epic only when its specs are delivered together — at the `forecast_end` plus a buffer of 15 % of the working days from today, never less than 5. Write none without the user's yes.
 

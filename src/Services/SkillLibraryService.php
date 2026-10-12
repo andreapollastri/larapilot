@@ -735,7 +735,7 @@ class SkillLibraryService
 
             $relative = str_replace('\\', '/', substr($item->getPathname(), strlen($base) + 1));
 
-            if ($item->isLink() || ! $item->isFile() || in_array($relative, ['SKILL.md', 'SKILL.blade.php'], true) || in_array($item->getFilename(), ['.gitkeep', '.DS_Store'], true)) {
+            if ($item->isLink() || ! $item->isFile() || in_array($relative, ['SKILL.md', 'SKILL.blade.php'], true) || in_array($item->getFilename(), ['.gitkeep', '.DS_Store', CustomSkillService::MARKER], true)) {
                 continue;
             }
 

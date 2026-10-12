@@ -9,6 +9,7 @@ use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\DashboardAuthService;
+use Larapilot\Services\PackagedSkillService;
 use Larapilot\Services\ScheduleService;
 use Larapilot\Support\LarapilotCommand;
 use Larapilot\Support\SharedRuntime;
@@ -22,7 +23,7 @@ class UpdateCommand extends LarapilotCommand
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + latest Boost + guidelines and skills)';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills, ScheduleService $schedule, DashboardAuthService $auth): int
+    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills, ScheduleService $schedule, DashboardAuthService $auth, PackagedSkillService $packagedSkills): int
     {
         if (! $config->hasProjectConfig()) {
             return $this->failure(
@@ -36,7 +37,8 @@ class UpdateCommand extends LarapilotCommand
         $preserveDesignSystems = (bool) $this->option('preserve-design-systems');
 
         SharedRuntime::refresh(! $preserveDesignSystems);
-        $quality->install(false, false);
+        // The config files of the gate when missing; composer.json is left alone.
+        $quality->scaffold();
         $this->components->info('Larapilot docs refreshed (.larapilot/shared-runtime.md, .larapilot/task-templates.md).');
 
         $preserveDesignSystems
@@ -45,6 +47,10 @@ class UpdateCommand extends LarapilotCommand
 
         $this->moveLegacyProjectDocs($config);
         $config->ensureDirectories();
+
+        if ($config->ignoreTemporaryFiles()) {
+            $this->line('.gitignore now lists /.larapilot/tmp-*: the payloads a skill writes and deletes are never committed.');
+        }
         $this->migrateDashboardUsers($auth, $config);
         $this->realignSchedule($schedule);
 
@@ -58,7 +64,9 @@ class UpdateCommand extends LarapilotCommand
             );
         }
 
-        $customSkills->registerAll();
+        foreach (CustomSkillService::conflicts($customSkills->registerAll()) as $conflict) {
+            $this->components->warn($conflict);
+        }
 
         if ($this->option('skip-boost')) {
             $this->line('Boost package update and publishing skipped. Run php artisan larapilot:update (without --skip-boost), or composer update laravel/boost --with-dependencies && php artisan boost:update.');
@@ -87,6 +95,12 @@ class UpdateCommand extends LarapilotCommand
             );
         }
 
+        $listed = $packagedSkills->listInBoostJson();
+
+        if ($listed !== null) {
+            $this->line('andreapollastri/larapilot added to "'.$listed.'" in boost.json: Boost publishes the guidelines only of the packages listed there.');
+        }
+
         if ($this->republishBoostGuidelines($boostPackageRefreshed) !== self::SUCCESS) {
             return $this->failure(
                 'E_PRECONDITION',
@@ -96,9 +110,38 @@ class UpdateCommand extends LarapilotCommand
             );
         }
 
+        $this->publishPackagedSkills($packagedSkills, $boostPackage);
         $this->components->info('Larapilot is up to date.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Boost 1 publishes guidelines but no skills, and its 1.x line will not
+     * get them: the `/larapilot-*` skills are copied by Larapilot then.
+     */
+    protected function publishPackagedSkills(PackagedSkillService $packagedSkills, BoostPackageService $boostPackage): void
+    {
+        if ($packagedSkills->boostPublishesSkills()) {
+            return;
+        }
+
+        $published = $packagedSkills->publish();
+
+        if ($published['folders'] === []) {
+            $this->components->warn('laravel/boost '.($boostPackage->installedVersion() ?? '1.x').' publishes no skills, and no agent folder was found to copy them to. Run boost:install and choose your agents, then larapilot:update.');
+
+            return;
+        }
+
+        $this->line(sprintf(
+            'laravel/boost %s publishes no skills: Larapilot copied its own into %s (%d written, %d already current%s).',
+            $boostPackage->installedVersion() ?? '1.x',
+            implode(', ', $published['folders']),
+            count($published['written']),
+            $published['unchanged'],
+            $published['removed'] !== [] ? ', '.count($published['removed']).' retired skill(s) removed' : ''
+        ));
     }
 
     /**

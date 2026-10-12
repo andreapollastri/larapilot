@@ -52,7 +52,7 @@ When `data.settings.decision_log` is `YES`, journal material user choices (desig
 2. **Decision journal** — `.larapilot/decisions.yaml` topics such as `design system`, `admin panel`, `visual language`, `aesthetic`, `palette`
 3. **Inception choices** — `.larapilot/choices.yaml` (`admin_panel`, `frontend_topology`, …) when present
 4. **Available design systems** — scan `{paths.design_systems}/` (usually `.larapilot/design-systems/`):
-   - **Packaged** (refreshed on install/update): `filament/`, `nova/`, `adminlte/`, `starter-kit/`, `shadcn/`, `bootstrap-5/`, `tailwind/`, `material-3/`, `nordic-saas/`, `fluent/`, `modern/`, `bold-california/`, `berlin/` — see `{paths.design_systems}/README.md`
+   - **Packaged** (refreshed on install/update): `filament/`, `nova/`, `adminlte/`, `starter-kit/`, `shadcn/`, `bootstrap-5/`, `tailwind/`, `material-3/`, `nordic-saas/`, `fluent/`, `modern/`, `bold-california/`, `berlin/`, `new-york/`, `zen/` — see `{paths.design_systems}/README.md`
    - **User-added** — any **other** subfolder that looks like a system: contains `README.md`, and/or `tokens.css`, and/or `html/index.html`. Use the **folder name** as the option id (e.g. `acme-brand/` → `ACME_BRAND`). Never ignore user-uploaded references.
 5. **Boost `Application Info`** — installed packages (e.g. `filament/filament`, Flux, Bootstrap) when they make the stack **obvious**
 6. **Existing mockups** — `.larapilot/mockups/*/` README + HTML: keep **visual consistency** within the same product unless the user explicitly wants a break
@@ -96,6 +96,8 @@ Use **AskQuestion**; Elise frames trade-offs in one chat line; **copy prompts an
 | Calm, trustworthy, minimal — or no preference expressed | `nordic-saas/` (the Nordic minimal default) |
 | Consumer brand, leisure, hospitality, e-commerce with personality | `bold-california/` |
 | Agency, studio, culture, events, an editorial or avant-garde brand | `berlin/` |
+| Restaurants, hospitality, food and city media, an editorial brand with a city voice | `new-york/` |
+| The quietest possible look: black and white, much empty space — studios, craft, wellness, portfolios | `zen/` |
 
 **Round 1 — Design system (required when gate runs)**
 
@@ -255,6 +257,8 @@ When the gate selected (or skipped to) a packaged system, its mockups **must** f
 | **Modern** (SaaS, developer tools, analytics) | `modern/` | `modern-tokens.css` | Dark-first with an equal light theme, electric accent, glass surfaces, bento grids, `kbd` hints, command palette — not Filament or Material chrome |
 | **Bold California** (consumer brand, leisure, DTC shop) | `bold-california/` | `bold-california-tokens.css` | Heavy display type, sunset palette on sand, pill buttons, sticker shadows, warm night dark mode — keep it off dense admin data unless asked |
 | **Berlin** (agency, studio, culture, events venue) | `berlin/` | `berlin-tokens.css` | Monochrome grid, one signal color, hairline rules, uppercase mono micro-labels, 0–2 px corners, black-canvas dark mode — no gradients, no soft shadows |
+| **New York** (restaurant group, hospitality, food or city media) | `new-york/` | `new-york-tokens.css` | Didone headlines on newsprint, Helvetica signage bands, round subway-line bullets, one taxi-yellow accent, newspaper rules — taxi is a surface, never text on paper |
+| **Zen** (studio, craft, wellness, portfolio, a brand that wants silence) | `zen/` | `zen-tokens.css` | Black and white only, no accent, wide empty space, light headings, hairlines, status by shape not colour, one ensō ornament, inverted dark mode |
 
 Every packaged screen is **self-contained**: one `<link>` to `tokens.css`, system font stack, no CDN, no web font, no script — the gallery renders offline and the same for everyone. Mockups keep that rule; the real font is loaded by Alex in the app.
 

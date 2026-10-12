@@ -2079,7 +2079,7 @@
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
       <div class="hero-copy">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.1.0</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.2.0</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -2243,21 +2243,27 @@
         <p>Then open your editor in the project and type <code>/larapilot-</code>: the skills are listed. Pick the
           one for your situation from <a href="#first-run">First run</a>.</p>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
-            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Composer picks the latest compatible release) ·
+            href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Boost 2 needs PHP 8.2 and Laravel 11.45.3+; Composer picks Boost 1 below that) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
         <details class="more">
           <summary>Still on Laravel 10 or 11?</summary>
         <p>On Laravel 10/11 the MCP stack uses <code>illuminate/json-schema</code> — stay on a recent framework patch (Laravel <strong>11.47+</strong> recommended on 11.x).</p>
+        <p id="boost-1"><strong>Boost 1.</strong> Boost 2 needs PHP 8.2 and Laravel 11.45.3 or later, so a Laravel 10 or PHP 8.1 app runs Boost 1.x, which publishes guidelines but no skills — and its 1.x line will not get them. <code>larapilot:install</code> and <code>larapilot:update</code> then copy the <code>/larapilot-*</code> skills into the skill folders of the agents <code>boost.json</code> names (<code>.claude/skills</code>, <code>.cursor/skills</code>, …), rewriting only what changed; <code>larapilot:doctor</code> reports a copy missing or out of date. Boost 1 adds the Larapilot guideline to <code>CLAUDE.md</code> only when <code>andreapollastri/larapilot</code> is in the <code>guidelines</code> list of <code>boost.json</code>: choose it in <code>boost:install</code>, or let <code>larapilot:update</code> add it. <code>larapilot:update</code> runs <code>composer update laravel/boost</code> only when Boost 2 can install, so <code>composer.lock</code> stays as it is. <code>boost:update --discover</code> is a Boost 2 option (2.3.2+).</p>
+        <p>Larastan 3 and the latest Pint need PHP 8.2: <code>larapilot:install</code> asks Composer for <code>larastan/larastan:^2.9|^3.0</code> and <code>laravel/pint:^1.20</code>, and Composer picks what the app takes.</p>
         <p>Laravel <strong>10</strong> and <strong>11</strong> are past their security-fix window. Composer 2.9+ refuses every <code>laravel/framework</code> 10.x/11.x release because open advisories have no patched line (fixes shipped in Laravel <strong>12.60+</strong> / <strong>13</strong>). Larapilot CI still runs those majors by ignoring only <code>laravel/framework</code> advisories on the 10/11 jobs. Apps still on 10/11 that fail <code>composer update</code> with <em>affected by security advisories</em> need the same ignore (<code>composer config --json policy.advisories.ignore '["laravel/framework"]'</code>) or should upgrade to Laravel 12+.</p>
         </details>
         <p><code>larapilot:install</code> also scaffolds <a href="https://github.com/larastan/larastan" target="_blank"
             rel="noopener">Larastan</a> (<strong>level 5+</strong>) and <a href="https://laravel.com/docs/pint"
             target="_blank" rel="noopener">Laravel Pint</a> — <code>phpstan.neon.dist</code>, <code>pint.json</code>,
-          Composer scripts, and dev dependencies. <code>php artisan larapilot:quality</code> runs both; the agent runs
-          it before every task is marked done, and you run it in CI. See
+          Composer scripts, and the two dev packages, added with <code>composer require --dev</code> when the app has
+          neither. <code>php artisan larapilot:quality</code> runs both; the agent runs
+          it before every task is marked done, and you run it in CI. An app with years of code never formatted
+          checks only what a branch changes: <a href="#quality-existing-codebase">An existing codebase</a>. See
           <a href="#deep-dive-code-quality">Code quality</a>.</p>
-        <p>Already on Boost without a fresh install? Run <code>php artisan boost:update --discover</code> once to pick
-          up new skills.</p>
+        <p>Already on Boost without a fresh install? Run <code>php artisan larapilot:update</code>: it adds
+          <code>andreapollastri/larapilot</code> to the package list of <code>boost.json</code> when there is one —
+          Boost publishes the guidelines and skills of the listed packages only — and republishes. By hand, choose the
+          package in <code>boost:install</code>, or run <code>boost:update --discover</code> (Boost 2.3.2+).</p>
 
         <h3>Connect the MCP servers</h3>
         <p><code>boost:install</code> usually registers them for you. If your editor does not list a
@@ -2272,6 +2278,15 @@
   }
 }</code></pre>
         </div>
+        <p id="sail"><strong>Sail or Docker.</strong> With Sail the command is <code>vendor/bin/sail</code> and the
+          arguments start with <code>artisan</code>. Larapilot follows Boost: with <code>"sail": true</code> in
+          <code>boost.json</code> every skill runs <code>vendor/bin/sail artisan</code>, and the JSON envelopes give
+          paths relative to the project root — the agent on the host cannot open <code>/var/www/html/...</code>. Any
+          other setup names its command in <code>.env</code>: <code>LARAPILOT_ARTISAN="docker compose exec app php
+          artisan"</code> (<code>LARAPILOT_AGENT_PATHS</code>: <code>auto</code> · <code>relative</code> ·
+          <code>absolute</code>), then <code>php artisan larapilot:update</code> to republish the guideline. Sail
+          publishes its port on every interface: <code>APP_PORT=127.0.0.1:80</code> keeps the open dashboard and API
+          on your machine.</p>
         <p>Check the install at any time with <code>php artisan larapilot:doctor</code> (add <code>--human</code>
           for a table instead of JSON).</p>
 
@@ -3465,6 +3480,38 @@
           </table>
         </div>
         <p>Events, phases, and the rules: <a href="#deep-dive-hooks">Workflow hooks</a>.</p>
+
+        <h3 id="v5-2">What 5.2 adds</h3>
+        <p>5.2.0 (2026-10-12) makes Larapilot fit an app that is already there, on the stack it runs on: Laravel 10,
+          PHP 8.1, Boost 1, Sail — and makes the version a dimension of the whole product. Nothing breaks on
+          upgrade.</p>
+        <ul>
+          <li><strong>Versions everywhere</strong> — with <code>release_mode</code> on, a <strong>Versions</strong>
+            page (one page per version, with its stories, forecast, milestone, and release notes), a version scope
+            that keeps the Board, the Plan, and the Forecast on one version or several, and skills that work inside a
+            version: no story without one, the version the work is on first, a ship that settles its open stories and
+            keeps its notes. <a href="#deep-dive-dashboard-versions">Versions</a></li>
+          <li><strong>A gate an existing codebase can pass</strong> — <code>quality_scope: CHANGED</code> checks the
+            files a branch changes; <code>larapilot:quality --baseline</code> keeps today's Larastan errors out.
+            <a href="#quality-existing-codebase">An existing codebase</a></li>
+          <li><strong>Dependencies that install on PHP 8.1</strong> — Larastan and Pint through
+            <code>composer require --dev</code>, with constraints Composer resolves to what the app takes;
+            <code>composer.json</code> keeps its formatting, and <code>larapilot:update</code> leaves it alone</li>
+          <li><strong>Skills on Boost 1</strong> — copied by Larapilot into the agent folders, checked by
+            <code>doctor</code>; no <code>composer update</code> of a Boost that cannot reach 2.
+            <a href="#boost-1">Boost 1</a></li>
+          <li><strong>Sail and Docker</strong> — the skills run the Artisan command of the project, and the envelopes
+            give paths the agent on the host can open. <a href="#sail">Sail or Docker</a></li>
+          <li><strong>Custom skills replace nothing</strong> — the names of Larapilot and Boost skills are refused,
+            and a folder Larapilot did not write is left alone</li>
+          <li><strong>The open API takes no cross-site write</strong>, <code>.larapilot/tmp-*</code> is ignored by
+            Git, <code>laravel/mcp</code> is declared, and Git is read without a shell, so Windows works</li>
+          <li><strong>New York</strong> — a fourteenth design system for restaurants, hospitality, and city media:
+            Didone headlines on newsprint, subway-signage bands with round line bullets, one taxi-yellow accent.
+            <a href="#deep-dive-design-systems">Design systems</a></li>
+          <li><strong>Zen</strong> — a fifteenth, the quietest: black and white only, wide empty space, light
+            headings, status shown by shape, one ensō. <a href="#deep-dive-design-systems">Design systems</a></li>
+        </ul>
 
         <h3 id="v5-1">What 5.1 adds</h3>
         <p>5.1.0 (2026-10-12) is a minor release of version 5, with three breaking changes for shared hosts. In
@@ -5737,7 +5784,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.1.0 released 2026-10-12</span>
+<span class="comment"># latest   : 5.2.0 released 2026-10-12</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -6012,8 +6059,10 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
               <code>.larapilot/design-systems/</code> as it is, your edits included</li>
             <li><code>php artisan larapilot:doctor --human</code> — verify install health after an upgrade, as a
               table (includes Larastan/Pint gate); without <code>--human</code> it answers JSON for scripts</li>
-            <li><code>php artisan boost:update --discover</code> — one-time if Boost was installed before Larapilot and
-              skills are missing</li>
+            <li><code>php artisan boost:update --discover</code> — Boost 2.3.2+, when Boost was installed before
+              Larapilot and its skills are missing; <code>larapilot:update</code> lists the package in
+              <code>boost.json</code> for you. On Boost 1, Larapilot copies the skills itself
+              (<a href="#boost-1">Boost 1</a>)</li>
           </ul>
 
           <h4>Automate with Composer (optional)</h4>
@@ -6437,14 +6486,17 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
               <span class="skill-badge">semver</span>
               <div class="skill-body">
                 <h3><code>/larapilot-release</code> <span class="skills-group-note" style="display:inline">— requires <code>release_mode=YES</code></span></h3>
-                <p>Manage the semver release ledger (<code>.larapilot/releases.yaml</code>): roadmaps, register releases,
-                  assign specs, switch active <code>release/*</code> branches, import history from Git tags, move status
-                  toward ship. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.</p>
+                <p>Manage the versions of the product (<code>.larapilot/releases.yaml</code>): roadmaps, register
+                  releases, give stories their version and move them between versions, show where a version stands,
+                  write its release notes, switch active <code>release/*</code> branches, import history from Git tags,
+                  and ship a version once its open stories are settled. Sarah owns Git mechanics; Jack owns policy;
+                  Mark owns scope; Albert writes the notes. See <a href="#deep-dive-dashboard-versions">Versions</a>.</p>
                 <p>After every release change it keeps the public wording of the
                   <a href="#deep-dive-dashboard-roadmap">Roadmap</a> current: <code>roadmap-show</code> prints what the
                   public reads, and <code>roadmap-set</code> gives an internal-sounding version or story a public title
                   and summary, or hides it — never a code, a person, an hour, a cost, or git.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:release-list</code> ·
+                  <code>larapilot:release-show</code> · <code>larapilot:release-notes</code> ·
                   <code>larapilot:release-add</code> · <code>larapilot:release-set</code> ·
                   <code>larapilot:release-cut</code> · <code>larapilot:release-feature</code> ·
                   <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> ·
@@ -7573,14 +7625,14 @@ php artisan larapilot:dashboard-user list</code></pre>
                 </tr>
                 <tr>
                   <td><code>pm</code></td>
-                  <td>Workflow (Board, PRD, Inception, Plan, Roadmap, Design), Insights (Forecast, Usage, Economics,
+                  <td>Workflow (Board, PRD, Inception, Plan, Versions, Roadmap, Design), Insights (Forecast, Usage, Economics,
                     Security, SBOM, Errors), Reference (API, Docs); the Logs outside <code>production</code></td>
                   <td>The Workspace: About, Settings, Skills, File manager, Database, Laravel, Git — and the Access
                     pages</td>
                 </tr>
                 <tr>
                   <td><code>ext</code></td>
-                  <td>Workflow only: Board, PRD, Inception, Plan, Roadmap, Design and its mockups — for a client or
+                  <td>Workflow only: Board, PRD, Inception, Plan, Versions, Roadmap, Design and its mockups — for a client or
                     an outside stakeholder</td>
                   <td>Everything else</td>
                 </tr>
@@ -10938,7 +10990,7 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
         <!-- Design systems -->
         <article class="deep-dive-sub" id="deep-dive-design-systems">
           <h3>Design systems</h3>
-          <p class="lead">Thirteen design systems ship in <code>.larapilot/design-systems/</code> on
+          <p class="lead">Fifteen design systems ship in <code>.larapilot/design-systems/</code> on
             <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
             draws every mockup in one of them — the one the PRD stack names, or the ones you pick to compare — and the
             frontend is built to mirror the chosen mockups. Each covers a backoffice, and the CSS frameworks, Fluent, and
@@ -11034,6 +11086,18 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
                   <td>Agencies, studios, culture, venues</td>
                   <td>A Swiss / Bauhaus grid, monochrome and one acid signal colour, hairline rules, mono micro-labels — <strong>13</strong> screens</td>
                 </tr>
+                <tr>
+                  <td><strong>New York</strong></td>
+                  <td><code>design-systems/new-york/</code></td>
+                  <td>Restaurants, hospitality, food and city media</td>
+                  <td>Didone headlines on newsprint, Helvetica subway-signage bands with round line bullets, one taxi-yellow accent, newspaper rules — <strong>13</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Zen</strong></td>
+                  <td><code>design-systems/zen/</code></td>
+                  <td>Studios, craft, wellness, portfolios</td>
+                  <td>Black and white only, wide empty space, light headings, hairlines, status shown by shape, one ensō ornament — <strong>12</strong> screens</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -11081,7 +11145,7 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
           <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
           <p>You can add <strong>your own</strong> design system or UI template under
             <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
-            (<code>/larapilot-design</code>) and implementation — not only the thirteen packaged references.
+            (<code>/larapilot-design</code>) and implementation — not only the fifteen packaged references.
             <code>/larapilot-design</code> can also write one for you after an interview about the brand, its
             references, tone, density, and accessibility; an adopted project gets the design system of the app as it
             is.
@@ -11128,8 +11192,11 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
                 </tr>
                 <tr>
                   <td><code>composer.json</code></td>
-                  <td><code>require-dev</code>: <code>larastan/larastan</code>, <code>laravel/pint</code>; scripts
-                    <code>lint</code>, <code>lint:check</code>, <code>analyse</code></td>
+                  <td><code>larastan/larastan:^2.9|^3.0</code> and <code>laravel/pint:^1.20</code> with
+                    <code>composer require --dev</code>, only when the app has neither (a Larastan another package
+                    brings counts); scripts <code>lint</code>, <code>lint:check</code>, <code>analyse</code> with
+                    <code>composer config</code>. The file keeps its formatting; <code>larapilot:update</code> does
+                    not touch it</td>
                 </tr>
               </tbody>
             </table>
@@ -11150,6 +11217,21 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
             <pre><code>composer lint:check   # pint --test
 composer analyse      # phpstan analyse --memory-limit=1G</code></pre>
           </div>
+
+          <h4 id="quality-existing-codebase">An existing codebase</h4>
+          <p>On an app never formatted, or with Larastan errors today, the gate would stay red on every task.
+            <code>/larapilot-adopt</code> proposes two things:</p>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --quality-scope=CHANGED   # Pint on the files the branch changed
+php artisan larapilot:quality --baseline                     # phpstan-baseline.neon, included</code></pre>
+          </div>
+          <p><code>CHANGED</code> measures a branch against the branch it came from (<code>develop</code> under Git
+            Flow, else the remote default, <code>main</code>, <code>master</code>): committed, staged, unstaged, and
+            untracked files, so a task stays checked after its commit. On the base branch itself it is what is not
+            pushed yet. <code>--fix</code> formats only those files. Larastan still reads the whole project — a change
+            can break a caller it did not touch — and the baseline keeps the errors that were already there out of the
+            gate.</p>
 
           <h4>When to run</h4>
           <ul>
@@ -11386,9 +11468,12 @@ php artisan larapilot:doctor --human                                  # a table 
                   <td><code>larapilot:release-list</code> · <code>larapilot:release-add</code>
                     (<code>--semver=</code>, <code>--title=</code>, <code>--status=</code>, <code>--specs=</code>) ·
                     <code>larapilot:release-set</code> (<code>--semver=</code>, <code>--status=</code>,
-                    <code>--add-spec=</code>, …) · <code>larapilot:release-cut</code> ·
+                    <code>--add-spec=</code>, <code>--remove-spec=</code>, …) · <code>larapilot:release-show</code> ·
+                    <code>larapilot:release-notes</code> (<code>--file=</code>, <code>--write</code>) ·
+                    <code>larapilot:release-cut</code> ·
                     <code>larapilot:release-feature</code> (<code>--spec=</code>, <code>--slug=</code>) ·
-                    <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> (<code>--push</code>) ·
+                    <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> (<code>--push</code>,
+                    <code>--defer-to=</code>, <code>--force</code>) ·
                     <code>larapilot:release-import</code> (<code>--dry-run</code>)
                   </td>
                   <td><code>/larapilot-release</code>, inception/adopt/feature/ship when
@@ -11683,6 +11768,13 @@ php artisan larapilot:doctor --human                                  # a table 
                   <td><strong>Inception</strong></td>
                   <td><code>/larapilot/inception</code></td>
                   <td>Discovery choices snapshot from <code>.larapilot/choices.yaml</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Versions</strong></td>
+                  <td><code>/larapilot/versions</code></td>
+                  <td>Every version with its progress, forecast, milestone, and risk, the stories no version claims,
+                    and one page per version with its stories and release notes; the version scope of the Board, the
+                    Plan, and the Forecast (<a href="#deep-dive-dashboard-versions">Versions</a>). Every role</td>
                 </tr>
                 <tr>
                   <td><strong>Roadmap</strong></td>
@@ -12494,6 +12586,39 @@ php artisan larapilot:doctor --human                                  # a table 
             Epic · Version · Sprint</strong> regroups the specs the same way as on the
             <a href="#deep-dive-dashboard-group-by">Board</a>.</p>
 
+          <h4 id="deep-dive-dashboard-versions">Versions</h4>
+          <p><code>/larapilot/versions</code>, in the <strong>Workflow</strong> menu and seen by every role, reads the
+            product version by version, from the release ledger <code>release_mode</code> keeps. Each version is a
+            card, the open ones first and the shipped ones after, newest first: its status, the stories done out of
+            all and the story points, a bar of what is done and in progress, the day its last open story is
+            forecast to land on the <a href="#deep-dive-dashboard-plan">Plan</a>, its milestone — marked
+            <strong>Late</strong> when the forecast misses it, <strong>Overdue</strong> when the date has passed with
+            stories open — and its release branch, for admins and developers. Above the cards: the version the work
+            is on (the release branch checked out, else the one in progress, else the next planned), the next
+            milestone, and the open stories <strong>no version claims</strong>, each linked.</p>
+          <p>A version opens on its own page, <code>/larapilot/versions/1.2.0</code>: its stories in the order they
+            are picked up — open first, delivered last — with type, status, epic, and points; its epics; what it moved
+            out when it shipped, and where to; and its <strong>release notes</strong>, drafted from the stories
+            (Added, Changed, Fixed, Not delivered yet, Moved to a later version) until the team keeps its own text
+            with <code>larapilot:release-notes</code>. <strong>Release notes (.md)</strong> downloads them.</p>
+          <p><strong>The version scope.</strong> The Board, the Plan, the Forecast, and the Versions page carry one
+            chip for each version and one for <strong>No version</strong>. A click adds or removes a version, so a
+            page shows one version, several, or the stories with none — and the scope <strong>stays</strong> while
+            you move between those pages, until <strong>All versions</strong> clears it. It travels in the address
+            too: <code>?version=1.2.0,1.3.0</code>, <code>?version=none</code>, <code>?version=all</code>. The
+            Board's figures and downloads, the Plan's Gantt and milestones, and the Forecast's figures, its
+            <strong>By version</strong> table, and its <code>report.md</code> follow it. The spec page shows the version
+            a story targets. The API answers <code>GET /larapilot/api/versions</code>,
+            <code>/versions/{version}</code>, and <code>?version=</code> on <code>/specs</code>.</p>
+          <p><strong>In the workflow.</strong> Every skill names the version it works in
+            (<code>v1.2.0 3/5 (60%)</code>), from <code>release</code> in its <code>larapilot:context</code>. Inception
+            and adopt leave no story without a version; feature, spec, and bug give every new story one — the fix of
+            a shipped version goes in its next patch; <code>spec-next</code> picks the version the work is on first;
+            implement stops on a story with no version and asks; review closes with how far the version is;
+            autopilot works one version at a time; and ship refuses a version with open stories until they are
+            delivered, moved (<code>release-ship --defer-to=1.3.0</code>, <code>--defer-to=backlog</code>), or shipped
+            anyway (<code>--force</code>), with its release notes kept and committed before the ceremony.</p>
+
           <h4 id="deep-dive-dashboard-roadmap">Roadmap</h4>
           <p><code>/larapilot/roadmap</code>, in the <strong>Workflow</strong> menu and seen by every role, is the
             product roadmap: the versions of the release ledger (<code>.larapilot/releases.yaml</code>, kept with
@@ -13260,9 +13385,18 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
                   <td><code>/larapilot/api/specs</code></td>
                   <td>Specs with task progress, mockup screens, counts-only feedback summaries, and the
                     <code>release</code>, <code>sprint</code>, and <code>sprint_proposed</code> of each. Optional
-                    <code>?status=TODO</code> filter; paginated with <code>?page</code> / <code>?per_page</code>
+                    <code>?status=TODO</code> and <code>?version=1.2.0,none</code> filters; paginated with <code>?page</code> / <code>?per_page</code>
                     (1–200, default 50) — body carries <code>total</code>, <code>page</code>, <code>per_page</code>,
                     <code>total_pages</code></td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/larapilot/api/versions</code> · <code>/versions/{version}</code></td>
+                  <td>Every version with its stories, <code>counts</code> and <code>points</code> by state,
+                    <code>progress</code>, <code>forecast_end</code>, <code>milestone</code>, and <code>risk</code>; the
+                    version the work is on (<code>current</code>) and the open stories no version claims
+                    (<code>unassigned</code>). One version adds its <code>stories</code>, <code>epics</code>, and release
+                    <code>notes</code> (<a href="#deep-dive-dashboard-versions">Versions</a>)</td>
                 </tr>
                 <tr>
                   <td><code>GET</code></td>
@@ -13562,7 +13696,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.1.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.2.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -163,6 +163,7 @@ it('leaves out every option that writes, and nothing else', function (): void {
     // An option added to one of these commands fails here until it is
     // named in the tool (it only reads) or in this list (it writes).
     expect($closed)->toBe([
+        'larapilot:release-notes' => ['--file', '--write'],
         'larapilot:usage-report' => ['--output'],
         'larapilot:aikido-issues' => ['--report'],
         'larapilot:aikido-repos' => ['--use', '--forget'],
@@ -170,7 +171,7 @@ it('leaves out every option that writes, and nothing else', function (): void {
         'larapilot:security-repos' => ['--use', '--forget'],
         'larapilot:errors-list' => ['--report'],
         'larapilot:boogle-errors' => ['--report'],
-        'larapilot:quality' => ['--fix'],
+        'larapilot:quality' => ['--fix', '--baseline'],
         'larapilot:backstage-export' => ['--write', '--force', '--catalog', '--mkdocs', '--no-techdocs', '--file'],
         'larapilot:upgrade-check' => ['--report'],
         'larapilot:sbom' => ['--write'],

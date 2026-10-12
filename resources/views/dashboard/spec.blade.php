@@ -79,6 +79,8 @@
     }
 
     .spec-badges .points { padding: 3px 10px; font-size: 0.7rem; }
+    .spec-badges .spec-version { text-decoration: none; }
+    .spec-badges .spec-version:hover { text-decoration: underline; }
 
     .merge-commit-block {
         margin-top: 8px !important;
@@ -565,6 +567,9 @@
                 <span class="badge {{ $badgeClass }}">{{ $status }}</span>
                 @if (! empty($spec['points']))
                     <span class="points">{{ $spec['points'] }} SP</span>
+                @endif
+                @if (! empty($version))
+                    <a class="points spec-version" href="{{ route('larapilot.dashboard.versions.show', ['version' => $version['version']]) }}" title="Targets v{{ $version['version'] }}{{ $version['title'] !== '' ? ' — '.$version['title'] : '' }} · {{ str_replace('_', ' ', $version['status']) }}, {{ $version['progress'] }}% delivered">v{{ $version['version'] }}</a>
                 @endif
                 @if (! empty($mockups))
                     <span class="mockup-badge" title="{{ count($mockups['screens'] ?? []) }} screen(s)">Mockup</span>

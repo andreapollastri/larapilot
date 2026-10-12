@@ -15,6 +15,7 @@ class SettingsSetCommand extends LarapilotCommand
                             {--git-mode= : Git mode: NO_GITFLOW, GITFLOW, or GITFLOW_PUSH}
                             {--testing= : Testing mode: MINIMAL, NORMAL, or BEST}
                             {--account= : Account mode: NONE, FREELANCE, or COMPANY (unlocks /larapilot/economics)}
+                            {--quality-scope= : What larapilot:quality checks: ALL (default) or CHANGED (the files the branch changed — for a codebase never formatted)}
                             {--auto-approve= : Auto-approve after implement: YES or NO}
                             {--lucille= : Lucille usage tracking: YES (default) or NO to exclude explicitly}
                             {--decision-log= : Decision journal + regression guard: YES (default) or NO}
@@ -101,6 +102,19 @@ class SettingsSetCommand extends LarapilotCommand
                 );
             }
             $partial['testing'] = $testing;
+        }
+
+        $qualityScope = $this->normalizeOption('quality-scope');
+        if ($qualityScope !== null) {
+            if (! in_array($qualityScope, $config->allowedQualityScopes(), true)) {
+                return $this->failure(
+                    'E_INVALID_INPUT',
+                    "Invalid --quality-scope value: {$qualityScope}.",
+                    $this->exitForCode('E_INVALID_INPUT'),
+                    'Allowed: '.implode(', ', $config->allowedQualityScopes()).'.'
+                );
+            }
+            $partial['quality_scope'] = $qualityScope;
         }
 
         $account = $this->normalizeOption('account');

@@ -11,6 +11,7 @@
             ['route' => 'larapilot.dashboard.prd', 'active' => ['larapilot.dashboard.prd'], 'label' => 'PRD', 'icon' => 'prd'],
             ['route' => 'larapilot.dashboard.inception', 'active' => ['larapilot.dashboard.inception'], 'label' => 'Inception', 'icon' => 'inception'],
             ['route' => 'larapilot.dashboard.plan', 'active' => ['larapilot.dashboard.plan'], 'label' => 'Plan', 'icon' => 'plan'],
+            ['route' => 'larapilot.dashboard.versions', 'active' => ['larapilot.dashboard.versions*'], 'label' => 'Versions', 'icon' => 'versions', 'area' => 'versions'],
             ['route' => 'larapilot.dashboard.roadmap', 'active' => ['larapilot.dashboard.roadmap*'], 'label' => 'Roadmap', 'icon' => 'roadmap', 'area' => 'roadmap'],
             ['route' => 'larapilot.dashboard.design', 'active' => ['larapilot.dashboard.design*'], 'label' => 'Design', 'icon' => 'design'],
         ],

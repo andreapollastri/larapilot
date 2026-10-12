@@ -7,25 +7,20 @@ namespace Larapilot\Services;
 /**
  * How the Board and the Plan are read: grouped by workflow status (the
  * Board), by epic (the Plan), by version, or by sprint — and narrowed to
- * one version or one sprint. The query says what is asked for; this
- * service says what is available and what each spec belongs to, so both
- * pages and the API tell the same story.
+ * one or more versions, or one sprint. The query says what is asked for;
+ * this service says what is available and what each spec belongs to, so
+ * both pages and the API tell the same story.
  */
 class BoardViewService
 {
-    /**
-     * The `**Release:**` line a spec body carries when a skill assigned it.
-     */
-    private const RELEASE_LINE = '/^[ \t>*-]*\*\*Release:?\*\*:?[ \t]*v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)/mi';
-
-    public const NO_VERSION = 'none';
+    public const NO_VERSION = VersionService::NONE;
 
     public const DELIVERED = 'none';
 
     public function __construct(
         protected ConfigService $config,
-        protected ReleaseService $releases,
         protected SprintService $sprints,
+        protected VersionService $versionService,
     ) {}
 
     /**
@@ -34,7 +29,7 @@ class BoardViewService
      */
     public function versionsAvailable(): bool
     {
-        return $this->config->releaseModeEnabled() || $this->releases->read()['releases'] !== [];
+        return $this->versionService->enabled();
     }
 
     /**
@@ -55,6 +50,7 @@ class BoardViewService
      *     group: string,
      *     default: string,
      *     version: string|null,
+     *     selected: list<string>,
      *     sprint: int|string|null,
      *     filtered: bool,
      *     options: list<array{key: string, label: string}>,
@@ -87,7 +83,7 @@ class BoardViewService
         }
 
         $versions = $versionsOn ? $this->versions($specs) : [];
-        $releaseOf = $this->releaseOf($specs, $versions);
+        $releaseOf = $versionsOn ? $this->versionService->assignments($specs) : [];
         $plan = $this->sprints->plan($specs, $sprintsOn);
 
         $assignments = [];
@@ -106,22 +102,9 @@ class BoardViewService
             ];
         }
 
-        $version = null;
-        $asked = trim((string) ($this->scalar($query, 'version') ?? ''));
-
-        if ($versionsOn && $asked !== '') {
-            if (strtolower($asked) === self::NO_VERSION) {
-                $version = self::NO_VERSION;
-            } else {
-                $needle = ltrim($asked, 'vV');
-
-                foreach ($versions as $row) {
-                    if ($row['version'] === $needle) {
-                        $version = $needle;
-                    }
-                }
-            }
-        }
+        // One version, several (`1.2.0,1.3.0`, or `version[]=`), or `none`.
+        $selected = $versionsOn ? $this->versionService->selection($query['version'] ?? null) : [];
+        $version = count($selected) === 1 ? $selected[0] : null;
 
         $sprint = null;
         $askedSprint = trim((string) ($this->scalar($query, 'sprint') ?? ''));
@@ -138,8 +121,9 @@ class BoardViewService
             'group' => $group,
             'default' => $default,
             'version' => $version,
+            'selected' => $selected,
             'sprint' => $sprint,
-            'filtered' => $version !== null || $sprint !== null,
+            'filtered' => $selected !== [] || $sprint !== null,
             'options' => $options,
             'versions' => $versions,
             'sprints' => $sprintsOn ? $plan['sprints'] : [],
@@ -163,12 +147,10 @@ class BoardViewService
     {
         $assignment = $view['assignments'][$code] ?? ['release' => null, 'sprint' => null, 'sprint_proposed' => false];
 
-        if ($view['version'] !== null) {
-            $wanted = $view['version'] === self::NO_VERSION ? null : $view['version'];
+        $selected = $view['selected'] ?? ($view['version'] !== null ? [$view['version']] : []);
 
-            if ($assignment['release'] !== $wanted) {
-                return false;
-            }
+        if ($selected !== [] && ! in_array($assignment['release'] ?? self::NO_VERSION, $selected, true)) {
+            return false;
         }
 
         if ($view['sprint'] !== null) {
@@ -278,6 +260,8 @@ class BoardViewService
                 'badge' => null,
                 'state' => $row['status'],
                 'items' => $buckets[$row['version']] ?? [],
+                'version' => $row['version'],
+                'progress' => $row['progress'],
             ];
         }
 
@@ -349,105 +333,22 @@ class BoardViewService
      * claims and what it has delivered of them.
      *
      * @param  list<array<string, mixed>>  $specs
-     * @return list<array{version: string, title: string, status: string, shipped: bool, current: bool, shipped_at: string|null, specs: list<string>, points: int, done: int}>
+     * @return list<array{version: string, title: string, status: string, shipped: bool, current: bool, shipped_at: string|null, specs: list<string>, points: int, done: int, progress: int}>
      */
     public function versions(array $specs): array
     {
-        $done = strtoupper($this->config->status('done'));
-        $index = [];
-
-        foreach ($specs as $spec) {
-            $index[strtoupper((string) ($spec['code'] ?? ''))] = $spec;
-        }
-
-        $rows = [];
-
-        foreach ($this->releases->list() as $release) {
-            $version = (string) ($release['version'] ?? '');
-
-            if ($version === '') {
-                continue;
-            }
-
-            $codes = array_values(array_filter(array_map(
-                static fn (mixed $code): string => strtoupper(trim((string) $code)),
-                is_array($release['specs'] ?? null) ? $release['specs'] : []
-            )));
-            $points = 0;
-            $delivered = 0;
-
-            foreach ($codes as $code) {
-                $spec = $index[$code] ?? null;
-
-                if ($spec === null) {
-                    continue;
-                }
-
-                $points += max(0, (int) ($spec['points'] ?? 0));
-                $delivered += strtoupper((string) ($spec['status'] ?? '')) === $done ? 1 : 0;
-            }
-
-            $status = strtolower((string) ($release['status'] ?? 'planned'));
-
-            $rows[] = [
-                'version' => $version,
-                'title' => trim((string) ($release['title'] ?? '')),
-                'status' => $status,
-                'shipped' => $status === 'shipped',
-                'current' => $status === 'in_progress',
-                'shipped_at' => is_string($release['shipped_at'] ?? null) ? $release['shipped_at'] : null,
-                'specs' => $codes,
-                'points' => $points,
-                'done' => $delivered,
-            ];
-        }
-
-        return $rows;
-    }
-
-    /**
-     * The release each spec belongs to: what the ledger says first, then
-     * the `**Release:**` line of its body when it names a release the
-     * ledger knows.
-     *
-     * @param  list<array<string, mixed>>  $specs
-     * @param  list<array<string, mixed>>  $versions
-     * @return array<string, string>
-     */
-    protected function releaseOf(array $specs, array $versions): array
-    {
-        $map = [];
-        $known = [];
-
-        foreach ($versions as $row) {
-            $known[$row['version']] = true;
-
-            foreach ($row['specs'] as $code) {
-                $map[$code] ??= $row['version'];
-            }
-        }
-
-        $result = [];
-
-        foreach ($specs as $spec) {
-            $code = (string) ($spec['code'] ?? '');
-
-            if ($code === '') {
-                continue;
-            }
-
-            $release = $map[strtoupper($code)] ?? null;
-
-            if ($release === null && preg_match(self::RELEASE_LINE, (string) ($spec['body'] ?? ''), $match) === 1 && isset($known[$match[1]])) {
-                $release = $match[1];
-            }
-
-            if ($release !== null) {
-                $result[$code] = $release;
-            }
-        }
-
-        return $result;
+        return array_map(static fn (array $row): array => [
+            'version' => $row['version'],
+            'title' => $row['title'],
+            'status' => $row['status'],
+            'shipped' => $row['shipped'],
+            'current' => $row['current'],
+            'shipped_at' => $row['shipped_at'],
+            'specs' => $row['specs'],
+            'points' => $row['points']['total'],
+            'done' => $row['counts']['done'],
+            'progress' => $row['progress'],
+        ], $this->versionService->rows($specs, false));
     }
 
     /**

@@ -17,7 +17,8 @@ class ReleaseSetCommand extends LarapilotCommand
                             {--title= : Short release name}
                             {--branch= : Git branch}
                             {--specs= : Comma-separated US-XXX codes (replaces list)}
-                            {--add-spec= : Append one US-XXX}
+                            {--add-spec= : Append one US-XXX (it leaves any other open version)}
+                            {--remove-spec= : Drop one US-XXX from this version}
                             {--shipped-at= : ISO timestamp when status becomes shipped}';
 
     protected $description = 'Update an existing release in the ledger';
@@ -71,10 +72,16 @@ class ReleaseSetCommand extends LarapilotCommand
             $partial['add_spec'] = strtoupper(trim($addSpec));
         }
 
+        $removeSpec = $this->option('remove-spec');
+
+        if (is_string($removeSpec) && trim($removeSpec) !== '') {
+            $partial['remove_spec'] = strtoupper(trim($removeSpec));
+        }
+
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --status, --title, --branch, --specs, --add-spec, or --shipped-at.',
+                'Provide at least one of --status, --title, --branch, --specs, --add-spec, --remove-spec, or --shipped-at.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

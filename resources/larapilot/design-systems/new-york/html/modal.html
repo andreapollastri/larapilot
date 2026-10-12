@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New reservation · Mulberry &amp; Grand backoffice</title>
+<meta name="description" content="Reservations page dimmed behind an open dialog: New reservation with restaurant choice by line bullet, party size, a grid of time slots, guest fields, a notice, and a toast in the corner.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ny-mockup ny-body">
+<a class="ny-skip" href="#r-title">Skip to dialog</a>
+<div class="ny-app">
+<aside class="ny-rail" aria-label="Backoffice">
+<div class="ny-rail__brand"><a class="ny-logo" href="dashboard.html" aria-label="Mulberry &amp; Grand backoffice, tonight"><span class="ny-logo__mark" aria-hidden="true">&amp;</span><span class="ny-logo__text"><span class="ny-logo__word">Mulberry <em>&amp;</em> Grand</span><span class="ny-logo__sub">Backoffice</span></span></a><button type="button" class="ny-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="ny-i ny-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="ny-rail__nav" aria-label="Main">
+<p class="ny-rail__group"><span>Front of house</span><span>Mon 12</span></p>
+<a class="ny-nav-item" href="dashboard.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="ny-nav-item__label">Tonight</span><span class="ny-nav-item__count">412</span></a>
+<a class="ny-nav-item is-active" aria-current="page" href="resource-list.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="ny-nav-item__label">Reservations</span><span class="ny-nav-item__count">148</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="ny-nav-item__label">Guests</span><span class="ny-nav-item__count">3,906</span></a>
+<p class="ny-rail__group"><span>Kitchen</span><span>Five lines</span></p>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="ny-nav-item__label">Menus</span><span class="ny-nav-item__count">11</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg><span class="ny-nav-item__label">86 board</span><span class="ny-count ny-count--alarm" title="6 dishes sold out">6</span></a>
+<p class="ny-rail__group"><span>House</span><span>A M G L 7</span></p>
+<a class="ny-nav-item" href="empty-state.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><span class="ny-nav-item__label">Venues</span><span class="ny-nav-item__count">5</span></a>
+<a class="ny-nav-item" href="#"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/></svg><span class="ny-nav-item__label">Staff</span><span class="ny-nav-item__count">86</span></a>
+<a class="ny-nav-item" href="settings.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="ny-nav-item__label">Settings</span><span class="ny-nav-item__count"></span></a>
+</nav>
+<div class="ny-rail__foot">
+<p class="ny-rail__service"><span class="ny-dot ny-dot--live" aria-hidden="true"></span>Dinner service · all five lines open</p>
+<div class="ny-row ny-gap-12"><span class="ny-av ny-av--taxi ny-av--lg">RV</span><span class="ny-stack ny-stack--4 ny-fill"><span class="ny-strong ny-text-sm ny-truncate">Rosa Valentine</span><span class="ny-label">General manager</span></span><a class="ny-btn ny-btn--ghost ny-btn--sm ny-btn--icon" href="login.html" aria-label="Sign out"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="ny-topbar">
+<p class="ny-topbar__folio"><strong>Monday, October 12, 2026</strong><span>Late edition</span><span>6:42 PM</span></p>
+<div class="ny-topbar__search" role="search"><label class="ny-search"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="ny-search__input" type="search" placeholder="Search guests, reservations, dishes, staff"><span class="ny-kbd" aria-hidden="true">/</span></label></div>
+<div class="ny-topbar__actions">
+<a class="ny-topbar__btn" href="modal.html" aria-label="New reservation"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="ny-topbar__btn" href="#" aria-label="Notifications, 3 unread"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="ny-topbar__badge" aria-hidden="true">3</span></a>
+<button type="button" class="ny-topbar__btn" aria-label="Theme: follows the system"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="ny-main" id="main">
+<header class="ny-pagehead ny-dbl-bottom">
+<nav class="ny-pagehead__eyebrow ny-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="ny-crumbs__sep" aria-hidden="true">/</span><a href="resource-list.html">Reservations</a><span class="ny-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">New</span></nav>
+<div class="ny-pagehead__title"><h1 class="ny-h1">Reservations</h1><span class="ny-pagehead__count">148</span></div>
+<div class="ny-pagehead__actions"><a class="ny-btn ny-btn--taxi" href="modal.html"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg> New reservation</a></div>
+</header>
+<nav class="ny-strip" aria-label="Filter by restaurant">
+<a class="ny-strip__item is-active" href="#" aria-current="true">All lines <span class="ny-strip__num">148</span></a>
+<a class="ny-strip__item" href="#"><span class="ny-bullet ny-bullet--a ny-bullet--sm" aria-hidden="true">A</span>Astor <span class="ny-strip__num">24</span></a>
+<a class="ny-strip__item" href="#"><span class="ny-bullet ny-bullet--m ny-bullet--sm" aria-hidden="true">M</span>Mulberry <span class="ny-strip__num">41</span></a>
+<a class="ny-strip__item" href="#"><span class="ny-bullet ny-bullet--g ny-bullet--sm" aria-hidden="true">G</span>Grand <span class="ny-strip__num">38</span></a>
+<a class="ny-strip__item" href="#"><span class="ny-bullet ny-bullet--l ny-bullet--sm" aria-hidden="true">L</span>Ludlow <span class="ny-strip__num">17</span></a>
+<a class="ny-strip__item" href="#"><span class="ny-bullet ny-bullet--7 ny-bullet--sm" aria-hidden="true">7</span>Seventh Ave <span class="ny-strip__num">28</span></a>
+</nav>
+<div class="ny-table-wrap">
+<table class="ny-table">
+<caption class="visually-hidden">Reservations for Monday, October 12, sorted by time</caption>
+<thead><tr><th scope="col">Time</th><th scope="col">Guest</th><th scope="col" class="ny-num">Party</th><th scope="col">Restaurant</th><th scope="col">Table</th><th scope="col">Status</th></tr></thead>
+<tbody>
+<tr><td><span class="ny-table__name">6:00</span> <span class="ny-label">PM</span></td><td><div class="ny-table__primary"><strong>Theo &amp; Ana Brandt</strong><span>R-2598 · anniversary</span></div></td><td class="ny-num">2</td><td><span class="ny-row ny-nowrap"><span class="ny-bullet ny-bullet--m ny-bullet--sm" aria-hidden="true">M</span>Mulberry Trattoria</span></td><td class="ny-mono">T12</td><td><span class="ny-tag ny-tag--good"><span class="ny-tag__dot"></span>Seated</span></td></tr>
+<tr><td><span class="ny-table__name">6:15</span> <span class="ny-label">PM</span></td><td><div class="ny-table__primary"><strong>Samuel Ferreira</strong><span>R-2601 · allergy: shellfish</span></div></td><td class="ny-num">4</td><td><span class="ny-row ny-nowrap"><span class="ny-bullet ny-bullet--g ny-bullet--sm" aria-hidden="true">G</span>Grand Street Grill</span></td><td class="ny-mono">T31</td><td><span class="ny-tag ny-tag--good"><span class="ny-tag__dot"></span>Seated</span></td></tr>
+<tr><td><span class="ny-table__name">6:30</span> <span class="ny-label">PM</span></td><td><div class="ny-table__primary"><strong>Priya Raman</strong><span>R-2603 · 15 min late</span></div></td><td class="ny-num">6</td><td><span class="ny-row ny-nowrap"><span class="ny-bullet ny-bullet--m ny-bullet--sm" aria-hidden="true">M</span>Mulberry Trattoria</span></td><td class="ny-mono">T7</td><td><span class="ny-tag ny-tag--taxi">Running late</span></td></tr>
+<tr><td><span class="ny-table__name">7:00</span> <span class="ny-label">PM</span></td><td><div class="ny-table__primary"><strong>Celeste Marchetti</strong><span>R-2566 · private dining</span></div></td><td class="ny-num">12</td><td><span class="ny-row ny-nowrap"><span class="ny-bullet ny-bullet--7 ny-bullet--sm" aria-hidden="true">7</span>Seventh Avenue Supper Club</span></td><td class="ny-mono">Salon</td><td><span class="ny-tag"><span class="ny-tag__ring"></span>Confirmed</span></td></tr>
+</tbody>
+</table>
+</div>
+<footer class="ny-mainfoot"><span>512 covers booked tonight · 9 on the waitlist</span><span>Walk-in tables open after 9 PM</span></footer>
+</main>
+</div>
+
+<div class="ny-overlay">
+<section class="ny-dialog ny-dialog--wide" role="dialog" aria-modal="true" aria-labelledby="r-title" aria-describedby="r-desc">
+<header class="ny-dialog__head"><span class="ny-band__arrow" aria-hidden="true"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span><h2 id="r-title" class="ny-dialog__title">New reservation</h2><span class="ny-band__tag">Tonight</span><button type="button" class="ny-dialog__close" aria-label="Close dialog"><svg class="ny-i ny-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></header>
+<form id="r-form" class="ny-dialog__body" action="#" aria-labelledby="r-title">
+<p id="r-desc" class="ny-byline"><strong>Monday, October 12</strong> · dinner service · times shown are free for the chosen restaurant and party.</p>
+<fieldset class="ny-field"><legend class="ny-field__label">Restaurant</legend><div class="ny-checkgrid">
+<label class="ny-check"><input class="ny-radio" type="radio" name="line"><span class="ny-bullet ny-bullet--a ny-bullet--sm" aria-hidden="true">A</span><span class="ny-check__text">Astor Oyster Room<small>412 Lafayette St</small></span></label>
+<label class="ny-check"><input class="ny-radio" type="radio" name="line" checked><span class="ny-bullet ny-bullet--m ny-bullet--sm" aria-hidden="true">M</span><span class="ny-check__text">Mulberry Trattoria<small>156 Mulberry St</small></span></label>
+<label class="ny-check"><input class="ny-radio" type="radio" name="line"><span class="ny-bullet ny-bullet--g ny-bullet--sm" aria-hidden="true">G</span><span class="ny-check__text">Grand Street Grill<small>288 Grand St</small></span></label>
+<label class="ny-check"><input class="ny-radio" type="radio" name="line"><span class="ny-bullet ny-bullet--l ny-bullet--sm" aria-hidden="true">L</span><span class="ny-check__text">Ludlow Counter<small>97 Ludlow St · walk-in only after 8</small></span></label>
+<label class="ny-check"><input class="ny-radio" type="radio" name="line"><span class="ny-bullet ny-bullet--7 ny-bullet--sm" aria-hidden="true">7</span><span class="ny-check__text">Seventh Avenue Supper Club<small>61 Seventh Ave S</small></span></label>
+</div></fieldset>
+<fieldset class="ny-field"><legend class="ny-field__label">Party size</legend><div class="ny-seg">
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="1 guest">1</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="2 guests">2</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="3 guests">3</label>
+<label class="ny-seg__opt"><input type="radio" name="party" checked aria-label="4 guests">4</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="5 guests">5</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="6 guests">6</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="7 guests">7</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="8 guests">8</label>
+<label class="ny-seg__opt"><input type="radio" name="party" aria-label="9 or more guests, private dining">9+</label>
+</div></fieldset>
+<fieldset class="ny-field"><legend class="ny-field__label"><span>Time</span><span class="ny-field__opt">Struck-through slots are full</span></legend><div class="ny-slots">
+<button type="button" class="ny-slot is-full" disabled aria-label="7:00 PM, full">7:00</button>
+<button type="button" class="ny-slot is-full" disabled aria-label="7:15 PM, full">7:15</button>
+<button type="button" class="ny-slot" aria-pressed="false">7:30</button>
+<button type="button" class="ny-slot is-full" disabled aria-label="7:45 PM, full">7:45</button>
+<button type="button" class="ny-slot" aria-pressed="false">8:00</button>
+<button type="button" class="ny-slot is-selected" aria-pressed="true">8:15</button>
+<button type="button" class="ny-slot" aria-pressed="false">8:30</button>
+<button type="button" class="ny-slot" aria-pressed="false">8:45</button>
+<button type="button" class="ny-slot" aria-pressed="false">9:00</button>
+<button type="button" class="ny-slot" aria-pressed="false">9:15</button>
+<button type="button" class="ny-slot is-full" disabled aria-label="9:30 PM, full">9:30</button>
+<button type="button" class="ny-slot" aria-pressed="false">9:45</button>
+</div></fieldset>
+<div class="ny-formsec__body">
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="r-guest"><span>Guest name<span class="ny-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><input id="r-guest" class="ny-input is-focus" type="text" value="Dolores Santangelo"></div>
+<div class="ny-field ny-fs-3"><label class="ny-field__label" for="r-phone">Mobile</label><div class="ny-inputgroup"><span class="ny-inputgroup__affix">+1</span><input id="r-phone" class="ny-input" type="tel" value="646-555-0193"></div></div>
+<div class="ny-field ny-fs-6"><label class="ny-field__label" for="r-notes"><span>Notes</span><span class="ny-field__opt">Allergies, occasions, seating</span></label><input id="r-notes" class="ny-input" type="text" value="Allergy: sesame. Prefers a booth."><p class="ny-help">Anything starting with “Allergy” prints in red on the kitchen chit.</p></div>
+</div>
+<div class="ny-notice ny-notice--taxi"><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="ny-notice__body"><p class="ny-notice__title">Mulberry Trattoria holds four tables for walk-ins after 9 PM.</p><p class="ny-text-sm">8:15 is the last booth for a party of four. Later slots seat you in the back room.</p></div></div>
+</form>
+<footer class="ny-dialog__foot"><span class="ny-row ny-text-sm"><span class="ny-bullet ny-bullet--m ny-bullet--sm" aria-hidden="true">M</span><span><strong>Party of 4 · 8:15 PM</strong> · table assigned at the door</span></span><button type="button" class="ny-btn ny-btn--ghost">Cancel</button><button type="submit" form="r-form" class="ny-btn ny-btn--taxi">Book the table <svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></footer>
+</section>
+</div>
+
+<div class="ny-toasts" role="status" aria-live="polite">
+<div class="ny-toast"><svg class="ny-i ny-i--20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><div><p class="ny-toast__title">Brandt party seated at T12</p><p class="ny-toast__text">Mulberry Trattoria · 6:04 PM · the kitchen has the anniversary note.</p><p class="ny-toast__actions"><a href="#">Undo</a><a href="resource-list.html">Open the book</a></p></div><button type="button" class="ny-toast__close" aria-label="Dismiss"><svg class="ny-i ny-i--16" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+</div>
+</body>
+</html>

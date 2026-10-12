@@ -108,7 +108,7 @@ Ask **only** what the code cannot tell you. Persona intro in chat; options in As
 - **Operations & support** — always ask, even when the repo shows the platform: who manages the server, who is on the hook when it is down, and what support window is promised (`--server-management=`, `--ops-owner=`, `--support-window=`; options in **Operations & Support**, `discovery-8.md`). On an adopted codebase there is already a machine in production and the arrangement around it is usually undocumented — it is also what prices the maintenance retainer in Economics.
 - **External frontend repo** if the API has no coupled UI — AskQuestion until path is known; run `larapilot:frontend-set --path=…` (writes `LARAPILOT_FRONTEND_REPO_PATH` in `.env`) + `larapilot:frontend-scan`; a monorepo (`targets.needs_project`) needs the user to name this product's projects (`frontend-set --project=…`), and the user says who builds the frontend (`--mode=driven|handoff`) (**Frontend Topology**, `discovery-5.md`).
 
-**Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `release.md`.
+**Release mode (brownfield)** — when `release_mode` is `NO`, AskQuestion once whether to enable semver release tracking, `YES` first and recommended. When `YES` (or just enabled): run `release-import`, present imported tags, AskQuestion for **current production version** and any **in_progress** release branch; persist with `release-add` / `release-set` per `release.md`. Then give the open backlog its versions in one table (spec → version, the next patch or minor first) and one AskQuestion, persisted with `release-set --add-spec=` (`versions.md`).
 
 ### 4. Codebase analysis report
 
@@ -190,6 +190,15 @@ Record `**Design system:** {project-slug} (as-is, derived)` in `## Technical Arc
 - `php artisan larapilot:choices-set --from-prd` (plus flags for any architecture choice not scraped).
 - When `data.settings.lucille` is `YES`: the `usage_log` command of the `context` envelope.
 - Zoey posts the end **Context estimate** line.
+
+### 7b. Quality gate on code that is already there
+
+Run `php artisan larapilot:quality` once, without `--fix`. When the existing code fails it — Pint across many files, Larastan errors — the gate would stay red on every task. Then, with the user's consent:
+
+- `php artisan larapilot:settings-set --quality-scope=CHANGED` — Pint checks only the files a branch changes, against its base.
+- `php artisan larapilot:quality --baseline` — writes `phpstan-baseline.neon` with today's Larastan errors and includes it; commit it on its own (`chore: PHPStan baseline`).
+
+Never run `--fix` on the whole repository here: a full reformat is its own commit, and only when the user asks for it.
 
 ### 8. Next steps
 

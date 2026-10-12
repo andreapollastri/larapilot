@@ -41,7 +41,7 @@ When `data.settings.release_mode` is `YES`, Sarah runs `php artisan larapilot:re
 1. `php artisan larapilot:spec-list --status=DONE` — verify accepted specs
 2. `php artisan larapilot:metrics` — release readiness overview
 3. `php artisan larapilot:prd-show --section="Technical Architecture"` — the deploy, edge, cloud, and observability choices the PRD records. Never the whole PRD
-4. When `release_mode=YES`: `php artisan larapilot:release-list --status=in_progress` — confirm target release version before deploy
+4. When `release_mode=YES`: `php artisan larapilot:release-show --semver=x.y.z` — the version to ship, its open stories, and its risk; then **Shipping a version** (`versions.md`): open stories are delivered, deferred (`release-ship --defer-to=`), or shipped with `--force` by the user's choice; `release-notes --semver=x.y.z` drafts the notes, Albert rewrites them and keeps them with `--file=` in `{paths.release_notes}`, committed on the release branch before the ceremony
 5. When `data.settings.hooks` is `YES` (`hooks.md`): `php artisan larapilot:hook-run ship --phase=before` as Phase 0 starts — run the skills it lists; a refusal is **NO-GO** with its reason — and `php artisan larapilot:hook-run ship --phase=after` once the verdict is GO, at the start of Phase 4. A failed `after` hook is reported before the runbook; when a hook of it deploys, verify that deploy instead of running the runbook's deploy again
 
 ## Prerequisites
@@ -91,7 +91,7 @@ Jack verifies the pipeline for the **detected target** with **Per-target deploy 
 Jack orchestrates (speaks in character):
 
 1. Ensure Lars verdict is **GO** (or waived)
-2. Commit outstanding release work, then `php artisan larapilot:release-ship --semver=x.y.z` when `release_mode=YES` (add `--push` only if `GITFLOW_PUSH` or the user asked to push)
+2. Commit outstanding release work and the release notes, then `php artisan larapilot:release-ship --semver=x.y.z` when `release_mode=YES` (add `--push` only if `GITFLOW_PUSH` or the user asked to push; `--defer-to=` / `--force` only as the user chose in step 4 of the CLI). It refuses a version with open stories otherwise
 3. Execute the target's runbook (`ship-2.md`); a failed deploy starts from its **Troubleshooting** table
 4. Post-deploy verification:
    - HTTP 200 on health/home route

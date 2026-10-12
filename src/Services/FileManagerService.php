@@ -157,6 +157,7 @@ class FileManagerService
     public function __construct(
         protected ConfigService $config,
         protected DiagnosticsService $diagnostics,
+        protected CustomSkillService $customSkills,
     ) {}
 
     /**
@@ -587,6 +588,7 @@ class FileManagerService
         $root = $this->requireRoot($rootKey);
         $relative = $this->normalize($directory);
         $name = $this->assertName($name);
+        $this->assertSkillName($rootKey, $relative, $name);
         $parent = $this->requireDirectory($root, $relative);
         $target = $parent.DIRECTORY_SEPARATOR.$name;
 
@@ -618,6 +620,7 @@ class FileManagerService
         }
 
         $name = $this->assertName($name);
+        $this->assertSkillName($rootKey, $this->parentOf($relative), $name);
         $source = $this->requireEntry($root, $relative);
         $current = basename($relative);
 
@@ -714,6 +717,12 @@ class FileManagerService
             }
 
             $display = implode('/', $segments);
+
+            if (count($segments) > 1 && ($reason = $this->reservedSkillReason($rootKey, $relative, $segments[0])) !== null) {
+                $skipped[] = ['path' => $display, 'reason' => $reason];
+
+                continue;
+            }
 
             if (! $file->isValid()) {
                 $skipped[] = ['path' => $display, 'reason' => $this->uploadError($file)];
@@ -890,6 +899,33 @@ class FileManagerService
      * Whether an entry at the top of a root is a custom skill folder — the
      * caller keeps the Boost registration in step when one changes.
      */
+    /**
+     * A folder at the top of the skills root is a slash command: it may not
+     * take the name of a Larapilot or a Boost skill, which it would replace
+     * in the agents.
+     */
+    protected function assertSkillName(string $rootKey, string $parent, string $name): void
+    {
+        $reason = $this->reservedSkillReason($rootKey, $parent, $name);
+
+        if ($reason !== null) {
+            throw new InvalidArgumentException($reason);
+        }
+    }
+
+    protected function reservedSkillReason(string $rootKey, string $parent, string $name): ?string
+    {
+        if ($rootKey !== 'skills' || $parent !== '') {
+            return null;
+        }
+
+        $owner = $this->customSkills->reservedBy($name);
+
+        return $owner === null
+            ? null
+            : "“{$name}” is a skill of {$owner}: a custom skill of that name would replace it in the agents. Choose another name.";
+    }
+
     public function isSkillFolder(string $rootKey, string $path): bool
     {
         return $rootKey === 'skills' && $path !== '' && ! str_contains($path, '/');

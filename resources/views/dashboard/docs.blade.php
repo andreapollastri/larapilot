@@ -263,7 +263,7 @@
                     <strong>Code history = YES</strong> — after each <code>task-done</code>, append file+line touchpoints to <code>.larapilot/code-history.yaml</code>.
                 </li>
                 <li @class(['is-on' => $isYes($s['release_mode'] ?? 'NO')])>
-                    <strong>Release mode = YES</strong> — semver ledger in <code>releases.yaml</code>. Gitflow cuts <code>release/x.y.z</code>, opens feature branches from it, and ships with <code>release-ship</code>.
+                    <strong>Release mode = YES</strong> — semver ledger in <code>releases.yaml</code>, and every story targets a version: the <a href="{{ route('larapilot.dashboard.versions') }}">Versions</a> page, the version scope of the Board, the Plan, and the Forecast, and skills that name the version they work in. Gitflow cuts <code>release/x.y.z</code>, opens feature branches from it, and ships with <code>release-ship</code> once the open stories of the version are settled.
                 </li>
                 <li @class(['is-on' => $isYes($s['project_docs'] ?? 'NO')])>
                     <strong>Project docs = YES</strong> — Albert maintains a living handbook in <code>.larapilot/docs/handbook/</code>, after material changes.
@@ -315,7 +315,7 @@
                     <tr><td><code>/larapilot-implement</code></td><td>Code, tests, atomic commits per git_mode, developer domain docs in <code>.larapilot/docs/devs/</code></td><td>🔧 Alex · 👾 Andrew · ⌨️ Sarah · 📝 Albert</td></tr>
                     <tr><td><code>/larapilot-review</code></td><td>DONE or rework feedback</td><td>🛡️ Robert · 🧪 Anne · 🔐 Lars</td></tr>
                     <tr><td><code>/larapilot-ship</code> <span class="skill-optional">optional</span></td><td>Security gate + deploy + launch checks</td><td>🚀 Jack · 🔐 Lars · ⚖️ Violet</td></tr>
-                    <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
+                    <tr><td><code>/larapilot-release</code> <span class="skill-optional">when release_mode</span></td><td><code>releases.yaml</code>, the version of each story, progress and release notes per version, release branches</td><td>⌨️ Sarah · 🚀 Jack · 💎 Mark</td></tr>
                     <tr><td><code>/larapilot-project-docs</code> <span class="skill-optional">when project_docs</span></td><td>Handbook in <code>.larapilot/docs/handbook/</code></td><td>📝 Albert</td></tr>
                     <tr><td><code>/larapilot-settings</code></td><td><code>config.yaml</code> settings</td><td>🤖 Zoey · 💎 Mark · 🚀 Jack · 🔐 Lars · 💰 Aurora</td></tr>
                     <tr><td><code>/larapilot-economics</code> <span class="skill-optional">when account ≠ NONE</span></td><td>Client quote, tax, payback, SaaS ARR — <a href="{{ route('larapilot.dashboard.economics') }}">Economics</a></td><td>💰 Aurora · 📒 Lucille</td></tr>

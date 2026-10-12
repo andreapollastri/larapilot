@@ -33,11 +33,11 @@ When the handoff says you are the autopilot spec worker, read `spec-worker.md` (
 
 ## CLI
 
-1. `php artisan larapilot:spec-show {code} --fields=id,title,status,dependencies` for the task list, then `php artisan larapilot:spec-show {code} --task=TASK-NN` for the task you are about to execute. OR `php artisan larapilot:spec-next --status=PLANNED --fields=id,title,status,dependencies` when no code was given, then `--task=` for the active task.
+1. `php artisan larapilot:spec-show {code} --fields=id,title,status,dependencies` for the task list, then `php artisan larapilot:spec-show {code} --task=TASK-NN` for the task you are about to execute. OR `php artisan larapilot:spec-next --status=PLANNED --fields=id,title,status,dependencies` when no code was given, then `--task=` for the active task. With release mode on, `spec-next` picks the stories of the version the work is on first and returns `data.release.version`; `--release=x.y.z` keeps to one version.
 2. `php artisan larapilot:spec-start {code}`
 3. `php artisan larapilot:task-done {code} {taskId}` (after each task)
 4. `php artisan larapilot:code-log --spec={code} --task={taskId} --skill=larapilot-implement` — **only when `data.settings.code_history` is `YES`**; right after `task-done`, and once more after `spec-review`
-5. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; `--fix` for formatting when needed. The envelope is verdict and findings. Run with `-v` only when a finding line was cut.
+5. `php artisan larapilot:quality` — Pint + Larastan (level 5+) before backend `task-done`; `--fix` for formatting when needed. The envelope is verdict and findings. Run with `-v` only when a finding line was cut. With `data.settings.quality_scope` `CHANGED`, Pint reads only the PHP files the branch changed and `--fix` formats only those: never format the whole repository inside a task commit.
 6. `php artisan larapilot:spec-review {code}`
 7. `php artisan larapilot:decision-log …` / `decision-check …` — when `data.settings.decision_log` is `YES` and the user redirects scope or changes a preference mid-run; `decision-check` first when it reverses an earlier recorded choice
 8. `php artisan larapilot:prd-show --ids=…` — the FRs, journeys, or NFRs the spec traces to, when a criterion is unclear. Never the whole PRD.
@@ -76,6 +76,8 @@ The rules are in the files you read, once: **Architecture Standards**, **Securit
 ### Phase 0 — Load plan
 
 From the field-filtered `spec-show`: `data.spec`, task ids and dependencies, `data.workdir`. Load a task body with `--task=` only for the task you are starting.
+
+**Version gate** (when `data.settings.release_mode` is `YES`, `versions.md`). The story's version is its `**Release:**` line or `spec-next` → `data.release.version`. **None → stop before TASK-00**: AskQuestion — `data.release.current`, the next open version, or a new one Sarah names — and persist with `release-set --semver=x.y.z --add-spec={code}` before the first commit. A version other than `data.release.current` → one line saying so; the work lands on that version's branch. Every status line carries the version line (`· v1.2.0 3/5 (60%)`).
 
 **Developer domain docs catch-up gate.** When `data.dev_docs.documented` is `false` and the codebase already has domains to describe, Albert brings the **whole project** level before any task runs — one file per existing domain, not just the ones this spec touches — per **First-change catch-up** (`dev-docs-catchup.md`, already in `read` in that case). Announce the scope in one line (no AskQuestion), commit it on its own as `docs({code}): bring developer domain docs level`, then start Phase 1. A greenfield project on its first spec has nothing to catch up on and skips straight to Phase 1. This gate runs at **every** effort level, `ECO` included.
 
@@ -117,4 +119,4 @@ Robert and Lars still speak in character when the **parent** summarizes merged f
 
 `php artisan larapilot:spec-review {code}` with a summary note; `larapilot:notify --event=spec_review` when notifications are ON.
 
-Report in **6 lines maximum**: spec code, tasks completed, tests run, review outcome, developer domain docs written or updated, mockup fidelity (`mirrored`, or the agreed deviations). A table is allowed only in this handoff.
+Report in **6 lines maximum**: spec code (with its version under release mode), tasks completed, tests run, review outcome, developer domain docs written or updated, mockup fidelity (`mirrored`, or the agreed deviations). A table is allowed only in this handoff.

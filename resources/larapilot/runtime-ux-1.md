@@ -16,7 +16,7 @@ Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS fr
 
 ### Design systems _(detect from the PRD — read on demand)_
 
-When the PRD `## Technical Architecture` records a UI framework, read its packaged reference **on demand**: `{paths.design_systems}/{system}/README.md` + `components.md` (+ `tokens.css`, the `html/` catalog; the root `README.md` is the index). Systems: `filament/`, `nova/`, `adminlte/`, `starter-kit/`, `shadcn/`, `bootstrap-5/`, `tailwind/`, `material-3/`, `nordic-saas/` (Nordic minimal), `fluent/`, `modern/`, `bold-california/`, `berlin/`, plus the project's own — a custom system from the interview, or the as-is system of an adopted project. Shared rules:
+When the PRD `## Technical Architecture` records a UI framework, read its packaged reference **on demand**: `{paths.design_systems}/{system}/README.md` + `components.md` (+ `tokens.css`, the `html/` catalog; the root `README.md` is the index). Systems: `filament/`, `nova/`, `adminlte/`, `starter-kit/`, `shadcn/`, `bootstrap-5/`, `tailwind/`, `material-3/`, `nordic-saas/` (Nordic minimal), `fluent/`, `modern/`, `bold-california/`, `berlin/`, `new-york/`, `zen/`, plus the project's own — a custom system from the interview, or the as-is system of an adopted project. Shared rules:
 
 1. Follow that system's visual language on the scoped screens — **never mix systems** and never apply Nordic minimal over them; public marketing pages keep the Nordic minimal language unless scoped otherwise.
 2. Copy the system `tokens.css` into the mockup folder as `{slug}-tokens.css`; map each screen to the system's concepts (resource list, dashboard, auth, settings) in the mockup README. Screens stay self-contained: one `<link>`, system fonts, no CDN, no script.

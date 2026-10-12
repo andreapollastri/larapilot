@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Kanso backoffice</title>
+<meta name="description" content="Studio settings of the Kanso backoffice: studio profile, shop currency and shipping zones, workshop defaults, notifications, the team of three and a quiet danger zone.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="zn-mockup zn-body">
+<a class="zn-skip" href="#main">Skip to content</a>
+<div class="zn-app">
+<aside class="zn-rail" aria-label="Backoffice">
+<div class="zn-rail__brand"><a class="zn-logo" href="dashboard.html" aria-label="Kanso backoffice, today"><svg class="zn-logo__mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M28.7 90.0L33.6 93.6 39.1 96.6 45.1 98.8 51.4 99.7 57.8 99.0 64.0 97.4 69.9 95.0 75.4 91.9 80.5 88.1 84.9 83.6 88.7 78.6 91.7 73.2 94.0 67.5 95.5 61.6 96.2 55.6 96.1 49.6 95.3 43.7 93.7 38.0 91.4 32.6 88.5 27.6 85.0 23.1 81.0 19.0 76.5 15.5 71.7 12.7 66.6 10.4 61.3 8.8 55.9 7.8 50.4 7.7 45.0 8.3 39.7 9.6 34.7 11.5 30.0 14.1 25.7 17.1 21.8 20.7 18.4 24.7 15.6 29.1 13.4 33.8 11.9 38.7 11.0 43.8 10.8 48.9 11.3 53.9 12.4 58.8 13.8 63.6 15.8 68.2 17.2 67.4 15.3 63.0 14.1 58.4 13.8 53.7 14.1 49.0 15.0 44.4 16.6 40.1 18.6 36.1 21.1 32.5 24.1 29.2 27.3 26.4 30.9 24.1 34.6 22.3 38.5 21.0 42.4 20.2 46.4 19.8 50.3 20.0 54.1 20.5 57.9 21.4 61.5 22.7 64.9 24.4 68.1 26.5 71.0 29.0 73.6 31.8 75.9 35.0 77.7 38.4 79.2 42.0 80.1 45.8 80.6 49.7 80.5 53.7 80.0 57.6 78.9 61.5 77.3 65.2 75.2 68.6 72.6 71.8 69.6 74.5 66.3 76.9 62.7 78.7 58.9 80.1 54.9 80.8 50.9 81.1 46.8 81.2 42.7 81.2 38.5 80.7 34.3 79.5 30.9 78.6 27.7 79.3 25.5 81.5 24.9 84.6 26.1 87.7Z"/></svg><span class="zn-logo__word">Kanso</span></a><button type="button" class="zn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="zn-i zn-i--24 zn-i--thin" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="zn-rail__nav" aria-label="Main">
+<a class="zn-nav-item" href="dashboard.html" title="Today"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="zn-nav-item__label">Today</span></a>
+<a class="zn-nav-item" href="resource-list.html" title="Orders"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg><span class="zn-nav-item__label">Orders</span><span class="zn-nav-item__count">2</span></a>
+<a class="zn-nav-item" href="#" title="Workshops"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="zn-nav-item__label">Workshops</span></a>
+<a class="zn-nav-item" href="#" title="Pieces"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg><span class="zn-nav-item__label">Pieces</span></a>
+<a class="zn-nav-item" href="#" title="Customers"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="zn-nav-item__label">Customers</span></a>
+<a class="zn-nav-item" href="#" title="Journal"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="zn-nav-item__label">Journal</span></a>
+<span class="zn-rail__gap" aria-hidden="true"></span>
+<a class="zn-nav-item is-active" aria-current="page" href="settings.html" title="Settings"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="zn-nav-item__label">Settings</span></a>
+</nav>
+<div class="zn-rail__foot">
+<span class="zn-av" aria-hidden="true">AM</span>
+<span class="zn-rail__who"><span class="zn-rail__name">Aiko Mori</span><span class="zn-rail__role">Owner</span></span>
+<a class="zn-btn zn-btn--ghost zn-btn--icon zn-btn--sm" href="login.html" aria-label="Sign out, Aiko Mori" title="Sign out"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a>
+</div>
+</aside>
+<header class="zn-topbar">
+<p class="zn-topbar__date"><time datetime="2026-10-12">Monday, 12 October 2026</time></p>
+<div class="zn-topbar__search" role="search"><label class="zn-search"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders, pieces and customers</span><input class="zn-search__input" type="search" placeholder="Search orders, pieces, customers"><span class="zn-kbd" aria-hidden="true">/</span></label></div>
+<div class="zn-topbar__actions"><a class="zn-btn zn-btn--primary" href="resource-form.html"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New order</a></div>
+</header>
+<main class="zn-main" id="main">
+<header class="zn-pagehead">
+<div><h1 class="zn-h1">Settings</h1><p class="zn-pagehead__lede">For the whole studio. Changes apply on the next page load.</p></div>
+</header>
+
+<nav class="zn-tabs" aria-label="Settings sections">
+<a class="zn-tab is-active" href="#profile" aria-current="true">Studio</a>
+<a class="zn-tab" href="#shop">Shop</a>
+<a class="zn-tab" href="#workshops">Workshops</a>
+<a class="zn-tab" href="#notify">Notifications</a>
+<a class="zn-tab" href="#team">Team <span class="zn-tab__count">3</span></a>
+<a class="zn-tab" href="#danger">Danger zone</a>
+</nav>
+
+<div class="zn-form">
+<section class="zn-formsec" id="profile" aria-labelledby="s1">
+<div class="zn-formsec__head"><h2 id="s1" class="zn-formsec__title">Studio profile</h2><p class="zn-formsec__desc">Shown on receipts, workshop tickets and the public site.</p></div>
+<div class="zn-formsec__body">
+<div class="zn-field"><label class="zn-flabel" for="p-name">Studio name</label><input id="p-name" class="zn-input" type="text" value="Kanso"></div>
+<div class="zn-field"><label class="zn-flabel" for="p-mail">Contact email</label><input id="p-mail" class="zn-input" type="email" value="studio@kanso.studio"></div>
+<div class="zn-field zn-field--full"><label class="zn-flabel" for="p-addr">Address</label><input id="p-addr" class="zn-input" type="text" value="2-41 Matsubara-chō, Higashiyama, Kyoto 605-0000"></div>
+<div class="zn-field"><label class="zn-flabel" for="p-tz">Time zone</label><span class="zn-selectbox zn-selectbox--block"><select id="p-tz" class="zn-select" disabled><option>Asia/Tokyo (JST)</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span><p class="zn-help">Fixed to the shop&rsquo;s opening hours.</p></div>
+<div class="zn-field"><label class="zn-flabel" for="p-lang">Receipt language</label><span class="zn-selectbox zn-selectbox--block"><select id="p-lang" class="zn-select"><option>Japanese and English</option><option>Japanese</option><option>English</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+</div>
+</section>
+
+<section class="zn-formsec" id="shop" aria-labelledby="s2">
+<div class="zn-formsec__head"><h2 id="s2" class="zn-formsec__title">Shop</h2><p class="zn-formsec__desc">Prices include consumption tax. Every piece ships in a wooden box.</p></div>
+<div class="zn-formsec__body">
+<div class="zn-field"><label class="zn-flabel" for="s-cur">Currency</label><span class="zn-selectbox zn-selectbox--block"><select id="s-cur" class="zn-select"><option>Japanese yen (¥)</option><option>US dollar ($)</option><option>Euro (€)</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="zn-field"><label class="zn-flabel" for="s-free">Free shipping in Japan from</label><span class="zn-inputgroup"><span class="zn-affix">¥</span><input id="s-free" class="zn-input" type="text" inputmode="numeric" value="30,000"></span></div>
+<div class="zn-field zn-field--full">
+<div class="zn-label-row"><span class="zn-flabel" id="zones">Shipping zones</span><a class="zn-link zn-text-xs" href="#">Add a zone</a></div>
+<div class="zn-table-wrap"><table class="zn-table zn-table--compact zn-table--plain" aria-labelledby="zones">
+<thead><tr><th scope="col">Zone</th><th scope="col">Delivery</th><th scope="col" class="zn-td-num">Rate</th></tr></thead>
+<tbody>
+<tr><td>Japan</td><td class="zn-soft">2–3 days</td><td class="zn-td-num">¥1,200</td></tr>
+<tr><td>Asia</td><td class="zn-soft">5–8 days</td><td class="zn-td-num">¥3,800</td></tr>
+<tr><td>Europe and North America</td><td class="zn-soft">8–14 days</td><td class="zn-td-num">¥6,500</td></tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</section>
+
+<section class="zn-formsec" id="workshops" aria-labelledby="s3">
+<div class="zn-formsec__head"><h2 id="s3" class="zn-formsec__title">Workshops</h2><p class="zn-formsec__desc">Defaults for every new date. Each date can change them.</p></div>
+<div class="zn-formsec__body">
+<div class="zn-field"><label class="zn-flabel" for="w-seats">Seats per workshop</label><span class="zn-inputgroup"><input id="w-seats" class="zn-input" type="number" min="1" max="12" value="8"><span class="zn-affix zn-affix--end">seats</span></span><p class="zn-help">Eight wheels in the studio, eight mats in the tea room.</p></div>
+<div class="zn-field"><label class="zn-flabel" for="w-window">Booking opens</label><span class="zn-selectbox zn-selectbox--block"><select id="w-window" class="zn-select"><option>30 days before</option><option>60 days before</option><option>14 days before</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="zn-field"><label class="zn-flabel" for="w-close">Booking closes</label><span class="zn-selectbox zn-selectbox--block"><select id="w-close" class="zn-select"><option>24 hours before</option><option>48 hours before</option><option>At the start</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="zn-field"><label class="zn-flabel" for="w-cancel">Free cancellation</label><span class="zn-selectbox zn-selectbox--block"><select id="w-cancel" class="zn-select"><option>Up to 48 hours before</option><option>Up to 7 days before</option><option>Never</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+</div>
+</section>
+
+<section class="zn-formsec" id="notify" aria-labelledby="s4">
+<div class="zn-formsec__head"><h2 id="s4" class="zn-formsec__title">Notifications</h2><p class="zn-formsec__desc">For you, Aiko. Each person sets their own.</p></div>
+<div class="zn-formsec__body"><div class="zn-field zn-field--full">
+<label class="zn-switchrow"><span class="zn-switchrow__text">A new order arrives<span>By email, as it happens.</span></span><input class="zn-switch" type="checkbox" role="switch" checked></label>
+<label class="zn-switchrow"><span class="zn-switchrow__text">A workshop is full<span>So a second date can be opened in time.</span></span><input class="zn-switch" type="checkbox" role="switch" checked></label>
+<label class="zn-switchrow"><span class="zn-switchrow__text">A piece runs low<span>Three left or fewer, before the next firing.</span></span><input class="zn-switch" type="checkbox" role="switch" checked></label>
+<label class="zn-switchrow"><span class="zn-switchrow__text">Weekly summary<span>Mondays at 08:00. Orders, seats and stock.</span></span><input class="zn-switch" type="checkbox" role="switch"></label>
+</div></div>
+</section>
+
+<section class="zn-formsec" id="team" aria-labelledby="s5">
+<div class="zn-formsec__head"><h2 id="s5" class="zn-formsec__title">Team</h2><p class="zn-formsec__desc">Three people. Only the owner sees revenue.</p><a class="zn-btn zn-btn--sm zn-mt-16" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Invite someone</a></div>
+<div class="zn-formsec__body"><ul class="zn-list zn-field--full">
+<li class="zn-list__row"><span class="zn-person"><span class="zn-av zn-av--solid" aria-hidden="true">AM</span><span class="zn-list__main"><span class="zn-list__title">Aiko Mori</span><span class="zn-list__sub">aiko@kanso.studio</span></span></span><span class="zn-tag zn-tag--ink">Owner</span></li>
+<li class="zn-list__row"><span class="zn-person"><span class="zn-av" aria-hidden="true">KS</span><span class="zn-list__main"><span class="zn-list__title">Kenji Sato</span><span class="zn-list__sub">kenji@kanso.studio · wheel workshops</span></span></span><span class="zn-tag">Studio</span></li>
+<li class="zn-list__row"><span class="zn-person"><span class="zn-av" aria-hidden="true">YH</span><span class="zn-list__main"><span class="zn-list__title">Yuna Hayashi</span><span class="zn-list__sub">yuna@kanso.studio · packing and shipping</span></span></span><span class="zn-tag">Shop</span></li>
+</ul></div>
+</section>
+
+<section class="zn-formsec" id="danger" aria-labelledby="s6">
+<div class="zn-formsec__head"><h2 id="s6" class="zn-formsec__title">Danger zone</h2><p class="zn-formsec__desc">Owner only. Take a moment first.</p></div>
+<div class="zn-formsec__body"><ul class="zn-list zn-field--full">
+<li class="zn-list__row"><span class="zn-list__main"><span class="zn-list__title">Pause the shop</span><span class="zn-list__sub">Hides prices and the cart. Workshops stay bookable.</span></span><a class="zn-btn zn-btn--sm" href="modal.html">Pause the shop</a></li>
+<li class="zn-list__row"><span class="zn-list__main"><span class="zn-list__title">Close the studio account</span><span class="zn-list__sub">Orders, pieces and customers are removed after 30 days.</span></span><a class="zn-btn zn-btn--sm zn-btn--danger" href="modal.html">Close account</a></li>
+</ul></div>
+</section>
+
+<div class="zn-formbar">
+<p class="zn-formbar__status"><span class="zn-dot zn-dot--ring" aria-hidden="true"></span>1 unsaved change · Shop</p>
+<div class="zn-actions"><button type="button" class="zn-btn zn-btn--ghost">Discard</button><button type="button" class="zn-btn zn-btn--primary">Save changes</button></div>
+</div>
+</div>
+</main>
+</div>
+</body>
+</html>

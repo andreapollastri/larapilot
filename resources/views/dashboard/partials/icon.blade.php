@@ -13,6 +13,9 @@
     @case('plan')
         <path d="M3 4v16"/><rect x="6" y="5" width="9" height="3.5" rx="1"/><rect x="9" y="10.25" width="11" height="3.5" rx="1"/><rect x="6" y="15.5" width="7" height="3.5" rx="1"/>
         @break
+    @case('versions')
+        <path d="m12 3 9 4.5-9 4.5-9-4.5z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/>
+        @break
     @case('roadmap')
         <path d="M4 19V5"/><path d="M4 15c2-3 4-3 6 0s4 3 6 0 4-3 4 0"/><circle cx="10" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="9" r="1.2" fill="currentColor" stroke="none"/>
         @break

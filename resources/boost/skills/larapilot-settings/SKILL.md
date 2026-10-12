@@ -54,7 +54,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 From the `context` envelope, show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · hooks={…} · sprints={…} · public_roadmap={…} · comments={…} · api_auth={…} · security_scan={…} · security={…} · security_provider={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · quality_scope={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · hooks={…} · sprints={…} · public_roadmap={…} · comments={…} · api_auth={…} · security_scan={…} · security={…} · security_provider={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -162,7 +162,7 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 
 | Setting | YES label | NO label |
 | --- | --- | --- |
-| `release_mode` | `YES — release ledger + /larapilot-release + Gitflow release branches` | `NO — classic develop/feature flow only (default)` |
+| `release_mode` | `YES — every story targets a version: release ledger, /larapilot-release, Versions page, release notes, Gitflow release branches` | `NO — classic develop/feature flow only (default)` |
 | `project_docs` | `YES — Albert maintains the handbook in .larapilot/docs/handbook/ (bootstrap from history if enabled mid-project)` | `NO — no handbook obligation (default)` |
 
 **6c-bis. Workflow hooks**
@@ -304,6 +304,7 @@ php artisan larapilot:settings-set \
   --backlog=STANDARD \
   --git-mode=GITFLOW \
   --testing=NORMAL \
+  --quality-scope=ALL \
   --account=NONE \
   --auto-approve=NO \
   --lucille=YES \
@@ -330,7 +331,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · hooks=… · sprints=… · public_roadmap=… · comments=… · api_auth=… · security_scan=… · security=… · security_provider=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · quality_scope=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · hooks=… · sprints=… · public_roadmap=… · comments=… · api_auth=… · security_scan=… · security=… · security_provider=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.

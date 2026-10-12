@@ -31,6 +31,8 @@ class MockupAssetResolver
         'modern',
         'bold-california',
         'berlin',
+        'new-york',
+        'zen',
     ];
 
     /**

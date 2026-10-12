@@ -58,22 +58,29 @@ class ForecastService
         protected SpecActualsService $specActuals,
         protected UsageService $usage,
         protected EconomicsService $economics,
+        protected VersionService $versions,
     ) {}
 
     /**
+     * @param  list<string>  $selected  The versions in scope (`none` for the stories no version claims); empty for the whole backlog.
      * @return array<string, mixed>
      */
-    public function dashboard(): array
+    public function dashboard(array $selected = []): array
     {
-        $snapshot = $this->snapshot();
+        $snapshot = $this->snapshot($selected);
 
         return $snapshot + ['report_markdown' => $this->reportMarkdown($snapshot)];
     }
 
     /**
+     * The forecast of the backlog, or of the versions in scope. The rate a
+     * delivered point took is measured on the whole backlog either way: a
+     * version is too small a sample to stand on its own.
+     *
+     * @param  list<string>  $selected
      * @return array<string, mixed>
      */
-    public function snapshot(): array
+    public function snapshot(array $selected = []): array
     {
         $statuses = [
             'done' => strtoupper($this->config->status('done')),
@@ -81,10 +88,16 @@ class ForecastService
             'review' => strtoupper($this->config->status('review')),
         ];
 
-        $rows = $this->rows($statuses);
+        $versionsOn = $this->versions->enabled();
+        $all = $this->rows($statuses, $versionsOn ? $this->versions->assignments() : []);
+        $selected = $versionsOn ? $selected : [];
+        $rows = $selected === [] ? $all : array_values(array_filter(
+            $all,
+            static fn (array $row): bool => in_array($row['version'] ?? VersionService::NONE, $selected, true)
+        ));
         $hoursPerPoint = $this->hoursPerPoint();
         $sprint = $this->sprint();
-        $measured = $this->measured($rows);
+        $measured = $this->measured($all);
 
         $points = ['total' => 0, 'done' => 0, 'wip' => 0, 'todo' => 0];
         $specs = ['total' => count($rows), 'done' => 0, 'wip' => 0, 'todo' => 0, 'unsized' => 0];
@@ -136,17 +149,101 @@ class ForecastService
                 'overhead_hours_per_spec' => self::AI_OVERHEAD_HOURS_PER_SPEC,
             ],
             'epics' => $this->epics($rows, $hoursPerPoint['value'], $sprint['hours'], $measured, $ai['basis']),
+            'versions' => $versionsOn ? $this->byVersion($rows, $hoursPerPoint['value'], $sprint['hours'], $measured, $ai['basis']) : [],
+            'scope' => [
+                'enabled' => $versionsOn,
+                'selected' => $selected,
+                'versions' => $versionsOn ? $this->versions->rows(null, false) : [],
+            ],
             'assumptions' => $this->assumptions($hoursPerPoint, $sprint, $measured, $specs['unsized']),
         ];
+    }
+
+    /**
+     * One row for each version in scope, oldest first, and one for the
+     * stories no version claims: the same figures as an epic, with the day
+     * the last open story is forecast to land and the milestone it answers
+     * to.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  array{hours_per_point: float, specs: int, points: int, hours: float, thin: bool}|null  $measured
+     * @return list<array<string, mixed>>
+     */
+    protected function byVersion(array $rows, float $hoursPerPoint, float $sprintHours, ?array $measured, string $basis): array
+    {
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $key = $row['version'] ?? VersionService::NONE;
+            $groups[$key] ??= ['specs' => 0, 'points' => 0, 'points_done' => 0, 'points_remaining' => 0, 'ai_hours' => 0.0, 'ai_hours_remaining' => 0.0];
+            $groups[$key]['specs']++;
+            $groups[$key]['points'] += $row['points'];
+            $groups[$key][$row['state'] === 'done' ? 'points_done' : 'points_remaining'] += $row['points'];
+            $ai = $this->aiHours($row['points'], $hoursPerPoint, $measured, $basis);
+            $groups[$key]['ai_hours'] += $ai;
+            $groups[$key]['ai_hours_remaining'] += $row['state'] === 'done' ? 0.0 : $ai;
+        }
+
+        $result = [];
+        $ledger = $this->versions->rows();
+
+        foreach ([...$ledger, ['version' => VersionService::NONE]] as $version) {
+            $key = $version['version'];
+
+            if (! isset($groups[$key])) {
+                continue;
+            }
+
+            $group = $groups[$key];
+            $remaining = round($group['points_remaining'] * $hoursPerPoint, 1);
+
+            $result[] = [
+                'version' => $key,
+                'title' => $key === VersionService::NONE ? 'No version' : $version['title'],
+                'status' => $key === VersionService::NONE ? 'none' : $version['status'],
+                'specs' => $group['specs'],
+                'points' => $group['points'],
+                'points_done' => $group['points_done'],
+                'points_remaining' => $group['points_remaining'],
+                'human_hours' => round($group['points'] * $hoursPerPoint, 1),
+                'human_hours_remaining' => $remaining,
+                'ai_hours' => round($group['ai_hours'], 1),
+                'ai_hours_remaining' => round($group['ai_hours_remaining'], 1),
+                'sprints_remaining' => $this->sprints($remaining, $sprintHours),
+                'forecast_end' => $version['forecast_end'] ?? null,
+                'milestone' => $version['milestone'] ?? null,
+                'risk' => $version['risk'] ?? null,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * The hours one spec of `$points` takes with Larapilot: the measured
+     * rate, or the realistic case of the model.
+     *
+     * @param  array{hours_per_point: float, specs: int, points: int, hours: float, thin: bool}|null  $measured
+     */
+    protected function aiHours(int $points, float $hoursPerPoint, ?array $measured, string $basis): float
+    {
+        if ($points === 0) {
+            return 0.0;
+        }
+
+        return $basis === 'measured' && $measured !== null
+            ? $points * $measured['hours_per_point']
+            : $points * $hoursPerPoint / self::AI_SPEEDUP['realistic'] + self::AI_OVERHEAD_HOURS_PER_SPEC['realistic'];
     }
 
     /**
      * Every spec of the backlog, in the few fields the forecast reads.
      *
      * @param  array{done: string, in_progress: string, review: string}  $statuses
-     * @return list<array{code: string, title: string, points: int, state: 'done'|'wip'|'todo', epic_code: string|null, epic_title: string|null}>
+     * @param  array<string, string>  $assignments  Spec code → version.
+     * @return list<array{code: string, title: string, points: int, state: 'done'|'wip'|'todo', epic_code: string|null, epic_title: string|null, version: string}>
      */
-    protected function rows(array $statuses): array
+    protected function rows(array $statuses, array $assignments = []): array
     {
         $rows = [];
 
@@ -172,6 +269,7 @@ class ForecastService
                 },
                 'epic_code' => $epicCode !== '' ? $epicCode : null,
                 'epic_title' => $epicCode !== '' ? trim((string) ($epic['title'] ?? $epicCode)) : null,
+                'version' => $assignments[$code] ?? VersionService::NONE,
             ];
         }
 
@@ -387,11 +485,7 @@ class ForecastService
                 $epics[$key]['points_remaining'] += $row['points'];
             }
 
-            if ($row['points'] > 0) {
-                $epics[$key]['ai_hours'] += $basis === 'measured' && $measured !== null
-                    ? $row['points'] * $measured['hours_per_point']
-                    : $row['points'] * $hoursPerPoint / self::AI_SPEEDUP['realistic'] + self::AI_OVERHEAD_HOURS_PER_SPEC['realistic'];
-            }
+            $epics[$key]['ai_hours'] += $this->aiHours($row['points'], $hoursPerPoint, $measured, $basis);
         }
 
         foreach ($epics as &$epic) {
@@ -493,6 +587,15 @@ class ForecastService
             'Generated: '.(new DateTimeImmutable('now'))->format(DateTimeInterface::ATOM),
             '',
         ];
+        $selected = $snapshot['scope']['selected'] ?? [];
+
+        if ($selected !== []) {
+            $lines[] = '**Scope:** '.implode(', ', array_map(
+                static fn (string $version): string => $version === VersionService::NONE ? 'no version' : 'v'.$version,
+                $selected
+            )).'. The rate a point took with Larapilot is measured on the whole backlog.';
+            $lines[] = '';
+        }
 
         if ($specs['total'] === 0) {
             $lines[] = '_No specs in the backlog yet: nothing to forecast._';
@@ -558,6 +661,32 @@ class ForecastService
                 self::number($epic['ai_hours']),
                 $epic['sprints']
             );
+        }
+
+        if (($snapshot['versions'] ?? []) !== []) {
+            $lines[] = '';
+            $lines[] = '## By version';
+            $lines[] = '';
+            $lines[] = sprintf('| Version | Status | Specs | SP | Done | Human left | AI %s left | Sprints left | Forecast | Milestone |', $ai['basis'] === 'measured' ? 'measured' : 'realistic');
+            $lines[] = '| ------- | ------ | ----: | --: | ---: | ---------: | ---------: | -----------: | -------- | --------- |';
+
+            foreach ($snapshot['versions'] as $version) {
+                $milestone = is_array($version['milestone']) ? $version['milestone']['date'].($version['risk'] === 'late' ? ' (late)' : ($version['risk'] === 'overdue' ? ' (overdue)' : '')) : '—';
+
+                $lines[] = sprintf(
+                    '| %s | %s | %d | %d | %d | %s h | %s h | %d | %s | %s |',
+                    str_replace('|', '\\|', $version['version'] === VersionService::NONE ? 'No version' : 'v'.$version['version'].($version['title'] !== '' ? ' — '.$version['title'] : '')),
+                    str_replace('_', ' ', $version['status']),
+                    $version['specs'],
+                    $version['points'],
+                    $version['points_done'],
+                    self::number($version['human_hours_remaining']),
+                    self::number($version['ai_hours_remaining']),
+                    $version['sprints_remaining'],
+                    $version['forecast_end'] ?? '—',
+                    $milestone
+                );
+            }
         }
 
         $lines[] = '';

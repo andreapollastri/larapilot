@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Larapilot\Support;
 
 use Illuminate\Console\Command;
+use Larapilot\Services\ConfigService;
 use Larapilot\Services\EconomicsService;
 use Larapilot\Services\HookService;
 use Larapilot\Support\Envelope as EnvelopeWriter;
@@ -36,7 +37,7 @@ abstract class LarapilotCommand extends Command
             $data['hooks'] = $this->hookReport;
         }
 
-        $this->line(EnvelopeWriter::success($kind, $data));
+        $this->line(EnvelopeWriter::success($kind, $this->forAgent($data)));
         $this->refreshEconomics();
 
         return self::SUCCESS;
@@ -65,9 +66,26 @@ abstract class LarapilotCommand extends Command
      */
     protected function failure(string $code, string $message, int $exitCode = 1, ?string $hint = null, ?array $details = null): int
     {
-        $this->error(EnvelopeWriter::error($code, $message, $hint, $details));
+        $this->error(EnvelopeWriter::error($code, $this->forAgent($message), $this->forAgent($hint), $this->forAgent($details)));
 
         return $exitCode;
+    }
+
+    /**
+     * Under Sail or another container the agent reads the files from the
+     * host, where the container's root does not exist: the envelope then
+     * speaks in paths relative to the project root (see `agent_paths`).
+     *
+     * @template T
+     *
+     * @param  T  $value
+     * @return T
+     */
+    protected function forAgent(mixed $value): mixed
+    {
+        $config = app(ConfigService::class);
+
+        return $config->agentPathsRelative() ? $config->forAgent($value) : $value;
     }
 
     /**

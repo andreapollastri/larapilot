@@ -7,6 +7,7 @@ namespace Larapilot\Console\Commands;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\HookService;
+use Larapilot\Services\PackagedSkillService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
 use Larapilot\Support\LarapilotCommand;
@@ -20,10 +21,11 @@ class DoctorCommand extends LarapilotCommand
 
     protected $description = 'Diagnose Larapilot installation and project setup';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, PrdService $prd, SpecService $specs, HookService $hooks): int
+    public function handle(ConfigService $config, CodeQualityService $quality, PrdService $prd, SpecService $specs, HookService $hooks, PackagedSkillService $packagedSkills): int
     {
         $designSystems = SharedRuntime::designSystemsProjectPath();
         $qualityStatus = $quality->status();
+        $skills = $packagedSkills->check();
 
         $runtimePacks = collect(SharedRuntime::packagedDocs())
             ->filter(fn (string $file): bool => str_starts_with($file, 'runtime-'));
@@ -49,6 +51,8 @@ class DoctorCommand extends LarapilotCommand
             'quality_larastan' => $qualityStatus['larastan_config'] && $qualityStatus['larastan_level_ok'],
             'quality_packages' => $qualityStatus['composer_require_dev'][CodeQualityService::PINT_PACKAGE]
                 && $qualityStatus['composer_require_dev'][CodeQualityService::LARASTAN_PACKAGE],
+            // Every agent folder holds the /larapilot-* skills as this version wrote them.
+            'skills' => $skills['ok'],
         ];
 
         $missingSettings = $config->missingSettingKeys();
@@ -60,7 +64,8 @@ class DoctorCommand extends LarapilotCommand
             && $checks['hooks']
             && $checks['quality_pint']
             && $checks['quality_larastan']
-            && $checks['quality_packages'];
+            && $checks['quality_packages']
+            && $checks['skills'];
 
         if ((bool) $this->option('human')) {
             $this->table(['Check', 'Status'], collect($checks)
@@ -72,6 +77,15 @@ class DoctorCommand extends LarapilotCommand
                 $this->components->warn(
                     'config.yaml is missing setting keys (package defaults apply): '.implode(', ', $missingSettings)
                     .'. Persist them with larapilot:settings-set.'
+                );
+            }
+
+            if (! $skills['ok']) {
+                $this->components->warn(
+                    'The agents do not hold the Larapilot skills of this version'
+                    .($skills['missing'] !== [] ? ' — missing: '.implode(', ', array_slice($skills['missing'], 0, 5)).(count($skills['missing']) > 5 ? ', …' : '') : '')
+                    .($skills['differs'] !== [] ? ' — out of date: '.implode(', ', array_slice($skills['differs'], 0, 5)).(count($skills['differs']) > 5 ? ', …' : '') : '')
+                    .'. Run larapilot:update'.($skills['publisher'] === 'boost' ? ' (it runs boost:update).' : ' (Boost 1.x publishes no skills: Larapilot copies them).')
                 );
             }
 
@@ -94,6 +108,7 @@ class DoctorCommand extends LarapilotCommand
             'checks' => $checks,
             'dev_docs' => $config->devDocsStatus(),
             'quality' => $qualityStatus,
+            'skills' => $skills,
             'settings_missing_keys' => $missingSettings,
             'legacy_project_docs' => $legacyProjectDocs,
             'project_root' => $config->projectRoot(),

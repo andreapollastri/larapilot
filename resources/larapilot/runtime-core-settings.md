@@ -3,7 +3,7 @@
 The values are `data.settings` in the `context` envelope. Change one only with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set` — never by editing `.larapilot/config.yaml`. A toggle that is `NO` and has no section in the files you were given is off: do nothing for it.
 
 <!-- when: view=full -->
-Persisted in `.larapilot/config.yaml` under `settings:`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `sprints: false` / `public_roadmap: false` / `api_auth: false` / `security_scan: false` / `security: false` (`security_provider`: `aikido` or `hackly`) / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`. Boolean settings are stored as `true`/`false`; the `settings-set` flag and every envelope express them as `YES`/`NO`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `quality_scope: ALL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `sprints: false` / `public_roadmap: false` / `api_auth: false` / `security_scan: false` / `security: false` (`security_provider`: `aikido` or `hackly`) / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`. Boolean settings are stored as `true`/`false`; the `settings-set` flag and every envelope express them as `YES`/`NO`.
 <!-- end -->
 
 ### Environment paths
@@ -74,6 +74,12 @@ Anne scales plan tasks, implement verification, and review evidence to this bar 
 **Do not** plan or run Playwright/Dusk/E2E/viewport-browser work: those belong to `BEST` only.
 <!-- end -->
 Full bar details: **Testing Standards** in `runtime-delivery.md`.
+
+<!-- when: quality_scope=CHANGED -->
+### Quality scope (`settings.quality_scope`)
+
+**`CHANGED`** — `larapilot:quality` runs Pint on the PHP files the branch changed against its base (committed, staged, unstaged, untracked); `--fix` formats only those. Larastan reads the project either way, with `phpstan-baseline.neon` when `larapilot:quality --baseline` wrote one. **`ALL`** (default) — Pint on the whole repository.
+<!-- end -->
 
 ### Account (`settings.account`) — opt-in, default NONE
 

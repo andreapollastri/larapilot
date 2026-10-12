@@ -46,6 +46,7 @@ class ContextService
         protected SpecService $specs,
         protected PrdService $prd,
         protected CustomSkillService $customSkills,
+        protected VersionService $versions,
     ) {}
 
     public function cachePath(): string
@@ -413,6 +414,8 @@ class ContextService
         $data = [
             'skill' => $name,
             'project_root' => $setup['project_root'],
+            // How Artisan runs here: every `php artisan` of the skill runs through it.
+            'artisan' => $this->config->artisanCommand(),
             'session' => $token,
             'settings' => $settings,
             'paths' => $custom !== null
@@ -420,6 +423,12 @@ class ContextService
                 : array_intersect_key($setup['paths'], array_flip($definition['paths'] ?? [])),
             'project' => $this->project($facts),
         ];
+
+        // With release mode on, every skill knows the version the work is
+        // on, how far each open version is, and what no version claims.
+        if ($settings['release_mode'] === 'YES') {
+            $data['release'] = $this->versions->brief();
+        }
 
         foreach ($definition['slices'] ?? [] as $slice) {
             if ($slice === 'dev_docs') {
@@ -445,7 +454,7 @@ class ContextService
         ];
 
         if ($settings['lucille'] === 'YES') {
-            $data['usage_log'] = 'php artisan larapilot:usage-log --category='.$definition['category']
+            $data['usage_log'] = $this->config->artisanCommand().' larapilot:usage-log --category='.$definition['category']
                 .' --skill='.$name.' --tokens={N} --minutes={M} --estimated';
         }
 

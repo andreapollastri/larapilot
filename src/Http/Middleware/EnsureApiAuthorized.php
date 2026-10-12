@@ -68,6 +68,14 @@ class EnsureApiAuthorized
         }
 
         if (! $configured && $policy->isOpen() && ! $this->config->apiAuthEnabled()) {
+            // Open, and with no CSRF in this group: a write must be one no
+            // web page can send from a developer's browser — JSON, which a
+            // cross-site form cannot post, and not from another site. A
+            // comment lands in the feedback the agent reads.
+            if (! $request->isMethodSafe() && $this->crossSite($request)) {
+                abort(403, 'On an open API a write is accepted only as JSON from this site or a client outside the browser. Send Content-Type: application/json, or make a token: php artisan larapilot:api-token generate.');
+            }
+
             return $next($request);
         }
 
@@ -82,6 +90,30 @@ class EnsureApiAuthorized
         }
 
         abort(401, 'Missing Larapilot API token.');
+    }
+
+    /**
+     * Whether a write could have been sent by another web site: a body that
+     * is not JSON (a form posts without a preflight), a browser that says
+     * the request is cross-site, or an Origin that is not this host.
+     */
+    protected function crossSite(Request $request): bool
+    {
+        if (! $request->isJson()) {
+            return true;
+        }
+
+        $site = strtolower((string) $request->headers->get('Sec-Fetch-Site', ''));
+
+        if ($site !== '' && ! in_array($site, ['same-origin', 'none'], true)) {
+            return true;
+        }
+
+        $origin = $request->headers->get('Origin');
+
+        return is_string($origin) && $origin !== '' && $origin !== 'null'
+            ? rtrim($origin, '/') !== $request->getSchemeAndHttpHost()
+            : $origin === 'null';
     }
 
     protected function matches(string $provided): bool

@@ -431,6 +431,7 @@ it('persists project settings via settings-set', function (): void {
         'git_mode' => 'GITFLOW_PUSH',
         'testing' => 'BEST',
         'account' => 'NONE',
+        'quality_scope' => 'ALL',
         'auto_approve' => 'YES',
         'lucille' => 'NO',
         'decision_log' => 'NO',

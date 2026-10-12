@@ -972,6 +972,77 @@ class GitService
     }
 
     /**
+     * The files this branch changed since it left its base — committed,
+     * staged, unstaged, and untracked — relative to the root, deleted ones
+     * left out. Null outside a repository.
+     *
+     * The base is the merge-base with the branch the work came from, so a
+     * change stays in the list after its commit. On the base branch itself
+     * it is the upstream: what is not pushed yet. With neither, the
+     * working tree alone.
+     *
+     * @return list<string>|null
+     */
+    public function changedFiles(): ?array
+    {
+        if (! $this->isRepository()) {
+            return null;
+        }
+
+        $base = $this->changeBase();
+        $files = [];
+
+        foreach ([
+            $this->git('-c', 'core.quotePath=false', 'diff', '--name-only', '--no-renames', '--diff-filter=ACMR', $base ?? 'HEAD'),
+            $this->git('-c', 'core.quotePath=false', 'ls-files', '--others', '--exclude-standard'),
+        ] as $output) {
+            foreach (preg_split('/\R/', (string) $output) ?: [] as $file) {
+                if ($file !== '') {
+                    $files[$file] = true;
+                }
+            }
+        }
+
+        return array_keys($files);
+    }
+
+    /**
+     * The commit a change is measured from: the merge-base with the first
+     * base branch that exists (`develop` under Git Flow, the remote's
+     * default, `main`, `master`), or with the upstream when the current
+     * branch is one of them. Null when none answers.
+     */
+    public function changeBase(): ?string
+    {
+        if (! $this->isRepository()) {
+            return null;
+        }
+
+        $current = $this->currentBranch();
+        $remoteDefault = $this->git('symbolic-ref', '--quiet', '--short', 'refs/remotes/origin/HEAD');
+        $candidates = array_values(array_unique(array_filter([
+            str_starts_with($this->config->settings()['git_mode'] ?? '', 'GITFLOW') ? 'develop' : null,
+            $remoteDefault !== null ? preg_replace('#^origin/#', '', $remoteDefault) : null,
+            'main',
+            'master',
+        ])));
+
+        if ($current !== null && in_array($current, $candidates, true)) {
+            return $this->git('merge-base', 'HEAD', '@{upstream}');
+        }
+
+        foreach ($candidates as $branch) {
+            foreach ([$branch, 'origin/'.$branch] as $ref) {
+                if ($this->git('rev-parse', '--verify', '--quiet', $ref.'^{commit}') !== null) {
+                    return $this->git('merge-base', 'HEAD', $ref);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * What a read-only git command prints, or null when it could not run.
      * Errors are dropped: the caller parses the output.
      */
@@ -1018,18 +1089,31 @@ class GitService
         ];
     }
 
+    /**
+     * What git prints on stdout, trimmed; null when it printed nothing or
+     * could not start. The arguments go to git as an array, with no shell
+     * between: `escapeshellarg` turns `%` into a space on Windows, and
+     * `2>/dev/null` is not syntax there. Stderr goes to the null device,
+     * so a long error can never fill a pipe nobody reads.
+     */
     protected function git(string ...$args): ?string
     {
-        $command = 'git -C '.escapeshellarg($this->root()).' ';
+        $process = @proc_open(array_merge(['git', '-C', $this->root()], $args), [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['file', DIRECTORY_SEPARATOR === '\\' ? 'NUL' : '/dev/null', 'w'],
+        ], $pipes);
 
-        foreach ($args as $arg) {
-            $command .= escapeshellarg($arg).' ';
+        if (! is_resource($process)) {
+            return null;
         }
 
-        $command .= '2>/dev/null';
-        $output = shell_exec($command);
+        fclose($pipes[0]);
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        proc_close($process);
 
-        if (! is_string($output)) {
+        if (! is_string($output) || $output === '') {
             return null;
         }
 

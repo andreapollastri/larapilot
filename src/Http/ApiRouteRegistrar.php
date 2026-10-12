@@ -47,6 +47,13 @@ class ApiRouteRegistrar
                     ->where('code', '[A-Za-z0-9][A-Za-z0-9._-]*')
                     ->name('larapilot.api.specs.comments.store');
 
+                Route::get('/versions', [ApiController::class, 'versions'])
+                    ->name('larapilot.api.versions.index');
+
+                Route::get('/versions/{version}', [ApiController::class, 'version'])
+                    ->where('version', 'v?\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?')
+                    ->name('larapilot.api.versions.show');
+
                 Route::get('/prd', [ApiController::class, 'prd'])
                     ->name('larapilot.api.prd');
 

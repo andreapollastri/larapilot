@@ -40,7 +40,7 @@ When `data.settings.decision_log` is `YES`, journal material user choices with `
 2. `php artisan larapilot:prd-show` — the outline; then `--ids=` for the FRs, journeys, and NFRs the feature touches. When `data.project.prd` is `false`, suggest `/larapilot-inception` first. Read the whole PRD only when step 3 edits it
 3. `php artisan larapilot:validate-spec --file=...`
 4. `php artisan larapilot:spec-add --file=...`
-5. When `release_mode=YES`: always propose a target version — an open release, or a **future** one Sarah names — AskQuestion, then `release-set --add-spec=US-XXX` after `spec-add` and `**Release:** x.y.z` on the spec body. When `settings.sprints` is `YES`, propose a sprint and persist it with `php artisan larapilot:spec-sprint {code} {n}`.
+5. When `release_mode=YES`: always propose a target version — an open release, or a **future** one Sarah names — AskQuestion, then `release-set --add-spec=US-XXX` after `spec-add` (it leaves any other open version) and `**Release:** x.y.z` on the spec body. No version only when the user says so (`versions.md`); the closing summary names the version and its new progress. When `settings.sprints` is `YES`, propose a sprint and persist it with `php artisan larapilot:spec-sprint {code} {n}`.
 6. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
 7. On a **change request**: `php artisan larapilot:prd-impact --ids=FR-XXX` — the other specs that rest on the promise being changed, with the action each needs by status
 

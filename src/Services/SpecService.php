@@ -277,18 +277,38 @@ class SpecService
     }
 
     /**
+     * The first eligible spec: by `$ranks` first when given (the version a
+     * spec targets — the version the work is on before the next one), then
+     * by priority, then by code. `$only` narrows the choice to those codes.
+     *
+     * @param  array<string, int>  $ranks  Spec code → rank; a spec with none comes last.
+     * @param  list<string>|null  $only
      * @return array{spec: array<string, mixed>, tasks: array<int, array<string, mixed>>, workdir: string}|null
      */
-    public function next(?string $status = null): ?array
+    public function next(?string $status = null, array $ranks = [], ?array $only = null): ?array
     {
         $status = $status ?? $this->config->status('todo');
         $items = $this->list($status)['items'];
+
+        if ($only !== null) {
+            $items = array_values(array_filter(
+                $items,
+                static fn (array $spec): bool => in_array((string) ($spec['code'] ?? ''), $only, true)
+            ));
+        }
 
         if ($items === []) {
             return null;
         }
 
-        usort($items, function (array $a, array $b): int {
+        usort($items, function (array $a, array $b) use ($ranks): int {
+            $ra = $ranks[(string) ($a['code'] ?? '')] ?? PHP_INT_MAX;
+            $rb = $ranks[(string) ($b['code'] ?? '')] ?? PHP_INT_MAX;
+
+            if ($ra !== $rb) {
+                return $ra <=> $rb;
+            }
+
             $priorityOrder = ['CRITICAL' => 0, 'HIGH' => 1, 'MEDIUM' => 2, 'LOW' => 3];
             $pa = $priorityOrder[strtoupper((string) ($a['priority'] ?? 'MEDIUM'))] ?? 2;
             $pb = $priorityOrder[strtoupper((string) ($b['priority'] ?? 'MEDIUM'))] ?? 2;

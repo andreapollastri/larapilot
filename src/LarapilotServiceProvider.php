@@ -65,8 +65,10 @@ use Larapilot\Console\Commands\ReleaseCutCommand;
 use Larapilot\Console\Commands\ReleaseFeatureCommand;
 use Larapilot\Console\Commands\ReleaseImportCommand;
 use Larapilot\Console\Commands\ReleaseListCommand;
+use Larapilot\Console\Commands\ReleaseNotesCommand;
 use Larapilot\Console\Commands\ReleaseSetCommand;
 use Larapilot\Console\Commands\ReleaseShipCommand;
+use Larapilot\Console\Commands\ReleaseShowCommand;
 use Larapilot\Console\Commands\ReleaseSyncCommand;
 use Larapilot\Console\Commands\RoadmapSetCommand;
 use Larapilot\Console\Commands\RoadmapShowCommand;
@@ -169,6 +171,7 @@ use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
 use Larapilot\Services\NotifyService;
 use Larapilot\Services\OpenApiService;
+use Larapilot\Services\PackagedSkillService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\ReleaseFlowService;
@@ -182,6 +185,7 @@ use Larapilot\Services\Tracker\TrackerLinkStore;
 use Larapilot\Services\Tracker\TrackerManager;
 use Larapilot\Services\TrackerService;
 use Larapilot\Services\ValidationService;
+use Larapilot\Services\VersionService;
 use Larapilot\Support\MockupAssetResolver;
 use Larapilot\Support\MockupCssProcessor;
 use Larapilot\Support\MockupHtmlProcessor;
@@ -189,7 +193,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '5.1.0';
+    public const VERSION = '5.2.0';
 
     public function register(): void
     {
@@ -208,6 +212,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(GitService::class);
         $this->app->singleton(GitGraphService::class);
         $this->app->singleton(SkillLibraryService::class);
+        $this->app->singleton(PackagedSkillService::class);
         $this->app->singleton(AgentGuidelineService::class);
         $this->app->singleton(GithubService::class);
         $this->app->singleton(GitlabService::class);
@@ -266,6 +271,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(ForecastService::class);
         $this->app->singleton(SprintService::class);
         $this->app->singleton(BoardViewService::class);
+        $this->app->singleton(VersionService::class);
         $this->app->singleton(RoadmapService::class);
         // One map for the request: the viewer and the dump share it, and the
         // next request starts clean.
@@ -355,6 +361,8 @@ class LarapilotServiceProvider extends ServiceProvider
                 CodeHistoryLogCommand::class,
                 CodeHistoryShowCommand::class,
                 ReleaseListCommand::class,
+                ReleaseShowCommand::class,
+                ReleaseNotesCommand::class,
                 ReleaseAddCommand::class,
                 ReleaseSetCommand::class,
                 ReleaseImportCommand::class,

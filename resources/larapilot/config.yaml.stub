@@ -7,6 +7,8 @@ settings:
   testing: NORMAL
   # Account mode — NONE, FREELANCE, or COMPANY. Unlocks /larapilot/economics.
   account: NONE
+  # What larapilot:quality checks — ALL (the whole repository) or CHANGED (the files the branch changed, for a codebase never formatted).
+  quality_scope: ALL
   auto_approve: false
   lucille: true
   # Decision journal + regression guard (.larapilot/decisions.yaml) — ON by default.
@@ -76,6 +78,7 @@ paths:
   code_history: .larapilot/code-history.yaml
   releases: .larapilot/releases.yaml
   roadmap: .larapilot/roadmap.yaml
+  release_notes: .larapilot/docs/releases/
   project_docs: .larapilot/docs/handbook/
   custom_skills: .larapilot/skills/
   economics: .larapilot/economics.yaml

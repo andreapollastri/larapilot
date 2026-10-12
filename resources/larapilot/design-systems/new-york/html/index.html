@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New York — Larapilot design system catalog</title>
+<meta name="description" content="Catalog of the New York design system: the taxi rule and the line rule, the five restaurants of Mulberry &amp; Grand with their line bullets, palette, type specimen and every screen of the public site and the backoffice with when to start from it.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ny-mockup ny-body" id="top">
+<a class="ny-skip" href="#main">Skip to content</a>
+<div class="ny-site">
+<header class="ny-sitehead">
+<nav class="ny-sitenav" aria-label="Catalog">
+<a class="ny-sitenav__link is-active" href="index.html" aria-current="page">Catalog</a>
+<a class="ny-sitenav__link" href="components.html">Components</a>
+<a class="ny-sitenav__link" href="dashboard.html">Backoffice</a>
+<a class="ny-sitenav__link" href="landing.html">Public site</a>
+</nav>
+<div class="ny-sitehead__brand"><a class="ny-logo" href="index.html" aria-label="New York design system catalog"><span class="ny-logo__mark" aria-hidden="true">&amp;</span><span class="ny-logo__text"><span class="ny-logo__word">New <em>York</em></span><span class="ny-logo__sub">Larapilot design system</span></span></a></div>
+<div class="ny-sitehead__end"><span class="ny-label">Prefix ny- · 1 stylesheet</span><button type="button" class="ny-sitehead__menu" aria-label="Open menu" aria-expanded="false"><svg class="ny-i ny-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+</header>
+<main id="main">
+<div class="ny-masthead">
+<div class="ny-masthead__ears"><p class="ny-ear"><strong>An original system</strong>The downtown newspaper crossed with the subway signage manual.</p><h1 class="ny-masthead__name ny-nameplate">New <span class="ny-amp">York</span><span class="visually-hidden"> — design system catalog</span></h1><p class="ny-ear ny-ear--right"><strong>Sample product</strong>Mulberry &amp; Grand, five restaurants below Houston Street.</p></div>
+<div class="ny-folio ny-folio--double"><span>Monday, October 12, 2026</span><span>Late edition · 13 screens</span><span>Light + night edition</span></div>
+</div>
+
+<div class="ny-wrap ny-mt-32 ny-bb-soft"><div class="ny-cols">
+<div class="ny-col-7 ny-stack ny-stack--16">
+<p class="ny-kicker ny-kicker--bar">The front page</p>
+<p class="ny-h1">Didone headlines, signage bands and one taxi-yellow accent</p>
+<p class="ny-dek">For restaurants, hotels, venues, publishers and any product that wants a confident, metropolitan voice.</p>
+<div class="ny-prose"><p class="ny-dropcap">Newsprint off-white, ink black and a single accent — taxi <span class="ny-mark">#F7B500</span>. Headlines and big numbers are set in a high-contrast Didone; signage and interface in Helvetica, white on black under a thin white stripe; long reads in a text serif. Every screen links one stylesheet, <code>../tokens.css</code>, and follows the operating system&rsquo;s theme; <code>dashboard-dark.html</code> forces the night edition.</p></div>
+</div>
+<dl class="ny-col-5 ny-dl"><dt>Display</dt><dd>Didone (Bodoni, Didot)</dd><dt>Signage &amp; UI</dt><dd>Helvetica Neue</dd><dt>Long reads</dt><dd>Source Serif, Georgia</dd><dt>Corners</dt><dd>2 px · 4 px on signs</dd><dt>Grid</dt><dd>12 columns, shared hairlines</dd><dt>Icons</dt><dd>Lucide (ISC), inline</dd><dt>Dark</dt><dd>OS, or <code>html.dark</code></dd></dl>
+</div><div class="ny-mt-32"></div></div>
+
+<section aria-labelledby="rules"><h2 id="rules" class="visually-hidden">The two rules and the five restaurants</h2>
+<div class="ny-grid ny-bt">
+<section class="ny-cell ny-span-4 ny-taxi" aria-labelledby="r1"><p class="ny-kicker ny-kicker--bar">Rule No. 1</p><h3 id="r1" class="ny-h3--serif">The taxi rule</h3><p>Taxi yellow is a <strong>surface</strong> under ink — the main button, the active nav item, a selected row, a highlighter. It is never text, an icon or a thin line on newsprint. On black it may be ink too.</p><p class="ny-tags"><span class="ny-tag">Ink on taxi 10.4:1</span><span class="ny-tag ny-tag--solid">Taxi on black 10.3:1</span></p></section>
+<section class="ny-cell ny-span-4 ny-night" aria-labelledby="r2"><p class="ny-kicker ny-kicker--bar">Rule No. 2</p><h3 id="r2" class="ny-h3--serif">The line rule</h3><p class="ny-soft">The five line colours name <strong>restaurants</strong> and chart series — never a status. A bullet always carries its letter, so colour is never the only cue.</p><p class="ny-bullets" role="img" aria-label="Line bullets A, M, G, L and 7"><span class="ny-bullet ny-bullet--a ny-bullet--md">A</span><span class="ny-bullet ny-bullet--m ny-bullet--md">M</span><span class="ny-bullet ny-bullet--g ny-bullet--md">G</span><span class="ny-bullet ny-bullet--l ny-bullet--md">L</span><span class="ny-bullet ny-bullet--7 ny-bullet--md">7</span></p></section>
+<section class="ny-cell ny-span-4" aria-labelledby="r3"><div class="ny-cell__head ny-cell__head--rule"><h3 id="r3" class="ny-cell__title">The five restaurants</h3><span class="ny-label">Mulberry &amp; Grand</span></div>
+<div class="ny-service">
+<div class="ny-service__row"><span class="ny-bullet ny-bullet--a ny-bullet--md">A</span><p class="ny-service__name"><strong>Astor Oyster Room</strong><span>412 Lafayette St · raw bar · 64 covers</span></p><span class="ny-tag ny-tag--plain">Raw bar</span></div>
+<div class="ny-service__row"><span class="ny-bullet ny-bullet--m ny-bullet--md">M</span><p class="ny-service__name"><strong>Mulberry Trattoria</strong><span>156 Mulberry St · red-sauce Italian · 90 covers</span></p><span class="ny-tag ny-tag--solid">Flagship</span></div>
+<div class="ny-service__row"><span class="ny-bullet ny-bullet--g ny-bullet--md">G</span><p class="ny-service__name"><strong>Grand Street Grill</strong><span>288 Grand St · chophouse · 110 covers</span></p><span class="ny-tag ny-tag--plain">Chophouse</span></div>
+<div class="ny-service__row"><span class="ny-bullet ny-bullet--l ny-bullet--md">L</span><p class="ny-service__name"><strong>Ludlow Counter</strong><span>97 Ludlow St · all-day diner · 48 covers</span></p><span class="ny-tag ny-tag--plain">Diner</span></div>
+<div class="ny-service__row"><span class="ny-bullet ny-bullet--7 ny-bullet--md">7</span><p class="ny-service__name"><strong>Seventh Avenue Supper Club</strong><span>61 Seventh Ave S · cocktails and supper · 72 covers</span></p><span class="ny-tag ny-tag--plain">Supper</span></div>
+</div></section>
+</div>
+</section>
+
+<section aria-labelledby="pal"><h2 id="pal" class="visually-hidden">Palette and type</h2>
+<div class="ny-swatches ny-mt-32">
+<div class="ny-swatch ny-swatch--wide"><div class="ny-swatch__chip ny-sw-taxi"></div><p class="ny-swatch__name">Taxi — the one accent</p><p class="ny-swatch__hex">#F7B500 · a surface on newsprint</p></div>
+<div class="ny-swatch ny-swatch--wide"><div class="ny-swatch__chip ny-sw-black"></div><p class="ny-swatch__name">Ink</p><p class="ny-swatch__hex">#111111 · text, rules, bands</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-newsprint"></div><p class="ny-swatch__name">Newsprint</p><p class="ny-swatch__hex">F3EFE6</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-sheet"></div><p class="ny-swatch__name">Sheet</p><p class="ny-swatch__hex">FBF9F4</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-pulp"></div><p class="ny-swatch__name">Pulp</p><p class="ny-swatch__hex">EAE4D6</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-g200"></div><p class="ny-swatch__name">Hairline</p><p class="ny-swatch__hex">D3CCBD</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-g600"></div><p class="ny-swatch__name">Muted ink</p><p class="ny-swatch__hex">6A6358</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-g700"></div><p class="ny-swatch__name">Soft ink</p><p class="ny-swatch__hex">4A453D</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-night"></div><p class="ny-swatch__name">Night edition</p><p class="ny-swatch__hex">121211</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-street"><span class="ny-streetsign">St</span></div><p class="ny-swatch__name">Street sign</p><p class="ny-swatch__hex">0B6B4A · good</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-red"></div><p class="ny-swatch__name">Alarm, light</p><p class="ny-swatch__hex">B3261E · errors</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-red-dark"></div><p class="ny-swatch__name">Alarm, night</p><p class="ny-swatch__hex">FF7B6E · errors</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-a"></div><p class="ny-swatch__name">Line A</p><p class="ny-swatch__hex">0039A6 · Astor</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-m"></div><p class="ny-swatch__name">Line M</p><p class="ny-swatch__hex">FF6319 · Mulberry</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-g"></div><p class="ny-swatch__name">Line G</p><p class="ny-swatch__hex">6CBE45 · Grand St</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-l"></div><p class="ny-swatch__name">Line L</p><p class="ny-swatch__hex">A7A9AC · Ludlow</p></div>
+<div class="ny-swatch"><div class="ny-swatch__chip ny-sw-7"></div><p class="ny-swatch__name">Line 7</p><p class="ny-swatch__hex">B933AD · Supper Club</p></div>
+</div>
+<div class="ny-specimen">
+<div class="ny-specimen__cell"><p class="ny-label">Didone · 400 · −0.03em</p><p class="ny-specimen__big">Aa <em>86</em></p><p class="ny-soft ny-text-sm">Headlines, big numbers, menu prices.</p></div>
+<div class="ny-specimen__cell"><p class="ny-label">Helvetica · signage 700 · −0.035em</p><p class="ny-specimen__sign">Canal St</p><div class="ny-band ny-band--sm"><span class="ny-bullet ny-bullet--m ny-bullet--sm">M</span><span>Mulberry Trattoria</span></div></div>
+<div class="ny-specimen__cell"><p class="ny-label">Text serif · italic for deks</p><p class="ny-specimen__text">Five rooms, one book, and a raw bar that sells out by nine.</p><p class="ny-byline">By <strong>Rosa Valentine</strong> · Owner and general manager</p></div>
+</div>
+</section>
+
+<section aria-labelledby="g1">
+<div class="ny-grouphead"><h2 id="g1" class="ny-h2">Public site</h2><span class="ny-label">3 screens</span></div>
+<nav class="ny-screens" aria-label="Public site screens">
+<a class="ny-screen" href="landing.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">1</span><span><span class="ny-screen__name">Landing</span><span class="ny-screen__file">landing.html</span></span><span class="ny-screen__what">Zipper, newspaper masthead, hero with the five restaurants, tonight&rsquo;s service, the long read, press, reservations, private dining, newsletter, footer.</span><span class="ny-screen__when">Start here for any public home, brand or venue page.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="menu.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">2</span><span><span class="ny-screen__name">Menu</span><span class="ny-screen__file">menu.html</span></span><span class="ny-screen__what">The printed carte of Mulberry Trattoria: courses, dotted leaders, specials, an 86&rsquo;d dish, wine column, dietary key and hours.</span><span class="ny-screen__when">Start here for menus, price lists and catalogues.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="error-404.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">3</span><span><span class="ny-screen__name">Error 404</span><span class="ny-screen__file">error-404.html</span></span><span class="ny-screen__what">&ldquo;This stop is not in service&rdquo;: a big Didone 404, a service notice and station plates back home.</span><span class="ny-screen__when">Start here for 404, 500 and maintenance pages.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+
+<section aria-labelledby="g2">
+<div class="ny-grouphead"><h2 id="g2" class="ny-h2">Backoffice</h2><span class="ny-label">8 screens</span></div>
+<nav class="ny-screens" aria-label="Backoffice screens">
+<a class="ny-screen" href="dashboard.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">4</span><span><span class="ny-screen__name">Tonight</span><span class="ny-screen__file">dashboard.html</span></span><span class="ny-screen__what">Black signage rail, folio topbar, covers, service status by restaurant, covers by half hour, tonight&rsquo;s book, the 86 board, activity.</span><span class="ny-screen__when">Start here for any admin overview or report.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="dashboard-dark.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">5</span><span><span class="ny-screen__name">Tonight, night edition</span><span class="ny-screen__file">dashboard-dark.html</span></span><span class="ny-screen__what">The same overview forced dark with &lt;html class="dark"&gt;: taxi may be ink here.</span><span class="ny-screen__when">Use to check a screen in the dark theme.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="resource-list.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">6</span><span><span class="ny-screen__name">Reservations</span><span class="ny-screen__file">resource-list.html</span></span><span class="ny-screen__what">Section strip by line, filter chips, sort, search, two rows selected with the bulk bar, a row menu, status tags, pager.</span><span class="ny-screen__when">Start here for any index or table screen.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="resource-form.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">7</span><span><span class="ny-screen__name">Edit reservation</span><span class="ny-screen__file">resource-form.html</span></span><span class="ny-screen__what">Numbered sections, required marks, an error with its summary, selects, switches, a segmented control, a drop zone, sticky bar.</span><span class="ny-screen__when">Start here for create and edit forms.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="modal.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">8</span><span><span class="ny-screen__name">New reservation</span><span class="ny-screen__file">modal.html</span></span><span class="ny-screen__what">Reservations dimmed behind a dialog with a signage head: restaurant by bullet, party size, time slots, guest fields, a toast.</span><span class="ny-screen__when">Start here for dialogs, confirmations, quick-create.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="settings.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">9</span><span><span class="ny-screen__name">Settings</span><span class="ny-screen__file">settings.html</span></span><span class="ny-screen__what">Numbered index, group profile, the five restaurants, service hours, notification switches, team and roles, danger zone.</span><span class="ny-screen__when">Start here for settings, profile and account pages.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="empty-state.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">10</span><span><span class="ny-screen__name">Private dining, empty</span><span class="ny-screen__file">empty-state.html</span></span><span class="ny-screen__what">No private dining rooms yet: a drawn round table, a Didone headline, the main action and compact empty cells.</span><span class="ny-screen__when">Start here for empty lists, no results, all-done states.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen" href="login.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">11</span><span><span class="ny-screen__name">Sign in</span><span class="ny-screen__file">login.html</span></span><span class="ny-screen__what">Black signage panel with the five bullets and a night photo; drawn email and password, keep me signed in, SSO.</span><span class="ny-screen__when">Start here for any auth page (fields are drawn, never real).</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+
+<section aria-labelledby="g3">
+<div class="ny-grouphead"><h2 id="g3" class="ny-h2">Reference</h2><span class="ny-label">2 screens</span></div>
+<nav class="ny-screens" aria-label="Reference screens">
+<a class="ny-screen" href="components.html"><span class="ny-bullet ny-bullet--ring ny-bullet--md">12</span><span><span class="ny-screen__name">Components</span><span class="ny-screen__file">components.html</span></span><span class="ny-screen__what">Every component of tokens.css in its variants and states, the photo placeholders, swatches and the theme islands.</span><span class="ny-screen__when">Look here before inventing anything.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="ny-screen is-hover" href="index.html" aria-current="page"><span class="ny-bullet ny-bullet--ring ny-bullet--md">13</span><span><span class="ny-screen__name">Catalog</span><span class="ny-screen__file">index.html</span></span><span class="ny-screen__what">This front page: the two rules, the five restaurants, palette, type and the list of screens.</span><span class="ny-screen__when">Start every New York project here.</span><svg class="ny-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+</main>
+<footer class="ny-sitefoot ny-mt-32"><div class="ny-checker" aria-hidden="true"></div><div class="ny-sitefoot__bottom"><span>New York · ny- · tokens.css</span><span>README.md · components.md · sources.md</span><a href="#top">Back to top ↑</a></div></footer>
+</div>
+</body>
+</html>

@@ -22,6 +22,7 @@ class ApiService
         protected MockupService $mockups,
         protected InternalFeedbackService $feedback,
         protected BoardViewService $views,
+        protected VersionService $versions,
     ) {}
 
     /**
@@ -51,11 +52,21 @@ class ApiService
     /**
      * @return array<string, mixed>
      */
-    public function specs(?string $status = null, int $page = 1, int $perPage = 50): array
+    public function specs(?string $status = null, int $page = 1, int $perPage = 50, mixed $version = null): array
     {
         $result = $this->specs->list($status);
+        $selected = $version !== null && $this->versions->enabled() ? $this->versions->selection($version) : [];
 
         $all = array_values($result['items']);
+
+        // `?version=1.2.0,none`: the stories of those versions, or of none.
+        if ($selected !== []) {
+            $all = array_values(array_filter(
+                $all,
+                fn (array $spec): bool => in_array($this->viewAssignments()[(string) ($spec['code'] ?? '')]['release'] ?? VersionService::NONE, $selected, true)
+            ));
+        }
+
         $total = count($all);
         $page = max(1, $page);
         $perPage = max(1, $perPage);
@@ -69,6 +80,7 @@ class ApiService
 
         return [
             'status' => $status,
+            'version' => $selected !== [] ? $selected : null,
             'count' => count($items),
             'total' => $total,
             'page' => $page,
@@ -77,6 +89,41 @@ class ApiService
             'items' => $items,
             'summary' => $result['summary'],
         ];
+    }
+
+    /**
+     * Every version with what it holds, what it has delivered, and its
+     * forecast against its milestone; the version the work is on; the open
+     * stories no version claims.
+     *
+     * @return array<string, mixed>
+     */
+    public function versions(): array
+    {
+        $enabled = $this->versions->enabled();
+        $rows = $enabled ? $this->versions->rows() : [];
+
+        return [
+            'enabled' => $enabled,
+            'release_mode' => $this->config->releaseModeEnabled(),
+            'current' => $rows !== [] ? $this->versions->current() : null,
+            'versions' => $rows,
+            'unassigned' => $this->versions->unassigned(),
+        ];
+    }
+
+    /**
+     * One version with its stories, its epics, and its release notes.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function version(string $version): ?array
+    {
+        try {
+            return $this->versions->enabled() ? $this->versions->show($version) : null;
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
     }
 
     /**

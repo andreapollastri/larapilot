@@ -12,7 +12,7 @@ Semver **release ledger** (`.larapilot/releases.yaml`) plus optional Gitflow **`
 <!-- when: view=full -->
 - **`NO`** — **Default.** Ignore release ledger, release branches, and release AskQuestion rounds — classic `develop` / `feature/US-XXX-*` flow only.
 <!-- end -->
-- **`YES`** — Sarah owns Git mechanics; Jack owns policy. `/larapilot-release` manages the ledger; inception/adopt propose roadmaps; `/larapilot-feature` assigns specs to open releases; `/larapilot-ship` runs the release ship ceremony.
+- **`YES`** — Sarah owns Git mechanics; Jack owns policy. `/larapilot-release` manages the ledger; inception/adopt propose roadmaps; `/larapilot-feature`, `/larapilot-spec`, and `/larapilot-bug` give every story a version; implement stops on a story with none; review and autopilot report the version; `/larapilot-ship` ships a version only with its open stories settled and its release notes kept (`.larapilot/runtime-versions.md`). The dashboard gains the **Versions** page and a version scope on the Board, the Plan, and the Forecast.
 
 <!-- when: view=full -->
 Enable with `php artisan larapilot:settings-set --release-mode=YES`.

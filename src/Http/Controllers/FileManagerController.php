@@ -328,7 +328,11 @@ class FileManagerController
             return $change();
         } finally {
             try {
-                $this->customSkills->registerAll();
+                $conflicts = CustomSkillService::conflicts($this->customSkills->registerAll());
+
+                if ($conflicts !== []) {
+                    session()->flash('larapilot_details', $conflicts);
+                }
             } catch (\Throwable) {
                 // The files are saved; the Skills page registers on its next visit.
             }

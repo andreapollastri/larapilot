@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Today · Kanso backoffice</title>
+<meta name="description" content="The Today overview of the Kanso backoffice: four quiet figures, thirty days of revenue, today's workshops, recent orders and pieces running low.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="zn-mockup zn-body">
+<a class="zn-skip" href="#main">Skip to content</a>
+<div class="zn-app">
+<aside class="zn-rail" aria-label="Backoffice">
+<div class="zn-rail__brand"><a class="zn-logo" href="dashboard.html" aria-label="Kanso backoffice, today"><svg class="zn-logo__mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M28.7 90.0L33.6 93.6 39.1 96.6 45.1 98.8 51.4 99.7 57.8 99.0 64.0 97.4 69.9 95.0 75.4 91.9 80.5 88.1 84.9 83.6 88.7 78.6 91.7 73.2 94.0 67.5 95.5 61.6 96.2 55.6 96.1 49.6 95.3 43.7 93.7 38.0 91.4 32.6 88.5 27.6 85.0 23.1 81.0 19.0 76.5 15.5 71.7 12.7 66.6 10.4 61.3 8.8 55.9 7.8 50.4 7.7 45.0 8.3 39.7 9.6 34.7 11.5 30.0 14.1 25.7 17.1 21.8 20.7 18.4 24.7 15.6 29.1 13.4 33.8 11.9 38.7 11.0 43.8 10.8 48.9 11.3 53.9 12.4 58.8 13.8 63.6 15.8 68.2 17.2 67.4 15.3 63.0 14.1 58.4 13.8 53.7 14.1 49.0 15.0 44.4 16.6 40.1 18.6 36.1 21.1 32.5 24.1 29.2 27.3 26.4 30.9 24.1 34.6 22.3 38.5 21.0 42.4 20.2 46.4 19.8 50.3 20.0 54.1 20.5 57.9 21.4 61.5 22.7 64.9 24.4 68.1 26.5 71.0 29.0 73.6 31.8 75.9 35.0 77.7 38.4 79.2 42.0 80.1 45.8 80.6 49.7 80.5 53.7 80.0 57.6 78.9 61.5 77.3 65.2 75.2 68.6 72.6 71.8 69.6 74.5 66.3 76.9 62.7 78.7 58.9 80.1 54.9 80.8 50.9 81.1 46.8 81.2 42.7 81.2 38.5 80.7 34.3 79.5 30.9 78.6 27.7 79.3 25.5 81.5 24.9 84.6 26.1 87.7Z"/></svg><span class="zn-logo__word">Kanso</span></a><button type="button" class="zn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="zn-i zn-i--24 zn-i--thin" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="zn-rail__nav" aria-label="Main">
+<a class="zn-nav-item is-active" aria-current="page" href="dashboard.html" title="Today"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="zn-nav-item__label">Today</span></a>
+<a class="zn-nav-item" href="resource-list.html" title="Orders"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg><span class="zn-nav-item__label">Orders</span><span class="zn-nav-item__count">2</span></a>
+<a class="zn-nav-item" href="#" title="Workshops"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="zn-nav-item__label">Workshops</span></a>
+<a class="zn-nav-item" href="#" title="Pieces"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg><span class="zn-nav-item__label">Pieces</span></a>
+<a class="zn-nav-item" href="#" title="Customers"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="zn-nav-item__label">Customers</span></a>
+<a class="zn-nav-item" href="#" title="Journal"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="zn-nav-item__label">Journal</span></a>
+<span class="zn-rail__gap" aria-hidden="true"></span>
+<a class="zn-nav-item" href="settings.html" title="Settings"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="zn-nav-item__label">Settings</span></a>
+</nav>
+<div class="zn-rail__foot">
+<span class="zn-av" aria-hidden="true">AM</span>
+<span class="zn-rail__who"><span class="zn-rail__name">Aiko Mori</span><span class="zn-rail__role">Owner</span></span>
+<a class="zn-btn zn-btn--ghost zn-btn--icon zn-btn--sm" href="login.html" aria-label="Sign out, Aiko Mori" title="Sign out"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a>
+</div>
+</aside>
+<header class="zn-topbar">
+<p class="zn-topbar__date"><time datetime="2026-10-12">Monday, 12 October 2026</time></p>
+<div class="zn-topbar__search" role="search"><label class="zn-search"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders, pieces and customers</span><input class="zn-search__input" type="search" placeholder="Search orders, pieces, customers"><span class="zn-kbd" aria-hidden="true">/</span></label></div>
+<div class="zn-topbar__actions"><a class="zn-btn zn-btn--primary" href="resource-form.html"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New order</a></div>
+</header>
+<main class="zn-main" id="main">
+<header class="zn-pagehead">
+<div><h1 class="zn-h1">Today</h1><p class="zn-pagehead__lede">Two orders to pack. Two seats left for this afternoon&rsquo;s wheel class.</p></div>
+</header>
+
+<section class="zn-section" aria-labelledby="figures">
+<h2 id="figures" class="visually-hidden">Figures</h2>
+<div class="zn-stats">
+<div class="zn-stat"><p class="zn-stat__label">Orders, 7 days</p><p class="zn-stat__value">23</p><p class="zn-stat__foot"><span class="zn-delta"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>4</span><span>more than the week before</span></p></div>
+<div class="zn-stat"><p class="zn-stat__label">Revenue, 30 days</p><p class="zn-stat__value"><span class="zn-stat__unit">¥</span>2,390,700</p><p class="zn-stat__foot"><span class="zn-delta"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>15%</span><span>on the 30 days before</span></p></div>
+<div class="zn-stat"><p class="zn-stat__label">Workshop seats today</p><p class="zn-stat__value">14<span class="zn-stat__of">/16</span></p><p class="zn-stat__foot"><span class="zn-seats" role="img" aria-label="14 of 16 seats taken: tea 8 of 8, wheel 6 of 8"><span class="zn-seats__group"><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span></span><span class="zn-seats__group"><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat"></span><span class="zn-seat"></span></span></span></p></div>
+<div class="zn-stat"><p class="zn-stat__label">Pieces in stock</p><p class="zn-stat__value">186</p><p class="zn-stat__foot"><span>4 running low</span></p></div>
+</div>
+</section>
+
+<div class="zn-grid">
+<section class="zn-block zn-col-8" aria-labelledby="revenue">
+<div class="zn-block__head"><h2 id="revenue" class="zn-block__title">Revenue, last 30 days</h2><span class="zn-block__meta">13 Sep – 12 Oct · ¥ per day</span></div>
+<div class="zn-chart-wrap"><svg class="zn-chart" viewBox="0 0 720 224" role="img" aria-label="Line chart of daily revenue from 13 September to 12 October 2026. The 30 days total ¥2,390,700, 15% above the 30 days before, drawn as a dashed line. The best day was Sunday 4 October at ¥118,000; today so far ¥46,000.">
+<line x1="48" y1="20" x2="712" y2="20" class="zn-ch-grid"/><text x="0" y="24" class="zn-ch-axis">150k</text>
+<line x1="48" y1="76" x2="712" y2="76" class="zn-ch-grid"/><text x="0" y="80" class="zn-ch-axis">100k</text>
+<line x1="48" y1="132" x2="712" y2="132" class="zn-ch-grid"/><text x="0" y="136" class="zn-ch-axis">50k</text>
+<line x1="48" y1="188" x2="712" y2="188" class="zn-ch-base"/><text x="0" y="192" class="zn-ch-axis">0</text>
+<path d="M48.0 94.4 70.9 130.1 93.8 122.1 116.7 118.3 139.6 120.4 162.5 129.5 185.4 76.2 208.3 92.4 231.2 106.6 254.1 121.4 277.0 130.8 299.9 124.2 322.8 128.9 345.7 76.4 368.6 82.7 391.4 122.0 414.3 130.3 437.2 126.5 460.1 120.5 483.0 116.2 505.9 90.3 528.8 79.6 551.7 116.5 574.6 108.5 597.5 124.3 620.4 128.9 643.3 111.6 666.2 85.3 689.1 80.5 712.0 116.5" class="zn-ch-line zn-ch-line--compare"/>
+<path d="M48.0 89.7 70.9 118.0 93.8 120.0 116.7 131.9 139.6 131.4 162.5 118.3 185.4 80.9 208.3 88.0 231.2 111.5 254.1 111.8 277.0 100.2 299.9 102.3 322.8 109.3 345.7 77.0 368.6 79.5 391.4 104.2 414.3 105.7 437.2 117.8 460.1 100.1 483.0 97.7 505.9 66.0 528.8 55.8 551.7 107.7 574.6 99.2 597.5 92.7 620.4 85.0 643.3 87.9 666.2 67.2 689.1 69.2 712.0 136.5" class="zn-ch-line"/>
+<circle cx="528.8" cy="55.8" r="3" class="zn-ch-dot"/><text x="528.8" y="42" text-anchor="middle" class="zn-ch-val">118k</text>
+<circle cx="712" cy="136.5" r="3.5" class="zn-ch-dot zn-ch-dot--solid"/>
+<text x="48" y="214" class="zn-ch-axis">13 Sep</text><text x="277" y="214" text-anchor="middle" class="zn-ch-axis">23 Sep</text><text x="505.9" y="214" text-anchor="middle" class="zn-ch-axis">3 Oct</text><text x="712" y="214" text-anchor="end" class="zn-ch-axis zn-ch-axis--ink">Today</text>
+</svg></div>
+<p class="zn-legend"><span class="zn-legend__item"><span class="zn-legend__key"></span>Last 30 days</span><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--compare"></span>The 30 days before</span></p>
+</section>
+
+<section class="zn-block zn-col-4" aria-labelledby="workshops">
+<div class="zn-block__head"><h2 id="workshops" class="zn-block__title">Workshops today</h2><a class="zn-block__link" href="#">All <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<ol class="zn-timeline">
+<li class="zn-tl__item"><span class="zn-tl__time">10:00</span><span class="zn-dot zn-dot--done" aria-hidden="true"></span><div class="zn-tl__body"><p class="zn-tl__title">Usucha for beginners</p><p class="zn-tl__meta"><span>Tea room · 90 min</span><span>8 of 8 seats</span><span>Finished</span></p></div></li>
+<li class="zn-tl__now"><span>13:20</span></li>
+<li class="zn-tl__item"><span class="zn-tl__time">14:00</span><span class="zn-dot zn-dot--ring" aria-hidden="true"></span><div class="zn-tl__body"><p class="zn-tl__title">Throwing a first chawan</p><p class="zn-tl__meta"><span>Studio · with Aiko · 2 h</span><span>6 of 8 seats</span><span>Next</span></p></div></li>
+</ol>
+</section>
+
+<section class="zn-block zn-col-8" aria-labelledby="recent">
+<div class="zn-block__head"><h2 id="recent" class="zn-block__title">Recent orders</h2><a class="zn-block__link" href="resource-list.html">All orders <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<div class="zn-table-wrap"><table class="zn-table zn-table--plain">
+<thead><tr><th scope="col">Customer</th><th scope="col">Pieces</th><th scope="col" class="zn-td-num">Total</th><th scope="col">Status</th></tr></thead>
+<tbody>
+<tr><td><a class="zn-td-title" href="#">Haruka Ito</a><span class="zn-td-sub">K-1048 · Osaka · 12:58</span></td><td>Shiro chawan</td><td class="zn-td-num">¥18,700</td><td><span class="zn-status zn-status--pending"><span class="zn-status__mark" aria-hidden="true"></span>New</span></td></tr>
+<tr><td><a class="zn-td-title" href="#">Daniel Weiss</a><span class="zn-td-sub">K-1047 · Zürich · 11:20</span></td><td>Kuro yunomi × 2</td><td class="zn-td-num">¥9,900</td><td><span class="zn-status zn-status--progress"><span class="zn-status__mark" aria-hidden="true"></span>Packing</span></td></tr>
+<tr><td><a class="zn-td-title" href="#">Mei Lin</a><span class="zn-td-sub">K-1046 · Taipei · yesterday</span></td><td>Ash glaze kyusu</td><td class="zn-td-num">¥24,200</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td></tr>
+<tr><td><a class="zn-td-title" href="#">Sora Tanaka</a><span class="zn-td-sub">K-1045 · Kyoto · yesterday</span></td><td>Stone plate, 24 cm × 4</td><td class="zn-td-num">¥26,400</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td></tr>
+<tr><td><a class="zn-td-title" href="#">Clara Moreau</a><span class="zn-td-sub">K-1044 · Lyon · 10 Oct</span></td><td>Tea set for two</td><td class="zn-td-num">¥31,900</td><td><span class="zn-status zn-status--cancelled"><span class="zn-status__mark" aria-hidden="true"></span>Cancelled</span></td></tr>
+</tbody>
+</table></div>
+</section>
+
+<section class="zn-block zn-col-4" aria-labelledby="low">
+<div class="zn-block__head"><h2 id="low" class="zn-block__title">Running low</h2><a class="zn-block__link" href="#">Pieces <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<ul class="zn-list">
+<li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Shiro chawan</a><span class="zn-list__sub">White shino · next firing 19 Oct</span></span><span class="zn-list__end">2 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-15"></span></span></li>
+<li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Ash glaze kyusu</a><span class="zn-list__sub">Side-handle teapot · next firing 26 Oct</span></span><span class="zn-list__end">1 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-10"></span></span></li>
+<li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Kuro yunomi</a><span class="zn-list__sub">Black glaze cup · next firing 19 Oct</span></span><span class="zn-list__end">3 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-15"></span></span></li>
+<li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Stone plate, 24 cm</a><span class="zn-list__sub">Unglazed stoneware · in the kiln</span></span><span class="zn-list__end">4 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-25"></span></span></li>
+</ul>
+</section>
+</div>
+
+<footer class="zn-mainfoot zn-mt-64"><span>Kanso · Higashiyama, Kyoto</span><span>Updated 13:20</span></footer>
+</main>
+</div>
+</body>
+</html>

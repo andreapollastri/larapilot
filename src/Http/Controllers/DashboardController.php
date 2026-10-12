@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Larapilot\Http\Controllers\Concerns\ScopesVersions;
 use Larapilot\Services\BoardViewService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardExportService;
@@ -21,10 +22,13 @@ use Larapilot\Services\MockupPackageService;
 use Larapilot\Services\MockupService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\SpecService;
+use Larapilot\Services\VersionService;
 use Larapilot\Support\SpecCode;
 
 class DashboardController
 {
+    use ScopesVersions;
+
     public function __construct(
         protected ConfigService $config,
         protected DashboardService $dashboard,
@@ -38,6 +42,7 @@ class DashboardController
         protected DecisionService $decisions,
         protected DashboardExportService $exports,
         protected BoardViewService $views,
+        protected VersionService $versions,
     ) {}
 
     public function index(Request $request): View
@@ -53,13 +58,20 @@ class DashboardController
             }
         }
 
-        $view = $this->views->resolve($request->query(), $flat);
+        $view = $this->views->resolve($this->scopedQuery($request, $this->versions), $flat);
 
         foreach ($board['columns'] as $status => $specs) {
             $board['columns'][$status] = array_values(array_filter(
                 array_map(fn (array $spec): array => $this->views->annotate($spec, $view), $specs),
                 fn (array $spec): bool => $this->views->matches((string) ($spec['code'] ?? ''), $view)
             ));
+        }
+
+        $board['backlog_total'] = (int) ($board['metrics']['total'] ?? 0);
+
+        // Scoped to some versions, the figures above the board are theirs.
+        if ($view['selected'] !== []) {
+            $board['metrics'] = $this->scopedMetrics($board);
         }
 
         $columns = $view['group'] === 'status' ? null : $this->views->columns($board['columns'], $view);
@@ -70,6 +82,7 @@ class DashboardController
 
         $board['view'] = $view;
         $board['viewColumns'] = $columns;
+        $board['scope'] = ['versions' => $view['versions'], 'selected' => $view['selected']];
 
         return view('larapilot::dashboard.index', $board);
     }
@@ -78,7 +91,34 @@ class DashboardController
     {
         $this->guard();
 
-        return $this->markdown($this->exports->board($request->query()), $this->exports->boardFilename());
+        return $this->markdown($this->exports->board($this->scopedQuery($request, $this->versions)), $this->exports->boardFilename());
+    }
+
+    /**
+     * Total, done, completion, and work in progress of the specs left on
+     * the board.
+     *
+     * @param  array<string, mixed>  $board
+     * @return array<string, mixed>
+     */
+    protected function scopedMetrics(array $board): array
+    {
+        $done = strtoupper((string) ($board['workflow']['done'] ?? $this->config->status('done')));
+        $wip = array_map('strtoupper', is_array($board['workflow']['wip'] ?? null) ? $board['workflow']['wip'] : []);
+        $metrics = $board['metrics'];
+        $metrics['total'] = 0;
+        $metrics['done'] = 0;
+        $metrics['wip'] = 0;
+
+        foreach ($board['columns'] as $status => $specs) {
+            $metrics['total'] += count($specs);
+            $metrics['done'] += strtoupper((string) $status) === $done ? count($specs) : 0;
+            $metrics['wip'] += in_array(strtoupper((string) $status), $wip, true) ? count($specs) : 0;
+        }
+
+        $metrics['completion_rate'] = $metrics['total'] > 0 ? round($metrics['done'] / $metrics['total'] * 100, 1) : 0;
+
+        return $metrics;
     }
 
     /**
@@ -88,7 +128,7 @@ class DashboardController
     {
         $this->guard();
 
-        return $this->markdown($this->exports->epics($request->query()), $this->exports->epicsFilename());
+        return $this->markdown($this->exports->epics($this->scopedQuery($request, $this->versions)), $this->exports->epicsFilename());
     }
 
     public function prd(): View
@@ -223,7 +263,7 @@ class DashboardController
 
         $plan = $this->dashboard->plan();
         $specs = $this->specs->allSpecs();
-        $view = $this->views->resolve($request->query(), $specs, 'epic');
+        $view = $this->views->resolve($this->scopedQuery($request, $this->versions), $specs, 'epic');
         $annotated = array_values(array_filter(
             array_map(fn (array $spec): array => $this->views->annotate($spec, $view), $specs),
             fn (array $spec): bool => $this->views->matches((string) ($spec['code'] ?? ''), $view)
@@ -260,8 +300,20 @@ class DashboardController
             }
         }
 
+        // A milestone tied to a version out of scope is not this plan's.
+        $versionsInScope = array_values(array_diff($view['selected'], [VersionService::NONE]));
+
+        if ($view['selected'] !== [] && is_array($plan['gantt']['milestones'] ?? null)) {
+            $plan['gantt']['milestones'] = array_values(array_filter(
+                $plan['gantt']['milestones'],
+                static fn (array $milestone): bool => trim((string) ($milestone['release'] ?? '')) === ''
+                    || in_array(ltrim((string) $milestone['release'], 'vV'), $versionsInScope, true)
+            ));
+        }
+
         $plan['view'] = $view;
         $plan['bands'] = $bands;
+        $plan['scope'] = ['versions' => $view['versions'], 'selected' => $view['selected']];
 
         return view('larapilot::dashboard.plan', $plan);
     }
@@ -524,6 +576,19 @@ class DashboardController
 
         if ($data === null) {
             abort(404);
+        }
+
+        // The version the story targets, and how far that version is.
+        $data['version'] = null;
+
+        if ($this->versions->enabled()) {
+            $target = $this->versions->assignments()[(string) ($data['spec']['code'] ?? $code)] ?? null;
+
+            foreach ($target !== null ? $this->versions->rows(null, false) : [] as $row) {
+                if ($row['version'] === $target) {
+                    $data['version'] = $row;
+                }
+            }
         }
 
         return view('larapilot::dashboard.spec', $data);

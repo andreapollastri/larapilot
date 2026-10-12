@@ -105,7 +105,7 @@ Anne plans explicit **responsive test tasks** interleaved with UI implementation
 
 Every Larapilot project stays compatible with [Larastan](https://github.com/larastan/larastan) **level 5 or higher** and [Laravel Pint](https://laravel.com/docs/pint) formatting.
 
-- **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and `require-dev` entries for `larastan/larastan` + `laravel/pint`.
-- **`larapilot:quality`** runs Pint (check-only by default; `--fix` applies formatting) then Larastan analysis — use before review/merge and during implement.
+- **`larapilot:install`** scaffolds `phpstan.neon.dist` (Larastan extension, `level: 5`), `pint.json`, Composer scripts (`lint`, `lint:check`, `analyse`), and adds `larastan/larastan` + `laravel/pint` with `composer require --dev` when the project has neither — Composer picks the versions the PHP and Laravel of the project take (Larastan 2 on PHP 8.1 / Laravel 10).
+- **`larapilot:quality`** runs Pint (check-only by default; `--fix` applies formatting) then Larastan analysis — use before review/merge and during implement. Under `quality_scope: CHANGED` Pint reads only the files the branch changed; `--baseline` writes and includes `phpstan-baseline.neon`, so errors the code already had stay out of the gate and new ones do not.
 - **`larapilot:doctor`** fails healthy when Pint/Larastan config, level, or dev dependencies are missing.
 - **Never lower** `level` below 5 without an explicit human waiver recorded in the PRD or plan.

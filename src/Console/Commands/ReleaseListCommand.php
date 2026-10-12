@@ -7,6 +7,7 @@ namespace Larapilot\Console\Commands;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
+use Larapilot\Services\VersionService;
 use Larapilot\Support\LarapilotCommand;
 
 class ReleaseListCommand extends LarapilotCommand
@@ -15,7 +16,7 @@ class ReleaseListCommand extends LarapilotCommand
 
     protected $description = 'List releases from the ledger (.larapilot/releases.yaml)';
 
-    public function handle(ConfigService $config, ReleaseService $releases, ReleaseFlowService $flow): int
+    public function handle(ConfigService $config, ReleaseService $releases, ReleaseFlowService $flow, VersionService $versions): int
     {
         if (! $config->releaseModeEnabled()) {
             return $this->failure(
@@ -42,12 +43,34 @@ class ReleaseListCommand extends LarapilotCommand
         }
 
         $items = $releases->list(is_string($status) && trim($status) !== '' ? (string) $status : null);
+        $progress = [];
+
+        foreach ($versions->rows() as $row) {
+            $progress[$row['version']] = [
+                'specs' => $row['counts'],
+                'points' => $row['points'],
+                'progress' => $row['progress'],
+                'forecast_end' => $row['forecast_end'],
+                'milestone' => $row['milestone'],
+                'risk' => $row['risk'],
+            ];
+        }
+
+        // Each release with what it has delivered, from the backlog: the
+        // ledger names the stories, the backlog says where they stand.
+        $items = array_map(
+            static fn (array $release): array => $release + ['progress' => $progress[(string) ($release['version'] ?? '')] ?? null],
+            $items
+        );
+        $current = $versions->current();
 
         return $this->success('release_list', [
             'releases' => $items,
             'count' => count($items),
             'path' => $releases->path(),
             'open_count' => count($releases->openReleases()),
+            'current' => $current,
+            'unassigned' => $versions->unassigned(),
             'git' => $flow->context(),
         ]);
     }

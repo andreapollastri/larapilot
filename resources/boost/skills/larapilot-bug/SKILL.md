@@ -151,6 +151,8 @@ Append to `{paths.support}/intake.md`:
 | Critical + Production | Note **`hotfix/US-XXX-short-desc`** branch from `main` (Jack); still create/rework spec |
 | Log only | Stop after intake.md entry; suggest re-run when ready |
 
+**Target version** (when `data.settings.release_mode` is `YES`, `versions.md` → **bug**): a defect in a shipped version → the open patch version of `data.release.last_shipped` (`x.y.Z+1`), else Sarah proposes it with `release-add`; a defect in a story of an open version → that version; Critical in production → hotfix of `last_shipped`. Name it in the verdict line, persist with `release-set --semver=x.y.z --add-spec=US-XXX` after `spec-add`, and write `**Release:** x.y.z` (the version that ships the fix) and `**Found in:** vA.B.C` (the one that has the defect) under `**Related:**` in the body. A rework or re-issue keeps the version the spec already has.
+
 ### 3b. PRD sync (requirement gap only)
 
 When the user chose **Product requirement gap**:

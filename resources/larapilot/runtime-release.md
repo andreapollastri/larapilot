@@ -1,6 +1,6 @@
 # Larapilot Runtime — Release
 
-Phase pack for **`larapilot-release`**, and for the release-touching steps of **`inception`**, **`adopt`**, **`feature`**, **`plan`**, **`implement`**, and **`ship`**.
+Phase pack for **`larapilot-release`**, and for the release-touching steps of **`inception`**, **`adopt`**, **`feature`**, **`plan`**, **`implement`**, and **`ship`**. How every skill works inside a version — the version line, the rules by phase, numbering, shipping — is `versions.md`.
 
 ## Gate _(Zoey enforces)_
 
@@ -18,15 +18,18 @@ Each release entry carries:
 | `title` | Short release name |
 | `status` | `planned` \| `in_progress` \| `shipped` |
 | `branch` | `release/x.y.z` |
-| `specs` | Assigned `US-XXX` codes |
+| `specs` | Assigned `US-XXX` codes — a story belongs to one open version |
+| `deferred` | Stories moved out when it shipped: `spec`, `to` (a version, or null for the backlog), `at` |
 | `created_at` | Set by `release-add` |
 | `shipped_at` | Set by `release-set --status=shipped` (or `--shipped-at=`) |
 
 | Command | Options | Use |
 | --- | --- | --- |
-| `php artisan larapilot:release-list` | `{--status=}` | List releases (optionally filtered by status) with assigned specs |
+| `php artisan larapilot:release-list` | `{--status=}` | List releases (optionally filtered by status) with assigned specs and their `progress` |
+| `php artisan larapilot:release-show` | `{--semver=}` | One version: stories by state, open ones, epics, forecast vs milestone, `risk` |
+| `php artisan larapilot:release-notes` | `{--semver=} {--file=} {--write}` | Release notes: draft from the stories; `--file=` / `--write` keep them in `paths.release_notes` |
 | `php artisan larapilot:release-add` | `{--semver=} {--title=} {--status=planned} {--specs=US-001,US-002}` | Register a new release in the ledger |
-| `php artisan larapilot:release-set` | `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--shipped-at=}` | Update an existing release: status transitions, branch, full spec list (`--specs=`), or append one spec (`--add-spec=`) |
+| `php artisan larapilot:release-set` | `{--semver=} {--status=} {--branch=} {--specs=} {--add-spec=} {--remove-spec=} {--shipped-at=}` | Update an existing release: status transitions, branch, full spec list (`--specs=`), move one spec in (`--add-spec=`, it leaves any other open version) or out (`--remove-spec=`) |
 
 ## Status Lifecycle _(Mark owns scope; Jack owns transitions)_
 
@@ -53,7 +56,7 @@ When `release_mode` is `YES` **and** `git_mode` is `GITFLOW` or `GITFLOW_PUSH`, 
 | **Assigned features** | `php artisan larapilot:release-feature --semver=x.y.z --spec=US-XXX --slug=short-desc` — branches `feature/US-XXX-*` **from** `release/x.y.z`. The PR target is that release branch, not `develop`. Omit `--semver` when `release-list` → `git.active_release` is set. |
 | **Unassigned features** | Specs with no release keep the classic flow: branch from `develop`, merge into `develop`. |
 | **Develop moved** | `php artisan larapilot:release-sync --semver=x.y.z` merges `develop` into the release branch. Do this before new feature work when `develop` has commits the release does not. |
-| **Ship ceremony** | `php artisan larapilot:release-ship --semver=x.y.z` merges `release/x.y.z` → `main`, tags `vX.Y.Z`, back-merges → `develop`, then marks the ledger `shipped`. A conflict aborts the merge and leaves the release `in_progress`. |
+| **Ship ceremony** | `php artisan larapilot:release-ship --semver=x.y.z` merges `release/x.y.z` → `main`, tags `vX.Y.Z`, back-merges → `develop`, then marks the ledger `shipped`. A conflict aborts the merge and leaves the release `in_progress`. A version with open stories is refused unless `--defer-to=x.y.z|backlog` or `--force` (`versions.md` → **Shipping a version**). |
 | **Push** | Add `--push` only under `GITFLOW_PUSH`, or when the user asked to push. `GITFLOW` prepares the PR locally and does not push. |
 
 `release-list` includes `git`: `current_branch`, `active_release`, `needs_choice`, `clean`. **Do not AskQuestion which release branch** when `needs_choice` is false, or when the spec already has `**Release:** x.y.z`. Ask only when `needs_choice` is true and the spec is unassigned. If `checked_out` is false, stop and surface `reason` (usually a dirty tree) — do not start editing on the wrong branch.
@@ -62,9 +65,9 @@ When `release_mode` is `YES` **and** `git_mode` is `NO_GITFLOW`: releases are **
 
 ## Spec ↔ Release Assignment _(Mark owns scope)_
 
-- When releases are open (`planned` or `in_progress`), `/larapilot-feature` asks via AskQuestion which open release the new spec belongs to — options: each open release, a **new release** (Sarah proposes the version), or **none/backlog**.
+- When releases are open (`planned` or `in_progress`), `/larapilot-feature` asks via AskQuestion which open release the new spec belongs to — options: each open release, a **new release** (Sarah proposes the version), or **none** only when the user asks for it.
 - Assignment is persisted with `release-set --add-spec=US-XXX` **after** `spec-add`, and the spec body carries a `**Release:** x.y.z` line (next to `**Blocked by:**` / `**Type:**`).
-- A spec with no `**Release:**` line is unassigned and follows the classic `develop` flow.
+- A spec with no `**Release:**` line is unassigned and follows the classic `develop` flow — and implement stops on it to settle the version first (`versions.md`).
 
 ## Sarah's Release-Evolution Proposal _(Sarah proposes; user confirms)_
 

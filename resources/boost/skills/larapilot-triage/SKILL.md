@@ -82,6 +82,7 @@ request: {the user's words, unedited}
 verdict: Bug | Bug — requirement gap | Feature | Feature — change request
 evidence: FR-XXX done-means "…" | US-XXX criterion "…" | regression since {release} | none
 maps to: US-XXX ({status}) | —
+version: found in vA.B.C | — (release mode only: the version the user runs, from data.release.last_shipped unless they say otherwise)
 settled by: evidence | user
 ```
 

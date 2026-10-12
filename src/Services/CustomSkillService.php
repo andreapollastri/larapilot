@@ -31,9 +31,36 @@ class CustomSkillService
         '.windsurf/skills',
     ];
 
+    /**
+     * Left in every folder Larapilot mirrors a custom skill into: a folder
+     * of that name without it was put there by someone else — Boost, the
+     * agent, the developer — and is never overwritten.
+     */
+    public const MARKER = '.larapilot-custom-skill';
+
+    /** @var list<string>|null */
+    protected ?array $boostSkillNames = null;
+
     public function __construct(
         protected ConfigService $config,
     ) {}
+
+    /**
+     * Who owns a skill name a custom skill may not take: the `/larapilot-*`
+     * skills of this package and the skills Boost ships. A custom skill of
+     * that name would replace theirs in the agents — in `.ai/skills` it is
+     * the override Boost publishes. Null when the name is free.
+     */
+    public function reservedBy(string $name): ?string
+    {
+        $name = strtolower(trim($name));
+
+        if (str_starts_with($name, 'larapilot-')) {
+            return 'Larapilot';
+        }
+
+        return in_array($name, $this->boostSkillNames(), true) ? 'Laravel Boost' : null;
+    }
 
     public function directory(): string
     {
@@ -117,7 +144,7 @@ class CustomSkillService
     /**
      * Persist a custom skill under `.larapilot/skills/{name}/SKILL.md` and register it with Boost.
      *
-     * @return array{name: string, path: string, relative_path: string, registered: list<string>}
+     * @return array{name: string, path: string, relative_path: string, registered: list<string>, kept: list<string>}
      */
     public function write(string $name, string $content, bool $force = false): array
     {
@@ -137,20 +164,23 @@ class CustomSkillService
 
         AtomicFile::write($path, $content);
 
-        $registered = $this->register($name);
+        // `--force` is the developer saying this skill is theirs: a copy
+        // of the same name in an agent folder is replaced.
+        $report = $this->registerReport($name, $force);
 
         return [
             'name' => $name,
             'path' => $path,
             'relative_path' => $this->relativePath($path),
-            'registered' => $registered,
+            'registered' => $report['registered'],
+            'kept' => $report['kept'],
         ];
     }
 
     /**
      * Mirror every discovered custom skill into Boost / agent skill directories.
      *
-     * @return list<array{name: string, registered: list<string>}>
+     * @return list<array{name: string, registered: list<string>, kept: list<string>, reserved: string|null}>
      */
     public function registerAll(): array
     {
@@ -160,13 +190,35 @@ class CustomSkillService
 
         foreach (glob($this->directory().'/*/SKILL.md') ?: [] as $skillFile) {
             $name = basename(dirname($skillFile));
-            $registered[] = [
-                'name' => $name,
-                'registered' => $this->register($name),
-            ];
+            $report = $this->registerReport($name);
+            $registered[] = ['name' => $name] + $report;
         }
 
         return $registered;
+    }
+
+    /**
+     * What `registerAll()` left alone, in words for a person: the folders
+     * of another skill of the same name, and the reserved names.
+     *
+     * @param  list<array{name: string, registered: list<string>, kept: list<string>, reserved: string|null}>  $registered
+     * @return list<string>
+     */
+    public static function conflicts(array $registered): array
+    {
+        $lines = [];
+
+        foreach ($registered as $skill) {
+            if (($skill['reserved'] ?? null) !== null) {
+                $lines[] = '.larapilot/skills/'.$skill['name'].' is not published: “'.$skill['name'].'” is a skill of '.$skill['reserved'].'. Rename the folder.';
+            }
+
+            foreach ($skill['kept'] ?? [] as $folder) {
+                $lines[] = $folder.' was left as it is: a skill of the same name that Larapilot did not write is there. Rename the custom skill, or delete that folder.';
+            }
+        }
+
+        return $lines;
     }
 
     /**
@@ -174,29 +226,104 @@ class CustomSkillService
      *
      * @return list<string> Relative destination directories written.
      */
-    public function register(string $name): array
+    public function register(string $name, bool $claim = false): array
     {
+        return $this->registerReport($name, $claim)['registered'];
+    }
+
+    /**
+     * Mirror one custom skill, and say what was left alone: a folder of the
+     * same name that Larapilot did not write (unless `$claim`), or the
+     * whole skill when its name is reserved.
+     *
+     * @return array{registered: list<string>, kept: list<string>, reserved: string|null}
+     */
+    public function registerReport(string $name, bool $claim = false): array
+    {
+        $report = ['registered' => [], 'kept' => [], 'reserved' => null];
         $name = trim($name);
 
         if ($name === '' || str_contains($name, '/') || str_contains($name, '\\') || str_contains($name, '..')) {
-            return [];
+            return $report;
         }
 
         $source = rtrim($this->directory(), '/\\').DIRECTORY_SEPARATOR.$name;
 
         if (! is_dir($source) || ! is_file($source.DIRECTORY_SEPARATOR.'SKILL.md')) {
-            return [];
+            return $report;
         }
 
-        $written = [];
+        if (($report['reserved'] = $this->reservedBy($name)) !== null) {
+            return $report;
+        }
 
         foreach ($this->registrationTargets() as $targetRoot) {
             $destination = rtrim($targetRoot, '/\\').DIRECTORY_SEPARATOR.$name;
+
+            if (! $claim && ! $this->owns($destination, $source)) {
+                $report['kept'][] = $this->relativePath($destination);
+
+                continue;
+            }
+
             $this->mirrorDirectory($source, $destination);
-            $written[] = $this->relativePath($destination);
+
+            if (! is_file($destination.DIRECTORY_SEPARATOR.self::MARKER)) {
+                AtomicFile::write($destination.DIRECTORY_SEPARATOR.self::MARKER, '');
+            }
+
+            $report['registered'][] = $this->relativePath($destination);
         }
 
-        return $written;
+        return $report;
+    }
+
+    /**
+     * Whether a folder in an agent skill folder is Larapilot's to write: it
+     * is not there yet, it carries the marker, or — a mirror made before
+     * the marker existed — its `SKILL.md` is the source's, byte for byte.
+     */
+    protected function owns(string $destination, string $source): bool
+    {
+        if (! file_exists($destination)) {
+            return true;
+        }
+
+        if (is_file($destination.DIRECTORY_SEPARATOR.self::MARKER)) {
+            return true;
+        }
+
+        $mirror = $destination.DIRECTORY_SEPARATOR.'SKILL.md';
+
+        return ! is_file($mirror) || hash_file('sha256', $mirror) === hash_file('sha256', $source.DIRECTORY_SEPARATOR.'SKILL.md');
+    }
+
+    /**
+     * The names of the skills the installed Boost ships, read once.
+     *
+     * @return list<string>
+     */
+    protected function boostSkillNames(): array
+    {
+        if ($this->boostSkillNames !== null) {
+            return $this->boostSkillNames;
+        }
+
+        $names = [];
+        $provider = 'Laravel\\Boost\\BoostServiceProvider';
+
+        if (! class_exists($provider)) {
+            return $this->boostSkillNames = [];
+        }
+
+        // Where Boost is installed, whatever the vendor folder is called.
+        $ai = dirname((string) (new \ReflectionClass($provider))->getFileName(), 2).'/.ai';
+
+        foreach (array_merge(glob($ai.'/*/skill/*', GLOB_ONLYDIR) ?: [], glob($ai.'/*/*/skill/*', GLOB_ONLYDIR) ?: []) as $folder) {
+            $names[strtolower(basename($folder))] = true;
+        }
+
+        return $this->boostSkillNames = array_keys($names);
     }
 
     /**
@@ -232,7 +359,7 @@ class CustomSkillService
                 continue;
             }
 
-            if (hash_file('sha256', $mirror) !== $fingerprint) {
+            if (! is_file($destination.DIRECTORY_SEPARATOR.self::MARKER) && hash_file('sha256', $mirror) !== $fingerprint) {
                 $result['kept'][] = $this->relativePath($destination);
 
                 continue;
@@ -294,6 +421,10 @@ class CustomSkillService
 
         if (preg_match('/^[a-z0-9][a-z0-9-]{0,62}$/', $name) !== 1) {
             throw new InvalidArgumentException('Skill name must be kebab-case (a-z, 0-9, hyphens), 1–63 characters.');
+        }
+
+        if (($owner = $this->reservedBy($name)) !== null) {
+            throw new InvalidArgumentException("“{$name}” is a skill of {$owner}: a custom skill of that name would replace it in the agents. Choose another name.");
         }
 
         $meta = $this->parseFrontMatter($content);
@@ -460,7 +591,15 @@ class CustomSkillService
                 continue;
             }
 
-            AtomicFile::write($to, (string) file_get_contents($from));
+            $content = (string) file_get_contents($from);
+
+            // The Skills page mirrors on every visit: a copy already current
+            // is not rewritten.
+            if (is_file($to) && filesize($to) === strlen($content) && (string) file_get_contents($to) === $content) {
+                continue;
+            }
+
+            AtomicFile::write($to, $content);
         }
     }
 }

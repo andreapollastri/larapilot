@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orders · Kanso backoffice</title>
+<meta name="description" content="The Orders list of the Kanso backoffice: a quiet toolbar with search and three filters, a bulk bar for two selected orders, ten October orders with shape-based status, and pagination.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="zn-mockup zn-body">
+<a class="zn-skip" href="#main">Skip to content</a>
+<div class="zn-app">
+<aside class="zn-rail" aria-label="Backoffice">
+<div class="zn-rail__brand"><a class="zn-logo" href="dashboard.html" aria-label="Kanso backoffice, today"><svg class="zn-logo__mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M28.7 90.0L33.6 93.6 39.1 96.6 45.1 98.8 51.4 99.7 57.8 99.0 64.0 97.4 69.9 95.0 75.4 91.9 80.5 88.1 84.9 83.6 88.7 78.6 91.7 73.2 94.0 67.5 95.5 61.6 96.2 55.6 96.1 49.6 95.3 43.7 93.7 38.0 91.4 32.6 88.5 27.6 85.0 23.1 81.0 19.0 76.5 15.5 71.7 12.7 66.6 10.4 61.3 8.8 55.9 7.8 50.4 7.7 45.0 8.3 39.7 9.6 34.7 11.5 30.0 14.1 25.7 17.1 21.8 20.7 18.4 24.7 15.6 29.1 13.4 33.8 11.9 38.7 11.0 43.8 10.8 48.9 11.3 53.9 12.4 58.8 13.8 63.6 15.8 68.2 17.2 67.4 15.3 63.0 14.1 58.4 13.8 53.7 14.1 49.0 15.0 44.4 16.6 40.1 18.6 36.1 21.1 32.5 24.1 29.2 27.3 26.4 30.9 24.1 34.6 22.3 38.5 21.0 42.4 20.2 46.4 19.8 50.3 20.0 54.1 20.5 57.9 21.4 61.5 22.7 64.9 24.4 68.1 26.5 71.0 29.0 73.6 31.8 75.9 35.0 77.7 38.4 79.2 42.0 80.1 45.8 80.6 49.7 80.5 53.7 80.0 57.6 78.9 61.5 77.3 65.2 75.2 68.6 72.6 71.8 69.6 74.5 66.3 76.9 62.7 78.7 58.9 80.1 54.9 80.8 50.9 81.1 46.8 81.2 42.7 81.2 38.5 80.7 34.3 79.5 30.9 78.6 27.7 79.3 25.5 81.5 24.9 84.6 26.1 87.7Z"/></svg><span class="zn-logo__word">Kanso</span></a><button type="button" class="zn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="zn-i zn-i--24 zn-i--thin" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="zn-rail__nav" aria-label="Main">
+<a class="zn-nav-item" href="dashboard.html" title="Today"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="zn-nav-item__label">Today</span></a>
+<a class="zn-nav-item is-active" aria-current="page" href="resource-list.html" title="Orders"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg><span class="zn-nav-item__label">Orders</span><span class="zn-nav-item__count">2</span></a>
+<a class="zn-nav-item" href="#" title="Workshops"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="zn-nav-item__label">Workshops</span></a>
+<a class="zn-nav-item" href="#" title="Pieces"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></svg><span class="zn-nav-item__label">Pieces</span></a>
+<a class="zn-nav-item" href="#" title="Customers"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="zn-nav-item__label">Customers</span></a>
+<a class="zn-nav-item" href="#" title="Journal"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="zn-nav-item__label">Journal</span></a>
+<span class="zn-rail__gap" aria-hidden="true"></span>
+<a class="zn-nav-item" href="settings.html" title="Settings"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="zn-nav-item__label">Settings</span></a>
+</nav>
+<div class="zn-rail__foot">
+<span class="zn-av" aria-hidden="true">AM</span>
+<span class="zn-rail__who"><span class="zn-rail__name">Aiko Mori</span><span class="zn-rail__role">Owner</span></span>
+<a class="zn-btn zn-btn--ghost zn-btn--icon zn-btn--sm" href="login.html" aria-label="Sign out, Aiko Mori" title="Sign out"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a>
+</div>
+</aside>
+<header class="zn-topbar">
+<p class="zn-topbar__date"><time datetime="2026-10-12">Monday, 12 October 2026</time></p>
+<div class="zn-topbar__search" role="search"><label class="zn-search"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders, pieces and customers</span><input class="zn-search__input" type="search" placeholder="Search orders, pieces, customers"><span class="zn-kbd" aria-hidden="true">/</span></label></div>
+<div class="zn-topbar__actions"><a class="zn-btn zn-btn--primary" href="modal.html"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New order</a></div>
+</header>
+<main class="zn-main" id="main">
+<header class="zn-pagehead">
+<div><div class="zn-pagehead__title"><h1 class="zn-h1">Orders</h1><span class="zn-pagehead__count">31</span></div><p class="zn-pagehead__lede">October so far. Two to pack, one waiting for a first look.</p></div>
+<div class="zn-pagehead__actions"><a class="zn-btn" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Export</a></div>
+</header>
+
+<div class="zn-toolbar" role="search" aria-label="Find orders">
+<label class="zn-search zn-search--box"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders</span><input class="zn-search__input" type="search" placeholder="Number, customer, piece"></label>
+<div class="zn-chips">
+<button type="button" class="zn-chip" aria-haspopup="menu" aria-expanded="false">Status<svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<button type="button" class="zn-chip" aria-haspopup="menu" aria-expanded="false">Channel<svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<span class="zn-chip zn-chip--applied">Period: October<button type="button" class="zn-chip__x" aria-label="Remove the period filter"><svg class="zn-i zn-i--12" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+</div>
+<span class="zn-toolbar__spacer"></span>
+<label class="zn-row"><span class="zn-toolbar__label">Sort</span><span class="zn-selectbox"><select class="zn-select zn-select--sm"><option>Newest first</option><option>Oldest first</option><option>Total, highest</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+</div>
+
+<div class="zn-bulkbar" role="region" aria-label="Bulk actions">
+<p class="zn-bulkbar__count">2 selected</p>
+<button type="button" class="zn-btn zn-btn--sm"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 16 2 2 4-4"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.27 9 5.15"/><path d="M3.29 7 12 12l8.71-5"/><path d="M12 22V12"/></svg>Mark as shipped</button>
+<button type="button" class="zn-btn zn-btn--sm"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print labels</button>
+<span class="zn-bulkbar__spacer"></span>
+<button type="button" class="zn-btn zn-btn--sm zn-btn--ghost">Clear selection</button>
+</div>
+
+<div class="zn-table-wrap"><table class="zn-table zn-table--page">
+<caption class="visually-hidden">Orders placed in October 2026, newest first</caption>
+<thead><tr>
+<th scope="col" class="zn-td-check"><input class="zn-checkbox is-mixed" type="checkbox" aria-label="Select all orders on this page, 2 of 10 selected"></th>
+<th scope="col"><button type="button" class="zn-th-sort is-sorted" aria-label="Order, sorted newest first">Order<svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></button></th>
+<th scope="col">Customer</th>
+<th scope="col">Pieces</th>
+<th scope="col">Channel</th>
+<th scope="col" class="zn-td-num">Total</th>
+<th scope="col">Status</th>
+<th scope="col" class="zn-td-actions"><span class="visually-hidden">Actions</span></th>
+</tr></thead>
+<tbody>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1048"></td><td class="zn-td-code">K-1048<span class="zn-td-sub">12 Oct, 12:58</span></td><td><a class="zn-td-title" href="resource-form.html">Haruka Ito</a><span class="zn-td-sub">Osaka</span></td><td>Shiro chawan</td><td class="zn-soft">Online</td><td class="zn-td-num">¥18,700</td><td><span class="zn-status zn-status--pending"><span class="zn-status__mark" aria-hidden="true"></span>New</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1048"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr class="is-selected"><td><input class="zn-checkbox" type="checkbox" checked aria-label="Select K-1047"></td><td class="zn-td-code">K-1047<span class="zn-td-sub">12 Oct, 11:20</span></td><td><a class="zn-td-title" href="resource-form.html">Daniel Weiss</a><span class="zn-td-sub">Zürich</span></td><td>Kuro yunomi × 2</td><td class="zn-soft">Online</td><td class="zn-td-num">¥9,900</td><td><span class="zn-status zn-status--progress"><span class="zn-status__mark" aria-hidden="true"></span>Packing</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1047"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1046"></td><td class="zn-td-code">K-1046<span class="zn-td-sub">11 Oct, 16:04</span></td><td><a class="zn-td-title" href="resource-form.html">Mei Lin</a><span class="zn-td-sub">Taipei</span></td><td>Ash glaze kyusu</td><td class="zn-soft">Online</td><td class="zn-td-num">¥24,200</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1046"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1045"></td><td class="zn-td-code">K-1045<span class="zn-td-sub">11 Oct, 10:31</span></td><td><a class="zn-td-title" href="resource-form.html">Sora Tanaka</a><span class="zn-td-sub">Kyoto</span></td><td>Stone plate, 24 cm × 4</td><td class="zn-soft">Shop</td><td class="zn-td-num">¥26,400</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1045"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1044"></td><td class="zn-td-code">K-1044<span class="zn-td-sub">10 Oct, 19:47</span></td><td><a class="zn-td-title" href="resource-form.html">Clara Moreau</a><span class="zn-td-sub">Lyon</span></td><td class="zn-muted">Tea set for two</td><td class="zn-muted">Online</td><td class="zn-td-num zn-muted"><span class="zn-strike">¥31,900</span></td><td><span class="zn-status zn-status--cancelled"><span class="zn-status__mark" aria-hidden="true"></span>Cancelled</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1044"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr class="is-selected"><td><input class="zn-checkbox" type="checkbox" checked aria-label="Select K-1043"></td><td class="zn-td-code">K-1043<span class="zn-td-sub">10 Oct, 09:12</span></td><td><a class="zn-td-title" href="resource-form.html">Kenji Arai</a><span class="zn-td-sub">Tokyo</span></td><td>Shiro chawan, Kuro yunomi</td><td class="zn-soft">Online</td><td class="zn-td-num">¥23,650</td><td><span class="zn-status zn-status--progress"><span class="zn-status__mark" aria-hidden="true"></span>Packing</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1043"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1042"></td><td class="zn-td-code">K-1042<span class="zn-td-sub">9 Oct, 21:05</span></td><td><a class="zn-td-title" href="resource-form.html">Emma Lindqvist</a><span class="zn-td-sub">Stockholm</span></td><td>Ash glaze kyusu</td><td class="zn-soft">Online</td><td class="zn-td-num">¥24,200</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1042"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1041"></td><td class="zn-td-code">K-1041<span class="zn-td-sub">8 Oct, 15:40</span></td><td><a class="zn-td-title" href="resource-form.html">Yuki Hayashi</a><span class="zn-td-sub">Kyoto</span></td><td>Shiro chawan × 2</td><td class="zn-soft">Shop</td><td class="zn-td-num">¥37,400</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1041"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1040"></td><td class="zn-td-code">K-1040<span class="zn-td-sub">7 Oct, 13:18</span></td><td><a class="zn-td-title" href="resource-form.html">Tom Becker</a><span class="zn-td-sub">Berlin</span></td><td>Stone plate, 24 cm × 2</td><td class="zn-soft">Online</td><td class="zn-td-num">¥13,200</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1040"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="zn-checkbox" type="checkbox" aria-label="Select K-1039"></td><td class="zn-td-code">K-1039<span class="zn-td-sub">6 Oct, 11:02</span></td><td><a class="zn-td-title" href="resource-form.html">Nao Fujii</a><span class="zn-td-sub">Kobe</span></td><td>Kuro yunomi × 4</td><td class="zn-soft">Shop</td><td class="zn-td-num">¥19,800</td><td><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1039"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+</tbody>
+</table></div>
+
+<nav class="zn-pager" aria-label="Pagination">
+<p class="zn-pager__info"><strong>1–10</strong> of <strong>31</strong> orders in October</p>
+<ul class="zn-pager__list">
+<li><span class="zn-pager__link is-disabled" aria-disabled="true"><svg class="zn-i zn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span class="visually-hidden">Previous page</span></span></li>
+<li><a class="zn-pager__link is-active" href="#" aria-current="page">1</a></li>
+<li><a class="zn-pager__link" href="#">2</a></li>
+<li><a class="zn-pager__link" href="#">3</a></li>
+<li><a class="zn-pager__link" href="#">4</a></li>
+<li><a class="zn-pager__link" href="#" aria-label="Next page"><svg class="zn-i zn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
+</ul>
+</nav>
+
+<footer class="zn-mainfoot zn-mt-64"><span>2 selected · ¥33,550</span><span>Shop and online, one list</span></footer>
+</main>
+</div>
+</body>
+</html>

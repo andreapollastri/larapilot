@@ -29,7 +29,7 @@ When the handoff says you are the autopilot spec worker, read `spec-worker.md` (
 
 ## CLI
 
-1. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO`
+1. `php artisan larapilot:spec-show {code}` OR `php artisan larapilot:spec-next --status=TODO` — with release mode on it picks the version the work is on first (`data.release.version`); `--release=x.y.z` keeps to one version. A plan's header carries `**Release:** x.y.z`, and a spec with no version is planned only after its version is settled (`versions.md`)
 2. `php artisan larapilot:prd-show --ids=…` — the ids on the spec's `**Traces to:**` line; `--section="Technical Architecture"` (and `"Domain Model"` when the spec names entities) for the recorded choices. Never the whole PRD.
 3. `php artisan larapilot:validate-plan {code} --file=...`
 4. `php artisan larapilot:spec-plan {code} --file=...` — when `data.settings.hooks` is `YES` it runs the hooks of `spec.planned` (`hooks.md`): a refusal with `details.hooks` is fixed and the command run again; a skill it names runs first, then `--skill-hooks-done=`; the skills under `data.hooks.after.skills` run before the handoff

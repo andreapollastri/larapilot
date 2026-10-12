@@ -322,6 +322,10 @@
     .group-switch a:hover { text-decoration: none; }
     .view-note { margin: 0 0 14px; }
     .view-column .column-sub { margin: 2px 0 0; color: var(--muted); font-size: 0.78rem; font-weight: 500; }
+    .view-column .column-header strong a { color: inherit; text-decoration: none; }
+    .view-column .column-header strong a:hover { text-decoration: underline; }
+    .column-progress { margin-top: 6px; height: 4px; border-radius: 999px; background: var(--surface-3); overflow: hidden; max-width: 160px; }
+    .column-progress span { display: block; height: 100%; background: var(--ok-fill); border-radius: inherit; }
 </style>
 @endpush
 
@@ -374,12 +378,21 @@
             @endif
         </div>
         @if (($metrics['total'] ?? 0) > 0)
+            @php $scopeQuery = ($view['selected'] ?? []) !== [] ? ['version' => implode(',', $view['selected'])] : []; @endphp
             <div class="page-actions">
-                <a class="btn ghost" id="board-download" href="{{ route('larapilot.dashboard.board.download') }}" data-base="{{ route('larapilot.dashboard.board.download') }}" data-name="status" title="The board as it is now, status by status, in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download status (.md)</span></a>
-                <a class="btn ghost" id="board-epics-download" href="{{ route('larapilot.dashboard.board.epics') }}" data-base="{{ route('larapilot.dashboard.board.epics') }}" data-name="epics" title="Every epic with its story points, its user stories with theirs, and the tasks of each, as a Markdown outline">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download epics (.md)</span></a>
+                <a class="btn ghost" id="board-download" href="{{ route('larapilot.dashboard.board.download', $scopeQuery) }}" data-base="{{ route('larapilot.dashboard.board.download') }}" data-name="status" title="The board as it is now, status by status, in one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download {{ $scopeQuery !== [] ? 'filtered ' : '' }}status (.md)</span></a>
+                <a class="btn ghost" id="board-epics-download" href="{{ route('larapilot.dashboard.board.epics', $scopeQuery) }}" data-base="{{ route('larapilot.dashboard.board.epics') }}" data-name="epics" title="Every epic with its story points, its user stories with theirs, and the tasks of each, as a Markdown outline">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])<span data-label>Download {{ $scopeQuery !== [] ? 'filtered ' : '' }}epics (.md)</span></a>
             </div>
         @endif
     </header>
+
+    @if (($view['versions'] ?? []) !== [] && ($backlog_total ?? 0) > 0)
+        @include('larapilot::dashboard.partials.version-scope', [
+            'scope' => $scope,
+            'scopeRoute' => 'larapilot.dashboard.index',
+            'scopeParams' => ($view['group'] ?? 'status') !== ($view['default'] ?? 'status') ? ['group' => $view['group']] : [],
+        ])
+    @endif
 
     <section class="metrics" aria-label="Backlog summary">
         <div class="card metric">
@@ -400,9 +413,13 @@
         </div>
     </section>
 
-    @if (($metrics['total'] ?? 0) === 0)
+    @if (($backlog_total ?? ($metrics['total'] ?? 0)) === 0)
         <div class="card empty">
             <p>No backlog specs yet. Run <code>/larapilot-spec</code> to create user stories.</p>
+        </div>
+    @elseif (($metrics['total'] ?? 0) === 0)
+        <div class="card empty">
+            <p>No story targets the versions in scope. <a href="{{ route('larapilot.dashboard.index', ['version' => 'all']) }}">Show all versions</a>.</p>
         </div>
     @else
         <form class="board-tools" id="board-tools" role="search">
@@ -456,6 +473,7 @@
             data-done-status="{{ $doneStatus }}"
             data-wip-statuses="{{ $wipStatuses }}"
             data-total="{{ $metrics['total'] ?? 0 }}"
+            data-version="{{ implode(',', $view['selected'] ?? []) }}"
         >
             @if (($view['group'] ?? 'status') === 'status')
             @foreach ($statusOrder as $status)
@@ -506,9 +524,16 @@
                 <article class="card column view-column" data-status="{{ $column['key'] }}">
                     <div class="column-header">
                         <div>
-                            <strong>{{ $column['label'] }}</strong>
+                            @if (($column['kind'] ?? '') === 'version' && ! empty($column['version']))
+                                <strong><a href="{{ route('larapilot.dashboard.versions.show', ['version' => $column['version']]) }}" title="Open the version">{{ $column['label'] }}</a></strong>
+                            @else
+                                <strong>{{ $column['label'] }}</strong>
+                            @endif
                             @if ($column['sub'])
                                 <p class="column-sub">{{ $column['sub'] }}</p>
+                            @endif
+                            @if (isset($column['progress']))
+                                <div class="column-progress" role="img" aria-label="{{ $column['progress'] }}% delivered"><span style="width: {{ $column['progress'] }}%"></span></div>
                             @endif
                         </div>
                         <div class="column-stats">
@@ -614,6 +639,12 @@
         // The downloads follow the filters: what is on screen is what is saved.
         const syncDownload = () => {
             const params = new URLSearchParams();
+
+            // The version scope is the server's: it narrows what is saved too.
+            if (board.dataset.version) {
+                params.set('version', board.dataset.version);
+            }
+
             const values = {
                 q: (query.value || '').trim(),
                 priority: priority ? priority.value : '',

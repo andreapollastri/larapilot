@@ -19,12 +19,21 @@ class DashboardExportService
         protected PrdService $prd,
         protected SpecService $specs,
         protected PlanService $plans,
+        protected VersionService $versions,
     ) {}
 
     /**
-     * The board, status by status. `$filters` takes the same four keys the
-     * board narrows by on screen (`q`, `priority`, `epic`, `status`), so a
-     * filtered board downloads as what is on screen.
+     * Spec code → version, read once per download.
+     *
+     * @var array<string, string>|null
+     */
+    protected ?array $assignments = null;
+
+    /**
+     * The board, status by status. `$filters` takes the keys the board
+     * narrows by on screen (`q`, `priority`, `epic`, `status`, and the
+     * version scope `version`), so a filtered board downloads as what is on
+     * screen.
      *
      * @param  array<string, mixed>  $filters
      */
@@ -801,7 +810,7 @@ class DashboardExportService
 
     /**
      * @param  array<string, mixed>  $filters
-     * @return array{q: string, priority: string, epic: string, status: string}
+     * @return array{q: string, priority: string, epic: string, status: string, version: string}
      */
     protected function boardFilters(array $filters): array
     {
@@ -809,11 +818,14 @@ class DashboardExportService
             ? trim(substr((string) $filters[$key], 0, 200))
             : '';
 
+        $this->assignments = null;
+
         return [
             'q' => strtolower($read('q')),
             'priority' => strtoupper($read('priority')),
             'epic' => $read('epic'),
             'status' => $read('status'),
+            'version' => $this->versions->enabled() ? implode(',', $this->versions->selection($filters['version'] ?? null)) : '',
         ];
     }
 
@@ -821,7 +833,7 @@ class DashboardExportService
      * The columns the filters leave on screen, in the order of the board.
      *
      * @param  array<string, mixed>  $board
-     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     * @param  array{q: string, priority: string, epic: string, status: string, version: string}  $filters
      * @return array<string, list<array<string, mixed>>>
      */
     protected function boardColumns(array $board, array $filters): array
@@ -843,7 +855,7 @@ class DashboardExportService
     }
 
     /**
-     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     * @param  array{q: string, priority: string, epic: string, status: string, version: string}  $filters
      */
     protected function isFiltered(array $filters): bool
     {
@@ -854,7 +866,7 @@ class DashboardExportService
      * The same test the board runs in the browser, on the same fields.
      *
      * @param  array<string, mixed>  $spec
-     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     * @param  array{q: string, priority: string, epic: string, status: string, version: string}  $filters
      */
     protected function matchesBoardFilters(array $spec, array $filters): bool
     {
@@ -864,6 +876,15 @@ class DashboardExportService
 
         if ($filters['epic'] !== '' && (string) ($spec['epic']['code'] ?? '') !== $filters['epic']) {
             return false;
+        }
+
+        if ($filters['version'] !== '') {
+            $this->assignments ??= $this->versions->assignments();
+            $version = $this->assignments[(string) ($spec['code'] ?? '')] ?? VersionService::NONE;
+
+            if (! in_array($version, explode(',', $filters['version']), true)) {
+                return false;
+            }
         }
 
         if ($filters['q'] === '') {
@@ -884,7 +905,7 @@ class DashboardExportService
     }
 
     /**
-     * @param  array{q: string, priority: string, epic: string, status: string}  $filters
+     * @param  array{q: string, priority: string, epic: string, status: string, version: string}  $filters
      */
     protected function describeBoardFilters(array $filters): string
     {
@@ -894,6 +915,13 @@ class DashboardExportService
             if ($filters[$key] !== '') {
                 $parts[] = $label.' “'.$this->inline($filters[$key]).'”';
             }
+        }
+
+        if ($filters['version'] !== '') {
+            $parts[] = 'version '.implode(', ', array_map(
+                static fn (string $version): string => $version === VersionService::NONE ? 'none' : 'v'.$version,
+                explode(',', $filters['version'])
+            ));
         }
 
         return implode(', ', $parts);

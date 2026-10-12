@@ -185,17 +185,113 @@ class ReleaseService
                 $current['specs'] = array_values(array_unique($specs));
             }
 
+            if (isset($partial['remove_spec'])) {
+                $gone = strtoupper(trim((string) $partial['remove_spec']));
+                $current['specs'] = array_values(array_filter(
+                    $this->normalizeSpecs($current['specs'] ?? []),
+                    static fn (string $code): bool => $code !== $gone
+                ));
+            }
+
             if (isset($partial['shipped_at'])) {
                 $current['shipped_at'] = $this->normalizeTimestamp($partial['shipped_at']);
             }
 
             $data['releases'][$index] = $current;
+            $movedFrom = [];
+
+            // A story targets one version: added to this one, it leaves
+            // every other version still open. A shipped version keeps what
+            // it delivered.
+            if (isset($partial['add_spec'])) {
+                $moved = strtoupper(trim((string) $partial['add_spec']));
+
+                foreach ($data['releases'] as $other => $release) {
+                    if ($other === $index || strtolower((string) ($release['status'] ?? '')) === 'shipped') {
+                        continue;
+                    }
+
+                    $specs = $this->normalizeSpecs($release['specs'] ?? []);
+
+                    if (in_array($moved, $specs, true)) {
+                        $data['releases'][$other]['specs'] = array_values(array_diff($specs, [$moved]));
+                        $movedFrom[] = (string) ($release['version'] ?? '');
+                    }
+                }
+            }
+
             $this->write($data['releases']);
 
-            return $current;
+            return $movedFrom !== [] ? $current + ['moved_from' => $movedFrom] : $current;
         }
 
         throw new \InvalidArgumentException("Release {$needle} not found.");
+    }
+
+    /**
+     * Move open stories out of a version before it ships: to another open
+     * version, or back to the backlog with no version. The version keeps a
+     * `deferred` record of each, so its release notes say where it went.
+     *
+     * @param  list<string>  $specs
+     * @return array<string, mixed> The version as it is now.
+     */
+    public function defer(string $version, array $specs, ?string $to): array
+    {
+        if (! $this->config->releaseModeEnabled()) {
+            throw new \InvalidArgumentException('Release mode is disabled (settings.release_mode = NO).');
+        }
+
+        $version = $this->normalizeVersion($version);
+        $target = $to !== null ? $this->normalizeVersion($to) : null;
+
+        if ($target === $version) {
+            throw new \InvalidArgumentException('A version cannot defer stories to itself.');
+        }
+
+        if ($target !== null) {
+            $found = $this->find($target);
+
+            if ($found === null) {
+                throw new \InvalidArgumentException("Release {$target} not found.");
+            }
+
+            if (strtolower((string) ($found['status'] ?? '')) === 'shipped') {
+                throw new \InvalidArgumentException("Release {$target} is shipped: defer to an open version, or to the backlog.");
+            }
+        }
+
+        $codes = $this->normalizeSpecs($specs);
+        $data = $this->read();
+        $result = null;
+
+        foreach ($data['releases'] as $index => $release) {
+            $current = $this->normalizeVersion((string) ($release['version'] ?? ''));
+
+            if ($current === $version) {
+                $release['specs'] = array_values(array_diff($this->normalizeSpecs($release['specs'] ?? []), $codes));
+                $deferred = is_array($release['deferred'] ?? null) ? $release['deferred'] : [];
+
+                foreach ($codes as $code) {
+                    $deferred[] = ['spec' => $code, 'to' => $target, 'at' => $this->now()];
+                }
+
+                $release['deferred'] = $deferred;
+                $data['releases'][$index] = $release;
+                $result = $release;
+            } elseif ($target !== null && $current === $target) {
+                $release['specs'] = array_values(array_unique([...$this->normalizeSpecs($release['specs'] ?? []), ...$codes]));
+                $data['releases'][$index] = $release;
+            }
+        }
+
+        if ($result === null) {
+            throw new \InvalidArgumentException("Release {$version} not found.");
+        }
+
+        $this->write($data['releases']);
+
+        return $result;
     }
 
     /**

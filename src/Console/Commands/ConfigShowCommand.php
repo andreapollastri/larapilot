@@ -68,6 +68,7 @@ class ConfigShowCommand extends LarapilotCommand
 
         $data = [
             'project_root' => $info['project_root'],
+            'artisan' => $info['artisan'],
             'connector' => $info['connector'],
         ];
 

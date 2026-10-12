@@ -1,3 +1,6 @@
+# On a codebase that already has errors, `php artisan larapilot:quality --baseline`
+# writes phpstan-baseline.neon and adds it to this list: the gate then holds
+# new code to the level without asking for the past to be fixed first.
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon

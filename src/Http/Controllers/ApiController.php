@@ -51,7 +51,28 @@ class ApiController
             is_string($status) && $status !== '' ? $status : null,
             $page,
             $perPage,
+            $request->query('version'),
         ));
+    }
+
+    public function versions(Request $request): JsonResponse
+    {
+        $this->guard();
+
+        return $this->cacheable($request, $this->api->versions());
+    }
+
+    public function version(Request $request, string $version): JsonResponse
+    {
+        $this->guard();
+
+        $data = $this->api->version($version);
+
+        if ($data === null) {
+            abort(404);
+        }
+
+        return $this->cacheable($request, $data);
     }
 
     public function spec(Request $request, string $code): JsonResponse

@@ -255,6 +255,14 @@
                     'BEST' => 'Full automation: E2E, viewport matrix, axe, Lighthouse when applicable.',
                 ],
             ],
+            'quality_scope' => [
+                'label' => 'Quality scope',
+                'description' => 'What larapilot:quality checks before a task is done: Pint and Larastan. CHANGED is the way into a codebase that was never formatted — pair it with a PHPStan baseline (larapilot:quality --baseline).',
+                'options' => [
+                    'ALL' => 'Pint on the whole repository (default).',
+                    'CHANGED' => 'Pint on the PHP files the branch changed against its base; Larastan on the project, with the baseline.',
+                ],
+            ],
             'account' => [
                 'label' => 'Account',
                 'description' => 'Who is selling the work. FREELANCE and COMPANY unlock the Economics page with country-aware quotes, tax, margins, and SaaS forecasts. Calibrate country and regime with /larapilot-economics.',
@@ -483,7 +491,7 @@
 
     @php
         $settingGroups = [
-            'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve', 'sprints'],
+            'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'quality_scope', 'auto_approve', 'sprints'],
             'Automation' => ['hooks'],
             'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'public_roadmap', 'project_docs', 'comments'],
             'Business' => ['account'],

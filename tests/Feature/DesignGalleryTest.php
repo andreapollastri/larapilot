@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Larapilot\Services\PrdService;
+use Larapilot\Support\MockupAssetResolver;
 use Symfony\Component\Yaml\Yaml;
 
 it('opens the design page on a gallery of every screen', function (): void {
@@ -272,6 +273,37 @@ MD,
     $this->get('/larapilot')
         ->assertOk()
         ->assertSee('Mockup', false);
+});
+
+it('ships every packaged design system in the same shape', function (): void {
+    $root = dirname(__DIR__, 2).'/resources/larapilot/design-systems';
+    $folders = array_map('basename', glob($root.'/*', GLOB_ONLYDIR) ?: []);
+
+    expect($folders)->toEqualCanonicalizing(MockupAssetResolver::PACKAGED);
+
+    $index = (string) file_get_contents($root.'/README.md');
+
+    foreach (MockupAssetResolver::PACKAGED as $system) {
+        expect($index)->toContain('`'.$system.'/`');
+
+        foreach (['README.md', 'components.md', 'sources.md', 'tokens.css'] as $file) {
+            expect($root.'/'.$system.'/'.$file)->toBeFile();
+        }
+
+        foreach (['index', 'components', 'dashboard', 'dashboard-dark', 'empty-state', 'login', 'settings', 'resource-list'] as $screen) {
+            expect($root.'/'.$system.'/html/'.$screen.'.html')->toBeFile();
+        }
+
+        // Self-contained: the one stylesheet of the system, no script, no CDN.
+        foreach (glob($root.'/'.$system.'/html/*.html') ?: [] as $screen) {
+            $html = (string) file_get_contents($screen);
+            $name = $system.'/'.basename($screen);
+
+            expect(str_contains($html, 'href="../tokens.css"'))->toBeTrue($name.' does not link ../tokens.css')
+                ->and(str_contains($html, '<script'))->toBeFalse($name.' has a script')
+                ->and(preg_match('#<link[^>]+href="(?:https?:)?//#i', $html))->toBe(0, $name.' links a remote stylesheet');
+        }
+    }
 });
 
 it('ships sign-in samples that draw the credential fields', function (): void {

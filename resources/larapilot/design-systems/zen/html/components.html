@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components · Zen design system</title>
+<meta name="description" content="Every Zen component in its variants and states: type, the ensō, buttons, status shapes, tags, stats, charts, toolbar, table, form controls, menus, dialog, toast, tabs, timeline, photos, public blocks, empty states, drawn fields, swatches and the two islands.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="zn-mockup zn-body" id="top">
+<a class="zn-skip" href="#main">Skip to content</a>
+<svg class="zn-defs" aria-hidden="true" focusable="false"><defs><pattern id="zn-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1" height="6" class="zn-ch-hatch"/></pattern></defs></svg>
+<svg class="zn-defs" aria-hidden="true" focusable="false"><symbol id="enso-bold" viewBox="0 0 100 100"><path d="M28.7 90.0L33.6 93.6 39.1 96.6 45.1 98.8 51.4 99.7 57.8 99.0 64.0 97.4 69.9 95.0 75.4 91.9 80.5 88.1 84.9 83.6 88.7 78.6 91.7 73.2 94.0 67.5 95.5 61.6 96.2 55.6 96.1 49.6 95.3 43.7 93.7 38.0 91.4 32.6 88.5 27.6 85.0 23.1 81.0 19.0 76.5 15.5 71.7 12.7 66.6 10.4 61.3 8.8 55.9 7.8 50.4 7.7 45.0 8.3 39.7 9.6 34.7 11.5 30.0 14.1 25.7 17.1 21.8 20.7 18.4 24.7 15.6 29.1 13.4 33.8 11.9 38.7 11.0 43.8 10.8 48.9 11.3 53.9 12.4 58.8 13.8 63.6 15.8 68.2 17.2 67.4 15.3 63.0 14.1 58.4 13.8 53.7 14.1 49.0 15.0 44.4 16.6 40.1 18.6 36.1 21.1 32.5 24.1 29.2 27.3 26.4 30.9 24.1 34.6 22.3 38.5 21.0 42.4 20.2 46.4 19.8 50.3 20.0 54.1 20.5 57.9 21.4 61.5 22.7 64.9 24.4 68.1 26.5 71.0 29.0 73.6 31.8 75.9 35.0 77.7 38.4 79.2 42.0 80.1 45.8 80.6 49.7 80.5 53.7 80.0 57.6 78.9 61.5 77.3 65.2 75.2 68.6 72.6 71.8 69.6 74.5 66.3 76.9 62.7 78.7 58.9 80.1 54.9 80.8 50.9 81.1 46.8 81.2 42.7 81.2 38.5 80.7 34.3 79.5 30.9 78.6 27.7 79.3 25.5 81.5 24.9 84.6 26.1 87.7Z"/></symbol><symbol id="enso-regular" viewBox="0 0 100 100"><path d="M30.1 87.5L34.8 90.5 39.9 92.9 45.5 94.6 51.3 95.2 57.1 94.6 62.8 93.3 68.2 91.1 73.3 88.3 77.9 84.8 82.0 80.8 85.5 76.2 88.3 71.3 90.4 66.1 91.8 60.6 92.5 55.1 92.4 49.6 91.7 44.2 90.2 39.0 88.1 34.0 85.5 29.4 82.3 25.2 78.6 21.4 74.5 18.2 70.1 15.5 65.4 13.3 60.5 11.8 55.5 10.8 50.4 10.6 45.3 11.1 40.4 12.1 35.6 13.8 31.1 16.0 26.9 18.8 23.1 22.1 19.8 25.8 17.0 29.9 14.7 34.4 13.0 39.1 12.0 43.9 11.6 48.9 11.9 53.9 12.8 58.7 14.2 63.5 16.2 68.0 17.0 67.6 15.0 63.1 13.8 58.5 13.3 53.7 13.5 49.0 14.3 44.3 15.7 39.9 17.7 35.7 20.2 31.9 23.1 28.5 26.4 25.5 30.0 22.9 33.8 20.9 37.8 19.4 41.9 18.3 46.1 17.8 50.3 17.8 54.4 18.3 58.5 19.2 62.4 20.5 66.1 22.3 69.6 24.6 72.7 27.3 75.6 30.3 78.1 33.7 80.1 37.4 81.7 41.3 82.7 45.4 83.3 49.7 83.2 54.0 82.6 58.3 81.5 62.5 79.8 66.6 77.5 70.3 74.7 73.8 71.5 76.9 67.9 79.5 64.0 81.5 59.8 83.1 55.4 84.0 51.0 84.3 46.5 84.3 42.1 83.9 37.6 82.9 33.4 81.3 31.4 80.8 29.5 81.2 28.2 82.5 27.8 84.3 28.5 86.1Z"/></symbol></svg>
+<div class="zn-site">
+<header class="zn-sitehead zn-sitehead--rule">
+<a class="zn-logo" href="index.html" aria-label="Zen design system catalog"><svg class="zn-logo__mark" aria-hidden="true"><use href="#enso-bold"/></svg><span class="zn-logo__word">Zen</span></a>
+<nav class="zn-sitenav" aria-label="Catalog">
+<a class="zn-sitenav__link" href="index.html">Catalog</a>
+<a class="zn-sitenav__link is-active" href="components.html" aria-current="page">Components</a>
+<a class="zn-sitenav__link" href="dashboard.html">Backoffice</a>
+<a class="zn-sitenav__link" href="landing.html">Public site</a>
+</nav>
+<div class="zn-sitehead__end"><span class="zn-label">zn- · tokens.css only</span><button type="button" class="zn-sitehead__menu" aria-label="Open menu" aria-expanded="false"><svg class="zn-i zn-i--24 zn-i--thin" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+</header>
+
+<main id="main" class="zn-wrap">
+<div class="zn-cat__intro">
+<div class="zn-stack zn-stack--24"><p class="zn-label">Reference</p><h1 class="zn-h1">Components</h1></div>
+<p class="zn-lede">Each block is the markup to copy. States that need a pointer or a keyboard — hover, focus, pressed, an error — are drawn with state classes, so they can be seen side by side.</p>
+</div>
+
+<section class="zn-section" aria-labelledby="c-type">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-type" class="zn-h2">Type</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">One sans at 300, 400 and 500. A serif only for rare display lines. Mono for codes.</p></div>
+<div class="zn-specimen">
+<div class="zn-specimen__cell"><p class="zn-label">Sans · 300 · large figures</p><p class="zn-specimen__big">Aa 12</p><p class="zn-figure__cap">Inter, Helvetica Neue, system-ui</p></div>
+<div class="zn-specimen__cell"><p class="zn-label">Serif · display only</p><p class="zn-specimen__serif">Ma</p><p class="zn-figure__cap">Iowan Old Style, Hiragino Mincho — .zn-display, .zn-story, .zn-quote, .zn-auth__line</p></div>
+<div class="zn-specimen__cell"><p class="zn-label">Mono · codes</p><p class="zn-specimen__mono">K-1048</p><p class="zn-figure__cap">ui-monospace — order numbers, kbd, file types</p></div>
+</div>
+<div class="zn-grid zn-grid--tight zn-mt-64">
+<div class="zn-col-7 zn-stack zn-stack--24">
+<p class="zn-display">Bowls for the hand.</p>
+<p class="zn-h1">Heading 1 — Orders</p>
+<p class="zn-h2">Heading 2 — Recent orders</p>
+<p class="zn-h3">Heading 3 — Shipping</p>
+<p class="zn-h4">Heading 4 — Ash glaze kyusu</p>
+<p class="zn-lede">Lede: hand-thrown bowls and tea ware from a small studio in Higashiyama.</p>
+<p class="zn-lede zn-lede--lg">Large lede, at 300.</p>
+</div>
+<div class="zn-col-5 zn-stack zn-stack--24">
+<div class="zn-stack"><p class="zn-label">Weights</p><p class="zn-text-lg zn-light">300 · headings, figures</p><p class="zn-text-md">400 · body text</p><p class="zn-text-md zn-strong">500 · labels, active items</p></div>
+<div class="zn-stack"><p class="zn-label">Label · 11 · 500 · +.14em</p><p class="zn-label zn-label--soft">Label, soft</p><p class="zn-label zn-label--ink">Label, ink</p></div>
+<p>Body 14 px with a <a class="zn-link" href="#">text link</a>, a <a class="zn-link is-hover" href="#">hovered link</a> and <a class="zn-arrowlink" href="#">an arrow link <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>.</p>
+<p class="zn-row zn-row--wrap zn-gap-16"><span class="zn-soft">Soft</span><span class="zn-muted">Muted</span><span class="zn-strike">¥24,200</span><span class="zn-mono">KAN-012</span><code>K-1048</code><span class="zn-tnum">¥2,390,700</span></p>
+</div>
+<div class="zn-col-8 zn-prose"><p>Prose keeps a 68ch measure and a calm line height. A bowl is thrown on the wheel, dried for a week, trimmed, bisque-fired, glazed and fired again.</p></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-enso">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-enso" class="zn-h2">The ensō, stones, rules</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">The one ornament. Bold cut up to 64 px, regular above. Used sparingly.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-5 zn-stack zn-stack--16"><p class="zn-label">Bold cut · 24 · 32 · 64</p><div class="zn-row zn-row--base zn-gap-32"><svg class="zn-enso zn-enso--24" aria-hidden="true"><use href="#enso-bold"/></svg><svg class="zn-enso zn-enso--32" aria-hidden="true"><use href="#enso-bold"/></svg><svg class="zn-enso zn-enso--64" aria-hidden="true"><use href="#enso-bold"/></svg></div><p class="zn-figure__cap">Logo mark, compact empty states.</p></div>
+<div class="zn-col-7 zn-stack zn-stack--16"><p class="zn-label">Regular cut · 96 · 128 · soft</p><div class="zn-row zn-row--base zn-row--wrap zn-gap-32"><svg class="zn-enso" aria-hidden="true"><use href="#enso-regular"/></svg><svg class="zn-enso zn-enso--128" aria-hidden="true"><use href="#enso-regular"/></svg><svg class="zn-enso zn-enso--128 zn-enso--soft" aria-hidden="true"><use href="#enso-regular"/></svg></div><p class="zn-figure__cap">Empty states, 404, the sign-in side (200, 320 for the large ones). Soft = line-2, behind a figure. This sheet draws each cut once as a &lt;symbol&gt; and reuses it; a screen pastes the path inline, as tokens.css section 7 gives it.</p></div>
+<div class="zn-col-5 zn-stack zn-stack--16"><p class="zn-label">Logo</p><div class="zn-row zn-gap-32"><a class="zn-logo" href="#" aria-label="Kanso, sample logo"><svg class="zn-logo__mark" aria-hidden="true"><use href="#enso-bold"/></svg><span class="zn-logo__word">Kanso</span></a></div><p>Inline <svg class="zn-enso zn-enso--24 zn-enso--inline" aria-hidden="true"><use href="#enso-bold"/></svg> in a line of text.</p></div>
+<div class="zn-col-3 zn-stack zn-stack--16"><p class="zn-label">Stones</p><span class="zn-stones"><span class="zn-stone zn-stone--sm"></span><span class="zn-stone"></span><span class="zn-stone zn-stone--lg"></span><span class="zn-stone zn-stone--lg zn-stone--ring"></span></span><p class="zn-figure__cap">The ensō's only echo: separators, seats.</p></div>
+<div class="zn-col-4 zn-stack zn-stack--16"><p class="zn-label">Rules</p><hr class="zn-rule"><hr class="zn-rule zn-rule--dashed"><hr class="zn-rule zn-rule--ink"><hr class="zn-rule zn-rule--thick"><hr class="zn-rule zn-rule--short"><p class="zn-figure__cap">Hairline · dashed · ink · 2 px emphasis · short.</p></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-btn">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-btn" class="zn-h2">Buttons</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Hover inverts the ink. Focus is a 2 px outline, 2 px away. Disabled turns dashed.</p></div>
+<div class="zn-demo">
+<div class="zn-demo__row"><span class="zn-demo__label">Primary</span><button type="button" class="zn-btn zn-btn--primary"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New order</button><button type="button" class="zn-btn zn-btn--primary is-hover">Hover</button><button type="button" class="zn-btn zn-btn--primary is-focus">Focus</button><button type="button" class="zn-btn zn-btn--primary is-pressed">Pressed</button><button type="button" class="zn-btn zn-btn--primary" disabled>Disabled</button></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Secondary</span><button type="button" class="zn-btn"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Export</button><button type="button" class="zn-btn is-hover">Hover</button><button type="button" class="zn-btn is-focus">Focus</button><button type="button" class="zn-btn is-pressed">Pressed</button><button type="button" class="zn-btn" disabled>Disabled</button></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Ghost</span><button type="button" class="zn-btn zn-btn--ghost">Cancel</button><button type="button" class="zn-btn zn-btn--ghost is-hover">Hover</button><button type="button" class="zn-btn zn-btn--ghost is-focus">Focus</button><a class="zn-btn zn-btn--ghost is-disabled" href="#" aria-disabled="true">Disabled</a></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Quiet · danger</span><button type="button" class="zn-btn zn-btn--quiet"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print slip</button><button type="button" class="zn-btn zn-btn--quiet is-hover">Hover</button><button type="button" class="zn-btn zn-btn--danger"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Cancel order</button><button type="button" class="zn-btn zn-btn--danger is-hover">Hover</button></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Sizes</span><button type="button" class="zn-btn zn-btn--sm">Small</button><button type="button" class="zn-btn">Default</button><button type="button" class="zn-btn zn-btn--lg zn-btn--primary">Large</button><button type="button" class="zn-btn zn-btn--icon" aria-label="Edit"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button><button type="button" class="zn-btn zn-btn--sm zn-btn--icon" aria-label="More"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button><button type="button" class="zn-btn zn-btn--ghost zn-btn--icon is-hover" aria-label="Close"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Group · count</span><span class="zn-btngroup" role="group" aria-label="Period"><button type="button" class="zn-btn zn-btn--sm" aria-pressed="false">Week</button><button type="button" class="zn-btn zn-btn--sm is-active" aria-pressed="true">Month</button><button type="button" class="zn-btn zn-btn--sm" aria-pressed="false">Year</button></span><button type="button" class="zn-btn">To pack <span class="zn-btn__count">2</span></button><span class="zn-actions"><button type="button" class="zn-btn zn-btn--ghost">Discard</button><button type="button" class="zn-btn zn-btn--primary">Save</button></span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Block</span><span class="zn-demo__narrow"><a class="zn-btn zn-btn--primary zn-btn--block zn-btn--lg" href="#">Book a seat</a></span></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-status">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-status" class="zn-h2">Status marks, dots, seats</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Status is a shape and a word — never colour, never the shape alone.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-6 zn-demo">
+<div class="zn-demo__row"><span class="zn-demo__label">Done</span><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span><span class="zn-figure__cap">● filled</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Pending</span><span class="zn-status zn-status--pending"><span class="zn-status__mark" aria-hidden="true"></span>New</span><span class="zn-figure__cap">○ ring</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">In progress</span><span class="zn-status zn-status--progress"><span class="zn-status__mark" aria-hidden="true"></span>Packing</span><span class="zn-figure__cap">◐ half</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Cancelled</span><span class="zn-status zn-status--cancelled"><span class="zn-status__mark" aria-hidden="true"></span>Cancelled</span><span class="zn-figure__cap">× cross + strike</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Alert</span><span class="zn-status zn-status--alert"><span class="zn-status__mark" aria-hidden="true"></span>Address missing</span><span class="zn-figure__cap">◆ needs attention</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Muted · large</span><span class="zn-status zn-status--done zn-status--muted"><span class="zn-status__mark" aria-hidden="true"></span>Archived</span><span class="zn-status zn-status--done zn-status--lg"><span class="zn-status__mark" aria-hidden="true"></span>Open today</span></div>
+</div>
+<div class="zn-col-6 zn-demo">
+<div class="zn-demo__row"><span class="zn-demo__label">Dots</span><span class="zn-row zn-gap-16"><span class="zn-dot" aria-hidden="true"></span><span class="zn-dot zn-dot--done" aria-hidden="true"></span><span class="zn-dot zn-dot--ring" aria-hidden="true"></span><span class="zn-dot zn-dot--half" aria-hidden="true"></span><span class="zn-dot zn-dot--cross" aria-hidden="true"></span><span class="zn-dot zn-dot--diamond" aria-hidden="true"></span><span class="zn-dot zn-dot--lg" aria-hidden="true"></span><span class="zn-dot zn-dot--ring zn-dot--lg" aria-hidden="true"></span></span></div>
+<p class="zn-figure__cap">Dots mark timeline items and legends; the word sits next to them.</p>
+<div class="zn-demo__row"><span class="zn-demo__label">Seats</span><span class="zn-seats" role="img" aria-label="6 of 8 seats taken"><span class="zn-seats__group"><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat is-filled"></span><span class="zn-seat"></span><span class="zn-seat"></span></span></span><span class="zn-text-sm zn-soft">6 of 8</span></div>
+<p class="zn-figure__cap">A workshop has 8 seats: filled = taken.</p>
+</div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-tags">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-tags" class="zn-h2">Tags, counts, avatars, kbd</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Quiet frames. Solid ink only where one thing must stand out.</p></div>
+<div class="zn-demo">
+<div class="zn-demo__row"><span class="zn-demo__label">Tags</span><span class="zn-tags"><span class="zn-tag">Stoneware</span><span class="zn-tag zn-tag--ink">One of a kind</span><span class="zn-tag zn-tag--solid">Gift</span><span class="zn-tag"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Wrapped</span><span class="zn-tag zn-tag--plain">Plain</span><span class="zn-tag zn-tag--label">Label</span></span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Counts</span><span class="zn-count">12</span><span class="zn-count zn-count--solid">3</span><span class="zn-count zn-count--ring">8</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Avatars</span><span class="zn-av zn-av--sm" aria-hidden="true">HI</span><span class="zn-av" aria-hidden="true">AM</span><span class="zn-av zn-av--solid" aria-hidden="true">AM</span><span class="zn-av zn-av--soft" aria-hidden="true">DW</span><span class="zn-av zn-av--lg" aria-hidden="true">ML</span><span class="zn-av zn-av--xl" aria-hidden="true">AM</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Stack · person</span><span class="zn-avstack" role="img" aria-label="Haruka Ito, Mei Lin, Sora Tanaka"><span class="zn-av zn-av--sm">HI</span><span class="zn-av zn-av--sm">ML</span><span class="zn-av zn-av--sm">ST</span></span><span class="zn-person"><span class="zn-av zn-av--sm" aria-hidden="true">HI</span>Haruka Ito</span></div>
+<div class="zn-demo__row"><span class="zn-demo__label">Kbd</span><span class="zn-row zn-gap-4"><kbd class="zn-kbd">/</kbd><kbd class="zn-kbd">⌘</kbd><kbd class="zn-kbd">K</kbd><kbd class="zn-kbd">Esc</kbd></span><span class="zn-text-sm zn-muted">Search · command · close</span></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-stats">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-stats" class="zn-h2">Blocks, cards, stats, meters</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">A block is a titled region over a hairline. A card is the same inside a frame.</p></div>
+<div class="zn-stats zn-stats--3">
+<div class="zn-stat"><p class="zn-stat__label">Revenue, 30 days</p><p class="zn-stat__value"><span class="zn-stat__unit">¥</span>2,390,700</p><p class="zn-stat__foot"><span class="zn-delta"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>15%</span><span>on the 30 days before</span></p></div>
+<div class="zn-stat"><p class="zn-stat__label">Seats today</p><p class="zn-stat__value">14<span class="zn-stat__of">/16</span></p><p class="zn-stat__foot"><span>2 left at 14:00</span></p></div>
+<div class="zn-stat"><p class="zn-stat__label">Returns</p><p class="zn-stat__value">1</p><p class="zn-stat__foot"><span class="zn-delta"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10"/><path d="M17 7v10H7"/></svg>2</span><span>fewer than September</span></p></div>
+</div>
+<div class="zn-grid zn-grid--tight zn-mt-64">
+<section class="zn-block zn-col-4" aria-labelledby="b-low"><div class="zn-block__head"><h3 id="b-low" class="zn-block__title">Block title</h3><span class="zn-block__meta">Meta</span></div>
+<div class="zn-stack zn-stack--24">
+<div class="zn-meterrow"><span class="zn-text-sm">Meter</span><span class="zn-text-sm zn-tnum">2 of 12</span><span class="zn-meter" role="img" aria-label="2 of 12"><span class="zn-meter__fill zn-w-15"></span></span></div>
+<div class="zn-meterrow"><span class="zn-text-sm">Thick</span><span class="zn-text-sm zn-tnum">60%</span><span class="zn-meter zn-meter--thick" role="img" aria-label="60%"><span class="zn-meter__fill zn-w-60"></span></span></div>
+<div class="zn-meterrow"><span class="zn-text-sm">Outline</span><span class="zn-text-sm zn-tnum">6 of 8 seats</span><span class="zn-meter zn-meter--outline" role="img" aria-label="6 of 8 seats"><span class="zn-meter__fill zn-w-75"></span></span></div>
+</div></section>
+<div class="zn-card zn-col-4"><div class="zn-card__head"><h3 class="zn-card__title">Card</h3><span class="zn-tag">Tag</span></div><p class="zn-card__text">A hairline frame for settings panels and pickers.</p><div class="zn-card__foot"><span class="zn-text-xs zn-muted">Foot</span><a class="zn-block__link" href="#">Link <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div>
+<div class="zn-col-4 zn-stack zn-stack--16"><div class="zn-card zn-card--ink"><h3 class="zn-card__title">Card, ink</h3><p class="zn-card__text">The chosen one.</p></div><a class="zn-card is-hover" href="#"><span class="zn-card__title">Card link, hover</span><span class="zn-card__text">The frame turns ink.</span></a></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-chart">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-chart" class="zn-h2">Charts</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Inline SVG. Ink for now, dashed for before, hatch for a second series. The hatch pattern is defined once per page in svg.zn-defs.</p></div>
+<div class="zn-grid zn-grid--tight">
+<figure class="zn-col-6 zn-figure">
+<div class="zn-chart-wrap"><svg class="zn-chart" viewBox="0 0 560 200" role="img" aria-label="Line chart of daily revenue, 28 September to 12 October 2026, against a 100k target and the two weeks before. Today so far ¥112,000.">
+<line x1="48" y1="20" x2="552" y2="20" class="zn-ch-grid"/><text x="0" y="24" class="zn-ch-axis">150k</text>
+<line x1="48" y1="70" x2="552" y2="70" class="zn-ch-target"/><text x="0" y="74" class="zn-ch-axis zn-ch-axis--ink">100k</text>
+<line x1="48" y1="120" x2="552" y2="120" class="zn-ch-grid"/><text x="0" y="124" class="zn-ch-axis">50k</text>
+<line x1="48" y1="170" x2="552" y2="170" class="zn-ch-base"/><text x="0" y="174" class="zn-ch-axis">0</text>
+<line x1="480" y1="20" x2="480" y2="170" class="zn-ch-now"/>
+<path d="M48 132 84 126 120 134 156 118 192 112 228 120 264 106 300 114 336 100 372 108 408 96 444 102 480 92 516 98 552 90" class="zn-ch-line zn-ch-line--compare"/>
+<path d="M48 120 84 110 120 128 156 96 192 88 228 104 264 80 300 92 336 74 372 86 408 64 444 70 480 58" class="zn-ch-line"/>
+<circle cx="408" cy="64" r="3" class="zn-ch-dot"/>
+<circle cx="480" cy="58" r="3.5" class="zn-ch-dot zn-ch-dot--solid"/><text x="480" y="44" text-anchor="middle" class="zn-ch-val">112k</text>
+<text x="48" y="194" class="zn-ch-axis">28 Sep</text><text x="300" y="194" text-anchor="middle" class="zn-ch-axis">5 Oct</text><text x="480" y="194" text-anchor="middle" class="zn-ch-axis zn-ch-axis--ink">Today</text>
+</svg></div>
+<p class="zn-legend"><span class="zn-legend__item"><span class="zn-legend__key"></span>Revenue</span><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--compare"></span>Two weeks before</span><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--target"></span>Target</span></p>
+<figcaption class="zn-figure__cap">Line, dashed comparison, dashed target, the “now” rule, an open and a solid dot, one value label.</figcaption>
+</figure>
+<figure class="zn-col-6 zn-figure">
+<div class="zn-chart-wrap"><svg class="zn-chart" viewBox="0 0 560 200" role="img" aria-label="Bar chart of monthly revenue, May to October 2026: shop sales between ¥450k and ¥700k a month, workshops between ¥180k and ¥330k. November and December are planned at ¥900k and ¥1M.">
+<line x1="48" y1="20" x2="552" y2="20" class="zn-ch-grid"/><text x="0" y="24" class="zn-ch-axis">1M</text>
+<line x1="48" y1="95" x2="552" y2="95" class="zn-ch-grid"/><text x="0" y="99" class="zn-ch-axis">500k</text>
+<rect x="64" y="92" width="14" height="78" class="zn-ch-bar"/><rect x="82" y="138.5" width="14" height="31.5" class="zn-ch-bar--hatch"/>
+<rect x="128" y="78.5" width="14" height="91.5" class="zn-ch-bar"/><rect x="146" y="131" width="14" height="39" class="zn-ch-bar--hatch"/>
+<rect x="192" y="98" width="14" height="72" class="zn-ch-bar"/><rect x="210" y="125" width="14" height="45" class="zn-ch-bar--hatch"/>
+<rect x="256" y="102.5" width="14" height="67.5" class="zn-ch-bar"/><rect x="274" y="143" width="14" height="27" class="zn-ch-bar--hatch"/>
+<rect x="320" y="65" width="14" height="105" class="zn-ch-bar"/><rect x="338" y="126.5" width="14" height="43.5" class="zn-ch-bar--hatch"/>
+<rect x="384" y="74" width="14" height="96" class="zn-ch-bar"/><rect x="402" y="120.5" width="14" height="49.5" class="zn-ch-bar--hatch"/>
+<rect x="448" y="35" width="32" height="135" class="zn-ch-bar--open"/>
+<rect x="512" y="20" width="32" height="150" class="zn-ch-bar--open"/>
+<line x1="48" y1="170" x2="552" y2="170" class="zn-ch-base"/><text x="0" y="174" class="zn-ch-axis">0</text>
+<text x="80" y="194" text-anchor="middle" class="zn-ch-axis">May</text><text x="144" y="194" text-anchor="middle" class="zn-ch-axis">Jun</text><text x="208" y="194" text-anchor="middle" class="zn-ch-axis">Jul</text><text x="272" y="194" text-anchor="middle" class="zn-ch-axis">Aug</text><text x="336" y="194" text-anchor="middle" class="zn-ch-axis">Sep</text><text x="400" y="194" text-anchor="middle" class="zn-ch-axis zn-ch-axis--ink">Oct</text><text x="496" y="10" text-anchor="middle" class="zn-ch-axis">Planned</text><text x="464" y="194" text-anchor="middle" class="zn-ch-axis">Nov</text><text x="528" y="194" text-anchor="middle" class="zn-ch-axis">Dec</text>
+</svg></div>
+<p class="zn-legend"><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--solid"></span>Shop</span><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--hatch"></span>Workshops</span></p>
+<figcaption class="zn-figure__cap">Solid bars, hatched bars (url(#zn-hatch)) and open bars for what is planned.</figcaption>
+</figure>
+<figure class="zn-col-6 zn-figure">
+<div class="zn-chart-wrap"><svg class="zn-chart" viewBox="0 0 560 120" role="img" aria-label="Orders per day, 5 to 12 October: the first four days in grey, the last four in ink, 6 orders today.">
+<rect x="8" y="64" width="40" height="36" class="zn-ch-bar--muted"/><rect x="78" y="52" width="40" height="48" class="zn-ch-bar--muted"/><rect x="148" y="76" width="40" height="24" class="zn-ch-bar--muted"/><rect x="218" y="40" width="40" height="60" class="zn-ch-bar--muted"/><rect x="302" y="46" width="40" height="54" class="zn-ch-bar"/><rect x="372" y="34" width="40" height="66" class="zn-ch-bar"/><rect x="442" y="28" width="40" height="72" class="zn-ch-bar"/><rect x="512" y="64" width="40" height="36" class="zn-ch-bar"/><text x="532" y="56" text-anchor="middle" class="zn-ch-val">6</text>
+<line x1="0" y1="100" x2="560" y2="100" class="zn-ch-base"/>
+<text x="8" y="116" class="zn-ch-axis">5 Oct</text><text x="552" y="116" text-anchor="end" class="zn-ch-axis zn-ch-axis--ink">Today</text>
+</svg></div>
+<p class="zn-legend"><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--muted"></span>Earlier</span><span class="zn-legend__item"><span class="zn-legend__key zn-legend__key--solid"></span>Last four days</span></p>
+<figcaption class="zn-figure__cap">Muted bars for the past, ink for now.</figcaption>
+</figure>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-toolbar">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-toolbar" class="zn-h2">Toolbar, chips, bulk bar</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Filters above a list. The active chip is solid ink; selection brings an inverted bar.</p></div>
+<div class="zn-toolbar">
+<label class="zn-search zn-search--box"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders</span><input class="zn-search__input" type="search" placeholder="Search orders"></label>
+<span class="zn-chips" role="group" aria-label="Status"><button type="button" class="zn-chip is-active" aria-pressed="true">All <span class="zn-chip__count">48</span></button><button type="button" class="zn-chip" aria-pressed="false">New <span class="zn-chip__count">2</span></button><button type="button" class="zn-chip is-hover" aria-pressed="false">Packing <span class="zn-chip__count">1</span></button><button type="button" class="zn-chip" aria-pressed="false">Shipped <span class="zn-chip__count">43</span></button></span>
+<span class="zn-toolbar__spacer"></span>
+<span class="zn-filter">Sort <span class="zn-selectbox"><select class="zn-select zn-select--sm" aria-label="Sort orders"><option>Newest first</option><option>Oldest first</option><option>Total</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+<span class="zn-segmented" role="group" aria-label="View"><button type="button" class="zn-segmented__item is-active" aria-pressed="true"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>List</button><button type="button" class="zn-segmented__item" aria-pressed="false"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>Grid</button></span>
+<span class="zn-toolbar__break"></span>
+<span class="zn-toolbar__label">Applied</span><span class="zn-chip zn-chip--applied">Country: Japan<button type="button" class="zn-chip__x" aria-label="Remove country filter"><svg class="zn-i zn-i--12" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span><span class="zn-chip zn-chip--applied">October<button type="button" class="zn-chip__x" aria-label="Remove month filter"><svg class="zn-i zn-i--12" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span><button type="button" class="zn-btn zn-btn--ghost zn-btn--sm">Clear</button>
+</div>
+<div class="zn-bulkbar" role="region" aria-label="Bulk actions sample"><p class="zn-bulkbar__count">3 orders selected</p><button type="button" class="zn-btn zn-btn--sm"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print slips</button><button type="button" class="zn-btn zn-btn--sm">Mark packed</button><span class="zn-bulkbar__spacer"></span><button type="button" class="zn-btn zn-btn--sm zn-btn--ghost">Clear</button></div>
+<p class="zn-figure__cap">The bulk bar is an inverted island: black in light, white in dark; the buttons inside invert with it. Shown only while rows are selected.</p>
+</section>
+
+<section class="zn-section" aria-labelledby="c-table">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-table" class="zn-h2">Table, pagination</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Hairline rows, no zebra. Hover underlines the title; a selected row gets the 2 px rule.</p></div>
+<div class="zn-table-wrap"><table class="zn-table zn-table--page">
+<caption class="visually-hidden">Orders, sample</caption>
+<thead><tr><th scope="col" class="zn-td-check"><input class="zn-checkbox is-mixed" type="checkbox" aria-label="Select all orders"></th><th scope="col"><button type="button" class="zn-th-sort is-sorted">Order <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></button></th><th scope="col">Customer</th><th scope="col"><button type="button" class="zn-th-sort">Placed <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg></button></th><th scope="col" class="zn-td-num">Total</th><th scope="col">Status</th><th scope="col" class="zn-td-actions"><span class="visually-hidden">Actions</span></th></tr></thead>
+<tbody>
+<tr class="is-selected"><td class="zn-td-check"><input class="zn-checkbox" type="checkbox" checked aria-label="Select K-1048"></td><td class="zn-td-code">K-1048</td><td><a class="zn-td-title" href="#">Haruka Ito</a><span class="zn-td-sub">Shiro chawan · Osaka</span></td><td class="zn-td-nowrap">12 Oct, 12:58</td><td class="zn-td-num">¥18,700</td><td><span class="zn-status zn-status--pending"><span class="zn-status__mark" aria-hidden="true"></span>New</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn" aria-label="Actions for K-1048"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr class="is-hover"><td class="zn-td-check"><input class="zn-checkbox" type="checkbox" aria-label="Select K-1047"></td><td class="zn-td-code">K-1047</td><td><a class="zn-td-title" href="#">Daniel Weiss</a><span class="zn-td-sub">Kuro yunomi × 2 · Zürich</span></td><td class="zn-td-nowrap">12 Oct, 11:20</td><td class="zn-td-num">¥9,900</td><td><span class="zn-status zn-status--progress"><span class="zn-status__mark" aria-hidden="true"></span>Packing</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn is-hover" aria-label="Actions for K-1047"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td class="zn-td-check"><input class="zn-checkbox" type="checkbox" aria-label="Select K-1044"></td><td class="zn-td-code">K-1044</td><td><a class="zn-td-title" href="#">Clara Moreau</a><span class="zn-td-sub">Tea set for two · Lyon</span></td><td class="zn-td-nowrap">10 Oct, 09:15</td><td class="zn-td-num"><span class="zn-strike">¥31,900</span></td><td><span class="zn-status zn-status--cancelled"><span class="zn-status__mark" aria-hidden="true"></span>Cancelled</span></td><td class="zn-td-actions"><button type="button" class="zn-rowbtn is-active" aria-label="Actions for K-1044" aria-expanded="true"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+</tbody>
+</table></div>
+<nav class="zn-pager" aria-label="Pagination sample"><p class="zn-pager__info">Showing <strong>1–3</strong> of <strong>48</strong> orders</p><ul class="zn-pager__list"><li><span class="zn-pager__link is-disabled" aria-disabled="true"><svg class="zn-i zn-i--16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span class="visually-hidden">Previous page</span></span></li><li><a class="zn-pager__link is-active" href="#" aria-current="page">1</a></li><li><a class="zn-pager__link" href="#">2</a></li><li><a class="zn-pager__link" href="#">3</a></li><li><span class="zn-pager__gap" aria-hidden="true">…</span></li><li><a class="zn-pager__link" href="#">12</a></li><li><a class="zn-pager__link" href="#"><svg class="zn-i zn-i--16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg><span class="visually-hidden">Next page</span></a></li></ul></nav>
+<p class="zn-figure__cap zn-mt-16">.zn-table--plain drops the last hairline inside a block; .zn-table--compact tightens rows to 12 px.</p>
+</section>
+
+<section class="zn-section" aria-labelledby="c-forms">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-forms" class="zn-h2">Form controls</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">A grey edge at rest, ink on hover and focus. Errors: a 2 px ink rule, an icon, the words.</p></div>
+<div class="zn-errorsum" role="alert"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><div><p class="zn-strong">One field needs a look</p><ul><li><a class="zn-link" href="#f-sku">SKU — use the form KAN-000</a></li></ul></div></div>
+<div class="zn-form">
+<div class="zn-formsec">
+<div class="zn-formsec__head"><h3 class="zn-formsec__title">Text fields</h3><p class="zn-formsec__desc">Default, focus, error, disabled, read-only; affix, mono and line inputs, select, textarea. A disabled select turns dashed too.</p></div>
+<div class="zn-formsec__body">
+<div class="zn-field"><label class="zn-flabel" for="f-name">Piece name<span class="zn-req" aria-hidden="true">*</span></label><input id="f-name" class="zn-input" type="text" value="Shiro chawan" required></div>
+<div class="zn-field"><label class="zn-flabel" for="f-glaze">Glaze, focused</label><input id="f-glaze" class="zn-input is-focus" type="text" value="White shino"></div>
+<div class="zn-field is-error"><label class="zn-flabel" for="f-sku">SKU</label><input id="f-sku" class="zn-input" type="text" value="SC-12" aria-invalid="true" aria-describedby="f-sku-e"><p id="f-sku-e" class="zn-error"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>Use the form KAN-000.</p></div>
+<div class="zn-field"><label class="zn-flabel" for="f-price">Price</label><span class="zn-inputgroup"><span class="zn-affix" aria-hidden="true">¥</span><input id="f-price" class="zn-input" type="text" inputmode="numeric" value="18,700"></span></div>
+<div class="zn-field"><label class="zn-flabel" for="f-made">Made by</label><input id="f-made" class="zn-input" type="text" value="Aiko Mori" disabled><p class="zn-help">Disabled: dashed edge.</p></div>
+<div class="zn-field"><label class="zn-flabel" for="f-code">Code</label><input id="f-code" class="zn-input zn-input--mono" type="text" value="KAN-012" readonly><p class="zn-help">Read-only, mono.</p></div>
+<div class="zn-field"><label class="zn-flabel" for="f-line">Line input</label><input id="f-line" class="zn-input zn-input--line" type="text" placeholder="A note for the slip"></div>
+<div class="zn-field"><label class="zn-flabel" for="f-cat">Category</label><span class="zn-selectbox zn-selectbox--block"><select id="f-cat" class="zn-select"><option>Tea bowls</option><option>Cups</option><option>Teapots</option><option>Plates</option></select><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="zn-field zn-field--full"><div class="zn-label-row"><label class="zn-flabel" for="f-note">Description</label><span class="zn-flabel__meta">112 / 400</span></div><textarea id="f-note" class="zn-textarea" aria-describedby="f-note-h">Thrown on the wheel, trimmed by hand, glazed in white shino. Each bowl is a little different.</textarea><p id="f-note-h" class="zn-help">Shown on the shop page. Keep it short.</p></div>
+</div>
+</div>
+<div class="zn-formsec">
+<div class="zn-formsec__head"><h3 class="zn-formsec__title">Choices</h3><p class="zn-formsec__desc">Square checkbox, round radio, a switch that fills, segmented and card choices.</p></div>
+<div class="zn-formsec__body">
+<fieldset class="zn-field"><legend class="zn-flabel zn-mb-16">Checkboxes</legend><div class="zn-checks">
+<label class="zn-check"><input class="zn-checkbox" type="checkbox" checked><span>Gift wrap<span class="zn-check__sub">Furoshiki cloth, ¥800</span></span></label>
+<label class="zn-check"><input class="zn-checkbox" type="checkbox"><span>Handwritten card</span></label>
+<label class="zn-check"><input class="zn-checkbox is-mixed" type="checkbox"><span>All pieces packed<span class="zn-check__sub">Mixed: some of them</span></span></label>
+<label class="zn-check"><input class="zn-checkbox" type="checkbox" disabled><span class="zn-muted">Insurance, not offered abroad</span></label>
+</div></fieldset>
+<fieldset class="zn-field"><legend class="zn-flabel zn-mb-16">Radios</legend><div class="zn-checks">
+<label class="zn-check"><input class="zn-radio" type="radio" name="r-ship" checked><span>Courier<span class="zn-check__sub">2–3 days in Japan</span></span></label>
+<label class="zn-check"><input class="zn-radio" type="radio" name="r-ship"><span>Post, surface</span></label>
+<label class="zn-check"><input class="zn-radio" type="radio" name="r-ship" disabled><span class="zn-muted">Pick-up, closed in winter</span></label>
+</div></fieldset>
+<div class="zn-field zn-field--full"><p class="zn-flabel">Switches</p><div>
+<label class="zn-switchrow"><span class="zn-switchrow__text">New orders<span>An email for every order</span></span><input class="zn-switch" type="checkbox" role="switch" checked></label>
+<label class="zn-switchrow"><span class="zn-switchrow__text">Weekly summary<span>Mondays at 8:00</span></span><input class="zn-switch" type="checkbox" role="switch"></label>
+<label class="zn-switchrow"><span class="zn-switchrow__text">SMS<span>Not available yet</span></span><input class="zn-switch" type="checkbox" role="switch" disabled></label>
+</div></div>
+<div class="zn-field"><p class="zn-flabel">Segmented</p><span class="zn-segmented" role="group" aria-label="Unit"><button type="button" class="zn-segmented__item is-active" aria-pressed="true">cm</button><button type="button" class="zn-segmented__item" aria-pressed="false">in</button></span></div>
+<fieldset class="zn-field zn-field--full"><legend class="zn-flabel zn-mb-16">Card choices</legend><div class="zn-choices">
+<label class="zn-choice is-active"><input class="zn-radio" type="radio" name="r-ws" checked><span>Tea<span class="zn-check__sub">90 min · ¥6,500</span></span></label>
+<label class="zn-choice"><input class="zn-radio" type="radio" name="r-ws"><span>Wheel<span class="zn-check__sub">2 h · ¥9,800</span></span></label>
+<label class="zn-choice"><input class="zn-radio" type="radio" name="r-ws"><span>Private<span class="zn-check__sub">On request</span></span></label>
+</div></fieldset>
+</div>
+</div>
+<div class="zn-formsec">
+<div class="zn-formsec__head"><h3 class="zn-formsec__title">Files</h3><p class="zn-formsec__desc">A dashed drop zone; it turns solid while a file is over it.</p></div>
+<div class="zn-formsec__body">
+<div class="zn-drop"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><p class="zn-drop__title">Drop photos or <u>browse</u></p><p class="zn-text-xs zn-muted">JPG or PNG, up to 10 MB</p></div>
+<div class="zn-drop is-dragover"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><p class="zn-drop__title">Release to upload</p><p class="zn-text-xs zn-muted">.is-dragover</p></div>
+<div class="zn-files zn-field--full">
+<div class="zn-file"><span class="zn-file__ext">jpg</span><span class="zn-stack zn-stack--4"><span class="zn-file__name">shiro-chawan-front.jpg</span><span class="zn-file__meta">2.4 MB · uploaded</span></span><button type="button" class="zn-rowbtn" aria-label="Remove shiro-chawan-front.jpg"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="zn-file"><span class="zn-file__ext">jpg</span><span class="zn-stack zn-stack--4"><span class="zn-file__name">shiro-chawan-foot.jpg</span><span class="zn-file__meta"><span class="zn-meter" role="img" aria-label="Uploading, 60%"><span class="zn-meter__fill zn-w-60"></span></span>60%</span></span><button type="button" class="zn-rowbtn" aria-label="Stop upload"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="zn-file is-error"><span class="zn-file__ext">heic</span><span class="zn-stack zn-stack--4"><span class="zn-file__name">IMG_2041.heic</span><span class="zn-error"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>This format is not supported.</span></span><button type="button" class="zn-rowbtn" aria-label="Remove IMG_2041.heic"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+</div>
+</div>
+</div>
+</div>
+<div class="zn-formbar"><span class="zn-formbar__status"><span class="zn-dot zn-dot--half" aria-hidden="true"></span>Unsaved changes</span><span class="zn-actions"><button type="button" class="zn-btn zn-btn--ghost">Discard</button><button type="button" class="zn-btn zn-btn--primary">Save piece</button></span></div>
+<p class="zn-figure__cap zn-mt-16">The form bar sticks to the bottom of a long form.</p>
+</section>
+
+<section class="zn-section" aria-labelledby="c-menu">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-menu" class="zn-h2">Menus, dialog</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">An ink frame, no shadow. The hovered item inverts. In a screen the dialog sits on a near-opaque backdrop.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-4 zn-stack zn-stack--16">
+<div class="zn-menu zn-menu--static" role="menu" aria-label="Order K-1046">
+<p class="zn-menu__label">Order K-1046</p>
+<a class="zn-menu__item" role="menuitem" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>Edit</a>
+<a class="zn-menu__item is-hover" role="menuitem" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print slip<span class="zn-menu__kbd">P</span></a>
+<a class="zn-menu__item is-active" role="menuitem" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Duplicate<span class="zn-menu__kbd">D</span></a>
+<div class="zn-menu__sep" role="separator"></div>
+<a class="zn-menu__item zn-menu__item--danger" role="menuitem" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>Cancel order</a>
+</div>
+<p class="zn-figure__cap">Static menu: label, hover, active, separator, danger in 500.</p>
+</div>
+<div class="zn-col-8">
+<div class="zn-overlay zn-overlay--static">
+<section class="zn-dialog" role="dialog" aria-labelledby="dlg-title" aria-describedby="dlg-text">
+<div class="zn-dialog__head"><h3 id="dlg-title" class="zn-dialog__title">Move the workshop</h3><button type="button" class="zn-btn zn-btn--ghost zn-btn--icon zn-dialog__close" aria-label="Close"><svg class="zn-i zn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="zn-dialog__body"><p id="dlg-text">Throwing a first chawan · 6 guests will get an email.</p>
+<div class="zn-dialog__grid">
+<div class="zn-field"><label class="zn-flabel" for="d-date">Date</label><input id="d-date" class="zn-input" type="text" value="Sat, 17 Oct 2026"></div>
+<div class="zn-field"><label class="zn-flabel" for="d-time">Time</label><input id="d-time" class="zn-input" type="text" value="14:00"></div>
+</div></div>
+<div class="zn-dialog__foot zn-dialog__foot--between"><span class="zn-text-xs zn-muted">Guests can cancel for free.</span><span class="zn-actions"><button type="button" class="zn-btn zn-btn--ghost">Cancel</button><button type="button" class="zn-btn zn-btn--primary">Move</button></span></div>
+</section>
+</div>
+<p class="zn-figure__cap zn-mt-16">.zn-overlay--static draws the backdrop in place; .zn-dialog--sm is the 440 px confirmation size.</p>
+</div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-feed">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-feed" class="zn-h2">Toast, notice, tooltip</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Toasts and tooltips are inverted islands. Notices stay quiet in the page.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-6 zn-stack zn-stack--24">
+<div class="zn-toasts zn-toasts--static" role="status">
+<div class="zn-toast"><svg class="zn-i zn-toast__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><div class="zn-toast__body"><p class="zn-toast__title">K-1047 marked as packed</p><p class="zn-toast__meta">Just now</p></div><a class="zn-toast__action" href="#">Undo</a><button type="button" class="zn-toast__close" aria-label="Dismiss"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="zn-toast"><svg class="zn-i zn-toast__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><div class="zn-toast__body"><p class="zn-toast__title">The label could not be printed</p><p class="zn-toast__meta">The printer is offline</p></div><button type="button" class="zn-toast__close" aria-label="Dismiss"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+</div>
+<div class="zn-row zn-gap-32"><p class="zn-figure__cap zn-mt-48">Tooltip: inverted, above its host.</p><p class="zn-tip-host zn-mt-48"><button type="button" class="zn-btn zn-btn--sm zn-btn--icon" aria-label="Copy order number" aria-describedby="tip1"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button><span id="tip1" class="zn-tooltip" role="tooltip">Copy K-1048</span></p></div>
+</div>
+<div class="zn-col-6 zn-stack zn-stack--16">
+<div class="zn-notice"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="zn-notice__body"><span class="zn-notice__title">Kiln day on 19 October</span>Orders placed after Thursday ship the week after.</div></div>
+<div class="zn-notice zn-notice--error" role="alert"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><div class="zn-notice__body"><span class="zn-notice__title">Payment failed</span>K-1043 was not charged. Ask the customer for another card.</div></div>
+<div class="zn-notice zn-notice--ink"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="zn-notice__body"><span class="zn-notice__title">Ink frame</span>For the one thing on the page that must be read.</div></div>
+<div class="zn-notice zn-notice--quiet"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="zn-notice__body">Quiet: no frame, inside a form or a card.</div></div>
+</div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-nav">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-nav" class="zn-h2">Navigation</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">The active item gets a 2 px ink rule and aria-current="page" in a screen. Hover underlines.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-3 zn-stack zn-stack--16"><p class="zn-label">Rail items</p>
+<nav class="zn-stack zn-stack--4" aria-label="Rail sample">
+<a class="zn-nav-item is-active" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="zn-nav-item__label">Today</span></a>
+<a class="zn-nav-item is-hover" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg><span class="zn-nav-item__label">Orders</span><span class="zn-nav-item__count">2</span></a>
+<a class="zn-nav-item" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg><span class="zn-nav-item__label">Workshops</span></a>
+</nav></div>
+<div class="zn-col-3 zn-stack zn-stack--16"><p class="zn-label">Sub-navigation</p>
+<nav class="zn-subnav" aria-label="Settings sections sample"><a class="zn-subnav__item is-active" href="#">Studio</a><a class="zn-subnav__item" href="#">Shop</a><a class="zn-subnav__item" href="#">Team</a><a class="zn-subnav__item" href="#">Notifications</a></nav></div>
+<div class="zn-col-6 zn-stack zn-stack--24"><p class="zn-label">Tabs</p>
+<nav class="zn-tabs" aria-label="Order sections sample"><a class="zn-tab is-active" href="#">Details</a><a class="zn-tab is-hover" href="#">Pieces <span class="zn-tab__count">2</span></a><a class="zn-tab" href="#">Shipping</a><a class="zn-tab" href="#">History <span class="zn-tab__count">5</span></a></nav>
+<p class="zn-label">Breadcrumbs · top search</p>
+<nav class="zn-crumbs" aria-label="Breadcrumb sample"><a href="#">Orders</a><span class="zn-crumbs__sep" aria-hidden="true">/</span><a href="#">October</a><span class="zn-crumbs__sep" aria-hidden="true">/</span><span>K-1048</span></nav>
+<label class="zn-search"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search orders, pieces and customers</span><input class="zn-search__input" type="search" placeholder="Search orders, pieces, customers"><span class="zn-kbd" aria-hidden="true">/</span></label>
+<p class="zn-label">Public site</p>
+<p class="zn-row zn-row--wrap zn-gap-32"><a class="zn-sitenav__link is-active" href="#">Shop</a><a class="zn-sitenav__link is-hover" href="#">Workshops</a><a class="zn-sitenav__link" href="#">Journal</a><a class="zn-cartlink" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Bag (2)</a></p>
+</div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-tl">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-tl" class="zn-h2">Timeline, activity, lists</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Time on the left, a dot, the event. A thin ink line marks now.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-4 zn-stack zn-stack--16"><p class="zn-label">Timeline</p>
+<ol class="zn-timeline">
+<li class="zn-tl__item"><span class="zn-tl__time">10:00</span><span class="zn-dot zn-dot--done" aria-hidden="true"></span><div class="zn-tl__body"><p class="zn-tl__title">Usucha for beginners</p><p class="zn-tl__meta"><span>Tea room</span><span>8 of 8</span><span>Finished</span></p></div></li>
+<li class="zn-tl__now"><span>13:20</span></li>
+<li class="zn-tl__item"><span class="zn-tl__time">14:00</span><span class="zn-dot zn-dot--ring" aria-hidden="true"></span><div class="zn-tl__body"><p class="zn-tl__title">Throwing a first chawan</p><p class="zn-tl__meta"><span>Studio</span><span>6 of 8</span><span>Next</span></p></div></li>
+<li class="zn-tl__item"><span class="zn-tl__time">17:30</span><span class="zn-dot zn-dot--cross" aria-hidden="true"></span><div class="zn-tl__body"><p class="zn-tl__title zn-strike">Evening tea</p><p class="zn-tl__meta"><span>Cancelled</span></p></div></li>
+</ol></div>
+<div class="zn-col-4 zn-stack zn-stack--16"><p class="zn-label">Activity log</p>
+<ol class="zn-log">
+<li class="zn-log__item"><span class="zn-log__time">13:02</span><p class="zn-log__text"><strong>Aiko</strong> marked K-1047 as packed.</p></li>
+<li class="zn-log__item"><span class="zn-log__time">12:58</span><p class="zn-log__text"><strong>Haruka Ito</strong> ordered a Shiro chawan.</p></li>
+<li class="zn-log__item"><span class="zn-log__time">09:40</span><p class="zn-log__text"><strong>Ren</strong> moved 4 Stone plates to the kiln.</p></li>
+</ol>
+<p class="zn-label zn-mt-24">List with meter</p>
+<ul class="zn-list"><li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Ash glaze kyusu</a><span class="zn-list__sub">Next firing 26 Oct</span></span><span class="zn-list__end">1 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-10"></span></span></li><li class="zn-list__row"><span class="zn-list__main"><a class="zn-list__title" href="#">Kuro yunomi</a><span class="zn-list__sub">Next firing 19 Oct</span></span><span class="zn-list__end">3 left</span><span class="zn-meter" aria-hidden="true"><span class="zn-meter__fill zn-w-15"></span></span></li></ul></div>
+<div class="zn-col-4 zn-stack zn-stack--16"><p class="zn-label">Definition list</p>
+<dl class="zn-dl"><dt>Subtotal</dt><dd>¥18,000</dd><dt>Gift wrap</dt><dd>¥800</dd><dt>Shipping</dt><dd>¥1,200</dd><dt>Total</dt><dd class="zn-strong">¥20,000</dd></dl>
+<p class="zn-label zn-mt-24">Stacked</p>
+<dl class="zn-dl zn-dl--stack"><dt>Customer</dt><dd>Haruka Ito</dd><dt>Ship to</dt><dd>2-4-1 Nakanoshima, Osaka</dd></dl></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-photo">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-photo" class="zn-h2">Photo placeholders</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Flat monochrome SVG with the .zn-ph-* fills. Photographs keep their greys in dark mode.</p></div>
+<div class="zn-grid zn-grid--tight">
+<figure class="zn-col-3 zn-figure"><span class="zn-photo"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Photo placeholder: a white tea bowl on linen"><rect width="400" height="300" class="zn-ph-0"/><rect y="204" width="400" height="96" class="zn-ph-1"/><ellipse cx="212" cy="216" rx="96" ry="8" class="zn-ph-2"/><path d="M116 132 C116 193.5 153.8 214 200 214 C246.2 214 284 193.5 284 132 Z" class="zn-ph-w"/><path d="M116 132 C116 193.5 153.8 214 200 214 C246.2 214 284 193.5 284 132" class="zn-ph-line-soft"/><ellipse cx="200" cy="132" rx="84" ry="10.1" class="zn-ph-1"/><rect x="174.8" y="212" width="50.4" height="5.7" class="zn-ph-2"/></svg></span><figcaption class="zn-figure__cap">4:3 · Shiro chawan on linen</figcaption></figure>
+<figure class="zn-col-3 zn-figure"><span class="zn-photo zn-photo--1x1"><svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Photo placeholder: two black cups"><rect width="300" height="300" class="zn-ph-1"/><rect y="214" width="300" height="86" class="zn-ph-2"/><ellipse cx="112" cy="220" rx="44" ry="6" class="zn-ph-3"/><ellipse cx="196" cy="220" rx="40" ry="6" class="zn-ph-3"/><path d="M72 114 L76.3 212 Q77.8 218 86.4 218 L129.6 218 Q138.2 218 139.7 212 L144 114 Z" class="zn-ph-5"/><ellipse cx="108" cy="114" rx="36" ry="7.2" class="zn-ph-4"/><path d="M162 130 L165.8 212 Q167.1 218 174.8 218 L213.2 218 Q220.9 218 222.2 212 L226 130 Z" class="zn-ph-5"/><ellipse cx="194" cy="130" rx="32" ry="6.4" class="zn-ph-4"/></svg></span><figcaption class="zn-figure__cap">1:1 · Kuro yunomi, a pair</figcaption></figure>
+<figure class="zn-col-3 zn-figure"><span class="zn-photo zn-photo--4x5"><svg viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Photo placeholder: an unglazed stone plate from above, with three pebbles"><rect width="300" height="375" class="zn-ph-1"/><circle cx="150" cy="186" r="112" class="zn-ph-0"/><circle cx="150" cy="186" r="104" class="zn-ph-2"/><circle cx="150" cy="186" r="80" class="zn-ph-line-soft"/><ellipse cx="128" cy="170" rx="18" ry="13" class="zn-ph-4"/><ellipse cx="168" cy="202" rx="12" ry="9" class="zn-ph-5"/><ellipse cx="160" cy="160" rx="7" ry="5" class="zn-ph-3"/></svg></span><figcaption class="zn-figure__cap">4:5 · Stone plate, 24 cm, from above</figcaption></figure>
+<figure class="zn-col-3 zn-figure"><span class="zn-photo zn-photo--3x4"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Photo placeholder: a line drawing of a side-handle teapot on black"><rect width="300" height="400" class="zn-ph-5"/><path d="M0 300H300" class="zn-ph-line-soft"/><ellipse cx="150" cy="232" rx="78" ry="62" class="zn-ph-line-w"/><ellipse cx="150" cy="176" rx="38" ry="7" class="zn-ph-line-w"/><circle cx="150" cy="163" r="6" class="zn-ph-line-w"/><path d="M226 220 Q258 206 270 176" class="zn-ph-line-w"/><path d="M76 214 L30 196 L28 204 L74 224" class="zn-ph-line-w"/></svg></span><figcaption class="zn-figure__cap">3:4 · Ash glaze kyusu, line drawing on kuro</figcaption></figure>
+</div>
+<p class="zn-figure__cap zn-mt-24">Also .zn-photo--3x2, --16x9, --21x9 and --fill (full height of its column).</p>
+</section>
+
+<section class="zn-section" aria-labelledby="c-public">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-public" class="zn-h2">Public blocks</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">The shop: pieces, the story, journal entries, a quote, the newsletter line. Hero and feature rows live in landing.html.</p></div>
+<div class="zn-collection zn-collection--3">
+<a class="zn-piece" href="#"><span class="zn-photo zn-photo--4x5"><svg viewBox="0 0 240 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="240" height="300" class="zn-ph-0"/><ellipse cx="126" cy="196" rx="78" ry="7" class="zn-ph-1"/><path d="M50 128 C50 177.5 81.5 194 120 194 C158.5 194 190 177.5 190 128 Z" class="zn-ph-w"/><path d="M50 128 C50 177.5 81.5 194 120 194 C158.5 194 190 177.5 190 128" class="zn-ph-line-soft"/><ellipse cx="120" cy="128" rx="70" ry="8.4" class="zn-ph-1"/><rect x="99" y="192" width="42" height="4.6" class="zn-ph-2"/></svg></span><span class="zn-piece__info"><span class="zn-piece__name">Shiro chawan</span><span class="zn-piece__price">¥18,700</span><span class="zn-piece__meta">White shino · 12 cm</span></span></a>
+<a class="zn-piece is-hover" href="#"><span class="zn-photo zn-photo--4x5"><svg viewBox="0 0 240 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="240" height="300" class="zn-ph-1"/><ellipse cx="126" cy="214" rx="50" ry="6" class="zn-ph-2"/><path d="M84 100 L88.3 206 Q89.8 212 98.4 212 L141.6 212 Q150.2 212 151.7 206 L156 100 Z" class="zn-ph-5"/><ellipse cx="120" cy="100" rx="36" ry="7.2" class="zn-ph-4"/></svg></span><span class="zn-piece__info"><span class="zn-piece__name">Kuro yunomi</span><span class="zn-piece__price">¥4,950</span><span class="zn-piece__meta">Black glaze · hover</span></span></a>
+<a class="zn-piece" href="#"><span class="zn-photo zn-photo--4x5"><svg viewBox="0 0 240 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="240" height="300" class="zn-ph-1"/><circle cx="120" cy="150" r="92" class="zn-ph-0"/><circle cx="120" cy="150" r="86" class="zn-ph-2"/><circle cx="120" cy="150" r="64" class="zn-ph-line-soft"/></svg></span><span class="zn-piece__info"><span class="zn-piece__name">Stone plate, 24 cm</span><span class="zn-piece__price">¥6,600</span><span class="zn-piece__meta">Unglazed stoneware</span></span></a>
+</div>
+<div class="zn-grid zn-grid--tight zn-mt-64">
+<div class="zn-col-12 zn-story"><p class="zn-story__text">We make few things, slowly, and keep them simple enough to be used every day.</p><p class="zn-story__sign">Aiko Mori, Higashiyama</p></div>
+<a class="zn-entry zn-col-4" href="#"><span class="zn-entry__date">8 October 2026</span><span class="zn-entry__title">The first firing of autumn</span><span class="zn-entry__text">Forty pieces, one long night, three cracked lids.</span></a>
+<a class="zn-entry zn-col-4 is-hover" href="#"><span class="zn-entry__date">21 September 2026</span><span class="zn-entry__title">On ash glaze</span><span class="zn-entry__text">Why the kyusu comes out a little different each time.</span></a>
+<div class="zn-col-4 zn-stack zn-stack--16"><p class="zn-label">Newsletter</p><p class="zn-text-sm zn-soft">One letter a season.</p><div class="zn-newsletter"><label class="visually-hidden" for="nl">Email</label><input id="nl" class="zn-newsletter__input" type="email" placeholder="Your email"><button type="button" class="zn-arrowlink">Subscribe <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div></div>
+<figure class="zn-col-12 zn-quote zn-mt-48"><blockquote class="zn-quote__text">A bowl that is used is never finished.</blockquote><figcaption class="zn-quote__cite">From the studio wall</figcaption></figure>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-empty">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-empty" class="zn-h2">Empty states</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">The ensō, one line, one action. Nothing else.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-8 zn-demo__frame"><div class="zn-empty"><svg class="zn-enso zn-empty__enso" aria-hidden="true"><use href="#enso-regular"/></svg><h3 class="zn-empty__title">No workshops scheduled for winter.</h3><p class="zn-empty__text">The studio rests in January. Add a date when the kiln is ready again.</p><div class="zn-empty__actions"><a class="zn-btn zn-btn--primary" href="#"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Schedule a workshop</a><a class="zn-btn zn-btn--ghost" href="#">See autumn</a></div></div></div>
+<div class="zn-col-4 zn-empty zn-empty--compact"><svg class="zn-enso zn-empty__enso" aria-hidden="true"><use href="#enso-bold"/></svg><h3 class="zn-empty__title">Nothing to pack.</h3><p class="zn-empty__text">Compact, for a block. New orders appear here.</p><div class="zn-empty__actions"><a class="zn-arrowlink" href="#">All orders <svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-mock">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-mock" class="zn-h2">Drawn credential fields</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Sign-in screens draw their fields: role="img" with a label, never a real input. The submit is a link with role="button".</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-4 mock-form">
+<div><span class="mock-label">Email</span><div class="mock-field" role="img" aria-label="Email field, filled in">aiko@kanso.studio</div></div>
+<div><span class="mock-label">Password</span><div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••<span class="mock-field__end">Show</span></div></div>
+<a class="zn-btn zn-btn--primary zn-btn--block zn-btn--lg" href="dashboard.html" role="button">Sign in</a>
+</div>
+<div class="zn-col-4 mock-form">
+<div><span class="mock-label">Focused</span><div class="mock-field mock-field--focus" role="img" aria-label="Email field, focused">aiko@kanso<span class="mock-field__caret"></span></div></div>
+<div><span class="mock-label">Empty</span><div class="mock-field mock-field--empty" role="img" aria-label="Code field, empty">6-digit code</div></div>
+<div><span class="mock-label">Line</span><div class="mock-field mock-field--line" role="img" aria-label="Email field, line style, filled in">ren@kanso.studio</div></div>
+</div>
+<div class="zn-col-4 mock-form">
+<div><span class="mock-label">Error</span><div class="mock-field mock-field--error" role="img" aria-label="Email field, with an error">aiko@kanso</div><p class="zn-error zn-mt-8"><svg class="zn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>Enter a full email address.</p></div>
+<div><span class="mock-label">Disabled</span><div class="mock-field mock-field--disabled" role="img" aria-label="Studio field, disabled">Kanso, Higashiyama</div></div>
+</div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-colour">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-colour" class="zn-h2">Colour</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">Paper, ink and five greys per theme. Dark mirrors light. Nothing else.</p></div>
+<p class="zn-label zn-mb-16">Light · on white</p>
+<div class="zn-swatches">
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-white"></div><p class="zn-swatch__name">--zn-bg · paper</p><p class="zn-swatch__hex">FFFFFF</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-black"></div><p class="zn-swatch__name">--zn-ink</p><p class="zn-swatch__hex">000000 · 21:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-g700"></div><p class="zn-swatch__name">--zn-ink-2 · grey-700</p><p class="zn-swatch__hex">4D4D4D · 8.45:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-g600"></div><p class="zn-swatch__name">--zn-ink-3 · grey-600</p><p class="zn-swatch__hex">6B6B6B · 5.33:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-g500"></div><p class="zn-swatch__name">--zn-ctl · grey-500</p><p class="zn-swatch__hex">8C8C8C · edges</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-g300"></div><p class="zn-swatch__name">--zn-line-2 · grey-300</p><p class="zn-swatch__hex">BDBDBD · decor</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-g100"></div><p class="zn-swatch__name">--zn-line · grey-100</p><p class="zn-swatch__hex">E6E6E6 · hairline</p></div>
+</div>
+<p class="zn-label zn-mt-48 zn-mb-16">Dark · on black</p>
+<div class="zn-swatches">
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-black"></div><p class="zn-swatch__name">--zn-bg · paper</p><p class="zn-swatch__hex">000000</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-white"></div><p class="zn-swatch__name">--zn-ink</p><p class="zn-swatch__hex">FFFFFF · 21:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-d700"></div><p class="zn-swatch__name">--zn-ink-2 · grey-d700</p><p class="zn-swatch__hex">B3B3B3 · 10.02:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-d600"></div><p class="zn-swatch__name">--zn-ink-3 · grey-d600</p><p class="zn-swatch__hex">949494 · 6.92:1</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-d500"></div><p class="zn-swatch__name">--zn-ctl · grey-d500</p><p class="zn-swatch__hex">767676 · edges</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-d300"></div><p class="zn-swatch__name">--zn-line-2 · grey-d300</p><p class="zn-swatch__hex">4A4A4A · decor</p></div>
+<div class="zn-swatch"><div class="zn-swatch__chip zn-sw-d100"></div><p class="zn-swatch__name">--zn-line · grey-d100</p><p class="zn-swatch__hex">262626 · hairline</p></div>
+</div>
+<p class="zn-label zn-mt-48 zn-mb-16">Photo greys · fixed in both themes</p>
+<div class="zn-swatches">
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-0"/></svg><p class="zn-swatch__name">.zn-ph-0 · paper wall</p><p class="zn-swatch__hex">F4F4F4</p></div>
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-1"/></svg><p class="zn-swatch__name">.zn-ph-1 · linen</p><p class="zn-swatch__hex">DCDCDC</p></div>
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-2"/></svg><p class="zn-swatch__name">.zn-ph-2 · raw clay</p><p class="zn-swatch__hex">B8B8B8</p></div>
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-3"/></svg><p class="zn-swatch__name">.zn-ph-3 · ash glaze</p><p class="zn-swatch__hex">8E8E8E</p></div>
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-4"/></svg><p class="zn-swatch__name">.zn-ph-4 · wood, stone</p><p class="zn-swatch__hex">5E5E5E</p></div>
+<div class="zn-swatch"><svg class="zn-swatch__chip" viewBox="0 0 10 10" preserveAspectRatio="none" aria-hidden="true"><rect width="10" height="10" class="zn-ph-5"/></svg><p class="zn-swatch__name">.zn-ph-5 · kuro glaze</p><p class="zn-swatch__hex">2E2E2E</p></div>
+</div>
+</section>
+
+<section class="zn-section" aria-labelledby="c-islands">
+<div class="zn-grouphead zn-bb zn-mb-32"><h2 id="c-islands" class="zn-h2">Islands</h2><p class="zn-text-sm zn-muted zn-maxw-40 zn-right">.zn-inv flips the theme for a block. .zn-night is black in both themes. The toast, tooltip, bulk bar and skip link are inverted islands by default.</p></div>
+<div class="zn-grid zn-grid--tight">
+<div class="zn-col-6 zn-card zn-inv"><div class="zn-card__head"><h3 class="zn-card__title">.zn-inv</h3><span class="zn-label">Inverted</span></div><p class="zn-card__text">Black in light, white in dark. Used by the toast, the tooltip and the bulk bar.</p><p class="zn-row zn-row--wrap zn-gap-16"><span class="zn-status zn-status--done"><span class="zn-status__mark" aria-hidden="true"></span>Shipped</span><span class="zn-status zn-status--pending"><span class="zn-status__mark" aria-hidden="true"></span>New</span><span class="zn-tag">Tag</span></p><div class="zn-card__foot"><a class="zn-link" href="#">A link</a><span class="zn-actions"><button type="button" class="zn-btn zn-btn--sm">Secondary</button><button type="button" class="zn-btn zn-btn--sm zn-btn--primary">Primary</button></span></div></div>
+<div class="zn-col-6 zn-card zn-night"><div class="zn-card__head"><h3 class="zn-card__title">.zn-night</h3><span class="zn-label">Always black</span></div><p class="zn-auth__line">Clay, water, fire, and time.</p><p class="zn-card__text">Always black: the sign-in side, a night photo band.</p><div class="zn-card__foot"><span class="zn-text-xs zn-muted">Kanso · Higashiyama</span><button type="button" class="zn-btn zn-btn--sm zn-btn--primary">Primary</button></div></div>
+</div>
+</section>
+</main>
+
+<footer class="zn-wrap"><div class="zn-sitefoot__bottom"><span>Zen · Larapilot design system</span><span>Every class lives in ../tokens.css</span><a href="#top">Back to top</a></div></footer>
+</div>
+</body>
+</html>

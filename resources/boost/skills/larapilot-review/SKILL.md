@@ -67,6 +67,8 @@ Robert speaks in character. For the selected spec, he presents:
 
 Ask the human: **Approve** or **Request changes** (with feedback).
 
+With release mode on (`versions.md`): name the story's version in the presentation; under Gitflow, a PR whose base is not that version's `release/x.y.z` is a FAIL. After `spec-approve`, close with the version line from `php artisan larapilot:release-show --semver=x.y.z` (`v1.2.0 4/5 (80%)`); when it delivered the last open story of the version, say so and propose `/larapilot-release` → notes and ship.
+
 ## Approval
 
 ```bash

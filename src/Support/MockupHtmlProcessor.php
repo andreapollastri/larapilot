@@ -27,6 +27,8 @@ class MockupHtmlProcessor
         'mo-mockup' => 'modern',
         'bc-mockup' => 'bold-california',
         'bn-mockup' => 'berlin',
+        'ny-mockup' => 'new-york',
+        'zn-mockup' => 'zen',
         'tw-gallery' => 'tailwind',
         'cdn.tailwindcss.com' => 'tailwind',
         'app-wrapper' => 'adminlte',
