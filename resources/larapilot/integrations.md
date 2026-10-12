@@ -7,7 +7,6 @@ php artisan larapilot:settings-set --github=YES
 php artisan larapilot:settings-set --gitlab=YES
 php artisan larapilot:settings-set --bitbucket=YES
 php artisan larapilot:settings-set --azure=YES
-php artisan larapilot:settings-set --dashboard-auth=YES
 php artisan larapilot:settings-set --notifications=YES --notify-slack=YES --notify-discord=NO --notify-telegram=NO
 ```
 
@@ -235,78 +234,72 @@ If a channel is ON but its env vars are missing, that channel is **skipped with 
 
 ---
 
-## Dashboard access (`settings.dashboard_auth`)
+## Dashboard sign-in (follows `APP_ENV`)
 
-Optional **HTTP Basic Auth** in front of the `/larapilot` dashboard **UI**. OFF by default — the dashboard is open in the allowed environments. This gate is **UI-only**: it never touches `/larapilot/api/*` (protect that with `LARAPILOT_API_TOKEN`) or the MCP server.
+There is no `dashboard_auth` setting. Who gets into `/larapilot` follows the environment:
 
-Credentials are stored as argon2id/bcrypt **hashes** in `.larapilot/auth.yaml` — no database, no `User` model, no cleartext. The file is appended to the project `.gitignore` the first time a user is written and must never be committed.
+| `APP_ENV` | What the dashboard does |
+| --- | --- |
+| `local` (and `testing`) | Open. No sign-in: whoever reaches it acts as an admin. |
+| anything else that is not `production` (`staging`, `qa`, `preview`, …) | A sign-in page — username and password. An authenticator (TOTP) is optional, each user turns it on from **Account**. |
+| `production` | Not served, unless `LARAPILOT_FORCE_IN_PROD=true`. Then every user signs in with a password **and** an authenticator, enrolled at the first sign-in if needed. |
 
-### Setup
-
-1. Add one or more users (the `add` action prompts for the password, or pass `--password=`):
+Users live in `.larapilot/auth.yaml`: password hashes (bcrypt/argon2id), roles, and the authenticator secret encrypted with `APP_KEY` — no database, no `User` model, no cleartext. The file is git-ignored and never committed. There is **no sign-up and no password reset**: an admin creates users and sets passwords, on the **Users** page or from the shell — the first admin of a server always from the shell.
 
 ```bash
-php artisan larapilot:dashboard-user add andrea
-php artisan larapilot:dashboard-user add reviewer --password='…'
+php artisan larapilot:dashboard-user add andrea --role=admin      # prompts for the password (12+ characters)
+php artisan larapilot:dashboard-user add giulia --role=pm --password='…'
+php artisan larapilot:dashboard-user role giulia dev
+php artisan larapilot:dashboard-user password giulia               # a new password; her sessions end
+php artisan larapilot:dashboard-user rename giulia giulia.rossi
+php artisan larapilot:dashboard-user totp-reset giulia             # lost phone: she enrols again
+php artisan larapilot:dashboard-user remove giulia
 php artisan larapilot:dashboard-user list
-php artisan larapilot:dashboard-user remove reviewer
 ```
 
-2. Enable the gate:
+| Role | Sees |
+| --- | --- |
+| `admin` | Everything: every page, **Users**, **API token**, **Anonymization**, the file manager, where the database lives. |
+| `dev` | Everything but Users, API token, Anonymization, and the file manager; never the host or name of the database. In production the Database page and its downloads are **anonymized**. |
+| `pm` | Workflow, Insights, Reference — not the Workspace (About, Settings, Skills, file manager, Database, Laravel, Git); the Logs outside production only. |
+| `ext` | Workflow only: Board, PRD, Inception, Plan, Roadmap, Design and its mockups. |
 
-```bash
-php artisan larapilot:settings-set --dashboard-auth=YES
-```
-
-3. Optional env tuning (`config/larapilot.php` → `dashboard_route.auth`):
-
-```
-LARAPILOT_DASHBOARD_AUTH_REALM=Larapilot          # Basic Auth realm shown by the browser
-LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS=30          # failed sign-ins per minute per IP; 0 disables throttling
-```
-
-### Notes
-
-- With `dashboard_auth=YES` and **no** users configured, the dashboard stays closed (**HTTP 503**) until a user is added or the setting is turned back OFF. Every page shows the same notice instead: the area is protected by the `dashboard_auth` setting, and `php artisan larapilot:dashboard-user add <username>` creates the first user. `auth.yaml` is git-ignored, so a fresh clone or a deploy starts here — add the user on each host.
-- Basic Auth transmits credentials on every request — always serve the dashboard over **HTTPS** on shared/staging hosts.
-- The dashboard is still never served in `production` regardless of this setting.
+- An admin cannot remove or rename themself, nor change their own role; another admin can, and an admin can act on every other admin.
+- A changed password, a removed user, or a changed role takes effect on the next request of every open session.
+- Wrong passwords are throttled per address (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 20 a minute) and per name (5 a minute); wrong codes per name. A code is good once.
+- `.larapilot/auth-audit.log` (git-ignored) keeps one JSON line per sign-in, failure, second factor, user change, token, anonymization map, and file-manager zip — never a password, a code, or a token. `LARAPILOT_DASHBOARD_AUTH_AUDIT=false` turns it off.
+- With no user yet, a shared host answers **HTTP 503** and says how to create the first admin.
+- `.larapilot/auth.yaml` written before 5.1 (`users: {name: hash}`) is read as it is — every user an admin — and `larapilot:update` rewrites it with roles.
+- The authenticator app shows the account under `LARAPILOT_DASHBOARD_AUTH_ISSUER` (default `APP_NAME`). The QR code is drawn on the server; the secret never leaves it.
+- Serve the dashboard over **HTTPS** on every shared host, and behind a proxy trust it (`TrustProxies`) so the limits see the visitor's address.
 
 ---
 
 ## API access (`settings.api_auth`)
 
-A shared-token gate on the `/larapilot/api/*` JSON API — the API **only**. It never touches the `/larapilot` dashboard UI (that is `dashboard_auth`) or the MCP server, and the API is never served in `production`.
-
-The token lives in the environment, never in `.larapilot/`:
-
-```
-LARAPILOT_API_TOKEN=your-long-random-string
-```
-
-Send it on every request as either header:
-
-```
-Authorization: Bearer your-long-random-string
-X-Larapilot-Token: your-long-random-string
-```
-
-### Setup
-
-1. Set `LARAPILOT_API_TOKEN` in the dev/staging environment.
-2. Make the token mandatory for the whole API:
+The token of the `/larapilot/api/*` JSON API. An admin makes it on the **API token** page of the dashboard, or from the shell; it is shown **once**, and only its hash is kept in `.larapilot/auth.yaml`. Rotating it ends the old one at once.
 
 ```bash
-php artisan larapilot:settings-set --api-auth=YES
+php artisan larapilot:api-token generate   # or: rotate, revoke, show
+```
+
+A token set in the environment works too (`LARAPILOT_API_TOKEN=…` in `.env`). Send it on every request as either header:
+
+```
+Authorization: Bearer <token>
+X-Larapilot-Token: <token>
 ```
 
 ### Behaviour
 
-| `api_auth` | `LARAPILOT_API_TOKEN` set | Result |
+| Where | No token exists | A token exists |
 | --- | --- | --- |
-| `NO` (default) | no | Reads open in dev/staging; writes refused outside `local`/`development`/`testing`. |
-| `NO` (default) | yes | Every request (read + write) must carry the token. |
-| `YES` | no | **HTTP 503** — the API fails closed until the token is configured, and the answer says so: the setting that protects it and how to add the token. |
-| `YES` | yes | Every request (read + write) must carry the token. |
+| `local` / `testing`, `api_auth=NO` (default) | Open | Every request needs it, reads included |
+| `local` / `testing`, `api_auth=YES` | **HTTP 503** with how to make one | Every request needs it |
+| any other environment | **HTTP 503** with how to make one | Every request needs it |
+| `production` | Hidden (404) unless `LARAPILOT_FORCE_IN_PROD=true`; then as above | |
+
+A user signed in on the dashboard whose role sees the API reference reads it from the browser without the token — never a write, the group has no CSRF.
 
 ### Calling the API (client side)
 
@@ -372,7 +365,7 @@ const board = await fetch(`${base}/board`, { headers }).then(r => r.json());
 
 **Backstage** — set `larapilot.io/api-url` on the entity and let the Backstage **backend proxy** attach `LARAPILOT_API_TOKEN` server-side (see `.larapilot/runtime-ops.md`); the browser plugin never sees the token.
 
-Fetching the OpenAPI contract itself also needs the token when `api_auth=YES`:
+Fetching the OpenAPI contract itself also needs the token once one exists:
 
 ```bash
 curl -sS -H "X-Larapilot-Token: $LARAPILOT_API_TOKEN" \
@@ -381,8 +374,8 @@ curl -sS -H "X-Larapilot-Token: $LARAPILOT_API_TOKEN" \
 
 ### Notes
 
-- `api_auth=YES` protects **every** endpoint in the group — `/board`, `/specs`, `/specs/{code}`, `/specs/{code}/comments`, `/prd`, `/metrics`, **`/diagnostics`**, `/backstage`, `/backstage/catalog-info.yaml`, `/openapi.json`, and the Swagger UI at `/docs`.
-- A wrong or missing token returns **HTTP 401**; with `api_auth=YES` and no `LARAPILOT_API_TOKEN` configured on the server the endpoints return **HTTP 503** (fail-closed): a JSON `message` that names the `api_auth` setting and tells how to add the token, or the same explanation as a page when a browser opens the API docs.
+- The token protects **every** endpoint in the group — `/board`, `/specs`, `/specs/{code}`, `/specs/{code}/comments`, `/prd`, `/metrics`, **`/diagnostics`**, `/backstage`, `/backstage/catalog-info.yaml`, `/openapi.json`, and the Swagger UI at `/docs`.
+- A wrong or missing token returns **HTTP 401**; where a token is required and none exists the endpoints return **HTTP 503** (fail-closed): a JSON `message` that says how to make one, or the same explanation as a page when a browser opens the API docs.
 - The token is sent on every request — always serve the API over **HTTPS** on shared/staging hosts.
 - Call the API through a server-side proxy so the token never reaches browser code.
 - The `php artisan larapilot:diagnostics` **CLI** command and the MCP `diagnostics` tool are local and need no token — only the HTTP endpoint is gated.
@@ -397,11 +390,40 @@ Independent of `api_auth`, always on:
 - **Pagination** — `GET /specs` takes `?page` (1-based) and `?per_page` (1-200, default 50); the body carries `total`, `page`, `per_page`, `total_pages`.
 - **Security headers** — every dashboard and API response carries `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`; dashboard pages also send `X-Frame-Options: DENY`.
 
-## Aikido (`settings.aikido`)
+## Security scanners (`settings.security` + `settings.security_provider`)
+
+Brings the open findings of a security scanner into the workflow. OFF by default. The user associates **one** scanner; it scans on its side, Larapilot runs none and installs nothing:
+
+| Scanner | What it scans | Ids |
+| --- | --- | --- |
+| **Aikido** — SaaS, [aikido.dev](https://www.aikido.dev/) | The repository through the git provider: dependencies, code, secrets, IaC, containers | Numbers (`24`) |
+| **Hackly** — self-hosted, [hackly.web.ap.it](https://hackly.web.ap.it/) | A clone of the repository (Semgrep, Trivy, Gitleaks, Composer audit, Checkpoint, Laravel checks) and the verified domains linked to it (TLS, headers, exposed paths, Nuclei, ZAP) | UUIDs |
+
+```bash
+php artisan larapilot:settings-set --security-provider=aikido   # or hackly; none turns it off
+php artisan larapilot:security-status
+```
+
+`--aikido=YES` is the name the setting had before 5.1 and still means `--security-provider=aikido`. The same commands work for both scanners:
+
+| Command (`php artisan larapilot:`) | What it does |
+| --- | --- |
+| `security-status` | Scanner, credentials, repository, last scan, `hints` |
+| `security-issues [--new] [--severity=] [--report] [--gate] [--detail={id}]` | The open findings with `state` `new` · `in_backlog` · `waived` · `false_positive`, and `gate.verdict`; `--detail` gives one finding as a brief and a fix prompt |
+| `security-plan --ids=…` | Groups confirmed ids by kind and fix for triage (a leaked secret never merges) |
+| `security-link {ids} --spec=US-XXX` · `--waive --reason="…"` · `--false-positive --reason="…"` · `--forget` | What was decided, kept in `.larapilot/aikido.yaml` or `.larapilot/hackly.yaml` (committed: ids and decisions, never a credential) and told to the scanner; `--local` tells nothing |
+| `security-push` | Tells the scanner the decisions it was not told (`unsent`) |
+| `security-repos [--search=]` · `--use={id}` · `--forget` | Which repository of the scanner this project is, when the git remote finds none |
+| `security-scan` | Asks for a new scan (Hackly: `--profile=quick\|standard\|deep`, `--include-targets`) |
+| `security-register` | `{paths.security}/security-register.md` for the client: every finding open, resolved, or ignored with its reason, in the PRD language |
+
+The `aikido-*` commands are the older names of the same Aikido steps. Through the MCP `RunArtisanTool` an agent may run `security-status`, `security-issues` (not `--report`), `security-plan`, and `security-repos --search` — the reads; every command that decides, writes, or scans runs with Artisan. `/larapilot-security` downloads, confirms, groups, and hands each group to `/larapilot-triage`; `/larapilot-ship` runs `security-issues --gate --report`; `/larapilot/security` shows the findings, the decisions, and the verdict of the gate.
+
+### Aikido (`security_provider: aikido`)
 
 Brings the findings of [Aikido](https://www.aikido.dev/) into the workflow. OFF by default. **Aikido scans the repository on its side**; Larapilot runs no scanner and installs nothing: it reads what Aikido found, over the public REST API, and tells Aikido what the user decided about each finding.
 
-### Setup
+#### Setup
 
 1. Connect the repository in Aikido, through the git provider (GitHub, GitLab, Bitbucket, Azure DevOps). Larapilot cannot do this step.
 2. In Aikido, **Settings → Integrations → Public REST API**, create a client. Reading needs the `issues:read` and `repositories:read` scopes; telling Aikido a decision needs `issues:write`; asking for a scan needs `repositories:write`.
@@ -419,56 +441,56 @@ LARAPILOT_AIKIDO_PUSH_DECISIONS=true  # false = decisions stay in the project, A
 4. Turn it on and check:
 
 ```bash
-php artisan larapilot:settings-set --aikido=YES
-php artisan larapilot:aikido-status
+php artisan larapilot:settings-set --security-provider=aikido
+php artisan larapilot:security-status
 ```
 
-### The repository
+#### The repository
 
-Larapilot finds the repository of the workspace from the git remote of the project, by its address or by its name. When the code is scanned under another repository — a fork, a mirror, a monorepo, a name that differs — nothing matches: `aikido-status` answers `needs_repository: true`, and **the user is asked which one it is**. `/larapilot-aikido` asks in chat, `/larapilot/security` shows the list with a form, and from the terminal:
+Larapilot finds the repository of the workspace from the git remote of the project, by its address or by its name. When the code is scanned under another repository — a fork, a mirror, a monorepo, a name that differs — nothing matches: `security-status` answers `needs_repository: true`, and **the user is asked which one it is**. `/larapilot-security` asks in chat, `/larapilot/security` shows the list with a form, and from the terminal:
 
 ```bash
-php artisan larapilot:aikido-repos                # the repositories of the workspace
-php artisan larapilot:aikido-repos --search=shop  # only the names that hold these letters
-php artisan larapilot:aikido-repos --use=12       # this project is repository 12 (or its exact name)
-php artisan larapilot:aikido-repos --forget       # back to the git remote
+php artisan larapilot:security-repos                # the repositories of the workspace
+php artisan larapilot:security-repos --search=shop  # only the names that hold these letters
+php artisan larapilot:security-repos --use=12       # this project is repository 12 (or its exact name)
+php artisan larapilot:security-repos --forget       # back to the git remote
 ```
 
 The choice is kept in `.larapilot/aikido.yaml`, which is committed, so every machine reads the same repository. `LARAPILOT_AIKIDO_REPOSITORY` in `.env` names it for one machine and wins there. Nothing is ever chosen for the user: a name that looks alike is not a match.
 
-### Decisions are told to Aikido
+#### Decisions are told to Aikido
 
 What the user decides here is sent to Aikido, so the workspace says the same as the project:
 
 | Decision | In Aikido |
 | --- | --- |
-| `aikido-link 40 --waive --reason="…"` | The finding is **ignored**, with the reason as its comment |
-| `aikido-link 24 --spec=US-012` | A **note** on the finding: the spec that fixes it |
-| `aikido-link 40 --forget` | The waiver is taken back: the finding is open again |
+| `security-link 40 --waive --reason="…"` | The finding is **ignored**, with the reason as its comment |
+| `security-link 24 --spec=US-012` | A **note** on the finding: the spec that fixes it |
+| `security-link 40 --forget` | The waiver is taken back: the finding is open again |
 
 - A finding can be in several repositories of the workspace. When it is, only the issues of **this** repository are ignored, and the other projects keep theirs.
-- The credentials need the `issues:write` scope. When Aikido refuses, or cannot be reached, **the decision is kept** and listed as `unsent`; `php artisan larapilot:aikido-push` tells it later. It also tells the decisions taken with an earlier version.
+- The credentials need the `issues:write` scope. When Aikido refuses, or cannot be reached, **the decision is kept** and listed as `unsent`; `php artisan larapilot:security-push` tells it later. It also tells the decisions taken with an earlier version.
 - A waiver Aikido would not take back is not forgotten here, so the two never disagree.
-- `--local` on `aikido-link` keeps one decision in the project; `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` keeps them all.
+- `--local` on `security-link` keeps one decision in the project; `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` keeps them all.
 - A waived finding leaves the open ones as soon as Aikido ignores it, and is listed under *No longer open in Aikido* with its reason.
 
-### The register for the client
+#### The register for the client
 
-`php artisan larapilot:aikido-register` writes `{paths.security}/aikido-register.md`, and **Register for the client (.md)** on `/larapilot/security` downloads it: every finding of the repository — **open** with the fix that is planned, **resolved** with the date, **ignored** with the date and the reason — and a count by severity. It is the document a client or an auditor asks for, written in the language of the PRD.
+`php artisan larapilot:security-register` writes `{paths.security}/security-register.md`, and **Register for the client (.md)** on `/larapilot/security` downloads it: every finding of the repository — **open** with the fix that is planned, **resolved** with the date, **ignored** with the date and the reason — and a count by severity. It is the document a client or an auditor asks for, written in the language of the PRD.
 
 The reason of a finding waived here is the one the user wrote. Aikido does not give back the reason of a finding ignored there by hand: the register lists it, and says the reason is kept in Aikido.
 
-### When ON
+#### When ON
 
-- `/larapilot-aikido` downloads the open findings, has the user confirm each one (resolve, waive, or skip), groups the confirmed ids with `larapilot:aikido-plan`, and hands each resolution group to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:aikido-link`.
-- `/larapilot-ship` runs `php artisan larapilot:aikido-issues --gate --report`: `FAIL` is a release blocker, `WARN` a note.
+- `/larapilot-security` downloads the open findings, has the user confirm each one (resolve, waive, or skip), groups the confirmed ids with `larapilot:security-plan`, and hands each resolution group to `/larapilot-triage`, which routes it to `/larapilot-bug` or `/larapilot-feature`. The spec that fixes a finding is recorded with `larapilot:security-link`.
+- `/larapilot-ship` runs `php artisan larapilot:security-issues --gate --report`: `FAIL` is a release blocker, `WARN` a note.
 - `/larapilot/security` shows the findings, what was decided about each, and the verdict of the gate.
-- `{paths.security}/aikido.md` is the report for the team: every open finding with its decision. `{paths.security}/aikido-register.md` is the register for the client.
+- `{paths.security}/security-report.md` is the report for the team: every open finding with its decision. `{paths.security}/security-register.md` is the register for the client.
 - `.larapilot/aikido.yaml` keeps the decisions, whether Aikido was told, and the repository that was chosen. Commit it, so a finding handed to the backlog on one machine is not handed over again on another.
 
-### What it never does
+#### What it never does
 
-- It never calls Aikido while the setting is `NO`.
+- It never calls Aikido while it is not the associated scanner.
 - It never writes a credential or an access token to a file of the project: the token lives in the cache for as long as Aikido says it lasts.
 - It never marks a finding as fixed. A finding leaves the list when Aikido no longer reports it — after the fix is merged and scanned.
 - It never waives a finding. Only the user does, with a reason of at least a sentence — and only then is Aikido told to ignore it.
@@ -476,6 +498,55 @@ The reason of a finding waived here is the one the user wrote. Aikido does not g
 - It never chooses the repository: when the git remote finds none, the user names it.
 
 The address of the token endpoint is derived from the region (`https://app.{region}.aikido.dev/api/oauth/token`). Set `LARAPILOT_AIKIDO_BASE_URL` when the workspace is reached through another address.
+
+### Hackly (`security_provider: hackly`)
+
+Hackly is **self-hosted**: Larapilot reads **your** instance. [hackly.web.ap.it](https://hackly.web.ap.it/) is its documentation, never an instance — the status says so when `LARAPILOT_HACKLY_URL` points at it.
+
+#### Setup
+
+1. In your Hackly, add the repository (Repositories → New, with a GitHub token that reads it). Link its domains to it if you want their findings too — they must be verified by DNS in Hackly.
+2. Create a personal token: Profile → API tokens, or on the Hackly server `php artisan hackly:token you@example.com --ability=write`. `read` lists; `write` lets Larapilot tell Hackly a decision and ask for a scan.
+3. Put the address of the instance and the token in `.env`:
+
+```dotenv
+LARAPILOT_HACKLY_URL=https://hackly.example.com   # your instance; /api is added
+LARAPILOT_HACKLY_TOKEN=hk_…
+LARAPILOT_HACKLY_REPOSITORY=                       # uuid or owner/name, for this machine; empty = chosen or found from the git remote
+LARAPILOT_HACKLY_INCLUDE_TARGETS=true              # read the findings of the linked domains too
+LARAPILOT_HACKLY_FAIL_ON=high                      # high, medium, low, or none
+LARAPILOT_HACKLY_SCAN_PROFILE=standard             # quick, standard, or deep
+LARAPILOT_HACKLY_PUSH_DECISIONS=true               # false = Hackly is told nothing
+```
+
+4. `php artisan larapilot:settings-set --security-provider=hackly`, then `php artisan larapilot:security-status`.
+
+#### Decisions are told to Hackly
+
+| Decision | In Hackly |
+| --- | --- |
+| `security-link {id} --spec=US-012` | The finding is **acknowledged** — the spec is kept in `.larapilot/hackly.yaml` |
+| `security-link {id} --waive --reason="…"` | **Acknowledged** — Hackly has no "accepted risk"; the reason is kept here and in the register |
+| `security-link {id} --false-positive --reason="…"` | **False positive**, with the reason as its note (8–2000 characters) |
+| `security-link {id} --forget` | **Open** again |
+
+Hackly refusing (a `read` token, no network) undoes nothing: the decision stays `unsent` until `security-push`.
+
+#### What is read, and how the gate is made
+
+- The findings of the repository — and of the domains linked to it, unless `LARAPILOT_HACKLY_INCLUDE_TARGETS=false` — in the states `open` and `ack`. Passed checks and scan deltas are left out.
+- Severities are Hackly's three: `high`, `medium`, `low`. Reachable code comes first among the same severity.
+- The gate is computed here, on the findings of this project: Hackly's own CI gate (`/v1/gates/ci`) looks at the whole workspace.
+- `security-issues --detail={uuid}` quotes Hackly's own brief and fix prompt: that prompt is what triage hands to the fix.
+- `security-scan` asks for a repository scan; `--include-targets` deep-scans the verified linked domains too. Target scans and penetration tests are started in Hackly: each needs its DNS check.
+- The register lists fixed findings as resolved and false positives as ignored, with the note written in Hackly when none was written here.
+
+#### What it never does
+
+- It never calls Hackly while it is not the associated scanner, and never with the token printed or written under `.larapilot/`.
+- It never marks a finding as fixed: a finding leaves the list when Hackly no longer reports it — after the fix is merged and scanned.
+- It never waives or calls a finding a false positive: only the user does, with a reason.
+- It never chooses the repository: when the git remote finds none, the user names it.
 
 ## Production errors (`settings.errors` + `settings.errors_provider`)
 
@@ -666,7 +737,7 @@ php artisan vendor:publish --tag=checkpoint-config
   - `FAIL` → **review blocker**. Fix it, or record an explicit waiver with `php artisan larapilot:decision-log` before `/larapilot-ship`.
   - `WARN` → review note, surfaced but non-blocking.
 - If the package is **not installed**, the review skill stops and asks the user to `composer require --dev andreapollastri/checkpoint` (or to turn the setting back OFF).
-- Owned by **Lars** (Security Expert), together with `dashboard_auth` and `api_auth`.
+- Owned by **Lars** (Security Expert), together with the dashboard sign-in and `api_auth`.
 - checkpoint ships its own GitHub Actions / GitLab CI scaffold (`checkpoint:scan` in CI) — use that for pipeline enforcement rather than re-wrapping it here.
 
 ### On the dashboard

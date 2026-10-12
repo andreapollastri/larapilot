@@ -16,16 +16,25 @@ Avoid introducing React, Svelte, Alpine-only bespoke stacks, or unrelated CSS fr
 
 ### Design systems _(detect from the PRD — read on demand)_
 
-When the PRD `## Technical Architecture` records a UI framework — **Filament**, a **Laravel Starter Kit** variant, **Bootstrap 5**, **Tailwind CSS**, or **AdminLTE** — detect it and read the packaged reference **on demand**: `.larapilot/design-systems/{system}/README.md` + `components.md` (plus `tokens.css` and the `html/` screen catalog when present; `{paths.design_systems}/README.md` is the index; system folders: `filament/`, `starter-kit/`, `bootstrap-5/`, `tailwind/`, `adminlte/`). Shared rules for every system:
+When the PRD `## Technical Architecture` records a UI framework, read its packaged reference **on demand**: `{paths.design_systems}/{system}/README.md` + `components.md` (+ `tokens.css`, the `html/` catalog; the root `README.md` is the index). Systems: `filament/`, `nova/`, `adminlte/`, `starter-kit/`, `shadcn/`, `bootstrap-5/`, `tailwind/`, `material-3/`, `nordic-saas/` (Nordic minimal), `fluent/`, `modern/`, `bold-california/`, `berlin/`, plus the project's own — a custom system from the interview, or the as-is system of an adopted project. Shared rules:
 
 1. Follow that system's visual language on the scoped screens — **never mix systems** and never apply Nordic minimal over them; public marketing pages keep the Nordic minimal language unless scoped otherwise.
-2. Copy or link the system `tokens.css` into the mockup folder; map each mockup screen to the system's concepts (resource list, dashboard, auth, settings, …) in the mockup README.
+2. Copy the system `tokens.css` into the mockup folder as `{slug}-tokens.css`; map each screen to the system's concepts (resource list, dashboard, auth, settings) in the mockup README. Screens stay self-contained: one `<link>`, system fonts, no CDN, no script.
 3. Show **light + dark** on at least one key screen; document sidebar/nav collapse on mobile.
 4. Brand/theme colors from the PRD or client materials override system defaults — document RGB/hex for implementation.
 
-When no design system is chosen, **`larapilot-design` runs the design-system gate** (AskQuestion, **`allow_multiple: true`** when comparing looks): packaged folders under `.larapilot/design-systems/`, any **user-added** system folders there, or a **new custom aesthetic from scratch** — before writing HTML. When the PRD or decision journal already locks the stack (e.g. Filament admin), the gate is skipped. Otherwise design in the agreed visual language — mockups inform the panel-route decision downstream (per **Vendor & Package Policy** in `runtime-delivery.md`), not the other way around.
+When no design system is chosen, **`larapilot-design` runs the design-system gate** (AskQuestion, **`allow_multiple: true`** when comparing looks): the packaged and the project's own folders, or a **new custom aesthetic** — before any HTML. A stack the PRD or the journal already locks (e.g. Filament admin) skips the gate. Mockups inform the panel-route decision downstream (**Vendor & Package Policy**, `runtime-delivery.md`), not the other way around.
 
 **Multiple style variants:** when the user picks more than one system or aesthetic, Elise writes parallel trees under `.larapilot/mockups/{spec}/styles/{slug}/` (same screen filenames in each) and lists them in `styles.yaml`. `/larapilot/design` lists every style; the user locks the winner with **Use this style** on the open screen, or `larapilot:mockup-choose-style`. Alex implements only the chosen slug.
+
+### Mockup fidelity _(Elise designs — Alex mirrors — Joe guards)_
+
+Approved mockups are the contract of the frontend: the build mirrors them — layout, components, copy, states (empty, error, loading, focus), responsive behaviour, dark mode when drawn.
+
+1. **Read before building** — on a UI task Alex opens the mockup README (Fidelity contract, Deviations), `styles.yaml` (the `chosen` style only), and every screen the task maps to. Never from memory.
+2. **Deviations are agreed first** — anything the user would notice is discussed in chat and motivated (technical limit, accessibility, design-system clash, performance, an acceptance criterion) **before** it is coded; then `decision-log --topic="mockup deviation"` (journal on), a row in the README `## Deviations`, a line in the handoff. **Silent deviations are forbidden**: Joe rates one High at review.
+3. **Mockups change at any time** — the user may ask for changes or detail whenever they want; `/larapilot-design {spec}` revises, presents the screens, asks for approval, logs `## Revisions`.
+4. **Adopted projects mirror the as-is** — with `**Project Origin:** Adopted`, Elise derives `{paths.design_systems}/{project-slug}/` from the existing views, CSS, brand assets, navigation, and copy (`sources.md` names the files) and draws every mockup in it; a redesign only when the user asks, discussed first.
 
 ### Default visual language
 

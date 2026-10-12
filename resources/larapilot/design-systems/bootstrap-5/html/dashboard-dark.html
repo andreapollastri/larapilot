@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview (dark) · Bramble Stays Host</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bs-mockup">
+<header class="navbar navbar-expand sticky-top bg-dark flex-nowrap p-0 shadow" data-bs-theme="dark">
+  <a class="navbar-brand col-lg-2 me-0 px-3 py-3 fs-6 fw-semibold d-flex align-items-center gap-2" href="dashboard.html">
+    <svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays <span class="badge text-bg-secondary fw-normal">Host</span>
+  </a>
+  <form class="d-none d-md-block flex-grow-1 px-3" role="search">
+    <input class="form-control form-control-sm" type="search" placeholder="Search bookings, guests, listings…" aria-label="Search bookings, guests and listings">
+  </form>
+  <ul class="navbar-nav flex-row align-items-center ms-auto px-2">
+    <li class="nav-item">
+      <a class="nav-link px-2 position-relative" href="#" aria-label="Notifications, 3 unread">
+        <svg class="bi bi-bell fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
+        <span class="position-absolute top-0 start-100 translate-middle-x badge rounded-pill text-bg-danger mt-1">3</span>
+      </a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-2 ms-2" href="#" role="button" aria-expanded="false">
+        <svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><text x="14" y="18" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">AO</text></svg><span class="d-none d-md-inline">Amara Okafor</span>
+      </a>
+    </li>
+    <li class="nav-item d-lg-none">
+      <button class="nav-link px-2" type="button" aria-label="Open the host menu" aria-controls="hostMenu" aria-expanded="false"><svg class="bi bi-list fs-4" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></button>
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 p-0 bg-body-tertiary border-end">
+      <nav class="offcanvas-lg offcanvas-start bg-body-tertiary" tabindex="-1" id="hostMenu" aria-label="Host menu">
+        <div class="offcanvas-header">
+          <p class="offcanvas-title h5 mb-0">Bramble Stays</p>
+          <button type="button" class="btn-close" aria-label="Close the host menu"></button>
+        </div>
+        <div class="offcanvas-body d-lg-flex flex-column p-0 pt-lg-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2">
+            <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="dashboard.html"><svg class="bi bi-speedometer2" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z"/><path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3"/></svg> Overview</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-list.html"><svg class="bi bi-journal-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10.854 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/><path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/></svg> Bookings <span class="badge rounded-pill text-bg-warning ms-auto">6</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-calendar3" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg> Calendar</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="empty-state.html"><svg class="bi bi-house-door" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/></svg> Listings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-chat-left-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg> Messages <span class="badge rounded-pill text-bg-primary ms-auto">2</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-wallet2" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/></svg> Payouts</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/></svg> Reviews</a></li>
+          </ul>
+          <p class="px-3 mt-4 mb-2 text-body-secondary text-uppercase small fw-semibold">Your listings</p>
+          <ul class="nav flex-column px-2 small">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Willow Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Larch Cabin</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Saltmarsh Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Old Mill Barn</a></li>
+          </ul>
+          <hr class="mx-3 my-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2 mb-3">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-gear" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/></svg> Settings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="landing.html#faq"><svg class="bi bi-question-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg> Help centre</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="login.html"><svg class="bi bi-box-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg> Sign out</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <main class="col-lg-10 ms-sm-auto px-3 px-md-4 py-4">
+      <div class="d-flex flex-wrap flex-md-nowrap justify-content-between align-items-center gap-3 pb-3 mb-4 border-bottom">
+        <div>
+          <h1 class="h2 mb-1">Good morning, Amara</h1>
+          <p class="text-body-secondary mb-0">Monday 12 October 2026 · 3 arrivals and 2 departures today</p>
+        </div>
+        <div class="btn-toolbar gap-2" role="toolbar" aria-label="Overview actions">
+          <div class="btn-group btn-group-sm" role="group" aria-label="Share and export">
+            <button type="button" class="btn btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-outline-secondary">Export</button>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1"><svg class="bi bi-calendar3" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg> This month</button>
+          <a class="btn btn-sm btn-primary d-flex align-items-center gap-1" href="resource-form.html"><svg class="bi bi-plus-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg> New listing</a>
+        </div>
+      </div>
+
+      <div class="alert alert-warning d-flex align-items-baseline gap-2 mb-4" role="alert">
+        <svg class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>
+        <div>Two booking requests expire in less than 24 hours. Guests are charged only once you accept. <a href="resource-list.html" class="alert-link text-nowrap">Review requests</a></div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <p class="text-body-secondary small mb-1">Revenue · October</p>
+                  <p class="fs-3 fw-semibold mb-0">€18,420</p>
+                </div>
+                <span class="d-none d-sm-inline-flex p-2 rounded-3 bg-primary-subtle text-primary-emphasis"><svg class="bi bi-cash-stack fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/></svg></span>
+              </div>
+              <p class="small mb-0 mt-2"><span class="text-success-emphasis fw-semibold"><svg class="bi bi-arrow-up-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/></svg> 12.4%</span> <span class="text-body-secondary">vs September</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <p class="text-body-secondary small mb-1">Nights booked</p>
+                  <p class="fs-3 fw-semibold mb-0">214</p>
+                </div>
+                <span class="d-none d-sm-inline-flex p-2 rounded-3 bg-success-subtle text-success-emphasis"><svg class="bi bi-moon-stars fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.32 7.32 0 0 0 5.205-2.162q-.506.063-1.029.063c-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286"/><path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/></svg></span>
+              </div>
+              <p class="small mb-0 mt-2"><span class="text-success-emphasis fw-semibold"><svg class="bi bi-arrow-up-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/></svg> 8.1%</span> <span class="text-body-secondary">vs September</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <p class="text-body-secondary small mb-1">Occupancy</p>
+                  <p class="fs-3 fw-semibold mb-0">82%</p>
+                </div>
+                <span class="d-none d-sm-inline-flex p-2 rounded-3 bg-info-subtle text-info-emphasis"><svg class="bi bi-house-check fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/><path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514"/></svg></span>
+              </div>
+              <div class="progress mt-3" role="progressbar" aria-label="Occupancy" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100" style="height: 6px">
+                <div class="progress-bar" style="width: 82%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <p class="text-body-secondary small mb-1">Guest rating</p>
+                  <p class="fs-3 fw-semibold mb-0">4.86 <span class="fs-6 text-body-secondary fw-normal">/ 5</span></p>
+                </div>
+                <span class="d-none d-sm-inline-flex p-2 rounded-3 bg-warning-subtle text-warning-emphasis"><svg class="bi bi-star-fill fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg></span>
+              </div>
+              <p class="small mb-0 mt-2"><span class="text-danger-emphasis fw-semibold"><svg class="bi bi-arrow-down-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M14 13.5a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1 0-1h4.793L2.146 2.854a.5.5 0 1 1 .708-.708L13 12.293V7.5a.5.5 0 0 1 1 0z"/></svg> 0.03</span> <span class="text-body-secondary">from 63 reviews</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-xl-8">
+          <div class="card h-100">
+            <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <h2 class="h6 mb-0">Revenue by week</h2>
+              <div class="btn-group btn-group-sm" role="group" aria-label="Range">
+                <button type="button" class="btn btn-outline-secondary active" aria-pressed="true">12 weeks</button>
+                <button type="button" class="btn btn-outline-secondary">Season</button>
+                <button type="button" class="btn btn-outline-secondary">Year</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap align-items-baseline gap-3 mb-3">
+                <span class="fs-4 fw-semibold">€52,600</span>
+                <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">+17% on 2025</span>
+                <span class="ms-md-auto d-flex gap-3 small text-body-secondary">
+                  <span class="d-inline-flex align-items-center gap-1"><svg class="bi bi-circle-fill text-primary" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> 2026</span>
+                  <span class="d-inline-flex align-items-center gap-1"><svg class="bi bi-circle-fill text-secondary" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> 2025</span>
+                </span>
+              </div>
+              <svg class="d-block w-100 h-auto" viewBox="0 0 560 250" role="img" aria-label="Weekly revenue, 20 July to 5 October 2026, against the same weeks of 2025: from €3.1k to €4.9k, peaking at €5.4k in mid-August"><g class="text-body-secondary" font-size="11"><path d="M40 222H538" stroke="currentColor" stroke-opacity=".18"/><text x="32" y="226" text-anchor="end" fill="currentColor">€0</text><path d="M40 152H538" stroke="currentColor" stroke-opacity=".18"/><text x="32" y="156" text-anchor="end" fill="currentColor">€2k</text><path d="M40 82H538" stroke="currentColor" stroke-opacity=".18"/><text x="32" y="86" text-anchor="end" fill="currentColor">€4k</text><path d="M40 12H538" stroke="currentColor" stroke-opacity=".18"/><text x="32" y="16" text-anchor="end" fill="currentColor">€6k</text><text x="40" y="242" text-anchor="middle" fill="currentColor">20 Jul</text><text x="130.5" y="242" text-anchor="middle" fill="currentColor">3 Aug</text><text x="221.1" y="242" text-anchor="middle" fill="currentColor">17 Aug</text><text x="311.6" y="242" text-anchor="middle" fill="currentColor">31 Aug</text><text x="402.2" y="242" text-anchor="middle" fill="currentColor">14 Sep</text><text x="492.7" y="242" text-anchor="middle" fill="currentColor">28 Sep</text><text x="538" y="242" text-anchor="middle" fill="currentColor">5 Oct</text></g><path class="text-secondary" d="M40 131 C62.6 131 62.6 117 85.3 117 C107.9 117 107.9 99.5 130.5 99.5 C153.2 99.5 153.2 85.5 175.8 85.5 C198.5 85.5 198.5 68 221.1 68 C243.7 68 243.7 61 266.4 61 C289 61 289 78.5 311.6 78.5 C334.3 78.5 334.3 103 356.9 103 C379.5 103 379.5 117 402.2 117 C424.8 117 424.8 110 447.5 110 C470.1 110 470.1 96 492.7 96 C515.4 96 515.4 89 538 89" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5 5"/><defs><linearGradient id="cg10" class="text-primary" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M40 113.5 C62.6 113.5 62.6 96 85.3 96 C107.9 96 107.9 75 130.5 75 C153.2 75 153.2 54 175.8 54 C198.5 54 198.5 33 221.1 33 C243.7 33 243.7 43.5 266.4 43.5 C289 43.5 289 61 311.6 61 C334.3 61 334.3 82 356.9 82 C379.5 82 379.5 92.5 402.2 92.5 C424.8 92.5 424.8 78.5 447.5 78.5 C470.1 78.5 470.1 64.5 492.7 64.5 C515.4 64.5 515.4 50.5 538 50.5 L538 222 L40 222Z" fill="url(#cg10)"/><path class="text-primary" d="M40 113.5 C62.6 113.5 62.6 96 85.3 96 C107.9 96 107.9 75 130.5 75 C153.2 75 153.2 54 175.8 54 C198.5 54 198.5 33 221.1 33 C243.7 33 243.7 43.5 266.4 43.5 C289 43.5 289 61 311.6 61 C334.3 61 334.3 82 356.9 82 C379.5 82 379.5 92.5 402.2 92.5 C424.8 92.5 424.8 78.5 447.5 78.5 C470.1 78.5 470.1 64.5 492.7 64.5 C515.4 64.5 515.4 50.5 538 50.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle class="text-primary" cx="538" cy="50.5" r="4.5" fill="currentColor" stroke="var(--bs-body-bg)" stroke-width="2"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <h2 class="h6 mb-0">Today</h2>
+              <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis">12 Oct</span>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <svg class="rounded-circle bg-primary-subtle text-primary-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">PR</text></svg>
+                <div class="flex-grow-1 lh-sm">
+                  <div class="fw-semibold">Priya Raman</div>
+                  <div class="small text-body-secondary">Willow Cottage · 2 guests</div>
+                </div>
+                <span class="badge text-bg-success">In 15:00</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <svg class="rounded-circle bg-info-subtle text-info-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">TW</text></svg>
+                <div class="flex-grow-1 lh-sm">
+                  <div class="fw-semibold">Tomasz Wiśniewski</div>
+                  <div class="small text-body-secondary">Larch Cabin · 4 guests</div>
+                </div>
+                <span class="badge text-bg-success">In 16:30</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <svg class="rounded-circle bg-warning-subtle text-warning-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">SE</text></svg>
+                <div class="flex-grow-1 lh-sm">
+                  <div class="fw-semibold">Sofia Esposito</div>
+                  <div class="small text-body-secondary">Saltmarsh Cottage · 3 guests</div>
+                </div>
+                <span class="badge text-bg-success">In 17:00</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <svg class="rounded-circle bg-secondary-subtle text-secondary-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">JH</text></svg>
+                <div class="flex-grow-1 lh-sm">
+                  <div class="fw-semibold">Jonah Hartley</div>
+                  <div class="small text-body-secondary">Old Mill Barn · clean 11:00</div>
+                </div>
+                <span class="badge text-bg-secondary">Out 10:00</span>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <svg class="rounded-circle bg-danger-subtle text-danger-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">MK</text></svg>
+                <div class="flex-grow-1 lh-sm">
+                  <div class="fw-semibold">Mei Kobayashi</div>
+                  <div class="small text-body-secondary">Willow Cottage · clean 11:30</div>
+                </div>
+                <span class="badge text-bg-secondary">Out 10:00</span>
+              </li>
+            </ul>
+            <div class="card-footer bg-transparent text-center">
+              <a href="dashboard.html" class="icon-link small">Open the calendar <svg class="bi bi-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <h2 class="h6 mb-0">Upcoming bookings</h2>
+              <a href="resource-list.html" class="btn btn-sm btn-outline-secondary">All bookings</a>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle text-nowrap mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Guest</th>
+                    <th scope="col">Listing</th>
+                    <th scope="col">Dates</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Payout</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><div class="fw-semibold">Priya Raman</div><div class="small text-body-secondary">2 adults</div></td>
+                    <td>Willow Cottage</td>
+                    <td><div>12–15 Oct</div><div class="small text-body-secondary">3 nights</div></td>
+                    <td><span class="badge text-bg-success">Confirmed</span></td>
+                    <td class="text-end">€426.00</td>
+                  </tr>
+                  <tr>
+                    <td><div class="fw-semibold">Tomasz Wiśniewski</div><div class="small text-body-secondary">2 adults, 2 children</div></td>
+                    <td>Larch Cabin</td>
+                    <td><div>12–19 Oct</div><div class="small text-body-secondary">7 nights</div></td>
+                    <td><span class="badge text-bg-success">Confirmed</span></td>
+                    <td class="text-end">€1,036.00</td>
+                  </tr>
+                  <tr>
+                    <td><div class="fw-semibold">Aiyana Redcloud</div><div class="small text-body-secondary">2 adults, 1 dog</div></td>
+                    <td>Saltmarsh Cottage</td>
+                    <td><div>18–20 Oct</div><div class="small text-body-secondary">2 nights</div></td>
+                    <td><span class="badge text-bg-warning">Request</span></td>
+                    <td class="text-end">€298.00</td>
+                  </tr>
+                  <tr>
+                    <td><div class="fw-semibold">Kenji Morita</div><div class="small text-body-secondary">1 adult</div></td>
+                    <td>Willow Cottage</td>
+                    <td><div>23–26 Oct</div><div class="small text-body-secondary">3 nights</div></td>
+                    <td><span class="badge text-bg-info">Awaiting payment</span></td>
+                    <td class="text-end">€426.00</td>
+                  </tr>
+                  <tr>
+                    <td><div class="fw-semibold">Fatima Zahra Benali</div><div class="small text-body-secondary">4 adults</div></td>
+                    <td>Old Mill Barn</td>
+                    <td><div>24–31 Oct</div><div class="small text-body-secondary">7 nights</div></td>
+                    <td><span class="badge text-bg-success">Confirmed</span></td>
+                    <td class="text-end">€1,610.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="card">
+            <div class="card-header"><h2 class="h6 mb-0">Occupancy by listing · October</h2></div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between small mb-1"><span>Willow Cottage</span><span class="fw-semibold">91%</span></div>
+              <div class="progress mb-3" role="progressbar" aria-label="Willow Cottage occupancy" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-success" style="width: 91%"></div></div>
+              <div class="d-flex justify-content-between small mb-1"><span>Larch Cabin</span><span class="fw-semibold">84%</span></div>
+              <div class="progress mb-3" role="progressbar" aria-label="Larch Cabin occupancy" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-success" style="width: 84%"></div></div>
+              <div class="d-flex justify-content-between small mb-1"><span>Saltmarsh Cottage</span><span class="fw-semibold">76%</span></div>
+              <div class="progress mb-3" role="progressbar" aria-label="Saltmarsh Cottage occupancy" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: 76%"></div></div>
+              <div class="d-flex justify-content-between small mb-1"><span>Old Mill Barn</span><span class="fw-semibold">48%</span></div>
+              <div class="progress mb-3" role="progressbar" aria-label="Old Mill Barn occupancy" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning" style="width: 48%"></div></div>
+              <p class="small text-body-secondary mb-0"><svg class="bi bi-lightbulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1"/></svg> Old Mill Barn has 9 empty weeknights. A 15% weeknight discount filled similar barns last autumn.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="d-flex flex-wrap justify-content-between gap-2 pt-4 mt-4 border-top small text-body-secondary">
+        <span>© 2026 Bramble Stays Ltd · Host app</span>
+        <span><a class="link-secondary" href="landing.html#faq">Help centre</a> · <a class="link-secondary" href="settings.html">Host terms</a></span>
+      </footer>
+    </main>
+  </div>
+</div>
+</body>
+</html>

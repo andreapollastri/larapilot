@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warehouses overview (dark) · Kestrel Inventory</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="lte-mockup layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
+  <nav class="app-header navbar navbar-expand bg-body" aria-label="Top bar">
+    <div class="container-fluid">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#" role="button" aria-label="Toggle sidebar"><svg class="bi bi-list" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></a></li>
+        <li class="nav-item d-none d-md-block"><a href="dashboard.html" class="nav-link">Home</a></li>
+        <li class="nav-item d-none d-md-block"><a href="resource-list.html" class="nav-link">Stock</a></li>
+      </ul>
+      <form class="navbar-search d-none d-xl-block ms-3" role="search">
+        <label for="navbar-search-input" class="visually-hidden">Search</label>
+        <div class="navbar-search-field">
+          <input type="search" id="navbar-search-input" class="form-control" placeholder="Search…">
+          <button class="navbar-search-submit" type="button" aria-label="Submit search"><svg class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></button>
+        </div>
+      </form>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item d-xl-none"><a class="nav-link" href="#" aria-label="Search"><svg class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" aria-label="Messages: 3 unread"><svg class="bi bi-chat-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a22 22 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105"/><path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8m0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"/></svg><span class="navbar-badge badge text-bg-danger">3</span></a></li>
+        <li class="nav-item"><a class="nav-link" href="#" aria-label="Notifications: 7 unread"><svg class="bi bi-bell-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></svg><span class="navbar-badge badge text-bg-warning">7</span></a></li>
+        <li class="nav-item d-none d-sm-block"><a class="nav-link" href="#" aria-label="Toggle fullscreen"><svg class="bi bi-arrows-fullscreen" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"/></svg></a></li>
+        <li class="nav-item dropdown user-menu">
+          <a href="#" class="nav-link dropdown-toggle" aria-expanded="false">
+            <svg class="rounded-circle bg-info-subtle text-info-emphasis flex-shrink-0 user-image shadow" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">RD</text></svg>
+            <span class="d-none d-md-inline">Rosa Delgado</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+      <a href="dashboard.html" class="brand-link">
+        <svg class="brand-image opacity-75 shadow rounded-circle" width="33" height="33" viewBox="0 0 33 33" aria-hidden="true"><circle cx="16.5" cy="16.5" r="16.5" fill="#e8913a"/><path d="M6 21c4-6 9-9.5 17-10.5l-4.5 3.4 6.5.6c-5 1.8-9.4 4.6-13 8.5l1.2-4.4z" fill="#fff"/><circle cx="21.5" cy="12.4" r="1" fill="#e8913a"/></svg>
+        <span class="brand-text fw-light">Kestrel Inventory</span>
+      </a>
+    </div>
+    <div class="sidebar-wrapper">
+      <nav class="mt-2" aria-label="Main navigation">
+        <ul class="nav sidebar-menu flex-column">
+          <li class="nav-item menu-open">
+            <a href="dashboard.html" class="nav-link active"><svg class="nav-icon bi bi-speedometer" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z"/><path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0"/></svg><p>Dashboard<svg class="nav-arrow bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></p></a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item"><a href="dashboard.html" class="nav-link"><svg class="nav-icon bi bi-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/></svg><p>Overview</p></a></li>
+              <li class="nav-item"><a href="dashboard-dark.html" class="nav-link active" aria-current="page"><svg class="nav-icon bi bi-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/></svg><p>Warehouses</p></a></li>
+            </ul>
+          </li>
+          <li class="nav-header">INVENTORY</li>
+          <li class="nav-item"><a href="resource-list.html" class="nav-link"><svg class="nav-icon bi bi-box-seam" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/></svg><p>Products</p></a></li>
+          <li class="nav-item"><a href="dashboard-dark.html" class="nav-link"><svg class="nav-icon bi bi-arrow-left-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/></svg><p>Stock movements</p></a></li>
+          <li class="nav-item"><a href="dashboard-dark.html" class="nav-link"><svg class="nav-icon bi bi-buildings" viewBox="0 0 16 16" aria-hidden="true"><path d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022M6 8.694 1 10.36V15h5zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5z"/><path d="M2 11h1v1H2zm2 0h1v1H4zm-2 2h1v1H2zm2 0h1v1H4zm4-4h1v1H8zm2 0h1v1h-1zm-2 2h1v1H8zm2 0h1v1h-1zm2-2h1v1h-1zm0 2h1v1h-1zM8 7h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zM8 5h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm0-2h1v1h-1z"/></svg><p>Warehouses</p></a></li>
+          <li class="nav-item"><a href="empty-state.html" class="nav-link"><svg class="nav-icon bi bi-truck" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg><p>Suppliers</p></a></li>
+          <li class="nav-item"><a href="resource-form.html" class="nav-link"><svg class="nav-icon bi bi-cart-plus" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg><p>Purchase orders<span class="nav-badge badge text-bg-warning me-3">12</span></p></a></li>
+          <li class="nav-item"><a href="resource-list.html" class="nav-link"><svg class="nav-icon bi bi-receipt" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/><path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/></svg><p>Sales orders</p></a></li>
+          <li class="nav-header">ADMINISTRATION</li>
+          <li class="nav-item"><a href="settings.html" class="nav-link"><svg class="nav-icon bi bi-gear" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/></svg><p>Settings</p></a></li>
+          <li class="nav-item"><a href="components.html" class="nav-link"><svg class="nav-icon bi bi-ui-checks-grid" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 10h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1m9-9h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1m0 9a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zm0-10a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2zm7 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2zM0 2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm5.354.854a.5.5 0 1 0-.708-.708L3 3.793l-.646-.647a.5.5 0 1 0-.708.708l1 1a.5.5 0 0 0 .708 0z"/></svg><p>UI elements</p></a></li>
+          <li class="nav-item"><a href="login.html" class="nav-link"><svg class="nav-icon bi bi-box-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg><p>Sign out</p></a></li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6"><h1 class="mb-0 fs-3">Warehouses</h1></div>
+          <div class="col-sm-6">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb float-sm-end">
+                <li class="breadcrumb-item"><a href="dashboard.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Warehouses</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon text-bg-primary shadow-sm"><svg class="bi bi-buildings" viewBox="0 0 16 16" aria-hidden="true"><path d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022M6 8.694 1 10.36V15h5zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5z"/><path d="M2 11h1v1H2zm2 0h1v1H4zm-2 2h1v1H2zm2 0h1v1H4zm4-4h1v1H8zm2 0h1v1h-1zm-2 2h1v1H8zm2 0h1v1h-1zm2-2h1v1h-1zm0 2h1v1h-1zM8 7h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zM8 5h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm0-2h1v1h-1z"/></svg></span>
+              <div class="info-box-content"><span class="info-box-text">Rotterdam DC</span><span class="info-box-number">91<small>%</small> full</span></div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon text-bg-success shadow-sm"><svg class="bi bi-box-seam" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/></svg></span>
+              <div class="info-box-content"><span class="info-box-text">Leipzig</span><span class="info-box-number">74<small>%</small> full</span></div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon text-bg-warning shadow-sm"><svg class="bi bi-truck" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg></span>
+              <div class="info-box-content"><span class="info-box-text">Lyon</span><span class="info-box-number">66<small>%</small> full</span></div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon text-bg-danger shadow-sm"><svg class="bi bi-exclamation-octagon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1z"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg></span>
+              <div class="info-box-content"><span class="info-box-text">Gdańsk</span><span class="info-box-number">3 dock issues</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h3 class="card-title">Weekly movements · all warehouses</h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" aria-label="Collapse card"><svg class="bi bi-dash-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8"/></svg></button>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-tool dropdown-toggle" aria-expanded="false"><svg class="bi bi-wrench" viewBox="0 0 16 16" aria-hidden="true"><path d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364zm13.37 9.019.528.026.287.445.445.287.026.529L15 13l-.242.471-.026.529-.445.287-.287.445-.529.026L13 15l-.471-.242-.529-.026-.287-.445-.445-.287-.026-.529L11 13l.242-.471.026-.529.445-.287.287-.445.529-.026L13 11z"/></svg></button>
+                  </div>
+                  <button type="button" class="btn btn-tool" aria-label="Remove card"><svg class="bi bi-x-lg" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg></button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p class="text-center"><strong>Units received and shipped, 5–11 October 2026</strong></p>
+                    <svg class="d-block w-100 h-auto" viewBox="0 0 640 240" role="img" aria-label="Units received and shipped per day this week: busiest on Friday with 498 received and 470 shipped"><g class="text-body-secondary" font-size="11"><path d="M44 212H628" stroke="currentColor" stroke-opacity=".18"/><text x="36" y="216" text-anchor="end" fill="currentColor">0</text><path d="M44 112H628" stroke="currentColor" stroke-opacity=".18"/><text x="36" y="116" text-anchor="end" fill="currentColor">250</text><path d="M44 12H628" stroke="currentColor" stroke-opacity=".18"/><text x="36" y="16" text-anchor="end" fill="currentColor">500</text><text x="85.7" y="232" text-anchor="middle" fill="currentColor">Mon</text><text x="169.1" y="232" text-anchor="middle" fill="currentColor">Tue</text><text x="252.6" y="232" text-anchor="middle" fill="currentColor">Wed</text><text x="336" y="232" text-anchor="middle" fill="currentColor">Thu</text><text x="419.4" y="232" text-anchor="middle" fill="currentColor">Fri</text><text x="502.9" y="232" text-anchor="middle" fill="currentColor">Sat</text><text x="586.3" y="232" text-anchor="middle" fill="currentColor">Sun</text></g><g class="text-primary" fill="currentColor"><rect x="68.7" y="47.2" width="16" height="164.8" rx="2"/><rect x="152.1" y="56.8" width="16" height="155.2" rx="2"/><rect x="235.6" y="30" width="16" height="182" rx="2"/><rect x="319" y="40" width="16" height="172" rx="2"/><rect x="402.4" y="12.8" width="16" height="199.2" rx="2"/><rect x="485.9" y="67.2" width="16" height="144.8" rx="2"/><rect x="569.3" y="164" width="16" height="48" rx="2"/></g><g class="text-info" fill="currentColor"><rect x="86.7" y="61.6" width="16" height="150.4" rx="2"/><rect x="170.1" y="51.2" width="16" height="160.8" rx="2"/><rect x="253.6" y="44.8" width="16" height="167.2" rx="2"/><rect x="337" y="31.6" width="16" height="180.4" rx="2"/><rect x="420.4" y="24" width="16" height="188" rx="2"/><rect x="503.9" y="80" width="16" height="132" rx="2"/><rect x="587.3" y="173.6" width="16" height="38.4" rx="2"/></g></svg>
+                    <div class="d-flex justify-content-center gap-3 small mt-2">
+                      <span class="d-inline-flex align-items-center gap-1"><svg class="bi bi-square-fill text-primary" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2z"/></svg> Received</span>
+                      <span class="d-inline-flex align-items-center gap-1"><svg class="bi bi-square-fill text-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2z"/></svg> Shipped</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <p class="text-center"><strong>Pick rate vs target</strong></p>
+                    <div class="progress-group">
+                      Rotterdam DC <span class="float-end"><b>1,840</b>/2,000</span>
+                      <div class="progress progress-sm"><div class="progress-bar text-bg-primary" style="width: 92%"></div></div>
+                    </div>
+                    <div class="progress-group">
+                      Leipzig <span class="float-end"><b>1,210</b>/1,500</span>
+                      <div class="progress progress-sm"><div class="progress-bar text-bg-danger" style="width: 81%"></div></div>
+                    </div>
+                    <div class="progress-group">
+                      Lyon <span class="float-end"><b>880</b>/1,000</span>
+                      <div class="progress progress-sm"><div class="progress-bar text-bg-success" style="width: 88%"></div></div>
+                    </div>
+                    <div class="progress-group">
+                      Gdańsk <span class="float-end"><b>390</b>/700</span>
+                      <div class="progress progress-sm"><div class="progress-bar text-bg-warning" style="width: 56%"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-md-3 col-6">
+                    <div class="text-center border-end">
+                      <span class="text-success"><svg class="bi bi-caret-up-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg> 17%</span>
+                      <h5 class="fw-bold mb-0">2,742</h5>
+                      <span class="text-uppercase small">Units received</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="text-center border-end">
+                      <span class="text-info"><svg class="bi bi-caret-left-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg> 0%</span>
+                      <h5 class="fw-bold mb-0">2,543</h5>
+                      <span class="text-uppercase small">Units shipped</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="text-center border-end">
+                      <span class="text-success"><svg class="bi bi-caret-up-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg> 4%</span>
+                      <h5 class="fw-bold mb-0">99.2%</h5>
+                      <span class="text-uppercase small">Pick accuracy</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="text-center">
+                      <span class="text-danger"><svg class="bi bi-caret-down-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg> 18%</span>
+                      <h5 class="fw-bold mb-0">31</h5>
+                      <span class="text-uppercase small">Damaged units</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-7">
+            <h2 class="fs-5 mb-3">Inbound today · Rotterdam DC</h2>
+            <div class="timeline">
+              <div class="time-label"><span class="text-bg-danger">12 Oct 2026</span></div>
+              <div>
+                <svg class="timeline-icon bi bi-truck text-bg-primary" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>
+                <div class="timeline-item">
+                  <span class="time"><svg class="bi bi-clock-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/></svg> 08:14</span>
+                  <h3 class="timeline-header"><a href="resource-form.html">PO-20931</a> arrived at dock 4 — Hartmann Werkzeuge</h3>
+                  <div class="timeline-body">26 pallets, 1,180 cartons. Two cartons logged as damaged on arrival; photos attached to the receipt.</div>
+                  <div class="timeline-footer"><a class="btn btn-primary btn-sm" href="resource-form.html">Open receipt</a> <a class="btn btn-danger btn-sm" href="resource-form.html">Raise claim</a></div>
+                </div>
+              </div>
+              <div>
+                <svg class="timeline-icon bi bi-check2-square text-bg-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z"/><path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0"/></svg>
+                <div class="timeline-item">
+                  <span class="time"><svg class="bi bi-clock-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/></svg> 09:02</span>
+                  <h3 class="timeline-header no-border"><a href="resource-list.html">Jonas Bakker</a> put away 412 units into zone A</h3>
+                </div>
+              </div>
+              <div>
+                <svg class="timeline-icon bi bi-exclamation-triangle-fill text-bg-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg>
+                <div class="timeline-item">
+                  <span class="time"><svg class="bi bi-clock-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/></svg> 10:30</span>
+                  <h3 class="timeline-header"><a href="resource-list.html">Cycle count</a> found a variance in bin C-07</h3>
+                  <div class="timeline-body">System shows 240 × cable gland M20, counted 228. Recount scheduled for 14:00.</div>
+                </div>
+              </div>
+              <div><svg class="timeline-icon bi bi-clock-fill text-bg-secondary" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/></svg></div>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h3 class="card-title">Stock value by warehouse</h3>
+                <div class="card-tools"><button type="button" class="btn btn-tool" aria-label="Collapse card"><svg class="bi bi-dash-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8"/></svg></button></div>
+              </div>
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-6"><svg class="d-block mx-auto" width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="Stock value by warehouse: Rotterdam 46%, Leipzig 28%, Lyon 17%, Gdańsk 9%"><circle cx="80" cy="80" r="69" fill="none" stroke="var(--bs-secondary-bg)" stroke-width="22"/><circle class="text-primary" cx="80" cy="80" r="69" fill="none" stroke="currentColor" stroke-width="22" stroke-dasharray="197.4 236.1" stroke-dashoffset="108.4"/><circle class="text-success" cx="80" cy="80" r="69" fill="none" stroke="currentColor" stroke-width="22" stroke-dasharray="119.4 314.1" stroke-dashoffset="-91"/><circle class="text-warning" cx="80" cy="80" r="69" fill="none" stroke="currentColor" stroke-width="22" stroke-dasharray="71.7 361.8" stroke-dashoffset="-212.4"/><circle class="text-danger" cx="80" cy="80" r="69" fill="none" stroke="currentColor" stroke-width="22" stroke-dasharray="37 396.5" stroke-dashoffset="-286.1"/></svg></div>
+                  <div class="col-6">
+                    <ul class="list-unstyled small mb-0">
+                      <li class="mb-1"><svg class="bi bi-circle-fill text-primary" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Rotterdam DC · €2.22M</li>
+                      <li class="mb-1"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Leipzig · €1.35M</li>
+                      <li class="mb-1"><svg class="bi bi-circle-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Lyon · €0.82M</li>
+                      <li><svg class="bi bi-circle-fill text-danger" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Gdańsk · €0.43M</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer p-0">
+                <ul class="nav nav-pills flex-column">
+                  <li class="nav-item"><a href="resource-list.html" class="nav-link">Rotterdam DC <span class="float-end text-danger"><svg class="bi bi-arrow-down" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/></svg> 4%</span></a></li>
+                  <li class="nav-item"><a href="resource-list.html" class="nav-link">Leipzig <span class="float-end text-success"><svg class="bi bi-arrow-up" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></svg> 11%</span></a></li>
+                  <li class="nav-item"><a href="resource-list.html" class="nav-link">Lyon <span class="float-end text-info"><svg class="bi bi-arrow-left" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></svg> 0%</span></a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout-warning">
+              <h5>Gdańsk dock 2 closed until Thursday</h5>
+              <p>Inbound for Gdańsk is rerouted to Leipzig. Expect +1 day on 9 purchase orders.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="app-footer">
+    <div class="float-end d-none d-sm-inline">Kestrel Inventory 3.2 · Rotterdam DC</div>
+    <strong>Copyright &copy; 2026 <a href="dashboard.html" class="text-decoration-none">Kestrel Logistics B.V.</a></strong> All rights reserved.
+  </footer>
+</div>
+</body>
+</html>

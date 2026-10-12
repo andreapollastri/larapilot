@@ -5,12 +5,19 @@ declare(strict_types=1);
 namespace Larapilot\Http;
 
 use Illuminate\Support\Facades\Route;
+use Larapilot\Http\Controllers\AccountController;
+use Larapilot\Http\Controllers\AnonymizationController;
+use Larapilot\Http\Controllers\ApiTokenController;
+use Larapilot\Http\Controllers\AuthController;
 use Larapilot\Http\Controllers\DashboardController;
 use Larapilot\Http\Controllers\DatabaseViewerController;
 use Larapilot\Http\Controllers\FileManagerController;
+use Larapilot\Http\Controllers\ForecastController;
 use Larapilot\Http\Controllers\LaravelViewerController;
 use Larapilot\Http\Controllers\LogViewerController;
+use Larapilot\Http\Controllers\RoadmapController;
 use Larapilot\Http\Controllers\StackController;
+use Larapilot\Http\Controllers\UsersController;
 use Larapilot\Http\Middleware\AddLarapilotSecurityHeaders;
 use Larapilot\Http\Middleware\EnsureDashboardAuthorized;
 use Larapilot\Services\ConfigService;
@@ -19,12 +26,24 @@ class DashboardRouteRegistrar
 {
     public static function register(): void
     {
+        $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
+        $base = (array) config('larapilot.dashboard_route.middleware', ['web']);
+
+        // The public roadmap is a token URL, not the dashboard: it answers
+        // wherever the application runs, including production, as long as
+        // the setting is on and the token matches.
+        Route::middleware([...$base, AddLarapilotSecurityHeaders::class])
+            ->prefix($prefix)
+            ->group(function (): void {
+                Route::get('/roadmap/p/{token}', [RoadmapController::class, 'public'])
+                    ->where('token', '[A-Za-z0-9]{20,80}')
+                    ->middleware('throttle:60,1')
+                    ->name('larapilot.roadmap.public');
+            });
+
         if (! app(ConfigService::class)->dashboardBrowsable()) {
             return;
         }
-
-        $prefix = trim((string) config('larapilot.dashboard_route.prefix', 'larapilot'), '/');
-        $base = (array) config('larapilot.dashboard_route.middleware', ['web']);
 
         $middleware = [
             ...$base,
@@ -40,11 +59,42 @@ class DashboardRouteRegistrar
             EnsureDashboardAuthorized::class,
         ];
 
+        // The door: reached before any sign-in, so it runs without the gate.
+        // The sign-in itself and every other write are POSTs with the CSRF
+        // token of the `web` group; the limits on wrong passwords and codes
+        // are kept per address and per name by the session service.
+        Route::middleware([...$base, AddLarapilotSecurityHeaders::class])
+            ->prefix($prefix)
+            ->group(function (): void {
+                Route::get('/login', [AuthController::class, 'showLogin'])
+                    ->name('larapilot.auth.login');
+
+                Route::post('/login', [AuthController::class, 'login'])
+                    ->name('larapilot.auth.login.attempt');
+
+                Route::get('/two-factor', [AuthController::class, 'showTwoFactor'])
+                    ->name('larapilot.auth.two-factor');
+
+                Route::post('/two-factor', [AuthController::class, 'twoFactor'])
+                    ->name('larapilot.auth.two-factor.verify');
+
+                Route::get('/two-factor/setup', [AuthController::class, 'showSetup'])
+                    ->name('larapilot.auth.two-factor.setup');
+
+                Route::post('/two-factor/setup', [AuthController::class, 'setup'])
+                    ->name('larapilot.auth.two-factor.setup.confirm');
+
+                Route::post('/logout', [AuthController::class, 'logout'])
+                    ->name('larapilot.auth.logout');
+            });
+
         Route::middleware($middleware)
             ->prefix($prefix)
             ->group(function (): void {
                 Route::get('/', [DashboardController::class, 'index'])
                     ->name('larapilot.dashboard.index');
+
+                self::registerAccess();
 
                 Route::get('/board.md', [DashboardController::class, 'boardDownload'])
                     ->name('larapilot.dashboard.board.download');
@@ -94,6 +144,18 @@ class DashboardRouteRegistrar
                 Route::get('/plan/plan.md', [DashboardController::class, 'planDownload'])
                     ->name('larapilot.dashboard.plan.download');
 
+                Route::get('/roadmap', [RoadmapController::class, 'index'])
+                    ->name('larapilot.dashboard.roadmap');
+
+                Route::post('/roadmap/regenerate', [RoadmapController::class, 'regenerate'])
+                    ->name('larapilot.dashboard.roadmap.regenerate');
+
+                Route::get('/forecast', [ForecastController::class, 'index'])
+                    ->name('larapilot.dashboard.forecast');
+
+                Route::get('/forecast/report.md', [ForecastController::class, 'report'])
+                    ->name('larapilot.dashboard.forecast.report');
+
                 Route::get('/usage', [DashboardController::class, 'usage'])
                     ->name('larapilot.dashboard.usage');
 
@@ -115,8 +177,11 @@ class DashboardRouteRegistrar
                 Route::get('/security', [DashboardController::class, 'security'])
                     ->name('larapilot.dashboard.security');
 
-                Route::get('/security/aikido.md', [DashboardController::class, 'securityReport'])
+                Route::get('/security/report.md', [DashboardController::class, 'securityReport'])
                     ->name('larapilot.dashboard.security.report');
+                // The address the report had when Aikido was the only scanner.
+                Route::get('/security/aikido.md', [DashboardController::class, 'securityReport'])
+                    ->name('larapilot.dashboard.security.report.legacy');
 
                 Route::get('/security/register.md', [DashboardController::class, 'securityRegister'])
                     ->name('larapilot.dashboard.security.register');
@@ -157,7 +222,8 @@ class DashboardRouteRegistrar
                 Route::get('/errors/errors.md', [DashboardController::class, 'errorsReport'])
                     ->name('larapilot.dashboard.errors.report');
                 // The address the report had when Boogle was the only tracker.
-                Route::get('/errors/boogle.md', [DashboardController::class, 'errorsReport']);
+                Route::get('/errors/boogle.md', [DashboardController::class, 'errorsReport'])
+                    ->name('larapilot.dashboard.errors.report.legacy');
 
                 Route::get('/design', [DashboardController::class, 'design'])
                     ->name('larapilot.dashboard.design');
@@ -191,7 +257,8 @@ class DashboardRouteRegistrar
                 Route::get('/database-export/sql', [DatabaseViewerController::class, 'dump'])
                     ->name('larapilot.dashboard.database.dump');
                 // The address the dump had before.
-                Route::get('/database.sql', [DatabaseViewerController::class, 'dump']);
+                Route::get('/database.sql', [DatabaseViewerController::class, 'dump'])
+                    ->name('larapilot.dashboard.database.dump.legacy');
 
                 Route::get('/database-export/migrations', [DatabaseViewerController::class, 'migrations'])
                     ->name('larapilot.dashboard.database.migrations');
@@ -255,6 +322,74 @@ class DashboardRouteRegistrar
     }
 
     /**
+     * One's own account, the users, the API token, and the anonymization
+     * map. The account is every signed-in user's; the rest are the admins'
+     * (`AccessPolicy`). A username in an address is whatever the file
+     * holds: it is looked up there, never read as a path.
+     */
+    protected static function registerAccess(): void
+    {
+        Route::get('/account', [AccountController::class, 'show'])
+            ->name('larapilot.dashboard.account');
+
+        Route::post('/account/password', [AccountController::class, 'password'])
+            ->name('larapilot.dashboard.account.password');
+
+        Route::get('/account/two-factor', [AccountController::class, 'twoFactor'])
+            ->name('larapilot.dashboard.account.two-factor');
+
+        Route::post('/account/two-factor', [AccountController::class, 'enableTwoFactor'])
+            ->name('larapilot.dashboard.account.two-factor.enable');
+
+        Route::post('/account/two-factor/disable', [AccountController::class, 'disableTwoFactor'])
+            ->name('larapilot.dashboard.account.two-factor.disable');
+
+        Route::get('/users', [UsersController::class, 'index'])
+            ->name('larapilot.dashboard.users');
+
+        Route::post('/users', [UsersController::class, 'store'])
+            ->name('larapilot.dashboard.users.store');
+
+        Route::post('/users/{user}/role', [UsersController::class, 'role'])
+            ->where('user', '[^/]+')
+            ->name('larapilot.dashboard.users.role');
+
+        Route::post('/users/{user}/password', [UsersController::class, 'password'])
+            ->where('user', '[^/]+')
+            ->name('larapilot.dashboard.users.password');
+
+        Route::post('/users/{user}/rename', [UsersController::class, 'rename'])
+            ->where('user', '[^/]+')
+            ->name('larapilot.dashboard.users.rename');
+
+        Route::post('/users/{user}/two-factor/reset', [UsersController::class, 'resetTwoFactor'])
+            ->where('user', '[^/]+')
+            ->name('larapilot.dashboard.users.two-factor.reset');
+
+        Route::post('/users/{user}/delete', [UsersController::class, 'destroy'])
+            ->where('user', '[^/]+')
+            ->name('larapilot.dashboard.users.delete');
+
+        Route::get('/api-token', [ApiTokenController::class, 'index'])
+            ->name('larapilot.dashboard.api-token');
+
+        Route::post('/api-token', [ApiTokenController::class, 'issue'])
+            ->name('larapilot.dashboard.api-token.issue');
+
+        Route::post('/api-token/revoke', [ApiTokenController::class, 'revoke'])
+            ->name('larapilot.dashboard.api-token.revoke');
+
+        Route::get('/anonymization', [AnonymizationController::class, 'index'])
+            ->name('larapilot.dashboard.anonymization');
+
+        Route::post('/anonymization', [AnonymizationController::class, 'update'])
+            ->name('larapilot.dashboard.anonymization.update');
+
+        Route::post('/anonymization/locale', [AnonymizationController::class, 'locale'])
+            ->name('larapilot.dashboard.anonymization.locale');
+    }
+
+    /**
      * The material folders under `.larapilot/`, and the project itself.
      * Only the known roots match, so `raw` and the action names can never
      * be read as a folder. The project is read only: the routes that write
@@ -267,6 +402,11 @@ class DashboardRouteRegistrar
 
         Route::get('/files', [FileManagerController::class, 'index'])
             ->name('larapilot.dashboard.files');
+
+        Route::get('/files/zip/{root}/{path?}', [FileManagerController::class, 'zip'])
+            ->where('root', $readable)
+            ->where('path', '.*')
+            ->name('larapilot.dashboard.files.zip');
 
         Route::get('/files/raw/{root}/{path}', [FileManagerController::class, 'raw'])
             ->where('root', $readable)

@@ -1,7 +1,7 @@
 {{--
     Shown in place of the dashboard, or of the JSON API, when a project setting
     protects the area and the one thing that opens it is still missing: a first
-    dashboard user (`dashboard_auth`) or the API token (`api_auth`).
+    dashboard user (a shared host or production) or the API token.
 
     Stands on its own — no sidebar, no project data — because whoever reads it
     has not signed in.
@@ -214,42 +214,46 @@
 
             @if ($isApi)
                 <p>
-                    This project asks for a token on every call to the Larapilot API — the <code>api_auth</code> setting is
-                    <strong>ON</strong> — and no token has been set on this server yet. Until there is one, the API
-                    stays closed rather than answer anyone.
+                    The Larapilot API asks for a token in this environment and none has been made yet. Until there is
+                    one, the API stays closed rather than answer anyone.
                 </p>
 
-                <h2>Add the token to open it</h2>
-                <p>Put a long random value in the <code>.env</code> of this server:</p>
-                <pre><code>LARAPILOT_API_TOKEN=your-long-random-string</code></pre>
+                <h2>Make a token to open it</h2>
+                <p>An admin makes it on the <strong>API token</strong> page of the dashboard, or from the shell of the project:</p>
+                <pre><code>php artisan larapilot:api-token generate</code></pre>
                 <p>
-                    Then send it on every request, as <code>Authorization: Bearer &lt;token&gt;</code> or in the
-                    <code>X-Larapilot-Token</code> header. If the configuration is cached, run
-                    <code>php artisan config:cache</code> again.
+                    It is shown once; only its hash is kept in <code>.larapilot/auth.yaml</code>, out of Git. Send it on
+                    every request as <code>Authorization: Bearer &lt;token&gt;</code> or in the
+                    <code>X-Larapilot-Token</code> header. A token set in the <code>.env</code> of this server works too:
                 </p>
+                <pre><code>LARAPILOT_API_TOKEN=your-long-random-string</code></pre>
 
                 <p class="aside">
-                    The token is not needed here? Lift the requirement with
+                    On a developer's machine (<code>APP_ENV=local</code>) the API reads without a token as long as none
+                    exists, unless the <code>api_auth</code> setting is ON — lift it there with
                     <code>php artisan larapilot:settings-set --api-auth=NO</code>.
                 </p>
             @else
                 <p>
-                    This project asks for a sign-in on the Larapilot dashboard — the <code>dashboard_auth</code> setting
-                    is <strong>ON</strong> — and no user has been created yet. Until there is one, the dashboard stays
-                    closed rather than open to anyone.
+                    The Larapilot dashboard asks for a sign-in in this environment
+                    (<code>APP_ENV={{ app()->environment() }}</code>) and no user has been created yet. Until there is
+                    one, the dashboard stays closed rather than open to anyone. There is no sign-up.
                 </p>
 
-                <h2>Create the first user to open it</h2>
-                <p>Run this in the project, with the username you want:</p>
-                <pre><code>php artisan larapilot:dashboard-user add &lt;username&gt;</code></pre>
+                <h2>Create the first admin to open it</h2>
+                <p>Run this in the project on this server, with the username you want:</p>
+                <pre><code>php artisan larapilot:dashboard-user add &lt;username&gt; --role=admin</code></pre>
                 <p>
-                    It asks for a password and keeps only its hash in <code>.larapilot/auth.yaml</code>, out of Git.
-                    Reload this page afterwards and sign in with the new credentials.
+                    It asks for a password (at least twelve characters) and keeps only its hash in
+                    <code>.larapilot/auth.yaml</code>, out of Git — so a fresh clone or a new server starts here.
+                    Reload this page afterwards and sign in. The admin then creates every other user, with their
+                    role, on the Users page.
                 </p>
 
                 <p class="aside">
-                    The sign-in is not needed here? Turn it off with
-                    <code>php artisan larapilot:settings-set --dashboard-auth=NO</code>.
+                    On a developer's machine (<code>APP_ENV=local</code>) no sign-in is asked. In production the
+                    dashboard is served only with <code>LARAPILOT_FORCE_IN_PROD=true</code>, and every user signs
+                    in with an authenticator app as well.
                 </p>
             @endif
         </section>

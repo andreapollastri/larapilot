@@ -1,0 +1,21 @@
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/app/*
+/storage/framework/*
+/storage/logs/*
+/storage/larapilot/*
+.env
+.env.backup
+.phpunit.result.cache
+*.sqlite*
+.DS_Store
+
+# Larapilot: never commit
+/.larapilot/auth-audit.log
+/.larapilot/auth.yaml
+/.larapilot/api-audit.log
+/.larapilot/roadmap-link.yaml

@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
-use Larapilot\Services\ConfigService;
-use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\Laravel\DumpRecorder;
 use Larapilot\Services\Laravel\MailRecorder;
 use Larapilot\Services\LaravelViewerService;
@@ -473,19 +471,18 @@ it('keeps the mail on a developer machine only, unless it is asked for', functio
 
     $this->get('/larapilot/laravel/mail')->assertOk()->assertSee('Keeping the mail is switched off.', false);
 
-    // A shared host: never by default, and never where the page is closed.
+    // A shared host: never by default.
     $this->app['env'] = 'staging';
     config()->set('larapilot.laravel_viewer.mail', null);
     $send();
-    config()->set('larapilot.laravel_viewer.mail', true);
-    $send();
     expect($store->count())->toBe(1);
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
+    // Kept where the page is served — behind the sign-in — when it is asked for.
+    config()->set('larapilot.laravel_viewer.mail', true);
     $send();
     expect($store->count())->toBe(2);
 
+    // Never where the page is closed: production without LARAPILOT_FORCE_IN_PROD.
     $this->app['env'] = 'production';
     $send();
     expect($store->count())->toBe(2);
@@ -595,38 +592,37 @@ it('keeps no dump where it is not asked to', function (): void {
     expect(app(DumpRecorder::class)->store()->count())->toBe(1);
 });
 
-it('stays behind the dashboard sign-in on a shared environment', function (): void {
+it('stays behind the dashboard sign-in on a shared environment, for admins and developers', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     recordFolder();
 
-    $this->app['env'] = 'staging';
-
-    $this->get('/larapilot')->assertOk()->assertDontSee('>Laravel</a>', false);
+    sharedHost();
 
     foreach (['', '/schedule', '/queue', '/mail', '/dumps'] as $tab) {
-        $this->get('/larapilot/laravel'.$tab)->assertNotFound();
+        $this->get('/larapilot/laravel'.$tab)->assertStatus(503);
     }
 
-    $this->withSession(['_token' => 'laravel-viewer-test']);
-    $this->post('/larapilot/laravel/mail/clear', ['_token' => 'laravel-viewer-test'])->assertNotFound();
-    $this->post('/larapilot/laravel/dumps/clear', ['_token' => 'laravel-viewer-test'])->assertNotFound();
+    dashboardUser('andrea');
+    dashboardUser('pm', 'correct-horse-battery', 'pm');
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
+    $this->get('/larapilot/laravel')->assertRedirect('/larapilot/login');
 
-    $this->get('/larapilot/laravel')->assertStatus(401);
+    signInDashboard('pm')->assertRedirect();
+    $this->get('/larapilot')->assertOk()->assertDontSee('>Laravel</a>', false);
+    $this->get('/larapilot/laravel/mail')->assertForbidden();
+    dashboardPost('/larapilot/laravel/mail/clear')->assertForbidden();
+    dashboardPost('/larapilot/logout');
 
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/larapilot', $headers)->assertOk()->assertSee('>Laravel</a>', false);
+    signInDashboard('andrea')->assertRedirect();
+    $this->get('/larapilot')->assertOk()->assertSee('>Laravel</a>', false);
 
     foreach (['', '/schedule', '/queue', '/mail', '/dumps'] as $tab) {
-        $this->get('/larapilot/laravel'.$tab, $headers)->assertOk();
+        $this->get('/larapilot/laravel'.$tab)->assertOk();
     }
 
     config()->set('larapilot.laravel_viewer.dumps', null);
 
-    $this->get('/larapilot/laravel/dumps', $headers)
+    $this->get('/larapilot/laravel/dumps')
         ->assertOk()
         ->assertSee('kept only on a developer', false)
         ->assertSee('LARAPILOT_LARAVEL_VIEWER_DUMPS=true', false);

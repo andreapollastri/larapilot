@@ -40,7 +40,10 @@ class DatabaseViewerService
     /** @var array<string, array<string, array{key: string, name: string, raw: string, schema: string|null, kind: string, size: int|null, comment: string|null}>> */
     protected array $objects = [];
 
-    public function __construct(protected DatabaseManager $databases) {}
+    public function __construct(
+        protected DatabaseManager $databases,
+        protected DatabaseAnonymizer $anonymizer,
+    ) {}
 
     /**
      * The connection the viewer reads: `database_viewer.connection` when it
@@ -311,6 +314,21 @@ class DatabaseViewerService
 
         // A masked column is never searched: a match would tell its value.
         $searchable = array_keys(array_filter($columns, static fn (array $column): bool => $column['searchable'] && ! $column['masked']));
+
+        // A filter on a real value would say whether that person is here,
+        // even when the cell shows a replacement. While anonymizing, nothing
+        // is searched or filtered, and a column is sorted only when it is kept.
+        if ($this->anonymizer->active()) {
+            $search = '';
+            $where = null;
+            $is = null;
+            $searchable = [];
+
+            if ($sort !== null && $this->anonymizer->formatter($key, $sort, (bool) $columns[$sort]['masked'], (string) ($columns[$sort]['type'] ?? '')) !== 'keep') {
+                $sort = null;
+            }
+        }
+
         $operator = $connection->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
         $result = [
@@ -375,7 +393,7 @@ class DatabaseViewerService
         $result['last_page'] = $lastPage;
         $result['from'] = $records === [] ? 0 : ($page - 1) * $perPage + 1;
         $result['to'] = $records === [] ? 0 : ($page - 1) * $perPage + count($records);
-        $result['rows'] = array_map(fn (object $record): array => $this->row((array) $record, $columns), $records);
+        $result['rows'] = array_map(fn (object $record): array => $this->row($key, (array) $record, $columns), $records);
         // As the database holds them, hidden values included: for what is
         // written from them on the server, never for the page.
         $result['records'] = array_map(static fn (object $record): array => (array) $record, $records);
@@ -388,17 +406,22 @@ class DatabaseViewerService
      * @param  array<string, array<string, mixed>>  $columns
      * @return list<array{column: string, kind: string, text: string, full: string, link: array{key: string, column: string, value: string}|null}>
      */
-    protected function row(array $record, array $columns): array
+    protected function row(string $table, array $record, array $columns): array
     {
         $cells = [];
 
         foreach ($record as $name => $value) {
             $name = (string) $name;
             $column = $columns[$name] ?? null;
-            $cell = $this->cell($value, $column !== null && $column['masked'], $column !== null && $column['numeric']);
+            $masked = $column !== null && $column['masked'];
+            $numeric = $column !== null && $column['numeric'];
+            $binary = $column !== null && (bool) preg_match('/blob|binary|bytea|image/', (string) ($column['type_name'] ?? ''));
+            $applied = $this->anonymizer->apply($table, $name, $value, $masked, $numeric, $binary, (string) ($column['type'] ?? ''));
+            $cell = $this->cell($applied['value'], $applied['masked'] || $masked, $numeric);
             $reference = $column['reference'] ?? null;
+            $changed = $applied['masked'] || $applied['value'] !== $value;
 
-            $cell['link'] = is_array($reference) && in_array($cell['kind'], ['text', 'number'], true) && mb_strlen($cell['full']) <= self::LINK_CHARS
+            $cell['link'] = ! $changed && is_array($reference) && in_array($cell['kind'], ['text', 'number'], true) && mb_strlen($cell['full']) <= self::LINK_CHARS
                 ? ['key' => $reference['key'], 'column' => $reference['column'], 'value' => $cell['full']]
                 : null;
 

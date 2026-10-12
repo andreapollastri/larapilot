@@ -6,7 +6,7 @@
     $hideSpecBadge = $embedded || ! empty($hide_spec_badge);
 @endphp
 
-<section @class(['decisions-panel', 'card' => ! $embedded]) id="decision-journal">
+<section @class(['decisions-panel', 'card' => ! $embedded]) id="decision-journal-entries">
     <header class="decisions-header">
         <div>
             @if ($embedded)

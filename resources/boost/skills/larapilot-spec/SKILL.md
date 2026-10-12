@@ -148,6 +148,8 @@ specs:
 
 **Epics (Mark + Lucille):** group related US specs under `EP-XXX` with a clear **objective** and, when dates exist, an epic **deadline**. Reuse epics from `spec-list` before creating new ones. Lucille validates that epic deadlines align with `schedule-set` milestones and remaining story points.
 
+**Versions (when `release_mode=YES`) and sprints (when `settings.sprints` is `YES`):** every new spec gets a target version — the release the PRD roadmap from inception assigns it to, otherwise an open `planned` / `in_progress` release from `release-list`, or a **future** one (the next cut, or a later version for a Could/Won't-now story). Present the whole mapping once (spec → version, MVP first) as one AskQuestion — accept, or adjust in chat — never one question per spec. Persist after `spec-add` with `release-set --semver=x.y.z --add-spec=US-XXX` and `**Release:** x.y.z` in the spec body. With sprints on, propose the two-week sprint of each spec in the same table (story points in order of priority, one person) and persist it with `php artisan larapilot:spec-sprint {code} {n}`; a spec left out stays *proposed* on the Board. With either setting off, ask nothing about it.
+
 Validate first, then `spec-add`. Delete temp file after CLI exits.
 
 ## Laravel Notes

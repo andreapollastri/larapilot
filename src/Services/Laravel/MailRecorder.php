@@ -6,6 +6,7 @@ namespace Larapilot\Services\Laravel;
 
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Support\Carbon;
 use Larapilot\Services\ConfigService;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -81,7 +82,7 @@ class MailRecorder
         $data = $event->data;
 
         $this->store->put([
-            'at' => date(DATE_ATOM),
+            'at' => Carbon::now()->toAtomString(),
             'subject' => (string) $message->getSubject(),
             'from' => $this->addresses($message->getFrom()),
             'to' => $this->addresses($message->getTo()),

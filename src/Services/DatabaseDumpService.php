@@ -44,7 +44,10 @@ class DatabaseDumpService
     /** @var callable(string): void */
     protected $write;
 
-    public function __construct(protected DatabaseViewerService $viewer) {}
+    public function __construct(
+        protected DatabaseViewerService $viewer,
+        protected DatabaseAnonymizer $anonymizer,
+    ) {}
 
     /**
      * The name of the file: the database and the moment it was taken.
@@ -308,6 +311,8 @@ class DatabaseDumpService
                 // Two rows cannot share one value under a unique index.
                 'distinct' => $hide && in_array($name, $unique, true),
                 'serial' => ! empty($column['auto_increment']),
+                // As the schema builder writes it — `varchar(40)`, `enum('a','b')` — for the anonymizer.
+                'type' => (string) ($column['type'] ?? $typeName),
             ];
         }
 
@@ -358,6 +363,36 @@ class DatabaseDumpService
     }
 
     /**
+     * Whether this download is anonymizing rows.
+     */
+    public function anonymizing(): bool
+    {
+        return $this->anonymizer->active();
+    }
+
+    /**
+     * The value of one column as a dump or a seeder may write it. A hidden
+     * column, and a column the map hides, becomes the placeholder. Any
+     * other column is replaced when anonymizing is on.
+     *
+     * @param  array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}  $column
+     */
+    public function exportedValue(string $table, array $column, mixed $value, int $row): mixed
+    {
+        if ($column['hidden']) {
+            return $this->hiddenValue($column, $row);
+        }
+
+        if (! $this->anonymizer->active()) {
+            return $value;
+        }
+
+        $applied = $this->anonymizer->apply($table, $column['name'], $value, false, $column['numeric'], $column['binary'], $column['type'] ?? '');
+
+        return $applied['masked'] ? $this->hiddenValue($column, $row) : $applied['value'];
+    }
+
+    /**
      * What a hidden column holds in place of its value: NULL, or nothing
      * when it cannot be NULL. Under a unique index every row gets a value
      * of its own instead — the same one twice would refuse the restore,
@@ -403,7 +438,7 @@ class DatabaseDumpService
         $bytes = 0;
 
         foreach ($this->records($table, $plan) as $record) {
-            $tuple = $this->tuple($plan, $record, $written + 1);
+            $tuple = $this->tuple($plan, $record, $written + 1, (string) $table['key']);
             $batch[] = $tuple;
             $bytes += strlen($tuple);
             $written++;
@@ -447,12 +482,13 @@ class DatabaseDumpService
 
             $target = $this->table($table);
             $head = ($plan['hidden'] === [] ? '' : '-- Left out, as the page hides them: '.implode(', ', $plan['hidden'])."\n")
+                .($this->anonymizer->active() ? "-- Personal columns are anonymized.\n" : '')
                 .$this->insertHead($table, $plan);
             $identityInsert = $this->driver === 'sqlsrv' && $plan['identity'];
             $inserts = [];
 
             foreach (array_values($records) as $index => $record) {
-                $statement = $head."\n".$this->tuple($plan, $record, $from + $index).';';
+                $statement = $head."\n".$this->tuple($plan, $record, $from + $index, (string) $table['key']).';';
 
                 if ($identityInsert) {
                     $statement = 'SET IDENTITY_INSERT '.$target." ON;\n".$statement."\nSET IDENTITY_INSERT ".$target.' OFF;';
@@ -484,17 +520,16 @@ class DatabaseDumpService
      * @param  array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>}  $plan
      * @param  array<string, mixed>  $record
      */
-    protected function tuple(array $plan, array $record, int $row): string
+    protected function tuple(array $plan, array $record, int $row, string $table): string
     {
         $values = [];
 
         foreach ($plan['columns'] as $column) {
-            if ($column['hidden']) {
-                $value = $this->hiddenValue($column, $row);
-                $values[] = $this->literal($value, $column['binary'] && is_string($value) && $value !== '');
-            } else {
-                $values[] = $this->literal($record[$column['name']] ?? null, $column['binary']);
-            }
+            $value = $this->exportedValue($table, $column, $record[$column['name']] ?? null, $row);
+            $asBinary = $column['hidden']
+                ? $column['binary'] && is_string($value) && $value !== ''
+                : $column['binary'];
+            $values[] = $this->literal($value, $asBinary);
         }
 
         return '('.implode(', ', $values).')';
@@ -989,6 +1024,10 @@ class DatabaseDumpService
             foreach ($summary['hidden'] as $column) {
                 $lines[] = '               '.$column;
             }
+        }
+
+        if ($rows && $this->anonymizer->active()) {
+            $lines[] = 'Rows:        anonymized — the map in .larapilot/anonymization.yaml, and a safe default for every other personal column.';
         }
 
         $lines[] = '';

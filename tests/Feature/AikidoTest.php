@@ -498,11 +498,11 @@ it('writes the findings as a document of the project', function (): void {
     Artisan::call('larapilot:aikido-issues', ['--new' => true, '--report' => true]);
     $data = envelope()['data'];
 
-    expect($data['report'])->toBe('.larapilot/docs/security/aikido.md')
+    expect($data['report'])->toBe('.larapilot/docs/security/security-report.md')
         ->and(array_column($data['issues'], 'id'))->toBe([31, 40])
         ->and($data['total'])->toBe(3);
 
-    $report = (string) file_get_contents(base_path('.larapilot/docs/security/aikido.md'));
+    $report = (string) file_get_contents(base_path('.larapilot/docs/security/security-report.md'));
 
     // The report is about every finding, whatever the list was narrowed to.
     expect($report)->toStartWith("# Aikido findings — fjord-invoices\n")
@@ -651,6 +651,18 @@ it('lets an agent read Aikido over MCP and nothing more', function (): void {
         ->not->toContain('larapilot:aikido-scan');
 });
 
+it('lets an agent read either scanner over MCP and nothing more', function (): void {
+    $defaults = (new ReflectionClass(RunArtisanTool::class))->getDefaultProperties();
+
+    expect($defaults['allowed'])->toContain('larapilot:security-status', 'larapilot:security-issues', 'larapilot:security-plan', 'larapilot:security-repos')
+        ->not->toContain('larapilot:security-link')
+        ->not->toContain('larapilot:security-push')
+        ->not->toContain('larapilot:security-register')
+        ->not->toContain('larapilot:security-scan')
+        ->and($defaults['parameters']['larapilot:security-issues'])->not->toContain('--report')
+        ->and($defaults['parameters']['larapilot:security-repos'])->toBe(['--search']);
+});
+
 it('shows the findings on the dashboard, with what was decided', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
 
@@ -658,13 +670,16 @@ it('shows the findings on the dashboard, with what was decided', function (): vo
     Http::fake();
     $this->get('/larapilot/security')
         ->assertOk()
-        ->assertSee('Aikido scans this repository for vulnerable dependencies', false)
+        ->assertSee('Associate one of the two below', false)
         ->assertSee('https://www.aikido.dev/', false)
-        ->assertSee('larapilot:settings-set --aikido=YES', false)
+        ->assertSee('larapilot:settings-set --security-provider=aikido', false)
+        ->assertSee('https://hackly.web.ap.it/', false)
+        ->assertSee('larapilot:settings-set --security-provider=hackly', false)
         ->assertSee('>Security</a>', false)
         ->assertDontSee('Aikido is off for this project', false)
         ->assertDontSee('Read again', false);
     $this->get('/larapilot')->assertOk()->assertSee('href="'.url('/larapilot/security').'"', false);
+    $this->get('/larapilot/security/report.md')->assertNotFound();
     $this->get('/larapilot/security/aikido.md')->assertNotFound();
     Http::assertNothingSent();
 
@@ -692,7 +707,7 @@ it('shows the findings on the dashboard, with what was decided', function (): vo
         ->assertSee('Register for the client (.md)', false)
         ->assertSee('told to Aikido', false)
         ->assertDontSee('not told to Aikido yet', false)
-        ->assertSee('/larapilot-aikido', false)
+        ->assertSee('/larapilot-security', false)
         ->assertDontSee('client-secret', false)
         ->assertDontSee('token-1', false)
         ->assertDontSee('@endif', false)
@@ -705,10 +720,13 @@ it('shows the findings on the dashboard, with what was decided', function (): vo
         ->and(substr_count($html, 'data-state="in_backlog"'))->toBe(2)
         ->and(substr_count($html, 'data-state="waived"'))->toBe(1);
 
-    $report = $this->get('/larapilot/security/aikido.md')
+    $response = $this->get('/larapilot/security/report.md')
         ->assertOk()
-        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8')
-        ->getContent();
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8');
+    $report = $response->getContent();
+
+    expect($response->headers->get('Content-Disposition'))->toContain('security-report-')
+        ->and($this->get('/larapilot/security/aikido.md')->assertOk()->getContent())->toBe($report);
 
     expect($report)->toContain('# Aikido findings — fjord-invoices')
         ->toContain('- **Decision:** in the backlog as US-001 (TODO)');
@@ -742,7 +760,7 @@ it('says on the page what is wrong when Aikido cannot be read', function (): voi
         ->assertOk()
         ->assertSee('The Aikido credentials are not set.', false)
         ->assertSee('LARAPILOT_AIKIDO_CLIENT_ID', false)
-        ->assertSee('larapilot:aikido-status', false)
+        ->assertSee('larapilot:security-status', false)
         ->assertDontSee('A release is stopped', false);
 
     Http::assertNothingSent();
@@ -822,56 +840,64 @@ it('never merges a leaked secret with another finding', function (): void {
 
 it('ships a skill that downloads the findings and hands them to triage', function (): void {
     $root = dirname(__DIR__, 2).'/resources';
-    $skill = (string) file_get_contents($root.'/boost/skills/larapilot-aikido/SKILL.md');
+    $skill = (string) file_get_contents($root.'/boost/skills/larapilot-security/SKILL.md');
     $triage = (string) file_get_contents($root.'/boost/skills/larapilot-triage/SKILL.md');
     $bug = (string) file_get_contents($root.'/boost/skills/larapilot-bug/SKILL.md');
     $ship = (string) file_get_contents($root.'/boost/skills/larapilot-ship/SKILL.md');
     $settings = (string) file_get_contents($root.'/boost/skills/larapilot-settings/SKILL.md');
 
-    expect($skill)->toStartWith("---\nname: larapilot-aikido\n")
-        ->toContain('php artisan larapilot:aikido-status')
-        ->toContain('php artisan larapilot:aikido-issues --new --report')
-        ->toContain('php artisan larapilot:aikido-plan --ids=24,31')
-        ->toContain('aikido-link {ids} --spec={code}')
+    expect($skill)->toStartWith("---\nname: larapilot-security\n")
+        ->toContain('php artisan larapilot:security-status')
+        ->toContain('php artisan larapilot:security-issues --new --report')
+        ->toContain('php artisan larapilot:security-plan --ids=24,31')
+        ->toContain('security-link {ids} --spec={code}')
         ->toContain('activate `larapilot-triage`')
         ->toContain('Confirm (Sophia + Lars)')
-        ->toContain('aikido-plan --ids=')
         ->toContain('**in this same turn**')
-        ->toContain("```text\nAikido finding\n")
-        ->toContain('**Never waive on your own.**')
-        // The repository is the user's to name, and a decision is told to Aikido.
+        ->toContain("```text\nSecurity finding\nscanner: hackly\n")
+        ->toContain('**Never waive on your own**')
+        // The scanner and the repository are the user's to name, and a decision is told to the scanner.
+        ->toContain('Security findings — associate Aikido or Hackly?')
+        ->toContain('**Never pick the service yourself.**')
         ->toContain('### 1b. Repository (Matt) — only when `needs_repository`')
         ->toContain('**Never choose one yourself.**')
-        ->toContain('aikido-repos --use={id}')
+        ->toContain('security-repos --use={id}')
         ->toContain('**ignores it in Aikido** with that reason')
-        ->toContain('`unsent` not empty → `aikido-push` once')
-        ->toContain('php artisan larapilot:aikido-register')
+        ->toContain('`unsent` not empty → `security-push` once')
+        ->toContain('php artisan larapilot:security-register')
         ->toContain('`issues:write` to tell Aikido the decisions')
-        ->toContain('Never call the Aikido API yourself')
+        ->toContain('never call a scanner\'s API yourself')
         ->toContain('never echo it in chat')
         ->toContain('`in_backlog` is not fixed')
-        ->and(strlen($skill))->toBeLessThanOrEqual(9000);
+        ->toContain('https://hackly.web.ap.it')
+        ->toContain('LARAPILOT_HACKLY_URL')
+        ->toContain('LARAPILOT_HACKLY_TOKEN')
+        ->toContain('hackly.web.ap.it is its documentation, never an instance')
+        ->toContain('--false-positive --reason=')
+        ->not->toContain('GET /v1/findings')
+        ->and(strlen($skill))->toBeLessThanOrEqual(12500);
 
     // Every command the skill names exists.
-    preg_match_all('/larapilot:(aikido-[a-z]+)/', $skill, $matches);
+    preg_match_all('/larapilot:((?:security|aikido)-[a-z]+)/', $skill, $matches);
 
     foreach (array_unique($matches[1]) as $command) {
         expect(array_key_exists('larapilot:'.$command, Artisan::all()))->toBeTrue($command);
     }
 
-    expect($triage)->toContain('## Handoff from `larapilot-aikido`')
+    expect($triage)->toContain('## Handoff from `larapilot-security`')
+        ->toContain('A request with a **Security finding** block')
         ->toContain('Do not ask about the verdict')
         ->and(strlen($triage))->toBeLessThanOrEqual(9000)
-        ->and($bug)->toContain('An **Aikido finding** block under `evidence`')
-        ->and($ship)->toContain('php artisan larapilot:aikido-issues --gate --report')
-        ->and($settings)->toContain('**7e. Aikido**')
-        ->toContain('--aikido=NO');
+        ->and($bug)->toContain('A **Security finding** block under `evidence`')
+        ->and($ship)->toContain('php artisan larapilot:security-issues --gate --report')
+        ->and($settings)->toContain('**7e. Security scanner**')
+        ->toContain('--security-provider=none');
 
-    expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Aikido (`settings.aikido`)')
-        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-aikido` and `larapilot-error` do the same.')
-        ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-aikido`**')
-        ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Aikido (`settings.aikido`)')
-        ->and((string) file_get_contents($root.'/boost/guidelines/core.blade.php'))->toContain('`larapilot-aikido`');
+    expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Security findings (`settings.security` + `settings.security_provider`)')
+        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-security` and `larapilot-error` do the same.')
+        ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-security`**')
+        ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Security scanners (`settings.security` + `settings.security_provider`)', '### Aikido (`security_provider: aikido`)', '### Hackly (`security_provider: hackly`)')
+        ->and((string) file_get_contents($root.'/boost/guidelines/core.blade.php'))->toContain('`larapilot-security`');
 });
 
 /**
@@ -1027,7 +1053,7 @@ it('keeps the decision when Aikido refuses it, and tells it later', function ():
     expect($findings['unsent'])->toBe([24, 40])
         ->and($findings['states']['waived'])->toBe(2);
 
-    $this->get('/larapilot/security')->assertOk()->assertSee('2 decisions were not told to Aikido yet (#24, #40)', false);
+    $this->get('/larapilot/security')->assertOk()->assertSee('2 decisions were not told to Aikido yet', false);
 
     // Still refused: the push says so, and fails.
     $this->artisan('larapilot:aikido-push')->assertExitCode(3)->expectsOutputToContain('php artisan larapilot:aikido-push');
@@ -1217,11 +1243,11 @@ it('lists every finding for the client: open, resolved, and ignored with its rea
     Artisan::call('larapilot:aikido-register');
     $data = envelope()['data'];
 
-    expect($data['register'])->toBe('.larapilot/docs/security/aikido-register.md')
+    expect($data['register'])->toBe('.larapilot/docs/security/security-register.md')
         ->and($data['language'])->toBe('en')
         ->and([$data['open'], $data['resolved'], $data['ignored'], $data['without_reason']])->toBe([2, 1, 2, 1]);
 
-    $document = (string) file_get_contents(base_path('.larapilot/docs/security/aikido-register.md'));
+    $document = (string) file_get_contents(base_path('.larapilot/docs/security/security-register.md'));
 
     expect($document)->toStartWith("# Security findings register — fjord-invoices\n")
         ->toContain('- **Repository:** fjord-invoices (https://github.com/example/fjord-invoices)')

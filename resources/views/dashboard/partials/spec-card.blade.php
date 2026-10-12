@@ -49,6 +49,16 @@
         </div>
     </div>
     <h3>{{ $spec['title'] ?? 'Untitled' }}</h3>
+    @if (! empty($spec['release']) || ! empty($spec['sprint']))
+        <div class="spec-plan">
+            @if (! empty($spec['release']))
+                <span class="spec-tag" title="Targets version {{ $spec['release'] }}">v{{ $spec['release'] }}</span>
+            @endif
+            @if (! empty($spec['sprint']))
+                <span @class(['spec-tag', 'is-proposed' => ! empty($spec['sprint_proposed'])]) title="{{ ! empty($spec['sprint_proposed']) ? 'Proposed from the backlog — nothing was decided yet' : 'Planned for this sprint' }}">Sprint {{ $spec['sprint'] }}{{ ! empty($spec['sprint_proposed']) ? ' · proposed' : '' }}</span>
+            @endif
+        </div>
+    @endif
     @if (! empty($spec['mockups']['available']))
         <div class="mockup-indicator">Mockup</div>
     @endif

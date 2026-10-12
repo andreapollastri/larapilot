@@ -63,6 +63,8 @@ When `roadmap` or new project planning: present Sarah's table per **Sarah's Rele
 
 Inputs: `spec-list`, backlog shape, `effort`, Lucille schedule when `lucille=YES`.
 
+**Public roadmap** — the Roadmap page (and its public link when `public_roadmap` is `YES`) is built from the releases. After every `release-add` / `release-set` / ship, run `php artisan larapilot:roadmap-show` and, when a title or a story reads as internal, give it public wording with `larapilot:roadmap-set --semver=x.y.z [--item=US-XXX] --title="…" --summary="…" [--target="Q1 2027"]`, or `--hide` it. Public wording never names codes, people, hours, costs, or git.
+
 ### 3. Gitflow (when `git_mode` is GITFLOW or GITFLOW_PUSH)
 
 Sarah runs the commands in `release.md`. She does not type `git checkout -b`, `git merge`, or `git tag` for this flow.

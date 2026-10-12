@@ -312,9 +312,25 @@
                     'NO' => 'No code change history (default).',
                 ],
             ],
+            'sprints' => [
+                'label' => 'Sprints',
+                'description' => 'Split the work into two-week sprints (one person\'s capacity) on the Board, the Plan, and in planning. Off by default.',
+                'options' => [
+                    'YES' => 'Board and Plan offer Group by Sprint; a spec with no sprint gets a proposed one.',
+                    'NO' => 'No sprint grouping (default).',
+                ],
+            ],
+            'public_roadmap' => [
+                'label' => 'Public roadmap',
+                'description' => 'A public link to the product roadmap — titles and versions only, no codes, people, hours, or git. Off by default.',
+                'options' => [
+                    'YES' => 'The Roadmap page keeps a token link anyone with it can open.',
+                    'NO' => 'The roadmap stays inside the dashboard (default).',
+                ],
+            ],
             'release_mode' => [
                 'label' => 'Release mode',
-                'description' => 'Semver release ledger in .larapilot/releases.yaml with /larapilot-release and optional Gitflow release/x.y.z branches.',
+                'description' => 'Release mode is explicit versioning: every spec targets a version in .larapilot/releases.yaml, with /larapilot-release and optional Gitflow release/x.y.z branches.',
                 'options' => [
                     'YES' => 'Release ledger, ship ceremony, and parallel release branches when Gitflow is active.',
                     'NO' => 'Classic develop/feature flow only (default).',
@@ -336,20 +352,12 @@
                     'NO' => 'Hide feedback UI and reject new comments project-wide (default).',
                 ],
             ],
-            'dashboard_auth' => [
-                'label' => 'Dashboard auth',
-                'description' => 'HTTP Basic Auth on the /larapilot dashboard UI only. Credentials live in .larapilot/auth.yaml (git-ignored).',
-                'options' => [
-                    'NO' => 'Dashboard open in allowed environments (default).',
-                    'YES' => 'Require username + password; manage users via larapilot:dashboard-user.',
-                ],
-            ],
             'api_auth' => [
                 'label' => 'API auth',
-                'description' => 'Makes LARAPILOT_API_TOKEN mandatory on every /larapilot/api/* request. Never affects the dashboard UI or MCP.',
+                'description' => 'Requires the API token on /larapilot/api/* on a developer\'s machine too. Outside local the token is always required; the dashboard sign-in follows APP_ENV, not a setting.',
                 'options' => [
-                    'NO' => 'Token enforced when set; reads open in dev/staging when unset (default).',
-                    'YES' => 'Every API call needs the token; fails closed (HTTP 503) when LARAPILOT_API_TOKEN is missing.',
+                    'NO' => 'Reads open in local/testing; everywhere else every call needs the token (default).',
+                    'YES' => 'Every API call needs the token, in local too; fails closed (HTTP 503) until one exists.',
                 ],
             ],
             'security_scan' => [
@@ -360,12 +368,20 @@
                     'YES' => 'checkpoint:scan in review; FAIL = blocker, WARN = review note.',
                 ],
             ],
-            'aikido' => [
-                'label' => 'Aikido',
-                'description' => 'Reads the findings of Aikido for this repository, and tells Aikido what was decided about them. Needs LARAPILOT_AIKIDO_CLIENT_ID and LARAPILOT_AIKIDO_CLIENT_SECRET in .env; Aikido scans the repository on its side.',
+            'security' => [
+                'label' => 'Security findings',
+                'description' => 'Reads the open security findings of this repository from the scanner named in security_provider, and tells it what was decided about them. The scanner scans on its side; Larapilot runs none.',
                 'options' => [
-                    'NO' => 'Aikido is not read (default).',
-                    'YES' => '/larapilot-aikido hands the open findings to triage; the ship gate stops on what nobody decided about; /larapilot/security shows them.',
+                    'NO' => 'No scanner is read (default).',
+                    'YES' => '/larapilot-security hands the open findings to triage; the ship gate stops on what nobody decided about; /larapilot/security shows them.',
+                ],
+            ],
+            'security_provider' => [
+                'label' => 'Security scanner',
+                'description' => 'Which scanner the findings are read from when security is YES. Set with php artisan larapilot:settings-set --security-provider=aikido|hackly.',
+                'options' => [
+                    'aikido' => 'Aikido — SaaS; LARAPILOT_AIKIDO_CLIENT_ID and LARAPILOT_AIKIDO_CLIENT_SECRET.',
+                    'hackly' => 'Hackly — self-hosted (hackly.web.ap.it); LARAPILOT_HACKLY_URL and LARAPILOT_HACKLY_TOKEN.',
                 ],
             ],
             'errors' => [
@@ -467,11 +483,11 @@
 
     @php
         $settingGroups = [
-            'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve'],
+            'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'auto_approve', 'sprints'],
             'Automation' => ['hooks'],
-            'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'project_docs', 'comments'],
+            'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'public_roadmap', 'project_docs', 'comments'],
             'Business' => ['account'],
-            'Security' => ['dashboard_auth', 'api_auth', 'security_scan', 'aikido'],
+            'Security' => ['api_auth', 'security_scan', 'security', 'security_provider'],
             'Monitoring' => ['errors', 'errors_provider', 'boogle'],
             'Forges' => ['github', 'gitlab', 'bitbucket', 'azure'],
             'Notifications' => ['notifications', 'notify_slack', 'notify_discord', 'notify_telegram'],

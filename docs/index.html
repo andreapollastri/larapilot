@@ -2079,7 +2079,7 @@
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
       <div class="hero-copy">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.0.4</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.1.0</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -2153,7 +2153,7 @@
       <a class="sub" href="#deep-dive-integrations">Forges &amp; notify</a>
       <a class="sub" href="#deep-dive-backstage">Backstage portal</a>
       <a class="sub" href="#deep-dive-tracker">Project trackers</a>
-      <a class="sub" href="#deep-dive-aikido">Aikido</a>
+      <a class="sub" href="#deep-dive-aikido">Security scanners</a>
       <a class="sub" href="#deep-dive-boogle">Production errors</a>
       <a class="sub" href="#deep-dive-sbom">SBOM, CVE &amp; Checkpoint</a>
       <a class="sub" href="#deep-dive-frontend-companion">Frontend companion</a>
@@ -2163,6 +2163,7 @@
       <a class="sub" href="#deep-dive-code-quality">Code quality</a>
       <a class="sub" href="#deep-dive-cli">Artisan CLI</a>
       <a class="sub" href="#deep-dive-dashboard">Dashboard</a>
+      <a class="sub" href="#deep-dive-dashboard-auth">Sign-in &amp; roles</a>
       <a class="sub" href="#deep-dive-economics">Economics</a>
       <a class="sub" href="#deep-dive-api">API</a>
       <a class="sub" href="#deep-dive-api-hardening">API hardening</a>
@@ -2235,9 +2236,10 @@
           already run serves it at <code>/larapilot</code>, with no other service to start, no frontend build, and
           no account. On Herd or Valet open <code>http://your-app.test/larapilot</code>, on Sail
           <code>http://localhost/larapilot</code>. Keep it in a browser tab: each skill writes to
-          <code>.larapilot/</code>, and the next reload shows it. It answers in <code>local</code>,
-          <code>development</code>, <code>testing</code>, and <code>staging</code>, never in
-          <code>production</code>. <a href="#deep-dive-dashboard">Every page</a>.</p>
+          <code>.larapilot/</code>, and the next reload shows it. It is open on your machine
+          (<code>APP_ENV=local</code>), asks for a user on every other environment, and is not served in
+          <code>production</code> unless you say so — <a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp;
+          roles</a>. <a href="#deep-dive-dashboard">Every page</a>.</p>
         <p>Then open your editor in the project and type <code>/larapilot-</code>: the skills are listed. Pick the
           one for your situation from <a href="#first-run">First run</a>.</p>
         <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
@@ -2453,13 +2455,17 @@
             <button type="button" role="tab" id="tour-tab-board" aria-controls="tour-board" aria-selected="true">Board</button>
             <button type="button" role="tab" id="tour-tab-spec" aria-controls="tour-spec" aria-selected="false" tabindex="-1">Spec</button>
             <button type="button" role="tab" id="tour-tab-plan" aria-controls="tour-plan" aria-selected="false" tabindex="-1">Plan</button>
+            <button type="button" role="tab" id="tour-tab-roadmap" aria-controls="tour-roadmap" aria-selected="false" tabindex="-1">Roadmap</button>
             <button type="button" role="tab" id="tour-tab-design" aria-controls="tour-design" aria-selected="false" tabindex="-1">Design</button>
+            <button type="button" role="tab" id="tour-tab-forecast" aria-controls="tour-forecast" aria-selected="false" tabindex="-1">Forecast</button>
             <button type="button" role="tab" id="tour-tab-usage" aria-controls="tour-usage" aria-selected="false" tabindex="-1">Usage</button>
             <button type="button" role="tab" id="tour-tab-economics" aria-controls="tour-economics" aria-selected="false" tabindex="-1">Economics</button>
             <button type="button" role="tab" id="tour-tab-database-diagram" aria-controls="tour-database-diagram" aria-selected="false" tabindex="-1">Database</button>
             <button type="button" role="tab" id="tour-tab-logs" aria-controls="tour-logs" aria-selected="false" tabindex="-1">Logs</button>
             <button type="button" role="tab" id="tour-tab-laravel-mail" aria-controls="tour-laravel-mail" aria-selected="false" tabindex="-1">Laravel</button>
+            <button type="button" role="tab" id="tour-tab-security" aria-controls="tour-security" aria-selected="false" tabindex="-1">Security</button>
             <button type="button" role="tab" id="tour-tab-git" aria-controls="tour-git" aria-selected="false" tabindex="-1">Git</button>
+            <button type="button" role="tab" id="tour-tab-users" aria-controls="tour-users" aria-selected="false" tabindex="-1">Users</button>
           </div>
           <figure class="shot tour-panel" id="tour-board" role="tabpanel" aria-labelledby="tour-tab-board">
             <div class="shot-frame">
@@ -2482,12 +2488,26 @@
             </div>
             <figcaption><strong>Plan.</strong> Release 0.1.0 shipped, so its milestone is done; 0.2.0 is on track for 16 October, with the waitlist in review and two stories under way today. <a href="#deep-dive-dashboard-plan">More</a></figcaption>
           </figure>
+          <figure class="shot tour-panel" id="tour-roadmap" role="tabpanel" aria-labelledby="tour-tab-roadmap">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/roadmap</span></div>
+              <img src="img/dashboard/roadmap.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Roadmap: version 0.1.0 shipped and 0.2.0 being built, each story in the words a customer reads">
+            </div>
+            <figcaption><strong>Roadmap.</strong> The versions as a customer reads them: 0.1.0 shipped, 0.2.0 being built for October, each story under a public title — the same lanes the public link shows. <a href="#deep-dive-dashboard-roadmap">More</a></figcaption>
+          </figure>
           <figure class="shot tour-panel" id="tour-design" role="tabpanel" aria-labelledby="tour-tab-design">
             <div class="shot-frame">
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/design</span></div>
               <img src="img/dashboard/design.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Design gallery: live previews of the mockup screens of the member app">
             </div>
             <figcaption><strong>Design.</strong> The member booking flow drawn by <code>/larapilot-design</code>, every screen a live preview tagged with the stories it covers. <a href="#deep-dive-dashboard-design">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-forecast" role="tabpanel" aria-labelledby="tour-tab-forecast">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/forecast</span></div>
+              <img src="img/dashboard/forecast.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Forecast: 76 story points, the sprints and hours of one person, and the same work with Larapilot">
+            </div>
+            <figcaption><strong>Forecast.</strong> 76 story points, 47 done: three two-week sprints for one person at 2.1 hours a point, against 0.6 hours a point measured with Larapilot on the eight delivered stories. <a href="#deep-dive-dashboard-forecast">More</a></figcaption>
           </figure>
           <figure class="shot tour-panel" id="tour-usage" role="tabpanel" aria-labelledby="tour-tab-usage">
             <div class="shot-frame">
@@ -2515,7 +2535,7 @@
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/logs</span></div>
               <img src="img/dashboard/logs.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Logs page with an exception opened on the frames of the application">
             </div>
-            <figcaption><strong>Logs.</strong> An exception opened on where it was thrown in the application; the nineteen frames of the framework stay one click away. <a href="#deep-dive-dashboard-logs">More</a></figcaption>
+            <figcaption><strong>Logs.</strong> An exception opened on where it was thrown in the application; the 57 frames of the framework and packages stay one click away. <a href="#deep-dive-dashboard-logs">More</a></figcaption>
           </figure>
           <figure class="shot tour-panel" id="tour-laravel-mail" role="tabpanel" aria-labelledby="tour-tab-laravel-mail">
             <div class="shot-frame">
@@ -2524,12 +2544,26 @@
             </div>
             <figcaption><strong>Laravel.</strong> A booking confirmation as it left the app: who it went to, the mailable that built it, the request that sent it, and the message in a frame that runs no script. <a href="#deep-dive-dashboard-laravel">More</a></figcaption>
           </figure>
+          <figure class="shot tour-panel" id="tour-security" role="tabpanel" aria-labelledby="tour-tab-security">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/security</span></div>
+              <img src="img/dashboard/security.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Security page reading Hackly: the release gate stopped by two high findings, and each finding with its decision">
+            </div>
+            <figcaption><strong>Security.</strong> What Hackly found in <code>fernway/fernway</code> and on its staging domain: two high findings with no decision yet stop the release, each finding waits for a spec, a waiver, or a false positive. <a href="#deep-dive-aikido">More</a></figcaption>
+          </figure>
           <figure class="shot tour-panel" id="tour-git" role="tabpanel" aria-labelledby="tour-tab-git">
             <div class="shot-frame">
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/git</span></div>
               <img src="img/dashboard/git.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Git history: Gitflow branches, pull request merges, and commits tagged with their stories">
             </div>
             <figcaption><strong>Git.</strong> Gitflow as the history draws it: stories merged into <code>release/0.2.0</code> by pull request, two feature branches under way, every commit tagged with its story. <a href="#deep-dive-dashboard-git">More</a></figcaption>
+          </figure>
+          <figure class="shot tour-panel" id="tour-users" role="tabpanel" aria-labelledby="tour-tab-users">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>staging.fernway.test/larapilot/users</span></div>
+              <img src="img/dashboard/users.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Users page on a staging host: five people, one per role, two with the authenticator on">
+            </div>
+            <figcaption><strong>Users.</strong> Fernway&#39;s staging host, behind the sign-in: Maya is the admin, Luca and Sam developers, Priya the product manager, Erin from a beta studio an external — two of them with the authenticator on. <a href="#deep-dive-dashboard-auth">More</a></figcaption>
           </figure>
         </div>
 
@@ -2732,8 +2766,8 @@
                 <td><code>/larapilot-tracker</code> — <a href="#example-tracker-sync">walkthrough</a></td>
               </tr>
               <tr>
-                <td>Vulnerabilities Aikido found in the repository</td>
-                <td><code>/larapilot-aikido</code> — see <a href="#deep-dive-aikido">Aikido</a></td>
+                <td>Vulnerabilities Aikido or Hackly found in the repository (and, with Hackly, its domains)</td>
+                <td><code>/larapilot-security</code> — see <a href="#deep-dive-aikido">Security scanners</a></td>
               </tr>
               <tr>
                 <td>Errors the application throws in production</td>
@@ -3431,6 +3465,83 @@
           </table>
         </div>
         <p>Events, phases, and the rules: <a href="#deep-dive-hooks">Workflow hooks</a>.</p>
+
+        <h3 id="v5-1">What 5.1 adds</h3>
+        <p>5.1.0 (2026-10-12) is a minor release of version 5, with three breaking changes for shared hosts. In
+          short:</p>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>5.0</th>
+                <th>5.1</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Who gets into the dashboard</strong></td>
+                <td>HTTP Basic Auth, when <code>dashboard_auth</code> was <code>YES</code>; open otherwise. Never in
+                  production</td>
+                <td>Follows <code>APP_ENV</code>: open in <code>local</code>; a sign-in page elsewhere, authenticator
+                  optional; hidden in <code>production</code> unless <code>LARAPILOT_FORCE_IN_PROD=true</code>, then
+                  password + authenticator for all. <a href="#deep-dive-dashboard-auth">Sign-in &amp; roles</a></td>
+              </tr>
+              <tr>
+                <td><strong>What each user sees</strong></td>
+                <td>Everything</td>
+                <td>Four roles — <code>admin</code>, <code>dev</code>, <code>pm</code>, <code>ext</code> — with
+                  <strong>Users</strong> and <strong>Account</strong> pages and <code>larapilot:dashboard-user</code>
+                  (<code>role</code>, <code>password</code>, <code>rename</code>, <code>totp-reset</code>)</td>
+              </tr>
+              <tr>
+                <td><strong>The API</strong></td>
+                <td>Token only when <code>LARAPILOT_API_TOKEN</code> was set; reads open otherwise</td>
+                <td>Token made on the <strong>API token</strong> page or with <code>larapilot:api-token</code>;
+                  required wherever one exists; <code>503</code> outside <code>local</code> until one does.
+                  <a href="#deep-dive-api-auth">API token</a></td>
+              </tr>
+              <tr>
+                <td><strong>Personal data</strong></td>
+                <td>Passwords and tokens hidden</td>
+                <td>An <strong>Anonymization</strong> map (Faker formatters, a locale, safe defaults);
+                  <strong>Anonymize</strong> on the SQL dump and the seeders; a developer in production sees the
+                  database anonymized only. <a href="#deep-dive-dashboard-anonymization">Anonymization</a></td>
+              </tr>
+              <tr>
+                <td><strong>File manager</strong></td>
+                <td>Open on a developer's machine, behind <code>dashboard_auth</code> elsewhere</td>
+                <td>Admins only; <strong>Download zip</strong> on every folder; <code>.env</code> shown as it is to
+                  an admin. <a href="#deep-dive-dashboard-files">File manager</a></td>
+              </tr>
+              <tr>
+                <td><strong>Security findings</strong></td>
+                <td>Aikido, <code>/larapilot-aikido</code></td>
+                <td>Aikido or <strong>Hackly</strong> (self-hosted, repository and linked domains),
+                  <code>/larapilot-security</code>, <code>larapilot:security-*</code>.
+                  <a href="#deep-dive-aikido">Security scanners</a></td>
+              </tr>
+              <tr>
+                <td><strong>Product view</strong></td>
+                <td>Board and Plan by status and epic</td>
+                <td><strong>Roadmap</strong> with a public link; <strong>Group by Version · Sprint</strong>;
+                  <strong>Forecast</strong> in Insights. <a href="#deep-dive-dashboard-roadmap">Roadmap</a> ·
+                  <a href="#deep-dive-dashboard-forecast">Forecast</a></td>
+              </tr>
+              <tr>
+                <td><strong>Skills</strong></td>
+                <td>—</td>
+                <td>Target versions proposed at inception and feature (<code>release_mode</code>), sprints in
+                  planning (<code>sprints</code>), the mockups as the contract of the frontend, a design system made
+                  for the client, adopted projects drawn as they are.
+                  <a href="#skills-mockup-contract">Mockups are the contract</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Upgrading from 5.0: <a href="#upgrade-5-1">three things to do on a shared host</a>. Every change, in
+          detail: the <a href="https://github.com/andreapollastri/larapilot/blob/main/CHANGELOG.md" target="_blank"
+            rel="noopener">changelog</a>.</p>
 
         <h3>Upgrading from 4.x</h3>
         <div class="code-block">
@@ -5626,7 +5737,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.0.4 released 2026-10-07</span>
+<span class="comment"># latest   : 5.1.0 released 2026-10-12</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -5664,6 +5775,20 @@ composer why andreapollastri/larapilot
           <p>Commit what changed — <code>composer.lock</code>, the runtime in <code>.larapilot/</code>, the skills
             and guidelines Boost republished for your editors — then open a new conversation with your agent: the
             one already open keeps the skills it loaded when it began.</p>
+          <p id="upgrade-5-1"><strong>From 5.0 to 5.1</strong> the three commands above are enough, but on a shared
+            host three things change — read <a href="#v5-1">What 5.1 adds</a> first:</p>
+          <ul>
+            <li><strong>The dashboard asks for a user</strong> on every environment but <code>local</code>,
+              <code>testing</code>, and <code>production</code> — <code>development</code> included. Until one exists
+              it answers <code>503</code>: run
+              <code>php artisan larapilot:dashboard-user add andrea --role=admin</code> on that server.
+              <code>larapilot:update</code> rewrites an old <code>auth.yaml</code>, every user an admin.</li>
+            <li><strong>The API needs its token</strong> outside <code>local</code>: <code>503</code> until one exists
+              (<code>php artisan larapilot:api-token generate</code>, or <code>LARAPILOT_API_TOKEN</code>), then on
+              every request, reads included.</li>
+            <li><strong><code>/larapilot-aikido</code> is <code>/larapilot-security</code></strong>; the
+              <code>aikido-*</code> commands and <code>--aikido=YES</code> keep working.</li>
+          </ul>
 
           <h4 id="upgrade-major">Major releases, step by step</h4>
           <p>Shown for 4.x → 5.0; for a later major, change the numbers. Work on a branch, so the upgrade is one
@@ -5972,6 +6097,9 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   <li><strong>Architecture choices are asked, never assumed</strong> — frontend topology, admin
                     panel, data store, local development, deploy platform. Lucille asks for deadlines; on a new
                     project one question offers release mode</li>
+                  <li><strong>The release roadmap</strong> — with <code>release_mode</code> on, Sarah proposes which
+                    stories go in which version, the MVP first, and asks for the starting release (default
+                    <code>0.1.0</code>). The versions feed the <a href="#deep-dive-dashboard-roadmap">Roadmap</a></li>
                   <li><strong>Ready check and readback</strong> — Tom runs a ten-point Definition of Ready, Mark
                     reads the decisions back in at most twelve lines, and the PRD is written once, after you
                     confirm</li>
@@ -6020,8 +6148,12 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   Status → <span class="status status-planned">PLANNED</span>. On a large codebase, an optional
                   read-only explore sub-agent maps the code first (never under <code>effort: ECO</code>). When
                   autopilot runs this step, that mapping stays inside the spec worker — no nested sub-agent.</p>
+                <p>Every UI task names the mockup screens it mirrors on a <code>Mirrors:</code> line, so implement
+                  opens them first (<a href="#skills-mockup-contract">mockups are the contract</a>). With
+                  <code>sprints</code> on, the plan proposes the sprint of the spec.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:validate-plan</code> ·
-                  <code>larapilot:spec-plan</code> — validate then persist the plan.
+                  <code>larapilot:spec-plan</code> — validate then persist the plan · <code>larapilot:spec-sprint</code>
+                  when <code>sprints</code> is on.
                 </p>
               </div>
             </div>
@@ -6036,6 +6168,10 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   and Lars review the diff in parallel (inline under <code>ECO</code>). Status → <span
                     class="status status-review">REVIEW</span> when all tasks complete. Autopilot runs only Phase 1
                   in the worker; the parent session launches that review and calls <code>spec-review</code>.</p>
+                <p>A UI task starts by reading the mockup screens it mirrors, and the code mirrors them — layout,
+                  components, copy, states, responsive behaviour, dark mode. A deviation is asked in chat before it is
+                  written; Joe's fidelity check closes the spec (<a href="#skills-mockup-contract">mockups are the
+                  contract</a>).</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-start</code> ·
                   <code>larapilot:quality</code> (<code>--fix</code>) · <code>larapilot:task-done</code> ·
                   <code>larapilot:spec-review</code>.
@@ -6047,7 +6183,8 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
               <div class="skill-body">
                 <h3><code>/larapilot-review US-XXX</code></h3>
                 <p>Human gate. You approve → <span class="status status-done">DONE</span>, or send back with feedback →
-                  <span class="status status-todo">TODO</span>.
+                  <span class="status status-todo">TODO</span>. A difference from the approved mockups that nobody
+                  agreed to in chat is a <strong>High</strong> finding.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-approve</code> or
                   <code>larapilot:spec-request-changes</code>.
@@ -6079,6 +6216,11 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                     system (<code>/larapilot-inception</code> + <code>.larapilot/legacy/</code>)</li>
                   <li>When <code>release_mode=YES</code>: <code>release-import</code> rebuilds shipped releases from Git
                     tags; AskQuestion for current production version and in-progress release branches</li>
+                  <li>When the app has a UI, Elise and Joe derive its <strong>as-is design system</strong> — from the
+                    views, the CSS and its tokens, the brand assets, and the navigation — into
+                    <code>.larapilot/design-systems/{project}/</code>, and every mockup of the project is drawn in it,
+                    so a mockup looks like the running product. A redesign happens only when you ask for it, and is
+                    discussed first</li>
                 </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:context</code> ·
                   <code>larapilot:prd-write</code> · <code>larapilot:validate-prd</code> ·
@@ -6110,13 +6252,14 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   FR). Criteria are built from the FR's done-means, the journey's failure modes, and the NFR targets
                   that apply; Tom runs a five-point ready check and Mark reads the feature back before it is
                   persisted. A <strong>change request</strong> edits the FR in place — same id, before → after in the
-                  revision history — and <code>prd-impact</code> names the other stories resting on it. When <code>release_mode=YES</code> and open releases exist, AskQuestion assigns the spec to a
-                  release (or backlog) → <code>**Release:** x.y.z</code> line + <code>release-set --add-spec=</code>.
+                  revision history — and <code>prd-impact</code> names the other stories resting on it. When <code>release_mode=YES</code>, it always proposes a target version — an open
+                  release, or a future one Sarah names — and writes the <code>**Release:** x.y.z</code> line +
+                  <code>release-set --add-spec=</code>. When <code>sprints</code> is on, it proposes the sprint too.
                 </p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:spec-add</code> ·
                   <code>larapilot:validate-spec</code> · <code>larapilot:release-list</code> ·
-                  <code>larapilot:release-set --add-spec=</code> — optionally <code>prd-write</code> when a new FR is
-                  added.
+                  <code>larapilot:release-set --add-spec=</code> · <code>larapilot:spec-sprint</code> — optionally
+                  <code>prd-write</code> when a new FR is added.
                 </p>
               </div>
             </div>
@@ -6182,14 +6325,37 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
               <span class="skill-badge">mockups</span>
               <div class="skill-body">
                 <h3><code>/larapilot-design US-XXX</code> <span class="skills-group-note" style="display:inline">— before plan</span></h3>
-                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from packaged references — Filament,
-                  Starter Kit, Bootstrap 5, Tailwind, or AdminLTE per PRD. Preview at <code>/mockups/{spec}</code>
-                  (non-production), on the spec page, and in the <a href="#deep-dive-dashboard">dashboard</a>
+                <p>Static HTML mockups in <code>mockups/{spec}/</code>, styled from a packaged
+                  <a href="#deep-dive-design-systems">design system</a> or one of the client's own. Preview at
+                  <code>/mockups/{spec}</code> — wherever the dashboard is served, behind the same sign-in, for every
+                  role that sees Design — on the spec page, and in the <a href="#deep-dive-dashboard">dashboard</a>
                   <strong>Design</strong> gallery (<code>/larapilot/design</code>) — every screen as a card you
                   click to browse the mockup like a site, zip download of HTML + assets. A mockup
                   <a href="#deep-dive-mockup-credentials">never contains a field for a username or a password</a>:
                   it draws them.
                 </p>
+                <p id="skills-mockup-contract"><strong>Mockups are the contract of the frontend.</strong> Design,
+                  plan, implement, and review read the same rules:</p>
+                <ul>
+                  <li><strong>The build mirrors the approved mockups</strong> — layout, components, copy, states,
+                    responsive behaviour, dark mode. Every UI task of a plan names the screens it mirrors, and
+                    implement opens them before the first line of frontend code.</li>
+                  <li><strong>A deviation is discussed before it is coded</strong> — what and why, in chat: you accept
+                    it, keep the mockup, or have the mockup changed first. An accepted one is logged in the decision
+                    journal and in the <code>## Deviations</code> table of the mockup README. A silent deviation is a
+                    <strong>High</strong> review finding.</li>
+                  <li><strong>The mockups stay the mirror of the product</strong> — after drawing, the skill presents
+                    the screens and asks for feedback; you can ask for changes at any later moment, each one logged
+                    under <code>## Revisions</code>.</li>
+                  <li><strong>A design system of the client's own</strong> — Elise offers an interview: the brand, its
+                    references and links, the files you drop in <code>.larapilot/brand/</code> and
+                    <code>client-materials/</code> (the dashboard file manager uploads there), tone, density,
+                    components, accessibility, dark mode. She writes
+                    <code>.larapilot/design-systems/{slug}/</code> in the shape of the packaged ones, and you approve
+                    it before any mockup uses it.</li>
+                  <li><strong>An adopted project mirrors the as-is</strong> — its mockups are drawn in the design
+                    system <a href="#skills-onboarding"><code>/larapilot-adopt</code></a> derived from the running app.</li>
+                </ul>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:context</code> — resolve
                   <code>paths.mockups</code> and <code>paths.design_systems</code>.
                 </p>
@@ -6247,13 +6413,17 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   <li><strong>Discovery</strong> — <code>prior_art</code> (Sebastian's existing-solutions search at
                     inception, consent asked before every search, ON)</li>
                   <li><strong>Delivery extras</strong> — <code>release_mode</code> (semver ledger + Gitflow release
-                    branches, OFF), <code>project_docs</code> (living handbook in <code>.larapilot/docs/handbook/</code>, OFF)</li>
+                    branches, OFF), <code>project_docs</code> (living handbook in <code>.larapilot/docs/handbook/</code>, OFF),
+                    <code>sprints</code> (two-week sprints on the Board, the Plan, and in planning, OFF),
+                    <code>public_roadmap</code> (a public link to the Roadmap, OFF)</li>
                   <li><strong>Business</strong> — <code>account</code> (<code>NONE</code> · <code>FREELANCE</code> ·
                     <code>COMPANY</code>; anything but <code>NONE</code> unlocks Economics)</li>
                   <li><strong>Access &amp; security</strong> — <code>comments</code> (dashboard + API internal
-                    feedback), <code>dashboard_auth</code> (HTTP Basic Auth on the dashboard UI),
-                    <code>api_auth</code> (mandatory <code>LARAPILOT_API_TOKEN</code> on the JSON API),
-                    <code>security_scan</code> (checkpoint in review and pre-ship) — all OFF by default</li>
+                    feedback), <code>api_auth</code> (the API token required on a developer's machine too),
+                    <code>security_scan</code> (checkpoint in review and pre-ship), <code>security</code> +
+                    <code>security_provider</code> (the findings of Aikido or Hackly) — all OFF by default. Who gets
+                    into the dashboard is not a setting: it follows <code>APP_ENV</code>
+                    (<a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a>)</li>
                   <li><strong>Integrations</strong> — GitHub / GitLab / Bitbucket / Azure DevOps forges,
                     Slack / Discord / Telegram channels</li>
                 </ul>
@@ -6270,11 +6440,16 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                 <p>Manage the semver release ledger (<code>.larapilot/releases.yaml</code>): roadmaps, register releases,
                   assign specs, switch active <code>release/*</code> branches, import history from Git tags, move status
                   toward ship. Sarah owns Git mechanics; Jack owns policy; Mark owns scope.</p>
+                <p>After every release change it keeps the public wording of the
+                  <a href="#deep-dive-dashboard-roadmap">Roadmap</a> current: <code>roadmap-show</code> prints what the
+                  public reads, and <code>roadmap-set</code> gives an internal-sounding version or story a public title
+                  and summary, or hides it — never a code, a person, an hour, a cost, or git.</p>
                 <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:release-list</code> ·
                   <code>larapilot:release-add</code> · <code>larapilot:release-set</code> ·
                   <code>larapilot:release-cut</code> · <code>larapilot:release-feature</code> ·
                   <code>larapilot:release-sync</code> · <code>larapilot:release-ship</code> ·
-                  <code>larapilot:release-import</code>.
+                  <code>larapilot:release-import</code> · <code>larapilot:roadmap-show</code> ·
+                  <code>larapilot:roadmap-set</code>.
                 </p>
                 <details class="skill-details">
                   <summary>Full reference</summary>
@@ -6536,18 +6711,21 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
             <div class="skill-item">
               <span class="skill-badge">security findings</span>
               <div class="skill-body">
-                <h3><code>/larapilot-aikido</code></h3>
-                <p>Downloads the open findings <strong>Aikido</strong> has for the repository, shows the ones
-                  nobody decided about, and hands each one you pick to
-                  <code>/larapilot-triage</code>, which routes it to <code>/larapilot-bug</code> or
-                  <code>/larapilot-feature</code>. It runs no scanner and writes no spec itself. Needs
-                  <code>aikido=YES</code>. Full reference: <a href="#deep-dive-aikido">Aikido</a>.
+                <h3><code>/larapilot-security</code></h3>
+                <p>Reads the security scanner the project associates — <strong>Aikido</strong> (SaaS) or
+                  <strong>Hackly</strong> (self-hosted, the repository and the domains linked to it) — and asks which
+                  one when none is set. Downloads the open findings, shows the ones nobody decided about, and hands
+                  each group you confirm to <code>/larapilot-triage</code>, which routes it to
+                  <code>/larapilot-bug</code> or <code>/larapilot-feature</code>; with Hackly, the fix prompt Hackly
+                  writes for a finding goes with it. It runs no scanner and writes no spec itself. Needs
+                  <code>security=YES</code>. Before 5.1 it was <code>/larapilot-aikido</code>. Full reference:
+                  <a href="#deep-dive-aikido">Security scanners</a>.
                 </p>
-                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:aikido-status</code> ·
-                  <code>larapilot:aikido-issues</code> · <code>larapilot:aikido-plan</code> ·
-                  <code>larapilot:aikido-link</code> · <code>larapilot:aikido-push</code> ·
-                  <code>larapilot:aikido-repos</code> · <code>larapilot:aikido-register</code> ·
-                  <code>larapilot:aikido-scan</code>.
+                <p class="skill-cli"><strong>CLI:</strong> <code>larapilot:security-status</code> ·
+                  <code>larapilot:security-issues</code> · <code>larapilot:security-plan</code> ·
+                  <code>larapilot:security-link</code> · <code>larapilot:security-push</code> ·
+                  <code>larapilot:security-repos</code> · <code>larapilot:security-register</code> ·
+                  <code>larapilot:security-scan</code> — the <code>aikido-*</code> names still answer for Aikido.
                 </p>
               </div>
             </div>
@@ -6956,8 +7134,10 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
                 <tr>
                   <td>Delivery extras</td>
                   <td><a href="#deep-dive-release-mode"><code>release_mode</code></a> ·
-                    <a href="#deep-dive-project-docs-setting"><code>project_docs</code></a></td>
-                  <td><code>NO</code> · <code>NO</code></td>
+                    <a href="#deep-dive-project-docs-setting"><code>project_docs</code></a> ·
+                    <a href="#deep-dive-sprints-setting"><code>sprints</code></a> ·
+                    <a href="#deep-dive-public-roadmap-setting"><code>public_roadmap</code></a></td>
+                  <td><code>NO</code> for all four</td>
                 </tr>
                 <tr>
                   <td>Automation</td>
@@ -6967,10 +7147,11 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
                 <tr>
                   <td>Access &amp; security</td>
                   <td><a href="#deep-dive-comments"><code>comments</code></a> ·
-                    <a href="#deep-dive-dashboard-auth"><code>dashboard_auth</code></a> ·
                     <a href="#deep-dive-api-auth"><code>api_auth</code></a> ·
-                    <a href="#deep-dive-security-scan"><code>security_scan</code></a></td>
-                  <td><code>NO</code> for all four</td>
+                    <a href="#deep-dive-security-scan"><code>security_scan</code></a> ·
+                    <a href="#deep-dive-aikido-setting"><code>security</code> + <code>security_provider</code></a> ·
+                    <a href="#deep-dive-boogle-setting"><code>errors</code> + <code>errors_provider</code></a></td>
+                  <td><code>NO</code> for all; the providers are empty until one is named</td>
                 </tr>
                 <tr>
                   <td>Integrations</td>
@@ -6983,7 +7164,9 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
             </table>
           </div>
           <p>The <a href="#deep-dive-dev-docs">developer domain docs</a> have no setting on purpose: they are always
-            written.</p>
+            written. Neither has the dashboard sign-in, since 5.1: who gets in follows <code>APP_ENV</code> —
+            <a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a>. A <code>dashboard_auth</code> line
+            left in <code>config.yaml</code> is ignored.</p>
 
           <p>Set one or several at once: <code>php artisan larapilot:settings-set --effort=MAX --testing=BEST</code>.
             Read them back with <code>php artisan larapilot:config-show --only=settings</code>. Yes/no settings are
@@ -7264,6 +7447,22 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
             with <code>php artisan larapilot:settings-set --project-docs=YES</code>. Skill:
             <a href="#skill-larapilot-project-docs">/larapilot-project-docs</a>.</p>
 
+          <h4 id="deep-dive-sprints-setting">Sprints <span class="chip">opt-in</span></h4>
+          <p><code>settings.sprints</code> (default <code>NO</code>) splits the work into two-week sprints of one
+            person: <strong>Group by: Sprint</strong> on the Board and the Plan, and a sprint proposed for each spec by
+            <code>/larapilot-feature</code> and <code>/larapilot-plan</code>, written with
+            <code>php artisan larapilot:spec-sprint US-012 3</code> (<code>none</code> clears it). A spec nobody gave a
+            sprint gets one proposed from the backlog, marked <strong>proposed</strong>. Enable with
+            <code>php artisan larapilot:settings-set --sprints=YES</code>. Details:
+            <a href="#deep-dive-dashboard-board">Board</a>.</p>
+
+          <h4 id="deep-dive-public-roadmap-setting">Public roadmap <span class="chip">opt-in</span></h4>
+          <p><code>settings.public_roadmap</code> (default <code>NO</code>) serves the
+            <a href="#deep-dive-dashboard-roadmap">Roadmap</a> at a public, unguessable link — even in
+            <code>production</code>, where the dashboard is hidden — with no code, person, hour, cost, comment, or git
+            on it. Enable with <code>php artisan larapilot:settings-set --public-roadmap=YES</code>; turning it off
+            stops the link at once.</p>
+
           <h4 id="deep-dive-hooks-setting">Workflow hooks <span class="chip">opt-in</span></h4>
           <p><code>settings.hooks</code> (default <code>NO</code>) runs the commands and skills of
             <code>.larapilot/hooks.yaml</code> on the transitions of the loop: a <code>before</code> hook that fails
@@ -7281,56 +7480,221 @@ php artisan larapilot:economics-set --country=IT --regime=forfettario_15 --hourl
             Projects installed before v3.0.3 with an explicit <code>comments: true</code> keep it.
           </p>
 
-          <h4 id="deep-dive-dashboard-auth">Dashboard auth <span class="chip">opt-in</span></h4>
-          <p><code>settings.dashboard_auth</code> (default <code>NO</code>) puts <strong>HTTP Basic Auth</strong> in front
-            of the <a href="#deep-dive-dashboard">dashboard</a> <strong>UI</strong> and of the mockups at
-            <code>/mockups</code>. It never gates <code>/larapilot/api/*</code> (that stays
-            <code>LARAPILOT_API_TOKEN</code>) or the MCP server, and the dashboard is still never served in
-            <code>production</code>. On a shared <code>staging</code> host, turn it on before anything else: with the
-            setting OFF, the board, the PRD, the specs, the git history, and the security findings are open to whoever
-            reaches the host.
-          </p>
+          <h4 id="deep-dive-dashboard-auth">Dashboard sign-in &amp; roles <span class="chip">follows APP_ENV</span></h4>
+          <p>There is no <code>dashboard_auth</code> setting and no HTTP Basic Auth since 5.1. The
+            <a href="#deep-dive-dashboard">dashboard</a> — and the mockups at <code>/mockups</code> with their assets —
+            has its own sign-in page, and what it asks follows <code>APP_ENV</code> alone:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th><code>APP_ENV</code></th>
+                  <th>What the dashboard does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>local</code>, <code>testing</code></td>
+                  <td>Open. No sign-in: whoever reaches it acts as an admin</td>
+                </tr>
+                <tr>
+                  <td>any other but <code>production</code> — <code>staging</code>, <code>qa</code>,
+                    <code>preview</code>, <code>development</code>, …</td>
+                  <td>A sign-in page: username and password. An authenticator app is optional — each user turns it
+                    on from <strong>Account</strong></td>
+                </tr>
+                <tr>
+                  <td><code>production</code></td>
+                  <td>Not served (404), unless <code>LARAPILOT_FORCE_IN_PROD=true</code>. Then every user signs in
+                    with a password <strong>and</strong> an authenticator app, and enrols one at the first sign-in if
+                    they have none</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="shot-row">
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>staging.fernway.test/larapilot/login</span></div>
+                <img src="img/dashboard/login.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The sign-in page of the dashboard on a staging host: username, password, and no sign-up">
+              </div>
+              <figcaption>Fernway&#39;s staging host (<code>APP_ENV=staging</code>) asks for a user; there is no sign-up and no password reset.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>staging.fernway.test/larapilot/users</span></div>
+                <img src="img/dashboard/users.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Users page: five users with their role, last sign-in, and authenticator">
+              </div>
+              <figcaption><strong>Users</strong>: one person per role — an admin, two developers, a product manager, an external — two with the authenticator on.</figcaption>
+            </figure>
+          </div>
+          <p><strong>There is no sign-up and no password reset.</strong> An admin creates the users and sets their
+            passwords — on the <strong>Users</strong> page, or from the shell. The first admin of a server is always
+            made from the shell: until a user exists, a shared host answers <code>HTTP 503</code> on every page, with
+            the command to run. Each server has its own users: they live in <code>.larapilot/auth.yaml</code> —
+            password hashes (bcrypt or argon2id), roles, authenticator secrets encrypted with <code>APP_KEY</code> —
+            git-ignored, with no database table and no <code>User</code> model.</p>
+          <div class="code-block">
+            <div class="code-block-header">on the server — the users of the dashboard</div>
+            <pre><code>php artisan larapilot:dashboard-user add andrea --role=admin       <span class="comment"># asks for the password (12+ characters)</span>
+php artisan larapilot:dashboard-user add giulia --role=pm --password='…'
+php artisan larapilot:dashboard-user role giulia dev               <span class="comment"># admin · dev · pm · ext</span>
+php artisan larapilot:dashboard-user password giulia               <span class="comment"># a new password; her sessions end</span>
+php artisan larapilot:dashboard-user rename giulia giulia.rossi
+php artisan larapilot:dashboard-user totp-reset giulia             <span class="comment"># a lost phone: she enrols again</span>
+php artisan larapilot:dashboard-user remove giulia
+php artisan larapilot:dashboard-user list</code></pre>
+          </div>
+          <p><code>--role</code> defaults to <code>admin</code>. Every user has a role, and the role decides which
+            pages answer:</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Role</th>
+                  <th>Sees</th>
+                  <th>Does not see</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>admin</code></td>
+                  <td>Everything: every page, <strong>Users</strong>, <strong>API token</strong>,
+                    <strong>Anonymization</strong>, the file manager, where the database lives, <code>.env</code> as it
+                    is</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><code>dev</code></td>
+                  <td>Workflow, Workspace (but the file manager), Insights, Reference</td>
+                  <td>Users, API token, Anonymization, the file manager; the host, port, and name of the database. In
+                    <code>production</code> the Database page and every download from it are
+                    <strong>anonymized</strong>, always</td>
+                </tr>
+                <tr>
+                  <td><code>pm</code></td>
+                  <td>Workflow (Board, PRD, Inception, Plan, Roadmap, Design), Insights (Forecast, Usage, Economics,
+                    Security, SBOM, Errors), Reference (API, Docs); the Logs outside <code>production</code></td>
+                  <td>The Workspace: About, Settings, Skills, File manager, Database, Laravel, Git — and the Access
+                    pages</td>
+                </tr>
+                <tr>
+                  <td><code>ext</code></td>
+                  <td>Workflow only: Board, PRD, Inception, Plan, Roadmap, Design and its mockups — for a client or
+                    an outside stakeholder</td>
+                  <td>Everything else</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Every role has <strong>Account</strong>. The menu shows each role its pages; any other page answers
+            <code>403</code> and says why.</p>
           <ul>
-            <li>Credentials are argon2id/bcrypt <strong>hashes</strong> in <code>.larapilot/auth.yaml</code> — no
-              database, no <code>User</code> model, never cleartext. The file is added to <code>.gitignore</code>
-              automatically the first time a user is written.</li>
-            <li>Manage users with <code>php artisan larapilot:dashboard-user {list|add &lt;username&gt;|remove
-              &lt;username&gt;}</code> — <code>add</code> prompts for the password (or takes <code>--password=</code>).</li>
-            <li>Failed sign-ins are rate-limited per IP
-              (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 30/min). With the setting ON and
-              <strong>no</strong> users configured the dashboard fails closed with <code>HTTP 503</code>: every page
-              shows a notice that the area is protected by this setting and gives the command that creates the first
-              user. <code>auth.yaml</code> is git-ignored, so a fresh clone or a deploy starts on that notice.</li>
-            <li>The <strong>File manager</strong>, <strong>Database</strong>, and <strong>Logs</strong> pages go further: outside
-              <code>local</code>/<code>development</code>/<code>testing</code> they answer <code>404</code> until
-              this setting is <code>YES</code>.</li>
-            <li>Enable with <code>php artisan larapilot:settings-set --dashboard-auth=YES</code>. Serve over HTTPS on
-              shared hosts — Basic Auth sends credentials on every request. Setup:
-              <a href="#deep-dive-integrations">Forges &amp; notifications</a> ·
-              <code>.larapilot/integrations.md</code>.</li>
+            <li><strong>Users</strong> (admins, in the <strong>Access</strong> group) creates users with a role,
+              changes roles and passwords, renames, resets a lost authenticator, and removes users. An admin never
+              acts on themself there — another admin does — and can act on every other admin.</li>
+            <li><strong>Account</strong> is every user's own: a new password, and the authenticator turned on or off.
+              The signed-in user and <strong>Sign out</strong> sit at the foot of the sidebar.</li>
+            <li><strong>A change takes effect at once</strong> — a new role, a new password, or a removed user
+              applies on the next request of every open session.</li>
+            <li><strong>The authenticator</strong> is any TOTP app (RFC 6238): Google Authenticator, Microsoft
+              Authenticator, 1Password, Authy. It is enrolled from a QR code drawn on the server; the secret is kept
+              encrypted with <code>APP_KEY</code> and never leaves the server. A code is good once, thirty seconds
+              either side of the clock. The app names the account after <code>LARAPILOT_DASHBOARD_AUTH_ISSUER</code>
+              (default <code>APP_NAME</code>).</li>
+            <li><strong>Passwords</strong> have at least twelve characters and are not the username. A username is
+              letters, digits, and <code>. _ @ + -</code>, up to 64 characters.</li>
+            <li><strong>Throttling</strong> — wrong passwords are limited per address
+              (<code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>, default 20 a minute) and per name (5 a minute from
+              anywhere); wrong codes per name. Behind a load balancer or a CDN, have the application trust the proxy
+              (<code>TrustProxies</code>), or every visitor shares one address.</li>
+            <li><strong>Sessions</strong> — the sign-in and the sign-out are forms with CSRF, and the session is
+              regenerated at every sign-in.</li>
+            <li><strong>The audit trail</strong> — <code>.larapilot/auth-audit.log</code>, git-ignored, keeps one
+              JSON line per sign-in, failure, second factor, user change, API token, anonymization map, and
+              file-manager zip — never a password, a code, or a token.
+              <code>LARAPILOT_DASHBOARD_AUTH_AUDIT=false</code> turns it off;
+              <code>LARAPILOT_DASHBOARD_AUTH_AUDIT_FILE</code> moves it.</li>
+            <li><strong>From 5.0</strong> — an <code>auth.yaml</code> written before 5.1 is read as it is, every
+              user an admin — the only role there was — and <code>larapilot:update</code> rewrites it with roles and
+              says whom it changed. <code>--dashboard-auth</code> is no longer a flag of <code>settings-set</code>.</li>
+            <li><strong>In production</strong> the package must be on the server: a deploy with
+              <code>composer install --no-dev</code> leaves out a Larapilot required with <code>--dev</code>. Serve
+              the dashboard over HTTPS on every shared host.</li>
+            <li>The sign-in never opens the JSON API to a client without its token, and the token never opens the
+              dashboard; neither touches MCP. Setup notes: <code>.larapilot/integrations.md</code> →
+              <em>Dashboard sign-in</em>.</li>
           </ul>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>staging.fernway.test/larapilot/account/two-factor</span></div>
+              <img src="img/dashboard/account.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Account: setting up the authenticator with a QR code drawn on the server and the secret to type">
+            </div>
+            <figcaption><strong>Account</strong> → <em>Set up an authenticator</em>: the QR code is drawn on the server, the secret can be typed instead, and a six-digit code turns it on.</figcaption>
+          </figure>
 
-          <h4 id="deep-dive-api-auth">API auth <span class="chip">opt-in</span></h4>
-          <p><code>settings.api_auth</code> (default <code>NO</code>) makes <code>LARAPILOT_API_TOKEN</code>
-            <strong>mandatory</strong> on every <code>/larapilot/api/*</code> request — the JSON API <strong>only</strong>.
-            It never gates the <a href="#deep-dive-dashboard">dashboard</a> UI (<code>dashboard_auth</code>) or the MCP
-            server, and the API is still never served in <code>production</code>.
-          </p>
+          <h4 id="deep-dive-api-auth">API token &amp; <code>api_auth</code></h4>
+          <p>The JSON API (<code>/larapilot/api/*</code>) has its own door: a token. An admin makes it on the
+            <strong>API token</strong> page of the dashboard (Access group) or from the shell; it is shown
+            <strong>once</strong>, and only its hash is kept in <code>.larapilot/auth.yaml</code>. Rotating it ends the
+            old one at once. A token set in <code>.env</code> (<code>LARAPILOT_API_TOKEN=…</code>) works too. Send it
+            on every request as <code>Authorization: Bearer &lt;token&gt;</code> or
+            <code>X-Larapilot-Token: &lt;token&gt;</code>.</p>
+          <div class="code-block">
+            <div class="code-block-header">on the server</div>
+            <pre><code>php artisan larapilot:api-token generate   <span class="comment"># show · generate · rotate · revoke</span></code></pre>
+          </div>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/api-token</span></div>
+              <img src="img/dashboard/api-token.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The API token page: an active token known by its first characters, with Rotate and Revoke, and how callers send it">
+            </div>
+            <figcaption><strong>API token</strong>: the token is shown once; afterwards the page knows it by its first characters and when it was made, and rotates or revokes it.</figcaption>
+          </figure>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Where</th>
+                  <th>No token exists</th>
+                  <th>A token exists</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>local</code> / <code>testing</code>, <code>api_auth=NO</code> (default)</td>
+                  <td>Open</td>
+                  <td>Every request needs it, reads included</td>
+                </tr>
+                <tr>
+                  <td><code>local</code> / <code>testing</code>, <code>api_auth=YES</code></td>
+                  <td><code>HTTP 503</code>, with how to make one</td>
+                  <td>Every request needs it</td>
+                </tr>
+                <tr>
+                  <td>any other environment</td>
+                  <td><code>HTTP 503</code>, with how to make one</td>
+                  <td>Every request needs it</td>
+                </tr>
+                <tr>
+                  <td><code>production</code></td>
+                  <td colspan="2">Not served (404), unless <code>LARAPILOT_FORCE_IN_PROD=true</code>; then as above</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <ul>
-            <li>With <code>api_auth=NO</code> (default): the token is enforced on every endpoint <em>when it is set</em>;
-              when it is not, read endpoints stay open in the allowed environments and writes are refused outside
-              <code>local</code>/<code>development</code>/<code>testing</code>.</li>
-            <li>With <code>api_auth=YES</code>: every request — reads <strong>and</strong> writes, including
-              <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> — must carry the token as
-              <code>Authorization: Bearer &lt;token&gt;</code> or <code>X-Larapilot-Token: &lt;token&gt;</code>. With the
-              setting ON and <strong>no</strong> <code>LARAPILOT_API_TOKEN</code> configured the API fails closed with
-              <code>HTTP 503</code> and says why — a JSON <code>message</code> that names the setting and tells how to
-              add the token, or the same explanation as a page when a browser opens the API docs; a wrong or missing
-              token is <code>HTTP 401</code>.</li>
-            <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Enable with
-              <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup + <code>curl</code> /
-              Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> →
-              <em>API access</em>.</li>
+            <li><code>settings.api_auth</code> (default <code>NO</code>) matters on a developer's machine only: it
+              asks for the token there too. Everywhere else the token is always required. Enable with
+              <code>php artisan larapilot:settings-set --api-auth=YES</code>.</li>
+            <li>A user signed in on the dashboard whose role sees the API — admin, dev, pm — reads it from the
+              browser, the Swagger UI included, without the token. Never a write: the API group has no CSRF.</li>
+            <li>A wrong or missing token is <code>HTTP 401</code>. Where a token is required and none exists, the
+              API answers <code>HTTP 503</code> with a JSON <code>message</code> that says how to make one, or the
+              same explanation as a page when a browser opens the API docs.</li>
+            <li>The token lives in the caller's environment, never in <code>.larapilot/</code>. Client setup +
+              <code>curl</code> / Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code>
+              → <em>API access</em>.</li>
             <li>The <code>php artisan larapilot:diagnostics</code> CLI and the MCP <code>diagnostics</code> tool are local
               and need no token — only the HTTP endpoint is gated.</li>
           </ul>
@@ -7353,23 +7717,29 @@ php artisan larapilot:settings-set --security-scan=YES</code></pre>
             <li><code>FAIL</code> findings are review blockers: fix them, or record a waiver with
               <code>larapilot:decision-log</code>. <code>WARN</code> findings become review notes.</li>
             <li>If the package is missing, the review skill stops and asks you to install it.</li>
-            <li>Owned by <strong>Lars</strong>, alongside <code>dashboard_auth</code> and <code>api_auth</code>. The client
+            <li>Owned by <strong>Lars</strong>, alongside <code>api_auth</code> and the security scanner. The client
               quote only promises a security scan when this setting is <code>YES</code>. Setup:
               <code>.larapilot/integrations.md</code> → <em>Security scan</em>.</li>
           </ul>
 
-          <h4 id="deep-dive-aikido-setting">Aikido <span class="chip">opt-in</span></h4>
-          <p><code>settings.aikido</code> (default <code>NO</code>) reads the findings of
-            <a href="https://www.aikido.dev/" target="_blank" rel="noopener">Aikido</a> for the repository.
-            Aikido scans on its side; Larapilot runs no scanner and only reads the result, with credentials kept in
-            <code>.env</code>. While the setting is off, Aikido is never called.</p>
+          <h4 id="deep-dive-aikido-setting">Security scanner <span class="chip">opt-in</span></h4>
+          <p><code>settings.security</code> (default <code>NO</code>) reads the findings of one security scanner for
+            the repository, and <code>settings.security_provider</code> names it:
+            <code>aikido</code> (<a href="https://www.aikido.dev/" target="_blank" rel="noopener">Aikido</a>, SaaS) or
+            <code>hackly</code> (<a href="https://hackly.web.ap.it/" target="_blank" rel="noopener">Hackly</a>,
+            self-hosted). The scanner scans on its side; Larapilot runs none and only reads the result, with
+            credentials kept in <code>.env</code>. While the setting is off, no scanner is called. Naming a provider
+            turns the findings on; <code>none</code> turns them off.</p>
           <div class="code-block">
             <div class="code-block-header">turn it on</div>
-            <pre><code>php artisan larapilot:settings-set --aikido=YES
-php artisan larapilot:aikido-status</code></pre>
+            <pre><code>php artisan larapilot:settings-set --security-provider=hackly   <span class="comment"># or aikido · none</span>
+php artisan larapilot:security-status</code></pre>
           </div>
-          <p>Owned by <strong>Lars</strong>. Everything else — the credentials, the skill, the gate — is in
-            <a href="#deep-dive-aikido">Aikido</a>.</p>
+          <p><code>--aikido=YES</code> is the name the setting had before 5.1 and means
+            <code>--security=YES --security-provider=aikido</code>; a <code>config.yaml</code> with
+            <code>aikido: true</code> reads as Aikido, and has nothing to change. Owned by <strong>Lars</strong>.
+            Everything else — the credentials, the skill, the gate — is in
+            <a href="#deep-dive-aikido">Security scanners</a>.</p>
 
           <h4 id="deep-dive-boogle-setting">Production errors <span class="chip">opt-in</span></h4>
           <p><code>settings.errors</code> (default <code>NO</code>) reads the errors the running application
@@ -7458,11 +7828,12 @@ php artisan larapilot:errors-status</code></pre>
   --release-mode=NO \
   --project-docs=NO \
   --hooks=NO \
+  --sprints=NO \
+  --public-roadmap=NO \
   --comments=NO \
-  --dashboard-auth=NO \
   --api-auth=NO \
   --security-scan=NO \
-  --aikido=NO \
+  --security=NO \
   --errors=NO \
   --errors-provider=boogle \
   --github=NO \
@@ -8301,7 +8672,12 @@ php artisan larapilot:prd-impact                       # the whole PRD: every id
 ├── economics.yaml            <span class="comment"># Economics profile (account ≠ NONE)</span>
 ├── economics.snapshot.yaml   <span class="comment"># last computed quote — refreshes itself</span>
 ├── economics.market.yaml     <span class="comment"># competitor research (Jennifer + Benjamin)</span>
-├── auth.yaml                 <span class="comment"># dashboard users, hashed — git-ignored</span>
+├── auth.yaml                 <span class="comment"># dashboard users, roles, API token hash — git-ignored</span>
+├── auth-audit.log            <span class="comment"># sign-ins, user changes, tokens, zips — git-ignored</span>
+├── anonymization.yaml        <span class="comment"># what each column becomes when anonymized — committed</span>
+├── roadmap.yaml              <span class="comment"># public wording of the roadmap — committed</span>
+├── roadmap-link.yaml         <span class="comment"># this host's public roadmap token — git-ignored</span>
+├── aikido.yaml · hackly.yaml <span class="comment"># security decisions + repository — committed</span>
 ├── shared-runtime.md         <span class="comment"># runtime index + Read protocol</span>
 ├── runtime-*.md              <span class="comment"># runtime section files — refreshed on update</span>
 ├── task-templates.md         <span class="comment"># plan/implement task shapes</span>
@@ -8345,8 +8721,10 @@ php artisan larapilot:prd-impact                       # the whole PRD: every id
                   <td><code>/larapilot-settings</code></td>
                   <td><code>effort</code>, <code>backlog</code>, <code>git_mode</code>, <code>testing</code>,
                     <code>account</code>, <code>auto_approve</code>, <code>lucille</code>, <code>decision_log</code>,
-                    <code>code_history</code>, <code>release_mode</code>, <code>project_docs</code>, <code>comments</code>,
-                    <code>dashboard_auth</code>, <code>api_auth</code>, <code>security_scan</code>, <code>github</code>,
+                    <code>code_history</code>, <code>release_mode</code>, <code>project_docs</code>, <code>sprints</code>,
+                    <code>public_roadmap</code>, <code>comments</code>, <code>api_auth</code>, <code>security_scan</code>,
+                    <code>security</code>, <code>security_provider</code>, <code>errors</code>,
+                    <code>errors_provider</code>, <code>github</code>,
                     <code>gitlab</code>, <code>bitbucket</code>, <code>azure</code>,
                     <code>notifications</code>, <code>notify_*</code> — see <a href="#deep-dive-settings">Settings</a>
                   </td>
@@ -8418,7 +8796,7 @@ php artisan larapilot:prd-impact                       # the whole PRD: every id
                 <tr>
                   <td><code>mockups/{spec}/</code></td>
                   <td><code>/larapilot-design</code></td>
-                  <td>Static HTML previews at <code>/mockups/{spec}</code> (dev/staging); gallery at
+                  <td>Static HTML previews at <code>/mockups/{spec}</code> (wherever the dashboard is, behind its sign-in); gallery at
                     <code>/larapilot/design</code> (presentation index + zip of HTML/assets); linked on spec
                     detail and in the JSON API when present</td>
                 </tr>
@@ -8685,7 +9063,7 @@ php artisan larapilot:schedule-apply --file=.larapilot/tmp-payload-schedule.json
           </p>
 
           <p>Dashboard: <code>/larapilot/usage</code> for tokens and estimate vs build · <code>/larapilot/plan</code> for the Gantt and
-            deadlines · download <code>/larapilot/usage/report.md</code> (dev/staging only). MCP
+            deadlines · download <code>/larapilot/usage/report.md</code> (wherever the dashboard is served). MCP
             <code>RunArtisanTool</code> allows <code>larapilot:usage-report</code>.</p>
         </article>
 
@@ -8816,27 +9194,28 @@ php artisan larapilot:upgrade-check --laravel=13 --offline    # the lock only, n
             <a href="#deep-dive-notifications">Notifications</a>.</p>
 
           <h4>Dashboard access</h4>
-          <p>Optional <strong>HTTP Basic Auth</strong> on the <a href="#deep-dive-dashboard">dashboard</a> UI, via the
-            <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> setting (default <code>NO</code>).
-            UI-only — never <code>/larapilot/api/*</code> or MCP.
-          </p>
+          <p>The <a href="#deep-dive-dashboard">dashboard</a> has a sign-in page and four roles; what it asks follows
+            <code>APP_ENV</code> — open in <code>local</code>, a sign-in elsewhere, hidden in <code>production</code>
+            unless <code>LARAPILOT_FORCE_IN_PROD=true</code>. The JSON API has its own token. Neither touches MCP.</p>
           <div class="code-block">
-            <div class="code-block-header">manage dashboard users</div>
-            <pre><code>php artisan larapilot:dashboard-user add andrea        # prompts for the password (or --password=)
+            <div class="code-block-header">on a shared host, before anyone opens it</div>
+            <pre><code>php artisan larapilot:dashboard-user add andrea --role=admin   <span class="comment"># prompts for the password (or --password=)</span>
 php artisan larapilot:dashboard-user list
-php artisan larapilot:dashboard-user remove andrea
-php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
+php artisan larapilot:api-token generate                     <span class="comment"># the token of /larapilot/api/*</span></code></pre>
           </div>
           <ul>
-            <li>Credentials are argon2id/bcrypt hashes in <code>.larapilot/auth.yaml</code> — no database, no
-              <code>User</code> model; the file is added to <code>.gitignore</code> automatically.</li>
-            <li>Env: <code>LARAPILOT_DASHBOARD_AUTH_REALM</code>, <code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code>
-              (failed sign-ins per minute per IP, default 30; <code>0</code> disables throttling).</li>
-            <li><code>dashboard_auth=YES</code> with no users → dashboard fails closed (<code>HTTP 503</code>) on a notice
-              that tells how to add the first one. Serve over
-              HTTPS on shared hosts.</li>
+            <li>Users, roles, and authenticator secrets are in <code>.larapilot/auth.yaml</code> — hashes, the secrets
+              encrypted with <code>APP_KEY</code>; no database, no <code>User</code> model; git-ignored.</li>
+            <li>Env: <code>LARAPILOT_FORCE_IN_PROD</code> (serve it in production, password + authenticator for all),
+              <code>LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS</code> (wrong passwords per minute per address, default 20;
+              <code>0</code> lifts that limit, the 5 a minute per name stays), <code>LARAPILOT_DASHBOARD_AUTH_ISSUER</code>
+              (the account name in the authenticator app), <code>LARAPILOT_DASHBOARD_AUTH_AUDIT</code> /
+              <code>_AUDIT_FILE</code> (the audit trail).</li>
+            <li>No user yet → every page answers <code>HTTP 503</code> with the command that makes the first admin.
+              Serve over HTTPS on shared hosts.</li>
           </ul>
-          <p>Settings table: <a href="#deep-dive-dashboard-auth">Dashboard auth</a>.</p>
+          <p>Roles, the authenticator, and the rules: <a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp;
+            roles</a> · <a href="#deep-dive-api-auth">API token</a>.</p>
 
           <h4>Security scan</h4>
           <p>Optional static scan with
@@ -9072,7 +9451,7 @@ nav:
 
           <h4>Live delivery data</h4>
           <p>For a Backstage frontend plugin or entity provider, two endpoints share the
-            <a href="#deep-dive-api">API</a> gate (dev/staging only):</p>
+            <a href="#deep-dive-api">API</a> gate and its token:</p>
           <div class="table-card">
             <table>
               <thead>
@@ -9115,7 +9494,7 @@ nav:
 
           <div class="cli-note"><strong>Proxy the API, never expose it.</strong> Call these endpoints through the
             Backstage <strong>backend proxy</strong> so <code>LARAPILOT_API_TOKEN</code> stays server-side — never from
-            browser code, and never against a production host (the API returns <code>404</code> there by design). If
+            browser code, and never against a production host (the API returns <code>404</code> there unless <code>LARAPILOT_FORCE_IN_PROD=true</code>). If
             the portal cannot reach a dev/staging environment, ship the committed <code>catalog-info.yaml</code> and
             TechDocs instead of the live endpoints.
           </div>
@@ -9351,14 +9730,145 @@ php artisan larapilot:tracker-pull --apply    # write mapped statuses back</code
 
         <!-- Aikido -->
         <article class="deep-dive-sub" id="deep-dive-aikido">
-          <h3>Aikido</h3>
-          <p class="lead">Optional. <a href="https://www.aikido.dev/" target="_blank" rel="noopener">Aikido</a>
-            scans the repository on its side — dependencies, code, leaked secrets, infrastructure, licenses —
-            through its connection to the git provider. Larapilot runs no scanner and installs nothing: it
-            <strong>reads what Aikido found</strong> over the public REST API, says what was already decided about
-            each finding, and brings the rest into the workflow through <code>/larapilot-triage</code>.</p>
+          <h3>Security scanners — Aikido &amp; Hackly</h3>
+          <p class="lead">Optional. The project associates <strong>one</strong> security scanner, and Larapilot
+            brings its findings into the workflow. The scanner scans on its side; Larapilot runs no scanner and
+            installs nothing: it <strong>reads what the scanner found</strong>, says what was already decided about
+            each finding, brings the rest into the workflow through <code>/larapilot-triage</code>, and
+            <strong>tells the scanner what you decided</strong>.</p>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Scanner</th>
+                  <th>What it scans</th>
+                  <th>Ids</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Aikido</strong> — SaaS,
+                    <a href="https://www.aikido.dev/" target="_blank" rel="noopener">aikido.dev</a></td>
+                  <td>The repository, through its connection to the git provider: dependencies, code, leaked
+                    secrets, infrastructure as code, containers, licenses</td>
+                  <td>Numbers (<code>24</code>)</td>
+                </tr>
+                <tr>
+                  <td><strong>Hackly</strong> — self-hosted,
+                    <a href="https://hackly.web.ap.it/" target="_blank" rel="noopener">hackly.web.ap.it</a></td>
+                  <td>A clone of the repository (Semgrep, Trivy, Gitleaks, Composer audit, Checkpoint, Laravel
+                    checks) <strong>and the domains linked to it</strong> (TLS, headers, exposed paths, Nuclei,
+                    ZAP)</td>
+                  <td>UUIDs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --security-provider=aikido   <span class="comment"># or hackly; none turns it off</span>
+php artisan larapilot:security-status</code></pre>
+          </div>
+          <p><code>settings.security</code> turns the findings on and <code>settings.security_provider</code> names
+            the scanner (<a href="#deep-dive-aikido-setting">Settings</a>). <code>--aikido=YES</code> is the name the
+            setting had before 5.1 and still means <code>--security-provider=aikido</code>; a
+            <code>config.yaml</code> with <code>aikido: true</code> reads as Aikido. <code>/larapilot-security</code>
+            — <code>/larapilot-aikido</code> before 5.1 — asks which scanner when none is set.</p>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/security</span></div>
+              <img src="img/dashboard/security.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Security page reading Hackly: the release gate stopped, open findings by severity, and each finding with its decision">
+            </div>
+            <figcaption><strong>Security</strong> on Fernway, with Hackly: the findings of <code>fernway/fernway</code> and of its staging domain, the gate stopped by two high findings with no decision yet, and the report and the register for the client one click away.</figcaption>
+          </figure>
 
-          <h4 id="deep-dive-aikido-setup">Setup</h4>
+          <h4 id="deep-dive-aikido-cli">The commands, for both scanners</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Command</th>
+                  <th>What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>larapilot:security-status</code></td>
+                  <td>Scanner, credentials, repository, last scan, <code>hints</code>: one line for each thing that
+                    is missing, with what to do about it. Read-only</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-issues</code></td>
+                  <td>The open findings with their state and the verdict of the gate.
+                    <code>--new</code> only the ones with no decision · <code>--severity=high</code> that
+                    severity and above · <code>--type=</code> one kind, as the scanner names it ·
+                    <code>--limit=</code> · <code>--report</code> writes
+                    <code>{paths.security}/security-report.md</code> · <code>--gate</code> exits
+                    <code>1</code> on <code>FAIL</code> · <code>--detail={id}</code> one finding as a brief and a fix
+                    prompt</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-plan --ids=…</code></td>
+                  <td>Groups confirmed ids by kind and fix for triage handoffs; a leaked secret never merges.
+                    Read-only</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-link {ids} --spec=US-012</code></td>
+                  <td>The spec that fixes the findings — a note in Aikido, an acknowledgement in Hackly. An id the
+                    scanner does not report is refused</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-link {ids} --waive --reason="…"</code></td>
+                  <td>Accepts the findings as they are and keeps why — ignored in Aikido with that reason,
+                    acknowledged in Hackly</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-link {ids} --false-positive --reason="…"</code></td>
+                  <td>The findings are not real — Hackly marks them false positives with the reason as their
+                    note</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-link {ids} --forget</code></td>
+                  <td>Drops what was decided, and opens the findings again in the scanner. <code>--local</code> on
+                    any of these tells the scanner nothing</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-push</code></td>
+                  <td>Tells the scanner the decisions it was not told yet (<code>unsent</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-repos</code></td>
+                  <td>The repositories of the scanner. <code>--search=</code> narrows the list ·
+                    <code>--use={id}</code> keeps the one this project is · <code>--forget</code> drops the
+                    choice</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-register</code></td>
+                  <td>Writes the register for the client to
+                    <code>{paths.security}/security-register.md</code>, naming its
+                    scanner and its scale. <code>--fresh</code> reads the scanner again</td>
+                </tr>
+                <tr>
+                  <td><code>larapilot:security-scan</code></td>
+                  <td>Asks for a new scan; it runs on the scanner's side and takes minutes. Hackly:
+                    <code>--profile=quick|standard|deep</code>, <code>--include-targets</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The <code>aikido-*</code> commands — <code>aikido-status</code>, <code>aikido-issues</code>,
+            <code>aikido-plan</code>, <code>aikido-link</code>, <code>aikido-push</code>, <code>aikido-repos</code>,
+            <code>aikido-register</code>, <code>aikido-scan</code> — are the older names of the same Aikido steps and
+            still answer. Through the MCP <code>RunArtisanTool</code> the reading commands are allowed, for both
+            scanners: <code>security-status</code>, <code>security-issues</code> (<code>--severity</code>,
+            <code>--type</code>, <code>--new</code>, <code>--limit</code>, <code>--detail</code>, <code>--gate</code> —
+            not <code>--report</code>), <code>security-plan</code> (<code>--ids</code>), and
+            <code>security-repos</code> (<code>--search</code> — not <code>--use</code> or <code>--forget</code>), and
+            the same four by their Aikido names. The commands that decide, write, or scan —
+            <code>security-link</code>, <code>security-push</code>, <code>security-scan</code>,
+            <code>security-register</code> — are not allowed through MCP.</p>
+
+          <h4 id="deep-dive-aikido-setup">Aikido — setup</h4>
           <ol>
             <li><strong>Connect the repository in Aikido</strong>, through the git provider (GitHub, GitLab,
               Bitbucket, Azure DevOps). Larapilot cannot do this step.</li>
@@ -9383,56 +9893,57 @@ LARAPILOT_AIKIDO_BASE_URL=        # only when the workspace is reached through a
           </div>
           <div class="code-block">
             <div class="code-block-header">Terminal</div>
-            <pre><code>php artisan larapilot:settings-set --aikido=YES
-php artisan larapilot:aikido-status</code></pre>
+            <pre><code>php artisan larapilot:settings-set --security-provider=aikido
+php artisan larapilot:security-status</code></pre>
           </div>
-          <p><code>aikido-status</code> answers with <code>enabled</code>, <code>configured</code>,
+          <p><code>security-status</code> answers with <code>enabled</code>, <code>configured</code>,
             <code>authenticated</code>, the <code>repository</code> it matched (id, name, branch, last scan), and
             <code>hints</code>: one line for each thing that is missing, with what to do about it.</p>
 
           <h4 id="deep-dive-aikido-repository">The repository</h4>
           <p>The repository is found from the git remote, by its address or by its name. When the code is scanned
             under another repository — a fork, a mirror, a monorepo, a name that differs — nothing matches:
-            <code>aikido-status</code> answers <code>needs_repository: true</code>, and <strong>you are asked
-            which one it is</strong>. <code>/larapilot-aikido</code> asks in chat, <code>/larapilot/security</code>
+            <code>security-status</code> answers <code>needs_repository: true</code>, and <strong>you are asked
+            which one it is</strong>. <code>/larapilot-security</code> asks in chat, <code>/larapilot/security</code>
             shows the list with a form, and the terminal has a command. Nothing is chosen for you: a name that
             looks alike is not a match.</p>
           <div class="code-block">
             <div class="code-block-header">Terminal</div>
-            <pre><code>php artisan larapilot:aikido-repos                # the repositories of the workspace
-php artisan larapilot:aikido-repos --search=shop  # only the names that hold these letters
-php artisan larapilot:aikido-repos --use=12       # this project is repository 12 (or its exact name)
-php artisan larapilot:aikido-repos --forget       # back to the git remote</code></pre>
+            <pre><code>php artisan larapilot:security-repos                # the repositories of the scanner
+php artisan larapilot:security-repos --search=shop  # only the names that hold these letters
+php artisan larapilot:security-repos --use=12       # this project is repository 12 (or its exact name)
+php artisan larapilot:security-repos --forget       # back to the git remote</code></pre>
           </div>
-          <p>The choice is kept in <code>.larapilot/aikido.yaml</code>, which is committed, so every machine reads
-            the same repository. <code>LARAPILOT_AIKIDO_REPOSITORY</code> in <code>.env</code> names it for one
-            machine, and wins there.</p>
+          <p>The choice is kept in <code>.larapilot/aikido.yaml</code> or <code>hackly.yaml</code>, which is
+            committed, so every machine reads the same repository. <code>LARAPILOT_AIKIDO_REPOSITORY</code> or
+            <code>LARAPILOT_HACKLY_REPOSITORY</code> in <code>.env</code> names it for one machine, and wins there.</p>
 
           <h4 id="deep-dive-aikido-skill">The skill</h4>
           <div class="code-block">
             <div class="code-block-header">in the editor</div>
-            <pre><code>/larapilot-aikido</code></pre>
+            <pre><code>/larapilot-security</code></pre>
           </div>
           <ol>
             <li><strong>Status</strong> — one line: repository, branch, last scan, the severity the gate fails
               on. With something missing, the hints are printed and the skill stops.</li>
-            <li><strong>Download</strong> — <code>aikido-issues --new --report</code>. The findings nobody decided
+            <li><strong>Download</strong> — <code>security-issues --new --report</code>. The findings nobody decided
               about are shown in a table, the most severe first, 15 rows at most; the detail of all of them goes
-              to <code>.larapilot/docs/security/aikido.md</code>.</li>
+              to <code>.larapilot/docs/security/security-report.md</code>.</li>
             <li><strong>Scope</strong> — one question: the findings that stop the ship gate, every new finding,
               the ones you name, or none.</li>
             <li><strong>Confirm</strong> — finding by finding (or in batches when there are many): resolve, waive
-              with a reason, or skip for now. Waives are recorded immediately with
-              <code>aikido-link</code>.</li>
-            <li><strong>Plan</strong> — <code>aikido-plan --ids=…</code> groups the confirmed ids by kind and fix;
+              with a reason, mark a false positive with a reason (Hackly), or skip for now. Waives are recorded
+              immediately with <code>security-link</code>.</li>
+            <li><strong>Plan</strong> — <code>security-plan --ids=…</code> groups the confirmed ids by kind and fix;
               you approve the groups. Leaked secrets never merge with anything else.</li>
             <li><strong>Hand off to triage</strong> — each group goes to <code>/larapilot-triage</code> in the
               same turn, with the block below. Triage measures it against the PRD like any request: a known
               vulnerability in shipped code is a <strong>bug</strong> when a requirement names security for that
               area, a <strong>bug with a requirement gap</strong> otherwise, and the verdict is not asked.
-              <code>/larapilot-bug</code> then writes the fix spec, with a criterion that Aikido no longer
-              reports the finding.</li>
-            <li><strong>Record</strong> — <code>aikido-link 24 --spec=US-012</code>, so the finding is not handed
+              <code>/larapilot-bug</code> then writes the fix spec, with a criterion that the scanner no longer
+              reports the finding. With Hackly, <code>security-issues --detail={uuid}</code> quotes the fix prompt
+              Hackly writes for the finding, and that prompt goes with the group.</li>
+            <li><strong>Record</strong> — <code>security-link 24 --spec=US-012</code>, so the finding is not handed
               over again, on this machine or another.</li>
           </ol>
           <div class="code-block">
@@ -9460,13 +9971,13 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               <tbody>
                 <tr>
                   <td><code>new</code></td>
-                  <td>Open in Aikido, and nobody decided about it</td>
+                  <td>Open in the scanner, and nobody decided about it</td>
                   <td>Counts</td>
                 </tr>
                 <tr>
                   <td><code>in_backlog</code></td>
                   <td>A spec of the backlog fixes it. <strong>Not fixed yet</strong></td>
-                  <td>Counts, until Aikido no longer reports it</td>
+                  <td>Counts, until the scanner no longer reports it</td>
                 </tr>
                 <tr>
                   <td><code>waived</code></td>
@@ -9474,8 +9985,13 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
                   <td>Does not count</td>
                 </tr>
                 <tr>
+                  <td><code>false_positive</code></td>
+                  <td>Not real, with a reason given by the user — Hackly only</td>
+                  <td>Does not count</td>
+                </tr>
+                <tr>
                   <td>no longer open</td>
-                  <td>Decided about here, and Aikido reports it as open no more: fixed, or waived here and
+                  <td>Decided about here, and the scanner reports it as open no more: fixed, or waived here and
                     ignored there</td>
                   <td>Does not count</td>
                 </tr>
@@ -9495,16 +10011,16 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td><code>aikido-link 40 --waive --reason="…"</code></td>
+                  <td><code>security-link 40 --waive --reason="…"</code></td>
                   <td>The finding is <strong>ignored</strong>, with the reason as its comment. It leaves the
                     open findings at once</td>
                 </tr>
                 <tr>
-                  <td><code>aikido-link 24 --spec=US-012</code></td>
+                  <td><code>security-link 24 --spec=US-012</code></td>
                   <td>A <strong>note</strong> on the finding: the spec that fixes it. The finding stays open</td>
                 </tr>
                 <tr>
-                  <td><code>aikido-link 40 --forget</code></td>
+                  <td><code>security-link 40 --forget</code></td>
                   <td>The waiver is taken back: the finding is open again</td>
                 </tr>
               </tbody>
@@ -9515,15 +10031,100 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               <strong>this</strong> repository are ignored, and the other projects keep theirs.</li>
             <li>The credentials need the <code>issues:write</code> scope. When Aikido refuses, or cannot be
               reached, <strong>the decision is kept</strong> and listed as <code>unsent</code>;
-              <code>larapilot:aikido-push</code> tells it later. It also tells the decisions taken with an
+              <code>larapilot:security-push</code> tells it later. It also tells the decisions taken with an
               earlier version.</li>
             <li>A waiver Aikido would not take back is not forgotten here, so the two never disagree.</li>
-            <li><code>--local</code> on <code>aikido-link</code> keeps one decision in the project;
+            <li><code>--local</code> on <code>security-link</code> keeps one decision in the project;
               <code>LARAPILOT_AIKIDO_PUSH_DECISIONS=false</code> keeps them all.</li>
           </ul>
 
+          <h4 id="deep-dive-hackly-setup">Hackly — setup</h4>
+          <p><a href="https://hackly.web.ap.it/" target="_blank" rel="noopener">Hackly</a> is
+            <strong>self-hosted</strong>: Larapilot reads <strong>your</strong> instance. <code>hackly.web.ap.it</code>
+            is its documentation site, never an instance — <code>security-status</code> says so when
+            <code>LARAPILOT_HACKLY_URL</code> points at it.</p>
+          <ol>
+            <li><strong>Add the repository in your Hackly</strong> (Repositories → New, with a GitHub token that
+              reads it). Link its domains to it for their findings too — each one verified by DNS in Hackly.</li>
+            <li><strong>Create a personal token</strong>: Profile → API tokens, or on the Hackly server
+              <code>php artisan hackly:token you@example.com --ability=write</code>. <code>read</code> lists;
+              <code>write</code> lets Larapilot tell Hackly a decision and ask for a scan.</li>
+            <li><strong>Put the address of the instance and the token in <code>.env</code></strong>, then associate
+              Hackly and check.</li>
+          </ol>
+          <div class="code-block">
+            <div class="code-block-header">.env</div>
+            <pre><code>LARAPILOT_HACKLY_URL=https://hackly.example.com   # your instance; /api is added
+LARAPILOT_HACKLY_TOKEN=hk_…
+LARAPILOT_HACKLY_REPOSITORY=                       # uuid or owner/name, for this machine; empty = chosen or found from the git remote
+LARAPILOT_HACKLY_INCLUDE_TARGETS=true              # read the findings of the linked domains too
+LARAPILOT_HACKLY_FAIL_ON=high                      # high · medium · low · none
+LARAPILOT_HACKLY_SCAN_PROFILE=standard             # quick · standard · deep
+LARAPILOT_HACKLY_PUSH_DECISIONS=true               # false = Hackly is told nothing
+LARAPILOT_HACKLY_CACHE=300                         # seconds the dashboard keeps what it read
+LARAPILOT_HACKLY_TIMEOUT=15                        # seconds per request</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal</div>
+            <pre><code>php artisan larapilot:settings-set --security-provider=hackly
+php artisan larapilot:security-status</code></pre>
+          </div>
+
+          <h4 id="deep-dive-hackly-decisions">Decisions are told to Hackly</h4>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Decision</th>
+                  <th>In Hackly</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>security-link {uuid} --spec=US-012</code></td>
+                  <td><strong>Acknowledged</strong>; the spec is kept in <code>.larapilot/hackly.yaml</code></td>
+                </tr>
+                <tr>
+                  <td><code>security-link {uuid} --waive --reason="…"</code></td>
+                  <td><strong>Acknowledged</strong> — Hackly has no "accepted risk"; the reason is kept here and in the
+                    register</td>
+                </tr>
+                <tr>
+                  <td><code>security-link {uuid} --false-positive --reason="…"</code></td>
+                  <td><strong>False positive</strong>, with the reason as its note (8 to 2000 characters)</td>
+                </tr>
+                <tr>
+                  <td><code>security-link {uuid} --forget</code></td>
+                  <td><strong>Open</strong> again</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Hackly refusing — a <code>read</code> token, no network — undoes nothing: the decision stays
+            <code>unsent</code> until <code>security-push</code>. <code>LARAPILOT_HACKLY_PUSH_DECISIONS=false</code>
+            keeps every decision in the project.</p>
+
+          <h4 id="deep-dive-hackly-read">What is read from Hackly, and the gate</h4>
+          <ul>
+            <li><strong>The findings of the repository and of its linked domains</strong> — unless
+              <code>LARAPILOT_HACKLY_INCLUDE_TARGETS=false</code> — in the states <code>open</code> and
+              <code>ack</code>. Passed checks and scan deltas are left out.</li>
+            <li><strong>Three severities</strong>, Hackly's: <code>high</code>, <code>medium</code>,
+              <code>low</code>. Reachable code comes first within a severity.</li>
+            <li><strong>The gate is this project's</strong>: it is computed here, on the findings of this repository
+              and its domains. Hackly's own CI gate looks at the whole workspace.</li>
+            <li><strong>The fix prompt</strong> — <code>security-issues --detail={uuid}</code> quotes Hackly's own
+              brief and fix prompt; triage hands that prompt to the fix.</li>
+            <li><strong>Scans</strong> — <code>security-scan</code> asks for a repository scan with
+              <code>LARAPILOT_HACKLY_SCAN_PROFILE</code>, or <code>--profile=quick|standard|deep</code>;
+              <code>--include-targets</code> deep-scans the verified linked domains too. Target scans and
+              penetration tests are started in Hackly, each behind its DNS check.</li>
+            <li><strong>The register</strong> lists fixed findings as resolved and false positives as ignored, with
+              the note written in Hackly when none was written here.</li>
+          </ul>
+
           <h4 id="deep-dive-aikido-register">The register for the client</h4>
-          <p><code>larapilot:aikido-register</code> writes <code>{paths.security}/aikido-register.md</code>, and
+          <p><code>larapilot:security-register</code> writes <code>{paths.security}/security-register.md</code>, and
             <strong>Register for the client (.md)</strong> on <code>/larapilot/security</code> downloads it: one
             document with every finding of the repository — <strong>open</strong> with the fix that is planned,
             <strong>resolved</strong> with the date, <strong>ignored</strong> with the date and the reason — and
@@ -9532,93 +10133,29 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
           <p>The reason of a finding waived here is the one you wrote. Aikido does not give back the reason of a
             finding ignored there by hand: the register lists it, and says the reason is kept in Aikido.</p>
           <p>The verdict of the gate is <code>FAIL</code> when a finding at
-            <code>LARAPILOT_AIKIDO_FAIL_ON</code> (default <code>high</code>) or above counts,
+            <code>LARAPILOT_AIKIDO_FAIL_ON</code> or <code>LARAPILOT_HACKLY_FAIL_ON</code> (default
+            <code>high</code>) or above counts,
             <code>WARN</code> when only lower ones do, <code>PASS</code> otherwise. <code>/larapilot-ship</code>
-            runs <code>larapilot:aikido-issues --gate --report</code>: <code>FAIL</code> is a release blocker,
+            runs <code>larapilot:security-issues --gate --report</code>: <code>FAIL</code> is a release blocker,
             <code>WARN</code> a note in the assessment. The same command exits <code>1</code> on
             <code>FAIL</code>, so a pipeline can use it.</p>
 
-          <h4 id="deep-dive-aikido-cli">Commands</h4>
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Command</th>
-                  <th>What it does</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>larapilot:aikido-status</code></td>
-                  <td>Setting, credentials, repository, last scan, hints. Read-only</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-issues</code></td>
-                  <td>The open findings with their state and the verdict of the gate.
-                    <code>--new</code> only the ones with no decision · <code>--severity=high</code> that
-                    severity and above · <code>--type=open_source</code> one kind ·
-                    <code>--limit=</code> · <code>--report</code> writes
-                    <code>{paths.security}/aikido.md</code> · <code>--gate</code> exits <code>1</code> on
-                    <code>FAIL</code></td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-plan --ids=24,31</code></td>
-                  <td>Groups confirmed ids by kind and fix for triage handoffs. Read-only</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-link 24,25 --spec=US-012</code></td>
-                  <td>The spec that fixes the findings, and a note about it in Aikido. A number Aikido does not
-                    report is refused</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-link 40 --waive --reason="…"</code></td>
-                  <td>Accepts a finding as it is, keeps why, and ignores it in Aikido with that reason</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-link 40 --forget</code></td>
-                  <td>Drops what was decided, and takes a waiver back in Aikido: the finding is
-                    <code>new</code> again. <code>--local</code> on any of the three tells Aikido nothing</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-push</code></td>
-                  <td>Tells Aikido the decisions it was not told yet</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-repos</code></td>
-                  <td>The repositories of the workspace. <code>--search=</code> narrows the list ·
-                    <code>--use=12</code> keeps the one this project is · <code>--forget</code> drops the
-                    choice</td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-register</code></td>
-                  <td>Writes the register for the client to
-                    <code>{paths.security}/aikido-register.md</code></td>
-                </tr>
-                <tr>
-                  <td><code>larapilot:aikido-scan</code></td>
-                  <td>Asks Aikido to scan the repository again. The scan runs there and takes minutes</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p><code>aikido-status</code>, <code>aikido-issues</code>, <code>aikido-plan</code>, and
-            <code>aikido-repos</code> (the list only) are allowed through the MCP <code>RunArtisanTool</code>;
-            the commands and the options that write are not.</p>
-
           <h4 id="deep-dive-aikido-dashboard">On the dashboard</h4>
-          <p><code>/larapilot/security</code> is always in the menu. With the setting off it is two lines: what
-            Aikido scans, and how to turn the link on. With the setting on it opens on the verdict
+          <p><code>/larapilot/security</code> is always in the menu, for admins, developers, and product managers.
+            Its first tab is the scanner the project associates; with none, the page describes Aikido and Hackly
+            side by side and how to associate either. With a scanner it opens on the verdict
             of the gate, in a sentence — <em>A release is stopped: 3 open findings are high or above, 2 with no
             decision yet</em> — then the open findings by severity, then every finding, the most severe first.
             A row opens on what the finding is, how to fix it, where it is, its CVE, when it was first seen, and
             what was decided: the spec it is in the backlog as, with its status, or the reason it was waived.
             Findings filter by decision and by text. What was read is kept for five minutes; <strong>Read
-            again</strong> asks Aikido anew, <strong>Download report (.md)</strong> saves the same document
+            again</strong> asks the scanner anew, <strong>Download report (.md)</strong> saves the same document
             the skill writes, and <strong>Register for the client (.md)</strong> saves every finding — open,
-            resolved, ignored with its reason. A decision Aikido was not told yet is said under the list. When
-            the git remote matches no repository of Aikido, the page lists the repositories of the workspace
-            and asks which one the project is. When Aikido cannot be read the page says what to check, and the
-            rest of the dashboard is untouched.</p>
+            resolved, ignored with its reason. A decision the scanner was not told yet is said under the list.
+            When the git remote matches no repository of the scanner, the page lists its repositories and asks
+            which one the project is. With Hackly the page names the linked domains whose findings it shows.
+            When the scanner cannot be read the page says what to check, and the rest of the dashboard is
+            untouched. The second tab is <a href="#deep-dive-checkpoint">Checkpoint</a>.</p>
 
           <h4 id="deep-dive-aikido-kept">What is kept, and where</h4>
           <div class="table-card">
@@ -9632,39 +10169,40 @@ fix: Upgrade guzzlehttp/psr7 to 2.7.0 or later</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td>Client id and secret</td>
+                  <td>Aikido client id and secret · Hackly address and token</td>
                   <td><code>.env</code></td>
                   <td>Never</td>
                 </tr>
                 <tr>
-                  <td>Access token</td>
+                  <td>Aikido's access token</td>
                   <td>The cache, for as long as Aikido says it lasts, less a minute</td>
                   <td>Never written to a file</td>
                 </tr>
                 <tr>
-                  <td>Decisions: finding id, spec, reason of a waiver, whether Aikido was told. The repository
-                    that was chosen</td>
-                  <td><code>.larapilot/aikido.yaml</code></td>
+                  <td>Decisions: finding id, spec, reason of a waiver or a false positive, whether the scanner was
+                    told. The repository that was chosen</td>
+                  <td><code>.larapilot/aikido.yaml</code> · <code>.larapilot/hackly.yaml</code></td>
                   <td>Yes — the team shares one set of decisions</td>
                 </tr>
                 <tr>
                   <td>The register for the client: every finding, open, resolved, or ignored</td>
-                  <td><code>.larapilot/docs/security/aikido-register.md</code></td>
+                  <td><code>.larapilot/docs/security/security-register.md</code></td>
                   <td>Your call: it names vulnerabilities that are still open</td>
                 </tr>
                 <tr>
                   <td>The report: every open finding with its decision</td>
-                  <td><code>.larapilot/docs/security/aikido.md</code></td>
+                  <td><code>.larapilot/docs/security/security-report.md</code></td>
                   <td>Your call: it names vulnerabilities that are still open</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="cli-note"><strong>What Larapilot never does.</strong> It never marks a finding as fixed: a
-            finding leaves the list when Aikido no longer reports it, after the fix is merged and scanned. It
-            never waives a finding: only the user does, with a reason — and only then is Aikido told to ignore
-            it. It never chooses the repository: when the git remote finds none, you name it. It never rates
-            a finding again: the severity is Aikido's. The address of the token endpoint is taken from the region
+          <div class="cli-note"><strong>What Larapilot never does.</strong> It never calls a scanner that is not
+            the one associated. It never marks a finding as fixed: a finding leaves the list when the scanner no
+            longer reports it, after the fix is merged and scanned. It never waives a finding or calls it a false
+            positive: only the user does, with a reason — and only then is the scanner told. It never chooses the
+            repository: when the git remote finds none, you name it. It never rates a finding again: the severity
+            is the scanner's. It never writes a credential under <code>.larapilot/</code>. The address of the token endpoint is taken from the region
             (<code>https://app.{region}.aikido.dev/api/oauth/token</code>, and
             <code>https://app.aikido.dev</code> for <code>eu</code>).
           </div>
@@ -10123,7 +10661,7 @@ returned: false</code></pre>
         <!-- SBOM, CVE & Checkpoint -->
         <article class="deep-dive-sub" id="deep-dive-sbom">
           <h3>SBOM, CVE &amp; Checkpoint</h3>
-          <p class="lead">Two local views of security next to Aikido: the <strong>SBOM</strong> of every package the
+          <p class="lead">Two local views of security next to the <a href="#deep-dive-aikido">security scanner</a>: the <strong>SBOM</strong> of every package the
             project ships, checked against <a href="https://osv.dev" target="_blank" rel="noopener">OSV.dev</a> for
             known vulnerabilities, and the last scan of
             <a href="https://github.com/andreapollastri/checkpoint" target="_blank" rel="noopener">Checkpoint</a>.</p>
@@ -10138,9 +10676,9 @@ returned: false</code></pre>
           <figure class="shot">
             <div class="shot-frame">
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/sbom</span></div>
-              <img src="img/dashboard/sbom.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The SBOM page: 148 Composer packages with licenses, checked against OSV.dev">
+              <img src="img/dashboard/sbom.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The SBOM page: 139 Composer packages with licenses, checked against OSV.dev">
             </div>
-            <figcaption>The 148 Composer packages of Fernway&#39;s lock file with their licenses, checked against OSV.dev: nothing open.</figcaption>
+            <figcaption>The 139 Composer packages of Fernway&#39;s lock file with their licenses, checked against OSV.dev: nothing open.</figcaption>
           </figure>
 
           <h4 id="deep-dive-sbom-osv">Known vulnerabilities</h4>
@@ -10162,7 +10700,7 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
           </ul>
 
           <h4 id="deep-dive-checkpoint">Checkpoint on the dashboard</h4>
-          <p><strong>Security</strong> has two tabs: <strong>Aikido</strong> and <strong>Checkpoint</strong>. The second
+          <p><strong>Security</strong> has two tabs: the security scanner (<strong>Aikido</strong> or <strong>Hackly</strong>) and <strong>Checkpoint</strong>. The second
             shows the last scan — verdict, checks by area (dependencies, configuration, code), each finding with its
             suppression hash, the trend — with <em>Run the scan</em> and a Markdown report.
             <code>php artisan larapilot:checkpoint-scan</code> runs <code>checkpoint:scan --json</code>
@@ -10400,10 +10938,11 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
         <!-- Design systems -->
         <article class="deep-dive-sub" id="deep-dive-design-systems">
           <h3>Design systems</h3>
-          <p class="lead">Five packaged visual references ship in <code>.larapilot/design-systems/</code> on
+          <p class="lead">Thirteen design systems ship in <code>.larapilot/design-systems/</code> on
             <code>larapilot:install</code> and refresh on <code>larapilot:update</code>. <code>/larapilot-design</code>
-            picks the folder that matches the PRD stack choice — Elise and Joe enforce token and component consistency
-            through implement and review.
+            draws every mockup in one of them — the one the PRD stack names, or the ones you pick to compare — and the
+            frontend is built to mirror the chosen mockups. Each covers a backoffice, and the CSS frameworks, Fluent, and
+            the aesthetic systems a public site too.
           </p>
 
           <div class="table-card">
@@ -10413,56 +10952,103 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
                   <th>System</th>
                   <th>Path</th>
                   <th>When to use</th>
-                  <th>Contents</th>
+                  <th>What it looks like</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>Filament</strong></td>
                   <td><code>design-systems/filament/</code></td>
-                  <td>Admin/control panel mockups when the PRD records <strong>Filament</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <code>figma-sources.md</code>,
-                    <strong>17</strong> HTML screens — v3 light sidebar, <strong>slate</strong> primary
-                  </td>
+                  <td>A panel the PRD records as <strong>Filament</strong></td>
+                  <td>Filament 4: full-width topbar, the OKLCH palettes and the shades Filament picks per component, <code>data-fi-primary</code> / <code>data-fi-gray</code> — <strong>21</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Laravel Nova</strong></td>
+                  <td><code>design-systems/nova/</code></td>
+                  <td>A panel on <strong>Nova</strong>, when the project licenses it</td>
+                  <td>Nova 5.7: Nova's own <code>--colors-*</code> variables, metrics, lenses, filters, action modals — <strong>13</strong> screens</td>
                 </tr>
                 <tr>
                   <td><strong>Laravel Starter Kits</strong></td>
                   <td><code>design-systems/starter-kit/</code></td>
-                  <td>Authenticated app UI when the PRD records a Starter Kit variant (<code>livewire</code>,
-                    <code>react</code>, <code>vue</code>, <code>svelte</code>)
-                  </td>
-                  <td><code>tokens.css</code> (shadcn oklch), <code>components.md</code>, <strong>7</strong> HTML
-                    screens</td>
+                  <td>The authenticated UI of a <strong>Starter Kit</strong>: React, Vue, Svelte, or Livewire</td>
+                  <td>The kits' real layouts — inset sidebar, header layout, settings, Fortify auth — and the Livewire kit's Flux look — <strong>15</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>shadcn/ui</strong></td>
+                  <td><code>design-systems/shadcn/</code></td>
+                  <td>Inertia product UI beyond the kit pages</td>
+                  <td>shadcn's default theme variables; sidebar, data table, sheet, dialog, kanban, a landing page — <strong>14</strong> screens</td>
                 </tr>
                 <tr>
                   <td><strong>Bootstrap 5</strong></td>
                   <td><code>design-systems/bootstrap-5/</code></td>
-                  <td>Marketing or app UI when the PRD records <strong>Bootstrap 5</strong> (without Filament or a
-                    Starter Kit)</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (landing,
-                    dashboard, login, settings, components)</td>
+                  <td>A site or app on <strong>Bootstrap 5</strong></td>
+                  <td>A subset of the official Bootstrap 5.3.8 stylesheet: real class names, Bootstrap Icons — <strong>12</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>AdminLTE 4</strong></td>
+                  <td><code>design-systems/adminlte/</code></td>
+                  <td>An admin panel on <strong>AdminLTE</strong></td>
+                  <td>A subset of the official AdminLTE 4.10 stylesheet: dark sidebar, small-box, info-box, card tools — <strong>10</strong> screens</td>
                 </tr>
                 <tr>
                   <td><strong>Tailwind CSS</strong></td>
                   <td><code>design-systems/tailwind/</code></td>
-                  <td>Marketing or custom app UI when the PRD records <strong>Tailwind CSS</strong> without Filament,
-                    Starter Kit, or Bootstrap</td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> utility-first HTML screens
-                  </td>
+                  <td>A site or custom app in <strong>Tailwind</strong> utilities, without a panel or kit</td>
+                  <td>Real Tailwind 4 utilities compiled into one file — no Play CDN — <strong>10</strong> screens</td>
                 </tr>
                 <tr>
-                  <td><strong>AdminLTE</strong></td>
-                  <td><code>design-systems/adminlte/</code></td>
-                  <td>Admin/control panel mockups when the PRD records <strong>AdminLTE 4</strong></td>
-                  <td><code>tokens.css</code>, <code>components.md</code>, <strong>6</strong> HTML screens (dashboard,
-                    resource list, login, settings, components)</td>
+                  <td><strong>Material Design 3</strong></td>
+                  <td><code>design-systems/material-3/</code></td>
+                  <td>Angular Material or Vuetify companions, Android-like products</td>
+                  <td>The 49 M3 colour roles generated from one seed; drawer, rail, navigation bar, 28 px dialogs — <strong>12</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Fluent 2</strong></td>
+                  <td><code>design-systems/fluent/</code></td>
+                  <td>Enterprise: intranets, B2B portals, Microsoft-ecosystem clients</td>
+                  <td>The look of Microsoft 365 and the Azure portal with Fluent's own token names; a service portal and a product page with pricing — no Microsoft logo — <strong>12</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Nordic SaaS</strong></td>
+                  <td><code>design-systems/nordic-saas/</code></td>
+                  <td>Larapilot's house system, the Nordic minimal default for public UI</td>
+                  <td>Warm stone neutrals, one fjord-blue accent, hairlines; an invoicing app and its site — <strong>11</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Modern</strong></td>
+                  <td><code>design-systems/modern/</code></td>
+                  <td>SaaS and developer tools</td>
+                  <td>Linear / Vercel-like: dark first with an equal light theme, glass surfaces, bento grids, command palette, <code>kbd</code> hints — <strong>11</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Bold California</strong></td>
+                  <td><code>design-systems/bold-california/</code></td>
+                  <td>Consumer brands, leisure, DTC shops</td>
+                  <td>Heavy display type, a sunset palette on sand, pill buttons, sticker shadows, a warm night dark mode — <strong>11</strong> screens</td>
+                </tr>
+                <tr>
+                  <td><strong>Berlin</strong></td>
+                  <td><code>design-systems/berlin/</code></td>
+                  <td>Agencies, studios, culture, venues</td>
+                  <td>A Swiss / Bauhaus grid, monochrome and one acid signal colour, hairline rules, mono micro-labels — <strong>13</strong> screens</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <p>Every folder has the same shape: <code>README.md</code> with the mapping from mockup to real code,
+            <code>components.md</code> with a snippet and do / don't per component, <code>sources.md</code> with what was
+            verified against the product and what was assumed, one <code>tokens.css</code>, and static screens in
+            <code>html/</code> — at least a dashboard, a resource list, a resource form, sign-in, settings, the
+            components, and an empty state, in light and dark. Screens render offline: no CDN, no web font, no
+            script, the product's own icon set copied path for path. Where a product misses WCAG AA contrast, the
+            system lifts that one value and says so, so the real app can do the same.</p>
           <p>Open each folder's <code>html/index.html</code> locally as a visual catalog — or browse every
             project mockup in the dashboard <a href="#deep-dive-dashboard">Design</a> gallery
-            (<code>/larapilot/design</code>). Skills resolve paths via
+            (<code>/larapilot/design</code>). The index of every screen is
+            <code>.larapilot/design-systems/README.md</code>. Skills resolve paths via
             <code>php artisan larapilot:config-show</code> → <code>paths.design_systems</code>.
           </p>
 
@@ -10471,7 +11057,7 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
             (1Password, Bitwarden, iCloud Keychain, the browser's own) scan every <code>&lt;input&gt;</code> they
             find, and the Design gallery renders the same screen several times at once — the card, the viewer, the
             style comparison. One real sign-in field makes them pop up, fill in, and offer to save on every
-            preview. So <code>/larapilot-design</code> follows one hard rule, and the five packaged systems ship a
+            preview. So <code>/larapilot-design</code> follows one hard rule, and every packaged system ships a
             <code>login.html</code> that shows how:</p>
           <ul>
             <li><strong>No <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, or <code>&lt;form&gt;</code>
@@ -10488,14 +11074,17 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
               viewer. Error, empty, and focus states are separate screens.</li>
             <li>Every other control stays real: search, name, amount, select, the <em>Remember me</em> checkbox.</li>
           </ul>
-          <p>Filament and Starter Kit carry the classes in <code>tokens.css</code> — <code>.mock-label</code>,
+          <p>Every packaged system carries the classes in its <code>tokens.css</code> — <code>.mock-label</code>,
             <code>.mock-field</code>, <code>.mock-field--secret</code>, <code>.mock-field--empty</code>. The real
             Fortify or Filament fields are built by Alex at implementation time.</p>
 
           <h4 id="deep-dive-custom-design-system">Custom design systems &amp; templates</h4>
           <p>You can add <strong>your own</strong> design system or UI template under
             <code>.larapilot/design-systems/{your-name}/</code> and use it for mockups
-            (<code>/larapilot-design</code>) and implementation — not only the five packaged references.
+            (<code>/larapilot-design</code>) and implementation — not only the thirteen packaged references.
+            <code>/larapilot-design</code> can also write one for you after an interview about the brand, its
+            references, tone, density, and accessibility; an adopted project gets the design system of the app as it
+            is.
           </p>
           <ul>
             <li>Drop tokens, component notes, HTML starters, and brand assets in that folder (same shape as the packaged
@@ -10686,8 +11275,13 @@ php artisan larapilot:doctor --human                                  # a table 
                 <tr>
                   <td>Access</td>
                   <td><code>larapilot:dashboard-user</code> (<code>list</code> · <code>add &lt;user&gt;</code> ·
-                    <code>remove &lt;user&gt;</code>, <code>--password=</code>)</td>
-                  <td><a href="#deep-dive-dashboard-auth">Dashboard auth</a></td>
+                    <code>role &lt;user&gt; &lt;role&gt;</code> · <code>password &lt;user&gt;</code> ·
+                    <code>rename &lt;user&gt; &lt;new&gt;</code> · <code>totp-reset &lt;user&gt;</code> ·
+                    <code>remove &lt;user&gt;</code>; <code>--role=admin|dev|pm|ext</code>, <code>--password=</code>) ·
+                    <code>larapilot:api-token</code> (<code>show</code> · <code>generate</code> · <code>rotate</code> ·
+                    <code>revoke</code>)</td>
+                  <td><a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a> ·
+                    <a href="#deep-dive-api-auth">API token</a></td>
                 </tr>
                 <tr>
                   <td>Forges &amp; notify</td>
@@ -10727,9 +11321,11 @@ php artisan larapilot:doctor --human                                  # a table 
                     <code>larapilot:spec-add</code> ·
                     <code>larapilot:spec-show</code> · <code>larapilot:spec-next</code> ·
                     <code>larapilot:spec-delete</code> · <code>larapilot:validate-spec</code> ·
-                    <code>larapilot:spec-comment</code> (<code>--blocks-merge</code>)
+                    <code>larapilot:spec-comment</code> (<code>--blocks-merge</code>) ·
+                    <code>larapilot:spec-sprint {code} {n|none}</code>
                   </td>
-                  <td><code>/larapilot-spec</code>, shortcuts, dashboard comments</td>
+                  <td><code>/larapilot-spec</code>, shortcuts, dashboard comments; sprints when
+                    <a href="#deep-dive-sprints-setting"><code>sprints</code></a> is on</td>
                 </tr>
                 <tr>
                   <td>Design</td>
@@ -10800,6 +11396,13 @@ php artisan larapilot:doctor --human                                  # a table 
                   </td>
                 </tr>
                 <tr>
+                  <td>Roadmap</td>
+                  <td><code>larapilot:roadmap-set</code> (<code>--intro=</code>, <code>--semver=</code>,
+                    <code>--item=</code>, <code>--title=</code>, <code>--summary=</code>, <code>--target=</code>,
+                    <code>--hide</code>, <code>--show</code>) · <code>larapilot:roadmap-show</code></td>
+                  <td><code>/larapilot-release</code> — see <a href="#deep-dive-dashboard-roadmap">Roadmap</a></td>
+                </tr>
+                <tr>
                   <td>Custom skills</td>
                   <td><code>larapilot:custom-skill-list</code> ·
                     <code>larapilot:custom-skill-add</code> (<code>--name=</code>,
@@ -10834,20 +11437,24 @@ php artisan larapilot:doctor --human                                  # a table 
                       href="#deep-dive-tracker">Project trackers</a></td>
                 </tr>
                 <tr>
-                  <td>Aikido</td>
-                  <td><code>larapilot:aikido-status</code> · <code>larapilot:aikido-issues</code>
+                  <td>Security scanner</td>
+                  <td><code>larapilot:security-status</code> · <code>larapilot:security-issues</code>
                     (<code>--new</code>, <code>--severity=</code>, <code>--type=</code>,
-                    <code>--limit=</code>, <code>--report</code>, <code>--gate</code>) ·
-                    <code>larapilot:aikido-plan</code> (<code>--ids=</code>) ·
-                    <code>larapilot:aikido-link</code> (<code>--spec=</code>,
-                    <code>--waive --reason=</code>, <code>--forget</code>, <code>--local</code>) ·
-                    <code>larapilot:aikido-push</code> · <code>larapilot:aikido-repos</code>
+                    <code>--limit=</code>, <code>--detail=</code>, <code>--report</code>, <code>--gate</code>) ·
+                    <code>larapilot:security-plan</code> (<code>--ids=</code>) ·
+                    <code>larapilot:security-link</code> (<code>--spec=</code>,
+                    <code>--waive --reason=</code>, <code>--false-positive --reason=</code>, <code>--forget</code>,
+                    <code>--local</code>) ·
+                    <code>larapilot:security-push</code> · <code>larapilot:security-repos</code>
                     (<code>--search=</code>, <code>--use=</code>, <code>--forget</code>) ·
-                    <code>larapilot:aikido-register</code> ·
-                    <code>larapilot:aikido-scan</code>
+                    <code>larapilot:security-register</code> (<code>--fresh</code>) ·
+                    <code>larapilot:security-scan</code> (<code>--profile=</code>, <code>--include-targets</code>) —
+                    Aikido's older names <code>aikido-status</code> · <code>aikido-issues</code> ·
+                    <code>aikido-plan</code> · <code>aikido-link</code> · <code>aikido-push</code> ·
+                    <code>aikido-repos</code> · <code>aikido-register</code> · <code>aikido-scan</code>
                   </td>
-                  <td><code>/larapilot-aikido</code>, <code>/larapilot-ship</code>, CI gate — see <a
-                      href="#deep-dive-aikido">Aikido</a></td>
+                  <td><code>/larapilot-security</code>, <code>/larapilot-ship</code>, CI gate — see <a
+                      href="#deep-dive-aikido">Security scanners</a></td>
                 </tr>
                 <tr>
                   <td>Production errors</td>
@@ -10921,7 +11528,9 @@ php artisan larapilot:doctor --human                                  # a table 
                     <code>validate-prd</code>/<code>-spec</code>/<code>-plan</code>, <code>prd-impact</code>,
                     <code>prd-show</code>, <code>doctor</code>,
                     <code>diagnostics</code>, <code>logs</code>, <code>quality</code>, <code>frontend-scan</code>,
-                    <code>frontend-rules</code>, <code>backstage-export</code>, <code>tracker-status</code>, <code>hook-list</code>, <code>context</code>, <code>schedule-show</code>, <code>stack</code>, <code>upgrade-check</code>, <code>sbom</code>, <code>vendor-audit</code>, <code>aikido-status</code> /
+                    <code>frontend-rules</code>, <code>backstage-export</code>, <code>tracker-status</code>, <code>hook-list</code>, <code>context</code>, <code>schedule-show</code>, <code>stack</code>, <code>upgrade-check</code>, <code>sbom</code>, <code>vendor-audit</code>, <code>security-status</code> /
+                    <code>security-issues</code> / <code>security-plan</code> / <code>security-repos</code> (Aikido and
+                    Hackly), their Aikido names <code>aikido-status</code> /
                     <code>aikido-issues</code> / <code>aikido-plan</code> / <code>aikido-repos</code>,
                     <code>errors-status</code> /
                     <code>errors-list</code> / <code>errors-plan</code> (and their old names
@@ -10935,8 +11544,9 @@ php artisan larapilot:doctor --human                                  # a table 
             parameters that read, and an option that writes a file is refused before the command runs:
             <code>quality --fix</code>, <code>backstage-export --write</code> / <code>--force</code> /
             <code>--catalog=</code> / <code>--mkdocs=</code> / <code>--file=</code>,
-            <code>usage-report --output=</code>, <code>aikido-issues --report</code>,
-            <code>aikido-repos --use=</code> / <code>--forget</code>, <code>errors-list --report</code>,
+            <code>usage-report --output=</code>, <code>aikido-issues --report</code>, <code>security-issues --report</code>,
+            <code>aikido-repos --use=</code> / <code>--forget</code>, <code>security-repos --use=</code> /
+            <code>--forget</code>, <code>errors-list --report</code>,
             <code>upgrade-check --report</code>, <code>sbom --write=</code>, <code>vendor-audit --report</code>. Run directly with Artisan, the commands take every option as
             before. All four tools are annotated as read-only (<code>readOnlyHint</code>), and the schema of
             <code>command</code> lists the commands that are allowed.</p>
@@ -10949,10 +11559,12 @@ php artisan larapilot:doctor --human                                  # a table 
             <code>/larapilot</code>. It is where you read what the skills write: review backlog progress, read
             the PRD, browse the <strong>Design</strong> gallery, inspect settings/choices, Lucille usage, and Economics
             quotes — then drill into spec detail between skill sessions.
-            With <code>comments=YES</code> you can also post <strong>internal feedback</strong> from the spec page
-            (dev/staging only), the <strong>File manager</strong> uploads and organizes the material the skills
+            With <code>comments=YES</code> you can also post <strong>internal feedback</strong> from the spec page,
+            the <strong>File manager</strong> uploads and organizes the material the skills
             read, <strong>Database</strong> shows the tables of the application and what is in them, and
-            <strong>Logs</strong> reads what it logged — workflow state still changes only via skills/CLI.</p>
+            <strong>Logs</strong> reads what it logged — workflow state still changes only via skills/CLI. Outside
+            your machine it asks for a user, and each user sees the pages of their role
+            (<a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a>).</p>
 
           <h4>Served by your Laravel app</h4>
           <ul>
@@ -10961,13 +11573,15 @@ php artisan larapilot:doctor --human                                  # a table 
               serves the app serves the dashboard.</li>
             <li><strong>Nothing to build.</strong> Blade views that carry their own styles: no Node, no
               <code>npm run build</code>, nothing added to the asset pipeline of your app.</li>
-            <li><strong>No account.</strong> It reads <code>.larapilot/</code>, the Git history of the repository,
-              and the database in <code>.env</code>: nothing to sign up for, nothing hosted somewhere else.</li>
+            <li><strong>Nothing hosted elsewhere.</strong> It reads <code>.larapilot/</code>, the Git history of the
+              repository, and the database in <code>.env</code>. Its users are in a git-ignored file of the project,
+              made by an admin — there is no sign-up.</li>
             <li><strong>Current on every reload.</strong> Each page reads the files when it loads, so what a skill
               wrote a minute ago is there. No sync, no export.</li>
-            <li><strong>Off where it should be.</strong> It answers only in the environments you allow, never in
-              <code>production</code>, and <a href="#deep-dive-dashboard-auth">dashboard_auth</a> puts a password
-              in front of it on a shared staging server.</li>
+            <li><strong>Closed where it should be.</strong> Open on a developer's machine, a sign-in page on every
+              other environment, not served in <code>production</code> unless <code>LARAPILOT_FORCE_IN_PROD=true</code>
+              — then a password and an authenticator for everyone
+              (<a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a>).</li>
           </ul>
 
           <h4>Activation</h4>
@@ -10976,10 +11590,11 @@ php artisan larapilot:doctor --human                                  # a table 
           <ul>
             <li><code>LARAPILOT_ENABLED=true</code> (default) — master switch in <code>config/larapilot.php</code></li>
             <li><code>LARAPILOT_DASHBOARD_ROUTE=true</code> (default) — dashboard route toggle</li>
-            <li>App environment is <strong>not</strong> <code>production</code></li>
-            <li>Environment is in the allowlist: <code>local</code>, <code>development</code>, <code>testing</code>, or
-              <code>staging</code>
-            </li>
+            <li>App environment is <strong>not</strong> <code>production</code> — or
+              <code>LARAPILOT_FORCE_IN_PROD=true</code>, the one switch that serves the dashboard, the mockups, and the
+              API there</li>
+            <li>When you add an <code>environments</code> list to <code>dashboard_route</code>, the environment is in
+              it. With none, every environment but <code>production</code> serves the dashboard</li>
           </ul>
           <p>Start your Laravel app the way you already do and open <code>/larapilot</code> on it:</p>
           <div class="code-block">
@@ -10997,32 +11612,43 @@ php artisan larapilot:doctor --human                                  # a table 
     'enabled' => env('LARAPILOT_DASHBOARD_ROUTE', true),
     'prefix' => 'larapilot',           // change to customize URL prefix
     'middleware' => ['web'],
-    'environments' => ['local', 'development', 'testing', 'staging'],
+    // Serves the dashboard, the mockups, and the API in production:
+    // a password AND an authenticator for every user.
+    'force_in_production' => (bool) env('LARAPILOT_FORCE_IN_PROD', false),
 
-    // Optional HTTP Basic Auth on the UI — enforced only when the
-    // `dashboard_auth` project setting is ON. Never gates the JSON API or MCP.
     'auth' => [
-        'file' => base_path('.larapilot/auth.yaml'),   // hashed credentials, git-ignored
-        'realm' => env('LARAPILOT_DASHBOARD_AUTH_REALM', 'Larapilot'),
-        'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 30),
+        'file' => base_path('.larapilot/auth.yaml'),   // users, roles, API token hash — git-ignored
+        // Wrong passwords per minute from one address (0 lifts it); 5 a minute per name always.
+        'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 20),
+        // The name the authenticator app shows for the account.
+        'issuer' => env('LARAPILOT_DASHBOARD_AUTH_ISSUER', env('APP_NAME', 'Larapilot')),
+        'audit' => env('LARAPILOT_DASHBOARD_AUTH_AUDIT', true),
+        'audit_file' => env('LARAPILOT_DASHBOARD_AUTH_AUDIT_FILE', '.larapilot/auth-audit.log'),
     ],
 ],</code></pre>
           </div>
 
-          <h4>Authentication <span class="chip">opt-in</span></h4>
-          <p>The dashboard UI is open by default in the allowed environments. Turn on the
-            <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> project setting to require
-            <strong>HTTP Basic Auth</strong>:</p>
+          <h4 id="deep-dive-dashboard-access">Who gets in</h4>
+          <p>There is no setting for it: what the dashboard asks follows <code>APP_ENV</code>. <code>local</code> and
+            <code>testing</code> are open — whoever reaches the dashboard acts as an admin. Every other environment
+            but <code>production</code> shows a sign-in page; an authenticator app is optional there.
+            <code>production</code> serves nothing unless <code>LARAPILOT_FORCE_IN_PROD=true</code>, and then every
+            user signs in with a password <strong>and</strong> an authenticator. There is no sign-up and no password
+            reset: an admin makes the users.</p>
           <div class="code-block">
-            <div class="code-block-header">enable the dashboard gate</div>
-            <pre><code>php artisan larapilot:dashboard-user add andrea      # prompts for a password, stores only the hash
-php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
+            <div class="code-block-header">on a shared host, the first admin</div>
+            <pre><code>php artisan larapilot:dashboard-user add andrea --role=admin   <span class="comment"># prompts for a password (12+ characters)</span></code></pre>
           </div>
-          <p>Credentials are argon2id/bcrypt hashes in <code>.larapilot/auth.yaml</code> (no database, no
-            <code>User</code> model; added to <code>.gitignore</code> automatically). Failed sign-ins are rate-limited
-            per IP. This gate is <strong>UI-only</strong> — it never applies to <code>/larapilot/api/*</code> (use
-            <code>LARAPILOT_API_TOKEN</code>) or the MCP server. Full reference:
-            <a href="#deep-dive-dashboard-auth">Project settings → Dashboard auth</a>.</p>
+          <p>Four roles — <code>admin</code>, <code>dev</code>, <code>pm</code>, <code>ext</code> — decide which pages
+            each user sees; the menu shows only those, and any other page answers <code>403</code>. The sidebar
+            groups the pages as <strong>Workflow</strong>, <strong>Workspace</strong>, <strong>Insights</strong>,
+            <strong>Reference</strong>, and <strong>Access</strong> (Users, API token, Anonymization — admins); its
+            foot shows the signed-in user, who opens <strong>Account</strong>, and <strong>Sign out</strong>. The
+            version under the title — <strong>Larapilot · Dashboard</strong> — links to
+            <a href="https://larapilot.web.ap.it" target="_blank" rel="noopener">larapilot.web.ap.it</a>. This gate
+            never applies to <code>/larapilot/api/*</code>, which has its <a href="#deep-dive-api-auth">token</a>, nor
+            to the MCP server. Roles, the authenticator, passwords, throttling, and the audit trail:
+            <a href="#deep-dive-dashboard-auth">Dashboard sign-in &amp; roles</a>.</p>
 
           <h4>Pages</h4>
           <div class="table-card">
@@ -11041,7 +11667,8 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Kanban backlog — specs grouped by workflow status (<span class="status status-todo">TODO</span> →
                     <span class="status status-done">DONE</span>), the status as it stands in one Markdown file
                     (<code>/larapilot/board.md</code>), and the epics as an outline of stories and tasks
-                    (<code>/larapilot/epics.md</code>)
+                    (<code>/larapilot/epics.md</code>). <strong>Group by: Status · Version · Sprint</strong> and a
+                    version filter (<a href="#deep-dive-dashboard-board">Board</a>)
                   </td>
                 </tr>
                 <tr>
@@ -11058,9 +11685,16 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Discovery choices snapshot from <code>.larapilot/choices.yaml</code></td>
                 </tr>
                 <tr>
+                  <td><strong>Roadmap</strong></td>
+                  <td><code>/larapilot/roadmap</code></td>
+                  <td>The versions of the release ledger as <strong>Shipped · Now · Next · Later</strong>, with their
+                    stories in public words, and the public link when <code>public_roadmap</code> is on
+                    (<a href="#deep-dive-dashboard-roadmap">Roadmap</a>). Every role</td>
+                </tr>
+                <tr>
                   <td><strong>Plan</strong></td>
                   <td><code>/larapilot/plan</code></td>
-                  <td>The delivery forecast: a dependency-aware Gantt with open work queued from today, by epic or in delivery order (time axis, today marker, task filters), milestones, and schedule criticality. Download <code>/larapilot/plan/plan.md</code>: epics, every story with status, priority, points, release, blockers, and forecast window, the tasks of each planned story, milestones, and the delivery order</td>
+                  <td>The delivery forecast: a dependency-aware Gantt with open work queued from today, by epic or in delivery order — or <strong>Group by: Version · Sprint</strong> (time axis, today marker, task filters), milestones, and schedule criticality. Download <code>/larapilot/plan/plan.md</code>: epics, every story with status, priority, points, release, blockers, and forecast window, the tasks of each planned story, milestones, and the delivery order</td>
                 </tr>
                 <tr>
                   <td><strong>Design</strong></td>
@@ -11087,10 +11721,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>File manager</strong></td>
                   <td><code>/larapilot/files</code></td>
-                  <td>The five material folders, each with what it is for: browse the folder tree, preview and
-                    download files, read a PDF in the page, upload files or a whole folder with its structure,
-                    rename, delete. A sixth folder, <strong>Project</strong>, shows the application itself,
-                    <strong>read only</strong></td>
+                  <td><strong>Admins only.</strong> The five material folders, each with what it is for: browse the
+                    folder tree, preview and download files, read a PDF in the page, upload files or a whole folder
+                    with its structure, rename, delete, <strong>Download zip</strong> of any folder. A sixth folder,
+                    <strong>Project</strong>, shows the application itself, <strong>read only</strong></td>
                 </tr>
                 <tr>
                   <td><strong>Database</strong></td>
@@ -11101,8 +11735,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     indexes, foreign keys. <strong>Diagram</strong> draws the tables and the foreign keys
                     between them; <strong>Migrations</strong> lists the ones that ran and the ones still to
                     run. <strong>Download SQL</strong> dumps the whole database; <strong>Other formats</strong> gives its
-                    structure alone, Laravel migrations, and seeders with its rows.
-                    <strong>Read only</strong>; passwords and tokens are never shown</td>
+                    structure alone, Laravel migrations, and seeders with its rows; the dump and the seeders take
+                    <strong>Anonymize personal data</strong>. <strong>Read only</strong>; passwords and tokens are
+                    never shown. Admins and developers — a developer in <code>production</code> sees the rows
+                    anonymized only</td>
                 </tr>
                 <tr>
                   <td><strong>Logs</strong></td>
@@ -11132,6 +11768,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                     it was made on. Filterable by developer</td>
                 </tr>
                 <tr>
+                  <td><strong>Forecast</strong></td>
+                  <td><code>/larapilot/forecast</code></td>
+                  <td>How long the backlog takes: story points done, under way, and to do; the two-week sprints one
+                    person needs; the same work with Larapilot, measured or modelled; by epic. Download
+                    <code>/larapilot/forecast/report.md</code> (<a href="#deep-dive-dashboard-forecast">Forecast</a>)</td>
+                </tr>
+                <tr>
                   <td><strong>Usage</strong></td>
                   <td><code>/larapilot/usage</code></td>
                   <td>Lucille token and hour ledger by category, plus download
@@ -11140,9 +11783,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                 <tr>
                   <td><strong>Security</strong></td>
                   <td><code>/larapilot/security</code></td>
-                  <td>Two tabs. <strong>Aikido</strong>: what Aikido found in the repository, with what was decided
-                    about each finding and the verdict of the ship gate; with <code>aikido</code> off, two lines on what
-                    Aikido is and how to connect it. Download <code>/larapilot/security/aikido.md</code>.
+                  <td>Two tabs. The first is the scanner the project associates — <strong>Aikido</strong> or
+                    <strong>Hackly</strong>: what it found in the repository (with Hackly, in its linked domains too),
+                    with what was decided about each finding and the verdict of the ship gate; with no scanner, what
+                    each one is and how to associate it. Downloads <code>/larapilot/security/report.md</code> (the
+                    findings of either scanner) and <code>/larapilot/security/register.md</code>.
                     <strong>Checkpoint</strong> (<code>/larapilot/security/checkpoint</code>): the last scan of
                     Checkpoint — verdict, checks by area, findings with their suppression hash, trend — with
                     <em>Run the scan</em> and <code>/larapilot/security/checkpoint.md</code></td>
@@ -11190,26 +11835,53 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>What the project runs on: Laravel, PHP, the database server, and Node, each with its support
                     window as a bar (bug fixes, security fixes, today) and an alert near or past its end; the project,
                     extensions, connections, drivers, the packages that shape an upgrade, frontend, CI and deploy, and
-                    every file that pins a version</td>
+                    every file that pins a version. The host, port, and name of the database are an admin's</td>
+                </tr>
+                <tr>
+                  <td><strong>Account</strong></td>
+                  <td><code>/larapilot/account</code></td>
+                  <td>Your password, and your authenticator turned on or off. Every signed-in user</td>
+                </tr>
+                <tr>
+                  <td><strong>Users</strong></td>
+                  <td><code>/larapilot/users</code></td>
+                  <td>Admins: create users with a role, change roles and passwords, rename, reset a lost
+                    authenticator, remove (<a href="#deep-dive-dashboard-auth">Sign-in &amp; roles</a>)</td>
+                </tr>
+                <tr>
+                  <td><strong>API token</strong></td>
+                  <td><code>/larapilot/api-token</code></td>
+                  <td>Admins: generate, rotate, or revoke the token of the JSON API — shown once
+                    (<a href="#deep-dive-api-auth">API token</a>)</td>
+                </tr>
+                <tr>
+                  <td><strong>Anonymization</strong></td>
+                  <td><code>/larapilot/anonymization</code></td>
+                  <td>Admins: what every column of the database becomes in an anonymized copy
+                    (<a href="#deep-dive-dashboard-anonymization">Anonymization</a>)</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <p>Pages are reached from a sidebar grouped as Workflow, Workspace, Insights, and Reference; on a phone the
-            sidebar is a drawer behind the menu button. The dashboard follows the system theme, and the switch at the
+          <p>Pages are reached from a sidebar grouped as Workflow, Workspace, Insights, Reference, and Access —
+            each user sees the pages of their role; on a phone the sidebar is a drawer behind the menu button. Its
+            foot shows the signed-in user and <strong>Sign out</strong>, and the version, which links to
+            <a href="https://larapilot.web.ap.it" target="_blank" rel="noopener">larapilot.web.ap.it</a>. The dashboard follows the system theme, and the switch at the
             foot of the sidebar pins <strong>light</strong> or <strong>dark</strong> for that browser.</p>
 
           <h4 id="deep-dive-dashboard-files">File manager</h4>
-          <p><code>/larapilot/files</code> manages what you hand the skills before they start. It opens on five
-            folders you can change, and on the project itself, which you can only read:</p>
+          <p><code>/larapilot/files</code> manages what you hand the skills before they start. It is for
+            <strong>admins only</strong>, on every environment — on a developer's machine, where the dashboard is
+            open, that is whoever uses it. It opens on five folders you can change, and on the project itself, which
+            you can only read:</p>
 
           <figure class="shot">
             <div class="shot-frame">
-              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/files</span></div>
-              <img src="img/dashboard/files.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The File manager: five workspace folders and the project, read-only">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/files/design-systems</span></div>
+              <img src="img/dashboard/files.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The File manager on the design-systems folder: the thirteen packaged systems, with Download zip, upload, and new folder">
             </div>
-            <figcaption>Brand, client materials, design systems, legacy snapshots, and custom skills — and the project itself, read-only.</figcaption>
+            <figcaption>The folders as tabs — brand, client materials, design systems, legacy, skills, and the project, read-only. In <strong>Design systems</strong>, the thirteen systems Larapilot ships; <strong>Download zip</strong> takes the folder as it shows.</figcaption>
           </figure>
           <div class="table-card">
             <table>
@@ -11270,6 +11942,11 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
                   <td>Yes</td>
                 </tr>
                 <tr>
+                  <td>Download a folder as a zip</td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
                   <td>Upload files or a folder, create a folder</td>
                   <td>Yes</td>
                   <td><strong>No</strong></td>
@@ -11314,21 +11991,27 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               tree unfolds only along the folder you are in.</li>
             <li><strong>Credentials show their keys, never their values.</strong> In every folder, a file that
               holds credentials is shown with each value replaced by <code>*****************</code> — on screen
-              and in the download, so the real bytes never leave the server. That covers <code>.env</code> and
-              <code>.env.*</code> (a template such as <code>.env.example</code> is shown as it is),
-              <code>auth.json</code>, <code>.npmrc</code>, <code>.yarnrc</code>, <code>.netrc</code>,
-              <code>.pgpass</code>. Comments stay readable; a commented-out value and the later lines of a value
+              and in the download, so the real bytes never leave the server. That covers <code>auth.json</code>,
+              <code>.npmrc</code>, <code>.yarnrc</code>, <code>.netrc</code>, <code>.pgpass</code>.
+              <strong><code>.env</code> and <code>.env.*</code> are the exception</strong>: shown as they are outside
+              <code>production</code>, and to an admin in <code>production</code>; masked for anyone else. A template
+              such as <code>.env.example</code> is always shown as it is. Comments stay readable; a commented-out value and the later lines of a value
               written over several lines are masked too. A key or a certificate (<code>.pem</code>,
               <code>.key</code>, <code>.p12</code>, <code>.pfx</code>, <code>id_rsa</code>, …) is one line of
               asterisks. A database (<code>.sqlite</code>, <code>.db</code>) is listed, and neither shown nor
               downloaded. A <code>.log</code> file is shown and downloaded with the passwords, tokens, and keys
               it quotes replaced by <code>[REDACTED]</code>, as on the Logs page, which reads it whole, by
               entries, where the file manager shows its first 256 KB.</li>
-            <li><strong>Local by default.</strong> The file manager is open in <code>local</code>,
-              <code>development</code>, and <code>testing</code>. On any other environment
-              (<code>staging</code>) it is served only when
-              <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is <code>YES</code>, and answers
-              <code>404</code> otherwise: client documents and legacy snapshots stay behind a sign-in.</li>
+            <li><strong>Download zip</strong> on every folder, the root of each one included, gives what the folder
+              shows, at any depth: databases left out, keys as their mask, logs redacted, and what a listing hides —
+              dot folders and the caches of the framework in Project — left out. <code>vendor/</code> and
+              <code>node_modules/</code> are zipped only when you open them and zip them themselves, never with a
+              parent. A symlink is skipped. The archive stops at <code>LARAPILOT_FILE_MANAGER_MAX_ZIP_MB</code>
+              (default <code>512</code>) and says so. Every zip is written to the
+              <a href="#deep-dive-dashboard-auth">audit trail</a>.</li>
+            <li><strong>Admins only.</strong> Client documents, legacy snapshots, and the files of the project stay
+              behind the sign-in and the role: a developer, a product manager, or an external user has no File
+              manager in the menu, and its addresses answer <code>403</code>.</li>
             <li><strong>Upload size.</strong> One file is limited by
               <code>LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB</code> (default <code>51200</code>, 50 MB) and by PHP's
               <code>upload_max_filesize</code> and <code>post_max_size</code>, whichever is lower. The page shows the
@@ -11359,14 +12042,16 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <figure class="shot">
               <div class="shot-frame">
                 <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/database?view=migrations</span></div>
-                <img src="img/dashboard/database-migrations.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Migrations: two pending, eight ran over seven batches">
+                <img src="img/dashboard/database-migrations.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Migrations: one pending, eight ran over seven batches, one ran with its file gone">
               </div>
-              <figcaption><strong>Migrations</strong>: two still to run, eight ran over seven batches.</figcaption>
+              <figcaption><strong>Migrations</strong>: one still to run, eight ran over seven batches, and one that ran from a branch this checkout does not have — its file is gone.</figcaption>
             </figure>
           </div>
           <ul>
             <li><strong>The list</strong> opens on every table and view, with its size where the driver reports
-              one, and the driver, the database, and the host on top — never the password. On MySQL and MariaDB
+              one, and the driver, the database, and the host on top — never the password. A developer sees the
+              driver alone: the host, the port, and the name of the database are an admin's, and are hidden from the
+              message of a failed connection too. On MySQL and MariaDB
               only the database in <code>.env</code> is listed, not every database the user can see; on
               PostgreSQL every schema is, and a table outside <code>public</code> is named
               <code>schema.table</code>. With a <code>prefix</code> on the connection, tables are named without
@@ -11436,9 +12121,17 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               as <code>NULL</code>, or as an empty string where <code>NULL</code> is not allowed — as
               <code>hidden-1</code>, <code>hidden-2</code>, … where a unique index holds the column, so the file
               still restores — and the head of the file names them. <strong>Include passwords and tokens</strong> puts them in, and is offered only in
-              <code>local</code>, <code>development</code>, and <code>testing</code> — on a shared host they never
+              <code>local</code> and <code>testing</code> — on a shared host they never
               leave the server, sign-in or not. The seeders follow the same rule, and
               <strong>Copy as SQL INSERT</strong> never carries them.</li>
+            <li><strong>Anonymize personal data</strong>, beside <strong>Download SQL</strong> and
+              <strong>Laravel seeders</strong>, writes every row through the
+              <a href="#deep-dive-dashboard-anonymization">anonymization map</a>: names, emails, phones, addresses,
+              and free text replaced, keys and record dates kept, so the copy still imports. The migrations are the
+              structure alone, with no row to replace. A <strong>developer in <code>production</code></strong>
+              always gets the anonymized rows — on screen and in every download — and cannot turn it off; search
+              and filters are off while the rows are anonymized, so a match never tells a value. An admin sees the
+              real rows and ticks the box for an anonymized download.</li>
             <li><strong>Other formats</strong>, beside <strong>Download SQL</strong>, gives the database three
               more ways:
               <ul>
@@ -11467,14 +12160,79 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>/larapilot/database-export/sql</code>, <code>/migrations</code>, and
               <code>/seeders</code>, with no extension, since a web server may keep <code>.sql</code> and
               <code>.zip</code> for itself; <code>/larapilot/database.sql</code> still answers.</li>
-            <li><strong>Local by default.</strong> Like the file manager, the page is open in
-              <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
-              is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
-              <code>YES</code>, and answers <code>404</code> otherwise.</li>
+            <li><strong>Admins and developers</strong> see the page, wherever the dashboard is served; a product
+              manager or an external user does not.</li>
             <li><strong>When the database cannot be read</strong> — the server is down, a value in
               <code>.env</code> is wrong — the page says so with the driver's own message.
               <code>LARAPILOT_DATABASE_VIEWER_CONNECTION</code> points it at another connection of
               <code>config/database.php</code>; <code>LARAPILOT_DATABASE_VIEWER=false</code> removes the page.</li>
+          </ul>
+
+          <h4 id="deep-dive-dashboard-anonymization">Anonymization</h4>
+          <p><code>/larapilot/anonymization</code>, in the <strong>Access</strong> group for admins, is the map of what
+            the personal data of the database becomes in an anonymized copy — on the Database page for a developer
+            in production, and in every SQL dump or seeder downloaded with <strong>Anonymize personal data</strong>.
+            It lists every column of every table with what it becomes and an example beside it.</p>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/anonymization</span></div>
+              <img src="img/dashboard/anonymization.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Anonymization: the users table of Fernway with each column, what it leaves as, and an example">
+            </div>
+            <figcaption>Fernway&#39;s <code>users</code>: name, email, and phone set by hand to British replacements (Faker <code>en_GB</code>), the password and the remember token always hidden, keys and dates kept.</figcaption>
+          </figure>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>A column can be</th>
+                  <th>What it writes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Keep</strong></td>
+                  <td>The value as it is</td>
+                </tr>
+                <tr>
+                  <td><strong>Hide</strong></td>
+                  <td><code>NULL</code>, or empty where <code>NULL</code> is not allowed</td>
+                </tr>
+                <tr>
+                  <td><strong>Same shape</strong></td>
+                  <td>New characters in the same pattern — a letter for a letter, a digit for a digit, the separators
+                    kept: a VAT number or a fiscal code still looks like one</td>
+                </tr>
+                <tr>
+                  <td><strong>A Faker formatter</strong></td>
+                  <td>Any formatter of <a href="https://fakerphp.org/formatters/" target="_blank"
+                      rel="noopener">fakerphp.org</a>, grouped as the site groups them: Person (name, first and last
+                    name, title, date of birth), Address, Phone, Company, Internet (email, username, domain, URL, IP,
+                    user agent), Text, Date and time, Payment (IBAN, SWIFT/BIC, card number and expiry), Identifiers
+                    (UUID, EAN-13, ISBN-13), Miscellaneous</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>The Faker locale</strong> is chosen among every locale the installed Faker ships — 73 in
+              Faker 1.24 — and writes the names, addresses, and phones of that country. A locale adds formatters of
+              its own, listed apart: an Italian <em>codice fiscale</em>, a French <em>NIR</em>, a Spanish
+              <em>DNI</em>.</li>
+            <li><strong>Safe defaults.</strong> A column with no line of its own follows a default that errs on the
+              side of privacy: a name, an email, a phone, an address, an identifier, free text are replaced; keys,
+              record dates, statuses, enumerations, and flags are kept, so the copy still imports and works.</li>
+            <li><strong>The tables of the framework</strong> are known by name, whatever their columns suggest:
+              <code>migrations</code> and the cache locks are kept; the payloads of queued and failed jobs, their
+              exceptions, cache values, and session payloads are hidden; the address and browser of a session are
+              replaced; Telescope and Pulse content is hidden.</li>
+            <li><strong>Passwords, tokens, and secrets</strong> stay hidden whatever the map says.</li>
+            <li><strong>The same value always becomes the same replacement</strong> on one install — seeded with an
+              HMAC of the value keyed with <code>APP_KEY</code> — so a foreign key written as text still matches,
+              relations survive, and a dump can be imported twice. No hash of a real value is ever written.</li>
+            <li><strong>A replacement fits its column</strong>: its type and its length.</li>
+            <li><strong>The map is <code>.larapilot/anonymization.yaml</code></strong>, committed, so every
+              environment anonymizes the same way. Saving it and changing the locale go to the
+              <a href="#deep-dive-dashboard-auth">audit trail</a>.</li>
           </ul>
 
           <h4 id="deep-dive-dashboard-logs">Logs</h4>
@@ -11490,7 +12248,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/logs?view=groups</span></div>
               <img src="img/dashboard/logs-repeats.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="Repeats counted: one row for each thing logged, with how many times">
             </div>
-            <figcaption><strong>Repeats counted</strong>: seventy entries become one row for each thing logged — seven times the same full class, twice the same Stripe key, redacted.</figcaption>
+            <figcaption><strong>Repeats counted</strong>: fifty-three entries become one row for each thing logged — seven times the same full class, twice the same Stripe key, redacted.</figcaption>
           </figure>
           <ul>
             <li><strong>Entries, not lines.</strong> An entry is what Laravel wrote between one
@@ -11525,12 +12283,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               request body logged as text; a line the redaction cannot check is hidden whole.
               <strong>Download log</strong> gives the file redacted the same way, with a line longer than 1 MB cut
               at that size; <strong>Secrets as written</strong> gives it as it is, and is
-              offered only in <code>local</code>, <code>development</code>, and <code>testing</code> — on a shared
+              offered only in <code>local</code> and <code>testing</code> — on a shared
               host they never leave the server, sign-in or not.</li>
-            <li><strong>Local by default.</strong> Like the file manager, the page is open in
-              <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
-              is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
-              <code>YES</code>, and answers <code>404</code> otherwise. Only the <code>.log</code> files of the
+            <li><strong>Admins and developers</strong> see the page wherever the dashboard is served;
+              <strong>product managers</strong> too, outside <code>production</code>. Only the <code>.log</code> files of the
               folder are opened, three folders deep, and a symlink is never followed.
               <code>LARAPILOT_LOG_VIEWER_PATH</code> reads another folder — absolute, or from the root of the
               project; <code>LARAPILOT_LOG_VIEWER=false</code> removes the page.</li>
@@ -11621,10 +12377,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <code>LARAPILOT_LARAVEL_VIEWER_MAIL=true</code> or
               <code>LARAPILOT_LARAVEL_VIEWER_DUMPS=true</code> keeps them wherever the page is served;
               <code>false</code> never.</li>
-            <li><strong>Local by default.</strong> Like the file manager, the page is open in
-              <code>local</code>, <code>development</code>, and <code>testing</code>; on any other environment it
-              is served only when <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> is
-              <code>YES</code>, and answers <code>404</code> otherwise.
+            <li><strong>Admins and developers</strong> see the page, wherever the dashboard is served.
               <code>LARAPILOT_LARAVEL_VIEWER=false</code> removes the page.</li>
           </ul>
 
@@ -11642,6 +12395,18 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             its tasks — a task is estimated in hours, so that is what it carries. Epics and stories come in the
             order of their codes, the stories with no epic last. With a filter on, either file holds what is on
             screen and says which filter produced it; an epic then counts the points of the stories that are left.</p>
+          <p id="deep-dive-dashboard-group-by"><strong>Group by: Status · Version · Sprint.</strong> The columns are
+            the workflow statuses by default. <strong>Version</strong> — offered when <code>release_mode</code> is on
+            or the release ledger holds releases — puts each spec under the release that claims it, or the one its
+            <code>**Release:**</code> line names, and a version filter narrows the kanban to one release.
+            <strong>Sprint</strong> — offered when <a href="#deep-dive-sprints-setting"><code>sprints</code></a> is on
+            — puts each spec in its two-week sprint: the one someone decided with
+            <code>php artisan larapilot:spec-sprint US-012 3</code> (<code>none</code> clears it), or, until someone
+            does, the one it is <strong>proposed</strong> for. A proposed sprint lays the open specs one after
+            another, in delivery order, into what one person does in a sprint: the hours of a sprint over the hours
+            a story point stands for, the same figures as <a href="#deep-dive-dashboard-forecast">Forecast</a>.
+            Sprint 1 starts on the first day Lucille's ledger recorded work. The JSON API returns
+            <code>release</code>, <code>sprint</code>, and <code>sprint_proposed</code> for each spec.</p>
 
           <figure class="shot">
             <div class="shot-frame">
@@ -11649,6 +12414,13 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <img src="img/dashboard/board.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Board: sixteen stories by status">
             </div>
             <figcaption>Fernway&#39;s board: each card with points, priority, task progress, mockup, comments, and the merge that closed it.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot?group=version</span></div>
+              <img src="img/dashboard/board-versions.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Board grouped by version: 0.1.0 shipped, 0.2.0 current, 0.3.0, and the stories no release claims">
+            </div>
+            <figcaption><strong>Group by Version</strong>: 0.1.0 shipped with five stories, 0.2.0 the current release with seven, 0.3.0 with four; every card shows its version and its sprint, decided or proposed.</figcaption>
           </figure>
 
           <h4 id="deep-dive-dashboard-prd">PRD</h4>
@@ -11718,7 +12490,60 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             <code>/larapilot-schedule</code> re-plans the order and the dates.</p>
           <p><strong>View</strong> switches between the specs grouped <em>by epic</em> and one queue in
             <em>delivery order</em>. A plan wider than the page opens as the <em>whole plan</em>;
-            <strong>Zoom</strong> &rarr; <em>Detail</em> widens the days and opens on today.</p>
+            <strong>Zoom</strong> &rarr; <em>Detail</em> widens the days and opens on today. <strong>Group by:
+            Epic · Version · Sprint</strong> regroups the specs the same way as on the
+            <a href="#deep-dive-dashboard-group-by">Board</a>.</p>
+
+          <h4 id="deep-dive-dashboard-roadmap">Roadmap</h4>
+          <p><code>/larapilot/roadmap</code>, in the <strong>Workflow</strong> menu and seen by every role, is the
+            product roadmap: the versions of the release ledger (<code>.larapilot/releases.yaml</code>, kept with
+            <code>release_mode</code>) in four lanes — <strong>Shipped</strong> (what is out, newest first),
+            <strong>Now</strong> (in progress), <strong>Next</strong> (the following planned release), and
+            <strong>Later</strong> (the ones after it) — each with its stories in public words and its target. With no
+            release in the ledger the roadmap is empty.</p>
+          <ul>
+            <li><strong>The public link.</strong> With
+              <a href="#deep-dive-public-roadmap-setting"><code>public_roadmap</code></a> on, the page shows a link to
+              send outside: <code>/larapilot/roadmap/p/{token}</code>. It shows the same lanes and leaves out spec and
+              epic codes, people, hours, story points, costs and tokens, branches, tags and commits, comments,
+              blockers and rework notes, mockups, and the stories a release does not claim or that are hidden. The
+              token is unguessable and <strong>regenerated with one click</strong> — the old link stops at once. It
+              is a secret of each host, kept in <code>.larapilot/roadmap-link.yaml</code>, out of Git, and the page
+              is throttled to 60 requests a minute.</li>
+            <li><strong>Even in production.</strong> The public link answers where the dashboard is hidden, as long
+              as the setting is on and the package is installed on that server.</li>
+            <li><strong>Public wording.</strong> <code>.larapilot/roadmap.yaml</code>, committed, keeps what the public
+              reads in place of the ledger: an intro, a title, a one-line summary and a target for a version, a title
+              and a summary for a story, and what is hidden. <code>/larapilot-release</code> keeps it current after
+              every release change.</li>
+          </ul>
+          <div class="shot-row">
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/roadmap</span></div>
+                <img src="img/dashboard/roadmap.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Roadmap in the dashboard: 0.1.0 shipped and 0.2.0 being built, with public titles">
+              </div>
+              <figcaption><strong>Roadmap</strong>: 0.1.0 shipped, 0.2.0 being built for October, each story under the title the public reads.</figcaption>
+            </figure>
+            <figure class="shot">
+              <div class="shot-frame">
+                <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/roadmap/p/…</span></div>
+                <img src="img/dashboard/roadmap-public.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The public roadmap link: the intro and the same lanes, with no code, person, or hour">
+              </div>
+              <figcaption><strong>The public link</strong>: the intro and the same lanes, with no spec code, person, hour, or commit.</figcaption>
+            </figure>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header">Terminal — the public wording</div>
+            <pre><code>php artisan larapilot:roadmap-set --intro="What we are building for our members."
+php artisan larapilot:roadmap-set --semver=0.2.0 --title="Waitlist" --target="Q1 2027"
+php artisan larapilot:roadmap-set --semver=0.2.0 --summary="Join a full class, get the seat when one frees up."
+php artisan larapilot:roadmap-set --semver=0.2.0 --item=US-014 --title="Book from the calendar"
+php artisan larapilot:roadmap-set --semver=0.2.0 --item=US-019 --hide   <span class="comment"># --show puts it back</span>
+php artisan larapilot:roadmap-show                                       <span class="comment"># what the public sees</span></code></pre>
+          </div>
+          <p><code>--target</code> takes a quarter, a month, or <code>YYYY-MM-DD</code>, for a version only; an empty
+            value restores the ledger's title or clears the field.</p>
 
           <h4 id="deep-dive-dashboard-design">Design</h4>
           <p>Open <code>/larapilot/design</code> for every HTML mockup produced by
@@ -11757,7 +12582,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/settings</span></div>
               <img src="img/dashboard/settings.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Settings page: project modes with their values and options">
             </div>
-            <figcaption>Gitflow, release mode, comments, and code history on; every other mode with what it would do.</figcaption>
+            <figcaption>Gitflow, release mode, sprints, the public roadmap, comments, code history, and Hackly on; every other mode with what it would do.</figcaption>
           </figure>
 
           <h4 id="deep-dive-dashboard-skills">Skills</h4>
@@ -11890,9 +12715,10 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             matter as facts.</p>
 
           <h4>Security</h4>
-          <p>The findings of Aikido for this repository. The page is always in the menu; with
-            <code>aikido</code> off it says what Aikido is and how to connect it. Full
-            chapter: <a href="#deep-dive-aikido">Aikido</a>.</p>
+          <p>The findings of the security scanner the project associates — Aikido, or Hackly with the domains
+            linked to the repository — and a second tab for Checkpoint. The page is always in the menu for admins,
+            developers, and product managers; with no scanner it describes both and how to associate either. Full
+            chapter: <a href="#deep-dive-aikido">Security scanners</a>.</p>
 
           <h4>Errors</h4>
           <p>What the running application threw, as the tracker of the project recorded it — Boogle, Sentry,
@@ -11946,6 +12772,67 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             hotfixes, other — checked for colour-blind separation on both themes. Colour is never the only sign:
             every row names its branch.</p>
 
+          <h4 id="deep-dive-dashboard-forecast">Forecast</h4>
+          <p><code>/larapilot/forecast</code>, in <strong>Insights</strong> before Usage (admins, developers, product
+            managers), answers how long the backlog takes — by one person, and with Larapilot — and says where every
+            number comes from.</p>
+          <figure class="shot">
+            <div class="shot-frame">
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/forecast</span></div>
+              <img src="img/dashboard/forecast.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The Forecast of Fernway: story points, sprints, hours per point, and Human vs AI">
+            </div>
+            <figcaption>Fernway: 76 story points, 2.1 hours a point from thirteen plans, three sprints for one person — and 0.6 hours a point measured on the eight delivered stories, 3.5 times faster.</figcaption>
+          </figure>
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Figure</th>
+                  <th>How it is computed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Story points</strong></td>
+                  <td>The points of the backlog: done, under way (<code>IN PROGRESS</code> and <code>REVIEW</code>),
+                    and to do. A spec with no points is counted apart</td>
+                </tr>
+                <tr>
+                  <td><strong>Hours a point stands for</strong></td>
+                  <td>The rate the plans imply — task hours over points — once at least two specs and five points are
+                    planned; until then the <a href="#deep-dive-effort"><code>effort</code></a> setting: 3 hours
+                    (<code>ECO</code>), 4 (<code>STANDARD</code>), 5.5 (<code>MAX</code>). The same rule Economics
+                    prices with</td>
+                </tr>
+                <tr>
+                  <td><strong>A sprint</strong></td>
+                  <td>Two weeks of five days of one person: 60 hours with the six-hour delivery day Plan counts with,
+                    or the day of the Economics profile when one is set</td>
+                </tr>
+                <tr>
+                  <td><strong>By a person</strong></td>
+                  <td>Points × hours per point; sprints = those hours ÷ the hours of a sprint, the last one started
+                    counted whole</td>
+                </tr>
+                <tr>
+                  <td><strong>With Larapilot, measured</strong></td>
+                  <td>Once delivered specs with points carry hours in Lucille's ledger: their hours ÷ their points,
+                    applied to the backlog. Called a first reading under three specs</td>
+                </tr>
+                <tr>
+                  <td><strong>With Larapilot, modelled</strong></td>
+                  <td>Before that, a range: the build work of a person ÷ 10 (optimistic) or ÷ 5 (realistic), plus 0.5
+                    or 1 hour of a person on every spec — reading the plan, answering the agent, reviewing,
+                    approving</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The same figures come by epic, with the specs that have none in a row of their own.
+            <strong>Download report.md</strong> (<code>/larapilot/forecast/report.md</code>) saves them with their
+            assumptions. The capacity of a sprint here is the one the proposed
+            <a href="#deep-dive-dashboard-group-by">sprints</a> of the Board and the Plan use.</p>
+
           <h4 id="deep-dive-dashboard-usage">Usage</h4>
           <p>Lucille's token and hour ledger — totals, category bars, history, and a one-click Markdown report at
             <code>/larapilot/usage/report.md</code> (same data as <code>larapilot:usage-report --insights</code>).
@@ -11995,7 +12882,7 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
               (superseded context and regression guard)</li>
             <li><strong>Mockups</strong> — when <code>/larapilot-design</code> created HTML in
               <code>.larapilot/mockups/{code}/</code>, an embedded preview and screen links appear (served via
-              <code>/mockups/{code}</code> in dev/staging). All mockups also live in the
+              <code>/mockups/{code}</code>, behind the dashboard sign-in). All mockups also live in the
               <strong>Design</strong> gallery at <code>/larapilot/design</code>
             </li>
             <li><strong>Internal feedback</strong> — accordion list of PM/dev comments (author, date, status, preview);
@@ -12309,29 +13196,34 @@ php artisan larapilot:settings-set --dashboard-auth=YES</code></pre>
             still changes only via skills/CLI.</p>
 
           <h4>Activation</h4>
-          <p>API routes share the dashboard gate: enabled when <a href="#deep-dive-dashboard">dashboard activation</a>
-            conditions are met. Base path: <code>/{prefix}/api</code> (default <code>/larapilot/api</code>). Returns
-            <code>404</code> in production or when disabled.
+          <p>API routes are served where the dashboard is: enabled when <a href="#deep-dive-dashboard">dashboard
+            activation</a> conditions are met. Base path: <code>/{prefix}/api</code> (default
+            <code>/larapilot/api</code>). Returns <code>404</code> in production — unless
+            <code>LARAPILOT_FORCE_IN_PROD=true</code> — or when disabled.
           </p>
 
           <h4>Authentication</h4>
-          <p>Set <code>LARAPILOT_API_TOKEN</code> to require a shared token on every API request — send it as
-            <code>Authorization: Bearer &lt;token&gt;</code> or an <code>X-Larapilot-Token</code> header. When the token
-            is set it is enforced on <strong>every</strong> endpoint, reads and writes alike. Without a token configured,
-            read endpoints stay open in the allowed environments, but write endpoints (<code>POST /comments</code>) are
-            refused outside local/development/testing.
-          </p>
-          <p>The <code>api_auth</code> project setting (default <code>NO</code>) makes the token
-            <strong>mandatory</strong>: with <code>api_auth=YES</code> every <code>/larapilot/api/*</code> call — the
-            <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> endpoints included — requires
-            <code>LARAPILOT_API_TOKEN</code>, and the API <strong>fails closed (HTTP 503)</strong> when the env var is not
-            set instead of answering unauthenticated. Turn it on with
-            <code>php artisan larapilot:settings-set --api-auth=YES</code>. Client setup and <code>curl</code> /
-            Laravel HTTP / <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> → <em>API access</em>.</p>
-          <p>The optional <code><a href="#deep-dive-dashboard-auth">dashboard_auth</a></code> setting (Basic Auth on the
-            dashboard UI) does <strong>not</strong> apply here, and <code>api_auth</code> does <strong>not</strong> apply
-            to the dashboard UI — the JSON API is gated only by <code>LARAPILOT_API_TOKEN</code> /
-            <code>api_auth</code> and the dashboard activation conditions.</p>
+          <p>The API has its own token, separate from the dashboard sign-in. An admin makes it on the
+            <strong>API token</strong> page (Access group) or with <code>php artisan larapilot:api-token generate</code>
+            (<code>show</code> · <code>rotate</code> · <code>revoke</code>); it is shown once and kept as a hash in
+            <code>.larapilot/auth.yaml</code>. <code>LARAPILOT_API_TOKEN</code> in <code>.env</code> works too. Send it as
+            <code>Authorization: Bearer &lt;token&gt;</code> or an <code>X-Larapilot-Token</code> header.</p>
+          <ul>
+            <li><strong>Once a token exists, every request needs it</strong> — reads and writes, the
+              <code>/diagnostics</code>, <code>/openapi.json</code>, and <code>/docs</code> endpoints included — on a
+              developer's machine too.</li>
+            <li><strong>Outside <code>local</code> and <code>testing</code></strong> the API answers
+              <code>HTTP 503</code> until a token exists, and says how to make one.</li>
+            <li><strong>On a developer's machine with no token</strong> it is open, unless
+              <a href="#deep-dive-api-auth"><code>api_auth</code></a> is <code>YES</code>: then it answers
+              <code>503</code> there too until a token exists. That is the only thing <code>api_auth</code> changes.</li>
+            <li><strong>A signed-in browser reads it.</strong> A user signed in on the dashboard whose role sees the
+              API (admin, dev, pm) reads it — the Swagger UI included — without the token; never a write.</li>
+          </ul>
+          <p>A wrong or missing token is <code>HTTP 401</code>. The dashboard sign-in never opens the API to another
+            client, and the token never opens the dashboard. Client setup and <code>curl</code> / Laravel HTTP /
+            <code>fetch</code> / CI examples: <code>.larapilot/integrations.md</code> → <em>API access</em>. The whole
+            table: <a href="#deep-dive-api-auth">API token &amp; api_auth</a>.</p>
           <div class="code-block">
             <div class="code-block-header">Calling the API with the token</div>
             <pre><code>curl -sS -H "Authorization: Bearer $LARAPILOT_API_TOKEN" \
@@ -12366,7 +13258,8 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
                 <tr>
                   <td><code>GET</code></td>
                   <td><code>/larapilot/api/specs</code></td>
-                  <td>Specs with task progress, mockup screens, and counts-only feedback summaries. Optional
+                  <td>Specs with task progress, mockup screens, counts-only feedback summaries, and the
+                    <code>release</code>, <code>sprint</code>, and <code>sprint_proposed</code> of each. Optional
                     <code>?status=TODO</code> filter; paginated with <code>?page</code> / <code>?per_page</code>
                     (1–200, default 50) — body carries <code>total</code>, <code>page</code>, <code>per_page</code>,
                     <code>total_pages</code></td>
@@ -12444,10 +13337,10 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
           </div>
           <figure class="shot">
             <div class="shot-frame">
-              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>fernway.test/larapilot/api/docs</span></div>
+              <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span>staging.fernway.test/larapilot/api/docs</span></div>
               <img src="img/dashboard/api-docs.webp" width="2160" height="1350" loading="lazy" decoding="async" alt="The API docs page: Swagger UI over the JSON API of the dashboard">
             </div>
-            <figcaption><code>/larapilot/api/docs</code> on Fernway: every endpoint of the JSON API, to try in the browser.</figcaption>
+            <figcaption><code>/larapilot/api/docs</code> on Fernway&#39;s staging host, signed in as an admin: every endpoint of the JSON API, to try in the browser.</figcaption>
           </figure>
 
           <h4>Response shape</h4>
@@ -12494,8 +13387,9 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   "workflow": { "todo": "TODO", "planned": "PLANNED", "in_progress": "IN PROGRESS", "review": "REVIEW", "done": "DONE" }
 }</code></pre>
           </div>
-          <p>The API is a development and staging tool: it is never registered in production, and on a shared host
-            it belongs behind <code>LARAPILOT_API_TOKEN</code> with <code>api_auth=YES</code>. Mockup preview URLs are
+          <p>The API is a development and staging tool: it is not registered in production unless
+            <code>LARAPILOT_FORCE_IN_PROD=true</code>, and on a shared host it answers only with its token — it is
+            closed (<code>503</code>) until one exists. Mockup preview URLs are
             absolute in API
             responses when the mockup route is browsable. Comment writes need <code>comments=YES</code>, honor
             <code>LARAPILOT_COMMENTS_ENABLED</code>, and reject DONE specs with <code>422</code>. Diagnostics honor
@@ -12507,7 +13401,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
         <article class="deep-dive-sub" id="deep-dive-api-hardening">
           <h3>API hardening</h3>
           <p class="lead">Four protections that are always on for <code>/larapilot/api/*</code>, whatever
-            <code>api_auth</code> says.</p>
+            <code>api_auth</code> says — besides the <a href="#deep-dive-api-auth">token</a>.</p>
           <ul>
             <li><strong>Rate limit</strong> — per IP, from <code>larapilot.api.rate_limit</code>
               (<code>"max,minutes"</code>, default <code>120,1</code>). Over budget → <code>HTTP 429</code> with
@@ -12668,7 +13562,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.0.4 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.1.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

@@ -588,6 +588,30 @@
     @media (max-width: 720px) {
         .plan-count { margin-left: 0; }
     }
+
+    .group-switch { margin-top: 12px; }
+
+    .bands { display: grid; gap: 14px; margin-bottom: 22px; }
+
+    .band { padding: 14px 16px; }
+
+    .band-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 12px;
+        margin-bottom: 10px;
+    }
+
+    .band-head h3 { margin: 0; font-size: 1rem; }
+
+    .band-sub { color: var(--muted); font-size: 0.82rem; }
+
+    .band-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+    .band-list a { font-weight: 600; }
+
+    .band-list .meta { color: var(--muted); font-size: 0.78rem; }
 </style>
 @endpush
 
@@ -970,7 +994,25 @@
         <header class="page-head">
             <div>
                 <h2>Plan</h2>
-                <p class="sub">Epics, deadlines, and the delivery forecast: a dependency-aware Gantt from specs and plans. Token spend stays on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>.</p>
+                <p class="sub">
+                    Epics, deadlines, and the delivery forecast: a dependency-aware Gantt from specs and plans.
+                    @if (($view['group'] ?? 'epic') === 'version')
+                        Grouped by version.
+                    @elseif (($view['group'] ?? 'epic') === 'sprint')
+                        Grouped by two-week sprint.
+                    @else
+                        Grouped by epic.
+                    @endif
+                    Token spend stays on <a href="{{ route('larapilot.dashboard.usage') }}">Usage</a>.
+                </p>
+                @if (count($view['options'] ?? []) > 1)
+                    <div class="chips group-switch" role="group" aria-label="Group the plan by">
+                        <span class="hint">Group by</span>
+                        @foreach ($view['options'] as $option)
+                            <a href="{{ route('larapilot.dashboard.plan', $option['key'] === $view['default'] ? [] : ['group' => $option['key']]) }}" @class(['chip', 'current' => $view['group'] === $option['key']])>{{ $option['label'] }}</a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
             <div class="page-actions">
                 <div @class(['health', $healthClass])>
@@ -979,9 +1021,44 @@
                 </div>
                 <a class="btn ghost" href="{{ route('larapilot.dashboard.plan.download') }}" title="Epics, user stories, tasks, milestones, and the forecast, as one Markdown file">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download plan (.md)</a>
             </div>
-        </header>
+    </header>
 
-        <div class="metrics">
+    @if (($view['group'] ?? 'epic') !== 'epic' && ($bands ?? []) !== [])
+        <div class="bands">
+            @foreach ($bands as $band)
+                <section class="card band">
+                    <div class="band-head">
+                        <h3>{{ $band['label'] }}</h3>
+                        @if ($band['sub'] !== null)
+                            <span class="band-sub">{{ $band['sub'] }}</span>
+                        @endif
+                        @if ($band['state'] === 'shipped')
+                            <span class="chip">Shipped</span>
+                        @elseif (in_array($band['state'], ['in_progress', 'current'], true))
+                            <span class="chip current">Current</span>
+                        @elseif (($band['proposed'] ?? 0) > 0)
+                            <span class="chip stale">Proposed</span>
+                        @endif
+                    </div>
+                    @if ($band['items'] === [])
+                        <p class="hint">Nothing in this {{ $band['kind'] === 'sprint' ? 'sprint' : 'version' }}.</p>
+                    @else
+                        <ul class="band-list">
+                            @foreach ($band['items'] as $item)
+                                <li>
+                                    <a href="{{ route('larapilot.dashboard.spec', ['code' => $item['code']]) }}">{{ $item['code'] }}</a>
+                                    {{ $item['title'] }}
+                                    <span class="meta">{{ (int) ($item['points'] ?? 0) }} SP</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </section>
+            @endforeach
+        </div>
+    @endif
+
+    <div class="metrics">
             <div class="card metric">
                 <div class="metric-label">Window</div>
                 <div class="metric-value is-date">{{ $pretty($start) }}</div>

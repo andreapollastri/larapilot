@@ -1,75 +1,342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full scheme-light bg-gray-50 antialiased dark:scheme-dark dark:bg-gray-950">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Components — Tailwind CSS</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
-  </script>
+  <meta name="color-scheme" content="light dark">
+  <title>Components · Tidewater (Tailwind CSS)</title>
+  <link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="min-h-screen bg-slate-50 px-4 py-8 font-sans text-slate-900 antialiased">
-  <main class="mx-auto max-w-3xl space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold">Components</h1>
-      <p class="text-slate-600">Pure Tailwind utilities for static mockups. <a href="index.html" class="text-indigo-600 hover:underline">← Back to catalog</a></p>
+<body class="tw-mockup h-full">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-indigo-600 focus:shadow-lg">Skip to content</a>
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+  <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 dark:border-white/10 dark:bg-gray-900">
+    <a href="dashboard.html" class="flex h-16 shrink-0 items-center" aria-label="Tidewater home"><span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span></a>
+    <nav aria-label="Main" class="flex flex-1 flex-col">
+      <ul role="list" class="flex flex-1 flex-col gap-y-7">
+        <li>
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Overview</a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>Customers<span aria-hidden="true" class="ml-auto w-11 min-w-max rounded-full bg-white px-2.5 py-0.5 text-center text-xs/5 font-medium whitespace-nowrap text-gray-600 outline-1 -outline-offset-1 outline-gray-200 dark:bg-gray-900 dark:text-white dark:outline-white/15">1,284</span></a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg>Revenue</a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg>Cohorts</a></li>
+            <li><a href="empty-state.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Reports</a></li>
+            <li><a href="components.html" aria-current="page" class="group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm/6 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"><svg class="size-6 shrink-0 text-indigo-600 dark:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>Components</a></li>
+          </ul>
+        </li>
+        <li>
+          <div class="text-xs/6 font-semibold text-gray-500 dark:text-gray-400">Saved segments</div>
+          <ul role="list" class="-mx-2 mt-2 space-y-1">
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">E</span><span class="truncate">Enterprise · Scale plan</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">T</span><span class="truncate">Trials ending this week</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">R</span><span class="truncate">At-risk (failed payment)</span></a></li>
+          </ul>
+        </li>
+        <li class="mt-auto">
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="settings.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>Settings</a></li>
+          </ul>
+        </li>
+        <li class="-mx-6">
+          <a href="settings.html" class="flex items-center gap-x-4 border-t border-gray-200 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
+            <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+            <span class="sr-only">Your profile:</span>
+            <span class="min-w-0"><span class="block truncate">Maya Okafor</span><span class="block truncate text-xs/5 font-normal text-gray-500 dark:text-gray-400">Lumenfield · Finance</span></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+<div class="lg:pl-72">
+  <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 dark:border-white/10 dark:bg-gray-900 dark:shadow-none">
+    <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden dark:text-gray-400" aria-label="Open sidebar"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+    <a href="dashboard.html" class="lg:hidden" aria-label="Tidewater home"><svg class="h-7 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg></a>
+    <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden dark:bg-white/10"></div>
+    <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+      <div class="grid flex-1 grid-cols-1">
+        <input type="search" name="search" aria-label="Search" placeholder="Search" class="col-start-1 row-start-1 block size-full min-w-0 bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-500 sm:text-sm/6 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-400">
+        <svg class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg>
+      </div>
+      <div class="flex items-center gap-x-4 lg:gap-x-6">
+        <button type="button" class="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500 dark:hover:text-white" aria-label="View notifications, 2 unread">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+          <span aria-hidden="true" class="absolute top-2 right-2.5 size-2 rounded-full bg-indigo-600 ring-2 ring-white dark:bg-indigo-400 dark:ring-gray-900"></span>
+        </button>
+        <div aria-hidden="true" class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-white/10"></div>
+        <a href="settings.html" class="-m-1.5 flex items-center p-1.5" aria-label="Your profile: Maya Okafor">
+          <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+          <span class="hidden lg:flex lg:items-center">
+            <span aria-hidden="true" class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-white">Maya Okafor</span>
+            <svg class="ml-2 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+          </span>
+        </a>
+      </div>
     </div>
-
-    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-4 font-semibold">Buttons</h2>
-      <div class="flex flex-wrap gap-2">
-        <button type="button" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">Primary</button>
-        <button type="button" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Secondary</button>
-        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Ghost</button>
-        <button type="button" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500">Danger</button>
-        <button type="button" class="text-sm font-medium text-indigo-600 underline-offset-4 hover:underline">Link</button>
+  </header>
+  <main id="main" class="py-8 sm:py-10">
+    <div class="px-4 sm:px-6 lg:px-8">
+<div class="border-b border-gray-200 pb-5 dark:border-white/10">
+        <h1 class="text-2xl/7 font-bold text-gray-900 sm:text-3xl sm:tracking-tight dark:text-white">Components</h1>
+        <p class="mt-2 max-w-3xl text-sm text-gray-500 dark:text-gray-400">Every pattern in components.md, in its variants and states, written with real Tailwind v4 utilities. Copy the markup; the classes compile unchanged with <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-xs text-gray-800 dark:bg-white/10 dark:text-gray-200">@import "tailwindcss"</code>.</p>
+        <nav aria-label="On this page" class="mt-4 flex flex-wrap gap-2 text-xs font-medium">
+          <a href="#buttons" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Buttons</a>
+          <a href="#badges" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Badges</a>
+          <a href="#forms" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Form controls</a>
+          <a href="#alerts" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Alerts</a>
+          <a href="#navigation" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Tabs and pagination</a>
+          <a href="#overlays" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Dropdown, modal, toast</a>
+          <a href="#data" class="rounded-full bg-white px-2.5 py-1 text-gray-700 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/5 dark:text-gray-300 dark:inset-ring-white/10 dark:hover:bg-white/10">Data display</a>
+        </nav>
       </div>
-    </section>
 
-    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-4 font-semibold">Alerts & badges</h2>
-      <div class="space-y-3">
-        <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800" role="alert">Changes saved successfully.</div>
-        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="alert">Your trial ends in 3 days.</div>
-        <div class="flex flex-wrap gap-2">
-          <span class="inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Primary</span>
-          <span class="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Success</span>
-          <span class="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">Warning</span>
-          <span class="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Danger</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-4 font-semibold">Form controls</h2>
-      <div class="space-y-4">
-        <div>
-          <label for="demo-email" class="mb-1 block text-sm font-medium">Email</label>
-          <input id="demo-email" type="email" placeholder="you@example.com" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-        </div>
-        <label class="flex items-center gap-2 text-sm">
-          <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600">
-          Accept terms
-        </label>
-      </div>
-    </section>
-
-    <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 class="mb-4 font-semibold">Modal (static preview)</h2>
-      <div class="relative rounded-lg border border-slate-200 bg-slate-900/40 p-8">
-        <div class="mx-auto max-w-md rounded-xl bg-white p-6 shadow-xl" role="dialog" aria-labelledby="modal-title" aria-modal="true">
-          <h2 id="modal-title" class="text-lg font-semibold">Confirm deletion</h2>
-          <p class="mt-2 text-sm text-slate-600">This action cannot be undone. All project data will be permanently removed.</p>
-          <div class="mt-6 flex justify-end gap-2">
-            <button type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
-            <button type="button" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500">Delete</button>
+      <div class="mt-10 space-y-14">
+        <section aria-labelledby="buttons">
+          <h2 id="buttons" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Buttons</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Primary for the one main action, secondary (white) for the rest, soft for low emphasis, red only for destructive actions. Disabled lowers opacity; focus-visible draws a 2px outline.</p>
+          <div class="mt-4 rounded-lg bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+            <div class="flex flex-wrap items-center gap-3">
+              <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500 ">Save changes</button>
+              <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20 ">Export CSV</button>
+              <button type="button" class="rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-xs hover:bg-indigo-100 dark:bg-indigo-500/20 dark:text-indigo-400 dark:shadow-none dark:hover:bg-indigo-500/30">Soft</button>
+              <button type="button" class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400">Delete customer</button>
+              <button type="button" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Text link <span aria-hidden="true">&rarr;</span></button>
+            </div>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500">xs</button>
+              <button type="button" class="rounded-sm bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500">sm</button>
+              <button type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500">md</button>
+              <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500">lg</button>
+              <button type="button" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500">xl</button>
+              <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500"><svg class="-ml-0.5 size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>With icon</button>
+              <button type="button" aria-label="Add customer" class="rounded-full bg-indigo-600 p-2 text-white shadow-xs hover:bg-indigo-500 dark:bg-indigo-500"><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg></button>
+              <button type="button" disabled class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs disabled:cursor-not-allowed disabled:opacity-50 dark:bg-indigo-500">Disabled</button>
+              <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs outline-2 outline-offset-2 outline-indigo-600 dark:bg-indigo-500 dark:outline-indigo-500">Focus ring</button>
+            </div>
+            <div class="mt-6 inline-flex rounded-md shadow-xs dark:shadow-none">
+              <button type="button" class="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-10 dark:bg-white/10 dark:text-white dark:inset-ring-gray-700 dark:hover:bg-white/20">Days</button>
+              <button type="button" class="relative -ml-px inline-flex items-center bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 focus:z-10 dark:bg-white/20 dark:text-white dark:inset-ring-gray-700" aria-pressed="true">Months</button>
+              <button type="button" class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-10 dark:bg-white/10 dark:text-white dark:inset-ring-gray-700 dark:hover:bg-white/20">Quarters</button>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section aria-labelledby="badges">
+          <h2 id="badges" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Badges</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Flat badges with a 1px inset ring for statuses; add the dot variant in tables; pill (rounded-full) for counts.</p>
+          <div class="mt-4 rounded-lg bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+            <div class="flex flex-wrap gap-2"><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-gray-50 text-gray-600 inset-ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:inset-ring-gray-400/20">Draft</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-green-50 text-green-700 inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20">Active</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-yellow-50 text-yellow-800 inset-ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:inset-ring-yellow-400/20">Past due</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-red-50 text-red-700 inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20">Churned</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-sky-50 text-sky-700 inset-ring-sky-700/10 dark:bg-sky-400/10 dark:text-sky-400 dark:inset-ring-sky-400/30">Trialing</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-indigo-50 text-indigo-700 inset-ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:inset-ring-indigo-400/30">Upgrade</span></div>
+            <div class="mt-4 flex flex-wrap gap-2"><span class="inline-flex items-center gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium inset-ring bg-green-50 text-green-700 inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg viewBox="0 0 6 6" aria-hidden="true" class="size-1.5 fill-green-500 dark:fill-green-400"><circle r="3" cx="3" cy="3"/></svg>Active</span><span class="inline-flex items-center gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium inset-ring bg-yellow-50 text-yellow-800 inset-ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:inset-ring-yellow-400/20"><svg viewBox="0 0 6 6" aria-hidden="true" class="size-1.5 fill-yellow-500 dark:fill-yellow-400"><circle r="3" cx="3" cy="3"/></svg>Past due</span><span class="inline-flex items-center gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium inset-ring bg-red-50 text-red-700 inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20"><svg viewBox="0 0 6 6" aria-hidden="true" class="size-1.5 fill-red-500 dark:fill-red-400"><circle r="3" cx="3" cy="3"/></svg>Churned</span><span class="inline-flex items-center gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium inset-ring bg-sky-50 text-sky-700 inset-ring-sky-700/10 dark:bg-sky-400/10 dark:text-sky-400 dark:inset-ring-sky-400/30"><svg viewBox="0 0 6 6" aria-hidden="true" class="size-1.5 fill-sky-500 dark:fill-sky-400"><circle r="3" cx="3" cy="3"/></svg>Trialing</span></div>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">1,392</span>
+              <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-white/10 dark:text-gray-300">61</span>
+              <span class="inline-flex items-center gap-x-0.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd"/></svg>4.6%</span>
+              <span class="inline-flex items-center gap-x-0.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 inset-ring inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd"/></svg>0.9%</span>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="forms">
+          <h2 id="forms" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Form controls</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Inputs use a 1px outline that becomes a 2px indigo outline on focus. States drawn here: default, focus, error with message, disabled, add-on, select, textarea, checkbox, radio, toggle and file drop zone.</p>
+          <div class="mt-4 rounded-lg bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+            <div>
+              <label for="c-name" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Company name <span class="text-red-600 dark:text-red-400" aria-hidden="true">*</span></label>
+              <div class="mt-2"><input id="c-name" type="text" value="Brightline Studio" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-400 dark:focus:outline-indigo-500"></div>
+              <p class="mt-2 text-sm/6 text-gray-600 dark:text-gray-400">Shown in reports and exports.</p>
+            </div>
+            <div>
+              <label for="c-focus" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Focused</label>
+              <div class="mt-2"><input id="c-focus" type="text" placeholder="Segment name" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-2 -outline-offset-2 outline-indigo-600 placeholder:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-indigo-500 dark:placeholder:text-gray-400"></div>
+            </div>
+            <div>
+              <label for="c-email" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Billing email</label>
+              <div class="mt-2 grid grid-cols-1">
+                <input id="c-email" type="email" value="accounts@brightline" aria-invalid="true" aria-describedby="c-email-error" class="col-start-1 row-start-1 block w-full rounded-md bg-white py-1.5 pr-10 pl-3 text-base text-red-900 outline-1 -outline-offset-1 outline-red-300 placeholder:text-red-300 focus:outline-2 focus:-outline-offset-2 focus:outline-red-600 sm:pr-9 sm:text-sm/6 dark:bg-white/5 dark:text-red-400 dark:outline-red-500/50 dark:placeholder:text-red-400/70 dark:focus:outline-red-400">
+                <svg class="pointer-events-none col-start-1 row-start-1 mr-3 size-5 self-center justify-self-end text-red-500 sm:size-4 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>
+              </div>
+              <p id="c-email-error" class="mt-2 text-sm text-red-600 dark:text-red-400">Enter a complete email address.</p>
+            </div>
+            <div>
+              <label for="c-disabled" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Stripe customer ID</label>
+              <div class="mt-2"><input id="c-disabled" type="text" value="cus_Q8fT2kLm91" disabled class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:outline-gray-200 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:disabled:bg-white/2.5 dark:disabled:text-gray-500 dark:disabled:outline-white/5"></div>
+            </div>
+            <div>
+              <label for="c-search" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Search with icon</label>
+              <div class="mt-2 grid grid-cols-1">
+                <input id="c-search" type="search" placeholder="Search customers" class="col-start-1 row-start-1 block w-full rounded-md bg-white py-1.5 pr-3 pl-10 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:pl-9 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-400 dark:focus:outline-indigo-500">
+                <svg class="pointer-events-none col-start-1 row-start-1 ml-3 size-5 self-center text-gray-400 sm:size-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <div>
+              <label for="c-plan" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Plan</label>
+              <div class="mt-2 grid grid-cols-1"><select id="c-plan" name="c-plan" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:*:bg-gray-800 dark:focus:outline-indigo-500"><option>Starter</option><option selected>Growth</option><option>Scale</option></select><svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></div>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="c-notes" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Notes</label>
+              <div class="mt-2"><textarea id="c-notes" rows="2" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-400 dark:focus:outline-indigo-500">Renewal call booked for November 18.</textarea></div>
+            </div>
+            <fieldset>
+              <legend class="text-sm/6 font-semibold text-gray-900 dark:text-white">Checkboxes</legend>
+              <div class="mt-3 space-y-3">
+                <div class="flex items-center gap-3"><div class="group grid size-4 grid-cols-1"><input type="checkbox" id="c-cb1" checked class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 dark:disabled:border-white/5 dark:disabled:bg-white/10 forced-colors:appearance-auto"><svg viewBox="0 0 14 14" fill="none" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25 dark:group-has-disabled:stroke-white/25"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100"/><path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100"/></svg></div><label for="c-cb1" class="text-sm/6 text-gray-900 dark:text-white">Checked</label></div>
+                <div class="flex items-center gap-3"><div class="group grid size-4 grid-cols-1"><input type="checkbox" id="c-cb2" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 dark:disabled:border-white/5 dark:disabled:bg-white/10 forced-colors:appearance-auto"><svg viewBox="0 0 14 14" fill="none" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25 dark:group-has-disabled:stroke-white/25"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100"/><path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100"/></svg></div><label for="c-cb2" class="text-sm/6 text-gray-900 dark:text-white">Unchecked</label></div>
+                <div class="flex items-center gap-3"><div class="group grid size-4 grid-cols-1"><input type="checkbox" id="c-cb3" class="col-start-1 row-start-1 appearance-none rounded-sm border border-indigo-600 bg-indigo-600 checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-indigo-500 dark:bg-indigo-500 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 dark:disabled:border-white/5 dark:disabled:bg-white/10 forced-colors:appearance-auto"><svg viewBox="0 0 14 14" fill="none" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25 dark:group-has-disabled:stroke-white/25"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100"/><path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-100"/></svg></div><label for="c-cb3" class="text-sm/6 text-gray-900 dark:text-white">Indeterminate (drawn)</label></div>
+                <div class="flex items-center gap-3"><div class="group grid size-4 grid-cols-1"><input type="checkbox" id="c-cb4" disabled class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 dark:disabled:border-white/5 dark:disabled:bg-white/10 forced-colors:appearance-auto"><svg viewBox="0 0 14 14" fill="none" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25 dark:group-has-disabled:stroke-white/25"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100"/><path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100"/></svg></div><label for="c-cb4" class="text-sm/6 text-gray-400 dark:text-gray-500">Disabled</label></div>
+              </div>
+            </fieldset>
+            <div class="space-y-6">
+              <fieldset>
+                <legend class="text-sm/6 font-semibold text-gray-900 dark:text-white">Radio group</legend>
+                <div class="mt-3 flex gap-x-6">
+                  <div class="flex items-center gap-x-3"><input type="radio" id="c-r1" name="c-r" checked class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 forced-colors:appearance-auto forced-colors:before:hidden"><label for="c-r1" class="text-sm/6 text-gray-900 dark:text-white">Monthly</label></div>
+                  <div class="flex items-center gap-x-3"><input type="radio" id="c-r2" name="c-r" class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 forced-colors:appearance-auto forced-colors:before:hidden"><label for="c-r2" class="text-sm/6 text-gray-900 dark:text-white">Annually</label></div>
+                </div>
+              </fieldset>
+              <div class="flex items-center gap-x-3"><div class="group relative inline-flex w-11 shrink-0 rounded-full bg-gray-200 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-indigo-600 transition-colors duration-200 ease-in-out has-checked:bg-indigo-600 has-focus-visible:outline-2 dark:bg-white/5 dark:inset-ring-white/10 dark:outline-indigo-500 dark:has-checked:bg-indigo-500"><span class="size-5 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5"></span><input type="checkbox" id="c-t1" name="c-t1" checked aria-labelledby="c-t1-label" class="absolute inset-0 size-full cursor-pointer appearance-none focus:outline-hidden"></div><span id="c-t1-label" class="text-sm/6 text-gray-900 dark:text-white">Toggle on</span></div>
+              <div class="flex items-center gap-x-3"><div class="group relative inline-flex w-11 shrink-0 rounded-full bg-gray-200 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-indigo-600 transition-colors duration-200 ease-in-out has-checked:bg-indigo-600 has-focus-visible:outline-2 dark:bg-white/5 dark:inset-ring-white/10 dark:outline-indigo-500 dark:has-checked:bg-indigo-500"><span class="size-5 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5"></span><input type="checkbox" id="c-t2" name="c-t2" aria-labelledby="c-t2-label" class="absolute inset-0 size-full cursor-pointer appearance-none focus:outline-hidden"></div><span id="c-t2-label" class="text-sm/6 text-gray-900 dark:text-white">Toggle off</span></div>
+            </div>
+            <div class="sm:col-span-2">
+              <span id="c-upload-label" class="block text-sm/6 font-medium text-gray-900 dark:text-white">File drop zone</span>
+              <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-8 dark:border-white/25">
+                <div class="text-center">
+                  <svg class="mx-auto size-10 text-gray-300 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                  <div class="mt-3 flex flex-wrap justify-center text-sm/6 text-gray-600 dark:text-gray-400"><label for="c-upload" class="relative cursor-pointer rounded-md font-semibold text-indigo-600 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-600 hover:text-indigo-500 dark:text-indigo-400"><span>Upload a file</span><input id="c-upload" type="file" aria-labelledby="c-upload-label" class="sr-only"></label><p class="pl-1">or drag and drop</p></div>
+                  <p class="text-xs/5 text-gray-600 dark:text-gray-400">PNG, JPG or SVG up to 2 MB</p>
+                </div>
+              </div>
+            </div>
+            <div class="sm:col-span-2">
+              <p class="text-sm/6 font-semibold text-gray-900 dark:text-white">Drawn credential fields (sign-in screens only)</p>
+              <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div><span class="mock-label">Email</span><div class="mt-2 mock-field" role="img" aria-label="Email field, filled in">maya@lumenfield.io</div></div>
+                <div><span class="mock-label">Password</span><div class="mt-2 mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div></div>
+                <div><span class="mock-label">Empty, with error</span><div class="mt-2 mock-field mock-field--empty mock-field--error" role="img" aria-label="Email field, empty, with an error">you@company.com</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="alerts">
+          <h2 id="alerts" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Alerts</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">A tinted panel with a 20px mini icon, a title and an optional body or actions. Use role=alert only for errors.</p>
+          <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div class="rounded-md bg-green-50 p-4 outline-1 outline-green-600/10 dark:bg-green-500/10 dark:outline-green-500/20"><div class="flex"><svg class="size-5 shrink-0 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/></svg><div class="ml-3"><h3 class="text-sm font-medium text-green-800 dark:text-green-200">Stripe connected</h3><p class="mt-1 text-sm text-green-700 dark:text-green-300">18,402 invoices imported. Metrics are up to date.</p></div></div></div>
+            <div class="rounded-md bg-yellow-50 p-4 outline-1 outline-yellow-600/10 dark:bg-yellow-500/10 dark:outline-yellow-500/20"><div class="flex"><svg class="size-5 shrink-0 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg><div class="ml-3"><h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-100">22 customers are past due</h3><p class="mt-1 text-sm text-yellow-700 dark:text-yellow-200">$4,180 MRR is at risk this week.</p></div></div></div>
+            <div class="rounded-md bg-red-50 p-4 outline-1 outline-red-600/10 dark:bg-red-500/10 dark:outline-red-500/20" role="alert"><div class="flex"><svg class="size-5 shrink-0 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/></svg><div class="ml-3"><h3 class="text-sm font-medium text-red-800 dark:text-red-200">Sync failed</h3><p class="mt-1 text-sm text-red-700 dark:text-red-300">The Paddle key was revoked. Reconnect to resume.</p></div></div></div>
+            <div class="rounded-md bg-sky-50 p-4 outline-1 outline-sky-600/10 dark:bg-sky-500/10 dark:outline-sky-500/20"><div class="flex"><svg class="size-5 shrink-0 text-sky-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd"/></svg><div class="ml-3 flex-1 md:flex md:justify-between"><p class="text-sm text-sky-700 dark:text-sky-300">Forecasts now include a confidence band.</p><p class="mt-3 text-sm md:mt-0 md:ml-6"><a href="landing.html" class="font-medium whitespace-nowrap text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200">Details <span aria-hidden="true">&rarr;</span></a></p></div></div></div>
+          </div>
+        </section>
+
+        <section aria-labelledby="navigation">
+          <h2 id="navigation" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Tabs, breadcrumbs and pagination</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Underline tabs for page sections, pill tabs inside cards, chevron breadcrumbs, and the numbered pagination used under tables.</p>
+          <div class="mt-4 rounded-lg bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 space-y-8">
+            <div class="border-b border-gray-200 dark:border-white/10">
+              <nav aria-label="Underline tabs" class="-mb-px flex gap-x-8 overflow-x-auto">
+                <a href="components.html" aria-current="page" class="shrink-0 border-b-2 border-indigo-600 px-1 pb-3 text-sm font-medium whitespace-nowrap text-indigo-600 dark:border-indigo-400 dark:text-indigo-400">Overview</a>
+                <a href="components.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-medium whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Invoices</a>
+                <a href="components.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-medium whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Activity</a>
+              </nav>
+            </div>
+            <nav aria-label="Pill tabs" class="flex gap-x-2">
+              <a href="components.html" aria-current="page" class="rounded-md bg-indigo-100 px-3 py-2 text-sm font-medium text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">MRR</a>
+              <a href="components.html" class="rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Customers</a>
+              <a href="components.html" class="rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Churn</a>
+            </nav>
+            <nav aria-label="Breadcrumb"><ol role="list" class="flex flex-wrap items-center gap-x-2 text-sm text-gray-500 dark:text-gray-400"><li><a href="dashboard.html" class="hover:text-gray-700 dark:hover:text-white"><svg class="size-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd"/></svg><span class="sr-only">Home</span></a></li><li class="flex items-center gap-x-2"><svg class="size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><a href="resource-list.html" class="hover:text-gray-700 dark:hover:text-white">Customers</a></li><li class="flex items-center gap-x-2"><svg class="size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><a href="components.html" aria-current="page" class="font-medium text-gray-700 dark:text-gray-200">Brightline Studio</a></li></ol></nav>
+            <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-xs dark:shadow-none">
+              <a href="components.html" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:inset-ring-gray-700 dark:hover:bg-white/5"><span class="sr-only">Previous</span><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg></a>
+              <a href="components.html" aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white dark:bg-indigo-500">1</a>
+              <a href="components.html" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:inset-ring-gray-700 dark:hover:bg-white/5">2</a>
+              <a href="components.html" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:inset-ring-gray-700 dark:hover:bg-white/5">3</a>
+              <a href="components.html" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:inset-ring-gray-700 dark:hover:bg-white/5"><span class="sr-only">Next</span><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></a>
+            </nav>
+          </div>
+        </section>
+
+        <section aria-labelledby="overlays">
+          <h2 id="overlays" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Dropdown, modal and toast</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Overlays are drawn open: in the app, Alpine or Livewire toggles them. The modal sits on a gray-500/75 backdrop; the toast is fixed bottom-right in the app (shown in place here).</p>
+          <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div class="relative h-80 rounded-lg bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <button type="button" aria-expanded="true" aria-haspopup="true" class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5">Options<svg class="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button>
+              <div role="menu" aria-label="Customer actions" class="absolute left-6 z-10 mt-2 w-56 origin-top-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 dark:divide-white/10 dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-1 dark:outline-white/10 dark:ring-0">
+                <div class="py-1">
+                  <a href="resource-form.html" role="menuitem" class="group flex items-center gap-x-3 bg-gray-100 px-4 py-2 text-sm text-gray-900 dark:bg-white/5 dark:text-white"><svg class="size-5 text-gray-500 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"/></svg>Edit</a>
+                  <a href="components.html" role="menuitem" class="group flex items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"><svg class="size-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/></svg>View in Stripe</a>
+                </div>
+                <div class="py-1">
+                  <a href="components.html" role="menuitem" class="group flex items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"><svg class="size-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z"/><path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"/></svg>Export history</a>
+                  <a href="components.html" role="menuitem" class="group flex items-center gap-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-400/10"><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg>Delete</a>
+                </div>
+              </div>
+            </div>
+            <div class="relative isolate flex h-80 items-center justify-center overflow-hidden rounded-lg p-4">
+              <div aria-hidden="true" class="absolute inset-0 -z-20 space-y-3 bg-white p-6 dark:bg-gray-900"><div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-white/10"></div><div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-white/5"></div><div class="h-24 rounded-lg bg-gray-100 dark:bg-white/5"></div><div class="h-3 w-1/2 rounded bg-gray-100 dark:bg-white/5"></div></div>
+              <div aria-hidden="true" class="absolute inset-0 -z-10 bg-gray-500/75 dark:bg-gray-950/75"></div>
+              <div role="dialog" aria-modal="true" aria-labelledby="m-title" class="w-full max-w-sm rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl sm:p-6 dark:bg-gray-800 dark:outline dark:-outline-offset-1 dark:outline-white/10">
+                <div class="sm:flex sm:items-start">
+                  <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10 dark:bg-red-500/10"><svg class="size-6 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div>
+                  <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 id="m-title" class="text-base font-semibold text-gray-900 dark:text-white">Exclude 3 customers?</h3>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">$11,950 MRR leaves every chart. You can include them again later.</p>
+                  </div>
+                </div>
+                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse sm:gap-x-3">
+                  <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:w-auto dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400">Exclude</button>
+                  <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div aria-live="polite" class="mt-6 flex w-full flex-col items-center sm:items-end">
+            <div class="pointer-events-auto w-full max-w-sm rounded-lg bg-white shadow-lg outline-1 outline-black/5 dark:bg-gray-800 dark:-outline-offset-1 dark:outline-white/10">
+              <div class="p-4">
+                <div class="flex items-start">
+                  <svg class="size-6 shrink-0 text-green-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  <div class="ml-3 w-0 flex-1 pt-0.5"><p class="text-sm font-medium text-gray-900 dark:text-white">Report scheduled</p><p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The board pack goes out on Monday, November 2.</p></div>
+                  <button type="button" class="ml-4 inline-flex shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600 dark:hover:text-white" aria-label="Close"><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="data">
+          <h2 id="data" class="scroll-mt-24 text-base/7 font-semibold text-gray-900 dark:text-white">Data display</h2><p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Stat with trend, avatars, description list, progress bar and a compact table. The full table with selection lives in resource-list.html.</p>
+          <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="rounded-lg bg-white px-4 py-5 shadow-xs outline-1 outline-gray-900/5 sm:p-6 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <p class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Monthly recurring revenue</p>
+              <p class="mt-1 flex items-baseline justify-between"><span class="text-2xl font-semibold tracking-tight text-gray-900 tabular-nums dark:text-white">$84,210</span><span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-green-50 text-green-700 inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20">+4.6%</span></p>
+              <div class="mt-4 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-3/4 rounded-full bg-indigo-600 dark:bg-indigo-400"></div></div>
+              <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">75% of the $112k Q4 target</p>
+            </div>
+            <div class="rounded-lg bg-white px-4 py-5 shadow-xs outline-1 outline-gray-900/5 sm:p-6 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <p class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Account team</p>
+              <div class="mt-3 flex -space-x-1">
+                <span class="rounded-full ring-2 ring-white dark:ring-gray-900"><span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span></span><span class="rounded-full ring-2 ring-white dark:ring-gray-900"><span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-700 dark:bg-sky-900 dark:text-sky-200">TH</span></span><span class="rounded-full ring-2 ring-white dark:ring-gray-900"><span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">PR</span></span><span class="rounded-full ring-2 ring-white dark:ring-gray-900"><span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-xs font-semibold text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200">DK</span></span>
+              </div>
+              <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">Maya, Tomás, Priya and Daniel</p>
+            </div>
+            <div class="rounded-lg bg-white px-4 py-5 shadow-xs outline-1 outline-gray-900/5 sm:p-6 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <dl class="divide-y divide-gray-100 text-sm dark:divide-white/5">
+                <div class="flex justify-between gap-x-4 py-2"><dt class="text-gray-500 dark:text-gray-400">Plan</dt><dd class="font-medium text-gray-900 dark:text-white">Growth</dd></div>
+                <div class="flex justify-between gap-x-4 py-2"><dt class="text-gray-500 dark:text-gray-400">Seats</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">14</dd></div>
+                <div class="flex justify-between gap-x-4 py-2"><dt class="text-gray-500 dark:text-gray-400">Next invoice</dt><dd class="font-medium text-gray-900 dark:text-white">Nov 1, 2026</dd></div>
+              </dl>
+            </div>
+          </div>
+          <div class="relative mt-6 overflow-x-auto rounded-lg bg-white shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+            <table class="min-w-full divide-y divide-gray-300 dark:divide-white/15">
+              <thead><tr><th scope="col" class="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-6 dark:text-white">Plan</th><th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-white">Customers</th><th scope="col" class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-white">MRR</th><th scope="col" class="py-3.5 pr-4 pl-3 text-right text-sm font-semibold text-gray-900 sm:pr-6 dark:text-white">Share</th></tr></thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-white/10">
+                <tr><td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">Scale</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">269</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">$41,320</td><td class="py-4 pr-4 pl-3 text-right text-sm text-gray-500 tabular-nums sm:pr-6 dark:text-gray-400">49%</td></tr>
+                <tr><td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">Growth</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">603</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">$33,470</td><td class="py-4 pr-4 pl-3 text-right text-sm text-gray-500 tabular-nums sm:pr-6 dark:text-gray-400">40%</td></tr>
+                <tr><td class="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-6 dark:text-white">Starter</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">412</td><td class="px-3 py-4 text-right text-sm text-gray-500 tabular-nums dark:text-gray-400">$9,420</td><td class="py-4 pr-4 pl-3 text-right text-sm text-gray-500 tabular-nums sm:pr-6 dark:text-gray-400">11%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
-    </section>
+
+    </div>
   </main>
+</div>
+
 </body>
 </html>

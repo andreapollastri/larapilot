@@ -101,7 +101,7 @@ class DatabaseSeederExportService
     /**
      * One seeder, written as its rows are read. Returns how many.
      *
-     * @param  array{name: string, class: string, plan: array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>, overriding: bool}}  $table
+     * @param  array{name: string, class: string, object: array{key: string}, plan: array{columns: list<array{name: string, nullable: bool, binary: bool, numeric: bool, hidden: bool, distinct: bool, serial: bool}>, overriding: bool}}  $table
      * @param  iterable<int, array<string, mixed>>  $records
      */
     protected function seeder(ZipStream $zip, array $table, iterable $records): int
@@ -113,7 +113,9 @@ class DatabaseSeederExportService
 
         $zip->append(
             "<?php\n\nnamespace Database\\Seeders;\n\nuse Illuminate\\Database\\Seeder;\nuse Illuminate\\Support\\Facades\\DB;\n\n"
-            ."/**\n * The rows of `".$table['name'].'`, as they were in the database on '.Carbon::now()->format('Y-m-d').".\n */\n"
+            ."/**\n * The rows of `".$table['name'].'`, as they were in the database on '.Carbon::now()->format('Y-m-d').'.'
+            .($this->dumps->anonymizing() ? " Personal columns are anonymized.\n" : "\n")
+            ." */\n"
             .'class '.$table['class']." extends Seeder\n{\n    public function run(): void\n    {\n"
         );
 
@@ -142,7 +144,7 @@ class DatabaseSeederExportService
             $pairs = [];
 
             foreach ($plan['columns'] as $column) {
-                $value = $column['hidden'] ? $this->dumps->hiddenValue($column, $written + 1) : ($record[$column['name']] ?? null);
+                $value = $this->dumps->exportedValue((string) $table['object']['key'], $column, $record[$column['name']] ?? null, $written + 1);
                 $pairs[] = $this->php($column['name']).' => '.$this->value($value, $column['binary'], $bytes);
             }
 
@@ -200,6 +202,10 @@ class DatabaseSeederExportService
             array_push($about, '', 'Passwords, tokens, and secrets are in these files. Keep them private.');
         } elseif ($hidden !== []) {
             array_push($about, '', 'Passwords, tokens, and secrets were left out — written as null, or as nothing where', 'null is not allowed, and as hidden-N, one for each row, where the column is unique:', '', ...array_map(static fn (string $column): string => '    '.$column, $hidden));
+        }
+
+        if ($this->dumps->anonymizing()) {
+            array_push($about, '', 'Personal columns are anonymized, from the map in .larapilot/anonymization.yaml.');
         }
 
         $calls = implode('', array_map(static fn (string $class): string => '                    '.$class."::class,\n", $classes));

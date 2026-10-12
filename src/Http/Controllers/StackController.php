@@ -7,6 +7,7 @@ namespace Larapilot\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\CheckpointService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\ProjectStackService;
@@ -32,8 +33,20 @@ class StackController
     {
         $this->guard();
 
+        $facts = $this->stack->facts();
+        $secrets = app(DashboardSession::class)->canSeeSecrets();
+
+        // Where the database lives is the environment of the server: an
+        // admin's to see, not a developer's.
+        if (! $secrets && is_array($facts['database'] ?? null)) {
+            $facts['database']['host'] = null;
+            $facts['database']['port'] = null;
+            $facts['database']['database'] = null;
+        }
+
         return view('larapilot::dashboard.about', [
-            'facts' => $this->stack->facts(),
+            'facts' => $facts,
+            'secrets_visible' => $secrets,
         ]);
     }
 

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New booking · Kollektiv Studio backoffice</title>
+<meta name="description" content="Bookings week view with an open dialog: New booking form (room, dates, client, type as a radio row, hold switch) over a dotted backdrop.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#booking-title">Skip to dialog</a>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item is-active" aria-current="page" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<nav class="bn-pagehead__eyebrow bn-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">05 — Bookings</span></nav>
+<div class="bn-pagehead__title"><h1 class="bn-h1">Bookings</h1><span class="bn-pagehead__count">KW 42</span></div>
+<div class="bn-pagehead__actions"><div class="bn-btngroup" role="group" aria-label="Range"><a class="bn-btn bn-btn--sm is-active" href="#" aria-current="true">Week</a><a class="bn-btn bn-btn--sm" href="#">Month</a><a class="bn-btn bn-btn--sm" href="#">Season</a></div><a class="bn-btn bn-btn--primary" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></svg> New booking</a></div>
+</header>
+<section class="bn-section" aria-label="Rooms, week 42"><div class="bn-tl-wrap"><div class="bn-tl" role="table" aria-label="Room bookings, Monday 12 to Sunday 18 October">
+<div class="bn-tl__head" role="row"><span class="bn-tl__corner bn-micro" role="columnheader">Room</span><span class="bn-tl__day is-today" role="columnheader"><strong>12</strong>Mo<span class="visually-hidden">, today</span></span><span class="bn-tl__day" role="columnheader"><strong>13</strong>Tu</span><span class="bn-tl__day" role="columnheader"><strong>14</strong>We</span><span class="bn-tl__day" role="columnheader"><strong>15</strong>Th</span><span class="bn-tl__day" role="columnheader"><strong>16</strong>Fr</span><span class="bn-tl__day" role="columnheader"><strong>17</strong>Sa</span><span class="bn-tl__day" role="columnheader"><strong>18</strong>Su</span></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Halle A</strong><span class="bn-micro">450 standing</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-1 bn-len-2" role="cell"><strong>Option: Spree Lichtspiele tests</strong><span class="bn-tl__meta">Projection · 10–22</span></p><p class="bn-tl__block bn-from-3 bn-len-1" role="cell"><strong>Kiez Kino 10 yrs</strong><span class="bn-tl__meta">Private · 19–02</span></p><p class="bn-tl__block bn-from-4 bn-len-1" role="cell"><strong>Tanzhaus rehearsal</strong><span class="bn-tl__meta">10–18</span></p><p class="bn-tl__block bn-tl__block--event bn-from-5 bn-len-2" role="cell"><strong>Tiefgarage Night 07</strong><span class="bn-tl__meta">Fr 23:00 → Sa 10:00 · 412/450</span></p><p class="bn-tl__block bn-tl__block--setup bn-from-7 bn-len-1" role="cell"><strong>Get-out</strong><span class="bn-tl__meta">Crew · 12–18</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Galerie</strong><span class="bn-micro">180 guests</span></p><p class="bn-tl__block bn-tl__block--event bn-from-2 bn-len-6" role="cell"><strong>Concrete Utopias — exhibition</strong><span class="bn-tl__meta">Open Tu–Su 12–20 · until 08.11</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Studio 1</strong><span class="bn-micro">Photo, 60 m²</span></p><p class="bn-tl__block bn-from-1 bn-len-2" role="cell"><strong>Shoot: Tiefgarage sleeves</strong><span class="bn-tl__meta">P-036 · Aiko B.</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-4 bn-len-1" role="cell"><strong>Option: Kante portraits</strong><span class="bn-tl__meta">P-029</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Studio 2</strong><span class="bn-micro">40 seated</span></p><p class="bn-tl__block bn-tl__block--event bn-from-1 bn-len-1" role="cell"><strong>Riso open lab</strong><span class="bn-tl__meta">18:00 · 14/16</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-4 bn-len-2" role="cell"><strong>Option: Nachtbus pitch day</strong><span class="bn-tl__meta">Hold until 13.10</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Dachterrasse</strong><span class="bn-micro">Closes 01.11</span></p><p class="bn-tl__block bn-from-4 bn-len-1" role="cell"><strong>Verlag Kante launch</strong><span class="bn-tl__meta">Private · 18–23</span></p><p class="bn-tl__block bn-tl__block--event bn-from-6 bn-len-1" role="cell"><strong>Type after the Wall</strong><span class="bn-tl__meta">Talk · 19:30</span></p></div>
+</div></div></section>
+<footer class="bn-mainfoot"><span>21 room-days booked of 35 · 60%</span><span>Options expire after 72 h</span></footer>
+</main>
+</div>
+<div class="bn-overlay">
+<section class="bn-dialog" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+<header class="bn-dialog__head"><p class="bn-micro bn-micro--ink">05 — Bookings / New</p><button type="button" class="bn-btn bn-btn--ghost bn-btn--icon" aria-label="Close dialog"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></header>
+<div class="bn-dialog__body">
+<h2 id="booking-title" class="bn-dialog__title">Book a room</h2>
+<div class="bn-dialog__grid">
+<div class="bn-field"><label class="bn-label" for="b-room"><span>Room<span class="bn-req" aria-hidden="true">*</span></span></label><span class="bn-selectbox bn-selectbox--block"><select id="b-room" class="bn-select"><option>Galerie — 180 guests</option><option>Halle A — 450 standing</option><option>Studio 2 — 40 seated</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="b-client">Client or project</label><input id="b-client" class="bn-input" type="text" value="Nachtbus Festival · P-038"></div>
+<div class="bn-field"><label class="bn-label" for="b-from"><span>From<span class="bn-req" aria-hidden="true">*</span></span></label><input id="b-from" class="bn-input bn-input--mono" type="text" value="Th 15.10.2026, 09:00"></div>
+<div class="bn-field"><label class="bn-label" for="b-to"><span>Until<span class="bn-req" aria-hidden="true">*</span></span></label><input id="b-to" class="bn-input bn-input--mono" type="text" value="Fr 16.10.2026, 18:00"><p class="bn-help">Halle A get-in starts Fr 16:00 next door.</p></div>
+</div>
+<fieldset class="bn-field"><legend class="bn-label">Type</legend><div class="bn-radiorow">
+<label class="bn-check"><input class="bn-radio" type="radio" name="t"><span>Private hire<span class="bn-check__sub">Not in the program</span></span></label>
+<label class="bn-check is-active"><input class="bn-radio" type="radio" name="t" checked><span>Studio work<span class="bn-check__sub">Linked to a project</span></span></label>
+<label class="bn-check"><input class="bn-radio" type="radio" name="t"><span>Public event<span class="bn-check__sub">Goes to the program</span></span></label>
+</div></fieldset>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Hold as an option</strong><span>Expires Th 15.10, 09:00 unless confirmed.</span></span><input class="bn-switch" type="checkbox" role="switch" checked></label>
+<div class="bn-notice bn-notice--quiet"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><p>The Galerie is open to the public Tu–Su 12–20 for Concrete Utopias. Studio work there must stay behind the partition.</p></div>
+</div>
+<footer class="bn-dialog__foot"><span class="bn-micro">2 days · €0 internal</span><span class="bn-actions"><button type="button" class="bn-btn bn-btn--ghost">Cancel</button><button type="button" class="bn-btn bn-btn--signal">Hold the Galerie <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></span></footer>
+</section>
+</div>
+</body>
+</html>

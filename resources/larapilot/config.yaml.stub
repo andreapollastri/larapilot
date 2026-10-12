@@ -21,13 +21,19 @@ settings:
   prior_art: true
   # Workflow hooks (.larapilot/hooks.yaml) — your commands and skills on the loop's transitions — OFF by default.
   hooks: false
+  # Two-week sprints on the Board, the Plan, and in planning — OFF by default.
+  sprints: false
+  # Public product roadmap at a token link — OFF by default.
+  public_roadmap: false
   # Internal feedback on dashboard/API/spec-comment — OFF by default.
   comments: false
-  dashboard_auth: false
-  # Require LARAPILOT_API_TOKEN on every /larapilot/api/* request — OFF by default.
+  # Require the API token on /larapilot/api/* in local too — OFF by default (outside local it is always required).
   api_auth: false
   # Run andreapollastri/checkpoint (static security scan) in /larapilot-review + pre-ship — OFF by default.
   security_scan: false
+  # Security findings read from a scanner — OFF by default. security_provider: aikido | hackly.
+  security: false
+  security_provider: ''
   aikido: false
   errors: false
   boogle: false
@@ -69,6 +75,7 @@ paths:
   decisions: .larapilot/decisions.yaml
   code_history: .larapilot/code-history.yaml
   releases: .larapilot/releases.yaml
+  roadmap: .larapilot/roadmap.yaml
   project_docs: .larapilot/docs/handbook/
   custom_skills: .larapilot/skills/
   economics: .larapilot/economics.yaml

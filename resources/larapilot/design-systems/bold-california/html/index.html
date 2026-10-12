@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOLD California · Sunday Surf Co. catalog</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bc-mockup bc-body">
+<main class="bc-catalog" id="main">
+<header class="bc-catalog__hero">
+<div>
+<a class="bc-logo bc-logo--lg" href="landing.html" aria-label="Sunday Surf Co. public site"><svg class="bc-logo__mark" viewBox="0 0 48 48" aria-hidden="true"><circle class="bc-f-sunset" cx="24" cy="24" r="22"/><path class="bc-f-sun" d="M13 31a11 11 0 0 1 22 0z"/><path class="bc-f-sea" d="M3.1 31C7 28 10 28 13.5 31S20 34 24 31S31 28 34.5 31S41 34 44.9 31A22 22 0 0 1 3.1 31z"/><circle class="bc-f-none bc-s-ink" cx="24" cy="24" r="22"/></svg><span class="bc-logo__word">Sunday<small>Surf Co.</small></span></a>
+<h1 class="bc-display bc-display--md bc-mt-6">BOLD California</h1>
+<p class="bc-lead bc-mt-4">An original Larapilot design system: sun-drenched, optimistic, confident. Heavy display type, sunset and Pacific colours on warm sand, pill buttons and sticker shadows, for a public site and its back office. Sample product: <b>Sunday Surf Co.</b>, a surf school with rentals and a shop in Encinitas. Every screen links one stylesheet, <code class="bc-mono">../tokens.css</code>, follows the OS theme (warm night in dark), and uses <code class="bc-mono">bc-</code> classes documented in components.md.</p>
+</div>
+<span class="bc-sticker bc-sticker--round"><span><span class="bc-sticker__big">11</span>screens</span></span>
+</header>
+
+<section aria-labelledby="sw-title">
+<h2 class="bc-eyebrow" id="sw-title">Palette · sand + ink, then the hues (fill 500 / text 700) · night</h2>
+<div class="bc-swatches">
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-sand"></span>Sand 100<span class="bc-swatch__code">#fff4e4</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-sand2"></span>Sand 200<span class="bc-swatch__code">#fbe7cc</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-ink"></span>Ink 900<span class="bc-swatch__code">#22140f</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-sunset"></span>Sunset<span class="bc-swatch__code">#ff6a2b</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-poppy"></span>Poppy<span class="bc-swatch__code">#f2392c</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-gold"></span>Gold<span class="bc-swatch__code">#ffc23a</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-pacific"></span>Pacific<span class="bc-swatch__code">#0fa3a3</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-ocean"></span>Ocean<span class="bc-swatch__code">#2456e8</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-palm"></span>Palm<span class="bc-swatch__code">#2fa85a</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-hibiscus"></span>Hibiscus<span class="bc-swatch__code">#ff8bb0</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-night"></span>Night<span class="bc-swatch__code">#1c1215</span></div>
+<div class="bc-swatch"><span class="bc-swatch__chip bc-sw-night2"></span>Night 2<span class="bc-swatch__code">#2a1a1e</span></div>
+</div>
+</section>
+
+<section class="bc-catalog__group" aria-labelledby="g1">
+<h2 class="bc-h2" id="g1">Public site</h2>
+<div class="bc-catalog__grid">
+<a class="bc-catalog__item" href="landing.html"><span class="bc-catalog__name">Landing<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">landing.html</span><span class="bc-catalog__desc">Huge hero with booker, tilted ticker, class cards, big numbers, steps, gear, reviews, photo grid, newsletter, footer. Start here for any marketing page.</span></a>
+<a class="bc-catalog__item" href="pricing.html"><span class="bc-catalog__name">Pricing<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">pricing.html</span><span class="bc-catalog__desc">Three plans with a featured sunset card, comparison table, FAQ with native details, CTA band. Start here for plans, packs, memberships.</span></a>
+</div>
+</section>
+
+<section class="bc-catalog__group" aria-labelledby="g2">
+<h2 class="bc-h2" id="g2">Back office · Sunday HQ</h2>
+<div class="bc-catalog__grid">
+<a class="bc-catalog__item" href="dashboard.html"><span class="bc-catalog__name">Dashboard<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">dashboard.html</span><span class="bc-catalog__desc">Shell, live ticker, oversized stat tiles, revenue bars, swell widget, today’s schedule, crew list, latest bookings, donut. Start here for any app home.</span></a>
+<a class="bc-catalog__item" href="dashboard-dark.html"><span class="bc-catalog__name">Dashboard, night<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">dashboard-dark.html</span><span class="bc-catalog__desc">The same screen forced into the warm night theme with &lt;html class="dark"&gt;.</span></a>
+<a class="bc-catalog__item" href="resource-list.html"><span class="bc-catalog__name">Resource list<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">resource-list.html</span><span class="bc-catalog__desc">Bookings table: tabs with counts, search, filter chips, sort, 3 rows selected with the bulk bar, open row menu, status badges, pagination.</span></a>
+<a class="bc-catalog__item" href="resource-form.html"><span class="bc-catalog__name">Resource form<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">resource-form.html</span><span class="bc-catalog__desc">Class editor: numbered sections, required marks, one error, a disabled field, choice cards, switch, drop zone, sticky action bar, live preview.</span></a>
+<a class="bc-catalog__item" href="settings.html"><span class="bc-catalog__name">Settings<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">settings.html</span><span class="bc-catalog__desc">Sub-navigation, business profile, booking rules as switch rows, theme cards, notification checkboxes, danger zone, toast.</span></a>
+<a class="bc-catalog__item" href="empty-state.html"><span class="bc-catalog__name">Empty state<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">empty-state.html</span><span class="bc-catalog__desc">Illustrated first-run state for Rentals, three compact empty states, a loud alert. Start here for zero-data pages.</span></a>
+<a class="bc-catalog__item" href="login.html"><span class="bc-catalog__name">Sign in<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">login.html</span><span class="bc-catalog__desc">Split sign-in with a sunset panel and drawn credentials, plus reset-password and two-factor cards.</span></a>
+</div>
+</section>
+
+<section class="bc-catalog__group" aria-labelledby="g3">
+<h2 class="bc-h2" id="g3">Reference</h2>
+<div class="bc-catalog__grid">
+<a class="bc-catalog__item" href="components.html"><span class="bc-catalog__name">Components<svg class="bc-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="bc-catalog__file">components.html</span><span class="bc-catalog__desc">Every component of components.md in its variants and states, numbered the same way.</span></a>
+</div>
+</section>
+</main>
+</body>
+</html>

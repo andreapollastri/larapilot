@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components — Material Design 3 (Meadow Field)</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="md3-mockup">
+<header class="md3-top-app-bar md3-top-app-bar--center">
+  <a class="md3-icon-btn md3-icon-btn--on-surface" href="index.html" aria-label="Back to the catalog"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg></a>
+  <h1 class="md3-top-app-bar__title">Components</h1>
+  <a class="md3-icon-btn" href="dashboard-dark.html" aria-label="Open the forced-dark dashboard"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q8 0 17 .5t23 1.5q-36 32-56 79t-20 99q0 90 63 153t153 63q52 0 99-18.5t79-51.5q1 12 1.5 19.5t.5 14.5q0 150-105 255T480-120Zm0-60q109 0 190-67.5T771-406q-25 11-53.67 16.5Q688.67-384 660-384q-114.69 0-195.34-80.66Q384-545.31 384-660q0-24 5-51.5t18-62.5q-98 27-162.5 109.5T180-480q0 125 87.5 212.5T480-180Zm-4-297Z"/></svg></a>
+</header>
+
+<main class="md3-catalog">
+  <p class="md-typescale-body-large md3-text-variant">Every component of <span class="md3-code">components.md</span> in its variants and states. Hover, focus and pressed are drawn with the demo classes <span class="md3-code">is-hover</span>, <span class="md3-code">is-focus</span> and <span class="md3-code">is-pressed</span>; disabled uses the real attribute.</p>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-appbar">
+    <h2 class="md3-demo-label" id="c-appbar">1 · Top app bar — small, center-aligned, medium, scrolled</h2>
+    <div class="md3-grid md3-grid--2">
+      <div class="md3-stack md3-stack--tight">
+        <div class="md3-top-app-bar"><span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></span><p class="md3-top-app-bar__title">Jobs</p><div class="md3-top-app-bar__actions"><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M796-121 533-384q-30 26-70 40.5T378-329q-108 0-183-75t-75-181q0-106 75-181t182-75q106 0 180.5 75T632-585q0 43-14 83t-42 75l264 262-44 44ZM377-389q81 0 138-57.5T572-585q0-81-57-138.5T377-781q-82 0-139.5 57.5T180-585q0 81 57.5 138.5T377-389Z"/></svg></span><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M479.86-160Q460-160 446-174.14t-14-34Q432-228 446.14-242t34-14Q500-256 514-241.86t14 34Q528-188 513.86-174t-34 14Zm0-272Q460-432 446-446.14t-14-34Q432-500 446.14-514t34-14Q500-528 514-513.86t14 34Q528-460 513.86-446t-34 14Zm0-272Q460-704 446-718.14t-14-34Q432-772 446.14-786t34-14Q500-800 514-785.86t14 34Q528-732 513.86-718t-34 14Z"/></svg></span></div></div>
+        <div class="md3-top-app-bar md3-top-app-bar--center"><span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg></span><p class="md3-top-app-bar__title">JB-2417</p><span class="md3-avatar md3-avatar--md">PR</span></div>
+      </div>
+      <div class="md3-stack md3-stack--tight">
+        <div class="md3-top-app-bar md3-top-app-bar--medium"><span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg></span><div class="md3-top-app-bar__actions"><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z"/></svg></span><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M479.86-160Q460-160 446-174.14t-14-34Q432-228 446.14-242t34-14Q500-256 514-241.86t14 34Q528-188 513.86-174t-34 14Zm0-272Q460-432 446-446.14t-14-34Q432-500 446.14-514t34-14Q500-528 514-513.86t14 34Q528-460 513.86-446t-34 14Zm0-272Q460-704 446-718.14t-14-34Q432-772 446.14-786t34-14Q500-800 514-785.86t14 34Q528-732 513.86-718t-34 14Z"/></svg></span></div><p class="md3-top-app-bar__title">Replace boiler pressure valve</p></div>
+        <div class="md3-top-app-bar md3-top-app-bar--scrolled"><span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></span><p class="md3-top-app-bar__title">Scrolled: surface-container</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-nav">
+    <h2 class="md3-demo-label" id="c-nav">2–4 · Navigation drawer, navigation rail, navigation bar</h2>
+    <div class="md3-demo md3-demo--top">
+      <div class="md3-shell-preview">
+        <nav class="md3-drawer" aria-label="Drawer sample">
+          <p class="md3-drawer__headline">Meadow Field</p>
+          <ul class="md3-drawer__list">
+            <li><a class="md3-drawer__item" href="#" aria-current="page"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h270v720H180Zm330 0v-361h330v301q0 24-18 42t-42 18H510Zm0-421v-299h270q24 0 42 18t18 42v239H510Z"/></svg><span class="md3-drawer__label">Dashboard</span></a></li>
+            <li><a class="md3-drawer__item is-hover" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-400ZM80-160v-420q0-24 18-42t42-18h140v-100q0-24 18-42t42-18h280q24 0 42 18t18 42v100h140q24 0 42 18t18 42v420H80Zm220-210v60h-60v-60H140v150h680v-150H720v60h-60v-60H300ZM140-580v150h100v-60h60v60h360v-60h60v60h100v-150H140Zm200-60h280v-100H340v100Z"/></svg><span class="md3-drawer__label">Jobs (hover)</span><span class="md3-drawer__badge">38</span></a></li>
+            <li><a class="md3-drawer__item" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M42-120v-92q0-34 16-56.5t45-36.5q54-26 115.5-43T358-365q78 0 139.5 17T613-305q29 14 45 36.5t16 56.5v92H42Zm60-60h512v-32q0-15-8.5-24.5T585-251q-43-19-96-36.5T358-305q-78 0-131 17.5T131-251q-12 5-20.5 14.5T102-212v32Zm148-288q-42-43-42-107h-10q-8 0-14-6t-6-14q0-8 6-14t14-6h10q0-40 20-72t52-52v39q0 6 4.5 10.5T295-685q7 0 11-4.5t4-10.5v-52q8-2 22-3.5t27-1.5q13 0 27 1.5t22 3.5v52q0 6 4 10.5t11 4.5q6 0 10.5-4.5T438-700v-39q32 20 51 52t19 72h10q8 0 14 6t6 14q0 8-6 14t-14 6h-10q0 64-42 107t-108 43q-66 0-108-43Zm174-42q24-25 24-65H268q0 40 24 65t66 25q42 0 66-25Zm236 149-2-29q-7-4-14.5-9T630-409l-26 14-22-32 26-19q-2-4-2-7.5v-15q0-3.5 2-7.5l-26-19 22-32 26 14 14-10q7-5 14-9l2-29h40l2 29q7 4 14 9l14 10 26-14 22 32-26 19q2 4 2 7.5v15q0 3.5-2 7.5l26 19-22 32-26-14q-6 5-13.5 10t-14.5 9l-2 29h-40Zm47-73q11-11 11-27t-11-27q-11-11-27-11t-27 11q-11 11-11 27t11 27q11 11 27 11t27-11Zm61-144-9-35q-10-4-20.5-11T721-639l-44 16-20-35 35-28q-2-5-3.5-11t-1.5-12q0-6 1.5-12t3.5-11l-35-28 20-35 44 16q7-8 17.5-15.5T759-805l9-35h38l9 35q10 3 20.5 10.5T853-779l44-16 20 35-35 28q2 5 3.5 11t1.5 12q0 6-1.5 12t-3.5 11l35 28-20 35-44-16q-7 8-17.5 15T815-613l-9 35h-38Zm60.5-89.5Q845-684 845-709t-16.5-41.5Q812-767 787-767t-41.5 16.5Q729-734 729-709t16.5 41.5Q762-651 787-651t41.5-16.5ZM358-180Z"/></svg><span class="md3-drawer__label">Technicians</span><span class="md3-drawer__badge">12</span></a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="md3-shell-preview">
+        <nav class="md3-rail" aria-label="Rail sample">
+          <span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></span>
+          <ul class="md3-rail__list">
+            <li><a class="md3-rail__item is-hover" href="#"><span class="md3-rail__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h270v-600H180v600Zm330 0h270v-301H510v301Zm0-361h270v-239H510v239Z"/></svg></span>Hover</a></li>
+            <li><a class="md3-rail__item" href="#" aria-current="page"><span class="md3-rail__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M340-640h280v-100H340v100ZM80-160v-210h160v60h60v-60h360v60h60v-60h160v210H80Zm0-270v-150q0-24.75 17.63-42.38Q115.25-640 140-640h140v-100q0-24.75 17.63-42.38Q315.25-800 340-800h280q24.75 0 42.38 17.62Q680-764.75 680-740v100h140q24.75 0 42.38 17.62Q880-604.75 880-580v150H720v-60h-60v60H300v-60h-60v60H80Z"/></svg></span>Jobs</a></li>
+            <li><a class="md3-rail__item" href="#"><span class="md3-rail__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg><span class="md3-badge md3-badge--small md3-badge--anchored"></span></span>Schedule</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="md3-phone-frame">
+        <div class="md3-top-app-bar"><span class="md3-icon-btn md3-icon-btn--on-surface"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></span><p class="md3-top-app-bar__title">Dashboard</p><span class="md3-avatar md3-avatar--md md3-avatar--inverse">PR</span></div>
+        <span class="md3-fab md3-fab--anchored"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg></span>
+        <nav class="md3-navbar" aria-label="Navigation bar sample">
+          <a class="md3-navbar__item" href="#" aria-current="page"><span class="md3-navbar__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h270v720H180Zm330 0v-361h330v301q0 24-18 42t-42 18H510Zm0-421v-299h270q24 0 42 18t18 42v239H510Z"/></svg></span>Home</a>
+          <a class="md3-navbar__item" href="#"><span class="md3-navbar__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-400ZM80-160v-420q0-24 18-42t42-18h140v-100q0-24 18-42t42-18h280q24 0 42 18t18 42v100h140q24 0 42 18t18 42v420H80Zm220-210v60h-60v-60H140v150h680v-150H720v60h-60v-60H300ZM140-580v150h100v-60h60v60h360v-60h60v60h100v-150H140Zm200-60h280v-100H340v100Z"/></svg><span class="md3-badge md3-badge--anchored">3</span></span>Jobs</a>
+          <a class="md3-navbar__item" href="#"><span class="md3-navbar__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg></span>Schedule</a>
+          <a class="md3-navbar__item" href="#"><span class="md3-navbar__indicator"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M42-120v-92q0-34 16-56.5t45-36.5q54-26 115.5-43T358-365q78 0 139.5 17T613-305q29 14 45 36.5t16 56.5v92H42Zm60-60h512v-32q0-15-8.5-24.5T585-251q-43-19-96-36.5T358-305q-78 0-131 17.5T131-251q-12 5-20.5 14.5T102-212v32Zm148-288q-42-43-42-107h-10q-8 0-14-6t-6-14q0-8 6-14t14-6h10q0-40 20-72t52-52v39q0 6 4.5 10.5T295-685q7 0 11-4.5t4-10.5v-52q8-2 22-3.5t27-1.5q13 0 27 1.5t22 3.5v52q0 6 4 10.5t11 4.5q6 0 10.5-4.5T438-700v-39q32 20 51 52t19 72h10q8 0 14 6t6 14q0 8-6 14t-14 6h-10q0 64-42 107t-108 43q-66 0-108-43Zm174-42q24-25 24-65H268q0 40 24 65t66 25q42 0 66-25Zm236 149-2-29q-7-4-14.5-9T630-409l-26 14-22-32 26-19q-2-4-2-7.5v-15q0-3.5 2-7.5l-26-19 22-32 26 14 14-10q7-5 14-9l2-29h40l2 29q7 4 14 9l14 10 26-14 22 32-26 19q2 4 2 7.5v15q0 3.5-2 7.5l26 19-22 32-26-14q-6 5-13.5 10t-14.5 9l-2 29h-40Zm47-73q11-11 11-27t-11-27q-11-11-27-11t-27 11q-11 11-11 27t11 27q11 11 27 11t27-11Zm61-144-9-35q-10-4-20.5-11T721-639l-44 16-20-35 35-28q-2-5-3.5-11t-1.5-12q0-6 1.5-12t3.5-11l-35-28 20-35 44 16q7-8 17.5-15.5T759-805l9-35h38l9 35q10 3 20.5 10.5T853-779l44-16 20 35-35 28q2 5 3.5 11t1.5 12q0 6-1.5 12t-3.5 11l35 28-20 35-44-16q-7 8-17.5 15T815-613l-9 35h-38Zm60.5-89.5Q845-684 845-709t-16.5-41.5Q812-767 787-767t-41.5 16.5Q729-734 729-709t16.5 41.5Q762-651 787-651t41.5-16.5ZM358-180Z"/></svg></span>Team</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-buttons">
+    <h2 class="md3-demo-label" id="c-buttons">5 · Common buttons — filled, tonal, elevated, outlined, text</h2>
+    <div class="md3-demo">
+      <a class="md3-btn md3-btn--filled" href="#">Filled</a>
+      <a class="md3-btn md3-btn--tonal" href="#">Tonal</a>
+      <a class="md3-btn md3-btn--elevated" href="#">Elevated</a>
+      <a class="md3-btn md3-btn--outlined" href="#">Outlined</a>
+      <a class="md3-btn md3-btn--text" href="#">Text</a>
+      <a class="md3-btn md3-btn--filled md3-btn--icon" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg>With icon</a>
+      <a class="md3-btn md3-btn--error" href="#">Delete</a>
+    </div>
+    <div class="md3-demo">
+      <span class="md3-btn md3-btn--filled is-hover">Hover</span>
+      <span class="md3-btn md3-btn--filled is-focus">Focus</span>
+      <span class="md3-btn md3-btn--filled is-pressed">Pressed</span>
+      <button class="md3-btn md3-btn--filled" type="button" disabled>Disabled</button>
+      <span class="md3-btn md3-btn--outlined is-hover">Hover</span>
+      <span class="md3-btn md3-btn--outlined is-focus">Focus</span>
+      <button class="md3-btn md3-btn--outlined" type="button" disabled>Disabled</button>
+      <button class="md3-btn md3-btn--text" type="button" disabled>Disabled</button>
+    </div>
+  </section>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-icon">
+      <h2 class="md3-demo-label" id="c-icon">6 · Icon buttons</h2>
+      <div class="md3-demo">
+        <a class="md3-icon-btn" href="#" aria-label="Standard"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z"/></svg></a>
+        <a class="md3-icon-btn is-selected" href="#" aria-label="Standard selected"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg></a>
+        <a class="md3-icon-btn md3-icon-btn--filled" href="#" aria-label="Filled"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg></a>
+        <a class="md3-icon-btn md3-icon-btn--tonal" href="#" aria-label="Tonal"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M427-120v-225h60v83h353v60H487v82h-60Zm-307-82v-60h247v60H120Zm187-166v-82H120v-60h187v-84h60v226h-60Zm120-82v-60h413v60H427Zm166-165v-225h60v82h187v60H653v83h-60Zm-473-83v-60h413v60H120Z"/></svg></a>
+        <a class="md3-icon-btn md3-icon-btn--outlined" href="#" aria-label="Outlined"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M686-80q-47.5 0-80.75-33.25T572-194q0-8 5-34L278-403q-16.28 17.34-37.64 27.17Q219-366 194-366q-47.5 0-80.75-33T80-480q0-48 33.25-81T194-594q24 0 45 9.3 21 9.29 37 25.7l301-173q-2-8-3.5-16.5T572-766q0-47.5 33.25-80.75T686-880q47.5 0 80.75 33.25T800-766q0 47.5-33.25 80.75T686-652q-23.27 0-43.64-9Q622-670 606-685L302-516q3 8 4.5 17.5t1.5 18q0 8.5-1 16t-3 15.5l303 173q16-15 36.09-23.5 20.1-8.5 43.07-8.5Q734-308 767-274.75T800-194q0 47.5-33.25 80.75T686-80Zm.04-60q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5Zm-492-286q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5ZM724.5-727.54q15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5 22.96 0 38.46-15.54ZM686-194ZM194-480Zm492-286Z"/></svg></a>
+        <a class="md3-icon-btn md3-icon-btn--outlined is-selected" href="#" aria-label="Outlined selected"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M160-200v-60h80v-304q0-84 49.5-150.5T420-798v-22q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v22q81 17 130.5 83.5T720-564v304h80v60H160ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z"/></svg></a>
+        <span class="md3-icon-btn is-hover"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z"/></svg></span>
+        <button class="md3-icon-btn md3-icon-btn--filled" type="button" disabled aria-label="Disabled"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg></button>
+      </div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-fab">
+      <h2 class="md3-demo-label" id="c-fab">7 · FAB — small, standard, large, extended, tonal colours</h2>
+      <div class="md3-demo">
+        <a class="md3-fab md3-fab--small" href="#" aria-label="Small FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg></a>
+        <a class="md3-fab" href="#" aria-label="FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z"/></svg></a>
+        <a class="md3-fab md3-fab--large" href="#" aria-label="Large FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg></a>
+        <a class="md3-fab md3-fab--extended" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z"/></svg>New job</a>
+        <a class="md3-fab md3-fab--secondary" href="#" aria-label="Secondary FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m612-120-263-93-179 71q-17 9-33.5-1T120-173v-558q0-13 7.5-23t19.5-15l202-71 263 92 178-71q17-8 33.5 1.5T840-788v565q0 11-7.5 19T814-192l-202 72Zm-34-75v-505l-196-66v505l196 66Zm60 0 142-47v-512l-142 54v505Zm-458-12 142-54v-505l-142 47v512Zm458-493v505-505Zm-316-66v505-505Z"/></svg></a>
+        <a class="md3-fab md3-fab--tertiary" href="#" aria-label="Tertiary FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m190-120-30-30 320-730 320 730-30 30-290-132-290 132Zm68-98 222-98 222 98-222-514-222 514Zm222-98Z"/></svg></a>
+        <a class="md3-fab md3-fab--surface md3-fab--lowered" href="#" aria-label="Surface lowered FAB"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-42v-75q-137-14-228-105T117-450H42v-60h75q14-137 105-228t228-105v-75h60v75q137 14 228 105t105 228h75v60h-75q-14 137-105 228T510-117v75h-60Zm244.5-223.5Q784-355 784-480t-89.5-214.5Q605-784 480-784t-214.5 89.5Q176-605 176-480t89.5 214.5Q355-176 480-176t214.5-89.5Zm-321-108Q330-417 330-480t43.5-106.5Q417-630 480-630t106.5 43.5Q630-543 630-480t-43.5 106.5Q543-330 480-330t-106.5-43.5ZM544-416q26-26 26-64t-26-64q-26-26-64-26t-64 26q-26 26-26 64t26 64q26 26 64 26t64-26Zm-64-64Z"/></svg></a>
+      </div>
+    </section>
+  </div>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-seg">
+      <h2 class="md3-demo-label" id="c-seg">8 · Segmented buttons</h2>
+      <div class="md3-segmented" role="group" aria-label="View">
+        <button class="md3-segmented__btn" type="button" aria-pressed="true"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z"/></svg>Day</button>
+        <button class="md3-segmented__btn" type="button" aria-pressed="false">Week</button>
+        <button class="md3-segmented__btn" type="button" aria-pressed="false">Month</button>
+        <button class="md3-segmented__btn" type="button" disabled>Year</button>
+      </div>
+      <div class="md3-segmented" role="group" aria-label="Layout">
+        <button class="md3-segmented__btn" type="button" aria-pressed="false"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"/></svg>List</button>
+        <button class="md3-segmented__btn" type="button" aria-pressed="true"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z"/></svg>Board</button>
+      </div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-badge">
+      <h2 class="md3-demo-label" id="c-badge">9 · Badges and avatars</h2>
+      <div class="md3-demo">
+        <span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M160-200v-60h80v-304q0-84 49.5-150.5T420-798v-22q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v22q81 17 130.5 83.5T720-564v304h80v60H160Zm320-302Zm0 422q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM300-260h360v-304q0-75-52.5-127.5T480-744q-75 0-127.5 52.5T300-564v304Z"/></svg><span class="md3-badge md3-badge--small md3-badge--anchored"></span></span>
+        <span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Zm340-302L140-685v465h680v-465L480-462Zm0-60 336-218H145l335 218ZM140-685v-55 520-465Z"/></svg><span class="md3-badge md3-badge--anchored">12</span></span>
+        <span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M880-81 721-240H300q-24.75 0-42.37-17.63Q240-275.25 240-300v-80h440q24.75 0 42.38-17.63Q740-415.25 740-440v-280h80q24.75 0 42.38 17.62Q880-684.75 880-660v579ZM140-425l75-75h405v-320H140v395ZM80-280v-540q0-24.75 17.63-42.38Q115.25-880 140-880h480q24.75 0 42.38 17.62Q680-844.75 680-820v320q0 24.75-17.62 42.37Q644.75-440 620-440H240L80-280Zm60-220v-320 320Z"/></svg><span class="md3-badge md3-badge--anchored">999+</span></span>
+      </div>
+      <div class="md3-demo">
+        <span class="md3-avatar md3-avatar--sm">MA</span>
+        <span class="md3-avatar md3-avatar--md md3-avatar--tertiary">AB</span>
+        <span class="md3-avatar md3-avatar--secondary md3-avatar__presence">KW</span>
+        <span class="md3-avatar md3-avatar--lg md3-avatar--inverse">PR</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-chips">
+    <h2 class="md3-demo-label" id="c-chips">10 · Chips — assist, filter, input, suggestion · and status chips</h2>
+    <div class="md3-chip-set">
+      <a class="md3-chip md3-chip--assist md3-chip--leading" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M528-248.18q-28-28.19-28-69Q500-358 528.18-386q28.19-28 69-28Q638-414 666-385.82q28 28.19 28 69Q694-276 665.82-248q-28.19 28-69 28Q556-220 528-248.18ZM180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg>Add to calendar</a>
+      <a class="md3-chip md3-chip--assist md3-chip--leading md3-chip--elevated" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M320-360h60v-130h184v85l116-115-116-116v86H350q-12.75 0-21.37 8.62Q320-532.75 320-520v160ZM479.95-77Q468-77 456.5-81T437-93L93-437q-8-8-12-19.55t-4-23.5q0-11.95 4-23.45T93-523l344-344q8-8 19.55-12t23.5-4q11.95 0 23.45 4t19.5 12l344 344q8 8 12 19.55t4 23.5q0 11.95-4 23.45T867-437L523-93q-8 8-19.55 12t-23.5 4ZM308-308l172 172 344-344-344-344-344 344 172 172Zm172-172Z"/></svg>Directions</a>
+      <button class="md3-chip md3-chip--filter" type="button" aria-pressed="false">Scheduled</button>
+      <button class="md3-chip md3-chip--filter md3-chip--leading" type="button" aria-pressed="true"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z"/></svg>Overdue</button>
+      <button class="md3-chip md3-chip--filter md3-chip--trailing" type="button" aria-pressed="false">Trade<svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-360 280-559h400L480-360Z"/></svg></button>
+      <span class="md3-chip md3-chip--input">Condensate pump<a class="md3-chip__remove" href="#" aria-label="Remove"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></a></span>
+      <span class="md3-chip md3-chip--input md3-chip--avatar"><span class="md3-avatar md3-avatar--sm">FL</span>Freya Lindqvist<a class="md3-chip__remove" href="#" aria-label="Remove Freya"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></a></span>
+      <a class="md3-chip md3-chip--suggestion" href="#">Reschedule to tomorrow</a>
+      <span class="md3-chip md3-chip--filter is-hover">Hover</span>
+      <button class="md3-chip md3-chip--filter" type="button" disabled>Disabled</button>
+    </div>
+    <div class="md3-chip-set">
+      <span class="md3-status md3-status--scheduled"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M528-248.18q-28-28.19-28-69Q500-358 528.18-386q28.19-28 69-28Q638-414 666-385.82q28 28.19 28 69Q694-276 665.82-248q-28.19 28-69 28Q556-220 528-248.18ZM180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg>Scheduled</span>
+      <span class="md3-status md3-status--enroute"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M200-204v54q0 12.75-8.62 21.37Q182.75-120 170-120h-20q-12.75 0-21.37-8.63Q120-137.25 120-150v-324l85-256q5-14 16.5-22t26.5-8h464q15 0 26.5 8t16.5 22l85 256v324q0 12.75-8.62 21.37Q822.75-120 810-120h-21q-13 0-21-8.63-8-8.62-8-21.37v-54H200Zm3-330h554l-55-166H258l-55 166Zm-23 60v210-210Zm105.76 160q23.24 0 38.74-15.75Q340-345.5 340-368q0-23.33-15.75-39.67Q308.5-424 286-424q-23.33 0-39.67 16.26Q230-391.47 230-368.24q0 23.24 16.26 38.74 16.27 15.5 39.5 15.5ZM675-314q23.33 0 39.67-15.75Q731-345.5 731-368q0-23.33-16.26-39.67Q698.47-424 675.24-424q-23.24 0-38.74 16.26-15.5 16.27-15.5 39.5 0 23.24 15.75 38.74Q652.5-314 675-314Zm-495 50h600v-210H180v210Z"/></svg>En route</span>
+      <span class="md3-status md3-status--progress"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M705-128 447-388q-23 8-46 13t-47 5q-97.08 0-165.04-67.67Q121-505.33 121-602q0-31 8.16-60.39T152-718l145 145 92-86-149-149q25.91-15.16 54.96-23.58Q324-840 354-840q99.17 0 168.58 69.42Q592-701.17 592-602q0 24-5 47t-13 46l259 258q11 10.96 11 26.48T833-198l-76 70q-10.7 11-25.85 11Q716-117 705-128Zm28-57 40-40-273-273q16-21 24-49.5t8-54.5q0-75-55.5-127T350-782l102 104q9 9 8.5 21.5T451-635L318-510q-9.27 8-21.64 8-12.36 0-20.36-8l-98-97q3 77 54.67 127T354-430q25 0 53-8t49-24l277 277ZM476-484Z"/></svg>In progress</span>
+      <span class="md3-status md3-status--completed"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z"/></svg>Completed</span>
+      <span class="md3-status md3-status--overdue"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M504.5-290.5Q515-301 515-315t-10.5-24.5Q494-350 480-350t-24.5 10.5Q445-329 445-315t10.5 24.5Q466-280 480-280t24.5-10.5ZM449-412h60v-268h-60v268ZM180-120q-24.75 0-42.37-17.63Q120-155.25 120-180v-600q0-24.75 17.63-42.38Q155.25-840 180-840h205q5-35 32-57.5t63-22.5q36 0 63 22.5t32 57.5h205q24.75 0 42.38 17.62Q840-804.75 840-780v600q0 24.75-17.62 42.37Q804.75-120 780-120H180Zm0-60h600v-600H180v600Zm324.5-627.5Q515-818 515-832t-10.5-24.5Q494-867 480-867t-24.5 10.5Q445-846 445-832t10.5 24.5Q466-797 480-797t24.5-10.5ZM180-180v-600 600Z"/></svg>Overdue</span>
+      <span class="md3-priority md3-priority--high"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m282-225-42-42 240-240 240 240-42 42-198-198-198 198Zm0-253-42-42 240-240 240 240-42 42-198-198-198 198Z"/></svg>High</span>
+      <span class="md3-priority"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M160-390v-60h640v60H160Zm0-120v-60h640v60H160Z"/></svg>Normal</span>
+      <span class="md3-priority"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-200 240-440l42-42 198 198 198-198 42 42-240 240Zm0-253L240-693l42-42 198 198 198-198 42 42-240 240Z"/></svg>Low</span>
+    </div>
+  </section>
+
+  <section class="md3-stack" aria-labelledby="c-cards">
+    <h2 class="md3-demo-label" id="c-cards">11 · Cards — elevated, filled, outlined, interactive</h2>
+    <div class="md3-grid md3-grid--4">
+      <article class="md3-card md3-card--elevated"><p class="md3-card__title">Elevated</p><p class="md3-card__content">surface-container-low, level 1. Metrics and summaries.</p></article>
+      <article class="md3-card md3-card--filled"><p class="md3-card__title">Filled</p><p class="md3-card__content">surface-container-highest, no shadow. Grouped content.</p></article>
+      <article class="md3-card md3-card--outlined"><p class="md3-card__title">Outlined</p><p class="md3-card__content">surface with outline-variant. Lists and tables.</p><div class="md3-card__actions"><a class="md3-btn md3-btn--text" href="#">Action</a></div></article>
+      <a class="md3-card md3-card--outlined md3-card--interactive is-hover" href="#"><div class="md3-card__media md3-card__media--tertiary"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M351-529q0 29 12 55t35 44q-2-3-1.5-6t.5-6q0-17 6.5-31.5T422-500l58-57 58 57q12 12 18.5 26.5T563-442q0 3 .5 6t-1.5 6q23-18 35-44t12-55q0-27-10.5-51T570-622q-11 7-22.5 10.5T524-608q-33 0-58-22t-29-55q-21 18-37 37t-27 39q-11 20-16.5 40t-5.5 40Zm129 28-31 30q-6 6-9 13.5t-3 15.5q0 17 13 29.5t30 12.5q17 0 30-12.5t13-29.5q0-8-3-16t-9-13l-31-30Zm-3-259v66q0 20 13.5 33t33.5 13q10 0 18-4t15-12l9-12q38 22 60.5 62t22.5 85q0 70-49.5 119.5T480-360q-70 0-119.5-49.5T311-529q0-67 44.5-128T477-760ZM220-80q-25 0-42.5-17.5T160-140v-580q0-66 47-113t113-47h320q66 0 113 47t47 113v580q0 25-17.5 42.5T740-80H220Zm0-170v110h520v-110q-30 0-53 20t-77 20q-54 0-75.5-20T480-250q-33 0-54.5 20T350-210q-54 0-75.5-20T220-250Zm130-20q33 0 54.5-20t75.5-20q54 0 77 20t53 20q30 0 53-20t77-20v-410q0-42-29-71t-71-29H320q-42 0-71 29t-29 71v410q54 0 75.5 20t54.5 20Z"/></svg></div><p class="md3-card__title">Interactive (hover)</p><p class="md3-card__subtitle">Whole card is the link</p></a>
+    </div>
+  </section>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-demo-panel--surface md3-demo-panel--flush" aria-labelledby="c-lists">
+      <h2 class="md3-demo-label md3-pad-16" id="c-lists">12 · Lists and dividers</h2>
+      <p class="md3-list-subheader">Today</p>
+      <ul class="md3-list md3-list--flush">
+        <li class="md3-list-item"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m627-287 45-45-159-160v-201h-60v225l174 181ZM480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-82 31.5-155t86-127.5Q252-817 325-848.5T480-880q82 0 155 31.5t127.5 86Q817-708 848.5-635T880-480q0 82-31.5 155t-86 127.5Q708-143 635-111.5T480-80Zm0-400Zm0 340q140 0 240-100t100-240q0-140-100-240T480-820q-140 0-240 100T140-480q0 140 100 240t240 100Z"/></svg><span class="md3-list-item__content md3-list-item__headline">One line with leading icon</span><span class="md3-list-item__trailing-text">08:30</span></li>
+        <li><hr class="md3-divider md3-divider--inset"></li>
+        <li class="md3-list-item md3-list-item--two-line md3-list-item--interactive is-hover"><span class="md3-avatar">MA</span><span class="md3-list-item__content"><span class="md3-list-item__headline">Mateo Alvarez (hover)</span><span class="md3-list-item__supporting">Two lines with avatar</span></span><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M530-481 332-679l43-43 241 241-241 241-43-43 198-198Z"/></svg></li>
+        <li class="md3-list-item md3-list-item--two-line is-selected"><span class="md3-avatar md3-avatar--tertiary">AB</span><span class="md3-list-item__content"><span class="md3-list-item__headline">Aisha Bello (selected)</span><span class="md3-list-item__supporting">secondary-container</span></span><input class="md3-checkbox" type="checkbox" checked aria-label="Aisha selected"></li>
+        <li><hr class="md3-divider md3-divider--middle"></li>
+        <li class="md3-list-item md3-list-item--three-line"><span class="md3-list-thumb"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h600v-600H180v600Zm56-97h489L578-473 446-302l-93-127-117 152Zm-56 97v-600 600Z"/></svg></span><span class="md3-list-item__content"><span class="md3-list-item__overline">JB-2417 · photo</span><span class="md3-list-item__headline">Three lines with thumbnail</span><span class="md3-list-item__supporting">Supporting text can run onto a second line before it is cut.</span></span><span class="md3-list-item__trailing-text">2.4 MB</span></li>
+      </ul>
+    </section>
+
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-menu">
+      <h2 class="md3-demo-label" id="c-menu">13–14 · Select (open) and menu</h2>
+      <div class="md3-field md3-field--outlined md3-field--select is-focused">
+        <div class="md3-field__container">
+          <span class="md3-field__label" id="c-sel-label">Arrival window</span>
+          <div class="md3-field__value" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="c-sel-label">13:00 – 15:00</div>
+          <span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m280-400 200-201 200 201H280Z"/></svg></span>
+        </div>
+      </div>
+      <ul class="md3-menu" role="listbox" aria-label="Arrival window">
+        <li class="md3-menu__item" role="option">08:00 – 10:00</li>
+        <li class="md3-menu__item" role="option">10:00 – 12:00</li>
+        <li class="md3-menu__item is-selected" role="option" aria-selected="true">13:00 – 15:00</li>
+        <li class="md3-menu__item is-hover" role="option">15:00 – 17:00 (hover)</li>
+      </ul>
+      <ul class="md3-menu" role="menu" aria-label="Job actions">
+        <li><a class="md3-menu__item" role="menuitem" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h279v60H180v600h600v-279h60v279q0 24-18 42t-42 18H180Zm202-219-42-43 398-398H519v-60h321v321h-60v-218L382-339Z"/></svg><span class="md3-menu__label">Open</span><span class="md3-menu__trailing">⏎</span></a></li>
+        <li><a class="md3-menu__item" role="menuitem" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h207q-2-37 26-66.5t67-29.5q39 0 67 29.5t26 66.5h207q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm321.5-710.5Q510-839 510-852t-8.5-21.5Q493-882 480-882t-21.5 8.5Q450-865 450-852t8.5 21.5Q467-822 480-822t21.5-8.5ZM180-217q60-56 136-90.5T480-342q88 0 164 34.5T780-217v-563H180v563Zm400-244q40-40 40-98t-40-98q-40-40-98-40t-98 40q-40 40-40 98t40 98q40 40 98 40t98-40ZM235-180h490v-9q-54-46-116-69.5T480-282q-67 0-129 23.5T235-189v9Zm192-324q-23-23-23-55t23-55q23-23 55-23t55 23q23 23 23 55t-23 55q-23 23-55 23t-55-23Zm53 5Z"/></svg><span class="md3-menu__label">Reassign</span></a></li>
+        <li><a class="md3-menu__item" role="menuitem" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v260h-60v-70H180v430h320v60H180Zm0-550h600v-130H180v130Zm0 0v-130 130ZM560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T902.09-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"/></svg><span class="md3-menu__label">Reschedule</span></a></li>
+        <li class="md3-menu__divider" role="separator"></li>
+        <li><a class="md3-menu__item md3-menu__item--danger" role="menuitem" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z"/></svg><span class="md3-menu__label">Cancel job</span></a></li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-fields">
+    <h2 class="md3-demo-label" id="c-fields">15 · Text fields — filled and outlined: empty, populated, focused, error, disabled</h2>
+    <div class="md3-grid md3-grid--3">
+      <div class="md3-field md3-field--filled is-empty"><div class="md3-field__container"><label class="md3-field__label" for="c-f1">Empty</label><input class="md3-field__input" id="c-f1"></div><div class="md3-field__supporting">Supporting text</div></div>
+      <div class="md3-field md3-field--filled"><div class="md3-field__container"><label class="md3-field__label" for="c-f2">Populated</label><input class="md3-field__input" id="c-f2" value="Hollis Bakery"></div></div>
+      <div class="md3-field md3-field--filled is-focused md3-field--leading"><div class="md3-field__container"><span class="md3-field__leading"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M796-121 533-384q-30 26-70 40.5T378-329q-108 0-183-75t-75-181q0-106 75-181t182-75q106 0 180.5 75T632-585q0 43-14 83t-42 75l264 262-44 44ZM377-389q81 0 138-57.5T572-585q0-81-57-138.5T377-781q-82 0-139.5 57.5T180-585q0 81 57.5 138.5T377-389Z"/></svg></span><label class="md3-field__label" for="c-f3">Focused</label><input class="md3-field__input" id="c-f3" value="Canal St"></div></div>
+      <div class="md3-field md3-field--filled is-error"><div class="md3-field__container"><label class="md3-field__label" for="c-f4">Phone*</label><input class="md3-field__input" id="c-f4" value="+1 555 01" aria-invalid="true"><span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M503.5-289.48q9.5-9.48 9.5-23.5t-9.48-23.52q-9.48-9.5-23.5-9.5t-23.52 9.48q-9.5 9.48-9.5 23.5t9.48 23.52q9.48 9.5 23.5 9.5t23.52-9.48ZM453-433h60v-253h-60v253Zm27.27 353q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Z"/></svg></span></div><div class="md3-field__supporting">Enter a full number</div></div>
+      <div class="md3-field md3-field--filled is-disabled"><div class="md3-field__container"><label class="md3-field__label" for="c-f5">Disabled</label><input class="md3-field__input" id="c-f5" value="JB-2427" disabled></div></div>
+      <div class="md3-field md3-field--filled md3-field--textarea"><div class="md3-field__container"><label class="md3-field__label" for="c-f6">Textarea</label><textarea class="md3-field__input" id="c-f6" rows="2">Valve drips into the tundish.</textarea></div><div class="md3-field__supporting"><span>Notes</span><span class="md3-field__counter">29 / 500</span></div></div>
+      <div class="md3-field md3-field--outlined is-empty"><div class="md3-field__container"><label class="md3-field__label" for="c-o1">Empty</label><input class="md3-field__input" id="c-o1"></div><div class="md3-field__supporting">Supporting text</div></div>
+      <div class="md3-field md3-field--outlined is-hover"><div class="md3-field__container"><label class="md3-field__label" for="c-o2">Populated (hover)</label><input class="md3-field__input" id="c-o2" value="14 Canal Street"></div></div>
+      <div class="md3-field md3-field--outlined is-focused"><div class="md3-field__container"><label class="md3-field__label" for="c-o3">Focused</label><input class="md3-field__input" id="c-o3" value="1.5"><span class="md3-field__suffix">hours</span></div></div>
+      <div class="md3-field md3-field--outlined is-error"><div class="md3-field__container"><label class="md3-field__label" for="c-o4">Date*</label><input class="md3-field__input" id="c-o4" value="14/10/2026" aria-invalid="true"><span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M503.5-289.48q9.5-9.48 9.5-23.5t-9.48-23.52q-9.48-9.5-23.5-9.5t-23.52 9.48q-9.5 9.48-9.5 23.5t9.48 23.52q9.48 9.5 23.5 9.5t23.52-9.48ZM453-433h60v-253h-60v253Zm27.27 353q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Z"/></svg></span></div><div class="md3-field__supporting">Use MM/DD/YYYY</div></div>
+      <div class="md3-field md3-field--outlined is-disabled"><div class="md3-field__container"><label class="md3-field__label" for="c-o5">Disabled</label><input class="md3-field__input" id="c-o5" value="Riverton depot" disabled></div></div>
+      <div class="md3-field md3-field--outlined md3-field--select"><div class="md3-field__container"><label class="md3-field__label" for="c-o6">Select</label><select class="md3-field__input" id="c-o6"><option>Normal</option><option>High</option></select><span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-360 280-559h400L480-360Z"/></svg></span></div></div>
+    </div>
+  </section>
+
+  <section class="md3-demo-panel md3-stack" aria-labelledby="c-mock">
+    <h2 class="md3-demo-label" id="c-mock">16 · Drawn credential fields (.mock-*) — sign-in screens only</h2>
+    <div class="md3-grid md3-grid--4">
+      <div class="md3-field md3-field--outlined"><span class="mock-label">Email</span><div class="mock-field" role="img" aria-label="Email field, filled in"><span class="mock-field__value">grace@hollisbakery.example</span></div></div>
+      <div class="md3-field md3-field--outlined"><span class="mock-label">Password</span><div class="mock-field mock-field--secret mock-field--focus" role="img" aria-label="Password field, focused"><span class="mock-field__value">••••••••</span></div></div>
+      <div class="md3-field md3-field--outlined"><span class="mock-label">Email</span><div class="mock-field mock-field--empty" role="img" aria-label="Email field, empty"><span class="mock-field__value"></span></div></div>
+      <div class="md3-field md3-field--outlined"><span class="mock-label">Password</span><div class="mock-field mock-field--secret mock-field--error" role="img" aria-label="Password field, wrong password"><span class="mock-field__value">•••••••</span><span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M503.5-289.48q9.5-9.48 9.5-23.5t-9.48-23.52q-9.48-9.5-23.5-9.5t-23.52 9.48q-9.5 9.48-9.5 23.5t9.48 23.52q9.48 9.5 23.5 9.5t23.52-9.48ZM453-433h60v-253h-60v253Zm27.27 353q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Z"/></svg></span></div><div class="md3-field__supporting">Wrong password. Try again.</div></div>
+      <div class="md3-field md3-field--filled"><span class="mock-label">Workspace</span><div class="mock-field" role="img" aria-label="Workspace field, filled in"><span class="mock-field__value">riverton-depot</span></div></div>
+    </div>
+  </section>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-search">
+      <h2 class="md3-demo-label" id="c-search">17 · Search bar</h2>
+      <div class="md3-search" role="search"><span class="md3-search__leading"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></span><label class="visually-hidden" for="c-s">Search</label><input class="md3-search__input" id="c-s" type="search" placeholder="Search jobs"><span class="md3-search__trailing"><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M408-453.92q-29-30.91-29-75.08v-251q0-41.67 29.44-70.83Q437.88-880 479.94-880t71.56 29.17Q581-821.67 581-780v251q0 44.17-29 75.08Q523-423 480-423t-72-30.92ZM480-651Zm-30 531v-136q-106-11-178-89t-72-184h60q0 91 64.29 153t155.5 62q91.21 0 155.71-62Q700-438 700-529h60q0 106-72 184t-178 89v136h-60Zm59.5-376.5Q521-510 521-529v-251q0-17-11.79-28.5T480-820q-17.42 0-29.21 11.5T439-780v251q0 19 11.5 32.5T480-483q18 0 29.5-13.5Z"/></svg></span><span class="md3-avatar md3-avatar--md md3-avatar--inverse">PR</span></span></div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-sel">
+      <h2 class="md3-demo-label" id="c-sel">18–20 · Checkbox, radio, switch</h2>
+      <div class="md3-demo">
+        <span class="md3-selection"><input class="md3-checkbox" type="checkbox" aria-label="Unchecked"></span>
+        <span class="md3-selection md3-selection--primary is-hover"><input class="md3-checkbox" type="checkbox" checked aria-label="Checked, hover"></span>
+        <span class="md3-selection"><input class="md3-checkbox is-indeterminate" type="checkbox" aria-label="Indeterminate"></span>
+        <span class="md3-selection"><input class="md3-checkbox is-error" type="checkbox" aria-label="Error"></span>
+        <span class="md3-selection"><input class="md3-checkbox" type="checkbox" checked disabled aria-label="Disabled checked"></span>
+        <span class="md3-selection"><input class="md3-radio" type="radio" name="c-r" aria-label="Radio off"></span>
+        <span class="md3-selection md3-selection--primary is-focus"><input class="md3-radio" type="radio" name="c-r" checked aria-label="Radio on, focus"></span>
+        <span class="md3-selection"><input class="md3-radio" type="radio" disabled aria-label="Radio disabled"></span>
+      </div>
+      <div class="md3-demo">
+        <button class="md3-switch" type="button" role="switch" aria-checked="false" aria-label="Off"><span class="md3-switch__handle"></span></button>
+        <button class="md3-switch" type="button" role="switch" aria-checked="true" aria-label="On"><span class="md3-switch__handle"></span></button>
+        <button class="md3-switch md3-switch--icons" type="button" role="switch" aria-checked="true" aria-label="On with icon"><span class="md3-switch__handle"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z"/></svg></span></button>
+        <button class="md3-switch md3-switch--icons is-hover" type="button" role="switch" aria-checked="false" aria-label="Off with icon, hover"><span class="md3-switch__handle"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></span></button>
+        <button class="md3-switch is-pressed" type="button" role="switch" aria-checked="true" aria-label="On, pressed"><span class="md3-switch__handle"></span></button>
+        <button class="md3-switch" type="button" role="switch" aria-checked="true" disabled aria-label="Disabled on"><span class="md3-switch__handle"></span></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-slider">
+      <h2 class="md3-demo-label" id="c-slider">21–22 · Slider and progress indicators</h2>
+      <div class="md3-slider md3-mt-16" style="--md3-value: 60%"><span class="md3-slider__label" aria-hidden="true"><span class="md3-slider__label-text">60</span></span><input class="md3-slider__input" type="range" value="60" aria-label="Value label shown while dragging"></div>
+      <div class="md3-slider" style="--md3-value: 30%"><input class="md3-slider__input" type="range" value="30" disabled aria-label="Disabled slider"></div>
+      <progress class="md3-progress" value="62" max="100" aria-label="Determinate, 62%">62%</progress>
+      <div class="md3-progress md3-progress--indeterminate" role="progressbar" aria-label="Loading"></div>
+      <div class="md3-demo">
+        <svg class="md3-circular" viewBox="0 0 48 48" role="img" aria-label="75%"><circle class="md3-circular__track" cx="24" cy="24" r="20"/><circle class="md3-circular__indicator" cx="24" cy="24" r="20" stroke-dasharray="94.2 125.7"/></svg>
+        <svg class="md3-circular" viewBox="0 0 48 48" role="img" aria-label="Loading"><circle class="md3-circular__indicator" cx="24" cy="24" r="20" stroke-dasharray="40 125.7"/></svg>
+        <svg class="md3-circular md3-circular--small" viewBox="0 0 48 48" role="img" aria-label="Small, loading"><circle class="md3-circular__indicator" cx="24" cy="24" r="20" stroke-dasharray="70 125.7"/></svg>
+      </div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-tabs">
+      <h2 class="md3-demo-label" id="c-tabs">23 · Tabs — primary, primary with icons, secondary</h2>
+      <div class="md3-tabs" role="tablist" aria-label="Primary tabs"><a class="md3-tab" href="#" role="tab" aria-selected="true"><span class="md3-tab__content">Overview</span></a><a class="md3-tab" href="#" role="tab"><span class="md3-tab__content">Activity</span></a><a class="md3-tab is-hover" href="#" role="tab"><span class="md3-tab__content">Files</span></a></div>
+      <div class="md3-tabs" role="tablist" aria-label="Tabs with icons"><a class="md3-tab md3-tab--stacked" href="#" role="tab" aria-selected="true"><span class="md3-tab__content"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M284-338.18q-28-28.19-28-69Q256-448 284.18-476q28.19-28 69-28Q394-504 422-475.82q28 28.19 28 69Q450-366 421.82-338q-28.19 28-69 28Q312-310 284-338.18ZM180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg>Today</span></a><a class="md3-tab md3-tab--stacked" href="#" role="tab"><span class="md3-tab__content"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M277.5-405.5Q266-417 266-434t11.5-28.5Q289-474 306-474t28.5 11.5Q346-451 346-434t-11.5 28.5Q323-394 306-394t-28.5-11.5Zm177 0Q443-417 443-434t11.5-28.5Q466-474 483-474t28.5 11.5Q523-451 523-434t-11.5 28.5Q500-394 483-394t-28.5-11.5Zm170 0Q613-417 613-434t11.5-28.5Q636-474 653-474t28.5 11.5Q693-451 693-434t-11.5 28.5Q670-394 653-394t-28.5-11.5ZM180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg>Week</span></a><a class="md3-tab md3-tab--stacked" href="#" role="tab"><span class="md3-tab__content"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m612-120-263-93-179 71q-17 9-33.5-1T120-173v-558q0-13 7.5-23t19.5-15l202-71 263 92 178-71q17-8 33.5 1.5T840-788v565q0 11-7.5 19T814-192l-202 72Zm-34-75v-505l-196-66v505l196 66Zm60 0 142-47v-512l-142 54v505Zm-458-12 142-54v-505l-142 47v512Zm458-493v505-505Zm-316-66v505-505Z"/></svg>Map</span></a></div>
+      <div class="md3-tabs md3-tabs--secondary" role="tablist" aria-label="Secondary tabs"><a class="md3-tab" href="#" role="tab" aria-selected="true"><span class="md3-tab__content">Parts</span></a><a class="md3-tab" href="#" role="tab"><span class="md3-tab__content">Labour</span></a><a class="md3-tab" href="#" role="tab"><span class="md3-tab__content">Expenses</span></a></div>
+    </section>
+  </div>
+
+  <section class="md3-stack" aria-labelledby="c-table">
+    <h2 class="md3-demo-label" id="c-table">24 · Data table, contextual selection bar and paginator</h2>
+    <div class="md3-table-card">
+      <div class="md3-table-toolbar"><p class="md3-table-toolbar__title">Parts on van RV-07</p><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M400-240v-60h160v60H400ZM240-450v-60h480v60H240ZM120-660v-60h720v60H120Z"/></svg></span><span class="md3-icon-btn"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M479.86-160Q460-160 446-174.14t-14-34Q432-228 446.14-242t34-14Q500-256 514-241.86t14 34Q528-188 513.86-174t-34 14Zm0-272Q460-432 446-446.14t-14-34Q432-500 446.14-514t34-14Q500-528 514-513.86t14 34Q528-460 513.86-446t-34 14Zm0-272Q460-704 446-718.14t-14-34Q432-772 446.14-786t34-14Q500-800 514-785.86t14 34Q528-732 513.86-718t-34 14Z"/></svg></span></div>
+      <div class="md3-table-scroll">
+        <table class="md3-table">
+          <thead><tr><th class="md3-col-check"><input class="md3-checkbox" type="checkbox" aria-label="Select all parts"></th><th aria-sort="ascending"><a class="md3-th-sort is-sorted" href="#">Part<svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-160v-526L202-438l-42-42 320-320 320 320-42 42-248-248v526h-60Z"/></svg></a></th><th>SKU</th><th class="md3-col-num">On van</th><th class="md3-col-num">Unit cost</th></tr></thead>
+          <tbody>
+            <tr><td class="md3-col-check"><input class="md3-checkbox" type="checkbox" aria-label="Select condensate pump"></td><td>Condensate pump, 230 V</td><td class="md3-cell-secondary">CP-230-01</td><td class="md3-col-num">2</td><td class="md3-col-num">$84.00</td></tr>
+            <tr class="is-selected" aria-selected="true"><td class="md3-col-check"><input class="md3-checkbox" type="checkbox" checked aria-label="Select relief valve"></td><td>Pressure relief valve, 3 bar</td><td class="md3-cell-secondary">PRV-3B-15</td><td class="md3-col-num">5</td><td class="md3-col-num">$46.20</td></tr>
+            <tr class="is-hover"><td class="md3-col-check"><input class="md3-checkbox" type="checkbox" aria-label="Select thermostat"></td><td>Smart thermostat (hover)</td><td class="md3-cell-secondary">TH-W24</td><td class="md3-col-num">1</td><td class="md3-col-num">$129.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="md3-paginator" role="group" aria-label="Pagination"><div class="md3-paginator__size"><span class="md3-paginator__size-label">Items per page:</span><span class="md3-paginator__select">5<svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-360 280-559h400L480-360Z"/></svg></span></div><span class="md3-paginator__range">1 – 3 of 3</span><div class="md3-paginator__actions"><button class="md3-icon-btn" type="button" disabled aria-label="Previous page"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M561-240 320-481l241-241 43 43-198 198 198 198-43 43Z"/></svg></button><button class="md3-icon-btn" type="button" disabled aria-label="Next page"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M530-481 332-679l43-43 241 241-241 241-43-43 198-198Z"/></svg></button></div></div>
+    </div>
+  </section>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-stack" aria-labelledby="c-dialog">
+      <h2 class="md3-demo-label" id="c-dialog">25 · Dialog (basic) over a scrim</h2>
+      <div class="md3-dialog-stage">
+        <div class="md3-dialog md3-dialog--narrow" role="dialog" aria-labelledby="c-dlg-h">
+          <div class="md3-dialog__icon"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z"/></svg></div>
+          <p class="md3-dialog__headline" id="c-dlg-h">Cancel JB-2425?</p>
+          <p class="md3-dialog__content">Samuel Osei and Riverside Library are told by SMS. The job stays in the history.</p>
+          <div class="md3-dialog__actions"><a class="md3-btn md3-btn--text" href="#">Keep job</a><a class="md3-btn md3-btn--text" href="#">Cancel job</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="md3-stack" aria-labelledby="c-feedback">
+      <h2 class="md3-demo-label" id="c-feedback">26–28 · Snackbar, tooltips, banner</h2>
+      <div class="md3-snackbar"><span class="md3-snackbar__text">2 jobs reassigned to Freya Lindqvist</span><a class="md3-btn md3-btn--text" href="#">Undo</a><a class="md3-icon-btn" href="#" aria-label="Dismiss"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></a></div>
+      <div class="md3-demo md3-demo--top">
+        <span class="md3-tooltip">Reschedule</span>
+        <div class="md3-tooltip md3-tooltip--rich"><span class="md3-tooltip__subhead">First-time fix rate</span>Jobs closed on the first visit, without a return trip, over the last 30 days.<div class="md3-tooltip__actions"><a class="md3-btn md3-btn--text" href="#">Learn more</a></div></div>
+      </div>
+      <div class="md3-banner md3-banner--error"><span class="md3-banner__icon"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M805-69 411-463q-54 13-99.5 42T232-357l-63-63q37-37 76.5-65t94.5-50L229-646q-47 23-89 54.5T63-526L0-589q36-37 77-69t84-55l-92-92 43-43 736 736-43 43Zm-388-85q-27-27-27-63t27-63q27-27 63-27t63 27q27 27 27 63t-27 63q-27 27-63 27t-63-27Zm311-203q-33-32-60-51.5T599-447L486-560q95 2 167.5 39T791-420l-63 63Zm169-169q-88-84-192.5-134T480-710q-37 0-71 4.5T352-693l-73-73q44-16 95.5-25t105.5-9q140 0 263.5 58T960-589l-63 63Z"/></svg></span><div class="md3-banner__body"><p>Offline. Changes are saved on this device and sync when you reconnect.</p><div class="md3-banner__actions"><a class="md3-btn md3-btn--text" href="#">Retry</a></div></div></div>
+    </section>
+  </div>
+
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-stack" aria-labelledby="c-exp">
+      <h2 class="md3-demo-label" id="c-exp">29 · Expansion panel</h2>
+      <div class="md3-accordion">
+        <details class="md3-expansion" open><summary class="md3-expansion__header"><span class="md3-expansion__title">Access notes</span><span class="md3-expansion__chevron"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-344 240-584l43-43 197 197 197-197 43 43-240 240Z"/></svg></span></summary><p class="md3-expansion__body">Rear entrance on Canal Street. Key safe code shared by SMS on the day.</p></details>
+        <details class="md3-expansion"><summary class="md3-expansion__header"><span class="md3-expansion__title">Previous visits (3)</span><span class="md3-expansion__chevron"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-344 240-584l43-43 197 197 197-197 43 43-240 240Z"/></svg></span></summary><p class="md3-expansion__body">Annual service in March 2026.</p></details>
+      </div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-comp">
+      <h2 class="md3-demo-label" id="c-comp">30 · Composites: timeline, upload, stat, meter</h2>
+      <ol class="md3-timeline">
+        <li class="md3-timeline__item"><span class="md3-timeline__marker md3-timeline__marker--primary"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M705-128 447-388q-23 8-46 13t-47 5q-97.08 0-165.04-67.67Q121-505.33 121-602q0-31 8.16-60.39T152-718l145 145 92-86-149-149q25.91-15.16 54.96-23.58Q324-840 354-840q99.17 0 168.58 69.42Q592-701.17 592-602q0 24-5 47t-13 46l259 258q11 10.96 11 26.48T833-198l-76 70q-10.7 11-25.85 11Q716-117 705-128Zm28-57 40-40-273-273q16-21 24-49.5t8-54.5q0-75-55.5-127T350-782l102 104q9 9 8.5 21.5T451-635L318-510q-9.27 8-21.64 8-12.36 0-20.36-8l-98-97q3 77 54.67 127T354-430q25 0 53-8t49-24l277 277ZM476-484Z"/></svg></span><div class="md3-timeline__body"><p class="md3-timeline__title">Status changed to In progress</p><p class="md3-timeline__meta">Today, 08:12</p></div></li>
+        <li class="md3-timeline__item"><span class="md3-timeline__marker"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M795-120q-116 0-236.5-56T335-335Q232-438 176-558.5T120-795q0-19.29 12.86-32.14Q145.71-840 165-840h140q14 0 24 10t14 25l26.93 125.64Q372-665 369.5-653.5t-10.73 19.73L259-533q26 44 55 82t64 72q37 38 78 69.5t86 55.5l95-98q10-11 23.15-15 13.15-4 25.85-2l119 26q15 4 25 16.04 10 12.05 10 26.96v135q0 19.29-12.86 32.14Q814.29-120 795-120ZM229-588l81-82-23-110H180q2 42 13.5 88.5T229-588Zm369 363q41 19 89 31t93 14v-107l-103-21-79 83ZM229-588Zm369 363Z"/></svg></span><div class="md3-timeline__body"><p class="md3-timeline__title">Job created from a call</p><p class="md3-timeline__meta">Fri 9 Oct, 15:58</p></div></li>
+      </ol>
+      <div class="md3-dropzone is-dragover"><span class="md3-dropzone__icon"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z"/></svg></span><p class="md3-dropzone__title">Drop to upload (drag-over)</p></div>
+      <div class="md3-stat"><p class="md3-stat__label"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m346-60-76-130-151-31 17-147-96-112 96-111-17-147 151-31 76-131 134 62 134-62 77 131 150 31-17 147 96 111-96 112 17 147-150 31-77 130-134-62-134 62Zm27-79 107-45 110 45 67-100 117-30-12-119 81-92-81-94 12-119-117-28-69-100-108 45-110-45-67 100-117 28 12 119-81 94 81 92-12 121 117 28 70 100Zm107-341Zm-43 133 227-225-45-41-182 180-95-99-46 45 141 140Z"/></svg>First-time fix</p><p class="md3-stat__value">92.4<span class="md3-stat__unit">%</span></p><p class="md3-stat__delta md3-stat__delta--up"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m123-240-43-43 292-291 167 167 241-241H653v-60h227v227h-59v-123L538-321 371-488 123-240Z"/></svg>+1.8 pts</p></div>
+      <div class="md3-meter" role="img" aria-label="Status split"><span class="md3-meter__seg" style="width:40%"></span><span class="md3-meter__seg md3-meter__seg--primary-container" style="width:25%"></span><span class="md3-meter__seg md3-meter__seg--tertiary" style="width:15%"></span><span class="md3-meter__seg md3-meter__seg--outline" style="width:12%"></span><span class="md3-meter__seg md3-meter__seg--error" style="width:8%"></span></div>
+      <div class="md3-legend"><span class="md3-legend__item"><span class="md3-legend__key"></span>Completed</span><span class="md3-legend__item"><span class="md3-legend__key md3-legend__key--primary-container"></span>In progress</span><span class="md3-legend__item"><span class="md3-legend__key md3-legend__key--tertiary-container"></span>En route</span><span class="md3-legend__item"><span class="md3-legend__key md3-legend__key--outline"></span>Scheduled</span><span class="md3-legend__item"><span class="md3-legend__key md3-legend__key--error"></span>Overdue</span></div>
+    </section>
+  </div>
+  <div class="md3-grid md3-grid--2">
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-more">
+      <h2 class="md3-demo-label" id="c-more">31 · Composites: details, chart, empty state</h2>
+      <dl class="md3-details md3-details--compact">
+        <dt>Pressure relief valve, 3 bar</dt><dd class="md3-col-num">$46.20</dd>
+        <dt>Labour, 1.5 h × $110</dt><dd class="md3-col-num">$165.00</dd>
+        <dt class="md3-details__total">Total before tax</dt><dd class="md3-col-num md3-details__total">$211.20</dd>
+      </dl>
+      <div class="md3-chart" role="img" aria-label="Sample line chart rising from 12 to 34 jobs">
+        <div class="md3-chart__y" aria-hidden="true"><span>40</span><span>20</span><span>0</span></div>
+        <div class="md3-chart__plot"><svg class="md3-chart__svg" viewBox="0 0 120 100" preserveAspectRatio="none" aria-hidden="true"><line class="md3-chart__grid" x1="0" y1="0" x2="120" y2="0"/><line class="md3-chart__grid" x1="0" y1="50" x2="120" y2="50"/><line class="md3-chart__grid" x1="0" y1="100" x2="120" y2="100"/><path class="md3-chart__area" d="M0 70 L40 45 L80 55 L120 15 L120 100 L0 100 Z"/><path class="md3-chart__line" d="M0 70 L40 45 L80 55 L120 15"/></svg></div>
+        <div class="md3-chart__x" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span></div>
+      </div>
+      <div class="md3-empty"><span class="md3-empty__art md3-empty__art--neutral"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-60h600v-136H634q-26 40-67.5 61.5T480-233q-45 0-86.5-21.5T326-316H180v136Zm374-136.5q33-23.5 56-59.5h170v-404H180v404h170q23 36 56.25 59.5 33.24 23.5 74 23.5Q521-293 554-316.5ZM180-180h600-600Z"/></svg></span><p class="md3-empty__title">No notes yet</p><p class="md3-empty__text">Notes from technicians appear here.</p></div>
+    </section>
+    <section class="md3-demo-panel md3-stack" aria-labelledby="c-type">
+      <h2 class="md3-demo-label" id="c-type">32 · Type scale (.md-typescale-*) and static map</h2>
+      <p class="md-typescale-display-small">Display small 36</p>
+      <p class="md-typescale-headline-small">Headline small 24</p>
+      <p class="md-typescale-title-large">Title large 22</p>
+      <p class="md-typescale-title-medium">Title medium 16 / 500</p>
+      <p class="md-typescale-body-large">Body large 16 — list headlines and inputs</p>
+      <p class="md-typescale-body-medium">Body medium 14 — default text</p>
+      <p class="md-typescale-label-large">Label large 14 / 500 — buttons</p>
+      <p class="md-typescale-label-small">LABEL SMALL 11 / 500</p>
+      <div class="md3-card md3-card--outlined md3-card--flush">
+        <svg class="md3-map" viewBox="0 0 320 150" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map sample with a pinned site"><rect class="md3-map__land" width="320" height="150"/><path class="md3-map__park" d="M206 0h114v62c-30 6-66 2-92-14C214 38 208 20 206 0Z"/><path class="md3-map__water" d="M0 108c50-14 92-6 140 6s106 14 180-8v22c-74 22-128 20-180 8S50 120 0 132Z"/><path class="md3-map__road" d="M0 66h320M118 0v150M236 66 290 150"/><path class="md3-map__road md3-map__road--minor" d="M60 22v44M176 66v40"/><circle class="md3-map__halo" cx="148" cy="80" r="16"/><path class="md3-map__pin" d="M148 50a12 12 0 0 0-12 12c0 9 12 22 12 22s12-13 12-22a12 12 0 0 0-12-12Zm0 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"/></svg>
+      </div>
+    </section>
+  </div>
+</main>
+</body>
+</html>

@@ -1,96 +1,381 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scheme-light bg-white antialiased dark:scheme-dark dark:bg-gray-900">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Landing — Tailwind CSS</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
-  </script>
+  <meta name="color-scheme" content="light dark">
+  <title>Tidewater · Subscription analytics for SaaS teams</title>
+  <link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="min-h-screen bg-white font-sans text-slate-900 antialiased">
-  <header class="border-b border-slate-200">
-    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Main">
-      <a href="landing.html" class="text-lg font-semibold text-indigo-600">Nordic Flow</a>
-      <div class="hidden items-center gap-6 md:flex">
-        <a href="#features" class="text-sm text-slate-600 hover:text-slate-900">Features</a>
-        <a href="#pricing" class="text-sm text-slate-600 hover:text-slate-900">Pricing</a>
-        <a href="login.html" class="text-sm text-slate-600 hover:text-slate-900">Log in</a>
-        <a href="login.html" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Start free trial</a>
-      </div>
-      <a href="login.html" class="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white md:hidden">Try free</a>
-    </nav>
-  </header>
+<body class="tw-mockup ">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-indigo-600 focus:shadow-lg">Skip to content</a>
+<header class="absolute inset-x-0 top-0 z-50">
+  <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+    <div class="flex lg:flex-1">
+      <a href="landing.html" class="-m-1.5 p-1.5" aria-label="Tidewater home"><span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span></a>
+    </div>
+    <div class="flex lg:hidden">
+      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200" aria-label="Open main menu"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+    </div>
+    <div class="hidden lg:flex lg:gap-x-12">
+      <a href="#features" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Product</a>
+      <a href="#cohorts" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Cohorts</a>
+      <a href="#pricing" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Pricing</a>
+      <a href="#customers" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Customers</a>
+      <a href="#faq" class="text-sm/6 font-semibold text-gray-900 dark:text-white">FAQ</a>
+    </div>
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <a href="login.html" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Log in <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </nav>
+</header>
 
-  <main>
-    <section class="bg-gradient-to-b from-slate-50 to-white py-20">
-      <div class="mx-auto max-w-3xl px-6 text-center">
-        <span class="mb-4 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">New · Workflow automation</span>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Build beautiful products with pure Tailwind</h1>
-        <p class="mt-4 text-lg text-slate-600">Marketing pages and app dashboards using utility classes only — no component library required.</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href="dashboard.html" class="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-500">View app demo</a>
-          <a href="#features" class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">Explore features</a>
+<main id="main">
+  <div class="relative isolate overflow-hidden pt-14">
+    <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+      <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36rem] -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-sky-300 to-indigo-600 opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72rem] dark:opacity-25" style="clip-path: polygon(72% 42%, 100% 60%, 96% 26%, 84% 0%, 79% 6%, 70% 27%, 58% 52%, 50% 61%, 45% 48%, 40% 26%, 26% 75%, 0% 64%, 16% 100%, 27% 77%, 74% 98%, 72% 42%)"></div>
+    </div>
+    <div class="mx-auto max-w-7xl px-6 pt-20 pb-24 sm:pt-32 sm:pb-32 lg:px-8">
+      <div class="mx-auto max-w-3xl text-center">
+        <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+          <p class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:text-gray-400 dark:ring-white/10 dark:hover:ring-white/20">New: twelve-month MRR forecasts with confidence bands. <a href="#features" class="font-semibold text-indigo-600 dark:text-indigo-400"><span aria-hidden="true" class="absolute inset-0"></span>Read more <span aria-hidden="true">&rarr;</span></a></p>
         </div>
+        <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl dark:text-white">Know your revenue the moment it moves</h1>
+        <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8 dark:text-gray-400">Tidewater connects to Stripe, Paddle and Chargebee in two minutes and turns every subscription event into MRR, churn and cohort reports your whole team can read.</p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+          <a href="login.html" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500">Start your free trial</a>
+          <a href="dashboard.html" class="text-sm/6 font-semibold text-gray-900 dark:text-white">Open the live demo <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <p class="mt-6 text-sm/6 text-gray-500 dark:text-gray-400">14 days free · no credit card · read-only access to your billing data</p>
       </div>
-    </section>
 
-    <section id="features" class="py-16">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="mb-12 text-center">
-          <h2 class="text-2xl font-bold">Ship site and app from one stack</h2>
-          <p class="mt-2 text-slate-600">Landing, auth, dashboard, and component patterns included.</p>
+      <div class="mt-16 flow-root sm:mt-24">
+        <div class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-gray-900/10 ring-inset lg:-m-4 lg:rounded-2xl lg:p-4 dark:bg-white/5 dark:ring-white/10">
+          <div class="overflow-hidden rounded-md bg-white shadow-2xl ring-1 ring-gray-900/10 lg:rounded-lg dark:bg-gray-900 dark:ring-white/10">
+            <div class="flex items-center gap-x-2 border-b border-gray-200 bg-gray-50 px-4 py-2.5 dark:border-white/10 dark:bg-white/5">
+              <span class="size-2.5 rounded-full bg-red-400"></span><span class="size-2.5 rounded-full bg-yellow-400"></span><span class="size-2.5 rounded-full bg-green-400"></span>
+              <span class="mx-auto hidden truncate rounded-md bg-white px-3 py-0.5 text-xs text-gray-500 ring-1 ring-gray-900/5 sm:block dark:bg-white/5 dark:text-gray-400 dark:ring-white/10">app.tidewater.io/lumenfield/overview</span>
+            </div>
+            <div class="flex text-left">
+              <div class="hidden w-52 shrink-0 border-r border-gray-200 p-4 md:block dark:border-white/10">
+                <div class="flex items-center gap-x-2"><svg class="h-6 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-sm font-semibold text-gray-900 dark:text-white">Lumenfield</span></div>
+                <ul class="mt-5 space-y-1 text-xs">
+                  <li class="flex items-center gap-x-2 rounded-md bg-gray-50 px-2 py-1.5 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Overview</li>
+                  <li class="flex items-center gap-x-2 rounded-md px-2 py-1.5 text-gray-600 dark:text-gray-400"><svg class="size-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>Customers</li>
+                  <li class="flex items-center gap-x-2 rounded-md px-2 py-1.5 text-gray-600 dark:text-gray-400"><svg class="size-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg>Revenue</li>
+                  <li class="flex items-center gap-x-2 rounded-md px-2 py-1.5 text-gray-600 dark:text-gray-400"><svg class="size-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg>Cohorts</li>
+                  <li class="flex items-center gap-x-2 rounded-md px-2 py-1.5 text-gray-600 dark:text-gray-400"><svg class="size-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg>Forecasts</li>
+                  <li class="flex items-center gap-x-2 rounded-md px-2 py-1.5 text-gray-600 dark:text-gray-400"><svg class="size-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Reports</li>
+                </ul>
+              </div>
+              <div class="min-w-0 flex-1 p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-x-4">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">Revenue overview</p>
+                  <p class="hidden rounded-md px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-900/10 sm:block dark:text-gray-300 dark:ring-white/10">Last 12 months</p>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                  <div class="rounded-lg p-3 ring-1 ring-gray-900/5 dark:ring-white/10"><p class="truncate text-[0.6875rem]/4 font-medium text-gray-500 dark:text-gray-400">MRR</p><p class="mt-1 flex items-baseline gap-x-1.5 text-base font-semibold text-gray-900 tabular-nums sm:text-lg dark:text-white">$84.2k<span class="text-xs font-medium text-green-600 dark:text-green-400">+4.6%</span></p></div>
+                  <div class="rounded-lg p-3 ring-1 ring-gray-900/5 dark:ring-white/10"><p class="truncate text-[0.6875rem]/4 font-medium text-gray-500 dark:text-gray-400">Customers</p><p class="mt-1 flex items-baseline gap-x-1.5 text-base font-semibold text-gray-900 tabular-nums sm:text-lg dark:text-white">1,284<span class="text-xs font-medium text-green-600 dark:text-green-400">+38</span></p></div>
+                  <div class="rounded-lg p-3 ring-1 ring-gray-900/5 dark:ring-white/10"><p class="truncate text-[0.6875rem]/4 font-medium text-gray-500 dark:text-gray-400">Net churn</p><p class="mt-1 flex items-baseline gap-x-1.5 text-base font-semibold text-gray-900 tabular-nums sm:text-lg dark:text-white">1.8%<span class="text-xs font-medium text-green-600 dark:text-green-400">−0.4</span></p></div>
+                  <div class="rounded-lg p-3 ring-1 ring-gray-900/5 dark:ring-white/10"><p class="truncate text-[0.6875rem]/4 font-medium text-gray-500 dark:text-gray-400">ARPA</p><p class="mt-1 flex items-baseline gap-x-1.5 text-base font-semibold text-gray-900 tabular-nums sm:text-lg dark:text-white">$65.58<span class="text-xs font-medium text-red-600 dark:text-red-400">−0.9%</span></p></div>
+                </div>
+                <div class="mt-4 rounded-lg p-4 ring-1 ring-gray-900/5 dark:ring-white/10">
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <p class="font-semibold text-gray-900 dark:text-white">MRR, this year vs last year</p>
+                    <p class="flex items-center gap-x-3 text-gray-500 dark:text-gray-400"><span class="flex items-center gap-x-1.5"><span class="h-0.5 w-3 rounded-full bg-indigo-600 dark:bg-indigo-400"></span>2026</span><span class="flex items-center gap-x-1.5"><span class="h-0.5 w-3 rounded-full bg-gray-300 dark:bg-gray-600"></span>2025</span></p>
+                  </div>
+                  <div class="mt-3"><svg class="h-40 sm:h-56 w-full text-indigo-600 dark:text-indigo-400" viewBox="0 0 600 200" preserveAspectRatio="none" role="img" aria-label="MRR this year against last year: $84,210 now, $61,200 a year ago"><defs><linearGradient id="hero-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".25"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g class="stroke-gray-100 dark:stroke-white/5"><line x1="0" x2="600" y1="8" y2="8" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="55" y2="55" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="102" y2="102" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="149" y2="149" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="196" y2="196" vector-effect="non-scaling-stroke"/></g><path d="M0 180.6C18.2 179.5 36.4 178.5 54.5 177.2C72.7 175.9 90.9 174.5 109.1 172.7C127.3 170.9 145.5 168.1 163.6 166.3C181.8 164.5 200 163.2 218.2 161.8C236.4 160.3 254.5 159.5 272.7 157.6C290.9 155.8 309.1 153.1 327.3 150.9C345.5 148.6 363.6 146.1 381.8 144.1C400 142.2 418.2 141.2 436.4 139.2C454.5 137.2 472.7 134.6 490.9 132.1C509.1 129.5 527.3 126.4 545.5 123.8C563.6 121.2 581.8 118.8 600 116.3" class="fill-none stroke-gray-300 dark:stroke-gray-600" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/><path d="M0 116.3C18.2 114 36.4 111.3 54.5 109.5C72.7 107.7 90.9 107.8 109.1 105.4C127.3 103 145.5 98.2 163.6 95.2C181.8 92.2 200 89.5 218.2 87.3C236.4 85.2 254.5 84.8 272.7 82.4C290.9 80.1 309.1 75.9 327.3 73.4C345.5 71 363.6 70.5 381.8 67.8C400 65.1 418.2 60.2 436.4 57.3C454.5 54.3 472.7 52.4 490.9 50.1C509.1 47.8 527.3 47.1 545.5 43.7C563.6 40.3 581.8 34.4 600 29.8L600.0 200L0.0 200Z" fill="url(#hero-fill)"/><path d="M0 116.3C18.2 114 36.4 111.3 54.5 109.5C72.7 107.7 90.9 107.8 109.1 105.4C127.3 103 145.5 98.2 163.6 95.2C181.8 92.2 200 89.5 218.2 87.3C236.4 85.2 254.5 84.8 272.7 82.4C290.9 80.1 309.1 75.9 327.3 73.4C345.5 71 363.6 70.5 381.8 67.8C400 65.1 418.2 60.2 436.4 57.3C454.5 54.3 472.7 52.4 490.9 50.1C509.1 47.8 527.3 47.1 545.5 43.7C563.6 40.3 581.8 34.4 600 29.8" class="fill-none stroke-current" stroke-width="2" vector-effect="non-scaling-stroke"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="grid gap-8 md:grid-cols-3">
-          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">⚡</div>
-            <h3 class="font-semibold">Utility-first</h3>
-            <p class="mt-2 text-sm text-slate-600">Compose layouts with Tailwind classes — easy to port into Blade or Livewire.</p>
-          </article>
-          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">📱</div>
-            <h3 class="font-semibold">Responsive</h3>
-            <p class="mt-2 text-sm text-slate-600">Mobile-first breakpoints with collapsible sidebar and stacked grids.</p>
-          </article>
-          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="mb-4 inline-flex rounded-lg bg-indigo-50 p-3 text-xl text-indigo-600" aria-hidden="true">🌙</div>
-            <h3 class="font-semibold">Dark mode ready</h3>
-            <p class="mt-2 text-sm text-slate-600">Use <code class="rounded bg-slate-100 px-1">dark:</code> variants on key app screens.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="pricing" class="border-t border-slate-200 bg-slate-50 py-16">
-      <div class="mx-auto max-w-md px-6 text-center">
-        <h2 class="text-2xl font-bold">Simple pricing</h2>
-        <p class="mt-2 text-slate-600">One plan for growing teams.</p>
-        <div class="mt-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p class="text-sm text-slate-500">Pro</p>
-          <p class="mt-1 text-4xl font-bold">€29<span class="text-base font-normal text-slate-500">/mo</span></p>
-          <ul class="mt-6 space-y-2 text-left text-sm text-slate-600">
-            <li>✓ Unlimited projects</li>
-            <li>✓ Team seats</li>
-            <li>✓ Email support</li>
-          </ul>
-          <a href="login.html" class="mt-6 block rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-500">Get started</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="border-t border-slate-200 bg-slate-100 py-10">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 text-sm text-slate-500">
-      <span>© 2026 Nordic Flow</span>
-      <div class="flex gap-4">
-        <a href="#" class="hover:text-slate-700">Privacy</a>
-        <a href="#" class="hover:text-slate-700">Terms</a>
-        <a href="index.html" class="hover:text-slate-700">Design catalog</a>
       </div>
     </div>
-  </footer>
+  </div>
+
+  <section id="customers" aria-labelledby="logos-title" class="mx-auto max-w-7xl px-6 lg:px-8">
+    <h2 id="logos-title" class="text-center text-lg/8 font-semibold text-gray-900 dark:text-white">Trusted by 3,100 subscription businesses, from two founders to two hundred</h2>
+    <div class="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-6">
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Lumenfield</span></div>
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 19 11.5 5h4L7 19zM10.5 19 16 10h4l-5.5 9z"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Brightline</span></div>
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.5 10A8 8 0 1 1 14.5 4.4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Kōan Labs</span></div>
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.5 19.5C4.5 10.5 10 4.5 19.5 4.5c0 9.5-6 15-15 15Z"/><path d="M4.5 19.5 13 11" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Verdant</span></div>
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5" transform="rotate(45 12 12)"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Quillmate</span></div>
+          <div class="col-span-2 flex items-center justify-center gap-x-2 text-gray-500 lg:col-span-1 dark:text-gray-400"><svg class="size-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="13" width="4.5" height="8" rx="1.2"/><rect x="9.75" y="8" width="4.5" height="13" rx="1.2"/><rect x="16.5" y="3" width="4.5" height="18" rx="1.2"/></svg><span class="text-lg font-semibold tracking-tight whitespace-nowrap">Osei</span></div>
+    </div>
+  </section>
+
+  <section id="features" aria-labelledby="features-title" class="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+    <div class="mx-auto max-w-2xl lg:text-center">
+      <p class="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Everything in one place</p>
+      <h2 id="features-title" class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl lg:text-balance dark:text-white">Every number your board asks for, ready on Monday</h2>
+      <p class="mt-6 text-lg/8 text-gray-600 dark:text-gray-300">No spreadsheets to rebuild and no SQL to maintain. Tidewater reads your billing history once, then keeps every metric current as invoices, upgrades and refunds happen.</p>
+    </div>
+    <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-5xl">
+      <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg></div>MRR you can trust</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">Discounts, prorations, refunds and multi-currency plans are normalised, so the number matches Stripe to the cent.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg></div>Cohort retention</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">See which sign-up months stick around and which plans quietly leak revenue after the third invoice.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg></div>Forecasts</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">Twelve-month projections built from your own growth and churn, with the confidence band printed next to them.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/></svg></div>Segments</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">Slice every chart by plan, country, acquisition channel or any Stripe metadata field you already send.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg></div>Digests where you work</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">A Monday summary in Slack or email, and an alert the hour a large account downgrades or a card fails.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold text-gray-900 dark:text-white"><div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500"><svg class="size-6 text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg></div>Your data stays yours</dt>
+          <dd class="mt-2 text-base/7 text-gray-600 dark:text-gray-400">Read-only API keys, EU or US hosting, SOC 2 Type II, and a nightly CSV or SQL export of everything.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="cohorts" aria-labelledby="cohorts-title" class="mt-32 overflow-hidden sm:mt-40">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-12 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-center">
+        <div class="lg:max-w-lg">
+          <p class="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Cohorts</p>
+          <h2 id="cohorts-title" class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl dark:text-white">Find the month your customers decide to stay</h2>
+          <p class="mt-6 text-lg/8 text-gray-600 dark:text-gray-300">Revenue retention by sign-up month, with expansion counted in. Lumenfield found that teams onboarded with a call kept 31% more revenue after six months, and changed how they sell.</p>
+          <ul role="list" class="mt-8 space-y-3 text-base/7 text-gray-600 dark:text-gray-300">
+            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Net and gross revenue retention, side by side</li>
+            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Filter cohorts by plan, channel or country</li>
+            <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Export any cell as the list of customers behind it</li>
+          </ul>
+        </div>
+        <figure class="rounded-xl bg-white p-4 shadow-xl ring-1 ring-gray-900/10 sm:p-6 dark:bg-gray-800/50 dark:ring-white/10">
+          <figcaption class="flex items-baseline justify-between gap-x-4">
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">Net revenue retention by sign-up month</span>
+            <span class="hidden text-xs text-gray-500 sm:inline dark:text-gray-400">Lumenfield · 2026</span>
+          </figcaption>
+          <div class="relative mt-4 overflow-x-auto">
+            <table class="w-full min-w-[26rem] border-separate border-spacing-1 text-center text-xs tabular-nums">
+              <thead><tr class="text-gray-500 dark:text-gray-400"><th scope="col" class="py-1 text-left font-medium">Cohort</th><th scope="col" class="font-medium">M1</th><th scope="col" class="font-medium">M2</th><th scope="col" class="font-medium">M3</th><th scope="col" class="font-medium">M4</th><th scope="col" class="font-medium">M5</th><th scope="col" class="font-medium">M6</th></tr></thead>
+              <tbody class="font-medium">
+                <tr><th scope="row" class="py-1 text-left font-medium text-gray-700 dark:text-gray-300">Mar</th><td class="rounded bg-indigo-600 py-2 text-white">100%</td><td class="rounded bg-indigo-600/90 text-white">97%</td><td class="rounded bg-indigo-600/80 text-white">96%</td><td class="rounded bg-indigo-600/80 text-white">98%</td><td class="rounded bg-indigo-600/90 text-white">101%</td><td class="rounded bg-indigo-600 text-white">104%</td></tr>
+                <tr><th scope="row" class="py-1 text-left font-medium text-gray-700 dark:text-gray-300">Apr</th><td class="rounded bg-indigo-600 py-2 text-white">100%</td><td class="rounded bg-indigo-600/80 text-white">94%</td><td class="rounded bg-indigo-600/70 text-white">91%</td><td class="rounded bg-indigo-600/70 text-white">92%</td><td class="rounded bg-indigo-600/80 text-white">95%</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td></tr>
+                <tr><th scope="row" class="py-1 text-left font-medium text-gray-700 dark:text-gray-300">May</th><td class="rounded bg-indigo-600 py-2 text-white">100%</td><td class="rounded bg-indigo-600/70 text-white">90%</td><td class="rounded bg-indigo-600/60 text-white">86%</td><td class="rounded bg-indigo-600/60 text-white">87%</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td></tr>
+                <tr><th scope="row" class="py-1 text-left font-medium text-gray-700 dark:text-gray-300">Jun</th><td class="rounded bg-indigo-600 py-2 text-white">100%</td><td class="rounded bg-indigo-600/90 text-white">98%</td><td class="rounded bg-indigo-600/90 text-white">99%</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td></tr>
+                <tr><th scope="row" class="py-1 text-left font-medium text-gray-700 dark:text-gray-300">Jul</th><td class="rounded bg-indigo-600 py-2 text-white">100%</td><td class="rounded bg-indigo-600/80 text-white">95%</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td><td class="rounded bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">–</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="stats-title" class="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+    <h2 id="stats-title" class="sr-only">Tidewater in numbers</h2>
+    <dl class="grid grid-cols-1 gap-x-8 gap-y-12 rounded-2xl bg-gray-50 px-6 py-12 text-center sm:grid-cols-2 sm:py-16 lg:grid-cols-4 dark:bg-white/5">
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2"><dt class="text-base/7 text-gray-600 dark:text-gray-400">annual recurring revenue tracked</dt><dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">$2.4B</dd></div>
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2"><dt class="text-base/7 text-gray-600 dark:text-gray-400">subscription businesses</dt><dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">3,100+</dd></div>
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2"><dt class="text-base/7 text-gray-600 dark:text-gray-400">billing sync uptime, last 12 months</dt><dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">99.98%</dd></div>
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2"><dt class="text-base/7 text-gray-600 dark:text-gray-400">median time to first report</dt><dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">2 min</dd></div>
+    </dl>
+  </section>
+
+  <section id="pricing" aria-labelledby="pricing-title" class="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+    <div class="mx-auto max-w-4xl text-center">
+      <p class="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Pricing</p>
+      <h2 id="pricing-title" class="mt-2 text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl dark:text-white">Priced on the revenue you track, never on seats</h2>
+    </div>
+    <p class="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl/8 dark:text-gray-400">Invite the whole company. You move up a tier only when your MRR does.</p>
+    <div class="mt-12 flex justify-center">
+      <fieldset aria-label="Payment frequency">
+        <div class="grid grid-cols-2 gap-x-1 rounded-full p-1 text-center text-xs/5 font-semibold inset-ring inset-ring-gray-200 dark:inset-ring-white/10">
+          <label class="group relative cursor-pointer rounded-full px-2.5 py-1 has-checked:bg-indigo-600 dark:has-checked:bg-indigo-500">
+            <input type="radio" name="frequency" value="monthly" checked class="absolute inset-0 cursor-pointer appearance-none rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <span class="text-gray-500 group-has-checked:text-white dark:text-gray-400">Monthly</span>
+          </label>
+          <label class="group relative cursor-pointer rounded-full px-2.5 py-1 has-checked:bg-indigo-600 dark:has-checked:bg-indigo-500">
+            <input type="radio" name="frequency" value="annually" class="absolute inset-0 cursor-pointer appearance-none rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            <span class="text-gray-500 group-has-checked:text-white dark:text-gray-400">Annually · 2 months free</span>
+          </label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+      <div class="rounded-3xl p-8 ring-1 ring-gray-200 xl:p-10 dark:bg-white/2.5 dark:ring-white/10">
+        <h3 id="tier-starter" class="text-lg/8 font-semibold text-gray-900 dark:text-white">Starter</h3>
+        <p class="mt-4 text-sm/6 text-gray-600 dark:text-gray-300">For founders who want the real numbers before the first hire.</p>
+        <p class="mt-6 flex items-baseline gap-x-1"><span class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">$29</span><span class="text-sm/6 font-semibold text-gray-600 dark:text-gray-400">/month</span></p>
+        <a href="login.html" aria-describedby="tier-starter" class="mt-6 block rounded-md px-3 py-2 text-center text-sm/6 font-semibold text-indigo-600 inset-ring inset-ring-indigo-200 hover:inset-ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-white/10 dark:text-white dark:inset-ring-white/5 dark:hover:bg-white/20">Start free trial</a>
+        <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 xl:mt-10 dark:text-gray-300">
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Up to $10k MRR</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>MRR, churn and customer metrics</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>One billing source</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Weekly email digest</li>
+        </ul>
+      </div>
+      <div class="relative rounded-3xl p-8 ring-2 ring-indigo-600 xl:p-10 dark:bg-white/5 dark:ring-indigo-500">
+        <div class="flex items-center justify-between gap-x-4">
+          <h3 id="tier-growth" class="text-lg/8 font-semibold text-indigo-600 dark:text-indigo-400">Growth</h3>
+          <p class="rounded-full bg-indigo-600/10 px-2.5 py-1 text-xs/5 font-semibold text-indigo-600 dark:bg-indigo-500 dark:text-white">Most popular</p>
+        </div>
+        <p class="mt-4 text-sm/6 text-gray-600 dark:text-gray-300">For teams that review revenue every week and plan from it.</p>
+        <p class="mt-6 flex items-baseline gap-x-1"><span class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">$99</span><span class="text-sm/6 font-semibold text-gray-600 dark:text-gray-400">/month</span></p>
+        <a href="login.html" aria-describedby="tier-growth" class="mt-6 block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400">Start free trial</a>
+        <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 xl:mt-10 dark:text-gray-300">
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Up to $100k MRR</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Cohorts, segments and forecasts</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Three billing sources</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Slack digests and churn alerts</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Unlimited teammates</li>
+        </ul>
+      </div>
+      <div class="rounded-3xl p-8 ring-1 ring-gray-200 xl:p-10 dark:bg-white/2.5 dark:ring-white/10">
+        <h3 id="tier-scale" class="text-lg/8 font-semibold text-gray-900 dark:text-white">Scale</h3>
+        <p class="mt-4 text-sm/6 text-gray-600 dark:text-gray-300">For finance teams who report to a board and an auditor.</p>
+        <p class="mt-6 flex items-baseline gap-x-1"><span class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">$299</span><span class="text-sm/6 font-semibold text-gray-600 dark:text-gray-400">/month</span></p>
+        <a href="login.html" aria-describedby="tier-scale" class="mt-6 block rounded-md px-3 py-2 text-center text-sm/6 font-semibold text-indigo-600 inset-ring inset-ring-indigo-200 hover:inset-ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-white/10 dark:text-white dark:inset-ring-white/5 dark:hover:bg-white/20">Talk to sales</a>
+        <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 xl:mt-10 dark:text-gray-300">
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Up to $1M MRR, then custom</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Everything in Growth</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>SQL export and data warehouse sync</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>SAML single sign-on and audit log</li>
+          <li class="flex gap-x-3"><svg class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/></svg>Named analyst, 4-hour response</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Customer story" class="relative isolate mt-32 overflow-hidden px-6 sm:mt-40 lg:px-8">
+    <figure class="mx-auto max-w-2xl lg:max-w-4xl">
+      <div class="flex justify-center gap-x-1 text-indigo-600 dark:text-indigo-400" aria-label="Rated 5 out of 5">
+        <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/></svg><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/></svg><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/></svg><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/></svg><svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd"/></svg>
+      </div>
+      <blockquote class="mt-8 text-center text-xl/8 font-semibold text-gray-900 sm:text-2xl/9 dark:text-white">
+        <p>“We used to spend the first week of every month rebuilding the MRR spreadsheet. Tidewater had our board numbers ready the first morning, and they match Stripe to the cent.”</p>
+      </blockquote>
+      <figcaption class="mt-10 flex items-center justify-center gap-x-4">
+        <span aria-hidden="true" class="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">TH</span>
+        <div class="text-left text-base">
+          <div class="font-semibold text-gray-900 dark:text-white">Tomás Herrera</div>
+          <div class="text-gray-600 dark:text-gray-400">Co-founder and CEO, Lumenfield</div>
+        </div>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-title" class="mx-auto mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+    <div class="mx-auto max-w-4xl">
+      <h2 id="faq-title" class="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">Frequently asked questions</h2>
+      <div class="mt-16 divide-y divide-gray-900/10 dark:divide-white/10">
+        <details class="group py-6 first:pt-0" open>
+          <summary class="flex w-full cursor-pointer list-none items-start justify-between text-left text-gray-900 dark:text-white [&::-webkit-details-marker]:hidden">
+            <span class="text-base/7 font-semibold">Does Tidewater change anything in our Stripe account?</span>
+            <span class="ml-6 flex h-7 items-center"><svg class="size-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><svg class="hidden size-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg></span>
+          </summary>
+          <p class="mt-2 pr-12 text-base/7 text-gray-600 dark:text-gray-400">No. We ask for a restricted, read-only key. Tidewater never creates, edits or refunds anything, and you can revoke the key at any time from your Stripe dashboard.</p>
+        </details>
+        <details class="group py-6">
+          <summary class="flex w-full cursor-pointer list-none items-start justify-between text-left text-gray-900 dark:text-white [&::-webkit-details-marker]:hidden">
+            <span class="text-base/7 font-semibold">How far back does the history go?</span>
+            <span class="ml-6 flex h-7 items-center"><svg class="size-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><svg class="hidden size-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg></span>
+          </summary>
+          <p class="mt-2 pr-12 text-base/7 text-gray-600 dark:text-gray-400">All of it. The first import replays every invoice since your first customer, usually in under ten minutes for 100,000 invoices.</p>
+        </details>
+        <details class="group py-6">
+          <summary class="flex w-full cursor-pointer list-none items-start justify-between text-left text-gray-900 dark:text-white [&::-webkit-details-marker]:hidden">
+            <span class="text-base/7 font-semibold">What counts toward the MRR limit of my plan?</span>
+            <span class="ml-6 flex h-7 items-center"><svg class="size-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><svg class="hidden size-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg></span>
+          </summary>
+          <p class="mt-2 pr-12 text-base/7 text-gray-600 dark:text-gray-400">Your average MRR over the last three months. A one-off spike never moves you up a tier.</p>
+        </details>
+        <details class="group py-6 last:pb-0">
+          <summary class="flex w-full cursor-pointer list-none items-start justify-between text-left text-gray-900 dark:text-white [&::-webkit-details-marker]:hidden">
+            <span class="text-base/7 font-semibold">Can we keep our data in the EU?</span>
+            <span class="ml-6 flex h-7 items-center"><svg class="size-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><svg class="hidden size-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg></span>
+          </summary>
+          <p class="mt-2 pr-12 text-base/7 text-gray-600 dark:text-gray-400">Yes. Choose Frankfurt when you create the workspace; data, backups and support access stay in the EU.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="cta-title" class="mx-auto mt-32 max-w-7xl sm:mt-40 sm:px-6 lg:px-8">
+    <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-20 text-center shadow-2xl sm:rounded-3xl sm:px-16 sm:py-24 dark:bg-gray-800 dark:shadow-none dark:ring-1 dark:ring-white/10">
+      <h2 id="cta-title" class="mx-auto max-w-2xl text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl">Read your revenue on Monday morning</h2>
+      <p class="mx-auto mt-6 max-w-xl text-lg/8 text-pretty text-gray-300">Connect a billing source in two minutes. Your first report is ready before your coffee is.</p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+        <a href="login.html" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Start your free trial</a>
+        <a href="dashboard.html" class="text-sm/6 font-semibold text-white hover:text-gray-100">Open the live demo <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <svg viewBox="0 0 1024 1024" aria-hidden="true" class="absolute top-full left-1/2 -z-10 size-[64rem] -translate-x-1/2 -translate-y-1/2 text-indigo-500 [mask-image:radial-gradient(closest-side,white,transparent)]">
+        <circle r="512" cx="512" cy="512" fill="url(#cta-glow)" fill-opacity="0.7"/>
+        <defs><radialGradient id="cta-glow"><stop stop-color="currentColor"/><stop offset="1" stop-color="#0ea5e9"/></radialGradient></defs>
+      </svg>
+    </div>
+  </section>
+</main>
+
+<footer class="mt-32 border-t border-gray-900/10 sm:mt-40 dark:border-white/10">
+  <div class="mx-auto max-w-7xl px-6 pt-16 pb-8 sm:pt-20 lg:px-8">
+    <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+      <div class="space-y-6">
+        <span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span>
+        <p class="max-w-xs text-sm/6 text-balance text-gray-600 dark:text-gray-400">Subscription analytics for SaaS teams. Made in Lisbon and Toronto.</p>
+      </div>
+      <div class="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div>
+            <h3 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Product</h3>
+            <ul role="list" class="mt-6 space-y-4 text-sm/6 text-gray-600 dark:text-gray-400">
+              <li><a href="#features" class="hover:text-gray-900 dark:hover:text-white">Metrics</a></li>
+              <li><a href="#cohorts" class="hover:text-gray-900 dark:hover:text-white">Cohorts</a></li>
+              <li><a href="#pricing" class="hover:text-gray-900 dark:hover:text-white">Pricing</a></li>
+              <li><a href="dashboard.html" class="hover:text-gray-900 dark:hover:text-white">Live demo</a></li>
+            </ul>
+          </div>
+          <div class="mt-10 md:mt-0">
+            <h3 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Integrations</h3>
+            <ul role="list" class="mt-6 space-y-4 text-sm/6 text-gray-600 dark:text-gray-400">
+              <li><a href="#features" class="hover:text-gray-900 dark:hover:text-white">Stripe</a></li>
+              <li><a href="#features" class="hover:text-gray-900 dark:hover:text-white">Paddle</a></li>
+              <li><a href="#features" class="hover:text-gray-900 dark:hover:text-white">Chargebee</a></li>
+              <li><a href="#features" class="hover:text-gray-900 dark:hover:text-white">Slack</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div>
+            <h3 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Company</h3>
+            <ul role="list" class="mt-6 space-y-4 text-sm/6 text-gray-600 dark:text-gray-400">
+              <li><a href="#customers" class="hover:text-gray-900 dark:hover:text-white">Customers</a></li>
+              <li><a href="#faq" class="hover:text-gray-900 dark:hover:text-white">About</a></li>
+              <li><a href="#faq" class="hover:text-gray-900 dark:hover:text-white">Careers</a></li>
+            </ul>
+          </div>
+          <div class="mt-10 md:mt-0">
+            <h3 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Legal</h3>
+            <ul role="list" class="mt-6 space-y-4 text-sm/6 text-gray-600 dark:text-gray-400">
+              <li><a href="#faq" class="hover:text-gray-900 dark:hover:text-white">Privacy</a></li>
+              <li><a href="#faq" class="hover:text-gray-900 dark:hover:text-white">Terms</a></li>
+              <li><a href="#faq" class="hover:text-gray-900 dark:hover:text-white">DPA</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-16 flex flex-col gap-4 border-t border-gray-900/10 pt-8 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
+      <p class="text-sm/6 text-gray-600 dark:text-gray-400">&copy; 2026 Tidewater Analytics, Inc. All rights reserved.</p>
+      <p class="flex items-center gap-x-2 text-sm/6 text-gray-600 dark:text-gray-400"><span aria-hidden="true" class="size-2 rounded-full bg-green-500"></span>All systems operational</p>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>

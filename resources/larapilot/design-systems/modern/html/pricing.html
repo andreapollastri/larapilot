@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>Pricing — Pulseboard</title>
+</head>
+<body class="mo-mockup mo-body mo-body--site">
+<a class="mo-skip" href="#main">Skip to content</a>
+<header class="mo-site-header">
+  <div class="mo-container mo-site-header__inner">
+    <a class="mo-brand" href="landing.html" aria-label="Pulseboard home"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span>Pulseboard</a>
+    <nav class="mo-site-nav" aria-label="Main">
+      <a href="landing.html#product">Product</a>
+      <a href="landing.html#customers">Customers</a>
+      <a href="pricing.html" aria-current="page">Pricing</a>
+      <a href="landing.html#changelog">Changelog</a>
+      <a href="landing.html">Docs</a>
+    </nav>
+    <div class="mo-site-header__end">
+      <a class="mo-btn mo-btn--ghost mo-btn--sm mo-hide-md" href="login.html">Sign in</a>
+      <a class="mo-btn mo-btn--primary mo-btn--sm" href="login.html">Start free</a>
+      <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--sm mo-site-menu" aria-label="Open menu"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+    </div>
+  </div>
+</header>
+<main id="main">
+  <section class="mo-hero" aria-labelledby="pricing-title">
+    <div class="mo-grid-bg" aria-hidden="true"></div>
+    <div class="mo-container mo-hero__inner">
+      <span class="mo-eyebrow"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>Pricing</span>
+      <h1 class="mo-display" id="pricing-title"><span class="mo-fade-text">Pay for events,</span><br><span class="mo-gradient-text">not for seats.</span></h1>
+      <p class="mo-lead">Every plan has every instrument and unlimited teammates. Start free, upgrade when the events do.</p>
+      <div class="mo-seg mo-seg--lg" role="group" aria-label="Billing period"><button type="button" class="mo-seg__item">Monthly</button><button type="button" class="mo-seg__item is-active" aria-pressed="true">Yearly <span class="mo-badge mo-badge--success">−20%</span></button></div>
+    </div>
+  </section>
+
+  <section class="mo-band mo-band--tight" aria-label="Plans">
+    <div class="mo-container mo-stack-lg">
+      <div class="mo-card mo-card--glass mo-p-4">
+        <div class="mo-slider">
+          <div class="mo-flex mo-items-center mo-justify-between mo-wrap mo-gap-2"><label class="mo-label" for="vol">Events per month</label><span class="mo-h3 mo-tnum">5M events <span class="mo-text-3 mo-text-sm">≈ 160K / day</span></span></div>
+          <div class="mo-slider__track mo-pct-45" id="vol" role="slider" aria-valuemin="1" aria-valuemax="100" aria-valuenow="5" aria-valuetext="5 million events per month" tabindex="0"><span class="mo-slider__fill"></span><span class="mo-slider__thumb"></span></div>
+          <div class="mo-slider__ticks" aria-hidden="true"><span>1M</span><span>2M</span><span>5M</span><span>10M</span><span>25M</span><span>50M</span><span>100M+</span></div>
+        </div>
+      </div>
+
+      <div class="mo-plans mo-plans--4">
+        <article class="mo-card mo-plan"><p class="mo-plan__name">Hobby</p><p class="mo-plan__price">€0<small>/ month</small></p><p class="mo-plan__desc">Side projects and prototypes. 1M events, then sampling.</p><ul class="mo-plan__list"><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>1M events / month</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>90 days of history</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>3 dashboards</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Community support</li></ul><a class="mo-btn mo-btn--secondary mo-btn--lg" href="login.html">Start free</a></article>
+        <article class="mo-card mo-plan"><p class="mo-plan__name">Pro</p><p class="mo-plan__price">€39<small>/ month</small></p><p class="mo-plan__desc">Small teams finding product–market fit.</p><ul class="mo-plan__list"><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>2M events / month</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>1 year of history</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Unlimited dashboards</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Email support</li></ul><a class="mo-btn mo-btn--secondary mo-btn--lg" href="login.html">Start a trial</a></article>
+        <article class="mo-card mo-card--glow mo-plan mo-plan--featured"><p class="mo-plan__name">Growth<span class="mo-badge mo-badge--solid">Your volume</span></p><p class="mo-plan__price">€199<small>/ month, yearly</small></p><p class="mo-plan__desc">Product teams shipping every week. Fits 5M events.</p><ul class="mo-plan__list"><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10M events / month</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Unlimited history</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Alerts, SQL, session replay</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Slack support, 4 h response</li></ul><a class="mo-btn mo-btn--primary mo-btn--lg" href="login.html">Start a 14-day trial</a></article>
+        <article class="mo-card mo-plan"><p class="mo-plan__name">Enterprise</p><p class="mo-plan__price">Custom</p><p class="mo-plan__desc">Regulated industries and 100M+ events.</p><ul class="mo-plan__list"><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>SAML SSO and SCIM</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Dedicated region, VPC peering</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>99.95% uptime SLA</li><li><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Named solutions engineer</li></ul><a class="mo-btn mo-btn--inverse mo-btn--lg" href="landing.html">Talk to sales</a></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="mo-band mo-band--line" aria-labelledby="compare-title">
+    <div class="mo-container">
+      <header class="mo-band__head"><h2 class="mo-title-site" id="compare-title">Compare plans</h2><p class="mo-lead">Every plan includes the same SDKs, API and EU or US hosting.</p></header>
+      <div class="mo-card">
+        <div class="mo-table-wrap">
+          <table class="mo-table mo-compare">
+            <caption class="visually-hidden">Features by plan</caption>
+            <thead><tr><th scope="col">Feature</th><th scope="col">Hobby</th><th scope="col">Pro</th><th scope="col">Growth</th><th scope="col">Enterprise</th></tr></thead>
+            <tbody>
+              <tr class="mo-compare__group"><td colspan="5">Analytics</td></tr>
+              <tr><th scope="row" class="mo-text-2">Live events, funnels, retention</th><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td></tr>
+              <tr><th scope="row" class="mo-text-2">History</th><td>90 days</td><td>1 year</td><td>Unlimited</td><td>Unlimited</td></tr>
+              <tr><th scope="row" class="mo-text-2">SQL warehouse access</th><td><span class="mo-compare__dash">—</span></td><td><span class="mo-compare__dash">—</span></td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td></tr>
+              <tr><th scope="row" class="mo-text-2">Session replay</th><td><span class="mo-compare__dash">—</span></td><td>1,000 / month</td><td>10,000 / month</td><td>Custom</td></tr>
+              <tr class="mo-compare__group"><td colspan="5">Security &amp; support</td></tr>
+              <tr><th scope="row" class="mo-text-2">SAML SSO, SCIM, audit log</th><td><span class="mo-compare__dash">—</span></td><td><span class="mo-compare__dash">—</span></td><td>SSO only</td><td><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="visually-hidden">Included</span></td></tr>
+              <tr><th scope="row" class="mo-text-2">Uptime SLA</th><td><span class="mo-compare__dash">—</span></td><td><span class="mo-compare__dash">—</span></td><td>99.9%</td><td>99.95%</td></tr>
+              <tr><th scope="row" class="mo-text-2">Support</th><td>Community</td><td>Email</td><td>Slack, 4 h</td><td>Named engineer</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mo-band mo-band--line" aria-labelledby="faq-title">
+    <div class="mo-container mo-maxw-md">
+      <header class="mo-band__head"><h2 class="mo-title-site" id="faq-title">Questions</h2></header>
+      <div class="mo-faq">
+        <details class="mo-faq__item" open><summary>What counts as an event?<svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Any call to <code class="mo-inline-code">track()</code>, a page view or an identify. Session replay frames and internal traffic you exclude are free.</p></details>
+        <details class="mo-faq__item"><summary>What happens if I go over my plan?<svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Nothing breaks. We keep ingesting, email the owner at 80% and 100%, and bill overage at €12 per extra million at the end of the month.</p></details>
+        <details class="mo-faq__item"><summary>Can I host my data in the EU?<svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Yes, on every plan. Pick Frankfurt or Oregon when you create a workspace; data never leaves the region.</p></details>
+        <details class="mo-faq__item"><summary>Do you offer discounts for startups and non-profits?<svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Companies under two years old with less than $5M raised get Growth free for a year. Non-profits get 50% off forever.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="mo-footer">
+  <div class="mo-container">
+    <div class="mo-footer__grid">
+      <div class="mo-footer__about">
+        <a class="mo-brand" href="landing.html"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span>Pulseboard</a>
+        <p>Product analytics for teams that ship every day. Made in Berlin and Lisbon.</p>
+        <span class="mo-status mo-status--success">All systems normal</span>
+      </div>
+      <div><p class="mo-footer__title">Product</p><ul class="mo-footer__links"><li><a href="landing.html#product">Live events</a></li><li><a href="landing.html#product">Funnels</a></li><li><a href="landing.html#product">Retention</a></li><li><a href="landing.html#product">Alerts</a></li></ul></div>
+      <div><p class="mo-footer__title">Developers</p><ul class="mo-footer__links"><li><a href="landing.html">Docs</a></li><li><a href="landing.html">API reference</a></li><li><a href="landing.html">SDKs</a></li><li><a href="landing.html#changelog">Changelog</a></li></ul></div>
+      <div><p class="mo-footer__title">Company</p><ul class="mo-footer__links"><li><a href="landing.html#customers">Customers</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="landing.html">Careers</a></li><li><a href="landing.html">Contact</a></li></ul></div>
+      <div><p class="mo-footer__title">Trust</p><ul class="mo-footer__links"><li><a href="landing.html">Security</a></li><li><a href="landing.html">GDPR &amp; DPA</a></li><li><a href="landing.html">SOC 2 report</a></li><li><a href="landing.html">Status</a></li></ul></div>
+    </div>
+    <div class="mo-footer__bottom"><span>© 2026 Pulseboard Labs GmbH · Berlin</span><span class="mo-flex mo-gap-4"><a class="mo-link--quiet" href="landing.html">Privacy</a><a class="mo-link--quiet" href="landing.html">Terms</a><a class="mo-link--quiet" href="landing.html">Imprint</a></span></div>
+  </div>
+</footer>
+</body>
+</html>

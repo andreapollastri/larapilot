@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Kollektiv Studio backoffice</title>
+<meta name="description" content="Studio settings: numbered index, studio profile, invoicing, team and roles table, notification switches, danger zone and a saved toast.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#main">Skip to content</a>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item is-active" aria-current="page" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<nav class="bn-pagehead__eyebrow bn-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">09 — Settings</span></nav>
+<div><h1 class="bn-h1">Settings</h1><p class="bn-pagehead__lede">Studio-wide. Changes apply to everyone on the next page load and are written to the audit log.</p></div>
+<div class="bn-pagehead__actions"><a class="bn-btn bn-btn--ghost" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg> Audit log</a></div>
+</header>
+<div class="bn-split">
+<nav class="bn-index" aria-label="Settings sections"><div class="bn-index__list">
+<a class="bn-index__item" href="#profile"><span class="bn-idx">01</span>Studio profile<span></span></a>
+<a class="bn-index__item is-active" href="#invoicing" aria-current="true"><span class="bn-idx">02</span>Invoicing<span class="bn-count">1</span></a>
+<a class="bn-index__item" href="#team"><span class="bn-idx">03</span>Team &amp; roles<span class="bn-nav-item__count">8</span></a>
+<a class="bn-index__item" href="#notify"><span class="bn-idx">04</span>Notifications<span></span></a>
+<a class="bn-index__item" href="#"><span class="bn-idx">05</span>Rooms &amp; venue<span></span></a>
+<a class="bn-index__item" href="#"><span class="bn-idx">06</span>Integrations<span></span></a>
+<a class="bn-index__item bn-index__item--alarm" href="#danger"><span class="bn-idx">07</span>Danger zone<span></span></a>
+</div></nav>
+<div>
+<section class="bn-formsec" id="profile" aria-labelledby="s1">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">01</p><h2 id="s1" class="bn-h3">Studio profile</h2><p class="bn-formsec__desc">Printed on invoices, contracts and the public site's Impressum.</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field"><label class="bn-label" for="p-legal">Legal name</label><input id="p-legal" class="bn-input" type="text" value="Kollektiv Studio GmbH"></div>
+<div class="bn-field"><label class="bn-label" for="p-vat">VAT ID</label><input id="p-vat" class="bn-input bn-input--mono" type="text" value="DE 318 552 014"></div>
+<div class="bn-field bn-field--full"><label class="bn-label" for="p-addr">Address</label><input id="p-addr" class="bn-input" type="text" value="Hallenweg 12, Hof 2, 10317 Berlin"></div>
+<div class="bn-field"><label class="bn-label" for="p-lang">Document language</label><span class="bn-selectbox bn-selectbox--block"><select id="p-lang" class="bn-select"><option>German, English on request</option><option>English</option><option>German</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="p-tz">Time zone</label><span class="bn-selectbox bn-selectbox--block"><select id="p-tz" class="bn-select" disabled><option>Europe/Berlin (CEST)</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span><p class="bn-help">Fixed for the venue's door times.</p></div>
+</div>
+</section>
+
+<section class="bn-formsec" id="invoicing" aria-labelledby="s2">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">02</p><h2 id="s2" class="bn-h3">Invoicing</h2><p class="bn-formsec__desc">Numbering, terms and reminders. Overdue invoices show in red across the backoffice.</p><p class="bn-tag bn-tag--signal bn-mt-8">1 unsaved change</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field"><label class="bn-label" for="i-prefix"><span>Number prefix<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><input id="i-prefix" class="bn-input bn-input--mono" type="text" value="KS-2026-"></div>
+<div class="bn-field"><label class="bn-label" for="i-next">Next number</label><input id="i-next" class="bn-input bn-input--mono" type="text" value="127" disabled><p class="bn-help">Numbers never repeat. Last: KS-2026-126, 13:58 today.</p></div>
+<div class="bn-field"><label class="bn-label" for="i-terms">Payment terms</label><span class="bn-selectbox bn-selectbox--block"><select id="i-terms" class="bn-select"><option>14 days net</option><option>30 days net</option><option>On receipt</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="i-iban">Bank account</label><input id="i-iban" class="bn-input bn-input--mono" type="text" value="DE41 •••• •••• •••• •••• 2014" readonly><p class="bn-help">Change via Felix Hartmann, with two-person approval.</p></div>
+<div class="bn-field bn-field--full">
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Send a friendly reminder 3 days after the due date</strong><span>Then a second one after 14 days, signed by the project lead.</span></span><input class="bn-switch" type="checkbox" role="switch" checked></label>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Attach an XRechnung file</strong><span>Required by public clients like Hallenbad Ost gGmbH.</span></span><input class="bn-switch is-focus" type="checkbox" role="switch" checked></label>
+</div>
+</div>
+</section>
+
+<section class="bn-section" id="team" aria-labelledby="s3">
+<div class="bn-row bn-row--between bn-row--wrap bn-gap-12"><div class="bn-row bn-row--base bn-gap-16"><p class="bn-formsec__idx" aria-hidden="true">03</p><h2 id="s3" class="bn-h3">Team &amp; roles</h2></div><a class="bn-btn bn-btn--sm" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="M19 16v6"/><path d="M22 19h-6"/></svg> Invite</a></div>
+<div class="bn-table-wrap bn-mt-16"><table class="bn-table bn-table--cell">
+<thead><tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col">Two-factor</th><th scope="col" class="bn-td-num">Last active</th></tr></thead>
+<tbody>
+<tr><td><span class="bn-person-inline"><span class="bn-av bn-av--signal">MO</span><span><span class="bn-td-title">Mira Okafor</span><span class="bn-td-sub">mira@kollektiv.studio</span></span></span></td><td><span class="bn-tag bn-tag--solid">Owner</span></td><td><span class="bn-tag"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> On</span></td><td class="bn-td-num bn-mono">now</td></tr>
+<tr><td><span class="bn-person-inline"><span class="bn-av bn-av--concrete">FH</span><span><span class="bn-td-title">Felix Hartmann</span><span class="bn-td-sub">felix@kollektiv.studio</span></span></span></td><td><span class="bn-tag bn-tag--solid">Finance</span></td><td><span class="bn-tag"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> On</span></td><td class="bn-td-num bn-mono">13:58</td></tr>
+<tr><td><span class="bn-person-inline"><span class="bn-av">SM</span><span><span class="bn-td-title">Samuel Mensah</span><span class="bn-td-sub">samuel@kollektiv.studio</span></span></span></td><td><span class="bn-tag">Venue</span></td><td><span class="bn-tag"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> On</span></td><td class="bn-td-num bn-mono">12:40</td></tr>
+<tr><td><span class="bn-person-inline"><span class="bn-av bn-av--outline">IV</span><span><span class="bn-td-title">Ines Vidal</span><span class="bn-td-sub">ines@kollektiv.studio</span></span></span></td><td><span class="bn-tag">Program</span></td><td><span class="bn-tag bn-tag--alarm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Off</span></td><td class="bn-td-num bn-mono">10:05</td></tr>
+<tr><td><span class="bn-person-inline"><span class="bn-av bn-av--outline">+</span><span><span class="bn-td-title">kemal.aydin@posteo.de</span><span class="bn-td-sub">Invited 10.10 by Ines V.</span></span></span></td><td><span class="bn-tag bn-tag--muted">Guest</span></td><td><span class="bn-muted">—</span></td><td class="bn-td-num"><a class="bn-link" href="#">Resend</a></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="bn-formsec" id="notify" aria-labelledby="s4">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">04</p><h2 id="s4" class="bn-h3">Notifications</h2><p class="bn-formsec__desc">For you, Mira. Each person sets their own.</p></div>
+<div class="bn-formsec__body"><div class="bn-field bn-field--full">
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>A project moves to Review</strong><span>Mail and the bell. Usually 3–5 a week.</span></span><input class="bn-switch" type="checkbox" role="switch" checked></label>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Ticket sales pass 90% for an event</strong><span>So the door team can be doubled in time.</span></span><input class="bn-switch" type="checkbox" role="switch" checked></label>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Weekly digest, Mondays 08:00</strong><span>Overdue invoices, room gaps, team load above 100%.</span></span><input class="bn-switch" type="checkbox" role="switch"></label>
+</div></div>
+</section>
+
+<section class="bn-formsec" id="danger" aria-labelledby="s7">
+<div class="bn-formsec__head"><p class="bn-formsec__idx bn-alarm-text" aria-hidden="true">07</p><h2 id="s7" class="bn-h3">Danger zone</h2><p class="bn-formsec__desc">Irreversible. Owners only.</p></div>
+<div class="bn-formsec__body"><div class="bn-field bn-field--full">
+<div class="bn-notice bn-notice--alarm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16h.01"/><path d="M12 8v4"/><path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z"/></svg><div class="bn-notice__body"><span class="bn-notice__title">Archive season 2025/26</span>Moves 29 delivered projects and their files to cold storage. Invoices stay searchable for the 10 years the law requires.</div><button type="button" class="bn-btn bn-btn--danger bn-btn--sm">Archive season</button></div>
+</div></div>
+</section>
+</div>
+</div>
+<div class="bn-toasts bn-toasts--top" role="status"><div class="bn-toast bn-inv"><span class="bn-toast__icon"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div class="bn-toast__body"><span class="bn-toast__title">Studio profile saved</span><span class="bn-toast__meta">14:31 · visible on the next invoice</span></div><button type="button" class="bn-toast__close" aria-label="Dismiss"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div>
+</main>
+</div>
+</body>
+</html>

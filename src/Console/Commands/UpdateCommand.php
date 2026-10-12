@@ -8,6 +8,7 @@ use Larapilot\Services\BoostPackageService;
 use Larapilot\Services\CodeQualityService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
+use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\ScheduleService;
 use Larapilot\Support\LarapilotCommand;
 use Larapilot\Support\SharedRuntime;
@@ -21,7 +22,7 @@ class UpdateCommand extends LarapilotCommand
 
     protected $description = 'Refresh Larapilot assets after a package upgrade (shared runtime + latest Boost + guidelines and skills)';
 
-    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills, ScheduleService $schedule): int
+    public function handle(ConfigService $config, CodeQualityService $quality, BoostPackageService $boostPackage, CustomSkillService $customSkills, ScheduleService $schedule, DashboardAuthService $auth): int
     {
         if (! $config->hasProjectConfig()) {
             return $this->failure(
@@ -44,6 +45,7 @@ class UpdateCommand extends LarapilotCommand
 
         $this->moveLegacyProjectDocs($config);
         $config->ensureDirectories();
+        $this->migrateDashboardUsers($auth, $config);
         $this->realignSchedule($schedule);
 
         $missingSettings = $config->missingSettingKeys();
@@ -203,5 +205,23 @@ class UpdateCommand extends LarapilotCommand
         }
 
         return $this->call('boost:update');
+    }
+
+    /**
+     * A `.larapilot/auth.yaml` written before 5.1 holds a hash in place of
+     * each user: every such user becomes an admin, as they already were —
+     * the only role there was — and the file takes the layout with roles.
+     */
+    protected function migrateDashboardUsers(DashboardAuthService $auth, ConfigService $config): void
+    {
+        if (! $auth->needsMigration()) {
+            return;
+        }
+
+        $migrated = $auth->migrate();
+
+        if ($migrated !== []) {
+            $this->line('Dashboard users given the admin role in '.$config->relativePath($auth->path()).': '.implode(', ', $migrated).'. Change a role with: php artisan larapilot:dashboard-user role <username> <admin|dev|pm|ext>');
+        }
     }
 }

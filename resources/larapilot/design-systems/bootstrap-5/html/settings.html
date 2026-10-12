@@ -1,66 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Settings — Bootstrap 5</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Bramble Stays Host</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="bs-mockup">
-  <div class="bs-app">
-    <aside class="bs-sidebar" aria-label="Sidebar">
-      <div class="bs-sidebar__header">
-        <a href="dashboard.html" class="bs-sidebar__brand">Acme Admin</a>
-      </div>
-      <nav class="bs-sidebar__nav nav flex-column">
-        <a class="nav-link" href="dashboard.html">Dashboard</a>
-        <a class="nav-link active" href="settings.html" aria-current="page">Settings</a>
+<header class="navbar navbar-expand sticky-top bg-dark flex-nowrap p-0 shadow" data-bs-theme="dark">
+  <a class="navbar-brand col-lg-2 me-0 px-3 py-3 fs-6 fw-semibold d-flex align-items-center gap-2" href="dashboard.html">
+    <svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays <span class="badge text-bg-secondary fw-normal">Host</span>
+  </a>
+  <form class="d-none d-md-block flex-grow-1 px-3" role="search">
+    <input class="form-control form-control-sm" type="search" placeholder="Search bookings, guests, listings…" aria-label="Search bookings, guests and listings">
+  </form>
+  <ul class="navbar-nav flex-row align-items-center ms-auto px-2">
+    <li class="nav-item">
+      <a class="nav-link px-2 position-relative" href="#" aria-label="Notifications, 3 unread">
+        <svg class="bi bi-bell fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
+        <span class="position-absolute top-0 start-100 translate-middle-x badge rounded-pill text-bg-danger mt-1">3</span>
+      </a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-2 ms-2" href="#" role="button" aria-expanded="false">
+        <svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><text x="14" y="18" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">AO</text></svg><span class="d-none d-md-inline">Amara Okafor</span>
+      </a>
+    </li>
+    <li class="nav-item d-lg-none">
+      <button class="nav-link px-2" type="button" aria-label="Open the host menu" aria-controls="hostMenu" aria-expanded="false"><svg class="bi bi-list fs-4" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></button>
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 p-0 bg-body-tertiary border-end">
+      <nav class="offcanvas-lg offcanvas-start bg-body-tertiary" tabindex="-1" id="hostMenu" aria-label="Host menu">
+        <div class="offcanvas-header">
+          <p class="offcanvas-title h5 mb-0">Bramble Stays</p>
+          <button type="button" class="btn-close" aria-label="Close the host menu"></button>
+        </div>
+        <div class="offcanvas-body d-lg-flex flex-column p-0 pt-lg-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-speedometer2" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z"/><path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3"/></svg> Overview</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-list.html"><svg class="bi bi-journal-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10.854 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/><path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/></svg> Bookings <span class="badge rounded-pill text-bg-warning ms-auto">6</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-calendar3" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg> Calendar</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="empty-state.html"><svg class="bi bi-house-door" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/></svg> Listings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-chat-left-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg> Messages <span class="badge rounded-pill text-bg-primary ms-auto">2</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-wallet2" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/></svg> Payouts</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/></svg> Reviews</a></li>
+          </ul>
+          <p class="px-3 mt-4 mb-2 text-body-secondary text-uppercase small fw-semibold">Your listings</p>
+          <ul class="nav flex-column px-2 small">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Willow Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Larch Cabin</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Saltmarsh Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Old Mill Barn</a></li>
+          </ul>
+          <hr class="mx-3 my-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2 mb-3">
+            <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="settings.html"><svg class="bi bi-gear" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/></svg> Settings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="landing.html#faq"><svg class="bi bi-question-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg> Help centre</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="login.html"><svg class="bi bi-box-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg> Sign out</a></li>
+          </ul>
+        </div>
       </nav>
-    </aside>
-
-    <div class="bs-main">
-      <header class="bs-topbar">
-        <nav aria-label="Breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Settings</li>
-          </ol>
-        </nav>
-      </header>
-
-      <main class="bs-content">
-        <div class="mb-4">
-          <h1 class="h3 mb-1">Profile settings</h1>
-          <p class="text-secondary mb-0">Update your account information.</p>
-        </div>
-
-        <div class="card mb-4" style="max-width: 36rem">
-          <div class="card-body">
-            <h2 class="h6 mb-3">Personal details</h2>
-            <form>
-              <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" value="Jane Doe">
-              </div>
-              <div class="mb-3">
-                <label for="settings-email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="settings-email" value="jane@example.com">
-              </div>
-              <button type="submit" class="btn btn-primary">Save changes</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="card border-danger" style="max-width: 36rem">
-          <div class="card-body">
-            <h2 class="h6 text-danger mb-2">Danger zone</h2>
-            <p class="text-secondary small mb-3">Permanently delete your account and all associated data.</p>
-            <button type="button" class="btn btn-outline-danger btn-sm">Delete account</button>
-          </div>
-        </div>
-      </main>
     </div>
+
+    <main class="col-lg-10 ms-sm-auto px-3 px-md-4 py-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-4 border-bottom">
+        <div>
+          <h1 class="h2 mb-1">Settings</h1>
+          <p class="text-body-secondary mb-0">Your host profile, payouts and how we reach you.</p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-3">
+          <nav class="list-group" aria-label="Settings sections">
+            <a class="list-group-item list-group-item-action active d-flex align-items-center gap-2" aria-current="page" href="settings.html"><svg class="bi bi-person" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/></svg> Profile</a>
+            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-bell" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg> Notifications</a>
+            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-bank" viewBox="0 0 16 16" aria-hidden="true"><path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z"/></svg> Payouts</a>
+            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-shield-lock" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/><path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415"/></svg> Security</a>
+            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-people" viewBox="0 0 16 16" aria-hidden="true"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg> Team <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis ms-auto">3</span></a>
+            <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-credit-card" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/><path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg> Plan &amp; billing</a>
+          </nav>
+        </div>
+
+        <div class="col-lg-9">
+          <section class="card mb-4" aria-labelledby="profileTitle">
+            <div class="card-header bg-body py-3"><h2 class="h5 mb-0" id="profileTitle">Profile</h2></div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                <svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Amara Okafor"><text x="32" y="40.6" text-anchor="middle" font-size="24" font-weight="600" fill="currentColor">AO</text></svg>
+                <div>
+                  <div class="d-flex gap-2 mb-1">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Change photo</button>
+                    <button type="button" class="btn btn-sm btn-link link-danger">Remove</button>
+                  </div>
+                  <div class="form-text mt-0">Guests see this next to your messages. Square, at least 400 px.</div>
+                </div>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="first" class="form-label">First name</label>
+                  <input type="text" class="form-control" id="first" value="Amara">
+                </div>
+                <div class="col-md-6">
+                  <label for="last" class="form-label">Last name</label>
+                  <input type="text" class="form-control" id="last" value="Okafor">
+                </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" value="amara.okafor@brambleandco.uk" aria-describedby="emailHelp">
+                  <div id="emailHelp" class="form-text">Booking requests and payout receipts go here.</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="phone" class="form-label">Mobile</label>
+                  <div class="input-group">
+                    <select class="form-select flex-grow-0 w-auto" aria-label="Country code"><option>+44</option><option>+353</option><option>+39</option></select>
+                    <input type="tel" class="form-control" id="phone" value="7700 900 418">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="lang" class="form-label">Language for guests</label>
+                  <select class="form-select" id="lang"><option selected>English</option><option>Italiano</option><option>Deutsch</option></select>
+                </div>
+                <div class="col-md-6">
+                  <label for="tz" class="form-label">Time zone</label>
+                  <select class="form-select" id="tz"><option selected>Europe/London (GMT+1)</option><option>Europe/Rome (GMT+2)</option></select>
+                </div>
+                <div class="col-12">
+                  <label for="about" class="form-label">About you</label>
+                  <textarea class="form-control" id="about" rows="3">I grew up in Ambleside and restored Willow Cottage with my brother in 2019. I live five minutes away and I'm happy to recommend walks, pubs and the best place for a lake swim.</textarea>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-body d-flex justify-content-end gap-2 py-3">
+              <button type="button" class="btn btn-outline-secondary">Cancel</button>
+              <button type="button" class="btn btn-primary">Save profile</button>
+            </div>
+          </section>
+
+          <section class="card mb-4" aria-labelledby="notifTitle">
+            <div class="card-header bg-body py-3 d-flex justify-content-between align-items-center">
+              <h2 class="h5 mb-0" id="notifTitle">Notifications</h2>
+              <span class="small text-body-secondary">Email · SMS</span>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <div class="flex-grow-1"><div class="fw-semibold">Booking requests</div><div class="small text-body-secondary">A guest asks to book. You have 24 hours to reply.</div></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" checked aria-label="Booking requests by email"></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" checked aria-label="Booking requests by SMS"></div>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <div class="flex-grow-1"><div class="fw-semibold">Guest messages</div><div class="small text-body-secondary">New messages in a conversation.</div></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" checked aria-label="Guest messages by email"></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" aria-label="Guest messages by SMS"></div>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <div class="flex-grow-1"><div class="fw-semibold">Reviews</div><div class="small text-body-secondary">A guest leaves a review you can reply to.</div></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" checked aria-label="Reviews by email"></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" aria-label="Reviews by SMS"></div>
+              </li>
+              <li class="list-group-item d-flex align-items-center gap-3 py-3">
+                <div class="flex-grow-1"><div class="fw-semibold">Bramble news</div><div class="small text-body-secondary">Product updates, a few times a year.</div></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" aria-label="Bramble news by email"></div>
+                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" role="switch" disabled aria-label="Bramble news by SMS, not available"></div>
+              </li>
+            </ul>
+          </section>
+
+          <section class="card mb-4" aria-labelledby="payoutTitle">
+            <div class="card-header bg-body py-3"><h2 class="h5 mb-0" id="payoutTitle">Payout method</h2></div>
+            <div class="card-body">
+              <div class="list-group mb-3">
+                <label class="list-group-item d-flex align-items-center gap-3 py-3">
+                  <input class="form-check-input flex-shrink-0" type="radio" name="payout" checked>
+                  <svg class="bi bi-bank fs-4 text-body-secondary" viewBox="0 0 16 16" aria-hidden="true"><path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z"/></svg>
+                  <span class="flex-grow-1"><span class="d-block fw-semibold">Starling Bank •••• 4821</span><span class="small text-body-secondary">GBP · payouts 24 h after check-in</span></span>
+                  <span class="badge text-bg-success">Default</span>
+                </label>
+                <label class="list-group-item d-flex align-items-center gap-3 py-3">
+                  <input class="form-check-input flex-shrink-0" type="radio" name="payout">
+                  <svg class="bi bi-paypal fs-4 text-body-secondary" viewBox="0 0 16 16" aria-hidden="true"><path d="M14.06 3.713c.12-1.071-.093-1.832-.702-2.526C12.628.356 11.312 0 9.626 0H4.734a.7.7 0 0 0-.691.59L2.005 13.509a.42.42 0 0 0 .415.486h2.756l-.202 1.28a.628.628 0 0 0 .62.726H8.14c.429 0 .793-.31.862-.731l.025-.13.48-3.043.03-.164.001-.007a.35.35 0 0 1 .348-.297h.38c1.266 0 2.425-.256 3.345-.91q.57-.403.993-1.005a4.94 4.94 0 0 0 .88-2.195c.242-1.246.13-2.356-.57-3.154a2.7 2.7 0 0 0-.76-.59l-.094-.061ZM6.543 8.82a.7.7 0 0 1 .321-.079H8.3c2.82 0 5.027-1.144 5.672-4.456l.003-.016q.326.186.548.438c.546.623.679 1.535.45 2.71-.272 1.397-.866 2.307-1.663 2.874-.802.57-1.842.815-3.043.815h-.38a.87.87 0 0 0-.863.734l-.03.164-.48 3.043-.024.13-.001.004a.35.35 0 0 1-.348.296H5.595a.106.106 0 0 1-.105-.123l.208-1.32z"/></svg>
+                  <span class="flex-grow-1"><span class="d-block fw-semibold">PayPal · amara@brambleandco.uk</span><span class="small text-body-secondary">EUR · 1% PayPal fee</span></span>
+                </label>
+              </div>
+              <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-2"><svg class="bi bi-plus-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg> Add payout method</button>
+            </div>
+          </section>
+
+          <section class="card mb-4" aria-labelledby="securityTitle">
+            <div class="card-header bg-body py-3"><h2 class="h5 mb-0" id="securityTitle">Security</h2></div>
+            <div class="card-body">
+              <div class="d-flex flex-wrap align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="flex-grow-1"><div class="fw-semibold">Password</div><div class="small text-body-secondary">Last changed 4 months ago</div></div>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Change password</button>
+              </div>
+              <div class="d-flex flex-wrap align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="flex-grow-1"><div class="fw-semibold d-flex align-items-center gap-2">Two-factor authentication <span class="badge text-bg-success">On</span></div><div class="small text-body-secondary">Authenticator app · 6 recovery codes left</div></div>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Manage</button>
+              </div>
+              <h3 class="h6">Signed-in devices</h3>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle text-nowrap mb-0">
+                  <tbody>
+                    <tr><td><svg class="bi bi-laptop" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5"/></svg> MacBook Air · Safari</td><td class="text-body-secondary">Ambleside, UK</td><td><span class="badge bg-success-subtle text-success-emphasis">This device</span></td><td></td></tr>
+                    <tr><td><svg class="bi bi-phone" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg> iPhone 15 · Bramble app</td><td class="text-body-secondary">Kendal, UK · 2 h ago</td><td></td><td class="text-end"><button type="button" class="btn btn-sm btn-link link-danger p-0">Sign out</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="card border-danger" aria-labelledby="dangerTitle">
+            <div class="card-header bg-danger-subtle text-danger-emphasis border-danger py-3"><h2 class="h5 mb-0" id="dangerTitle">Close host account</h2></div>
+            <div class="card-body d-flex flex-wrap align-items-center gap-3">
+              <p class="mb-0 flex-grow-1">Unlists your 4 homes and cancels future bookings after you confirm. Payouts already due are still paid.</p>
+              <button type="button" class="btn btn-outline-danger">Close account</button>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="d-flex flex-wrap justify-content-between gap-2 pt-4 mt-4 border-top small text-body-secondary">
+        <span>© 2026 Bramble Stays Ltd · Host app</span>
+        <span><a class="link-secondary" href="landing.html#faq">Help centre</a> · <a class="link-secondary" href="settings.html">Host terms</a></span>
+      </footer>
+    </main>
   </div>
+</div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div class="toast show" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-header">
+      <svg class="bi bi-check-circle-fill text-success me-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+      <strong class="me-auto">Profile saved</strong>
+      <small class="text-body-secondary">just now</small>
+      <button type="button" class="btn-close" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">Guests will see your new “About you” on all 4 listings.</div>
+  </div>
+</div>
 </body>
 </html>

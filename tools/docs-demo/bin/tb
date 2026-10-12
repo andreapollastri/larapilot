@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Runs testbench (artisan) against the Fernway app: tb <target-dir> larapilot:spec-list ...
+set -euo pipefail
+KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(cd "$KIT/../.." && pwd)"
+TARGET="$(cd "${1:?usage: tb <target-dir> <command...>}" && pwd -P)"; shift
+export TESTBENCH_WORKING_PATH="$TARGET/work"
+cd "$TARGET/fernway"
+exec php -d memory_limit=1G -d auto_prepend_file="$TARGET/work/prepend.php" "$REPO/vendor/bin/testbench" "$@"

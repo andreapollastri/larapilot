@@ -1,97 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard — Filament</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Northwind Ops</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="fi-mockup">
-  <div class="fi-layout">
-    <aside class="fi-sidebar" aria-label="Main navigation">
-      <header class="fi-sidebar__header">
-        <div class="fi-sidebar__brand">Filament Demo</div>
-      </header>
-      <nav class="fi-sidebar__nav">
-        <a href="dashboard.html" class="is-active" aria-current="page">Dashboard</a>
-        <div class="fi-nav-group__label">Catalog</div>
-        <a href="resource-list.html">Users</a>
-        <a href="resource-list.html">Orders</a>
-        <div class="fi-nav-group__label">System</div>
-        <a href="settings.html">Settings</a>
-      </nav>
-    </aside>
-    <div class="fi-main">
-      <header class="fi-topbar">
-        <div class="fi-topbar__spacer"></div>
-        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
-      </header>
-      <main class="fi-content">
-        <header class="fi-page-header">
-          <h1>Dashboard</h1>
-          <p>Welcome back, Jane.</p>
-        </header>
-        <div class="fi-stat-grid">
-          <article class="fi-stat-card">
-            <div class="fi-stat-card__label">Total users</div>
-            <div class="fi-stat-card__value">1,284</div>
-            <div class="fi-stat-card__delta">+12% vs last month</div>
-          </article>
-          <article class="fi-stat-card">
-            <div class="fi-stat-card__label">New orders</div>
-            <div class="fi-stat-card__value">86</div>
-            <div class="fi-stat-card__delta">+4% vs last week</div>
-          </article>
-          <article class="fi-stat-card">
-            <div class="fi-stat-card__label">Revenue</div>
-            <div class="fi-stat-card__value">€24,580</div>
-            <div class="fi-stat-card__delta">+8% vs last month</div>
-          </article>
-          <article class="fi-stat-card">
-            <div class="fi-stat-card__label">Open tickets</div>
-            <div class="fi-stat-card__value">14</div>
-            <div class="fi-stat-card__delta" style="color: rgb(var(--color-warning-600))">3 need attention</div>
-          </article>
-        </div>
-        <section class="fi-section" aria-labelledby="recent-heading">
-          <h2 class="fi-section__heading" id="recent-heading">Recent users</h2>
-          <div class="fi-table-wrap">
-            <table class="fi-table">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Joined</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Anna Rossi</td>
-                  <td>anna@example.com</td>
-                  <td><span class="fi-badge fi-badge--success">Active</span></td>
-                  <td>Jul 8, 2026</td>
-                </tr>
-                <tr>
-                  <td>Marco Bianchi</td>
-                  <td>marco@example.com</td>
-                  <td><span class="fi-badge fi-badge--warning">Pending</span></td>
-                  <td>Jul 7, 2026</td>
-                </tr>
-                <tr>
-                  <td>Sara Conti</td>
-                  <td>sara@example.com</td>
-                  <td><span class="fi-badge fi-badge--success">Active</span></td>
-                  <td>Jul 5, 2026</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
+<body class="fi-mockup fi-body fi-body-has-topbar fi-body-has-navigation">
+<a href="#fi-main-content" class="fi-skip-link">Skip to content</a>
+<header class="fi-topbar-ctn">
+<nav class="fi-topbar" aria-label="Topbar">
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-open-sidebar-btn" aria-label="Expand sidebar" aria-controls="fi-main-sidebar" aria-expanded="false"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+<div class="fi-topbar-start"><a href="dashboard.html" class="fi-logo" aria-label="Northwind Ops home"><span class="fi-logo-mark"><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/></svg></span>Northwind Ops</a></div>
+<div class="fi-topbar-end">
+<div class="fi-global-search-ctn"><div class="fi-global-search"><div class="fi-global-search-field">
+<label for="fi-global-search-input" class="fi-sr-only">Global search</label>
+<div class="fi-input-wrp"><div class="fi-input-wrp-prefix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg></div>
+<input id="fi-global-search-input" type="search" class="fi-input fi-input-has-inline-prefix" placeholder="Search" autocomplete="off"></div>
+</div></div></div>
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-database-notifications-btn" aria-label="Notifications, 3 unread"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><span class="fi-icon-btn-badge-ctn"><span class="fi-badge fi-color fi-color-primary fi-size-xs">3</span></span></button>
+<div class="fi-user-menu fi-dropdown"><button type="button" class="fi-user-menu-trigger" aria-label="User menu" aria-haspopup="menu" aria-expanded="false"><span class="fi-avatar fi-circular fi-user-avatar">ZH</span></button></div>
+</div>
+</nav>
+</header>
+<div class="fi-layout">
+<aside id="fi-main-sidebar" class="fi-sidebar fi-sidebar-open" aria-label="Sidebar">
+<nav class="fi-sidebar-nav" aria-label="Main"><ul class="fi-sidebar-nav-groups">
+<li class="fi-sidebar-group"><ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url fi-active"><a href="dashboard.html" class="fi-sidebar-item-btn" aria-current="page"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span class="fi-sidebar-item-label">Dashboard</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Shop</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Shop" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-list.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg><span class="fi-sidebar-item-label">Orders</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-primary">38</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-edit.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg><span class="fi-sidebar-item-label">Products</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="relation-manager.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg><span class="fi-sidebar-item-label">Customers</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="cards-navigation.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path d="M6 6h.008v.008H6V6Z"/></svg><span class="fi-sidebar-item-label">Categories</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Logistics</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Logistics" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg><span class="fi-sidebar-item-label">Shipments</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-info">12</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg><span class="fi-sidebar-item-label">Warehouses</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"/></svg><span class="fi-sidebar-item-label">Suppliers</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Reports</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Reports" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="widgets-dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg><span class="fi-sidebar-item-label">Analytics</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Settings</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Settings" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="fi-sidebar-item-label">Store settings</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg><span class="fi-sidebar-item-label">Team</span></a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="fi-main-ctn">
+<main id="fi-main-content" class="fi-main">
+<div class="fi-page">
+<div class="fi-page-header-main-ctn">
+<header class="fi-header">
+<div><h1 class="fi-header-heading">Dashboard</h1></div>
+<div class="fi-header-actions-ctn">
+<button type="button" class="fi-btn"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H6a.75.75 0 0 1-.75-.75V12ZM6 13.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V14a.75.75 0 0 0-.75-.75H6ZM7.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H8a.75.75 0 0 1-.75-.75V12ZM8 13.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V14a.75.75 0 0 0-.75-.75H8ZM9.25 10a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H10a.75.75 0 0 1-.75-.75V10ZM10 11.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V12a.75.75 0 0 0-.75-.75H10ZM9.25 14a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H10a.75.75 0 0 1-.75-.75V14ZM12 9.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V10a.75.75 0 0 0-.75-.75H12ZM11.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H12a.75.75 0 0 1-.75-.75V12ZM12 13.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V14a.75.75 0 0 0-.75-.75H12ZM13.25 10a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H14a.75.75 0 0 1-.75-.75V10ZM14 11.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V12a.75.75 0 0 0-.75-.75H14Z"/><path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd"/></svg>Oct 1 – Oct 12, 2026</button>
+<a href="widgets-dashboard.html" class="fi-btn fi-color fi-color-primary"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M1 2.75A.75.75 0 0 1 1.75 2h16.5a.75.75 0 0 1 0 1.5H18v8.75A2.75 2.75 0 0 1 15.25 15h-1.072l.798 3.06a.75.75 0 0 1-1.452.38L13.41 18H6.59l-.114.44a.75.75 0 0 1-1.452-.38L5.823 15H4.75A2.75 2.75 0 0 1 2 12.25V3.5h-.25A.75.75 0 0 1 1 2.75ZM7.373 15l-.391 1.5h6.037l-.392-1.5H7.373Zm7.49-8.931a.75.75 0 0 1-.175 1.046 19.326 19.326 0 0 0-3.398 3.098.75.75 0 0 1-1.097.04L8.5 8.561l-2.22 2.22A.75.75 0 1 1 5.22 9.72l2.75-2.75a.75.75 0 0 1 1.06 0l1.664 1.663a20.786 20.786 0 0 1 3.122-2.74.75.75 0 0 1 1.046.176Z" clip-rule="evenodd"/></svg>Open analytics</a>
+</div>
+</header>
+<div class="fi-page-main">
+<div class="fi-page-content">
+<div class="fi-wi">
+<section class="fi-wi-widget fi-section fi-account-widget" aria-label="Account">
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<span class="fi-avatar fi-circular fi-size-lg fi-user-avatar" role="img" aria-label="Zainab Haddad">ZH</span>
+<div class="fi-account-widget-main">
+<h2 class="fi-account-widget-heading">Welcome</h2>
+<p class="fi-account-widget-user-name">Zainab Haddad</p>
+</div>
+<a href="login.html" class="fi-btn"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M19 10a.75.75 0 0 0-.75-.75H8.704l1.048-.943a.75.75 0 1 0-1.004-1.114l-2.5 2.25a.75.75 0 0 0 0 1.114l2.5 2.25a.75.75 0 1 0 1.004-1.114l-1.048-.943h9.546A.75.75 0 0 0 19 10Z" clip-rule="evenodd"/></svg>Sign out</a>
+</div></div>
+</section>
+<section class="fi-wi-widget fi-section fi-info-widget" aria-label="Distribution center">
+<div class="fi-section-content-ctn"><div class="fi-section-content fi-flex">
+<div class="fi-grow">
+<h2 class="fi-account-widget-heading">Seattle distribution center</h2>
+<p class="fi-account-widget-user-name">Same-day cut-off 3:00 PM PT · 18 orders to pick</p>
+</div>
+<div class="fi-info-widget-links">
+<a href="resource-list.html" class="fi-link"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M15.988 3.012A2.25 2.25 0 0 1 18 5.25v6.5A2.25 2.25 0 0 1 15.75 14H13.5V7A2.5 2.5 0 0 0 11 4.5H8.128a2.252 2.252 0 0 1 1.884-1.488A2.25 2.25 0 0 1 12.25 1h1.5a2.25 2.25 0 0 1 2.238 2.012ZM11.5 3.25a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v.25h-3v-.25Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M2 7a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7Zm2 3.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.5a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/></svg>Pick list</a>
+<a href="empty-state.html" class="fi-link"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.5h9V4.606c0-.771-.59-1.43-1.375-1.489A41.568 41.568 0 0 0 6.5 3ZM2 12v2.5A1.5 1.5 0 0 0 3.5 16h.041a3 3 0 0 1 5.918 0h.791a.75.75 0 0 0 .75-.75V12H2Z"/><path d="M6.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM13.25 5a.75.75 0 0 0-.75.75v8.514a3.001 3.001 0 0 1 4.893 1.44c.37-.275.61-.719.595-1.227a24.905 24.905 0 0 0-1.784-8.549A1.486 1.486 0 0 0 14.823 5H13.25ZM14.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg>Carriers</a>
+</div>
+</div></div>
+</section>
+<div class="fi-wi-widget fi-col-span-full">
+<div class="fi-wi-stats-overview">
+<div class="fi-wi-stats-overview-stats-ctn fi-cols-4">
+<div class="fi-wi-stats-overview-stat">
+<div class="fi-wi-stats-overview-stat-content">
+<div class="fi-wi-stats-overview-stat-label-ctn"><span class="fi-wi-stats-overview-stat-label">Revenue</span></div>
+<div class="fi-wi-stats-overview-stat-value">$184,240</div>
+<div class="fi-wi-stats-overview-stat-description fi-color fi-color-success"><span>12% increase</span><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z" clip-rule="evenodd"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat-chart fi-color fi-color-success"><svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-area" d="M0 21C4.17 20.03 8.33 17.64 16.67 17.12C25 16.6 25 19.81 33.33 18.91C41.67 18.02 41.67 15.18 50 13.54C58.33 11.9 58.33 13.32 66.67 12.35C75 11.38 75 11.75 83.33 9.67C91.67 7.58 95.83 5.42 100 4V24H0Z"/><path class="fi-chart-line" d="M0 21C4.17 20.03 8.33 17.64 16.67 17.12C25 16.6 25 19.81 33.33 18.91C41.67 18.02 41.67 15.18 50 13.54C58.33 11.9 58.33 13.32 66.67 12.35C75 11.38 75 11.75 83.33 9.67C91.67 7.58 95.83 5.42 100 4"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat">
+<div class="fi-wi-stats-overview-stat-content">
+<div class="fi-wi-stats-overview-stat-label-ctn"><span class="fi-wi-stats-overview-stat-label">New orders</span></div>
+<div class="fi-wi-stats-overview-stat-value">1,284</div>
+<div class="fi-wi-stats-overview-stat-description fi-color fi-color-success"><span>7% increase</span><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.577 4.878a.75.75 0 0 1 .919-.53l4.78 1.281a.75.75 0 0 1 .531.919l-1.281 4.78a.75.75 0 0 1-1.449-.387l.81-3.022a19.407 19.407 0 0 0-5.594 5.203.75.75 0 0 1-1.139.093L7 10.06l-4.72 4.72a.75.75 0 0 1-1.06-1.061l5.25-5.25a.75.75 0 0 1 1.06 0l3.074 3.073a20.923 20.923 0 0 1 5.545-4.931l-3.042-.815a.75.75 0 0 1-.53-.919Z" clip-rule="evenodd"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat-chart fi-color fi-color-success"><svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-area" d="M0 18.48C4.17 19.11 8.33 22.26 16.67 21C25 19.74 25 14.55 33.33 13.44C41.67 12.34 41.67 17.69 50 16.59C58.33 15.49 58.33 11.56 66.67 9.04C75 6.52 75 7.78 83.33 6.52C91.67 5.26 95.83 4.63 100 4V24H0Z"/><path class="fi-chart-line" d="M0 18.48C4.17 19.11 8.33 22.26 16.67 21C25 19.74 25 14.55 33.33 13.44C41.67 12.34 41.67 17.69 50 16.59C58.33 15.49 58.33 11.56 66.67 9.04C75 6.52 75 7.78 83.33 6.52C91.67 5.26 95.83 4.63 100 4"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat">
+<div class="fi-wi-stats-overview-stat-content">
+<div class="fi-wi-stats-overview-stat-label-ctn"><span class="fi-wi-stats-overview-stat-label">New customers</span></div>
+<div class="fi-wi-stats-overview-stat-value">86</div>
+<div class="fi-wi-stats-overview-stat-description fi-color fi-color-danger"><span>3% decrease</span><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M1.22 5.222a.75.75 0 0 1 1.06 0L7 9.942l3.768-3.769a.75.75 0 0 1 1.113.058 20.908 20.908 0 0 1 3.813 7.254l1.574-2.727a.75.75 0 0 1 1.3.75l-2.475 4.286a.75.75 0 0 1-1.025.275l-4.287-2.475a.75.75 0 0 1 .75-1.3l2.71 1.565a19.422 19.422 0 0 0-3.013-6.024L7.53 11.533a.75.75 0 0 1-1.06 0l-5.25-5.25a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat-chart fi-color fi-color-danger"><svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-area" d="M0 9.1C4.17 7.83 8.33 3.15 16.67 4C25 4.85 25 9.53 33.33 12.5C41.67 15.47 41.67 16.32 50 15.9C58.33 15.48 58.33 10.38 66.67 10.8C75 11.23 75 15.05 83.33 17.6C91.67 20.15 95.83 20.15 100 21V24H0Z"/><path class="fi-chart-line" d="M0 9.1C4.17 7.83 8.33 3.15 16.67 4C25 4.85 25 9.53 33.33 12.5C41.67 15.47 41.67 16.32 50 15.9C58.33 15.48 58.33 10.38 66.67 10.8C75 11.23 75 15.05 83.33 17.6C91.67 20.15 95.83 20.15 100 21"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat">
+<div class="fi-wi-stats-overview-stat-content">
+<div class="fi-wi-stats-overview-stat-label-ctn"><span class="fi-wi-stats-overview-stat-label">Average order</span></div>
+<div class="fi-wi-stats-overview-stat-value">$143.49</div>
+<div class="fi-wi-stats-overview-stat-description"><span>Flat vs September</span><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd"/></svg></div>
+</div>
+<div class="fi-wi-stats-overview-stat-chart fi-color-gray"><svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-area" d="M0 21C4.17 18.88 8.33 13.56 16.67 12.5C25 11.44 25 17.81 33.33 16.75C41.67 15.69 41.67 11.44 50 8.25C58.33 5.06 58.33 2.94 66.67 4C75 5.06 75 12.5 83.33 12.5C91.67 12.5 95.83 6.12 100 4V24H0Z"/><path class="fi-chart-line" d="M0 21C4.17 18.88 8.33 13.56 16.67 12.5C25 11.44 25 17.81 33.33 16.75C41.67 15.69 41.67 11.44 50 8.25C58.33 5.06 58.33 2.94 66.67 4C75 5.06 75 12.5 83.33 12.5C91.67 12.5 95.83 6.12 100 4"/></svg></div>
+</div>
+</div>
+</div>
+</div>
+<section class="fi-wi-widget fi-section fi-wi-chart">
+<header class="fi-section-header">
+<div class="fi-section-header-text-ctn">
+<h2 class="fi-section-header-heading">Revenue</h2>
+<p class="fi-section-header-description">Gross sales per month, USD</p>
+</div>
+<div class="fi-section-header-after-ctn">
+<div class="fi-input-wrp fi-wi-chart-filter"><select class="fi-select-input" aria-label="Revenue period"><option>Last 12 months</option><option>This quarter</option><option>This year</option></select></div>
+</div>
+</header>
+<div class="fi-section-content-ctn"><div class="fi-section-content"><div class="fi-chart" role="img" aria-label="Line chart: revenue per month, Nov 2025 to Oct 2026, rising from $11,200 to $23,800"><div class="fi-chart-y" aria-hidden="true"><span>$25,000</span><span>$20,000</span><span>$15,000</span><span>$10,000</span><span>$5,000</span><span>$0</span></div><div class="fi-chart-plot"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-grid" d="M0 0H100"/><path class="fi-chart-grid" d="M0 20H100"/><path class="fi-chart-grid" d="M0 40H100"/><path class="fi-chart-grid" d="M0 60H100"/><path class="fi-chart-grid" d="M0 80H100"/><path class="fi-chart-grid" d="M0 100H100"/><g class="fi-color fi-color-primary"><path class="fi-chart-area" d="M0 55.2L9.09 44.4L18.18 51.6L27.27 42.4L36.36 36.8L45.45 39.6L54.55 29.6L63.64 24.4L72.73 27.6L81.82 18.4L90.91 12.4L100 4.8V100H0Z"/><path class="fi-chart-line" d="M0 55.2L9.09 44.4L18.18 51.6L27.27 42.4L36.36 36.8L45.45 39.6L54.55 29.6L63.64 24.4L72.73 27.6L81.82 18.4L90.91 12.4L100 4.8"/><path class="fi-chart-points" d="M0 55.2h0M9.09 44.4h0M18.18 51.6h0M27.27 42.4h0M36.36 36.8h0M45.45 39.6h0M54.55 29.6h0M63.64 24.4h0M72.73 27.6h0M81.82 18.4h0M90.91 12.4h0M100 4.8h0"/></g></svg></div><div class="fi-chart-x" aria-hidden="true"><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span></div><div class="fi-chart-legend" aria-hidden="true"><span class="fi-chart-legend-item fi-color fi-color-primary">Revenue</span></div></div></div></div>
+</section>
+<section class="fi-wi-widget fi-section fi-wi-chart">
+<header class="fi-section-header">
+<div class="fi-section-header-text-ctn">
+<h2 class="fi-section-header-heading">Orders per month</h2>
+<p class="fi-section-header-description">All channels, cancelled orders excluded</p>
+</div>
+</header>
+<div class="fi-section-content-ctn"><div class="fi-section-content"><div class="fi-chart" role="img" aria-label="Bar chart: orders per month, Nov 2025 to Oct 2026, from 58 to 121"><div class="fi-chart-y" aria-hidden="true"><span>125</span><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="fi-chart-plot"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="fi-chart-grid" d="M0 0H100"/><path class="fi-chart-grid" d="M0 20H100"/><path class="fi-chart-grid" d="M0 40H100"/><path class="fi-chart-grid" d="M0 60H100"/><path class="fi-chart-grid" d="M0 80H100"/><path class="fi-chart-grid" d="M0 100H100"/><g class="fi-color fi-color-primary"><path class="fi-chart-bar" d="M1.17 100V53.6H7.17V100M9.5 100V43.2H15.5V100M17.83 100V48.8H23.83V100M26.17 100V41.6H32.17V100M34.5 100V34.4H40.5V100M42.83 100V36.8H48.83V100M51.17 100V27.2H57.17V100M59.5 100V21.6H65.5V100M67.83 100V24.8H73.83V100M76.17 100V15.2H82.17V100M84.5 100V9.6H90.5V100M92.83 100V3.2H98.83V100"/></g></svg></div><div class="fi-chart-x fi-chart-x-bands" aria-hidden="true"><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span></div><div class="fi-chart-legend" aria-hidden="true"><span class="fi-chart-legend-item fi-color fi-color-primary">Orders</span></div></div></div></div>
+</section>
+<div class="fi-wi-widget fi-col-span-full">
+<div class="fi-ta">
+<div class="fi-ta-ctn fi-ta-ctn-with-header">
+<div class="fi-ta-header fi-ta-header-adaptive-actions-position">
+<div>
+<h2 class="fi-ta-header-heading">Latest orders</h2>
+<p class="fi-ta-header-description">The six most recent orders across wholesale and the online store.</p>
+</div>
+<div class="fi-ta-actions"><a href="resource-list.html" class="fi-btn fi-size-sm">View all orders</a></div>
+</div>
+<div class="fi-ta-content-ctn">
+<table class="fi-ta-table">
+<thead><tr>
+<th class="fi-ta-header-cell fi-ta-header-cell-sorted" scope="col" aria-sort="descending"><button type="button" class="fi-ta-header-cell-sort-btn">Order date<svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button></th>
+<th class="fi-ta-header-cell" scope="col">Number</th>
+<th class="fi-ta-header-cell" scope="col">Customer</th>
+<th class="fi-ta-header-cell" scope="col">Status</th>
+<th class="fi-ta-header-cell" scope="col">Total</th>
+<th class="fi-ta-actions-header-cell" scope="col"><span class="fi-sr-only">Actions</span></th>
+</tr></thead>
+<tbody>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 12, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10492</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Amara Okafor</span><span class="fi-ta-text-description">Harbor Lane Café</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-warning"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z" clip-rule="evenodd"/></svg><span>Processing</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$1,248.60</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 12, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10491</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Ingrid Solberg</span><span class="fi-ta-text-description">Fjordline Market</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-info"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5 4a.75.75 0 0 1 .738.616l.252 1.388A1.25 1.25 0 0 0 6.996 7.01l1.388.252a.75.75 0 0 1 0 1.476l-1.388.252A1.25 1.25 0 0 0 5.99 9.996l-.252 1.388a.75.75 0 0 1-1.476 0L4.01 9.996A1.25 1.25 0 0 0 3.004 8.99l-1.388-.252a.75.75 0 0 1 0-1.476l1.388-.252A1.25 1.25 0 0 0 4.01 6.004l.252-1.388A.75.75 0 0 1 5 4ZM12 1a.75.75 0 0 1 .721.544l.195.682c.118.415.443.74.858.858l.682.195a.75.75 0 0 1 0 1.442l-.682.195a1.25 1.25 0 0 0-.858.858l-.195.682a.75.75 0 0 1-1.442 0l-.195-.682a1.25 1.25 0 0 0-.858-.858l-.682-.195a.75.75 0 0 1 0-1.442l.682-.195a1.25 1.25 0 0 0 .858-.858l.195-.682A.75.75 0 0 1 12 1ZM10 11a.75.75 0 0 1 .728.568.968.968 0 0 0 .704.704.75.75 0 0 1 0 1.456.968.968 0 0 0-.704.704.75.75 0 0 1-1.456 0 .968.968 0 0 0-.704-.704.75.75 0 0 1 0-1.456.968.968 0 0 0 .704-.704A.75.75 0 0 1 10 11Z" clip-rule="evenodd"/></svg><span>New</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$586.20</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 11, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10490</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Priya Raman</span><span class="fi-ta-text-description">Saffron & Salt</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-success"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.908 2.067A.978.978 0 0 0 2 3.05V8h6V3.05a.978.978 0 0 0-.908-.983 32.481 32.481 0 0 0-4.184 0ZM12.919 4.722A.98.98 0 0 0 11.968 4H10a1 1 0 0 0-1 1v6.268A2 2 0 0 1 12 13h1a.977.977 0 0 0 .985-1 31.99 31.99 0 0 0-1.066-7.278Z"/><path d="M11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 12V9h6v3a1 1 0 0 1-1 1 2 2 0 1 0-4 0 1 1 0 0 1-1-1Z"/><path d="M6 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg><span>Shipped</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$2,310.00</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 10, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10489</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Kenji Watanabe</span><span class="fi-ta-text-description">Bluefin Grocers</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-success"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M15 8c0 .982-.472 1.854-1.202 2.402a2.995 2.995 0 0 1-.848 2.547 2.995 2.995 0 0 1-2.548.849A2.996 2.996 0 0 1 8 15a2.996 2.996 0 0 1-2.402-1.202 2.995 2.995 0 0 1-2.547-.848 2.995 2.995 0 0 1-.849-2.548A2.996 2.996 0 0 1 1 8c0-.982.472-1.854 1.202-2.402a2.995 2.995 0 0 1 .848-2.547 2.995 2.995 0 0 1 2.548-.849A2.995 2.995 0 0 1 8 1c.982 0 1.854.472 2.402 1.202a2.995 2.995 0 0 1 2.547.848c.695.695.978 1.645.849 2.548A2.996 2.996 0 0 1 15 8Zm-3.291-2.843a.75.75 0 0 1 .135 1.052l-4.25 5.5a.75.75 0 0 1-1.151.043l-2.25-2.5a.75.75 0 1 1 1.114-1.004l1.65 1.832 3.7-4.789a.75.75 0 0 1 1.052-.134Z" clip-rule="evenodd"/></svg><span>Delivered</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$874.35</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 10, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10488</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Lucía Fernández</span><span class="fi-ta-text-description">Casa Olivo</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-danger"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm2.78-4.22a.75.75 0 0 1-1.06 0L8 9.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 8 5.22 6.28a.75.75 0 0 1 1.06-1.06L8 6.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 8l1.72 1.72a.75.75 0 0 1 0 1.06Z" clip-rule="evenodd"/></svg><span>Cancelled</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$129.80</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+<tr class="fi-ta-row"><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item">Oct 9, 2026</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-font-medium"><a href="resource-view.html">NW-10487</a></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-descriptions"><span class="fi-ta-text-item">Daniel Osei</span><span class="fi-ta-text-description">Maple Street Deli</span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text fi-ta-text-has-badges"><span class="fi-badge fi-color fi-color-success"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2.908 2.067A.978.978 0 0 0 2 3.05V8h6V3.05a.978.978 0 0 0-.908-.983 32.481 32.481 0 0 0-4.184 0ZM12.919 4.722A.98.98 0 0 0 11.968 4H10a1 1 0 0 0-1 1v6.268A2 2 0 0 1 12 13h1a.977.977 0 0 0 .985-1 31.99 31.99 0 0 0-1.066-7.278Z"/><path d="M11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 12V9h6v3a1 1 0 0 1-1 1 2 2 0 1 0-4 0 1 1 0 0 1-1-1Z"/><path d="M6 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg><span>Shipped</span></span></div></div></td><td class="fi-ta-cell"><div class="fi-ta-col"><div class="fi-ta-text"><span class="fi-ta-text-item fi-tabular">$1,092.40</span></div></div></td><td class="fi-ta-cell fi-ta-actions-cell"><div class="fi-ta-actions"><a href="resource-view.html" class="fi-link fi-color fi-color-primary fi-size-sm"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/></svg>Open</a></div></td></tr>
+</tbody>
+</table>
+</div>
+<nav class="fi-pagination" aria-label="Pagination navigation">
+<span class="fi-pagination-overview">Showing 1 to 6 of 1,284 results</span>
+<div class="fi-pagination-records-per-page-select-ctn">
+<label class="fi-pagination-records-per-page-select fi-input-wrp"><span class="fi-input-wrp-prefix"><span class="fi-input-wrp-label">Per page</span></span><select class="fi-select-input" aria-label="Per page"><option>6</option><option>12</option><option>24</option></select></label>
+<label class="fi-pagination-records-per-page-select fi-compact fi-input-wrp"><span class="fi-sr-only">Per page</span><select class="fi-select-input" aria-label="Per page"><option>6</option><option>12</option></select></label>
+</div>
+<a href="resource-list.html" class="fi-btn fi-pagination-next-btn">Next</a>
+<ol class="fi-pagination-items">
+<li class="fi-pagination-item fi-active"><button type="button" class="fi-pagination-item-btn" aria-label="Go to page 1" aria-current="page"><span class="fi-pagination-item-label">1</span></button></li>
+<li class="fi-pagination-item"><button type="button" class="fi-pagination-item-btn" aria-label="Go to page 2"><span class="fi-pagination-item-label">2</span></button></li>
+<li class="fi-pagination-item"><button type="button" class="fi-pagination-item-btn" aria-label="Go to page 3"><span class="fi-pagination-item-label">3</span></button></li>
+<li class="fi-pagination-item fi-disabled"><span class="fi-pagination-item-btn"><span class="fi-pagination-item-label">…</span></span></li>
+<li class="fi-pagination-item"><button type="button" class="fi-pagination-item-btn" aria-label="Go to page 214"><span class="fi-pagination-item-label">214</span></button></li>
+<li class="fi-pagination-item"><button type="button" class="fi-pagination-item-btn" aria-label="Next"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button></li>
+</ol>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
 </body>
 </html>

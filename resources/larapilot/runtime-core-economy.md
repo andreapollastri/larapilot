@@ -42,7 +42,7 @@ The behavior behind each level is the **Output Economy** section of the skill, t
 - **Clarity first** — **`larapilot-inception`**, **`larapilot-adopt`**
 - **Moderate** — **`larapilot-feature`**, **`larapilot-bug`**, **`larapilot-prd`**, **`larapilot-spec`**, **`larapilot-design`**, **`larapilot-laravel-upgrade`**, **`larapilot-php-upgrade`**, **`larapilot-db-upgrade`**
 - **Split** — **`larapilot-plan`**
-- **High** — **`larapilot-triage`**, **`larapilot-aikido`**, **`larapilot-error`**, **`larapilot-vendor-check`**, **`larapilot-implement`**, **`larapilot-review`**, **`larapilot-settings`**, **`larapilot-usage`**, **`larapilot-schedule`**, **`larapilot-economics`**, **`larapilot-tracker`**, **`larapilot-backstage`**
+- **High** — **`larapilot-triage`**, **`larapilot-security`**, **`larapilot-error`**, **`larapilot-vendor-check`**, **`larapilot-implement`**, **`larapilot-review`**, **`larapilot-settings`**, **`larapilot-usage`**, **`larapilot-schedule`**, **`larapilot-economics`**, **`larapilot-tracker`**, **`larapilot-backstage`**
 - **Structured terse** — **`larapilot-ship`**
 - **Minimal** — **`larapilot-autopilot`**
 <!-- end -->

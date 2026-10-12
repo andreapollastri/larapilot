@@ -386,7 +386,6 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
         ->and($yaml)->toContain('comments: false')
-        ->and($yaml)->toContain('dashboard_auth: false')
         ->and($yaml)->toContain('api_auth: false')
         ->and($yaml)->toContain('security_scan: false')
         ->and($yaml)->toContain('github: false')
@@ -437,10 +436,10 @@ it('persists project settings via settings-set', function (): void {
         'decision_log' => 'NO',
         'code_history' => 'YES',
         'comments' => 'NO',
-        'dashboard_auth' => 'NO',
         'api_auth' => 'YES',
         'security_scan' => 'YES',
         'aikido' => 'NO',
+        'security' => 'NO',
         'errors' => 'NO',
         'boogle' => 'NO',
         'github' => 'YES',
@@ -455,7 +454,10 @@ it('persists project settings via settings-set', function (): void {
         'project_docs' => 'NO',
         'prior_art' => 'NO',
         'hooks' => 'NO',
+        'sprints' => 'NO',
+        'public_roadmap' => 'NO',
         'errors_provider' => '',
+        'security_provider' => '',
     ])
         ->and(app(ConfigService::class)->setupInfo()['settings'])->toBe($settings)
         ->and(app(ConfigService::class)->priorArtEnabled())->toBeFalse()

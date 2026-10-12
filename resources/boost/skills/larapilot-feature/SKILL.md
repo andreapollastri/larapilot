@@ -40,7 +40,7 @@ When `data.settings.decision_log` is `YES`, journal material user choices with `
 2. `php artisan larapilot:prd-show` — the outline; then `--ids=` for the FRs, journeys, and NFRs the feature touches. When `data.project.prd` is `false`, suggest `/larapilot-inception` first. Read the whole PRD only when step 3 edits it
 3. `php artisan larapilot:validate-spec --file=...`
 4. `php artisan larapilot:spec-add --file=...`
-5. When `release_mode=YES` and open releases exist: `release-list`, AskQuestion for target release (each open release | new release | none/backlog), then `release-set --add-spec=US-XXX` after `spec-add`; add `**Release:** x.y.z` to the spec body.
+5. When `release_mode=YES`: always propose a target version — an open release, or a **future** one Sarah names — AskQuestion, then `release-set --add-spec=US-XXX` after `spec-add` and `**Release:** x.y.z` on the spec body. When `settings.sprints` is `YES`, propose a sprint and persist it with `php artisan larapilot:spec-sprint {code} {n}`.
 6. When PRD scope changes per **PRD Living Document**: edit PRD, append **PRD Revision History**, then `php artisan larapilot:prd-write` + `php artisan larapilot:validate-prd`
 7. On a **change request**: `php artisan larapilot:prd-impact --ids=FR-XXX` — the other specs that rest on the promise being changed, with the action each needs by status
 
@@ -96,7 +96,9 @@ Use **AskQuestion** for fixed choices; persona intro stays in chat.
 - **Epic:** existing epic code (default — reuse the closest match from `spec-list`) | new epic (propose title) only when no existing epic covers the product area (**Epic consolidation**, Project Settings)
 - **Blocked by:** none | existing `US-XXX` (dependency)
 
-**Release assignment (when `release_mode=YES` and `release-list` shows open releases)** — AskQuestion: each open `planned`/`in_progress` release | **new release** (Sarah proposes next semver) | **none / backlog**. Persist after `spec-add` with `release-set --add-spec=`. That question picks the release, not the git branch. Do not ask again which branch to check out: `release-list` → `git.needs_choice` is the only later branch question, and only when the spec stayed unassigned.
+**Release assignment (when `release_mode=YES`)** — always propose a target version: each open `planned`/`in_progress` release, or a **future release** Sarah proposes (current or the next cut). AskQuestion, then persist after `spec-add` with `release-set --add-spec=` and `**Release:** x.y.z`. That question picks the release, not the git branch. Do not ask again which branch to check out: `release-list` → `git.needs_choice` is the only later branch question, and only when the spec stayed unassigned.
+
+**Sprint (when `settings.sprints` is `YES`)** — propose which two-week sprint the spec belongs to and write it with `php artisan larapilot:spec-sprint {code} {n}` (`none` clears it). When the setting is `NO`, do not ask.
 
 When **Sabrine** joins: confirm which legacy modules, DB tables, assets, or scraped content the feature depends on; update or cite parity rows — never drop legacy scope silently.
 

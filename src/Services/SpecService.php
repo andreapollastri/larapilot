@@ -436,6 +436,29 @@ class SpecService
         });
     }
 
+    /**
+     * The sprint a spec is planned for. Null clears it, so the Board proposes
+     * one again when sprints are on.
+     */
+    public function setSprint(string $code, ?int $sprint): void
+    {
+        $this->mutateBacklog(function () use ($code, $sprint): void {
+            $spec = $this->find($code);
+
+            if ($spec === null) {
+                throw new \RuntimeException("Spec {$code} not found.");
+            }
+
+            if ($sprint === null) {
+                unset($spec['sprint']);
+            } else {
+                $spec['sprint'] = $sprint;
+            }
+
+            $this->persistSpec($spec);
+        });
+    }
+
     public function requestChanges(string $code, string $feedbackMarkdown): void
     {
         $this->mutateBacklog(function () use ($code, $feedbackMarkdown): void {

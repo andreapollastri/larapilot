@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 use Larapilot\Services\ConfigService;
-use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\FileManagerService;
+use Larapilot\Support\MockupAssetResolver;
 
 function material(string $relative, string $contents = 'x'): string
 {
@@ -335,7 +335,7 @@ it('marks the packaged design systems', function (): void {
         ->assertSee('Packaged', false)
         ->getContent();
 
-    expect(substr_count($html, '>Packaged</span>'))->toBe(5);
+    expect(substr_count($html, '>Packaged</span>'))->toBe(count(MockupAssetResolver::PACKAGED));
 });
 
 it('keeps the Boost registration of a custom skill in step', function (): void {
@@ -383,47 +383,115 @@ it('leaves a registered copy that is not the skill it mirrors', function (): voi
         ->and(file_get_contents(base_path('.ai/skills/deploy/SKILL.md')))->toContain("Someone else's.");
 });
 
-it('stays behind the dashboard sign-in on a shared environment', function (): void {
+/**
+ * @return array<string, string>
+ */
+function fileManagerZip(string $bytes): array
+{
+    $file = (string) tempnam(sys_get_temp_dir(), 'lp-files-');
+    file_put_contents($file, $bytes);
+    $zip = new ZipArchive;
+    $files = [];
+
+    try {
+        expect($zip->open($file, ZipArchive::CHECKCONS))->toBeTrue();
+
+        for ($index = 0; $index < $zip->numFiles; $index++) {
+            $files[(string) $zip->getNameIndex($index)] = (string) $zip->getFromIndex($index);
+        }
+    } finally {
+        $zip->close();
+        @unlink($file);
+    }
+
+    return $files;
+}
+
+it('is for admins alone on a shared environment', function (): void {
     $this->artisan('larapilot:install')->assertSuccessful();
     material('brand/logo.png', 'png');
     material('client-materials/contract.md', '# Confidential');
 
-    $this->app['env'] = 'staging';
+    sharedHost();
 
+    // No user yet: closed, and nothing can be written.
+    $this->get('/larapilot/files')->assertStatus(503);
+    $this->get('/larapilot/files/raw/client-materials/contract.md')->assertStatus(503);
+    $this->post('/larapilot/files/brand/delete', signed(['path' => 'logo.png']))->assertStatus(503);
+
+    dashboardUser('andrea');
+    dashboardUser('dev', 'correct-horse-battery', 'dev');
+
+    $this->get('/larapilot/files/zip/brand')->assertRedirect('/larapilot/login');
+    $this->get('/larapilot/files/brand')->assertRedirect('/larapilot/login');
+    signInDashboard('dev')->assertRedirect();
     $this->get('/larapilot')->assertOk()->assertDontSee('>File manager</a>', false);
-    $this->get('/larapilot/files')->assertNotFound();
-    $this->get('/larapilot/files/client-materials')->assertNotFound();
-    $this->get('/larapilot/files/client-materials/contract.md')->assertNotFound();
-    $this->get('/larapilot/files/raw/client-materials/contract.md')->assertNotFound();
-    $this->post('/larapilot/files/brand/delete', signed(['path' => 'logo.png']))->assertNotFound();
-    $this->post('/larapilot/files/brand/rename', signed(['path' => 'logo.png', 'name' => 'x.png']))->assertNotFound();
-    $this->post('/larapilot/files/brand/folder', signed(['name' => 'x']))->assertNotFound();
-    $this->post('/larapilot/files/brand/upload', signed([
-        'files' => [UploadedFile::fake()->createWithContent('x.txt', 'x')],
-    ]))->assertNotFound();
-
+    $this->get('/larapilot/files')->assertForbidden();
+    $this->get('/larapilot/files/client-materials/contract.md')->assertForbidden();
+    $this->get('/larapilot/files/raw/client-materials/contract.md?download=1')->assertForbidden();
+    $this->get('/larapilot/files/zip/client-materials')->assertForbidden();
+    dashboardPost('/larapilot/files/brand/delete', ['path' => 'logo.png'])->assertForbidden();
+    dashboardPost('/larapilot/files/brand/upload', ['files' => [UploadedFile::fake()->createWithContent('x.txt', 'x')]])->assertForbidden();
     expect(base_path('.larapilot/brand/logo.png'))->toBeFile()
         ->and(file_exists(base_path('.larapilot/brand/x.txt')))->toBeFalse();
+    dashboardPost('/larapilot/logout');
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
-
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/larapilot/files/brand')->assertStatus(401);
-    $this->get('/larapilot/files/raw/brand/logo.png')->assertStatus(401);
-    $this->post('/larapilot/files/brand/delete', signed(['path' => 'logo.png']))->assertStatus(401);
-
-    $this->get('/larapilot', $headers)->assertOk()->assertSee('>File manager</a>', false);
-
-    $this->get('/larapilot/files/brand', $headers)
-        ->assertOk()
-        ->assertSee('Upload files', false);
-
-    $this->post('/larapilot/files/brand/delete', signed(['path' => 'logo.png']), $headers)
-        ->assertRedirect('/larapilot/files/brand');
+    signInDashboard('andrea')->assertRedirect('/larapilot');
+    $this->get('/larapilot')->assertOk()->assertSee('>File manager</a>', false);
+    $this->get('/larapilot/files/brand')->assertOk()->assertSee('Upload files', false)->assertSee('Download zip', false);
+    dashboardPost('/larapilot/files/brand/delete', ['path' => 'logo.png'])->assertRedirect('/larapilot/files/brand');
 
     expect(file_exists(base_path('.larapilot/brand/logo.png')))->toBeFalse();
+});
+
+it('zips what a folder shows, and shows an env file as it is outside production', function (): void {
+    $this->artisan('larapilot:install')->assertSuccessful();
+    material('client-materials/contract.md', '# Confidential contract');
+    material('client-materials/app/.env', "APP_NAME=Fjord\nDB_PASSWORD=hunter2-env\n");
+    material('client-materials/app/id_rsa', "-----BEGIN OPENSSH PRIVATE KEY-----\nprivate-key-bytes\n");
+    material('client-materials/app/data.sqlite', 'SQLite format 3 rows');
+    material('client-materials/app/worker.log', "[2026-10-01 12:00:00] local.ERROR: login failed {\"password\":\"hunter2-log\"}\n");
+
+    // Outside production the values of .env are shown and downloaded as they are.
+    $this->get('/larapilot/files/client-materials/app/.env')->assertOk()->assertSee('hunter2-env', false)->assertDontSee('values hidden', false);
+    expect($this->get('/larapilot/files/raw/client-materials/app/.env?download=1')->assertOk()->streamedContent() ?: '')->toBeString();
+
+    $this->get('/larapilot/files/client-materials')->assertOk()->assertSee('Download zip', false)->assertSee('/larapilot/files/zip/client-materials', false);
+
+    $response = $this->get('/larapilot/files/zip/client-materials')->assertOk();
+    expect($response->headers->get('Content-Disposition'))->toContain('client-materials-')->toContain('.zip');
+    $files = fileManagerZip($response->streamedContent());
+
+    expect(array_keys($files))->toContain('contract.md', 'app/.env', 'app/id_rsa', 'app/worker.log')
+        ->and($files)->not->toHaveKey('app/data.sqlite')
+        ->and($files['contract.md'])->toBe('# Confidential contract')
+        ->and($files['app/.env'])->toContain('hunter2-env')
+        ->and($files['app/id_rsa'])->not->toContain('private-key-bytes')
+        ->and($files['app/worker.log'])->not->toContain('hunter2-log')->toContain('[REDACTED]');
+
+    // A folder of its own zips alone; an empty one says so.
+    expect(array_keys(fileManagerZip($this->get('/larapilot/files/zip/client-materials/app')->assertOk()->streamedContent())))->toContain('.env');
+    mkdir(base_path('.larapilot/client-materials/empty'), 0755, true);
+    $this->get('/larapilot/files/zip/client-materials/empty')->assertRedirect()->assertSessionHas('larapilot_error');
+    $this->get('/larapilot/files/zip/client-materials/../brand')->assertNotFound();
+    $this->get('/larapilot/files/zip/nowhere')->assertNotFound();
+
+    // Masked again where the rule asks it: production, for anyone but an admin.
+    $files = app(FileManagerService::class);
+    $files->revealSecrets(false);
+    expect($files->masked('client-materials', 'app/.env'))->toContain('DB_PASSWORD=')->not->toContain('hunter2-env')
+        ->and($files->file('client-materials', 'app/.env'))->toBeNull();
+    $zip = $files->zipEntries('client-materials', 'app');
+    expect(collect($zip['files'])->firstWhere('path', '.env')['content'])->not->toContain('hunter2-env');
+
+    // An admin in production sees it as it is.
+    dashboardUser('andrea');
+    forcedProduction();
+    signInDashboard('andrea')->assertRedirect('/larapilot/two-factor/setup');
+    $this->get('/larapilot/two-factor/setup')->assertOk();
+    dashboardPost('/larapilot/two-factor/setup', ['code' => totpCode(totpSetupSecret())])->assertRedirect('/larapilot');
+    $this->get('/larapilot/files/client-materials/app/.env')->assertOk()->assertSee('hunter2-env', false);
+    expect(array_keys(fileManagerZip($this->get('/larapilot/files/zip/client-materials')->assertOk()->streamedContent())))->toContain('app/.env');
 });
 
 it('hides the file manager in production and when it is switched off', function (): void {
@@ -658,32 +726,29 @@ it('shows a file that holds credentials with every value hidden', function (): v
             ->assertSee('Not shown', false)
             ->assertDontSee('do-not-leak', false);
 
-        $env = $this->get('/larapilot/files/project/lp-probe/.env')
+        // Outside production an env file is shown and downloaded as it is.
+        $this->get('/larapilot/files/project/lp-probe/.env')
             ->assertOk()
-            ->assertSee('This file holds credentials.', false)
-            ->assertSee('Download, values hidden', false)
-            ->assertDontSee('do-not-leak', false)
-            ->assertDontSee('Fjord Invoices', false)
-            ->getContent();
+            ->assertSee('do-not-leak-1', false)
+            ->assertDontSee('This file holds credentials.', false);
+        expect($this->get('/larapilot/files/raw/project/lp-probe/.env?download=1')->assertOk()->headers->get('Content-Disposition'))->toContain('.env');
+
+        // Masked where the rule asks it — production, for anyone but an admin.
+        $files = app(FileManagerService::class);
+        $files->revealSecrets(false);
+        $env = (string) $files->masked('project', 'lp-probe/.env');
 
         // The names of the keys are there, and so are the comments.
         foreach (['# Application', 'APP_NAME='.$mask, 'APP_KEY='.$mask, 'export STRIPE_SECRET='.$mask, 'EMPTY_ONE='.$mask, 'MULTI='.$mask, '#OLD_KEY='.$mask, 'DB_PASSWORD ='.$mask] as $line) {
-            expect($env)->toContain(e($line));
+            expect($env)->toContain($line);
         }
 
-        $download = $this->get('/larapilot/files/raw/project/lp-probe/.env?download=1')->assertOk();
-
-        expect($download->headers->get('Content-Disposition'))->toBe('attachment; filename=".env"')
-            ->and($download->headers->get('Content-Type'))->toBe('text/plain; charset=UTF-8')
-            ->and($download->getContent())->toContain('APP_KEY='.$mask)
-            ->and($download->getContent())->not->toContain('do-not-leak')
+        expect($env)->not->toContain('do-not-leak')
+            ->not->toContain('Fjord Invoices')
             // eight lines carry a value; the second line of the value written
             // over two is masked whole
-            ->and(substr_count($download->getContent(), $mask))->toBe(8)
-            ->and($download->getContent())->toContain("MULTI={$mask}\n{$mask}\n");
-
-        // Without ?download the answer is the same: never the bytes on disk.
-        expect($this->get('/larapilot/files/raw/project/lp-probe/.env')->getContent())->not->toContain('do-not-leak');
+            ->and(substr_count($env, $mask))->toBe(8)
+            ->and($env)->toContain("MULTI={$mask}\n{$mask}\n");
 
         $auth = json_decode($this->get('/larapilot/files/raw/project/lp-probe/auth.json')->assertOk()->getContent(), true);
 
@@ -693,13 +758,22 @@ it('shows a file that holds credentials with every value hidden', function (): v
             'bearer' => $mask,
         ]);
 
+        $download = $this->get('/larapilot/files/raw/project/lp-probe/.npmrc?download=1')->assertOk();
+
+        expect($download->headers->get('Content-Disposition'))->toBe('attachment; filename=".npmrc"')
+            ->and($download->headers->get('Content-Type'))->toBe('text/plain; charset=UTF-8')
+            ->and($download->getContent())->not->toContain('do-not-leak');
+
         $this->get('/larapilot/files/project/lp-probe/auth.json')
             ->assertOk()
+            ->assertSee('This file holds credentials.', false)
+            ->assertSee('Download, values hidden', false)
             ->assertSee('http-basic', false)
             ->assertSee('username', false)
             ->assertDontSee('do-not-leak', false);
 
-        $files = app(FileManagerService::class);
+        // A request turned the rule back on for this machine: the service is asked again, masked.
+        $files->revealSecrets(false);
 
         expect($files->masked('project', 'lp-probe/.npmrc'))->toBe("registry={$mask}\n//registry.example.test/:_authToken={$mask}\n")
             ->and($files->masked('project', 'lp-probe/.netrc'))->toBe("machine example.test login {$mask} password {$mask}\n")
@@ -711,10 +785,15 @@ it('shows a file that holds credentials with every value hidden', function (): v
             ->and($files->masked('project', 'lp-probe/missing'))->toBeNull();
 
         foreach (['.env', '.env.production', 'auth.json', '.npmrc', '.netrc', '.pgpass', 'oauth-private.key', 'database.sqlite'] as $name) {
-            // The path of the real bytes is never handed out.
-            expect($files->file('project', 'lp-probe/'.$name))->toBeNull($name)
-                ->and($this->get('/larapilot/files/project/lp-probe/'.$name)->assertOk()->getContent())->not->toContain('do-not-leak');
+            // The path of the real bytes is never handed out while masked.
+            expect($files->file('project', 'lp-probe/'.$name))->toBeNull($name);
         }
+
+        foreach (['auth.json', '.npmrc', '.netrc', '.pgpass', 'oauth-private.key', 'database.sqlite'] as $name) {
+            expect($this->get('/larapilot/files/project/lp-probe/'.$name)->assertOk()->getContent())->not->toContain('do-not-leak');
+        }
+
+        $files->revealSecrets(false);
 
         // A database is neither shown nor served.
         $this->get('/larapilot/files/project/lp-probe/database.sqlite')
@@ -736,9 +815,10 @@ it('shows a file that holds credentials with every value hidden', function (): v
         file_put_contents($rootEnv, "APP_NAME=Fjord\nAPP_KEY=base64:do-not-leak-root\n");
 
         try {
-            expect($this->get('/larapilot/files/raw/project/.env')->assertOk()->getContent())
-                ->toContain('APP_KEY='.$mask)
-                ->not->toContain('do-not-leak');
+            // Outside production it is read as it is; masked, it keeps the names alone.
+            $this->get('/larapilot/files/project/.env')->assertOk()->assertSee('do-not-leak-root', false);
+            $files->revealSecrets(false);
+            expect($files->masked('project', '.env'))->toContain('APP_KEY='.$mask)->not->toContain('do-not-leak');
         } finally {
             if ($previous === false) {
                 @unlink($rootEnv);
@@ -752,10 +832,10 @@ it('shows a file that holds credentials with every value hidden', function (): v
 
         $this->get('/larapilot/files/legacy/old/.env')
             ->assertOk()
-            ->assertSee('LEGACY_TOKEN='.$mask, false)
-            ->assertDontSee('do-not-leak', false);
+            ->assertSee('LEGACY_TOKEN=do-not-leak', false);
 
-        expect($this->get('/larapilot/files/raw/legacy/old/.env?download=1')->getContent())->toBe('LEGACY_TOKEN='.$mask);
+        $files->revealSecrets(false);
+        expect($files->masked('legacy', 'old/.env'))->toBe('LEGACY_TOKEN='.$mask);
     });
 });
 

@@ -1,0 +1,175 @@
+[
+ {
+  "name": "board",
+  "path": "/larapilot"
+ },
+ {
+  "name": "board-dark",
+  "path": "/larapilot",
+  "dark": true
+ },
+ {
+  "name": "board-mobile",
+  "path": "/larapilot",
+  "mobile": true
+ },
+ {
+  "name": "board-versions",
+  "path": "/larapilot?group=version"
+ },
+ {
+  "name": "spec",
+  "path": "/larapilot/specs/US-006",
+  "height": 1000
+ },
+ {
+  "name": "spec-mobile",
+  "path": "/larapilot/specs/US-006",
+  "mobile": true
+ },
+ {
+  "name": "plan",
+  "path": "/larapilot/plan",
+  "height": 1000,
+  "eval": "(() => { const c = [...document.querySelectorAll('input[type=checkbox]')].find(i => /Show tasks/.test(i.closest('label')?.textContent || i.parentElement?.textContent || '')); if (c && c.checked) c.click(); return c ? c.checked : 'no checkbox'; })()"
+ },
+ {
+  "name": "roadmap",
+  "path": "/larapilot/roadmap"
+ },
+ {
+  "name": "roadmap-public",
+  "path": "/larapilot/roadmap",
+  "follow": "[...document.querySelectorAll('a,input,code')].map(e => e.href || e.value || e.textContent).find(v => /\\/roadmap\\/p\\//.test(v || ''))"
+ },
+ {
+  "name": "design",
+  "path": "/larapilot/design"
+ },
+ {
+  "name": "prd",
+  "path": "/larapilot/prd"
+ },
+ {
+  "name": "inception",
+  "path": "/larapilot/inception"
+ },
+ {
+  "name": "about",
+  "path": "/larapilot/about"
+ },
+ {
+  "name": "settings",
+  "path": "/larapilot/settings"
+ },
+ {
+  "name": "skills",
+  "path": "/larapilot/skills"
+ },
+ {
+  "name": "files",
+  "path": "/larapilot/files/design-systems"
+ },
+ {
+  "name": "database-diagram",
+  "path": "/larapilot/database?view=diagram"
+ },
+ {
+  "name": "database-table",
+  "path": "/larapilot/database/bookings"
+ },
+ {
+  "name": "database-migrations",
+  "path": "/larapilot/database?view=migrations"
+ },
+ {
+  "name": "logs",
+  "path": "/larapilot/logs",
+  "eval": "(() => { const d = [...document.querySelectorAll('details.log-entry')].find(e => /ClassFullException/.test(e.querySelector('summary')?.textContent || '')); if (!d) return false; d.open = true; window.scrollTo(0, d.getBoundingClientRect().top + scrollY - 470); return true; })()"
+ },
+ {
+  "name": "logs-repeats",
+  "path": "/larapilot/logs?view=groups"
+ },
+ {
+  "name": "laravel",
+  "path": "/larapilot/laravel"
+ },
+ {
+  "name": "laravel-schedule",
+  "path": "/larapilot/laravel/schedule"
+ },
+ {
+  "name": "laravel-queue",
+  "path": "/larapilot/laravel/queue"
+ },
+ {
+  "name": "laravel-mail",
+  "path": "/larapilot/laravel/mail",
+  "follow": "[...document.querySelectorAll('a.lv-item')].find(a => /lily\\.parker/i.test(a.textContent))?.href"
+ },
+ {
+  "name": "laravel-dumps",
+  "path": "/larapilot/laravel/dumps"
+ },
+ {
+  "name": "git",
+  "path": "/larapilot/git",
+  "eval": "(() => { const h = [...document.querySelectorAll('h2,h3')].find(e => /History/.test(e.textContent)); h?.closest('section,div')?.scrollIntoView(); window.scrollBy(0, -8); return !!h; })()"
+ },
+ {
+  "name": "forecast",
+  "path": "/larapilot/forecast"
+ },
+ {
+  "name": "usage",
+  "path": "/larapilot/usage"
+ },
+ {
+  "name": "economics",
+  "path": "/larapilot/economics"
+ },
+ {
+  "name": "security",
+  "path": "/larapilot/security"
+ },
+ {
+  "name": "sbom",
+  "path": "/larapilot/sbom"
+ },
+ {
+  "name": "docs",
+  "path": "/larapilot/docs"
+ },
+ {
+  "name": "anonymization",
+  "path": "/larapilot/anonymization",
+  "eval": "(() => { const d = [...document.querySelectorAll('details')].find(e => /^\\s*users\\b/.test(e.querySelector('summary')?.textContent || '')); if (!d) return false; d.open = true; window.scrollTo(0, d.getBoundingClientRect().top + scrollY - 140); return true; })()"
+ },
+ {
+  "name": "api-token",
+  "path": "/larapilot/api-token"
+ },
+ {
+  "name": "login",
+  "server": "staging",
+  "signedOut": true,
+  "path": "/larapilot/login"
+ },
+ {
+  "name": "users",
+  "server": "staging",
+  "path": "/larapilot/users"
+ },
+ {
+  "name": "account",
+  "server": "staging",
+  "path": "/larapilot/account/two-factor"
+ },
+ {
+  "name": "api-docs",
+  "path": "/larapilot/api/docs",
+  "wait": 2500,
+  "server": "staging"
+ }
+]

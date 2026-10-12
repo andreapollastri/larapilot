@@ -5,8 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Larapilot\Services\ConfigService;
-use Larapilot\Services\DashboardAuthService;
+use Larapilot\Services\DatabaseAnonymizer;
 use Larapilot\Services\DatabaseDiagramPdfWriter;
 use Larapilot\Services\DatabaseDiagramService;
 use Larapilot\Services\DatabaseDumpService;
@@ -642,25 +641,29 @@ it('shows a cell the way its value reads', function (): void {
         ->and($viewer->formatBytes(104857600))->toBe('100 MB');
 });
 
-it('stays behind the dashboard sign-in on a shared environment', function (): void {
+it('stays behind the dashboard sign-in on a shared environment, for admins and developers', function (): void {
     viewerDatabase();
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    $this->app['env'] = 'staging';
+    sharedHost();
 
+    $this->get('/larapilot/database')->assertStatus(503);
+    $this->get('/larapilot/database/users')->assertStatus(503);
+
+    dashboardUser('andrea');
+    dashboardUser('pm', 'correct-horse-battery', 'pm');
+
+    $this->get('/larapilot/database/users')->assertRedirect('/larapilot/login');
+
+    signInDashboard('pm')->assertRedirect();
     $this->get('/larapilot')->assertOk()->assertDontSee('>Database</a>', false);
-    $this->get('/larapilot/database')->assertNotFound();
-    $this->get('/larapilot/database/users')->assertNotFound();
+    $this->get('/larapilot/database/users')->assertForbidden();
+    $this->get('/larapilot/database-export/sql')->assertForbidden();
+    dashboardPost('/larapilot/logout');
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
-
-    $this->get('/larapilot/database/users')->assertStatus(401);
-
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/larapilot', $headers)->assertOk()->assertSee('>Database</a>', false);
-    $this->get('/larapilot/database/users', $headers)->assertOk()->assertSee('Ada Lovelace', false);
+    signInDashboard('andrea')->assertRedirect();
+    $this->get('/larapilot')->assertOk()->assertSee('>Database</a>', false);
+    $this->get('/larapilot/database/users')->assertOk()->assertSee('Ada Lovelace', false);
 });
 
 it('hides the database viewer in production and when it is switched off', function (): void {
@@ -741,24 +744,27 @@ it('puts the credentials in the dump only when asked, and only on a developer ma
         ->assertSee('Include passwords and tokens', false);
 
     $this->artisan('larapilot:install')->assertSuccessful();
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
-    $this->app['env'] = 'staging';
+    dashboardUser('andrea');
+    sharedHost();
+    signInDashboard('andrea')->assertRedirect();
 
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/larapilot/database.sql')->assertStatus(401);
-
-    $sql = $this->get('/larapilot/database.sql?credentials=1', $headers)->assertOk()->streamedContent();
+    $sql = $this->get('/larapilot/database.sql?credentials=1')->assertOk()->streamedContent();
 
     expect($sql)->not->toContain('hash-of-ada-s3cret')
         ->toContain('Credentials: left out');
 
-    $this->get('/larapilot/database', $headers)
+    $this->get('/larapilot/database')
         ->assertOk()
         ->assertSee('Download SQL', false)
         ->assertDontSee('Include passwords and tokens', false)
         ->assertSee('Passwords and tokens are left out on a shared host.', false);
+
+    // `development` asks for a sign-in like any shared host, and keeps them out too.
+    sharedHost('development');
+
+    expect($this->get('/larapilot/database.sql?credentials=1')->assertOk()->streamedContent())
+        ->not->toContain('hash-of-ada-s3cret')
+        ->toContain('Credentials: left out');
 });
 
 it('keeps a dump restorable when a hidden column is unique', function (): void {
@@ -990,7 +996,7 @@ it('downloads the structure alone, with no rows', function (): void {
 });
 
 it('takes the next AUTO_INCREMENT number out of a structure, and nothing else', function (): void {
-    $dumps = new class(app(DatabaseViewerService::class)) extends DatabaseDumpService
+    $dumps = new class(app(DatabaseViewerService::class), app(DatabaseAnonymizer::class)) extends DatabaseDumpService
     {
         public function bare(string $driver, string $statement): string
         {
@@ -1348,17 +1354,16 @@ it('keeps the credentials out of the seeders on a shared host, whatever is asked
     viewerDatabase();
 
     $this->artisan('larapilot:install')->assertSuccessful();
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
-    $this->app['env'] = 'staging';
+    dashboardUser('andrea');
+    sharedHost();
 
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
+    $this->get('/larapilot/database-export/seeders?credentials=1')->assertRedirect('/larapilot/login');
+    $this->get('/larapilot/database-export/migrations')->assertRedirect('/larapilot/login');
+    $this->get('/larapilot/database-export/sql?only=structure')->assertRedirect('/larapilot/login');
 
-    $this->get('/larapilot/database-export/seeders?credentials=1')->assertStatus(401);
-    $this->get('/larapilot/database-export/migrations')->assertStatus(401);
-    $this->get('/larapilot/database-export/sql?only=structure')->assertStatus(401);
+    signInDashboard('andrea')->assertRedirect();
 
-    $files = unzipped($this->get('/larapilot/database-export/seeders?credentials=1', $headers)->assertOk()->streamedContent());
+    $files = unzipped($this->get('/larapilot/database-export/seeders?credentials=1')->assertOk()->streamedContent());
 
     expect(implode("\n", $files))->not->toContain('hash-of-ada-s3cret')
         ->toContain('Passwords, tokens, and secrets were left out');

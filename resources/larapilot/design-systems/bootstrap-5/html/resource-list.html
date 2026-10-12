@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bookings · Bramble Stays Host</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bs-mockup">
+<header class="navbar navbar-expand sticky-top bg-dark flex-nowrap p-0 shadow" data-bs-theme="dark">
+  <a class="navbar-brand col-lg-2 me-0 px-3 py-3 fs-6 fw-semibold d-flex align-items-center gap-2" href="dashboard.html">
+    <svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays <span class="badge text-bg-secondary fw-normal">Host</span>
+  </a>
+  <form class="d-none d-md-block flex-grow-1 px-3" role="search">
+    <input class="form-control form-control-sm" type="search" placeholder="Search bookings, guests, listings…" aria-label="Search bookings, guests and listings">
+  </form>
+  <ul class="navbar-nav flex-row align-items-center ms-auto px-2">
+    <li class="nav-item">
+      <a class="nav-link px-2 position-relative" href="#" aria-label="Notifications, 3 unread">
+        <svg class="bi bi-bell fs-5" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
+        <span class="position-absolute top-0 start-100 translate-middle-x badge rounded-pill text-bg-danger mt-1">3</span>
+      </a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-2 ms-2" href="#" role="button" aria-expanded="false">
+        <svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><text x="14" y="18" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">AO</text></svg><span class="d-none d-md-inline">Amara Okafor</span>
+      </a>
+    </li>
+    <li class="nav-item d-lg-none">
+      <button class="nav-link px-2" type="button" aria-label="Open the host menu" aria-controls="hostMenu" aria-expanded="false"><svg class="bi bi-list fs-4" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg></button>
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 p-0 bg-body-tertiary border-end">
+      <nav class="offcanvas-lg offcanvas-start bg-body-tertiary" tabindex="-1" id="hostMenu" aria-label="Host menu">
+        <div class="offcanvas-header">
+          <p class="offcanvas-title h5 mb-0">Bramble Stays</p>
+          <button type="button" class="btn-close" aria-label="Close the host menu"></button>
+        </div>
+        <div class="offcanvas-body d-lg-flex flex-column p-0 pt-lg-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-speedometer2" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z"/><path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3"/></svg> Overview</a></li>
+            <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="resource-list.html"><svg class="bi bi-journal-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10.854 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2"/><path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z"/></svg> Bookings <span class="badge rounded-pill text-bg-warning ms-auto">6</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-calendar3" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg> Calendar</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="empty-state.html"><svg class="bi bi-house-door" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/></svg> Listings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-chat-left-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg> Messages <span class="badge rounded-pill text-bg-primary ms-auto">2</span></a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-wallet2" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/></svg> Payouts</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="dashboard.html"><svg class="bi bi-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/></svg> Reviews</a></li>
+          </ul>
+          <p class="px-3 mt-4 mb-2 text-body-secondary text-uppercase small fw-semibold">Your listings</p>
+          <ul class="nav flex-column px-2 small">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Willow Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Larch Cabin</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Saltmarsh Cottage</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-circle-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8"/></svg> Old Mill Barn</a></li>
+          </ul>
+          <hr class="mx-3 my-3">
+          <ul class="nav nav-pills flex-column gap-1 px-2 mb-3">
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="settings.html"><svg class="bi bi-gear" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/></svg> Settings</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="landing.html#faq"><svg class="bi bi-question-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg> Help centre</a></li>
+            <li class="nav-item"><a class="nav-link link-body-emphasis d-flex align-items-center gap-2" href="login.html"><svg class="bi bi-box-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg> Sign out</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <main class="col-lg-10 ms-sm-auto px-3 px-md-4 py-4">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small mb-2">
+          <li class="breadcrumb-item"><a href="dashboard.html">Overview</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Bookings</li>
+        </ol>
+      </nav>
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div>
+          <h1 class="h2 mb-1">Bookings</h1>
+          <p class="text-body-secondary mb-0">128 bookings across 4 listings · 6 requests waiting for your reply</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2"><svg class="bi bi-download" viewBox="0 0 16 16" aria-hidden="true"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg> Export CSV</button>
+          <a class="btn btn-primary d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-plus-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg> Add booking</a>
+        </div>
+      </div>
+
+      <ul class="nav nav-underline flex-nowrap overflow-x-auto text-nowrap mb-3">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="resource-list.html">All <span class="badge rounded-pill text-bg-secondary ms-1">128</span></a></li>
+        <li class="nav-item"><a class="nav-link link-body-emphasis" href="resource-list.html">Upcoming <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis ms-1">42</span></a></li>
+        <li class="nav-item"><a class="nav-link link-body-emphasis" href="resource-list.html">Requests <span class="badge rounded-pill text-bg-warning ms-1">6</span></a></li>
+        <li class="nav-item"><a class="nav-link link-body-emphasis" href="resource-list.html">Past <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis ms-1">74</span></a></li>
+        <li class="nav-item"><a class="nav-link link-body-emphasis" href="resource-list.html">Cancelled <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis ms-1">6</span></a></li>
+      </ul>
+
+      <div class="row g-2 align-items-center mb-3">
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="input-group">
+            <span class="input-group-text bg-body"><svg class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></span>
+            <input type="search" class="form-control" placeholder="Guest name, email or booking ref" aria-label="Search bookings">
+          </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+          <select class="form-select" aria-label="Listing"><option>All listings</option><option>Willow Cottage</option><option>Larch Cabin</option><option>Saltmarsh Cottage</option><option>Old Mill Barn</option></select>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+          <select class="form-select" aria-label="Arrival"><option>Next 30 days</option><option>This week</option><option>Any time</option></select>
+        </div>
+        <div class="col-12 col-xl-4 d-flex flex-wrap align-items-center gap-2 justify-content-xl-end">
+          <button type="button" class="btn btn-sm btn-light border rounded-pill d-flex align-items-center gap-1">Confirmed, Request <svg class="bi bi-x" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"><svg class="bi bi-funnel" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/></svg> More filters <span class="badge text-bg-primary">1</span></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header bg-primary-subtle border-primary-subtle d-flex flex-wrap align-items-center gap-2 py-2">
+          <span class="fw-semibold text-primary-emphasis me-2">2 bookings selected</span>
+          <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1"><svg class="bi bi-envelope" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg> Message guests</button>
+          <button type="button" class="btn btn-sm btn-outline-primary">Export selected</button>
+          <a href="modal.html" class="btn btn-sm btn-outline-danger">Cancel bookings</a>
+          <button type="button" class="btn btn-sm btn-link text-primary-emphasis ms-auto">Clear selection</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle text-nowrap mb-0">
+            <thead>
+              <tr>
+                <th scope="col" class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select all bookings on this page"></th>
+                <th scope="col">Booking</th>
+                <th scope="col">Guest</th>
+                <th scope="col">Listing</th>
+                <th scope="col" aria-sort="ascending"><a href="resource-list.html" class="link-body-emphasis text-decoration-none d-inline-flex align-items-center gap-1">Check-in <svg class="bi bi-arrow-up text-primary" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></svg></a></th>
+                <th scope="col" class="text-end">Nights</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-end"><a href="resource-list.html" class="link-body-emphasis text-decoration-none d-inline-flex align-items-center gap-1">Total <svg class="bi bi-arrow-down-up text-body-tertiary" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"/></svg></a></th>
+                <th scope="col" aria-label="Actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20481"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20481</a><div class="small text-body-secondary">Booked 2 Sep</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-primary-subtle text-primary-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">PR</text></svg><div class="lh-sm"><div>Priya Raman</div><div class="small text-body-secondary">priya.raman@fastmail.com</div></div></div></td>
+                <td>Willow Cottage</td>
+                <td>Mon 12 Oct</td>
+                <td class="text-end">3</td>
+                <td><span class="badge text-bg-success">Confirmed</span></td>
+                <td class="text-end">€426.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20481"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr class="table-active">
+                <td class="ps-3"><input class="form-check-input" type="checkbox" checked aria-label="Select booking BR-20477"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20477</a><div class="small text-body-secondary">Booked 28 Aug</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-info-subtle text-info-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">TW</text></svg><div class="lh-sm"><div>Tomasz Wiśniewski</div><div class="small text-body-secondary">t.wisniewski@poczta.pl</div></div></div></td>
+                <td>Larch Cabin</td>
+                <td>Mon 12 Oct</td>
+                <td class="text-end">7</td>
+                <td><span class="badge text-bg-success">Confirmed</span></td>
+                <td class="text-end">€1,036.00</td>
+                <td class="text-end pe-3">
+                  <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-light border show" aria-expanded="true" aria-label="Actions for BR-20477"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end show shadow" data-bs-popper="static">
+                      <li><h6 class="dropdown-header">BR-20477</h6></li>
+                      <li><a class="dropdown-item d-flex align-items-center gap-2" href="resource-form.html"><svg class="bi bi-eye" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/></svg> View booking</a></li>
+                      <li><a class="dropdown-item d-flex align-items-center gap-2" href="resource-list.html"><svg class="bi bi-chat-left-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg> Message guest</a></li>
+                      <li><a class="dropdown-item d-flex align-items-center gap-2" href="resource-list.html"><svg class="bi bi-receipt" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/><path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/></svg> Send invoice</a></li>
+                      <li><a class="dropdown-item d-flex align-items-center gap-2 disabled" href="resource-list.html" aria-disabled="true"><svg class="bi bi-calendar-x" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/></svg> Change dates</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="modal.html"><svg class="bi bi-x-circle" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg> Cancel booking</a></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr class="table-active">
+                <td class="ps-3"><input class="form-check-input" type="checkbox" checked aria-label="Select booking BR-20502"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20502</a><div class="small text-body-secondary">Booked 9 Oct</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-warning-subtle text-warning-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">SE</text></svg><div class="lh-sm"><div>Sofia Esposito</div><div class="small text-body-secondary">sofia.esposito@libero.it</div></div></div></td>
+                <td>Saltmarsh Cottage</td>
+                <td>Mon 12 Oct</td>
+                <td class="text-end">4</td>
+                <td><span class="badge text-bg-success">Confirmed</span></td>
+                <td class="text-end">€596.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20502"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20511"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20511</a><div class="small text-body-secondary">Requested 11 Oct</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-danger-subtle text-danger-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">AR</text></svg><div class="lh-sm"><div>Aiyana Redcloud</div><div class="small text-body-secondary">aiyana@redcloud.studio</div></div></div></td>
+                <td>Saltmarsh Cottage</td>
+                <td>Sun 18 Oct</td>
+                <td class="text-end">2</td>
+                <td><span class="badge text-bg-warning">Request · 21 h left</span></td>
+                <td class="text-end">€298.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20511"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20463"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20463</a><div class="small text-body-secondary">Booked 19 Aug</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-secondary-subtle text-secondary-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">KM</text></svg><div class="lh-sm"><div>Kenji Morita</div><div class="small text-body-secondary">kenji.morita@icloud.com</div></div></div></td>
+                <td>Willow Cottage</td>
+                <td>Fri 23 Oct</td>
+                <td class="text-end">3</td>
+                <td><span class="badge text-bg-info">Awaiting payment</span></td>
+                <td class="text-end">€426.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20463"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20455"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20455</a><div class="small text-body-secondary">Booked 14 Aug</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">FB</text></svg><div class="lh-sm"><div>Fatima Zahra Benali</div><div class="small text-body-secondary">fz.benali@gmail.com</div></div></div></td>
+                <td>Old Mill Barn</td>
+                <td>Sat 24 Oct</td>
+                <td class="text-end">7</td>
+                <td><span class="badge text-bg-success">Confirmed</span></td>
+                <td class="text-end">€1,610.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20455"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20438"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20438</a><div class="small text-body-secondary">Booked 3 Aug</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-primary-subtle text-primary-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">LO</text></svg><div class="lh-sm"><div>Liam O'Connor</div><div class="small text-body-secondary">liam.oconnor@eircom.net</div></div></div></td>
+                <td>Larch Cabin</td>
+                <td>Fri 30 Oct</td>
+                <td class="text-end">3</td>
+                <td><span class="badge text-bg-secondary">Cancelled by guest</span></td>
+                <td class="text-end text-body-secondary"><s>€444.00</s></td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20438"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="ps-3"><input class="form-check-input" type="checkbox" aria-label="Select booking BR-20519"></td>
+                <td><a href="resource-form.html" class="fw-semibold text-decoration-none">BR-20519</a><div class="small text-body-secondary">Requested 12 Oct</div></td>
+                <td><div class="d-flex align-items-center gap-2"><svg class="rounded-circle bg-info-subtle text-info-emphasis flex-shrink-0" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><text x="16" y="20.3" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">NA</text></svg><div class="lh-sm"><div>Nadia Al-Amin</div><div class="small text-body-secondary">nadia.alamin@proton.me</div></div></div></td>
+                <td>Willow Cottage</td>
+                <td>Fri 6 Nov</td>
+                <td class="text-end">2</td>
+                <td><span class="badge text-bg-warning">Request · 47 h left</span></td>
+                <td class="text-end">€284.00</td>
+                <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-link link-secondary" aria-label="Actions for BR-20519"><svg class="bi bi-three-dots" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer bg-body d-flex flex-wrap align-items-center justify-content-between gap-3 py-3">
+          <div class="d-flex align-items-center gap-2 small text-body-secondary">
+            <span>Showing <strong class="text-body">1–8</strong> of <strong class="text-body">128</strong></span>
+            <span class="vr"></span>
+            <label for="perPage" class="text-nowrap">Rows</label>
+            <select id="perPage" class="form-select form-select-sm w-auto"><option>8</option><option>25</option><option>50</option></select>
+          </div>
+          <nav aria-label="Bookings pages">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item disabled"><a class="page-link" href="resource-list.html" aria-label="Previous page" aria-disabled="true"><svg class="bi bi-chevron-left" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg></a></li>
+              <li class="page-item active" aria-current="page"><a class="page-link" href="resource-list.html">1</a></li>
+              <li class="page-item"><a class="page-link" href="resource-list.html">2</a></li>
+              <li class="page-item"><a class="page-link" href="resource-list.html">3</a></li>
+              <li class="page-item disabled"><span class="page-link">…</span></li>
+              <li class="page-item"><a class="page-link" href="resource-list.html">16</a></li>
+              <li class="page-item"><a class="page-link" href="resource-list.html" aria-label="Next page"><svg class="bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <footer class="d-flex flex-wrap justify-content-between gap-2 pt-4 mt-4 border-top small text-body-secondary">
+        <span>© 2026 Bramble Stays Ltd · Host app</span>
+        <span><a class="link-secondary" href="landing.html#faq">Help centre</a> · <a class="link-secondary" href="settings.html">Host terms</a></span>
+      </footer>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Settings · Fjord</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ns-mockup ">
+<a class="ns-skip-link" href="#main">Skip to content</a>
+<div class="ns-app">
+  <aside class="ns-sidebar" aria-label="Sidebar">
+    <a href="dashboard.html" class="ns-sidebar__brand" aria-label="Fjord, overview"><svg class="ns-brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor"/><path class="ns-brand__line" d="M5.5 18.5 10.5 9.5l3.6 6 2.4-3.6 6 6.6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path class="ns-brand__line ns-brand__line--soft" d="M6 22.2c2-.9 3.4-.9 5.3 0s3.4.9 5.4 0 3.4-.9 5.3 0" fill="none" stroke-width="1.6" stroke-linecap="round"/></svg>Fjord</a>
+    <button type="button" class="ns-workspace" aria-label="Switch workspace: Solberg Studio">
+      <span class="ns-avatar ns-avatar--sand" aria-hidden="true">IS</span>
+      <span class="ns-grow"><span class="ns-workspace__name ns-truncate">Solberg Studio</span><span class="ns-workspace__meta">Studio plan · EUR</span></span>
+      <svg class="ns-icon ns-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+    </button>
+    <nav aria-label="Main" class="ns-nav">
+      <a href="dashboard.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+      <a href="resource-list.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>Invoices<span class="ns-nav__count">24</span></a>
+      <a href="resource-view.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="ns-nav__count">11</span></a>
+      <a href="empty-state.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Recurring</a>
+      <a href="dashboard.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Reports</a>
+    </nav>
+    <nav aria-label="Shortcuts" class="ns-nav">
+      <p class="ns-nav__label">Shortcuts</p>
+      <a href="resource-form.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M9 15h6"/><path d="M12 18v-6"/></svg>New invoice</a>
+      <a href="resource-list.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Overdue<span class="ns-nav__count ns-nav__count--alert">2</span></a>
+      <a href="components.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>Components</a>
+    </nav>
+    <div class="ns-sidebar__footer">
+      <div class="ns-upsell">
+        <p class="ns-upsell__title">7 of 10 clients used</p>
+        <div class="ns-progress ns-mt-2"><div class="ns-progress__bar" style="width: 70%"></div></div>
+        <p class="ns-mt-2">Unlimited clients on Team. <a href="landing.html#pricing" class="ns-link">Compare plans</a></p>
+      </div>
+      <div class="ns-nav">
+        <a href="settings.html" class="ns-nav__item" aria-current="page"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+        <a href="settings.html" class="ns-nav__item" aria-label="Your profile: Ingrid Solberg"><span class="ns-avatar ns-avatar--sand ns-avatar--sm" aria-hidden="true">IS</span><span class="ns-truncate">Ingrid Solberg</span></a>
+      </div>
+    </div>
+  </aside>
+  <div class="ns-main">
+    <header class="ns-topbar">
+      <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon ns-topbar__menu" aria-label="Open menu"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+      <a href="dashboard.html" class="ns-topbar__brand" aria-label="Fjord, overview"><svg class="ns-brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor"/><path class="ns-brand__line" d="M5.5 18.5 10.5 9.5l3.6 6 2.4-3.6 6 6.6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path class="ns-brand__line ns-brand__line--soft" d="M6 22.2c2-.9 3.4-.9 5.3 0s3.4.9 5.4 0 3.4-.9 5.3 0" fill="none" stroke-width="1.6" stroke-linecap="round"/></svg>Fjord</a>
+      <label class="ns-search"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search invoices and clients</span><input type="search" placeholder="Search invoices, clients, amounts"><span class="ns-kbd" aria-hidden="true">⌘K</span></label>
+      <div class="ns-topbar__actions">
+        <a href="resource-form.html" class="ns-btn ns-btn--ghost ns-btn--icon ns-only-sm" aria-label="New invoice"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+        <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Help"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+        <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Notifications, 3 new"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M11.68 2.009A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673c-.824-.85-1.678-1.731-2.21-3.348"/><circle cx="18" cy="5" r="3"/></svg></button>
+      </div>
+    </header>
+    <main id="main" class="ns-content">
+<div class="ns-page-header">
+        <div>
+          <h1 class="ns-page-header__title">Settings</h1>
+          <p class="ns-page-header__subtitle">Solberg Studio · how you appear on invoices and how Fjord works for you.</p>
+        </div>
+      </div>
+
+      <div class="ns-grid ns-grid--aside-main">
+        <nav class="ns-subnav" aria-label="Settings sections">
+          <a href="settings.html" class="ns-subnav__item" aria-current="page"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>Business</a>
+          <a href="settings.html" class="ns-subnav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>Invoices</a>
+          <a href="settings.html" class="ns-subnav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>Payments</a>
+          <a href="settings.html" class="ns-subnav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>Reminders</a>
+          <a href="settings.html" class="ns-subnav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>Team</a>
+          <a href="settings.html" class="ns-subnav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11h3.75a2 2 0 0 1 1.6.8l.45.6a4 4 0 0 0 6.4 0l.45-.6a2 2 0 0 1 1.6-.8H21"/><path d="M3 7h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Plan and billing</a>
+        </nav>
+
+        <div>
+          <section class="ns-form-section ns-form-section--stack" aria-labelledby="s-business">
+            <div>
+              <h2 id="s-business" class="ns-form-section__title">Business profile</h2>
+              <p class="ns-form-section__text">Printed at the top of every invoice and used on your payment page.</p>
+            </div>
+            <div class="ns-form-grid">
+              <div class="ns-col-full ns-row ns-row--lg">
+                <span class="ns-avatar ns-avatar--sand ns-avatar--xl" aria-hidden="true">SS</span>
+                <div class="ns-stack ns-stack--sm">
+                  <div class="ns-row"><button type="button" class="ns-btn ns-btn--secondary ns-btn--sm"><svg class="ns-icon ns-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Upload logo</button><button type="button" class="ns-btn ns-btn--ghost ns-btn--sm">Remove</button></div>
+                  <p class="ns-hint">SVG or PNG, at least 400 px wide. Shown at 48 px high on invoices.</p>
+                </div>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="biz-name">Business name <span class="ns-label__req" aria-hidden="true">*</span></label>
+                <input id="biz-name" type="text" class="ns-input" value="Solberg Studio" required>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="org">Organisation number</label>
+                <input id="org" type="text" class="ns-input ns-num" value="927 118 403" aria-describedby="org-hint">
+                <p id="org-hint" class="ns-hint">Checked against Brønnøysundregistrene.</p>
+              </div>
+              <div class="ns-field ns-col-full">
+                <label class="ns-label" for="street">Address</label>
+                <input id="street" type="text" class="ns-input" value="Bryggen 14">
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="city">Postcode and city</label>
+                <input id="city" type="text" class="ns-input" value="5003 Bergen">
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="country">Country</label>
+                <select id="country" class="ns-select"><option selected>Norway</option><option>Sweden</option><option>Denmark</option><option>Finland</option></select>
+              </div>
+              <div class="ns-col-full ns-setting">
+                <div><p class="ns-setting__title" id="vat-label">Registered for VAT (MVA)</p><p class="ns-setting__text" id="vat-desc">Adds 25% VAT to domestic invoices and "MVA" after your organisation number.</p></div>
+                <input type="checkbox" role="switch" class="ns-switch" checked aria-labelledby="vat-label" aria-describedby="vat-desc">
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-form-section ns-form-section--stack" aria-labelledby="s-invoices">
+            <div>
+              <h2 id="s-invoices" class="ns-form-section__title">Invoice defaults</h2>
+              <p class="ns-form-section__text">Used for every new invoice. You can change them per invoice.</p>
+            </div>
+            <div class="ns-form-grid">
+              <div class="ns-field">
+                <label class="ns-label" for="prefix">Numbering</label>
+                <div class="ns-input-group"><span class="ns-input-group__addon">INV-2026-</span><input id="prefix" type="text" class="ns-input ns-num" value="046" aria-describedby="prefix-hint"></div>
+                <p id="prefix-hint" class="ns-hint">The next invoice will be INV-2026-046.</p>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="terms">Payment terms</label>
+                <select id="terms" class="ns-select"><option>Due on receipt</option><option selected>Net 14</option><option>Net 30</option></select>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="currency">Default currency</label>
+                <select id="currency" class="ns-select"><option selected>EUR · Euro</option><option>NOK · Norwegian krone</option><option>SEK · Swedish krona</option></select>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="lang">Invoice language</label>
+                <select id="lang" class="ns-select"><option selected>English</option><option>Norsk bokmål</option><option>Svenska</option></select>
+              </div>
+              <div class="ns-field ns-col-full">
+                <label class="ns-label" for="footer">Footer note</label>
+                <textarea id="footer" class="ns-textarea" rows="2">Thank you for working with Solberg Studio. Late payments accrue interest under the Norwegian Late Payment Act.</textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-form-section ns-form-section--stack" aria-labelledby="s-signin">
+            <div>
+              <h2 id="s-signin" class="ns-form-section__title">Sign-in</h2>
+              <p class="ns-form-section__text">Credentials are drawn in mockups and never built as fields.</p>
+            </div>
+            <div class="ns-form-grid">
+              <div>
+                <span class="mock-label">Email</span>
+                <div class="mock-field mock-field--disabled" role="img" aria-label="Email field, filled in">ingrid@solbergstudio.no</div>
+              </div>
+              <div>
+                <span class="mock-label">Password</span>
+                <div class="mock-field mock-field--secret mock-field--disabled" role="img" aria-label="Password field, filled in">••••••••••••</div>
+              </div>
+              <div class="ns-col-full ns-row ns-row--between ns-alert">
+                <div class="ns-row"><svg class="ns-icon ns-icon--lg ns-success-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><div><p class="ns-alert__title">Two-step sign-in is on</p><p class="ns-text-sm">Authenticator app, added 2 March 2026.</p></div></div>
+                <div class="ns-row"><button type="button" class="ns-btn ns-btn--secondary ns-btn--sm">Change password</button><button type="button" class="ns-btn ns-btn--ghost ns-btn--sm">Manage</button></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-form-section ns-form-section--stack" aria-labelledby="s-danger">
+            <div>
+              <h2 id="s-danger" class="ns-form-section__title">Close workspace</h2>
+              <p class="ns-form-section__text">Invoices stay available to your clients for 10 years, as Norwegian law requires.</p>
+            </div>
+            <div class="ns-alert ns-alert--danger">
+              <svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              <div class="ns-grow">
+                <p class="ns-alert__title">You still have 6 open invoices</p>
+                <p class="ns-alert__body">Mark them as paid or void them before closing Solberg Studio.</p>
+                <div class="ns-row ns-mt-3"><button type="button" class="ns-btn ns-btn--danger ns-btn--sm" disabled>Close workspace</button><a href="resource-list.html" class="ns-btn ns-btn--ghost ns-btn--sm">See open invoices</a></div>
+              </div>
+            </div>
+          </section>
+
+
+        </div>
+      </div>
+
+      <div class="ns-sticky-actions">
+        <p class="ns-text-sm ns-muted ns-grow">2 unsaved changes</p>
+        <button type="button" class="ns-btn ns-btn--ghost">Discard</button>
+        <button type="button" class="ns-btn ns-btn--primary">Save changes</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

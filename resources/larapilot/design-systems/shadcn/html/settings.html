@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="The shadcn forms example (settings nav + profile form) inside the app shell, with a Sonner toast.">
+<title>Settings · Orbit</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="sc-mockup">
+<!-- Shell: SidebarProvider + AppSidebar (sidebar-07: TeamSwitcher, NavMain with Collapsible + SidebarMenuSub, NavProjects with SidebarMenuAction, NavUser) + SidebarInset with header h-16 (SidebarTrigger, Separator orientation=vertical, Breadcrumb). Content: the shadcn forms example (SidebarNav + ProfileForm with react-hook-form + zod), Separator, Sonner toast. -->
+<a class="visually-hidden sc-skip-link" href="#main">Skip to content</a>
+<div class="sc-shell">
+<aside class="sc-sidebar" aria-label="Sidebar">
+<div class="sc-sidebar__header">
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--lg" type="button" aria-haspopup="menu" aria-label="Switch team, current: Halcyon Labs"><span class="sc-team-logo"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/><path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/></svg></span><span class="sc-menu-btn__meta"><strong>Halcyon Labs</strong><small>Business</small></span><svg class="sc-icon sc-ml-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></li></ul>
+</div>
+<nav class="sc-sidebar__content" aria-label="Main">
+<div class="sc-sidebar__group">
+<div class="sc-sidebar__group-label">Platform</div>
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><a class="sc-menu-btn" href="dashboard.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg><span>Overview</span></a></li><li class="sc-sidebar__item"><button class="sc-menu-btn" type="button" aria-expanded="false"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="10"/></svg><span>Issues</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></li><li class="sc-sidebar__item"><button class="sc-menu-btn" type="button" aria-expanded="false"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 8 8H4"/><path d="m8 22-4-4 4-4"/></svg><span>Cycles</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="modal.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg><span>Team</span></a></li><li class="sc-sidebar__item is-open"><button class="sc-menu-btn" type="button" aria-expanded="true"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span>Settings</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><ul class="sc-sidebar__sub"><li><a class="sc-sub-btn is-active" href="settings.html" aria-current="page"><span>Profile</span></a></li><li><a class="sc-sub-btn" href="modal.html"><span>Members</span></a></li><li><a class="sc-sub-btn" href="settings.html"><span>Billing</span></a></li><li><a class="sc-sub-btn" href="settings.html"><span>Integrations</span></a></li></ul></li></ul>
+</div>
+<div class="sc-sidebar__group">
+<div class="sc-sidebar__group-label">Projects</div>
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span>Atlas Mobile</span></a><button class="sc-menu-action" type="button" aria-label="More for Atlas Mobile"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg><span>Billing Revamp</span></a><button class="sc-menu-action" type="button" aria-label="More for Billing Revamp"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18"/><path d="M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z"/><path d="m3 3 6.586 6.586"/><circle cx="11" cy="11" r="2"/></svg><span>Design System</span></a><button class="sc-menu-action" type="button" aria-label="More for Design System"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg><span>Platform API</span></a><button class="sc-menu-action" type="button" aria-label="More for Platform API"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--muted" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>More</span></button></li></ul>
+</div>
+</nav>
+<div class="sc-sidebar__footer">
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--lg" type="button" aria-haspopup="menu" aria-label="Account menu"><span class="sc-avatar sc-avatar--rounded">SM</span><span class="sc-menu-btn__meta"><strong>Sofia Marchetti</strong><small>sofia@halcyonlabs.io</small></span><svg class="sc-icon sc-ml-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></li></ul>
+</div>
+</aside>
+<main class="sc-inset" id="main">
+<header class="sc-header">
+<button class="sc-btn sc-btn--ghost sc-btn--icon-7 sc-sidebar-trigger" type="button" aria-label="Toggle sidebar"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+<span class="sc-separator sc-separator--vertical sc-header__sep" role="presentation"></span>
+<nav aria-label="Breadcrumb"><ol class="sc-breadcrumb"><li class="sc-hidden-mobile"><a href="settings.html">Settings</a></li><li class="sc-hidden-mobile" role="presentation" aria-hidden="true"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></li><li><span aria-current="page">Profile</span></li></ol></nav>
+<div class="sc-header__actions"></div>
+</header>
+<div class="sc-content">
+<div class="sc-settings-page">
+<div class="sc-settings-page__head"><h1 class="sc-settings-page__title">Settings</h1><p class="sc-muted">Manage your account settings and set e-mail preferences.</p></div>
+<div class="sc-separator sc-my-6" role="presentation"></div>
+<div class="sc-settings">
+<aside class="sc-settings__aside"><nav class="sc-settings__nav" aria-label="Settings"><a class="sc-btn sc-btn--ghost sc-settings__link is-active" href="settings.html" aria-current="page">Profile</a><a class="sc-btn sc-btn--ghost sc-settings__link" href="settings.html">Account</a><a class="sc-btn sc-btn--ghost sc-settings__link" href="settings.html">Appearance</a><a class="sc-btn sc-btn--ghost sc-settings__link" href="settings.html">Notifications</a><a class="sc-btn sc-btn--ghost sc-settings__link" href="settings.html">Display</a></nav></aside>
+<div class="sc-settings__panel">
+<div><h2 class="sc-text-lg sc-font-medium">Profile</h2><p class="sc-text-sm sc-muted">This is how others will see you on the site.</p></div>
+<div class="sc-separator" role="presentation"></div>
+<div class="sc-form sc-form--loose">
+<div class="sc-field"><label class="sc-label" for="username">Username</label><input class="sc-input" id="username" value="sofia.m"><p class="sc-field__description">This is your public display name. It can be your real name or a pseudonym. You can only change this once every 30 days.</p></div>
+<div class="sc-field"><label class="sc-label" for="email">Email</label><select class="sc-select" id="email"><option>sofia@halcyonlabs.io</option><option>sofia.marchetti@fastmail.it</option></select><p class="sc-field__description">You can manage verified email addresses in your <a href="#">email settings</a>.</p></div>
+<div class="sc-field is-invalid"><label class="sc-label" for="bio">Bio</label><textarea class="sc-textarea" id="bio" rows="3" aria-invalid="true" aria-describedby="bio-e">Product engineer on Atlas Mobile. Previously @lumen. Ask me about offline sync, keyboard shortcuts and good espresso in Torino — and anything else you might want to know about how we plan cycles at Halcyon.</textarea><p class="sc-field__description">You can @mention other users and organizations to link to them.</p><p class="sc-field__error" id="bio-e">Bio must not be longer than 160 characters.</p></div>
+<div class="sc-field"><span class="sc-label">URLs</span><p class="sc-field__description">Add links to your website, blog, or social media profiles.</p>
+<input class="sc-input" aria-label="URL 1" value="https://sofiamarchetti.dev">
+<input class="sc-input" aria-label="URL 2" value="https://halcyonlabs.io/team/sofia">
+<div><button class="sc-btn sc-btn--outline sc-btn--sm" type="button">Add URL</button></div></div>
+<div><button class="sc-btn" type="button">Update profile</button></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<ol class="sc-toaster" aria-label="Notifications"><li class="sc-toast"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg><div class="sc-toast__body"><p class="sc-toast__title">Verification email sent</p><p class="sc-toast__description">Check sofia.marchetti@fastmail.it to add it to your profile.</p></div><button class="sc-btn sc-btn--xs sc-toast__action" type="button">Resend</button></li></ol>
+</body>
+</html>

@@ -1,75 +1,100 @@
 # Filament (mockup reference)
 
-Visual contract for **admin/control panel** mockups when the PRD chose **Filament**.
+A static, offline replica of a **Filament 4** admin panel (current 4.x look: v4.12; Filament 5 renders the
+same UI). Use it to draw admin mockups that pass for screenshots of the real panel in light and dark mode,
+on desktop and on phones, and that a developer can translate one-to-one into Resources, Pages, Widgets
+and Actions. Sample product throughout: **Northwind Ops**, a wholesale coffee and kitchen-goods distributor
+(orders, customers, products, shipments).
 
-## Source of truth
+## When to use it
 
-| Resource | URL |
-| --- | --- |
-| **Figma — Design System** | [Design System](https://www.figma.com/community/file/1413822581847485668/filament-3-design-system) (Giovanni Zanin, CC BY 4.0) |
-| **Figma — UI Kit (Free)** | [UI Kit (Free)](https://www.figma.com/community/file/1417716904167561805/filament-3-free) (VhiWEB community) |
-| **Merge index** | `figma-sources.md` in this folder |
-| **Filament docs** | [Themes & colors](https://filamentphp.com/docs/panels/themes) |
-| **Live reference** | [Filament demo](https://demo.filamentphp.com/) |
+Use it when the screen is an **admin / back-office panel** and the PRD's Technical Architecture chose
+Filament (or the app already runs a Filament panel). Do **not** use it for public marketing pages,
+storefronts or a hand-built Livewire/Blade app UI — pick another packaged system for those.
 
-Both Figma files are unofficial community kits replicated from the Filament demo. Larapilot merges them into one reference — see `figma-sources.md` for which kit owns which frames. When in doubt, prefer the demo and Filament docs.
+## How a mockup uses it
 
-## When Elise must use this
+1. Copy `tokens.css` next to the mockup as **`filament-tokens.css`** and link only that:
+   `<link rel="stylesheet" href="filament-tokens.css">` (the dashboard rewrites the link to the packaged file).
+2. Body class **`fi-mockup`** is the marker (keep it); panel screens use
+   `<body class="fi-mockup fi-body fi-body-has-topbar fi-body-has-navigation">`, auth screens `fi-mockup fi-body`.
+3. Start from the closest screen in `html/` (open `html/index.html`), keep the shell, swap the content.
+   Compose with the classes in `components.md` only; never add a second stylesheet, CDN, font or script.
+4. Icons are inline Heroicons (outline 24 for navigation, mini 20 in buttons and inputs, micro 16 in
+   badges and table actions), `aria-hidden="true"`, inside `class="fi-icon fi-size-…"`.
+5. Sign-in screens draw the credentials with `.mock-field` (never `<input type="password">`).
 
-Apply this design system when **all** of the following are true:
+### Palette and dark mode
 
-1. The screen is an **admin/control panel** (dashboard, CRUD list, form, settings, auth inside the panel).
-2. The PRD `## Technical Architecture` records **Filament** as the panel choice (or `Application Info` shows Filament installed and the PRD already committed to it).
+- Default colours are Filament's: primary **Amber**, gray **Zinc**, success Green, warning Amber,
+  danger Red, info Blue — as the OKLCH values Filament writes on `:root` (`--primary-50 … --primary-950`).
+- Another primary: `<html data-fi-primary="blue">` (also `emerald`, `indigo`, `rose`, `violet`, `zinc`) ⇔
+  `->colors(['primary' => Color::Blue])`. Another gray: `data-fi-gray="slate|gray"`. Each palette block also
+  carries Filament's **contrast picks** (e.g. amber buttons are amber-400 with amber-900 text; blue buttons
+  blue-600 with white text), so components stay faithful after a switch. A brand hex: override
+  `--primary-50 … 950` (and, if needed, the `--fi-primary-*` picks) in a `<style>` of the mockup README's choice
+  — and record the value Alex registers in the panel provider.
+- Dark mode: tokens use `light-dark()`; `<html class="dark">` forces dark (Filament's own switch), the OS
+  preference applies otherwise, `<html class="light">` pins light. Show at least one key screen in dark.
 
-Do **not** use this for public marketing pages, storefronts, or custom panels — those follow the Nordic minimal language in shared-runtime unless the PRD says otherwise.
+## Screens (`html/`)
 
-## Mockup implementation
+| File | What it shows | Filament PHP |
+| --- | --- | --- |
+| `index.html` | Catalog, palette swatches, links to every screen | — |
+| `dashboard.html` | Account + info widgets, 4-stat overview with sparklines, line and bar chart widgets, latest-orders table widget | `Dashboard`, `AccountWidget`, `StatsOverviewWidget`, `ChartWidget`, `TableWidget` |
+| `widgets-dashboard.html` | Analytics page: filters form, stats with icons, wide comparison chart, doughnut, stacked bars, top products table | `Page` + `HasFiltersForm`, widgets |
+| `dashboard-dark.html` | Dashboard forced dark, user menu open (profile, theme switcher, sign out) | `->darkMode()`, user menu |
+| `resource-list.html` | Orders: header actions, status tabs with counts, bulk actions, search, filter badge, selection + filter indicators, sortable columns, badges with icons, money/date columns, row actions, summary, pagination | `ListRecords`, `getTabs()`, `Table` |
+| `filters.html` | Filters dropdown open (deferred, Apply filters) with indicators | `$table->filters()` |
+| `resource-create.html` | Create order: sections with descriptions, 2/3 + 1/3 grid, required marks, helper text, error, disabled field, selects, toggle buttons, table repeater, rich editor, upload drop zone, checkbox list, toggles, footer actions | `CreateRecord`, `Schema` |
+| `resource-edit.html` | Edit product (demo-style): header View/Delete, rich editor, image grid upload, pricing error, aside status/associations, multi-select badges | `EditRecord` |
+| `resource-view.html` | View order infolist: sections, badges, repeatable table with totals, customer card, timeline | `ViewRecord`, infolist entries |
+| `relation-manager.html` | Edit customer + relation-manager tabs + orders table (Associate / New, Dissociate) | `RelationManager` |
+| `form-wizard.html` | Contained wizard (completed, active, upcoming), repeater cards with an error | `Wizard`, `HasWizard` |
+| `modal.html` | Form action modal with icon over the list + backdrop | `Action::make()->form()` |
+| `slide-over.html` | Slide-over action with sticky header/footer, callout, radios | `->slideOver()` |
+| `notifications.html` | Database notifications slide-over + toast | `Notification`, `->databaseNotifications()` |
+| `empty-state.html` | Table empty state with actions, card and compact empty states | `emptyStateHeading()` |
+| `settings.html` | Settings page with aside sections | custom `Page` with a form |
+| `profile.html` | Edit profile, drawn passwords, multi-factor rows | `->profile(isSimple: false)`, MFA |
+| `cards-navigation.html` | Cluster with start sub-navigation, image + toggle columns | `Cluster`, `SubNavigationPosition::Start` |
+| `components.html` | Every component in variants and states | — |
+| `login.html`, `auth-register.html` | Simple-layout auth cards with drawn credentials | `->login()`, `->registration()` |
 
-1. **Link tokens** — in every Filament admin mockup HTML, include:
+## Mockup → code mapping
 
-   ```html
-   <link rel="stylesheet" href="filament-tokens.css">
-   ```
+- Page = `fi-page` with `fi-header` → a Resource page (`ListRecords`, `CreateRecord`, `EditRecord`,
+  `ViewRecord`) or a custom `Page`; header buttons → `getHeaderActions()`.
+- `fi-ta` table → `Table` columns (`TextColumn` with `->description()`, `->badge()`, `->money()`, `->dateTime()`,
+  `IconColumn`, `ToggleColumn`, `ImageColumn`), `->filters()`, `->recordActions()`, `->toolbarActions()`
+  (bulk), `->headerActions()`, `->summaries`; tabs → `getTabs()`.
+- `fi-section` / `fi-fo-field` → `Section`, `Grid`, `Fieldset`, `TextInput`, `Select`, `Toggle`, `ToggleButtons`,
+  `CheckboxList`, `Radio`, `FileUpload`, `RichEditor`, `Repeater` (`->table()`), `KeyValue`, `TagsInput`, `DatePicker`.
+- `fi-in-entry` → infolist `TextEntry`, `IconEntry`, `RepeatableEntry`.
+- `fi-wi-*` → widgets; `fi-modal` → action modals; `fi-no` → notifications; `fi-sc-wizard` → `Wizard`.
+- `components.md` names the exact PHP for each class.
 
-   Copy `tokens.css` from this folder into the mockup directory as `filament-tokens.css` (or reference it with a relative path to `.larapilot/design-systems/filament/tokens.css` if served from the mockup route).
+## Fidelity notes (what is approximated)
 
-2. **Font** — load **Inter** (Filament default):
+- Charts are inline SVG (Chart.js canvases in the app): same colours, grid, legend and point style; ticks are HTML.
+- FilePond and the TipTap editor are drawn with our own `fi-fo-file-upload-*` / `fi-fo-rich-editor-*` helpers
+  matching their look; searchable selects use a drawn `fi-select-input-btn`.
+- Real Filament adds contrast-computed shade utilities (`fi-bg-color-400`, `hover:fi-text-color-800`, …);
+  mockups write `fi-color fi-color-{name}` and the tokens hold those picks. Avatars are initials, not ui-avatars images.
+- Inter is the panel font (served by Filament itself). Mockups do not load it: Inter is first in the stack,
+  system UI fonts otherwise. The brand mark next to "Northwind Ops" stands for `->brandLogo()`.
+- The sidebar is hidden below 1024 px (the off-canvas drawer is not drawn); the topbar shows the menu button.
+- Filament 3 notes: v3 put the logo in a white sidebar header and the topbar to its right, used semibold
+  white-text buttons on amber-600, `primary-600` for active nav and gray-500 helper text. Apply those by hand
+  only if the project is pinned to v3; everything else (class vocabulary, spacing, radii) carries over.
 
-   ```html
-   <link rel="preconnect" href="https://fonts.bunny.net">
-   <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-   ```
+## Do / don't
 
-3. **Layout** — follow `components.md` for shell (light sidebar + topbar), page header, sections, tables, forms, actions, and empty states. **Starting points:** copy or adapt screens from `{paths.design_systems}/filament/html/` (catalog at `index.html`).
+- Do keep one primary action per area, gray for the rest; use status badges with icons.
+- Do keep tables in `fi-ta-content-ctn` (they scroll on phones) and widgets in `fi-wi`.
+- Don't invent colours or shades; don't add shadows or radii Filament does not use (cards are `rounded-xl`,
+  controls `rounded-lg`, badges `rounded-md`).
+- Don't use `<form>` or password inputs on auth screens; draw them.
 
-4. **Colors** — use CSS variables from `tokens.css`. Default semantic palette matches Filament out of the box:
-
-   | Token | Tailwind base | Usage |
-   | --- | --- | --- |
-   | `primary` | Slate | Primary buttons, active nav, links |
-   | `success` | Green | Success badges, notifications |
-   | `warning` | Amber | Warnings |
-   | `danger` | Red | Destructive actions, errors |
-   | `info` | Blue | Info badges, hints |
-   | `gray` | Zinc | Surfaces, borders, secondary text |
-
-   If the PRD or client materials specify a custom Filament theme (e.g. primary = Indigo), override `--color-primary-*` in the mockup README and document the hex/RGB values Alex will register in the Panel provider.
-
-5. **Dark mode** — Filament supports system/light/dark. Mockups must show **light** as primary and at least one key admin screen in **dark** (`class="dark"` on `<html>` or a toggle). Verify contrast in both modes.
-
-6. **Mobile** — Filament panels collapse the sidebar on small viewports. Admin mockups still follow Mobile First: document collapsed sidebar (drawer/hamburger), stacked form fields, and horizontal scroll only for data tables (`overflow-x-auto`).
-
-## README contract (mockup folder)
-
-When using this design system, the mockup `README.md` must include:
-
-- **Design system:** Filament — link to this folder, `figma-sources.md`, and both Figma files
-- **Panel screens** mapped to Filament concepts (Resource list, Create/Edit form, Relation manager, Widget dashboard, Settings page)
-- **Theme tokens** — primary color overrides if any
-- **Responsive & navigation** — sidebar collapse behavior, breakpoints
-- **Accessibility** — focus rings, form labels, table headers (standard Filament patterns satisfy most WCAG AA checks; note any custom widgets)
-
-## Downstream
-
-- **Alex** implements with Filament Resources, Pages, Widgets, and Actions — mockups are layout/flow references, not pixel-perfect HTML to paste.
-- **Anne** tests at mobile + desktop widths with the panel auth flow in mind.
+Sources and the verified / assumed table: `sources.md`. Community Figma kits: `figma-sources.md`.

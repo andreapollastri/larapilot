@@ -398,6 +398,11 @@
             @if ($object['comment'] !== null)
                 <p class="sub">{{ $object['comment'] }}</p>
             @endif
+            @if ($anonymized ?? false)
+                <p class="sub">These rows are anonymized, and so is the SQL beside them. Search and filters are off.@if ($anonymize_optional ?? false) <a href="{{ request()->fullUrlWithoutQuery(['anonymize']) }}">Show the real rows</a>@endif</p>
+            @elseif ($anonymize_optional ?? false)
+                <p class="sub"><a href="{{ request()->fullUrlWithQuery(['anonymize' => 1]) }}">Preview the anonymized rows</a></p>
+            @endif
             <ul class="db-meta">
                 @if ($error === null)
                     <li>{{ number_format($total) }} {{ $total === 1 ? 'row' : 'rows' }}{{ $search !== '' || $where !== null ? ' found' : '' }}</li>

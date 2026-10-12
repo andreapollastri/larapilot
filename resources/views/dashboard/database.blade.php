@@ -11,6 +11,9 @@
         <div>
             <h2>Database</h2>
             <p class="sub">The tables of the application's database and what is in them — the connection in <code>.env</code>, read through Laravel, so the page is the same on MySQL, MariaDB, PostgreSQL, SQLite, and SQL Server. Nothing is changed from here.</p>
+            @if ($anonymized ?? false)
+                <p class="sub">These rows are anonymized, and so is a download. Search is off. An admin sets the map on Anonymization.</p>
+            @endif
         </div>
         @if ($error === null)
             <form class="page-actions db-dump" method="get" action="{{ route('larapilot.dashboard.database.dump') }}">
@@ -21,6 +24,17 @@
                     </label>
                 @else
                     <span class="hint">Passwords and tokens are left out on a shared host.</span>
+                @endif
+                @if ($anonymized ?? false)
+                    @if (! ($anonymize_optional ?? true))
+                        <input type="hidden" name="anonymize" value="1">
+                    @endif
+                    <span class="hint">Personal columns are replaced in this download.</span>
+                @else
+                    <label class="db-check" title="Replace personal columns in this download. The rows on screen stay as they are.">
+                        <input type="checkbox" name="anonymize" value="1">
+                        Anonymize personal data
+                    </label>
                 @endif
                 <button type="submit" class="btn">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download SQL</button>
                 <details class="db-more" data-db-more>

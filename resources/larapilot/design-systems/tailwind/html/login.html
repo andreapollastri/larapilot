@@ -1,45 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full scheme-light bg-white antialiased dark:scheme-dark dark:bg-gray-900">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — Tailwind CSS</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
-  </script>
+  <meta name="color-scheme" content="light dark">
+  <title>Sign in · Tidewater</title>
+  <link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans text-slate-900 antialiased">
-  <main class="w-full max-w-sm">
-    <div class="mb-6 text-center">
-      <a href="landing.html" class="text-lg font-bold text-indigo-600">Nordic Flow</a>
-    </div>
-    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 class="text-center text-xl font-semibold">Sign in</h1>
-      <p class="mt-1 text-center text-sm text-slate-600">Welcome back — sign in to continue.</p>
-      <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
-      <div class="mt-6 space-y-4">
+<body class="tw-mockup h-full">
+<div class="flex min-h-full">
+  <div class="flex flex-1 flex-col justify-between px-4 py-10 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <header>
+      <a href="landing.html" class="inline-flex" aria-label="Tidewater home"><span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span></a>
+    </header>
+    <main id="main" class="mx-auto w-full max-w-sm py-12 lg:w-96">
+      <h1 class="text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">Sign in to your account</h1>
+      <p class="mt-2 text-sm/6 text-gray-500 dark:text-gray-400">Not on Tidewater yet? <a href="landing.html#pricing" class="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Start a 14-day free trial</a></p>
+
+      <!-- A picture of the sign-in form: no form element and no credential input. The real screen uses the input classes of components.md § 5. -->
+      <div class="mt-10 space-y-6">
         <div>
-          <span class="mb-1 block text-sm font-medium">Email</span>
-          <div role="img" aria-label="Email field, filled in" class="block w-full truncate rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm">jane@example.com</div>
+          <span class="mock-label">Email address</span>
+          <div class="mt-2"><div class="mock-field" role="img" aria-label="Email field, filled in">maya@lumenfield.io</div></div>
         </div>
         <div>
-          <span class="mb-1 block text-sm font-medium">Password</span>
-          <div role="img" aria-label="Password field, filled in" class="block w-full truncate rounded-lg border border-slate-300 px-3 py-2 text-sm tracking-[0.18em] shadow-sm">••••••••••</div>
+          <div class="flex items-center justify-between">
+            <span class="mock-label">Password</span>
+            <a href="login.html" class="text-sm/6 font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Forgot password?</a>
+          </div>
+          <div class="mt-2"><div class="mock-field mock-field--secret mock-field--focus" role="img" aria-label="Password field, filled in">••••••••••••</div></div>
         </div>
-        <label class="flex items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-          Remember me
-        </label>
-        <a href="dashboard.html" role="button" class="block w-full rounded-lg bg-indigo-600 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Log in</a>
+        <div class="flex items-center gap-3">
+          <div class="group grid size-4 grid-cols-1"><input type="checkbox" id="remember" checked class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 dark:disabled:border-white/5 dark:disabled:bg-white/10 forced-colors:appearance-auto"><svg viewBox="0 0 14 14" fill="none" aria-hidden="true" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25 dark:group-has-disabled:stroke-white/25"><path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100"/><path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100"/></svg></div>
+          <label for="remember" class="block text-sm/6 text-gray-900 dark:text-gray-300">Keep me signed in for 30 days</label>
+        </div>
+        <a href="dashboard.html" role="button" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500">Sign in</a>
       </div>
-      <p class="mt-4 text-center text-sm text-slate-500">
-        <a href="#" class="text-indigo-600 hover:underline">Forgot your password?</a>
-        · <a href="landing.html" class="text-indigo-600 hover:underline">Back to site</a>
-      </p>
+
+      <div class="mt-10">
+        <div class="relative">
+          <div aria-hidden="true" class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200 dark:border-white/10"></div></div>
+          <div class="relative flex justify-center text-sm/6 font-medium"><span class="bg-white px-6 text-gray-900 dark:bg-gray-900 dark:text-white">Or continue with</span></div>
+        </div>
+        <div class="mt-6 grid grid-cols-2 gap-4">
+          <a href="dashboard.html" role="button" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 focus-visible:inset-ring-transparent dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20"><svg class="size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 7a5 5 0 1 1 3.61 4.804l-1.903 1.903A1 1 0 0 1 9 14H8v1a1 1 0 0 1-1 1H6v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 .293-.707L8.196 8.39A5.002 5.002 0 0 1 8 7Zm5-3a.75.75 0 0 0 0 1.5A1.5 1.5 0 0 1 14.5 7 .75.75 0 0 0 16 7a3 3 0 0 0-3-3Z" clip-rule="evenodd"/></svg><span class="text-sm/6 font-semibold">Single sign-on</span></a>
+          <a href="dashboard.html" role="button" class="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 focus-visible:inset-ring-transparent dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20"><svg class="size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M10 2.5c-1.31 0-2.526.386-3.546 1.051a.75.75 0 0 1-.82-1.256A8 8 0 0 1 18 9a22.47 22.47 0 0 1-1.228 7.351.75.75 0 1 1-1.417-.49A20.97 20.97 0 0 0 16.5 9 6.5 6.5 0 0 0 10 2.5ZM4.333 4.416a.75.75 0 0 1 .218 1.038A6.466 6.466 0 0 0 3.5 9a7.966 7.966 0 0 1-1.293 4.362.75.75 0 0 1-1.257-.819A6.466 6.466 0 0 0 2 9c0-1.61.476-3.11 1.295-4.365a.75.75 0 0 1 1.038-.219ZM10 6.12a3 3 0 0 0-3.001 3.041 11.455 11.455 0 0 1-2.697 7.24.75.75 0 0 1-1.148-.965A9.957 9.957 0 0 0 5.5 9c0-.028.002-.055.004-.082a4.5 4.5 0 0 1 8.996.084V9.15l-.005.297a.75.75 0 1 1-1.5-.034c.003-.11.004-.219.005-.328a3 3 0 0 0-3-2.965Zm0 2.13a.75.75 0 0 1 .75.75c0 3.51-1.187 6.745-3.181 9.323a.75.75 0 1 1-1.186-.918A13.687 13.687 0 0 0 9.25 9a.75.75 0 0 1 .75-.75Zm3.529 3.698a.75.75 0 0 1 .584.885 18.883 18.883 0 0 1-2.257 5.84.75.75 0 1 1-1.29-.764 17.386 17.386 0 0 0 2.078-5.377.75.75 0 0 1 .885-.584Z" clip-rule="evenodd"/></svg><span class="text-sm/6 font-semibold">Passkey</span></a>
+        </div>
+      </div>
+    </main>
+    <footer class="flex flex-wrap gap-x-6 gap-y-2 text-xs/5 text-gray-500 dark:text-gray-400">
+      <p>&copy; 2026 Tidewater Analytics, Inc.</p>
+      <a href="landing.html#faq" class="hover:text-gray-700 dark:hover:text-gray-200">Privacy</a>
+      <a href="landing.html#faq" class="hover:text-gray-700 dark:hover:text-gray-200">Terms</a>
+      <a href="landing.html#faq" class="hover:text-gray-700 dark:hover:text-gray-200">Status</a>
+    </footer>
+  </div>
+
+  <aside aria-label="What Tidewater shows you" class="relative isolate hidden w-0 flex-1 overflow-hidden bg-gray-900 lg:flex lg:flex-col lg:justify-center lg:px-16 xl:px-24 dark:bg-gray-950 dark:border-l dark:border-white/10">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true" class="absolute top-0 left-1/2 -z-10 size-[64rem] -translate-x-1/3 -translate-y-1/2 text-indigo-600 [mask-image:radial-gradient(closest-side,white,transparent)]">
+      <circle r="512" cx="512" cy="512" fill="url(#login-glow)" fill-opacity="0.8"/>
+      <defs><radialGradient id="login-glow"><stop stop-color="currentColor"/><stop offset="1" stop-color="#0ea5e9"/></radialGradient></defs>
+    </svg>
+    <div class="mx-auto w-full max-w-lg">
+      <div class="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10 backdrop-blur-sm">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-400">Monthly recurring revenue</p>
+            <p class="mt-1 text-4xl font-semibold tracking-tight text-white tabular-nums">$84,210</p>
+          </div>
+          <span class="inline-flex items-center gap-x-0.5 rounded-full bg-green-400/10 px-2 py-0.5 text-xs font-medium text-green-400 inset-ring inset-ring-green-500/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd"/></svg>4.6%</span>
+        </div>
+        <div class="mt-6"><svg class="h-32 w-full text-indigo-400" viewBox="0 0 600 200" preserveAspectRatio="none" role="img" aria-label="MRR this year against last year: $84,210 now, $61,200 a year ago"><defs><linearGradient id="login-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".25"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><g class="stroke-white/5"><line x1="0" x2="600" y1="8" y2="8" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="55" y2="55" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="102" y2="102" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="149" y2="149" vector-effect="non-scaling-stroke"/><line x1="0" x2="600" y1="196" y2="196" vector-effect="non-scaling-stroke"/></g><path d="M0 180.6C18.2 179.5 36.4 178.5 54.5 177.2C72.7 175.9 90.9 174.5 109.1 172.7C127.3 170.9 145.5 168.1 163.6 166.3C181.8 164.5 200 163.2 218.2 161.8C236.4 160.3 254.5 159.5 272.7 157.6C290.9 155.8 309.1 153.1 327.3 150.9C345.5 148.6 363.6 146.1 381.8 144.1C400 142.2 418.2 141.2 436.4 139.2C454.5 137.2 472.7 134.6 490.9 132.1C509.1 129.5 527.3 126.4 545.5 123.8C563.6 121.2 581.8 118.8 600 116.3" class="fill-none stroke-gray-600" stroke-width="1.5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/><path d="M0 116.3C18.2 114 36.4 111.3 54.5 109.5C72.7 107.7 90.9 107.8 109.1 105.4C127.3 103 145.5 98.2 163.6 95.2C181.8 92.2 200 89.5 218.2 87.3C236.4 85.2 254.5 84.8 272.7 82.4C290.9 80.1 309.1 75.9 327.3 73.4C345.5 71 363.6 70.5 381.8 67.8C400 65.1 418.2 60.2 436.4 57.3C454.5 54.3 472.7 52.4 490.9 50.1C509.1 47.8 527.3 47.1 545.5 43.7C563.6 40.3 581.8 34.4 600 29.8L600.0 200L0.0 200Z" fill="url(#login-fill)"/><path d="M0 116.3C18.2 114 36.4 111.3 54.5 109.5C72.7 107.7 90.9 107.8 109.1 105.4C127.3 103 145.5 98.2 163.6 95.2C181.8 92.2 200 89.5 218.2 87.3C236.4 85.2 254.5 84.8 272.7 82.4C290.9 80.1 309.1 75.9 327.3 73.4C345.5 71 363.6 70.5 381.8 67.8C400 65.1 418.2 60.2 436.4 57.3C454.5 54.3 472.7 52.4 490.9 50.1C509.1 47.8 527.3 47.1 545.5 43.7C563.6 40.3 581.8 34.4 600 29.8" class="fill-none stroke-current" stroke-width="2" vector-effect="non-scaling-stroke"/></svg></div>
+        <dl class="mt-6 grid grid-cols-3 gap-4 border-t border-white/10 pt-6 text-sm">
+          <div><dt class="text-gray-400">Customers</dt><dd class="mt-1 font-semibold text-white tabular-nums">1,284</dd></div>
+          <div><dt class="text-gray-400">Net churn</dt><dd class="mt-1 font-semibold text-white tabular-nums">1.8%</dd></div>
+          <div><dt class="text-gray-400">ARPA</dt><dd class="mt-1 font-semibold text-white tabular-nums">$65.58</dd></div>
+        </dl>
+      </div>
+      <figure class="mt-12">
+        <blockquote class="text-lg/8 font-semibold text-white"><p>“Our board numbers were ready the first morning, and they match Stripe to the cent.”</p></blockquote>
+        <figcaption class="mt-6 flex items-center gap-x-4">
+          <span aria-hidden="true" class="inline-flex size-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">TH</span>
+          <div class="text-sm/6"><div class="font-semibold text-white">Tomás Herrera</div><div class="text-gray-400">Co-founder and CEO, Lumenfield</div></div>
+        </figcaption>
+      </figure>
     </div>
-  </main>
+  </aside>
+</div>
+
 </body>
 </html>

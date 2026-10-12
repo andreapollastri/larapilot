@@ -1,7 +1,11 @@
 {{-- The scanners under Security: one tab each. --}}
-@php $current = $current ?? 'aikido'; @endphp
+@php
+    $current = $current ?? 'scanner';
+    $current = $current === 'aikido' ? 'scanner' : $current;
+    $scanner = $scanner ?? (app(\Larapilot\Services\ConfigService::class)->securityProvider() === 'hackly' ? 'Hackly' : (app(\Larapilot\Services\ConfigService::class)->securityProvider() === 'aikido' ? 'Aikido' : 'Scanner'));
+@endphp
 <nav class="security-tabs" aria-label="Security scanners">
-    <a href="{{ route('larapilot.dashboard.security') }}" @class(['is-current' => $current === 'aikido']) @if ($current === 'aikido') aria-current="page" @endif>Aikido</a>
+    <a href="{{ route('larapilot.dashboard.security') }}" @class(['is-current' => $current === 'scanner']) @if ($current === 'scanner') aria-current="page" @endif>{{ $scanner }}</a>
     <a href="{{ route('larapilot.dashboard.security.checkpoint') }}" @class(['is-current' => $current === 'checkpoint']) @if ($current === 'checkpoint') aria-current="page" @endif>Checkpoint</a>
     <a href="{{ route('larapilot.dashboard.sbom') }}">Dependencies (SBOM)</a>
 </nav>

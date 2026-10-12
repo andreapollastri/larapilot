@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Sign in · Fjord</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ns-mockup ns-auth">
+<header class="ns-auth__top">
+  <a href="landing.html" aria-label="Fjord home"><span class="ns-brand"><svg class="ns-brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor"/><path class="ns-brand__line" d="M5.5 18.5 10.5 9.5l3.6 6 2.4-3.6 6 6.6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path class="ns-brand__line ns-brand__line--soft" d="M6 22.2c2-.9 3.4-.9 5.3 0s3.4.9 5.4 0 3.4-.9 5.3 0" fill="none" stroke-width="1.6" stroke-linecap="round"/></svg>Fjord</span></a>
+  <p class="ns-text-sm ns-muted">New to Fjord? <a href="landing.html#pricing" class="ns-link">Create an account</a></p>
+</header>
+<main id="main" class="ns-auth__main">
+  <section class="ns-auth__card" aria-labelledby="signin-title">
+    <h1 id="signin-title" class="ns-auth__title">Welcome back</h1>
+    <p class="ns-auth__sub">Sign in to send invoices and see what is coming in.</p>
+
+    <!-- A picture of the sign-in form: no form element and no credential input. The real screen uses .ns-input (components.md). -->
+    <div class="ns-stack ns-mt-8">
+      <div>
+        <span class="mock-label">Email</span>
+        <div class="mock-field" role="img" aria-label="Email field, filled in">ingrid@solbergstudio.no</div>
+      </div>
+      <div>
+        <div class="ns-row ns-row--between"><span class="mock-label">Password</span><a href="login.html" class="ns-link ns-text-sm">Forgot it?</a></div>
+        <div class="mock-field mock-field--secret mock-field--focus" role="img" aria-label="Password field, filled in">••••••••••••</div>
+      </div>
+      <label class="ns-check"><input type="checkbox" class="ns-checkbox" checked><span class="ns-check__text">Remember this device for 30 days</span></label>
+      <a href="dashboard.html" class="ns-btn ns-btn--primary ns-btn--lg ns-btn--block" role="button">Sign in</a>
+    </div>
+
+    <p class="ns-auth__divider">or</p>
+    <div class="ns-stack ns-stack--sm">
+      <a href="dashboard.html" class="ns-btn ns-btn--secondary ns-btn--block" role="button"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>Email me a sign-in link</a>
+      <a href="dashboard.html" class="ns-btn ns-btn--secondary ns-btn--block" role="button"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></svg>Use a passkey</a>
+    </div>
+  </section>
+</main>
+<footer class="ns-auth__foot">
+  <p>&copy; 2026 Fjord AS · <a href="landing.html#faq" class="ns-link">Privacy</a> · <a href="landing.html#faq" class="ns-link">Terms</a></p>
+</footer>
+<svg class="ns-auth__art" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 40 C 160 22.0 300 58.0 480 40 S 820 22.0 1020 47.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/><path d="M-20 62 C 160 45.6 300 78.4 480 62 S 820 45.6 1020 68.56" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/><path d="M-20 84 C 160 69.2 300 98.8 480 84 S 820 69.2 1020 89.92" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/><path d="M-20 106 C 160 92.8 300 119.2 480 106 S 820 92.8 1020 111.28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6"/><path d="M-20 128 C 160 116.4 300 139.6 480 128 S 820 116.4 1020 132.64" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/><path d="M-20 150 C 160 140.0 300 160.0 480 150 S 820 140.0 1020 154.0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.4"/><path d="M-20 172 C 160 163.6 300 180.4 480 172 S 820 163.6 1020 175.36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.3"/></svg>
+
+</body>
+</html>

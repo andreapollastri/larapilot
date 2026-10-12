@@ -33,7 +33,7 @@ When `data.settings.decision_log` is `YES`, journal the choices the user makes a
 - **Tom** turns observed behavior into acceptance-style requirement statements and flags ambiguous / dead code.
 - **Sarah** reads CLI commands, scheduler, CI pipelines, and Git/branching setup; **Jack** reads deploy + observability config.
 - **Lars** notes the security surface (auth stack, guards, sensitive routes); **Violet** flags personal-data handling already present.
-- **Emma / Elise / Joe / Ricky / Marika / Emily** join only when public web surfaces, UI, mobile, copy, or multi-locale support exist in the repo.
+- **Emma / Elise / Joe / Ricky / Marika / Emily** join only when public web surfaces, UI, mobile, copy, or multi-locale support exist in the repo. **Elise + Joe** own the **as-is design system** (step 6b): the mockups of an adopted project mirror what already exists.
 - **Sabrine is silent** here — there is no legacy parity contract; the Laravel code *is* the product.
 
 ## Config & CLI
@@ -71,7 +71,7 @@ Inventory, with file-path evidence for each item:
 | **Auth & security** | Fortify / Breeze / Jetstream / Sanctum / Passport / Socialite, guards, middleware, roles & permissions packages, 2FA, signed routes |
 | **CLI & ops** | `app/Console/Kernel.php` schedule, custom `artisan` commands, queues / horizon config, `.github/workflows` or other CI, deploy config, `config/*` + `.env.example` keys |
 | **Integrations** | Third-party SDKs in `composer.json`, HTTP clients, webhooks, payment / mail / storage / search / analytics / error-tracking config |
-| **Frontend & UX** | Public routes, sitemap / robots, `resources/views`, `resources/js`, locale files `lang/*`, theme / design system, accessibility affordances |
+| **Frontend & UX** | Public routes, sitemap / robots, `resources/views`, `resources/js`, locale files `lang/*`, theme / design system, accessibility affordances. **Elise + Joe** record the as-is UI with paths: CSS framework and tokens (`resources/css/**`, `tailwind.config.*`, the `@theme` block, a Filament or Nova theme), layouts and shared components (`resources/views/**`, Livewire / Inertia pages), navigation (menus, route names), brand assets in `public/` (logo, favicon, OG image), the real copy in views and `lang/*`, dark-mode support |
 | **Quality signals** | `tests/*` coverage breadth, Pest/PHPUnit, static analysis (`phpstan`/`larastan`), Pint, observability (Sentry/Flare/Telescope/Pulse), `README` / `docs/` |
 
 ### 2. Derive the product model
@@ -139,6 +139,10 @@ Write `{paths.research}/codebase-analysis.md` (create parent dirs). This is the 
 ## Security Surface
 - Auth stack, guards, roles/permissions, sensitive routes, 2FA, personal-data touchpoints (Violet)
 
+## Frontend As-Is
+| Screen | Route | View / component | Layout & components | Source |
+- Tokens (colours, fonts, radius, spacing) with the file they come from; brand assets; navigation; dark mode
+
 ## Quality & Risk
 - Test coverage snapshot, static analysis, observability, notable tech debt / dead code / TODOs
 ```
@@ -158,7 +162,7 @@ Use the **PRD Template in `/larapilot-inception`** (section rules in `discovery-
 - `## Risks & Assumptions` lists every `Not recorded in repo — confirm` item as an open question with an owner, plus the risks the analysis report flagged under **Quality & Risk**.
 - Add a short lead paragraph under `## Functional Requirements`: *"Requirements FR-001…FR-NNN are reverse-engineered from the running codebase at commit {{GIT_SHA}}; see `research/codebase-analysis.md` for evidence."*
 - Every FR body cites its evidence paths and carries a **MoSCoW** tag (production code → Must).
-- `## Technical Architecture` reflects the **real** stack, plus `**Server Management:**`, `**Ops Owner:**`, and `**Support Window:**` from Round 3; unknowns are marked `Not recorded in repo — confirm`, never invented. Do not propose migrations or rewrites here.
+- `## Technical Architecture` reflects the **real** stack, plus `**Server Management:**`, `**Ops Owner:**`, and `**Support Window:**` from Round 3, and `**Design system:** {project-slug} (as-is, derived)` when the repo has UI (step 6b); unknowns are marked `Not recorded in repo — confirm`, never invented. Do not propose migrations or rewrites here.
 - `## PRD Revision History` first row: `| {{DATE}} | larapilot-adopt | Initial PRD reverse-engineered from codebase @ {{GIT_SHA}} |`.
 
 Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `php artisan larapilot:validate-prd`. If `data.ok` is false, fix findings (max 3 attempts); clear `PRD_RECOMMENDED_SECTION` warnings too — an adopted PRD carries every section a fresh one does.
@@ -166,6 +170,20 @@ Persist: `php artisan larapilot:prd-write --file=…` (or `--content=`), then `p
 ### 6. Developer domain docs (retroactive bootstrap)
 
 Albert writes one best-effort file per domain under `{paths.dev_docs}` (default `.larapilot/docs/devs/`), derived from the analysis report's **Domain Model** and **Feature Inventory** — **English**, from `TEMPLATE.md`, with anything inferred rather than verified marked `<!-- TODO: verify -->`. Keep the folder `README.md` index in sync. Cover **every** domain the analysis found, not a sample: this is the project's catch-up, and a project adopted through this skill must reach its first spec already level. Accuracy is best-effort — `<!-- TODO: verify -->` is the honest marker, and the next spec that touches a domain corrects its file. Contract: **First-change catch-up** (`dev-docs-catchup.md`).
+
+### 6b. As-is design system (Elise + Joe — when the repo has UI)
+
+The mockups of an adopted project must be credible against the running application: same screens, layout, components, tokens, copy, and navigation as today. Before anyone draws, derive the project's own design system from the **Frontend As-Is** section of the analysis report and write `{paths.design_systems}/{project-slug}/` with the shape of a packaged folder (read `{paths.design_systems}/README.md` and one packaged folder first):
+
+| File | Content |
+| --- | --- |
+| `README.md` | What the as-is UI is (framework, panel, layout family), when to use it (every mockup of this project), how it relates to a packaged folder when the app runs one (Filament, Nova, a Starter Kit, Bootstrap: same classes, the project's theme on top), the real fonts and how the app loads them |
+| `components.md` | The shell and the components found in the code — anatomy, states, do/don't — each with the file it lives in |
+| `sources.md` | **Every file the system was derived from**: path → what was taken (token, component, layout, copy, asset); screenshots the user dropped in `{paths.client_materials}/` |
+| `tokens.css` | The values found in the code (never invented), dark set when the app has one, body marker `.{project-slug}-mockup`, `.mock-*` helpers for drawn credentials |
+| `html/README.md` | The real screens: route → view file → what it shows — the catalog `/larapilot-design` redraws as they are today (entry screen after login, main list, a form, the login) before its first mockup; under `effort: MAX` draw them here |
+
+Record `**Design system:** {project-slug} (as-is, derived)` in `## Technical Architecture`; `decision-log --topic="design system" --value="{project-slug}" --rationale="as-is, derived from the codebase"` when the journal is on. From here on, every mockup uses this system; a new screen is drawn in the as-is style, and a redesign happens only when the user asks for it, discussed and motivated in chat first (**Adopted projects — mirror the as-is**, `/larapilot-design`; **Mockup fidelity**, `ux-1.md`). Read-only on the app: this step writes under `.larapilot/` only.
 
 ### 7. Dashboard snapshot & ledger
 
@@ -180,11 +198,12 @@ Offer, in order:
 - `/larapilot-spec` — bootstrap the backlog from the reverse-engineered PRD. **Call out** that most FRs describe already-shipped work: the user typically wants to either (a) generate the backlog then close already-delivered stories, or (b) scope `/larapilot-spec` to `Future Phases` / gaps only. Recommend (b) for a large mature app.
 - `/larapilot-feature "…"` — if the user's immediate need is one new capability rather than a full backlog.
 - `/larapilot-settings` — set `git_mode`, `testing`, `backlog` granularity before the first spec.
+- `/larapilot-design` — mockups of this project are drawn in the as-is system `{project-slug}/` (step 6b); say so, and that a redesign happens only when the user asks for it.
 
 ## Output Boundaries
 
 - Read-only on the application codebase — no refactors, migrations, renames, or "cleanup" in this skill.
-- No backlog / spec / plan artifacts — only the PRD, `codebase-analysis.md`, and the developer domain docs bootstrap.
+- No backlog / spec / plan artifacts — only the PRD, `codebase-analysis.md`, the developer domain docs bootstrap, and the as-is design system folder under `{paths.design_systems}/`.
 - Do not fabricate architecture the repo does not show — mark it `confirm` and ask, or leave it for `/larapilot-inception`-style discovery later.
 - Not a substitute for `/larapilot-inception` on true greenfield or legacy-rewrite work.
 - Agents speak in character during discovery; the PRD and analysis report are formal documents in the detected language.
@@ -198,9 +217,9 @@ Offer, in order:
 **Invoke:** `/larapilot-adopt` in a 3-year-old Laravel 11 invoicing SaaS with no `.larapilot/docs/PRD.md`.
 
 1. `context` → no PRD, `lucille: YES`, `effort: STANDARD`.
-2. Discovery: Livewire + Filament admin, Sanctum API, 14 models, Stripe + Mailgun + S3, Horizon queues, GitHub Actions CI, Sentry. `Explore` sub-agent maps `app/`.
+2. Discovery: Livewire + Filament admin, Sanctum API, 14 models, Stripe + Mailgun + S3, Horizon queues, GitHub Actions CI, Sentry. `Explore` sub-agent maps `app/`. Elise + Joe: Filament panel with a custom theme (primary `#0E7490`, `app/Providers/Filament/AdminPanelProvider.php`), Tailwind tokens in `resources/css/app.css`, logo in `public/img/`, 9 Livewire pages.
 3. Derived: Project Kind **Application**; personas **Account Owner**, **Team Member**, **API Consumer**, **Admin**; 22 FRs (all Must — in production); half-built "recurring invoices" behind a feature flag → Future Phases.
 4. Interview: name **"Bilo"**, pitch confirmed; forward Delivery Target **V1 Complete**; recurring invoices → *Keep & finish*; deploy platform not in repo → user says Forge + AWS.
 5. Write `research/codebase-analysis.md` (entity table, feature inventory, integrations, CI, security surface, 3 tech-debt notes).
-6. Write PRD — `Project Origin: Adopted (existing codebase)`, FRs cite paths, architecture = real stack, deploy = Forge/AWS. `validate-prd` → ok.
+6. Write PRD — `Project Origin: Adopted (existing codebase)`, FRs cite paths, architecture = real stack, deploy = Forge/AWS, `Design system: bilo (as-is, derived)`. `validate-prd` → ok. Step 6b writes `.larapilot/design-systems/bilo/` (tokens from `app.css` and the panel provider, `sources.md` with 14 files).
 7. `choices-set --from-prd`; `usage-log`. Next: `/larapilot-spec` scoped to Future Phases (recurring invoices) + any gaps.

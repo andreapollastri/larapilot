@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
-use Larapilot\Services\Aikido\AikidoException;
 use Larapilot\Services\Boogle\BoogleException;
 use Larapilot\Services\Errors\ErrorTrackerManager;
 use Larapilot\Support\Markdown;
+use Throwable;
 
 class DashboardService
 {
@@ -26,8 +26,7 @@ class DashboardService
         protected CustomSkillService $customSkills,
         protected SkillLibraryService $skillLibrary,
         protected AgentGuidelineService $guidelines,
-        protected AikidoService $aikido,
-        protected AikidoRegisterWriter $aikidoRegister,
+        protected SecurityService $security,
         protected BoogleService $boogle,
         protected ErrorTrackerManager $errorTrackers,
         protected EconomicsService $economicsService,
@@ -263,41 +262,57 @@ class DashboardService
     }
 
     /**
-     * The findings of Aikido, or why they cannot be read. The page never
-     * fails on a provider that is down: it says what is wrong.
+     * The findings of the security scanner — Aikido or Hackly — or why they
+     * cannot be read. The page never fails on a scanner that is down: it
+     * says what is wrong.
      *
      * @return array<string, mixed>
      */
     public function security(bool $refresh = false): array
     {
-        $enabled = $this->config->aikidoEnabled();
-        $data = ['enabled' => $enabled, 'status' => null, 'findings' => null, 'error' => null, 'hint' => null, 'repositories' => null];
+        $provider = $this->security->provider();
+        $enabled = $provider !== '';
+        $data = [
+            'enabled' => $enabled,
+            'provider' => $enabled ? $provider : null,
+            'scanner' => $enabled ? $this->security->label() : null,
+            'status' => null,
+            'findings' => null,
+            'error' => null,
+            'hint' => null,
+            'repositories' => null,
+        ];
 
         if (! $enabled) {
             return $data;
         }
 
         try {
-            $data['findings'] = $this->aikido->findings([], $refresh);
+            $data['findings'] = $this->security->findings([], $refresh);
 
             foreach ($data['findings']['issues'] as $index => $issue) {
                 $data['findings']['issues'][$index]['spec_url'] = $issue['spec'] !== null
                     ? route('larapilot.dashboard.spec', $issue['spec'])
                     : null;
             }
-        } catch (AikidoException $e) {
-            $data['error'] = $e->getMessage();
-            $data['hint'] = $e->hint();
-            $data['status'] = $this->aikido->status();
+        } catch (Throwable $e) {
+            if (! $this->security->isScannerError($e) && ! $e instanceof \InvalidArgumentException) {
+                throw $e;
+            }
 
-            // None of the repositories of the workspace is this project:
-            // the page asks which one it is.
-            if ($data['status']['needs_repository']) {
-                try {
-                    $data['repositories'] = $this->aikido->repositories();
-                } catch (AikidoException) {
-                    // what is wrong is already on the page
+            $data['error'] = $e->getMessage();
+            $data['hint'] = $this->security->hint($e);
+
+            try {
+                $data['status'] = $this->security->status();
+
+                // None of the repositories of the scanner is this project:
+                // the page asks which one it is.
+                if ($data['status']['needs_repository']) {
+                    $data['repositories'] = $this->security->repositories();
                 }
+            } catch (Throwable) {
+                // what is wrong is already on the page
             }
         }
 
@@ -305,15 +320,13 @@ class DashboardService
     }
 
     /**
-     * Keep the repository of Aikido the user says this project is.
+     * Keep the repository of the scanner the user says this project is.
      *
      * @return array<string, mixed>
-     *
-     * @throws AikidoException|\InvalidArgumentException
      */
-    public function chooseSecurityRepository(int $id): array
+    public function chooseSecurityRepository(string $id): array
     {
-        return $this->aikido->useRepository((string) $id);
+        return $this->security->useRepository($id);
     }
 
     /**
@@ -323,31 +336,26 @@ class DashboardService
      */
     public function securityRegister(): ?array
     {
-        if (! $this->config->aikidoEnabled()) {
+        if (! $this->security->enabled()) {
             return null;
         }
 
         try {
-            $register = $this->aikido->register();
-        } catch (AikidoException) {
+            return $this->security->renderRegister($this->security->register());
+        } catch (Throwable) {
             return null;
         }
-
-        return [
-            'content' => $this->aikidoRegister->render($register),
-            'filename' => $this->aikidoRegister->filename($register),
-        ];
     }
 
     public function securityReport(): ?string
     {
-        if (! $this->config->aikidoEnabled()) {
+        if (! $this->security->enabled()) {
             return null;
         }
 
         try {
-            return $this->aikido->report($this->aikido->findings([], false));
-        } catch (AikidoException) {
+            return $this->security->report($this->security->findings([], false));
+        } catch (Throwable) {
             return null;
         }
     }

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Data table: filter input, faceted filters, column visibility menu open, sorting, selection, floating bulk bar, pagination.">
+<title>Issues · Orbit</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="sc-mockup">
+<!-- Shell: SidebarProvider + AppSidebar (sidebar-07: TeamSwitcher, NavMain with Collapsible + SidebarMenuSub, NavProjects with SidebarMenuAction, NavUser) + SidebarInset with header h-16 (SidebarTrigger, Separator orientation=vertical, Breadcrumb). Content: the tasks data table (DataTableToolbar, DataTableFacetedFilter, DataTableViewOptions, DataTableColumnHeader, DataTablePagination) with TanStack Table; floating action bar for the selection. -->
+<a class="visually-hidden sc-skip-link" href="#main">Skip to content</a>
+<div class="sc-shell">
+<aside class="sc-sidebar" aria-label="Sidebar">
+<div class="sc-sidebar__header">
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--lg" type="button" aria-haspopup="menu" aria-label="Switch team, current: Halcyon Labs"><span class="sc-team-logo"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/><path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/></svg></span><span class="sc-menu-btn__meta"><strong>Halcyon Labs</strong><small>Business</small></span><svg class="sc-icon sc-ml-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></li></ul>
+</div>
+<nav class="sc-sidebar__content" aria-label="Main">
+<div class="sc-sidebar__group">
+<div class="sc-sidebar__group-label">Platform</div>
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><a class="sc-menu-btn" href="dashboard.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg><span>Overview</span></a></li><li class="sc-sidebar__item is-open"><button class="sc-menu-btn" type="button" aria-expanded="true"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="10"/></svg><span>Issues</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><ul class="sc-sidebar__sub"><li><a class="sc-sub-btn is-active" href="resource-list.html" aria-current="page"><span>All issues</span></a></li><li><a class="sc-sub-btn" href="resource-list.html"><span>My issues</span></a></li><li><a class="sc-sub-btn" href="resource-list.html"><span>Triage</span></a></li><li><a class="sc-sub-btn" href="resource-list.html"><span>Backlog</span></a></li></ul></li><li class="sc-sidebar__item"><button class="sc-menu-btn" type="button" aria-expanded="false"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 8 8H4"/><path d="m8 22-4-4 4-4"/></svg><span>Cycles</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="modal.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg><span>Team</span></a></li><li class="sc-sidebar__item"><button class="sc-menu-btn" type="button" aria-expanded="false"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span>Settings</span><svg class="sc-icon sc-menu-btn__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></li></ul>
+</div>
+<div class="sc-sidebar__group">
+<div class="sc-sidebar__group-label">Projects</div>
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span>Atlas Mobile</span></a><button class="sc-menu-action" type="button" aria-label="More for Atlas Mobile"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg><span>Billing Revamp</span></a><button class="sc-menu-action" type="button" aria-label="More for Billing Revamp"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18"/><path d="M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z"/><path d="m3 3 6.586 6.586"/><circle cx="11" cy="11" r="2"/></svg><span>Design System</span></a><button class="sc-menu-action" type="button" aria-label="More for Design System"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><a class="sc-menu-btn" href="kanban.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg><span>Platform API</span></a><button class="sc-menu-action" type="button" aria-label="More for Platform API"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></li><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--muted" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>More</span></button></li></ul>
+</div>
+</nav>
+<div class="sc-sidebar__footer">
+<ul class="sc-sidebar__menu"><li class="sc-sidebar__item"><button class="sc-menu-btn sc-menu-btn--lg" type="button" aria-haspopup="menu" aria-label="Account menu"><span class="sc-avatar sc-avatar--rounded">SM</span><span class="sc-menu-btn__meta"><strong>Sofia Marchetti</strong><small>sofia@halcyonlabs.io</small></span><svg class="sc-icon sc-ml-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></li></ul>
+</div>
+</aside>
+<main class="sc-inset" id="main">
+<header class="sc-header">
+<button class="sc-btn sc-btn--ghost sc-btn--icon-7 sc-sidebar-trigger" type="button" aria-label="Toggle sidebar"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+<span class="sc-separator sc-separator--vertical sc-header__sep" role="presentation"></span>
+<nav aria-label="Breadcrumb"><ol class="sc-breadcrumb"><li class="sc-hidden-mobile"><a href="resource-list.html">Issues</a></li><li class="sc-hidden-mobile" role="presentation" aria-hidden="true"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></li><li><span aria-current="page">All issues</span></li></ol></nav>
+<div class="sc-header__actions"><button class="sc-header__search" type="button" aria-label="Search, press Command K"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span>Search issues…</span><kbd class="sc-kbd">⌘K</kbd></button>
+<button class="sc-btn sc-btn--ghost sc-btn--icon sc-notif" type="button" aria-label="Notifications, 3 unread"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="sc-notif-dot"></span></button></div>
+</header>
+<div class="sc-content">
+<div class="sc-page-header">
+<div><h1 class="sc-page-title">Issues</h1><p class="sc-page-desc">Everything Halcyon Labs is working on in cycle 42.</p></div>
+<div class="sc-row"><button class="sc-btn sc-btn--outline" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Import</button><a class="sc-btn" href="resource-form.html"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New issue</a></div>
+</div>
+<div class="sc-toolbar">
+<div class="sc-toolbar__left">
+<input class="sc-input sc-input--sm sc-input--filter" type="search" placeholder="Filter issues..." aria-label="Filter issues">
+<div class="sc-anchor"><button class="sc-btn sc-btn--outline sc-btn--sm sc-facet" type="button" aria-haspopup="dialog"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>Status<span class="sc-facet__sep" aria-hidden="true"></span><span class="sc-badge sc-badge--secondary sc-badge--square sc-facet__count">2</span><span class="sc-facet__chips"><span class="sc-badge sc-badge--secondary sc-badge--square">In Progress</span><span class="sc-badge sc-badge--secondary sc-badge--square">In Review</span></span></button></div>
+<button class="sc-btn sc-btn--outline sc-btn--sm sc-facet" type="button" aria-haspopup="dialog"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>Priority</button>
+<button class="sc-btn sc-btn--ghost sc-btn--sm" type="button">Reset<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+</div>
+<div class="sc-toolbar__right">
+<div class="sc-anchor sc-anchor--end">
+<button class="sc-btn sc-btn--outline sc-btn--sm sc-hidden-mobile is-open" type="button" aria-haspopup="menu" aria-expanded="true"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>View</button>
+<div class="sc-menu sc-w-40 sc-hidden-mobile" role="menu" aria-label="Toggle columns">
+<p class="sc-menu__label">Toggle columns</p><div class="sc-menu__separator" role="separator"></div>
+<button class="sc-menu__item sc-menu__item--inset" role="menuitemcheckbox" aria-checked="true" type="button"><span class="sc-menu__check"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Title</button>
+<button class="sc-menu__item sc-menu__item--inset" role="menuitemcheckbox" aria-checked="true" type="button"><span class="sc-menu__check"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Status</button>
+<button class="sc-menu__item sc-menu__item--inset is-focused" role="menuitemcheckbox" aria-checked="true" type="button"><span class="sc-menu__check"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Priority</button>
+<button class="sc-menu__item sc-menu__item--inset" role="menuitemcheckbox" aria-checked="true" type="button"><span class="sc-menu__check"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Assignee</button>
+<button class="sc-menu__item sc-menu__item--inset" role="menuitemcheckbox" aria-checked="false" type="button">Estimate</button>
+<button class="sc-menu__item sc-menu__item--inset" role="menuitemcheckbox" aria-checked="false" type="button">Created</button>
+</div>
+</div>
+</div>
+</div>
+<div class="sc-table-wrap">
+<table class="sc-table">
+<thead><tr>
+<th class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select all"></th>
+<th><button class="sc-sort" type="button">Issue<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></th>
+<th><button class="sc-sort is-sorted" type="button" aria-label="Title, sorted ascending">Title<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></th>
+<th><button class="sc-sort" type="button">Status<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></th>
+<th><button class="sc-sort" type="button">Priority<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></button></th>
+<th>Assignee</th>
+<th class="is-actions"><span class="visually-hidden">Actions</span></th>
+</tr></thead>
+<tbody>
+<tr data-state="selected">
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1294" checked></td>
+<td class="sc-w-20 sc-key">ORB-1294</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Feature</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Offline sync for field notes on Atlas Mobile</a></div></td>
+<td><div class="sc-status sc-status--progress"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>In Progress</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><span>High</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">KW</span><span>Kenji Watanabe</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1294"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1291"></td>
+<td class="sc-w-20 sc-key">ORB-1291</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Bug</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Crash when uploading HEIC photos from iOS 19</a></div></td>
+<td><div class="sc-status sc-status--done"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg><span>Done</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span>Urgent</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">AN</span><span>Amara Nwosu</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1291"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1288"></td>
+<td class="sc-w-20 sc-key">ORB-1288</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Feature</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Proration for mid-cycle plan changes</a></div></td>
+<td><div class="sc-status sc-status--review"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></svg><span>In Review</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><span>High</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">LF</span><span>Lucas Ferreira</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1288"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr data-state="selected">
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1285" checked></td>
+<td class="sc-w-20 sc-key">ORB-1285</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Chore</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Migrate invoices to the new billing provider</a></div></td>
+<td><div class="sc-status sc-status--progress"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>In Progress</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><span>Medium</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">LF</span><span>Lucas Ferreira</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1285"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1282"></td>
+<td class="sc-w-20 sc-key">ORB-1282</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Design</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Dark mode tokens for charts and badges</a></div></td>
+<td><div class="sc-status sc-status--done"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg><span>Done</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg><span>Low</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">PS</span><span>Priya Shah</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1282"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1279"></td>
+<td class="sc-w-20 sc-key">ORB-1279</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Feature</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Rate-limit the public issues API per token</a></div></td>
+<td><div class="sc-status sc-status--blocked"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 9-6 6"/><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"/><path d="m9 9 6 6"/></svg><span>Blocked</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><span>High</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">TR</span><span>Tomás Rivera</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1279"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1276"></td>
+<td class="sc-w-20 sc-key">ORB-1276</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Docs</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Keyboard shortcuts cheat sheet</a></div></td>
+<td><div class="sc-status sc-status--todo"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg><span>Todo</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg><span>Low</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">HK</span><span>Hana Kim</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1276"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1273"></td>
+<td class="sc-w-20 sc-key">ORB-1273</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Bug</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Timezone drift in cycle burndown on DST change</a></div></td>
+<td><div class="sc-status sc-status--todo"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg><span>Todo</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><span>Medium</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">ED</span><span>Elif Demir</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1273"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1270"></td>
+<td class="sc-w-20 sc-key">ORB-1270</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Feature</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Webhook retries with exponential backoff</a></div></td>
+<td><div class="sc-status sc-status--review"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></svg><span>In Review</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><span>Medium</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">TR</span><span>Tomás Rivera</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1270"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr><tr>
+<td class="is-check"><input class="sc-checkbox" type="checkbox" aria-label="Select ORB-1266"></td>
+<td class="sc-w-20 sc-key">ORB-1266</td>
+<td class="is-wrap"><div class="sc-row"><span class="sc-badge sc-badge--outline">Chore</span><a class="sc-cell-main sc-truncate" href="slide-over.html">Upgrade the design tokens package to v4</a></div></td>
+<td><div class="sc-status sc-status--backlog"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>Backlog</span></div></td>
+<td><div class="sc-status"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg><span>Low</span></div></td>
+<td><div class="sc-cell-user"><span class="sc-avatar sc-avatar--sm">PS</span><span>Priya Shah</span></div></td>
+<td class="is-actions"><button class="sc-btn sc-btn--ghost sc-btn--icon-sm sc-muted" type="button" aria-label="Open menu for ORB-1266"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sc-pagination">
+<p class="sc-pagination__summary">2 of 128 row(s) selected.</p>
+<div class="sc-pagination__controls">
+<div class="sc-pagination__rows sc-hidden-mobile"><span>Rows per page</span><button class="sc-select-trigger sc-select-trigger--sm sc-w-18" type="button" aria-label="Rows per page">10<svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div>
+<p class="sc-pagination__page">Page 1 of 13</p>
+<div class="sc-pagination__buttons"><button class="sc-btn sc-btn--outline sc-btn--icon-sm sc-btn--edge is-disabled" type="button" aria-label="Go to first page"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></svg></button><button class="sc-btn sc-btn--outline sc-btn--icon-sm is-disabled" type="button" aria-label="Go to previous page"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="sc-btn sc-btn--outline sc-btn--icon-sm" type="button" aria-label="Go to next page"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button class="sc-btn sc-btn--outline sc-btn--icon-sm sc-btn--edge" type="button" aria-label="Go to last page"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></button></div>
+</div>
+</div>
+<div class="sc-action-bar" role="toolbar" aria-label="Bulk actions for 2 selected issues">
+<span class="sc-action-bar__count">2 selected<button class="sc-btn sc-btn--ghost sc-btn--icon-xs" type="button" aria-label="Clear selection"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+<span class="sc-separator sc-separator--vertical" role="presentation"></span>
+<button class="sc-btn sc-btn--secondary sc-btn--sm" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="10"/></svg>Status</button><button class="sc-btn sc-btn--secondary sc-btn--sm" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>Assign</button><button class="sc-btn sc-btn--secondary sc-btn--sm" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Export</button><button class="sc-btn sc-btn--secondary sc-btn--sm sc-btn--danger-text" type="button"><svg class="sc-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>
+</div>
+</div>
+</main>
+</div>
+</body>
+</html>

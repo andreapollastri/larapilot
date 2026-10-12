@@ -3,7 +3,7 @@
 The values are `data.settings` in the `context` envelope. Change one only with **`/larapilot-settings`** (AskQuestion) or `php artisan larapilot:settings-set` — never by editing `.larapilot/config.yaml`. A toggle that is `NO` and has no section in the files you were given is off: do nothing for it.
 
 <!-- when: view=full -->
-Persisted in `.larapilot/config.yaml` under `settings:`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `dashboard_auth: false` / `api_auth: false` / `security_scan: false` / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`. Boolean settings are stored as `true`/`false`; the `settings-set` flag and every envelope express them as `YES`/`NO`.
+Persisted in `.larapilot/config.yaml` under `settings:`. Defaults when unset: `effort: STANDARD` / `backlog: STANDARD` / `git_mode: GITFLOW` / `testing: NORMAL` / `account: NONE` / `auto_approve: false` / `lucille: true` / `decision_log: true` / `code_history: false` / `prior_art: true` / `release_mode: false` / `project_docs: false` / `comments: false` / `sprints: false` / `public_roadmap: false` / `api_auth: false` / `security_scan: false` / `security: false` (`security_provider`: `aikido` or `hackly`) / `github|gitlab|bitbucket|azure: false` / `notifications: false` / `notify_*: false`. Boolean settings are stored as `true`/`false`; the `settings-set` flag and every envelope express them as `YES`/`NO`.
 <!-- end -->
 
 ### Environment paths

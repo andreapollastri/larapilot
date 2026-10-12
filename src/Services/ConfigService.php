@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\EnvWriter;
+use Larapilot\Support\MockupAssetResolver;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigService
@@ -107,6 +108,7 @@ class ConfigService
                 'decisions' => $this->absolutePath($config['paths']['decisions'] ?? '.larapilot/decisions.yaml'),
                 'code_history' => $this->absolutePath($config['paths']['code_history'] ?? '.larapilot/code-history.yaml'),
                 'releases' => $this->absolutePath($config['paths']['releases'] ?? '.larapilot/releases.yaml'),
+                'roadmap' => $this->absolutePath($config['paths']['roadmap'] ?? '.larapilot/roadmap.yaml'),
                 'project_docs' => $this->absolutePath($config['paths']['project_docs'] ?? self::PROJECT_DOCS_PATH),
                 'custom_skills' => $this->absolutePath($config['paths']['custom_skills'] ?? '.larapilot/skills/'),
                 'economics' => $this->absolutePath($config['paths']['economics'] ?? '.larapilot/economics.yaml'),
@@ -388,10 +390,11 @@ class ConfigService
      *     decision_log: string,
      *     code_history: string,
      *     comments: string,
-     *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
      *     aikido: string,
+     *     security: string,
+     *     security_provider: string,
      *     errors: string,
      *     boogle: string,
      *     github: string,
@@ -406,6 +409,8 @@ class ConfigService
      *     project_docs: string,
      *     prior_art: string,
      *     hooks: string,
+     *     sprints: string,
+     *     public_roadmap: string,
      *     errors_provider: string
      * }
      */
@@ -440,7 +445,36 @@ class ConfigService
         $settings['boogle'] = $errors && $provider === 'boogle' ? 'YES' : 'NO';
         $settings['errors_provider'] = $provider;
 
+        // `security`, its scanner, and the old `aikido` flag are read as one
+        // thing, so a file written before 5.1 says the same as a new one.
+        [$security, $scanner] = $this->securityWithProvider(
+            $settings['security'] === 'YES',
+            $settings['aikido'] === 'YES',
+            strtolower(trim((string) ($merged['security_provider'] ?? '')))
+        );
+
+        $settings['security'] = $security ? 'YES' : 'NO';
+        $settings['aikido'] = $security && $scanner === 'aikido' ? 'YES' : 'NO';
+        $settings['security_provider'] = $scanner;
+
         return $settings;
+    }
+
+    /**
+     * Whether the security findings are read, and from which scanner, from
+     * what the file holds. Before 5.1 the only scanner was Aikido, under
+     * `aikido`: a project that turned it on reads Aikido still. With the
+     * findings on and no scanner named, it is Aikido.
+     *
+     * @return array{0: bool, 1: string}
+     */
+    protected function securityWithProvider(bool $security, bool $aikido, string $provider): array
+    {
+        if ($aikido && ! $security) {
+            return [true, 'aikido'];
+        }
+
+        return [$security, $security && $provider === '' ? 'aikido' : $provider];
     }
 
     /**
@@ -472,10 +506,11 @@ class ConfigService
      *     decision_log: bool,
      *     code_history: bool,
      *     comments: bool,
-     *     dashboard_auth: bool,
      *     api_auth: bool,
      *     security_scan: bool,
      *     aikido: bool,
+     *     security: bool,
+     *     security_provider: string,
      *     errors: bool,
      *     boogle: bool,
      *     github: bool,
@@ -490,6 +525,8 @@ class ConfigService
      *     project_docs: bool,
      *     prior_art: bool,
      *     hooks: bool,
+     *     sprints: bool,
+     *     public_roadmap: bool,
      *     errors_provider: string
      * }
      */
@@ -511,6 +548,7 @@ class ConfigService
         }
 
         $settings['errors_provider'] = strtolower(trim((string) ($defaults['errors_provider'] ?? '')));
+        $settings['security_provider'] = strtolower(trim((string) ($defaults['security_provider'] ?? '')));
 
         return $settings;
     }
@@ -528,10 +566,10 @@ class ConfigService
             'decision_log' => true,
             'code_history' => false,
             'comments' => false,
-            'dashboard_auth' => false,
             'api_auth' => false,
             'security_scan' => false,
             'aikido' => false,
+            'security' => false,
             'errors' => false,
             'boogle' => false,
             'github' => false,
@@ -546,6 +584,10 @@ class ConfigService
             'project_docs' => false,
             'prior_art' => true,
             'hooks' => false,
+            // Two-week sprints on the Board, the Plan, and in planning — OFF by default.
+            'sprints' => false,
+            // A public product roadmap at a token link — OFF by default.
+            'public_roadmap' => false,
         ];
     }
 
@@ -564,10 +606,11 @@ class ConfigService
      *     decision_log: string,
      *     code_history: string,
      *     comments: string,
-     *     dashboard_auth: string,
      *     api_auth: string,
      *     security_scan: string,
      *     aikido: string,
+     *     security: string,
+     *     security_provider: string,
      *     errors: string,
      *     boogle: string,
      *     github: string,
@@ -606,6 +649,12 @@ class ConfigService
             $settings['errors_provider']
         );
 
+        [$settings['security'], $settings['security_provider']] = $this->securityWithProvider(
+            $settings['security'],
+            $settings['aikido'],
+            strtolower(trim((string) $settings['security_provider']))
+        );
+
         // Selecting ECO turns Lucille off unless the caller also sets lucille
         // explicitly (re-enable with settings-set --lucille=YES while staying on ECO).
         if (($partial['effort'] ?? null) === 'ECO' && ! array_key_exists('lucille', $partial)) {
@@ -623,7 +672,7 @@ class ConfigService
                 continue;
             }
 
-            if ($key === 'errors_provider') {
+            if ($key === 'errors_provider' || $key === 'security_provider') {
                 $settings[$key] = strtolower(trim((string) $value));
 
                 continue;
@@ -650,6 +699,26 @@ class ConfigService
         // `boogle` is the old name of errors=YES with provider boogle,
         // and is kept in step with them for the projects that read it.
         $settings['boogle'] = $settings['errors'] === true && $settings['errors_provider'] === 'boogle';
+
+        if (array_key_exists('aikido', $partial)) {
+            if ($settings['aikido'] === true) {
+                // `--aikido=YES` is `--security=YES --security-provider=aikido`.
+                $settings['security'] = true;
+                $settings['security_provider'] = 'aikido';
+            } elseif (! array_key_exists('security', $partial) && in_array($settings['security_provider'], ['', 'aikido'], true)) {
+                $settings['security'] = false;
+            }
+        } elseif (array_key_exists('security_provider', $partial) && $settings['security_provider'] !== '' && ! array_key_exists('security', $partial)) {
+            // Naming a scanner turns the findings on.
+            $settings['security'] = true;
+        }
+
+        if ($settings['security'] === true && $settings['security_provider'] === '') {
+            $settings['security_provider'] = 'aikido';
+        }
+
+        // `aikido` is the old name of security=YES with provider aikido.
+        $settings['aikido'] = $settings['security'] === true && $settings['security_provider'] === 'aikido';
 
         $existing['settings'] = $settings;
 
@@ -730,6 +799,23 @@ class ConfigService
     }
 
     /**
+     * Whether the Board, the Plan, and planning split the work into
+     * two-week sprints.
+     */
+    public function sprintsEnabled(): bool
+    {
+        return $this->settings()['sprints'] === 'YES';
+    }
+
+    /**
+     * Whether a public product roadmap is served at its token link.
+     */
+    public function publicRoadmapEnabled(): bool
+    {
+        return $this->settings()['public_roadmap'] === 'YES';
+    }
+
+    /**
      * Where the workflow hooks are defined (`paths.hooks`).
      */
     public function hooksPath(): string
@@ -772,18 +858,10 @@ class ConfigService
     }
 
     /**
-     * Optional HTTP Basic Auth on the dashboard UI — OFF by default. Never
-     * gates the JSON API (`larapilot.api.token`) or the MCP server.
-     */
-    public function dashboardAuthEnabled(): bool
-    {
-        return $this->settings()['dashboard_auth'] === 'YES';
-    }
-
-    /**
-     * Require `LARAPILOT_API_TOKEN` on every `/larapilot/api/*` request — OFF by
-     * default. When ON the JSON API fails closed (HTTP 503) until the token env
-     * var is configured. Never affects the dashboard UI or the MCP server.
+     * Require the API token on every `/larapilot/api/*` request on a
+     * developer's machine too — OFF by default. Outside `local` the token is
+     * required whatever this says; when ON the API is closed in `local` as
+     * well until a token exists. Never affects the dashboard UI or MCP.
      */
     public function apiAuthEnabled(): bool
     {
@@ -803,13 +881,60 @@ class ConfigService
     }
 
     /**
-     * Read the findings of Aikido for this repository — OFF by default. When
-     * ON, `/larapilot-aikido` downloads the open findings and hands them to
+     * Read the security findings of this repository from the scanner the
+     * project chose — Aikido or Hackly — OFF by default. When ON,
+     * `/larapilot-security` downloads the open findings and hands them to
      * triage, and the ship gate stops on the ones nobody decided about.
+     */
+    public function securityEnabled(): bool
+    {
+        return $this->settings()['security'] === 'YES';
+    }
+
+    /**
+     * The scanner the findings are read from — `aikido` or `hackly` — or
+     * an empty string when the findings are off.
+     */
+    public function securityProvider(): string
+    {
+        $settings = $this->settings();
+
+        return $settings['security'] === 'YES' ? $settings['security_provider'] : '';
+    }
+
+    /**
+     * The scanners Larapilot reads, as `settings.security_provider` names them.
+     *
+     * @return list<string>
+     */
+    public function allowedSecurityProviders(): array
+    {
+        return ['aikido', 'hackly'];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedSecurityModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * The findings are read from Aikido.
      */
     public function aikidoEnabled(): bool
     {
-        return $this->settings()['aikido'] === 'YES';
+        return $this->securityProvider() === 'aikido';
+    }
+
+    /**
+     * The findings are read from Hackly (https://hackly.web.ap.it), the
+     * self-hosted scanner of the team.
+     */
+    public function hacklyEnabled(): bool
+    {
+        return $this->securityProvider() === 'hackly';
     }
 
     /**
@@ -1130,14 +1255,6 @@ class ConfigService
     /**
      * @return list<string>
      */
-    public function allowedDashboardAuthModes(): array
-    {
-        return $this->allowedYesNoModes();
-    }
-
-    /**
-     * @return list<string>
-     */
     public function allowedApiAuthModes(): array
     {
         return $this->allowedYesNoModes();
@@ -1155,6 +1272,22 @@ class ConfigService
      * @return list<string>
      */
     public function allowedHooksModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedSprintsModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedPublicRoadmapModes(): array
     {
         return $this->allowedYesNoModes();
     }
@@ -1286,6 +1419,13 @@ class ConfigService
     public function workspaceDirectoryPaths(): array
     {
         $config = $this->resolve();
+        $designSystemsRoot = $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/');
+        $designSystems = [];
+
+        foreach (MockupAssetResolver::PACKAGED as $slug) {
+            $designSystems[] = $designSystemsRoot.'/'.$slug;
+            $designSystems[] = $designSystemsRoot.'/'.$slug.'/html';
+        }
 
         return array_values(array_unique([
             dirname($this->configPath()),
@@ -1304,16 +1444,7 @@ class ConfigService
             $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/'),
             $this->absolutePath($config['paths']['research'] ?? '.larapilot/research/').'/reference-products',
             $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/'),
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/filament',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/filament/html',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/starter-kit/html',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/bootstrap-5',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/bootstrap-5/html',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/tailwind',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/tailwind/html',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte',
-            $this->absolutePath($config['paths']['design_systems'] ?? '.larapilot/design-systems/').'/adminlte/html',
+            ...$designSystems,
             $this->absolutePath($config['paths']['internal_feedback'] ?? '.larapilot/internal-feedback/'),
             $this->absolutePath($config['paths']['usage'] ?? '.larapilot/usage/'),
             dirname($this->absolutePath($config['paths']['prd'] ?? '.larapilot/docs/PRD.md')),
@@ -1584,8 +1715,10 @@ class ConfigService
     }
 
     /**
-     * Whether the workflow dashboard may be browsed in the current
-     * environment. Never true in production.
+     * Whether the workflow dashboard is served in the current environment:
+     * everywhere but production, and in production only when
+     * `LARAPILOT_FORCE_IN_PROD` is true. Who gets in once it is served is
+     * the matter of `Auth\AccessPolicy`.
      */
     public function dashboardBrowsable(): bool
     {
@@ -1593,11 +1726,19 @@ class ConfigService
     }
 
     /**
-     * Whether the dashboard file manager is available. It follows the
-     * dashboard gate, so it is never true in production. It is open on a
-     * developer machine; on a shared host it needs the dashboard sign-in,
-     * because client documents and legacy snapshots are not for an
-     * anonymous visitor to read, let alone change.
+     * Whether the dashboard is served in production, on the one switch
+     * that opens it there: `LARAPILOT_FORCE_IN_PROD=true`. Every user then
+     * signs in with a password and an authenticator.
+     */
+    public function dashboardForcedInProduction(): bool
+    {
+        return (bool) config('larapilot.dashboard_route.force_in_production', false);
+    }
+
+    /**
+     * Whether the dashboard file manager is available: wherever the
+     * dashboard is, unless switched off. Outside a developer's machine the
+     * dashboard asks for a sign-in, and the file manager is for admins.
      */
     public function fileManagerBrowsable(): bool
     {
@@ -1605,10 +1746,9 @@ class ConfigService
     }
 
     /**
-     * Whether the dashboard database viewer is available. Same rule as the
-     * file manager: never in production, open on a developer machine, and
-     * behind the dashboard sign-in anywhere else — the rows of the
-     * application's database are not for an anonymous visitor.
+     * Whether the dashboard database viewer is available: wherever the
+     * dashboard is, unless switched off. Admins and developers see it; in
+     * production a developer sees the rows anonymized only.
      */
     public function databaseViewerBrowsable(): bool
     {
@@ -1616,10 +1756,9 @@ class ConfigService
     }
 
     /**
-     * Whether the dashboard log viewer is available. Same rule as the file
-     * manager and the database viewer: never in production, open on a
-     * developer machine, and behind the dashboard sign-in anywhere else —
-     * a log names users, routes, and queries.
+     * Whether the dashboard log viewer is available: wherever the
+     * dashboard is, unless switched off. Admins and developers see it,
+     * product managers outside production.
      */
     public function logViewerBrowsable(): bool
     {
@@ -1627,10 +1766,8 @@ class ConfigService
     }
 
     /**
-     * Whether the Laravel page of the dashboard is available. Same rule as
-     * the file manager, the database viewer, and the log viewer: never in
-     * production, open on a developer machine, and behind the dashboard
-     * sign-in anywhere else — it shows the mail the application sent.
+     * Whether the Laravel page of the dashboard is available: wherever the
+     * dashboard is, unless switched off. Admins and developers see it.
      */
     public function laravelViewerBrowsable(): bool
     {
@@ -1657,17 +1794,13 @@ class ConfigService
 
     /**
      * The gate the file manager, the database viewer, the log viewer, and
-     * the Laravel page share: the dashboard is browsable, the tool is not
-     * switched off, and the machine is a developer's own or the dashboard
-     * asks for a sign-in.
+     * the Laravel page share: the dashboard is served and the tool is not
+     * switched off. Outside a developer's machine the dashboard itself
+     * asks for a sign-in, and the role decides the rest.
      */
     protected function protectedToolBrowsable(string $tool): bool
     {
-        if (! $this->dashboardBrowsable() || ! (bool) config("larapilot.{$tool}.enabled", true)) {
-            return false;
-        }
-
-        return app()->environment(['local', 'development', 'testing']) || $this->dashboardAuthEnabled();
+        return $this->dashboardBrowsable() && (bool) config("larapilot.{$tool}.enabled", true);
     }
 
     /**
@@ -1687,7 +1820,9 @@ class ConfigService
         }
 
         if (app()->environment('production')) {
-            return false;
+            // The one switch that serves the dashboard — and with it the
+            // mockups and the API — in production.
+            return $this->dashboardForcedInProduction();
         }
 
         $allowed = config("larapilot.{$routeKey}.environments");

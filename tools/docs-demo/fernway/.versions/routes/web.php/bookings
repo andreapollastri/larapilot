@@ -1,0 +1,12 @@
+<?php
+
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\TimetableController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/studios/{studio}/timetable', TimetableController::class)->name('timetable');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/sessions/{session}/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+});

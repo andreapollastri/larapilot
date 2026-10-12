@@ -13,6 +13,9 @@
     @case('plan')
         <path d="M3 4v16"/><rect x="6" y="5" width="9" height="3.5" rx="1"/><rect x="9" y="10.25" width="11" height="3.5" rx="1"/><rect x="6" y="15.5" width="7" height="3.5" rx="1"/>
         @break
+    @case('roadmap')
+        <path d="M4 19V5"/><path d="M4 15c2-3 4-3 6 0s4 3 6 0 4-3 4 0"/><circle cx="10" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="9" r="1.2" fill="currentColor" stroke="none"/>
+        @break
     @case('design')
         <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>
         @break
@@ -67,6 +70,21 @@
         @break
     @case('usage')
         <path d="M3 12h4l2.5-7 5 14 2.5-7h4"/>
+        @break
+    @case('users')
+        <circle cx="9" cy="8" r="3.5"/><path d="M3 20v-1.5a4.5 4.5 0 0 1 4.5-4.5h3a4.5 4.5 0 0 1 4.5 4.5V20"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M17.5 14h.5a3.5 3.5 0 0 1 3.5 3.5V20"/>
+        @break
+    @case('user')
+        <circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.5A4.5 4.5 0 0 1 9.5 14h5a4.5 4.5 0 0 1 4.5 4.5V20"/>
+        @break
+    @case('logout')
+        <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M14 8l4 4-4 4"/><path d="M18 12H9"/>
+        @break
+    @case('mask')
+        <path d="M4 7c2.5-1.3 5.3-2 8-2s5.5.7 8 2v4c0 4.5-3.5 8.5-8 10-4.5-1.5-8-5.5-8-10z"/><path d="M8.5 11.5c.8-.7 2.2-.7 3 0M12.5 11.5c.8-.7 2.2-.7 3 0"/><path d="M9 16c1.8 1 4.2 1 6 0"/>
+        @break
+    @case('forecast')
+        <path d="M4 20h16"/><path d="m4 16 4.5-4.5 3.5 3 3-4.5"/><path d="m15 10 4.5-4.5" stroke-dasharray="1.6 2.2"/><path d="M16.5 5h3v3"/>
         @break
     @case('economics')
         <path d="M4 20h16"/><path d="m5 15 4.5-4.5 3.5 3L19 7"/><path d="M15 7h4v4"/>
@@ -163,6 +181,9 @@
         @break
     @case('shield')
         <path d="M12 3 4.5 6v5.5c0 4.6 3 8.2 7.5 9.5 4.5-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.2 10"/>
+        @break
+    @case('mask')
+        <path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.6 10.6 0 0 1 12 5c5 0 9 7 9 7a17 17 0 0 1-2.2 3.1"/><path d="M6.7 6.7C4 8.4 3 12 3 12s4 7 9 7c1.4 0 2.7-.3 3.8-.9"/>
         @break
     @case('bug')
         <rect x="8" y="7" width="8" height="12" rx="4"/><path d="M12 11v8M9.5 4.5 11 7M14.5 4.5 13 7M8 11H4.5M8 15H4M16 11h3.5M16 15h4"/>

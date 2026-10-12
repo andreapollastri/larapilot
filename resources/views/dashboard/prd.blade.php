@@ -379,7 +379,8 @@
                     @endforeach
                     @if (($decisions['entry_count'] ?? 0) > 0)
                         <li>
-                            <a href="#decision-journal">Decision journal</a>
+                            {{-- A PRD may hold a section of the same name: this entry is the journal of the project. --}}
+                            <a href="#decision-journal-entries">{{ collect($prd['headings'])->contains(fn ($heading) => strcasecmp(trim($heading['title']), 'Decision journal') === 0) ? 'Decision journal entries' : 'Decision journal' }}</a>
                         </li>
                     @endif
                 </ul>

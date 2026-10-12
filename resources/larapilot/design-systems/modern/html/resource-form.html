@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>New funnel — Pulseboard</title>
+</head>
+<body class="mo-mockup mo-body">
+<a class="mo-skip" href="#main">Skip to content</a>
+<div class="mo-app">
+<nav class="mo-sidebar" aria-label="Workspace">
+  <div class="mo-sidebar__top">
+    <a class="mo-ws" href="dashboard.html" aria-label="Acme workspace, switch workspace"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span><span class="mo-ws__text"><span class="mo-ws__name">Acme Inc.</span><span class="mo-ws__sub">Growth plan</span></span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></a>
+    <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-menu-btn" aria-label="Open navigation"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+  </div>
+  <button type="button" class="mo-cmdk"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span>Search or jump to…</span><span class="mo-kbds"><kbd class="mo-kbd">⌘</kbd><kbd class="mo-kbd">K</kbd></span></button>
+  <div class="mo-nav">
+    <a class="mo-nav__item" href="dashboard.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+    <a class="mo-nav__item" href="dashboard.html#live"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>Live events<span class="mo-nav__count">1.2k/m</span></a>
+    <a class="mo-nav__item" href="resource-list.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>People<span class="mo-nav__count">48.3k</span></a>
+    <a class="mo-nav__item is-active" href="resource-form.html" aria-current="page"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Funnels</a>
+    <a class="mo-nav__item" href="dashboard.html#retention"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Retention</a>
+    <a class="mo-nav__item" href="empty-state.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>Alerts<span class="mo-nav__count mo-nav__count--accent">2</span></a>
+  </div>
+  <div class="mo-nav">
+    <p class="mo-nav__label">Saved views <svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></p>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c1"></span>Power users</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c2"></span>Activated this week</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c3"></span>Churn risk</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c4"></span>EU enterprise trials</a>
+  </div>
+  <div class="mo-sidebar__foot">
+    <div class="mo-usage">
+      <div class="mo-usage__row"><span>Events this month</span><strong class="mo-tnum">8.2M / 10M</strong></div>
+      <div class="mo-meter"><div class="mo-meter__bar mo-pct-80"></div></div>
+    </div>
+    <a class="mo-nav__item" href="settings.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+    <a class="mo-user" href="settings.html" aria-label="Account: Maya Okafor"><span class="mo-avatar mo-avatar--1">MO</span><span class="mo-user__text"><span class="mo-user__name">Maya Okafor</span><span class="mo-user__mail">maya@acme.io</span></span></a>
+  </div>
+</nav>
+<main class="mo-main" id="main">
+  <header class="mo-topbar">
+    <nav class="mo-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Funnels</a><span class="mo-crumbs__sep">/</span><span aria-current="page">New funnel</span></nav>
+    <div class="mo-topbar__end">
+      <span class="mo-status mo-status--warning mo-hide-sm">Unsaved changes</span>
+      <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--sm" aria-label="Keyboard shortcuts"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg></button>
+    </div>
+  </header>
+
+  <div class="mo-page">
+    <div class="mo-page-head">
+      <div class="mo-page-head__text">
+        <h1 class="mo-h1">New funnel</h1>
+        <p class="mo-page-head__desc">Track how people move between events. Fields marked <span class="mo-req" aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
+      </div>
+    </div>
+
+    <div class="mo-callout mo-callout--danger" role="alert"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><div><p class="mo-callout__title">One step needs your attention</p><p>Step 3 has no event yet — pick one or remove the step.</p></div></div>
+
+    <div class="mo-grid mo-gap-4 mo-cols-main-aside mo-items-start">
+      <div class="mo-stack">
+        <section class="mo-card" aria-labelledby="sec-details">
+          <div class="mo-card__head mo-card__head--bordered"><div><h2 class="mo-card__title" id="sec-details">Details</h2><p class="mo-card__sub">How the funnel shows up in search and on dashboards</p></div></div>
+          <div class="mo-card__body">
+            <div class="mo-formgrid">
+              <div class="mo-field mo-span-2">
+                <label class="mo-label" for="f-name">Name <span class="mo-req" aria-hidden="true">*</span></label>
+                <input class="mo-input is-focus" id="f-name" type="text" value="Pricing page to paid plan" required aria-required="true">
+              </div>
+              <div class="mo-field mo-span-2">
+                <label class="mo-label" for="f-desc">Description <span class="mo-label__opt">Optional</span></label>
+                <textarea class="mo-textarea" id="f-desc" rows="3">Visitors who open /pricing, start a sign-up and upgrade within 14 days. Used in the weekly growth review.</textarea>
+                <p class="mo-help">Markdown is supported. 108 / 500 characters.</p>
+              </div>
+              <div class="mo-field">
+                <label class="mo-label" for="f-dash">Add to dashboard</label>
+                <select class="mo-select" id="f-dash"><option>Product overview</option><option>Growth review</option><option>Don't add</option></select>
+              </div>
+              <div class="mo-field">
+                <label class="mo-label" for="f-owner">Owner</label>
+                <input class="mo-input" id="f-owner" type="text" value="Maya Okafor (you)" disabled>
+                <p class="mo-help">Owners can only be changed by a workspace admin.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mo-card" aria-labelledby="sec-steps">
+          <div class="mo-card__head mo-card__head--bordered"><div><h2 class="mo-card__title" id="sec-steps">Steps <span class="mo-req" aria-hidden="true">*</span></h2><p class="mo-card__sub">In order. Drag to reorder, at least two steps.</p></div><button type="button" class="mo-btn mo-btn--secondary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add step</button></div>
+          <div class="mo-card__body">
+            <ol class="mo-builder">
+              <li class="mo-builder__step">
+                <span class="mo-builder__grip"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg></span><span class="mo-builder__num">1</span>
+                <div class="mo-builder__fields"><select class="mo-select" aria-label="Step 1 event"><option>page_viewed</option></select><span class="mo-chip"><span class="mo-chip__key">path</span><span class="mo-chip__op">equals</span><span class="mo-chip__val">/pricing</span></span></div>
+                <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Remove step 1"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+              </li>
+              <li class="mo-builder__step">
+                <span class="mo-builder__rate">41.8% continue</span>
+                <span class="mo-builder__grip"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg></span><span class="mo-builder__num">2</span>
+                <div class="mo-builder__fields"><select class="mo-select" aria-label="Step 2 event"><option>signup_completed</option></select><button type="button" class="mo-chip mo-chip--add"><span><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Where</span></button></div>
+                <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Remove step 2"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+              </li>
+              <li class="mo-builder__step is-invalid">
+                <span class="mo-builder__grip"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg></span><span class="mo-builder__num">3</span>
+                <div class="mo-builder__fields"><select class="mo-select is-invalid" aria-label="Step 3 event" aria-invalid="true" aria-describedby="err-step3"><option>Choose an event…</option><option>plan_upgraded</option></select><p class="mo-error" id="err-step3"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>Pick an event — step 3 is empty</p></div>
+                <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Remove step 3"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="mo-card" aria-labelledby="sec-settings">
+          <div class="mo-card__head mo-card__head--bordered"><div><h2 class="mo-card__title" id="sec-settings">Counting</h2><p class="mo-card__sub">How conversions are measured</p></div></div>
+          <div class="mo-card__body mo-stack">
+            <div class="mo-formgrid">
+              <div class="mo-field">
+                <label class="mo-label" for="f-window">Conversion window</label>
+                <div class="mo-input-group"><input class="mo-input" id="f-window" type="number" value="14"><select class="mo-select" aria-label="Window unit"><option>days</option><option>hours</option></select></div>
+                <p class="mo-help">Every step must happen within this time of step 1.</p>
+              </div>
+              <div class="mo-field">
+                <span class="mo-label" id="lbl-count">Count by</span>
+                <div class="mo-seg mo-seg--lg mo-seg--block" role="group" aria-labelledby="lbl-count"><button type="button" class="mo-seg__item is-active" aria-pressed="true">Unique people</button><button type="button" class="mo-seg__item">Total events</button><button type="button" class="mo-seg__item">Sessions</button></div>
+              </div>
+            </div>
+            <hr>
+            <label class="mo-choice"><input class="mo-switch" type="checkbox" role="switch" checked><span class="mo-choice__text"><span class="mo-choice__title">Exclude internal traffic</span><span class="mo-choice__help">Drops everyone whose email ends in @acme.io and the office IP ranges.</span></span></label>
+            <label class="mo-choice"><input class="mo-switch" type="checkbox" role="switch"><span class="mo-choice__text"><span class="mo-choice__title">Strict order</span><span class="mo-choice__help">No other tracked event may happen between two steps.</span></span></label>
+            <label class="mo-choice"><input class="mo-check" type="checkbox" checked><span class="mo-choice__text"><span class="mo-choice__title">Alert #growth on Slack</span><span class="mo-choice__help">When overall conversion drops more than 10% week over week.</span></span></label>
+          </div>
+        </section>
+
+        <section class="mo-card" aria-labelledby="sec-import">
+          <div class="mo-card__head mo-card__head--bordered"><div><h2 class="mo-card__title" id="sec-import">Import steps</h2><p class="mo-card__sub">Optional · one event name per row</p></div></div>
+          <div class="mo-card__body mo-stack-sm">
+            <div class="mo-drop is-dragover">
+              <span class="mo-icon-tile mo-icon-tile--lg"><svg class="mo-icon mo-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg></span>
+              <p class="mo-drop__title">Drop a CSV to replace the steps</p>
+              <p>or <a class="mo-link" href="resource-form.html">browse files</a> · .csv up to 1 MB</p>
+            </div>
+            <div class="mo-file"><svg class="mo-icon mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/></svg><div class="mo-grow"><p class="mo-truncate">growth-review-steps.csv</p><p class="mo-file__meta">3 rows · 214 bytes · uploaded 2 min ago</p></div><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Remove file"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="mo-stack" aria-label="Preview">
+        <section class="mo-card mo-card--glow">
+          <div class="mo-card__head"><h2 class="mo-card__title"><svg class="mo-icon mo-icon--sm mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>Live preview</h2><span class="mo-badge mo-badge--accent">Last 30 days</span></div>
+          <div class="mo-card__body mo-stack">
+            <div class="mo-funnel mo-funnel--3">
+              <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-100"></div></div><p class="mo-funnel__value">12,480</p><p class="mo-funnel__name">/pricing</p></div>
+              <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-40"></div></div><p class="mo-funnel__value">5,212</p><p class="mo-funnel__name">Signed up</p></div>
+              <div class="mo-funnel__step"><div class="mo-funnel__track"></div><p class="mo-funnel__value mo-text-3">—</p><p class="mo-funnel__name">Step 3</p></div>
+            </div>
+            <dl class="mo-kv">
+              <dt>Median time to convert</dt><dd>2d 7h</dd>
+              <dt>Biggest drop-off</dt><dd>Step 1 → 2</dd>
+              <dt>Sample</dt><dd>100% of events</dd>
+            </dl>
+          </div>
+          <div class="mo-card__foot"><span>Updated 4s ago</span><span class="mo-live"><span class="mo-live__dot"></span>Live</span></div>
+        </section>
+        <section class="mo-card mo-card--inset">
+          <div class="mo-card__body mo-stack-sm mo-text-sm">
+            <p class="mo-fw-600 mo-flex mo-items-center mo-gap-2"><svg class="mo-icon mo-icon--sm mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Tip</p>
+            <p class="mo-text-2">Press <kbd class="mo-kbd">⌘</kbd> <kbd class="mo-kbd">K</kbd> and type “funnel” to open any funnel from anywhere.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="mo-sticky-actions">
+      <span class="mo-sticky-actions__note"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>1 error to fix before creating</span>
+      <a href="dashboard.html" class="mo-btn mo-btn--ghost">Cancel</a>
+      <button type="button" class="mo-btn mo-btn--secondary">Save as draft</button>
+      <button type="button" class="mo-btn mo-btn--primary" aria-disabled="true">Create funnel<span class="mo-kbds"><kbd class="mo-kbd">⌘</kbd><kbd class="mo-kbd">↵</kbd></span></button>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

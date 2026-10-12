@@ -127,8 +127,9 @@ final class ContextManifest
                     'delivery-3' => 'The schema is non-trivial: trees, NoSQL, search.',
                     'ship-1' => 'The repository records no deploy platform, edge, or cloud.',
                     'release?release_mode=NO' => 'The user turns release mode on.',
+                    'ux-1' => 'The as-is design system is written: mockup fidelity.',
                 ],
-                'paths' => ['prd', 'research', 'client_materials', 'legacy', 'dev_docs', 'choices', 'schedule'],
+                'paths' => ['prd', 'research', 'client_materials', 'legacy', 'dev_docs', 'design_systems', 'choices', 'schedule'],
                 'slices' => ['dev_docs', 'frontend'],
             ],
 
@@ -171,7 +172,7 @@ final class ContextManifest
                 'paths' => ['prd'],
             ],
 
-            'aikido' => [
+            'security' => [
                 'category' => 'support',
                 'paths' => ['security'],
             ],

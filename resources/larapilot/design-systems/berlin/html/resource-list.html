@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects · Kollektiv Studio backoffice</title>
+<meta name="description" content="Projects index: status strip, search, filters, sort, row selection with a bulk action bar, row actions menu, status tags and pagination.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#main">Skip to content</a>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item is-active" aria-current="page" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<nav class="bn-pagehead__eyebrow bn-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">02 — Projects</span></nav>
+<div class="bn-pagehead__title"><h1 class="bn-h1">Projects</h1><span class="bn-pagehead__count">38</span></div>
+<div class="bn-pagehead__actions"><a class="bn-btn" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg> Export CSV</a><a class="bn-btn bn-btn--signal" href="resource-form.html"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg> New project</a></div>
+</header>
+
+<nav class="bn-statstrip" aria-label="Filter by status">
+<a class="bn-statstrip__item is-active" href="#" aria-current="true"><span class="bn-statstrip__label">All 2026</span><span class="bn-statstrip__num">38</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">Pitch</span><span class="bn-statstrip__num">4</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">Briefing</span><span class="bn-statstrip__num">3</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">In production</span><span class="bn-statstrip__num">14</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">Review</span><span class="bn-statstrip__num">5</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">On hold</span><span class="bn-statstrip__num">2</span></a>
+<a class="bn-statstrip__item" href="#"><span class="bn-statstrip__label">Delivered</span><span class="bn-statstrip__num">10</span></a>
+</nav>
+
+<div class="bn-toolbar" role="search">
+<label class="bn-search bn-search--lg"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search projects</span><input class="bn-search__input" type="search" value="" placeholder="Search title, client, code"></label>
+<button type="button" class="bn-chip"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg> Client <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<button type="button" class="bn-chip"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg> Lead <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<span class="bn-toolbar__spacer"></span>
+<label class="bn-row"><span class="bn-toolbar__label">Sort</span><span class="bn-selectbox"><select class="bn-select bn-select--sm"><option>Deadline, soonest</option><option>Budget, highest</option><option>Recently updated</option><option>Code</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+<div class="bn-btngroup" role="group" aria-label="Density"><button type="button" class="bn-btn bn-btn--sm bn-btn--icon is-active" aria-label="Comfortable rows" aria-pressed="true"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/></svg></button><button type="button" class="bn-btn bn-btn--sm bn-btn--icon" aria-label="Compact rows" aria-pressed="false"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 7.5H3"/><path d="M21 12H3"/><path d="M21 16.5H3"/></svg></button></div>
+<span class="bn-toolbar__break"></span>
+<span class="bn-toolbar__label">Filters</span>
+<span class="bn-chip bn-chip--applied">Discipline: Identity, Print<button type="button" class="bn-chip__x" aria-label="Remove discipline filter"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+<span class="bn-chip bn-chip--applied">Due before 31.12<button type="button" class="bn-chip__x" aria-label="Remove due date filter"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+<a class="bn-link bn-toolbar__clear" href="#">Clear all</a>
+</div>
+
+<div class="bn-bulkbar bn-inv" role="region" aria-label="Bulk actions">
+<p class="bn-bulkbar__count"><span class="bn-count bn-count--signal">3</span>projects selected</p>
+<button type="button" class="bn-btn bn-btn--sm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="M19 16v6"/><path d="M22 19h-6"/></svg> Assign lead</button>
+<button type="button" class="bn-btn bn-btn--sm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg> Change status</button>
+<button type="button" class="bn-btn bn-btn--sm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg> Export</button>
+<button type="button" class="bn-btn bn-btn--sm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg> Archive</button>
+<span class="bn-bulkbar__spacer"></span>
+<button type="button" class="bn-btn bn-btn--sm bn-btn--ghost">Clear selection</button>
+</div>
+
+<div class="bn-table-wrap">
+<table class="bn-table bn-table--page">
+<caption class="visually-hidden">Projects 2026, filtered by Identity or Print, due before 31.12, sorted by deadline</caption>
+<thead><tr>
+<th scope="col" class="bn-td-check"><input class="bn-checkbox is-mixed" type="checkbox" aria-label="Select all 12 projects on this page"></th>
+<th scope="col"><button type="button" class="bn-th-sort">Code</button></th>
+<th scope="col"><button type="button" class="bn-th-sort">Project / client</button></th>
+<th scope="col">Lead</th>
+<th scope="col" class="bn-td-num"><button type="button" class="bn-th-sort">Budget</button></th>
+<th scope="col" aria-sort="ascending"><button type="button" class="bn-th-sort is-sorted">Due <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></button></th>
+<th scope="col">Status</th>
+<th scope="col" class="bn-td-actions"><span class="visually-hidden">Actions</span></th>
+</tr></thead>
+<tbody>
+<tr class="is-selected"><td><input class="bn-checkbox" type="checkbox" checked aria-label="Select P-036"></td><td class="bn-td-code">P-036</td><td><a class="bn-td-title" href="resource-form.html">Tiefgarage Records — label &amp; sleeves</a><span class="bn-td-sub">Tiefgarage Records · Identity, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm">AB</span>Aiko B.</span></td><td class="bn-td-num bn-mono">€14,200</td><td class="bn-td-nowrap bn-mono">23.10.2026</td><td><span class="bn-tag bn-tag--signal">Review</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-036"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr class="is-selected"><td><input class="bn-checkbox" type="checkbox" checked aria-label="Select P-037"></td><td class="bn-td-code">P-037</td><td><a class="bn-td-title" href="resource-form.html">Grauzone — exhibition catalogue</a><span class="bn-td-sub">Galerie Nullpunkt · Editorial, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--concrete">TW</span>Tomasz W.</span></td><td class="bn-td-num bn-mono">€9,600</td><td class="bn-td-nowrap bn-mono">06.11.2026</td><td><span class="bn-tag"><span class="bn-tag__ring"></span>Briefing</span></td><td class="bn-td-actions"><div class="bn-pop"><button type="button" class="bn-rowbtn is-active" aria-label="Actions for P-037" aria-expanded="true"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+<div class="bn-menu" role="menu" aria-label="P-037 actions"><p class="bn-menu__label">P-037 · Grauzone</p><a class="bn-menu__item" role="menuitem" href="resource-form.html"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg> Edit brief<span class="bn-menu__kbd">E</span></a><a class="bn-menu__item is-hover" role="menuitem" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Duplicate<span class="bn-menu__kbd">D</span></a><a class="bn-menu__item" role="menuitem" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.828 14.829a4 4 0 0 1-5.656 0 4 4 0 0 1 0-5.657 4 4 0 0 1 5.656 0"/><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"/><path d="M8 12h5"/></svg> Create invoice</a><a class="bn-menu__item" role="menuitem" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></svg> Book a room</a><div class="bn-menu__sep" role="separator"></div><a class="bn-menu__item bn-menu__item--danger" role="menuitem" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg> Archive project</a></div></div></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-034"></td><td class="bn-td-code">P-034</td><td><a class="bn-td-title" href="resource-form.html">Hallenbad Ost — reopening campaign</a><span class="bn-td-sub">Hallenbad Ost gGmbH · Campaign, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--outline">JA</span>Jonas A.</span></td><td class="bn-td-num bn-mono">€36,500</td><td class="bn-td-nowrap bn-mono">13.11.2026</td><td><span class="bn-tag bn-tag--signal">Review</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-034"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr class="is-selected"><td><input class="bn-checkbox" type="checkbox" checked aria-label="Select P-039"></td><td class="bn-td-code">P-039</td><td><a class="bn-td-title" href="resource-form.html">Fahrradwerk Moabit — shop signage</a><span class="bn-td-sub">Fahrradwerk Moabit · Identity, Spatial</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--outline">JA</span>Jonas A.</span></td><td class="bn-td-num bn-mono">€7,400</td><td class="bn-td-nowrap bn-mono">20.11.2026</td><td><span class="bn-tag"><span class="bn-tag__ring"></span>Briefing</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-039"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-035"></td><td class="bn-td-code">P-035</td><td><a class="bn-td-title" href="resource-form.html">Kaffeerösterei Sorte — packaging system</a><span class="bn-td-sub">Kaffeerösterei Sorte · Identity, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--signal">LD</span>Leyla D.</span></td><td class="bn-td-num bn-mono">€18,900</td><td class="bn-td-nowrap bn-mono">27.11.2026</td><td><span class="bn-tag bn-tag--hatch"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></svg> On hold</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-035"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-031"></td><td class="bn-td-code">P-031</td><td><a class="bn-td-title" href="resource-form.html">Spree Lichtspiele — festival identity 2027</a><span class="bn-td-sub">Spree Lichtspiele e.V. · Identity, Motion</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--signal">LD</span>Leyla D.</span></td><td class="bn-td-num bn-mono">€48,000</td><td class="bn-td-nowrap bn-mono">30.11.2026</td><td><span class="bn-tag bn-tag--solid"><span class="bn-tag__dot"></span>Production</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-031"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-029"></td><td class="bn-td-code">P-029</td><td><a class="bn-td-title" href="resource-form.html">Kante 01–12 — book series</a><span class="bn-td-sub">Verlag Kante · Editorial, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--concrete">TW</span>Tomasz W.</span></td><td class="bn-td-num bn-mono">€22,800</td><td class="bn-td-nowrap bn-mono">04.12.2026</td><td><span class="bn-tag bn-tag--solid"><span class="bn-tag__dot"></span>Production</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-029"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-033"></td><td class="bn-td-code">P-033</td><td><a class="bn-td-title" href="resource-form.html">Kiez Kino — weekly programme print</a><span class="bn-td-sub">Kiez Kino UG · Editorial, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm">AB</span>Aiko B.</span></td><td class="bn-td-num bn-mono">€27,400</td><td class="bn-td-nowrap bn-mono">18.12.2026</td><td><span class="bn-tag bn-tag--solid"><span class="bn-tag__dot"></span>Production</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-033"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-038"></td><td class="bn-td-code">P-038</td><td><a class="bn-td-title" href="resource-form.html">Nachtbus Festival — poster series 2027</a><span class="bn-td-sub">Nachtbus Festival · Identity, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--signal">LD</span>Leyla D.</span></td><td class="bn-td-num bn-mono">€12,000</td><td class="bn-td-nowrap bn-mono bn-muted">—</td><td><span class="bn-tag bn-tag--muted">Pitch</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-038"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+<tr><td><input class="bn-checkbox" type="checkbox" aria-label="Select P-032"></td><td class="bn-td-code">P-032</td><td><a class="bn-td-title" href="resource-form.html">Tanzhaus Spreeufer — season 26/27</a><span class="bn-td-sub">Tanzhaus Spreeufer · Campaign, Print</span></td><td><span class="bn-person-inline"><span class="bn-av bn-av--sm bn-av--signal">MO</span>Mira O.</span></td><td class="bn-td-num bn-mono">€24,000</td><td class="bn-td-nowrap bn-mono">02.10.2026</td><td><span class="bn-tag"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Delivered</span></td><td class="bn-td-actions"><button type="button" class="bn-rowbtn" aria-label="Actions for P-032"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></td></tr>
+</tbody>
+</table>
+</div>
+<nav class="bn-pager" aria-label="Pagination">
+<p class="bn-pager__info">Showing <strong>01–10</strong> of <strong>23</strong> filtered · 38 total</p>
+<ul class="bn-pager__list">
+<li><span class="bn-pager__link is-disabled" aria-disabled="true"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span class="visually-hidden">Previous page</span></span></li>
+<li><a class="bn-pager__link is-active" href="#" aria-current="page">01</a></li>
+<li><a class="bn-pager__link" href="#">02</a></li>
+<li><a class="bn-pager__link" href="#">03</a></li>
+<li><a class="bn-pager__link" href="#" aria-label="Next page"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
+</ul>
+</nav>
+<footer class="bn-mainfoot"><span>3 selected · €31,200 budget</span><span>Shortcuts: / search · J K move · X select</span></footer>
+</main>
+</div>
+</body>
+</html>

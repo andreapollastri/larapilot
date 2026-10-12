@@ -12,17 +12,115 @@ use SplFileInfo;
 class MockupAssetResolver
 {
     /**
+     * Design systems shipped with the package, in the order a bare
+     * `tokens.css` is looked up.
+     *
      * @var list<string>
      */
-    protected array $designSystemSlugs = [
+    public const PACKAGED = [
         'filament',
+        'nova',
+        'adminlte',
         'starter-kit',
+        'shadcn',
         'bootstrap-5',
         'tailwind',
-        'adminlte',
+        'material-3',
+        'nordic-saas',
+        'fluent',
+        'modern',
+        'bold-california',
+        'berlin',
     ];
 
+    /**
+     * Older or shorter token file names that still resolve to a packaged
+     * folder: `bootstrap-tokens.css` was the name before `bootstrap-5/`
+     * took its own.
+     *
+     * @var array<string, string>
+     */
+    protected const TOKEN_ALIASES = [
+        'bootstrap' => 'bootstrap-5',
+        'material' => 'material-3',
+        'shadcn-ui' => 'shadcn',
+    ];
+
+    /**
+     * @var array{key: string, slugs: list<string>}|null
+     */
+    protected ?array $slugCache = null;
+
     public function __construct(protected ConfigService $config) {}
+
+    /**
+     * Every design system the project holds: the packaged ones first, then
+     * the folders added beside them — a custom system from the interview,
+     * the as-is system of an adopted project, an uploaded reference — that
+     * carry a `tokens.css`, a `README.md`, or an `html/index.html`.
+     *
+     * @return list<string>
+     */
+    public function designSystemSlugs(): array
+    {
+        $root = $this->designSystemsRoot();
+        $key = $root.'@'.(is_dir($root) ? (string) filemtime($root) : '-');
+
+        if ($this->slugCache !== null && $this->slugCache['key'] === $key) {
+            return $this->slugCache['slugs'];
+        }
+
+        $slugs = self::PACKAGED;
+
+        if (is_dir($root)) {
+            foreach (scandir($root) ?: [] as $entry) {
+                if ($entry === '.' || $entry === '..' || in_array($entry, $slugs, true)) {
+                    continue;
+                }
+
+                if (preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $entry) !== 1) {
+                    continue;
+                }
+
+                $dir = $root.DIRECTORY_SEPARATOR.$entry;
+
+                if (! is_dir($dir)) {
+                    continue;
+                }
+
+                if (is_file($dir.'/tokens.css') || is_file($dir.'/README.md') || is_file($dir.'/html/index.html')) {
+                    $slugs[] = $entry;
+                }
+            }
+        }
+
+        $this->slugCache = ['key' => $key, 'slugs' => $slugs];
+
+        return $slugs;
+    }
+
+    /**
+     * The design system a `{slug}-tokens.css` file name points at; null when
+     * the name is not one of a known system.
+     */
+    public function designSystemForTokenBasename(string $basename): ?string
+    {
+        $basename = strtolower(basename(str_replace('\\', '/', $basename)));
+
+        if (! str_ends_with($basename, '-tokens.css')) {
+            return null;
+        }
+
+        $slug = substr($basename, 0, -strlen('-tokens.css'));
+
+        foreach ($this->designSystemSlugs() as $known) {
+            if (strtolower($known) === $slug) {
+                return $known;
+            }
+        }
+
+        return self::TOKEN_ALIASES[$slug] ?? null;
+    }
 
     public function designSystemsRoot(): string
     {
@@ -115,7 +213,7 @@ class MockupAssetResolver
             }
         }
 
-        foreach ($this->designSystemSlugs as $slug) {
+        foreach ($this->designSystemSlugs() as $slug) {
             $match = $this->resolveDesignSystemsFile($slug.'/'.$basename);
 
             if ($match !== null) {
@@ -296,22 +394,14 @@ class MockupAssetResolver
 
     protected function mapTokenBasenameToDesignSystemsPath(string $basename): ?string
     {
-        if (! str_ends_with($basename, '-tokens.css')) {
-            return null;
-        }
+        $system = $this->designSystemForTokenBasename($basename);
 
-        $system = str_replace('-tokens.css', '', $basename);
-
-        if (in_array($system, $this->designSystemSlugs, true)) {
-            return $system.'/tokens.css';
-        }
-
-        return null;
+        return $system !== null ? $system.'/tokens.css' : null;
     }
 
     protected function detectDesignSystem(string $mockupRoot): ?string
     {
-        foreach ($this->designSystemSlugs as $slug) {
+        foreach ($this->designSystemSlugs() as $slug) {
             if (is_file($mockupRoot.DIRECTORY_SEPARATOR.$slug.'-tokens.css')) {
                 return $slug;
             }
@@ -322,8 +412,8 @@ class MockupAssetResolver
         if (is_file($readme)) {
             $content = strtolower((string) file_get_contents($readme));
 
-            foreach ($this->designSystemSlugs as $slug) {
-                if (str_contains($content, $slug)) {
+            foreach ($this->designSystemSlugs() as $slug) {
+                if (str_contains($content, strtolower($slug))) {
                     return $slug;
                 }
             }

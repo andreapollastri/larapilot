@@ -234,7 +234,7 @@ it('renders the decision journal below the PRD grouped by user story', function 
         ->assertSee('Project / discovery', false)
         ->assertSee('US-001 — Login', false)
         ->assertSee('Sanctum', false)
-        ->assertSee('href="#decision-journal"', false);
+        ->assertSee('href="#decision-journal-entries"', false);
 });
 
 it('shows user-story decisions on the spec detail page', function (): void {

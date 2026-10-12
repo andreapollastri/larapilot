@@ -1,24 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bootstrap 5 — Screens</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bootstrap 5 — screen catalog · Bramble Stays</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="bs-mockup">
-  <main class="bs-gallery container">
-    <h1 class="mb-2">Bootstrap 5</h1>
-    <p class="bs-gallery__intro">Static HTML mockups using Bootstrap 5.3 defaults — <a href="https://getbootstrap.com/docs/5.3/">getbootstrap.com</a>. See <a href="../sources.md">sources.md</a>.</p>
-
-    <div class="bs-gallery__grid">
-      <a class="bs-gallery__card" href="landing.html"><h2>Landing</h2><p>Marketing hero, features, CTA</p></a>
-      <a class="bs-gallery__card" href="dashboard.html"><h2>Dashboard</h2><p>Sidebar app shell + stats + table</p></a>
-      <a class="bs-gallery__card" href="login.html"><h2>Login</h2><p>Centered sign-in card</p></a>
-      <a class="bs-gallery__card" href="settings.html"><h2>Settings</h2><p>Profile form in app shell</p></a>
-      <a class="bs-gallery__card" href="components.html"><h2>Components</h2><p>Buttons, alerts, badges, modal</p></a>
+<body class="bs-mockup bg-body-tertiary">
+<header class="bg-body border-bottom py-4">
+  <div class="container">
+    <p class="small text-body-secondary mb-1">Larapilot design system · Bootstrap v5.3.8 · Bootstrap Icons 1.13</p>
+    <h1 class="h3 mb-1 d-flex align-items-center gap-2"><svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays — screen catalog</h1>
+    <p class="text-body-secondary mb-0">Holiday bookings: a public site for guests and a host app. Real Bootstrap class names, light and dark (<code>data-bs-theme</code>), desktop and phone.</p>
+  </div>
+</header>
+<main class="container py-4">
+  <section class="mb-4" aria-labelledby="swatches">
+    <h2 class="h6 text-uppercase text-body-secondary" id="swatches">Theme colours</h2>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      <span class="badge text-bg-primary p-3">primary #0d6efd</span>
+      <span class="badge text-bg-secondary p-3">secondary #6c757d</span>
+      <span class="badge text-bg-success p-3">success #198754</span>
+      <span class="badge text-bg-danger p-3">danger #dc3545</span>
+      <span class="badge text-bg-warning p-3">warning #ffc107</span>
+      <span class="badge text-bg-info p-3">info #0dcaf0</span>
+      <span class="badge text-bg-light border p-3">light #f8f9fa</span>
+      <span class="badge text-bg-dark p-3">dark #212529</span>
     </div>
-  </main>
+    <div class="d-flex flex-wrap gap-2">
+      <span class="badge bg-body text-body border p-3">body-bg</span>
+      <span class="badge bg-body-tertiary text-body border p-3">tertiary-bg</span>
+      <span class="badge bg-body-secondary text-body border p-3">secondary-bg</span>
+      <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle p-3">primary-subtle</span>
+      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle p-3">success-subtle</span>
+      <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle p-3">warning-subtle</span>
+      <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle p-3">danger-subtle</span>
+    </div>
+  </section>
+
+  <h2 class="h6 text-uppercase text-body-secondary">Screens</h2>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="landing.html">Landing</a></h3><p class="card-text small text-body-secondary mb-0">Public site: navbar, hero with search, press logos, stay cards, features, testimonials, host pricing, FAQ accordion, footer. Start here for any marketing or public page.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="dashboard.html">Dashboard</a></h3><p class="card-text small text-body-secondary mb-0">Host app shell (dark top navbar, offcanvas-lg sidebar), stat cards, SVG revenue chart, today list, bookings table, progress bars. Start here for any signed-in overview.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="dashboard-dark.html">Dashboard — dark</a></h3><p class="card-text small text-body-secondary mb-0">The same overview forced dark with <code>&lt;html data-bs-theme="dark"&gt;</code>. Use it to check a screen's dark mode.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="resource-list.html">Resource list</a></h3><p class="card-text small text-body-secondary mb-0">Bookings index: underline tabs with counts, search and filters, selected rows with a bulk action bar, sortable headers, an open row menu, status badges, pagination.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="modal.html">Modal</a></h3><p class="card-text small text-body-secondary mb-0">The bookings list with a confirmation modal open over the backdrop. Start here for destructive confirmations.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="resource-form.html">Resource form</a></h3><p class="card-text small text-body-secondary mb-0">Listing editor: tabs, card sections, required marks, helper text, an invalid field, a disabled field, floating labels, input groups, checks, switches, radios, upload zone, sticky actions.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="settings.html">Settings</a></h3><p class="card-text small text-body-secondary mb-0">List-group section nav, profile form, notification switches, payout radios, security rows, danger zone, a toast. Start here for account and preference pages.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="login.html">Login</a></h3><p class="card-text small text-body-secondary mb-0">Split sign-in with drawn credentials (<code>.mock-field</code>), social buttons and a host testimonial. Start here for any auth screen.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="empty-state.html">Empty state</a></h3><p class="card-text small text-body-secondary mb-0">First-run listings page, a "no results" table state, an onboarding checklist and placeholders. Start here when a list can be empty.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="components.html">Components</a></h3><p class="card-text small text-body-secondary mb-0">Every documented component in its variants and states: buttons, badges, alerts, cards, forms, validation, drawn fields, tables, dropdown, modal, toasts, progress, accordion, offcanvas.</p></div></div></div>
+    <div class="col"><div class="card h-100"><div class="card-body"><h3 class="h5 card-title"><a class="stretched-link link-body-emphasis" href="icons.html">Icons</a></h3><p class="card-text small text-body-secondary mb-0">144 Bootstrap Icons glyphs inlined as SVG, with their <code>bi-*</code> names. Copy a glyph from here when a screen needs a new icon.</p></div></div></div>
+  </div>
+</main>
 </body>
 </html>

@@ -1,29 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scheme-light bg-gray-50 antialiased dark:scheme-dark dark:bg-gray-950">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tailwind CSS — Screens</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
-  </script>
+  <meta name="color-scheme" content="light dark">
+  <title>Tailwind CSS · Larapilot design system catalog</title>
   <link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900">
-  <main class="tw-gallery">
-    <h1 class="text-2xl font-bold">Tailwind CSS</h1>
-    <p class="tw-gallery__intro">Pure utility-class mockups via Tailwind CDN — <a href="https://tailwindcss.com/docs" class="text-indigo-600 hover:underline">tailwindcss.com</a>. See <a href="../sources.md" class="text-indigo-600 hover:underline">sources.md</a>.</p>
+<body class="tw-mockup ">
+<header class="border-b border-gray-200 bg-white dark:border-white/10 dark:bg-gray-900">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-x-6 px-6 py-5 lg:px-8">
+    <span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Tailwind CSS v4.3 · packaged utilities</p>
+  </div>
+</header>
+<main id="main" class="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+  <div class="max-w-3xl">
+    <p class="text-sm/6 font-semibold text-indigo-600 dark:text-indigo-400">Larapilot design system · tailwind</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl dark:text-white">Tidewater, drawn in real Tailwind utilities</h1>
+    <p class="mt-4 text-base/7 text-gray-600 dark:text-gray-300">Every screen below is written with Tailwind v4 class names exactly as you would type them in Blade. The packaged <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-sm text-gray-800 dark:bg-white/10 dark:text-gray-200">tokens.css</code> holds those utilities with Tailwind's own values, so the mockups render offline with no CDN and no build. Light and dark follow your OS; <code class="rounded bg-gray-100 px-1 py-0.5 font-mono text-sm text-gray-800 dark:bg-white/10 dark:text-gray-200">&lt;html class="dark"&gt;</code> forces dark.</p>
+  </div>
+  <section aria-labelledby="palette" class="mt-10 rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+    <h2 id="palette" class="text-base/7 font-semibold text-gray-900 dark:text-white">Palette: indigo is primary, gray is neutral</h2>
+    <div class="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2"><div><p class="text-sm font-medium text-gray-900 dark:text-white">indigo</p><ul role="list" class="mt-2 flex overflow-hidden rounded-lg ring-1 ring-gray-900/10 dark:ring-white/10"><li class="h-10 flex-1 bg-indigo-50"><span class="sr-only">indigo-50</span></li><li class="h-10 flex-1 bg-indigo-100"><span class="sr-only">indigo-100</span></li><li class="h-10 flex-1 bg-indigo-200"><span class="sr-only">indigo-200</span></li><li class="h-10 flex-1 bg-indigo-300"><span class="sr-only">indigo-300</span></li><li class="h-10 flex-1 bg-indigo-400"><span class="sr-only">indigo-400</span></li><li class="h-10 flex-1 bg-indigo-500"><span class="sr-only">indigo-500</span></li><li class="h-10 flex-1 bg-indigo-600"><span class="sr-only">indigo-600</span></li><li class="h-10 flex-1 bg-indigo-700"><span class="sr-only">indigo-700</span></li><li class="h-10 flex-1 bg-indigo-800"><span class="sr-only">indigo-800</span></li><li class="h-10 flex-1 bg-indigo-900"><span class="sr-only">indigo-900</span></li><li class="h-10 flex-1 bg-indigo-950"><span class="sr-only">indigo-950</span></li></ul><div aria-hidden="true" class="mt-1 flex text-[0.625rem] text-gray-500 tabular-nums dark:text-gray-400"><span class="flex-1 text-center">50</span><span class="flex-1 text-center">100</span><span class="flex-1 text-center">200</span><span class="flex-1 text-center">300</span><span class="flex-1 text-center">400</span><span class="flex-1 text-center">500</span><span class="flex-1 text-center">600</span><span class="flex-1 text-center">700</span><span class="flex-1 text-center">800</span><span class="flex-1 text-center">900</span><span class="flex-1 text-center">950</span></div></div><div><p class="text-sm font-medium text-gray-900 dark:text-white">gray</p><ul role="list" class="mt-2 flex overflow-hidden rounded-lg ring-1 ring-gray-900/10 dark:ring-white/10"><li class="h-10 flex-1 bg-gray-50"><span class="sr-only">gray-50</span></li><li class="h-10 flex-1 bg-gray-100"><span class="sr-only">gray-100</span></li><li class="h-10 flex-1 bg-gray-200"><span class="sr-only">gray-200</span></li><li class="h-10 flex-1 bg-gray-300"><span class="sr-only">gray-300</span></li><li class="h-10 flex-1 bg-gray-400"><span class="sr-only">gray-400</span></li><li class="h-10 flex-1 bg-gray-500"><span class="sr-only">gray-500</span></li><li class="h-10 flex-1 bg-gray-600"><span class="sr-only">gray-600</span></li><li class="h-10 flex-1 bg-gray-700"><span class="sr-only">gray-700</span></li><li class="h-10 flex-1 bg-gray-800"><span class="sr-only">gray-800</span></li><li class="h-10 flex-1 bg-gray-900"><span class="sr-only">gray-900</span></li><li class="h-10 flex-1 bg-gray-950"><span class="sr-only">gray-950</span></li></ul><div aria-hidden="true" class="mt-1 flex text-[0.625rem] text-gray-500 tabular-nums dark:text-gray-400"><span class="flex-1 text-center">50</span><span class="flex-1 text-center">100</span><span class="flex-1 text-center">200</span><span class="flex-1 text-center">300</span><span class="flex-1 text-center">400</span><span class="flex-1 text-center">500</span><span class="flex-1 text-center">600</span><span class="flex-1 text-center">700</span><span class="flex-1 text-center">800</span><span class="flex-1 text-center">900</span><span class="flex-1 text-center">950</span></div></div></div>
+  </section>
+  <section aria-labelledby="screens" class="mt-12">
+    <h2 id="screens" class="text-base/7 font-semibold text-gray-900 dark:text-white">Screens</h2>
+    <ul role="list" class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="landing.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Landing page</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/landing.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Hero with app screenshot, logo cloud, features, cohort split section, stats, pricing tiers, testimonial, FAQ, CTA and footer.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for any public or marketing page. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="dashboard.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Dashboard</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/dashboard.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Sidebar app shell (a top bar with a menu button on phones), KPI stats with trends, SVG area chart, MRR movements, events table.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for any signed-in overview. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="dashboard-dark.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Dashboard, forced dark</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/dashboard-dark.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">The same screen with &lt;html class="dark"&gt;: how every dark: variant looks without the OS setting.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Use it to review dark mode side by side. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="resource-list.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Resource list</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/resource-list.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Customers table: status tabs, search, filter buttons and applied-filter chips, bulk action bar, sorting, row actions, badges, pagination.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for any index or table screen. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="resource-form.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Resource form</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/resource-form.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Edit customer: two-column sections, required marks, an error, a disabled field, add-ons, select, textarea, upload, checkboxes, toggles, sticky actions.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for create and edit screens. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="settings.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Settings</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/settings.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Tabbed account settings: profile, radio group, toggle card, two-factor status, sessions list, a blocked destructive action.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for preferences and account pages. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="login.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Sign in</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/login.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Split sign-in with drawn credential fields, remember me, SSO and passkey buttons, and a brand panel.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for every auth screen. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="empty-state.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Empty state</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/empty-state.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Reports with nothing scheduled yet: dashed empty state with a primary action and template starting points.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Start here for first-run screens. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+        <li class="group relative flex flex-col rounded-xl bg-white p-6 shadow-xs outline-1 outline-gray-900/5 hover:outline-indigo-600/40 dark:bg-gray-900 dark:shadow-none dark:outline-white/10 dark:hover:outline-indigo-400/50">
+          <h3 class="text-base/7 font-semibold text-gray-900 dark:text-white"><a href="components.html" class="focus-visible:outline-hidden"><span aria-hidden="true" class="absolute inset-0"></span>Components</a></h3>
+          <p class="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">html/components.html</p>
+          <p class="mt-3 flex-1 text-sm/6 text-gray-600 dark:text-gray-300">Every pattern in components.md in its variants and states: buttons, badges, form controls, alerts, tabs, overlays, data display.</p>
+          <p class="mt-4 text-sm/6 font-medium text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-400">Look up a pattern before writing new markup. <span aria-hidden="true">&rarr;</span></p>
+        </li>
+    </ul>
+  </section>
+</main>
 
-    <div class="tw-gallery__grid">
-      <a class="tw-gallery__card" href="landing.html"><h2>Landing</h2><p>Marketing hero, features, pricing</p></a>
-      <a class="tw-gallery__card" href="dashboard.html"><h2>Dashboard</h2><p>Sidebar app shell + stats + table</p></a>
-      <a class="tw-gallery__card" href="login.html"><h2>Login</h2><p>Centered auth card</p></a>
-      <a class="tw-gallery__card" href="settings.html"><h2>Settings</h2><p>Profile form in app shell</p></a>
-      <a class="tw-gallery__card" href="components.html"><h2>Components</h2><p>Buttons, inputs, alerts, modal</p></a>
-    </div>
-  </main>
 </body>
 </html>

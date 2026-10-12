@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>New invoice · Fjord</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="ns-mockup ">
+<a class="ns-skip-link" href="#main">Skip to content</a>
+<div class="ns-app">
+  <aside class="ns-sidebar" aria-label="Sidebar">
+    <a href="dashboard.html" class="ns-sidebar__brand" aria-label="Fjord, overview"><svg class="ns-brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor"/><path class="ns-brand__line" d="M5.5 18.5 10.5 9.5l3.6 6 2.4-3.6 6 6.6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path class="ns-brand__line ns-brand__line--soft" d="M6 22.2c2-.9 3.4-.9 5.3 0s3.4.9 5.4 0 3.4-.9 5.3 0" fill="none" stroke-width="1.6" stroke-linecap="round"/></svg>Fjord</a>
+    <button type="button" class="ns-workspace" aria-label="Switch workspace: Solberg Studio">
+      <span class="ns-avatar ns-avatar--sand" aria-hidden="true">IS</span>
+      <span class="ns-grow"><span class="ns-workspace__name ns-truncate">Solberg Studio</span><span class="ns-workspace__meta">Studio plan · EUR</span></span>
+      <svg class="ns-icon ns-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+    </button>
+    <nav aria-label="Main" class="ns-nav">
+      <a href="dashboard.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+      <a href="resource-list.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>Invoices<span class="ns-nav__count">24</span></a>
+      <a href="resource-view.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>Clients<span class="ns-nav__count">11</span></a>
+      <a href="empty-state.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Recurring</a>
+      <a href="dashboard.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Reports</a>
+    </nav>
+    <nav aria-label="Shortcuts" class="ns-nav">
+      <p class="ns-nav__label">Shortcuts</p>
+      <a href="resource-form.html" class="ns-nav__item" aria-current="page"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M9 15h6"/><path d="M12 18v-6"/></svg>New invoice</a>
+      <a href="resource-list.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Overdue<span class="ns-nav__count ns-nav__count--alert">2</span></a>
+      <a href="components.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>Components</a>
+    </nav>
+    <div class="ns-sidebar__footer">
+      <div class="ns-upsell">
+        <p class="ns-upsell__title">7 of 10 clients used</p>
+        <div class="ns-progress ns-mt-2"><div class="ns-progress__bar" style="width: 70%"></div></div>
+        <p class="ns-mt-2">Unlimited clients on Team. <a href="landing.html#pricing" class="ns-link">Compare plans</a></p>
+      </div>
+      <div class="ns-nav">
+        <a href="settings.html" class="ns-nav__item"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+        <a href="settings.html" class="ns-nav__item" aria-label="Your profile: Ingrid Solberg"><span class="ns-avatar ns-avatar--sand ns-avatar--sm" aria-hidden="true">IS</span><span class="ns-truncate">Ingrid Solberg</span></a>
+      </div>
+    </div>
+  </aside>
+  <div class="ns-main">
+    <header class="ns-topbar">
+      <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon ns-topbar__menu" aria-label="Open menu"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+      <a href="dashboard.html" class="ns-topbar__brand" aria-label="Fjord, overview"><svg class="ns-brand__mark" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor"/><path class="ns-brand__line" d="M5.5 18.5 10.5 9.5l3.6 6 2.4-3.6 6 6.6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path class="ns-brand__line ns-brand__line--soft" d="M6 22.2c2-.9 3.4-.9 5.3 0s3.4.9 5.4 0 3.4-.9 5.3 0" fill="none" stroke-width="1.6" stroke-linecap="round"/></svg>Fjord</a>
+      <label class="ns-search"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search invoices and clients</span><input type="search" placeholder="Search invoices, clients, amounts"><span class="ns-kbd" aria-hidden="true">⌘K</span></label>
+      <div class="ns-topbar__actions">
+        <a href="resource-form.html" class="ns-btn ns-btn--ghost ns-btn--icon ns-only-sm" aria-label="New invoice"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+        <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Help"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+        <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Notifications, 3 new"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M11.68 2.009A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673c-.824-.85-1.678-1.731-2.21-3.348"/><circle cx="18" cy="5" r="3"/></svg></button>
+      </div>
+    </header>
+    <main id="main" class="ns-content">
+<nav class="ns-breadcrumb" aria-label="Breadcrumb"><a href="resource-list.html">Invoices</a><span class="ns-breadcrumb__sep" aria-hidden="true">/</span><span aria-current="page">New invoice</span></nav>
+      <div class="ns-page-header">
+        <div>
+          <div class="ns-row"><h1 class="ns-page-header__title">New invoice</h1><span class="ns-badge"><span class="ns-badge__dot"></span>Draft</span></div>
+          <p class="ns-page-header__subtitle">Autosaved 2 minutes ago. Fields marked <span class="ns-danger-text">*</span> are required.</p>
+        </div>
+        <div class="ns-page-header__actions">
+          <a href="resource-view.html" class="ns-btn ns-btn--secondary"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>Preview</a>
+        </div>
+      </div>
+
+      <div class="ns-alert ns-alert--danger ns-mb-6" role="alert">
+        <svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <div><p class="ns-alert__title">One thing to fix before sending</p><p class="ns-alert__body">Nordlys Festival has no billing email yet. <a href="#billing-email" class="ns-link">Add it below</a>.</p></div>
+      </div>
+
+      <div class="ns-grid ns-grid--main-aside">
+        <div class="ns-stack ns-stack--lg">
+          <section class="ns-card" aria-labelledby="sec-client">
+            <div class="ns-card__header"><h2 id="sec-client" class="ns-card__title">Client and dates</h2></div>
+            <div class="ns-card__body ns-form-grid">
+              <div class="ns-field">
+                <label class="ns-label" for="client">Client <span class="ns-label__req" aria-hidden="true">*</span></label>
+                <select id="client" name="client" class="ns-select" required>
+                  <option>Nordlys Festival · Tromsø</option><option>Halden &amp; Moe Arkitekter · Oslo</option><option>Lumo Interiors · Helsinki</option><option>Tundra Labs · Stockholm</option>
+                </select>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="billing-email">Billing email <span class="ns-label__req" aria-hidden="true">*</span></label>
+                <input id="billing-email" name="billing-email" type="email" class="ns-input" placeholder="billing@nordlysfestival.no" required aria-invalid="true" aria-describedby="billing-email-error">
+                <p id="billing-email-error" class="ns-error-text"><svg class="ns-icon ns-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>Add the address the invoice should go to.</p>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="number">Invoice number</label>
+                <input id="number" name="number" type="text" class="ns-input ns-num" value="INV-2026-045" disabled aria-describedby="number-hint">
+                <p id="number-hint" class="ns-hint">Next in your sequence. Change the format in Settings.</p>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="reference">PO or reference <span class="ns-label__opt">Optional</span></label>
+                <input id="reference" name="reference" type="text" class="ns-input" value="NF-2026-114">
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="issued">Issue date <span class="ns-label__req" aria-hidden="true">*</span></label>
+                <div class="ns-input-icon"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><input id="issued" name="issued" type="text" class="ns-input" value="12 Oct 2026" required></div>
+              </div>
+              <div class="ns-field">
+                <label class="ns-label" for="terms">Payment terms</label>
+                <select id="terms" name="terms" class="ns-select" aria-describedby="terms-hint"><option>Due on receipt</option><option selected>Net 14</option><option>Net 30</option><option>Custom date</option></select>
+                <p id="terms-hint" class="ns-hint">Due Monday 26 October 2026.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-card" aria-labelledby="sec-lines">
+            <div class="ns-card__header">
+              <h2 id="sec-lines" class="ns-card__title">Line items</h2>
+              <div class="ns-field">
+                <label class="visually-hidden" for="currency">Currency</label>
+                <select id="currency" name="currency" class="ns-select ns-input--sm"><option selected>EUR · Euro</option><option>NOK · Norwegian krone</option><option>GBP · Pound sterling</option><option>USD · US dollar</option></select>
+              </div>
+            </div>
+            <div class="ns-card__body">
+              <div class="ns-table-wrap">
+                <table class="ns-lines">
+                  <thead><tr><th scope="col">Description</th><th scope="col" class="is-num is-qty">Qty</th><th scope="col" class="is-num is-rate">Rate</th><th scope="col" class="is-num is-amount">Amount</th><th scope="col"><span class="visually-hidden">Remove</span></th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><input type="text" class="ns-input" aria-label="Line 1 description" value="Poster system, 2027 identity"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 1 quantity" value="1"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 1 rate" value="1,200.00"></td>
+                      <td><span class="ns-lines__amount">€1,200.00</span></td>
+                      <td><button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Remove line 1"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
+                    </tr>
+                    <tr>
+                      <td><input type="text" class="ns-input is-focus" aria-label="Line 2 description" value="Programme layout, hours"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 2 quantity" value="6"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 2 rate" value="95.00"></td>
+                      <td><span class="ns-lines__amount">€570.00</span></td>
+                      <td><button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Remove line 2"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
+                    </tr>
+                    <tr>
+                      <td><input type="text" class="ns-input" aria-label="Line 3 description" value="Print production management"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 3 quantity" value="1"></td>
+                      <td><input type="text" class="ns-input ns-input--num" aria-label="Line 3 rate" value="430.00"></td>
+                      <td><span class="ns-lines__amount">€430.00</span></td>
+                      <td><button type="button" class="ns-btn ns-btn--ghost ns-btn--icon" aria-label="Remove line 3"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="ns-row ns-row--between ns-mt-4">
+                <div class="ns-row">
+                  <button type="button" class="ns-btn ns-btn--secondary ns-btn--sm"><svg class="ns-icon ns-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add line</button>
+                  <button type="button" class="ns-btn ns-btn--ghost ns-btn--sm"><svg class="ns-icon ns-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>Add tracked time <span class="ns-muted">6.5 h</span></button>
+                </div>
+                <div class="ns-field">
+                  <label class="visually-hidden" for="vat">VAT rate</label>
+                  <select id="vat" name="vat" class="ns-select ns-input--sm"><option selected>VAT 25% · Norway</option><option>VAT 15% · food</option><option>Reverse charge · EU</option><option>No VAT</option></select>
+                </div>
+              </div>
+              <hr class="ns-divider ns-mt-6">
+              <div class="ns-totals ns-mt-6">
+                <div class="ns-totals__row"><span>Subtotal</span><span>€2,200.00</span></div>
+                <div class="ns-totals__row"><span>VAT 25%</span><span>€550.00</span></div>
+                <div class="ns-totals__row ns-totals__row--total"><span>Total</span><span>€2,750.00</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-card" aria-labelledby="sec-notes">
+            <div class="ns-card__header"><h2 id="sec-notes" class="ns-card__title">Note and attachments</h2></div>
+            <div class="ns-card__body ns-stack">
+              <div class="ns-field">
+                <label class="ns-label" for="note">Note to client</label>
+                <textarea id="note" name="note" class="ns-textarea" rows="3" aria-describedby="note-hint">Thank you for having me back for another festival year. You can pay by bank transfer or by card from the invoice page.</textarea>
+                <p id="note-hint" class="ns-hint">Shown under the line items and in the email.</p>
+              </div>
+              <div class="ns-field">
+                <span class="ns-label" id="attach-label">Attachments</span>
+                <div class="ns-dropzone">
+                  <span class="ns-dropzone__icon"><svg class="ns-icon ns-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg></span>
+                  <p class="ns-dropzone__title">Drop files here or <label for="attach" class="ns-dropzone__link">browse</label></p>
+                  <p>PDF, PNG or JPG, up to 10 MB each</p>
+                  <input id="attach" type="file" class="visually-hidden" aria-labelledby="attach-label" multiple>
+                </div>
+                <div class="ns-file">
+                  <span class="ns-file__icon"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+                  <div class="ns-grow"><p class="ns-file__name">nordlys-poster-proofs.pdf</p><p class="ns-file__meta">2.4 MB · uploaded just now</p></div>
+                  <button type="button" class="ns-btn ns-btn--ghost ns-btn--icon ns-btn--sm" aria-label="Remove nordlys-poster-proofs.pdf"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="ns-card" aria-labelledby="sec-pay">
+            <div class="ns-card__header"><h2 id="sec-pay" class="ns-card__title">Payment and reminders</h2></div>
+            <div class="ns-card__body">
+              <div class="ns-setting">
+                <div><p class="ns-setting__title" id="card-label">Accept card payments</p><p class="ns-setting__text" id="card-desc">Card, Apple Pay and Google Pay on the invoice page. 1.4% + €0.25 per payment.</p></div>
+                <input type="checkbox" role="switch" class="ns-switch" checked aria-labelledby="card-label" aria-describedby="card-desc">
+              </div>
+              <div class="ns-setting">
+                <div><p class="ns-setting__title" id="remind-label">Send polite reminders</p><p class="ns-setting__text" id="remind-desc">3, 7 and 14 days after the due date, stopped as soon as they pay.</p></div>
+                <input type="checkbox" role="switch" class="ns-switch" checked aria-labelledby="remind-label" aria-describedby="remind-desc">
+              </div>
+              <div class="ns-setting">
+                <div><p class="ns-setting__title" id="pdf-label">Attach the PDF to the email</p><p class="ns-setting__text" id="pdf-desc">Some finance teams ask for it; the link always works.</p></div>
+                <input type="checkbox" role="switch" class="ns-switch" aria-labelledby="pdf-label" aria-describedby="pdf-desc">
+              </div>
+              <label class="ns-check ns-mt-4"><input type="checkbox" class="ns-checkbox" checked><span class="ns-check__text">Save these lines as a template for Nordlys Festival</span></label>
+            </div>
+          </section>
+        </div>
+
+        <aside class="ns-stack ns-sticky" aria-label="Summary">
+          <section class="ns-card" aria-labelledby="sum-title">
+            <div class="ns-card__header">
+              <h2 id="sum-title" class="ns-card__title">Summary</h2>
+              <span class="ns-text-sm ns-muted ns-num">INV-2026-045</span>
+            </div>
+            <div class="ns-card__body ns-stack">
+              <div class="ns-row ns-row--nowrap ns-row--lg"><span class="ns-avatar ns-avatar--moss ns-avatar--lg" aria-hidden="true">NF</span><div><p class="ns-medium">Nordlys Festival</p><p class="ns-text-sm ns-muted">Storgata 64, 9008 Tromsø</p></div></div>
+              <dl class="ns-dl">
+                <dt>Issued</dt><dd>12 Oct 2026</dd>
+                <dt>Due</dt><dd>26 Oct 2026 · Net 14</dd>
+                <dt>Lines</dt><dd>3 · 6 hours</dd>
+              </dl>
+              <hr class="ns-divider">
+              <div class="ns-totals">
+                <div class="ns-totals__row"><span>Subtotal</span><span>€2,200.00</span></div>
+                <div class="ns-totals__row"><span>VAT 25%</span><span>€550.00</span></div>
+                <div class="ns-totals__row ns-totals__row--total"><span>Total due</span><span>€2,750.00</span></div>
+              </div>
+            </div>
+          </section>
+          <div class="ns-alert ns-alert--success">
+            <svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>
+            <div><p class="ns-alert__title">Reliable payer</p><p class="ns-alert__body">Nordlys Festival paid its last 3 invoices on time, in 9 days on average.</p></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="ns-sticky-actions">
+        <a href="resource-list.html" class="ns-btn ns-btn--ghost">Cancel</a>
+        <button type="button" class="ns-btn ns-btn--secondary">Save draft</button>
+        <button type="button" class="ns-btn ns-btn--primary"><svg class="ns-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>Send invoice</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

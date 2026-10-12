@@ -1,57 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — AdminLTE</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/css/adminlte.min.css">
-  <style>
-    /* Credential fields are drawn, not built — see the mockup rules. */
-    .mock-field { display: flex; align-items: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-    .mock-field--secret { letter-spacing: 0.18em; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Kestrel Inventory</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="login-page bg-body-secondary">
-  <div class="login-box">
-    <div class="login-logo">
-      <a href="dashboard.html"><b>Admin</b>LTE</a>
-    </div>
-    <div class="card">
-      <div class="card-body login-card-body">
-        <p class="login-box-msg">Sign in to start your session</p>
-        <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
-        <div class="mock-form">
-          <div class="input-group mb-3">
-            <div class="form-control mock-field" role="img" aria-label="Email field, filled in">jane@example.com</div>
-            <div class="input-group-text"><span class="bi bi-envelope"></span></div>
-          </div>
-          <div class="input-group mb-3">
-            <div class="form-control mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
-            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
-          </div>
-          <div class="row">
-            <div class="col-8">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember">
-                <label class="form-check-label" for="remember">Remember Me</label>
-              </div>
-            </div>
-            <div class="col-4">
-              <a href="dashboard.html" class="btn btn-primary w-100" role="button">Sign In</a>
-            </div>
+<body class="lte-mockup login-page bg-body-secondary">
+<main class="login-box">
+  <h1 class="login-logo"><a href="dashboard.html"><b>Kestrel</b> Inventory</a></h1>
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Sign in to start your session</p>
+      <div class="alert alert-warning small py-2" role="status"><svg class="bi bi-exclamation-triangle-fill me-1" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg> Your session expired after 8 hours. Sign in again.</div>
+      <span class="visually-hidden">Email</span>
+      <div class="input-group mb-3">
+        <div class="mock-field" role="img" aria-label="Email field, filled in">rosa.delgado@kestrel-logistics.eu</div>
+        <div class="input-group-text"><svg class="bi bi-envelope" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg></div>
+      </div>
+      <span class="visually-hidden">Password</span>
+      <div class="input-group mb-3">
+        <div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••••</div>
+        <div class="input-group-text"><svg class="bi bi-lock-fill" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/></svg></div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-7">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="remember" checked>
+            <label class="form-check-label" for="remember">Remember me</label>
           </div>
         </div>
-        <p class="mb-1 mt-3"><a href="#">I forgot my password</a></p>
-        <p class="mb-0"><a href="index.html" class="text-center">Back to design catalog</a></p>
+        <div class="col-5">
+          <div class="d-grid gap-2"><a href="dashboard.html" class="btn btn-primary" role="button">Sign In</a></div>
+        </div>
       </div>
+      <div class="social-auth-links text-center mb-3 d-grid gap-2">
+        <p class="mb-1">- OR -</p>
+        <a href="dashboard.html" class="btn btn-primary" role="button"><svg class="bi bi-microsoft me-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.462 0H0v7.19h7.462zM16 0H8.538v7.19H16zM7.462 8.211H0V16h7.462zm8.538 0H8.538V16H16z"/></svg> Sign in with Microsoft</a>
+        <a href="dashboard.html" class="btn btn-danger" role="button"><svg class="bi bi-google me-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M15.545 6.558a9.4 9.4 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.7 7.7 0 0 1 5.352 2.082l-2.284 2.284A4.35 4.35 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.8 4.8 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.7 3.7 0 0 0 1.599-2.431H8v-3.08z"/></svg> Sign in with Google</a>
+      </div>
+      <p class="mb-1"><a href="login.html">I forgot my password</a></p>
+      <p class="mb-0"><a href="login.html" class="text-center">Request an account from your administrator</a></p>
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/js/adminlte.min.js"></script>
+  <p class="text-center small text-secondary mt-3 mb-0">Kestrel Inventory 3.2 · © 2026 Kestrel Logistics B.V.</p>
+</main>
 </body>
 </html>

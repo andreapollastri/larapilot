@@ -1,0 +1,17 @@
+<?php
+
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CheckInController;
+use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\TimetableController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/studios/{studio}/timetable', TimetableController::class)->name('timetable');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/sessions/{session}/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+    Route::post('/bookings/{booking}/check-in', CheckInController::class)->name('bookings.check-in');
+});
+
+Route::post('/stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');

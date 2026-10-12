@@ -18,7 +18,7 @@ use Larapilot\Support\AtomicFile;
  * Aikido scans the repository on its side, through the connection to the
  * git provider. Larapilot runs no scanner: it reads what Aikido found, says
  * what was already decided about each finding, and gives the ship gate a
- * verdict. Turning a finding into work is the job of `/larapilot-aikido`,
+ * verdict. Turning a finding into work is the job of `/larapilot-security`,
  * which hands it to triage.
  *
  * A decision the user takes here is told to Aikido, so the workspace says
@@ -532,7 +532,7 @@ class AikidoService
             mkdir($directory, 0755, true);
         }
 
-        $path = $directory.DIRECTORY_SEPARATOR.'aikido.md';
+        $path = $directory.DIRECTORY_SEPARATOR.'security-report.md';
         AtomicFile::write($path, $this->report($findings));
 
         return ['path' => $path, 'relative' => str_replace('\\', '/', $this->config->relativePath($path))];

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Material Design 3 — screen catalog (Meadow Field)</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="md3-mockup">
+<header class="md3-top-app-bar">
+  <span class="md3-brand-mark"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M80-160v-60h240q-20-91-87.5-159.5T80-470q20-5 39.5-7.5T160-480q134 0 227 93t93 227H80Zm460 0q0-42-8-73.5T512-296q40-88 120-136t168-48q21 0 40.5 2.5T880-470q-85 22-154 91.5T640-220h240v60H540Zm-58-193q-9-76 13-142t64.5-115Q602-659 662-688t127-31q-56 35-105.5 95.5T621-494q-44 21-80 58.5T482-353Zm-61-76q-16-15-35-30t-32-23q3-12 4.5-26.5T360-532q0-76-24-144t-68-124q70 28 124 88.5T468-573q-18 32-30.5 69.5T421-429Z"/></svg></span>
+  <h1 class="md3-top-app-bar__title">Material 3 · catalog</h1>
+  <div class="md3-top-app-bar__actions"><a class="md3-btn md3-btn--tonal md3-btn--icon" href="components.html"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M679-466 466-679l213-213 213 213-213 213Zm-559-72v-301h301v301H120Zm418 418v-301h301v301H538Zm-418 0v-301h301v301H120Zm60-478h181v-181H180v181Zm502 51 129-129-129-129-129 129 129 129Zm-84 367h181v-181H598v181Zm-418 0h181v-181H180v181Zm181-418Zm192-78ZM361-361Zm237 0Z"/></svg>Components</a></div>
+</header>
+
+<main class="md3-catalog">
+  <section class="md3-stack md3-stack--tight" aria-labelledby="intro-title">
+    <p class="md3-section-label">Larapilot design system · material-3</p>
+    <h2 class="md-typescale-headline-medium" id="intro-title">Meadow Field, a field-service app drawn in Material 3</h2>
+    <p class="md-typescale-body-large md3-text-variant">Angular Material (M3 theme), Vuetify 3 and Material Web screens share these tokens: one seed colour, <span class="md3-code">#4C7A34</span>, expanded with SchemeTonalSpot into every <span class="md3-code">--md-sys-color-*</span> role, light and dark. Copy <span class="md3-code">tokens.css</span> next to a mockup as <span class="md3-code">material-3-tokens.css</span>, put <span class="md3-code">md3-mockup</span> on <span class="md3-code">&lt;body&gt;</span>, and start from the closest screen below.</p>
+  </section>
+
+  <section class="md3-stack md3-stack--tight" aria-labelledby="swatch-title">
+    <h2 class="md3-demo-label" id="swatch-title">Colour roles (follow the OS theme)</h2>
+    <div class="md3-swatches">
+      <span class="md3-swatch md3-swatch--primary">primary</span>
+      <span class="md3-swatch md3-swatch--primary-container">primary-container</span>
+      <span class="md3-swatch md3-swatch--secondary">secondary</span>
+      <span class="md3-swatch md3-swatch--secondary-container">secondary-container</span>
+      <span class="md3-swatch md3-swatch--tertiary">tertiary</span>
+      <span class="md3-swatch md3-swatch--tertiary-container">tertiary-container</span>
+      <span class="md3-swatch md3-swatch--error">error</span>
+      <span class="md3-swatch md3-swatch--error-container">error-container</span>
+      <span class="md3-swatch md3-swatch--surface">surface</span>
+      <span class="md3-swatch md3-swatch--surface-container-low">surface-container-low</span>
+      <span class="md3-swatch md3-swatch--surface-container">surface-container</span>
+      <span class="md3-swatch md3-swatch--surface-container-high">surface-container-high</span>
+      <span class="md3-swatch md3-swatch--surface-container-highest">surface-container-highest</span>
+      <span class="md3-swatch md3-swatch--inverse-surface">inverse-surface</span>
+      <span class="md3-swatch md3-swatch--outline">outline</span>
+      <span class="md3-swatch md3-swatch--outline-variant">outline-variant</span>
+    </div>
+  </section>
+
+  <nav class="md3-stack md3-stack--tight" aria-labelledby="screens-title">
+    <h2 class="md3-demo-label" id="screens-title">Screens</h2>
+    <div class="md3-catalog-list">
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="dashboard.html"><p class="md3-card__title">Dashboard</p><p class="md3-card__content">Navigation drawer, top app bar with search, elevated stat cards, area chart, status meter, today’s jobs, technicians, FAB. Start here for any overview or home screen.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="dashboard-dark.html"><p class="md3-card__title">Dashboard, forced dark</p><p class="md3-card__content">The same screen with <span class="md3-code">&lt;html class="dark"&gt;</span>. Use it to check a dark mockup without changing the OS theme.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="resource-list.html"><p class="md3-card__title">Resource list (jobs table)</p><p class="md3-card__content">mat-table look: search bar, filter chips, sorted header, row checkboxes, contextual “2 selected” bar, status chips, row overflow, mat-paginator. Start here for any index.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="resource-form.html"><p class="md3-card__title">Resource form (new job)</p><p class="md3-card__content">Filled and outlined fields, required marks, counters, error and disabled fields, selects, date, segmented button, switch, checkboxes, input chips, drop zone, sticky footer.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="resource-view.html"><p class="md3-card__title">Resource view (job detail)</p><p class="md3-card__content">Header with status and actions, assist chips, tabs, checklist with progress, details list, activity timeline, technician, map and estimate cards.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="dialog.html"><p class="md3-card__title">Dialog</p><p class="md3-card__content">Basic dialog with icon, headline, radio list and text actions over a 32 % scrim. Start here for confirmations and pickers.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="settings.html"><p class="md3-card__title">Settings</p><p class="md3-card__content">Section list, outlined fields, segmented buttons, radio groups, sliders with value label, switch list, danger zone, floating snackbar.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="empty-state.html"><p class="md3-card__title">Empty states</p><p class="md3-card__content">“No results” after a search with suggestion chips, and the first-run “No jobs yet” with an illustration built from Material Symbols.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="login.html"><p class="md3-card__title">Sign in</p><p class="md3-card__content">Two-column M3 sign-in card with drawn outlined fields (<span class="md3-code">.mock-field</span>), focused password, checkbox, text and filled buttons.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="landing.html"><p class="md3-card__title">Landing page</p><p class="md3-card__content">Public marketing page: top bar, hero with product preview, logos, feature cards, pricing with segmented toggle, testimonial, FAQ expansion panels, footer.</p></a>
+      <a class="md3-card md3-card--outlined md3-card--interactive" href="components.html"><p class="md3-card__title">Components</p><p class="md3-card__content">Every component of components.md in its variants and states (hover, focus, pressed, disabled). Look up a class here before writing new CSS.</p></a>
+    </div>
+  </nav>
+</main>
+</body>
+</html>

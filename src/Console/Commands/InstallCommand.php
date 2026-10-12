@@ -48,7 +48,7 @@ class InstallCommand extends LarapilotCommand
         $this->line('  - .larapilot/client-materials/');
         $this->line('  - .larapilot/legacy/');
         $this->line('  - .larapilot/research/');
-        $this->line('  - .larapilot/design-systems/ (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE references for mockups)');
+        $this->line('  - .larapilot/design-systems/ (Filament, Nova, AdminLTE, Starter Kit, shadcn/ui, Bootstrap 5, Tailwind, Material 3, Nordic SaaS, Fluent 2, Modern, Bold California, Berlin references for mockups)');
         $this->line('  - .larapilot/skills/ (.gitkeep)');
         $this->line('  - .larapilot/docs/handbook/ (living handbook, filled when project_docs=YES)');
 

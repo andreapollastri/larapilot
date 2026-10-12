@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Meadow Field (Material 3)</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="md3-mockup">
+<main class="md3-auth">
+  <section class="md3-auth__card" aria-labelledby="signin-title">
+    <div class="md3-auth__intro">
+      <span class="md3-brand-mark md3-brand-mark--lg"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M80-160v-60h240q-20-91-87.5-159.5T80-470q20-5 39.5-7.5T160-480q134 0 227 93t93 227H80Zm460 0q0-42-8-73.5T512-296q40-88 120-136t168-48q21 0 40.5 2.5T880-470q-85 22-154 91.5T640-220h240v60H540Zm-58-193q-9-76 13-142t64.5-115Q602-659 662-688t127-31q-56 35-105.5 95.5T621-494q-44 21-80 58.5T482-353Zm-61-76q-16-15-35-30t-32-23q3-12 4.5-26.5T360-532q0-76-24-144t-68-124q70 28 124 88.5T468-573q-18 32-30.5 69.5T421-429Z"/></svg></span>
+      <h1 class="md3-auth__title" id="signin-title">Sign in</h1>
+      <p class="md-typescale-body-large">Use your Meadow Field account to open the dispatch board, the job list and your technicians’ day.</p>
+      <div class="md3-chip-set">
+        <span class="md3-chip md3-chip--input md3-chip--avatar"><span class="md3-avatar md3-avatar--sm md3-avatar--tertiary">RD</span>Riverton depot<svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-360 280-559h400L480-360Z"/></svg></span>
+      </div>
+    </div>
+
+    <div class="md3-auth__fields">
+      <p class="visually-hidden">This is a picture of the sign-in screen: the fields below are drawn, nothing can be typed.</p>
+      <div class="md3-field md3-field--outlined">
+        <span class="mock-label">Email</span>
+        <div class="mock-field" role="img" aria-label="Email field, filled in"><span class="mock-field__value">priya.raman@meadowfield.app</span></div>
+      </div>
+      <div class="md3-field md3-field--outlined">
+        <span class="mock-label">Password</span>
+        <div class="mock-field mock-field--secret mock-field--focus" role="img" aria-label="Password field, filled in"><span class="mock-field__value">••••••••••••</span><span class="md3-field__trailing"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="m629-419-44-44q26-71-27-118t-115-24l-44-44q17-11 38-16t43-5q71 0 120.5 49.5T650-500q0 22-5.5 43.5T629-419Zm129 129-40-40q49-36 85.5-80.5T857-500q-50-111-150-175.5T490-740q-42 0-86 8t-69 19l-46-47q35-16 89.5-28T485-800q143 0 261.5 81.5T920-500q-26 64-67 117t-95 93Zm58 226L648-229q-35 14-79 21.5t-89 7.5q-146 0-265-81.5T40-500q20-52 55.5-101.5T182-696L56-822l42-43 757 757-39 44ZM223-654q-37 27-71.5 71T102-500q51 111 153.5 175.5T488-260q33 0 65-4t48-12l-64-64q-11 5-27 7.5t-30 2.5q-70 0-120-49t-50-121q0-15 2.5-30t7.5-27l-97-97Zm305 142Zm-116 58Z"/></svg></span></div>
+        <div class="md3-field__supporting">At least 12 characters</div>
+      </div>
+      <div class="md3-row md3-row--between md3-row--wrap">
+        <label class="md3-check"><input class="md3-checkbox" type="checkbox" checked>Keep me signed in on this device</label>
+        <a class="md3-btn md3-btn--text" href="#">Forgot password?</a>
+      </div>
+    </div>
+
+    <div class="md3-auth__actions">
+      <a class="md3-btn md3-btn--text md3-btn--icon" href="#"><svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M232-432q-20-20-20-48t20-48q20-20 48-20t48 20q20 20 20 48t-20 48q-20 20-48 20t-48-20Zm48 192q-100 0-170-70T40-480q0-100 70-170t170-70q72 0 126 34t85 103h356l113 113-167 153-88-64-88 64-75-60h-51q-25 60-78.5 98.5T280-240Zm0-60q58 0 107-38.5t63-98.5h114l54 45 88-63 82 62 85-79-51-51H450q-12-56-60-96.5T280-660q-75 0-127.5 52.5T100-480q0 75 52.5 127.5T280-300Z"/></svg>Use company SSO</a>
+      <a href="dashboard.html" class="md3-btn md3-btn--filled" role="button">Sign in</a>
+    </div>
+  </section>
+
+  <footer class="md3-auth__footer">
+    <a class="md3-btn md3-btn--text md3-btn--trailing-icon md3-auth__lang" href="#">English (United States)<svg class="md3-icon" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-360 280-559h400L480-360Z"/></svg></a>
+    <nav class="md3-auth__links" aria-label="Legal">
+      <a class="md3-btn md3-btn--text" href="#">Help</a>
+      <a class="md3-btn md3-btn--text" href="#">Privacy</a>
+      <a class="md3-btn md3-btn--text" href="#">Terms</a>
+    </nav>
+  </footer>
+</main>
+</body>
+</html>

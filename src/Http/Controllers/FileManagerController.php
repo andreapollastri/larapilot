@@ -10,10 +10,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use InvalidArgumentException;
+use Larapilot\Services\Auth\AuthAuditService;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\CustomSkillService;
 use Larapilot\Services\FileManagerService;
+use Larapilot\Support\ZipStream;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileManagerController
 {
@@ -21,6 +25,8 @@ class FileManagerController
         protected ConfigService $config,
         protected FileManagerService $files,
         protected CustomSkillService $customSkills,
+        protected DashboardSession $session,
+        protected AuthAuditService $audit,
     ) {}
 
     public function index(): View
@@ -43,15 +49,90 @@ class FileManagerController
         }
 
         return view('larapilot::dashboard.files-browse', array_merge($data, [
+            'can_download' => $this->canDownload(),
+            'secrets_revealed' => $this->files->revealsSecrets(),
+            'zip' => $data['is_directory'] && $this->canDownload() ? $this->files->url($root, (string) $data['directory'], 'zip') : null,
             'folders' => array_values($this->files->roots()),
             'browse' => fn (string $to = ''): string => $this->files->url($root, $to),
             'raw' => fn (string $of, bool $download = false): string => $this->files->url($root, $of, 'raw').($download ? '?download=1' : ''),
         ]));
     }
 
+    /**
+     * A folder as a zip, as the listing shows it, written while it downloads.
+     */
+    public function zip(string $root, ?string $path = null): StreamedResponse|RedirectResponse
+    {
+        $this->guard();
+        $this->guardDownloads();
+
+        $zip = $this->files->zipEntries($root, (string) $path);
+
+        if ($zip === null) {
+            abort(404);
+        }
+
+        if ($zip['files'] === []) {
+            return $this->back($root, (string) $path)->with('larapilot_error', 'There is nothing in this folder to put in a zip.');
+        }
+
+        $this->audit->record('files.zip', [
+            'root' => $root,
+            'path' => (string) $path,
+            'files' => count($zip['files']),
+            'actor' => $this->session->name() ?? 'dashboard',
+        ]);
+
+        return response()->streamDownload(static function () use ($zip): void {
+            if (function_exists('set_time_limit')) {
+                @set_time_limit(0);
+            }
+
+            $writer = new ZipStream(static function (string $chunk): void {
+                echo $chunk;
+            });
+
+            foreach ($zip['files'] as $file) {
+                if ($file['content'] !== null) {
+                    $writer->add($file['path'], $file['content']);
+
+                    continue;
+                }
+
+                $handle = @fopen((string) $file['absolute'], 'rb');
+
+                if ($handle === false) {
+                    continue;
+                }
+
+                $writer->begin($file['path']);
+
+                while (! feof($handle)) {
+                    $writer->append((string) fread($handle, 1048576));
+                }
+
+                fclose($handle);
+                $writer->end();
+            }
+
+            if ($zip['truncated']) {
+                $writer->add('ZIP-TRUNCATED.txt', "This zip stopped at the size limit of the file manager (LARAPILOT_FILE_MANAGER_MAX_ZIP_MB). Download the folders inside one by one.\n");
+            }
+
+            $writer->finish();
+        }, $zip['name'], [
+            'Content-Type' => 'application/zip',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
     public function raw(Request $request, string $root, string $path): BinaryFileResponse|Response
     {
         $this->guard();
+
+        if ($request->boolean('download')) {
+            $this->guardDownloads();
+        }
 
         // A file that holds credentials goes out the way it is shown: the
         // names of its keys, and asterisks where the values are.
@@ -293,6 +374,25 @@ class FileManagerController
     {
         if (! $this->config->fileManagerBrowsable()) {
             abort(404);
+        }
+
+        // The values of an env file: as they are outside production, and to
+        // an admin in production; masked for anyone else.
+        $this->files->revealSecrets(! app()->environment('production') || $this->session->isAdmin());
+    }
+
+    /**
+     * Files leave the dashboard for admins only, in every environment.
+     */
+    protected function canDownload(): bool
+    {
+        return $this->session->isAdmin();
+    }
+
+    protected function guardDownloads(): void
+    {
+        if (! $this->canDownload()) {
+            abort(403, 'Only an admin downloads from the file manager.');
         }
     }
 

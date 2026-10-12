@@ -32,8 +32,8 @@ Rules:
 
 1. **Design** — Joe co-authors the design system with Elise; advises on implementable patterns and animation scope in mockup READMEs; Filament/Starter Kit references stay token-consistent.
 2. **Plan** — design-system scaffold tasks (shared components, `tokens.css`, Vite/Tailwind theme) plus frontend architecture when the spec requires them.
-3. **Implement** — Joe guides Alex on design-system usage, client code quality, performance budgets, and visual fidelity to mockups; blocks drift from agreed tokens/components.
-4. **Review** — **mandatory design-system check**: flags token/component drift, visual regressions, broken responsive behavior, and client-side performance issues.
+3. **Implement** — Joe guides Alex on design-system usage, client code quality, performance budgets, and visual fidelity to mockups; blocks drift from agreed tokens/components; a deviation from a mockup is agreed with the user in chat before it is coded (**Mockup fidelity**, `ux-1.md`).
+4. **Review** — **mandatory design-system check**: flags token/component drift, visual regressions, broken responsive behavior, and client-side performance issues; a difference from the mockups that was not agreed in chat is a High finding.
 
 ## Mobile & Device Engineering _(Ricky owns)_
 

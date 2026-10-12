@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full scheme-light bg-gray-50 antialiased dark:scheme-dark dark:bg-gray-950">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Revenue overview, dark theme · Tidewater</title>
+  <link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="tw-mockup h-full">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-indigo-600 focus:shadow-lg">Skip to content</a>
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+  <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 dark:border-white/10 dark:bg-gray-900">
+    <a href="dashboard.html" class="flex h-16 shrink-0 items-center" aria-label="Tidewater home"><span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span></a>
+    <nav aria-label="Main" class="flex flex-1 flex-col">
+      <ul role="list" class="flex flex-1 flex-col gap-y-7">
+        <li>
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="dashboard.html" aria-current="page" class="group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm/6 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"><svg class="size-6 shrink-0 text-indigo-600 dark:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Overview</a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>Customers<span aria-hidden="true" class="ml-auto w-11 min-w-max rounded-full bg-white px-2.5 py-0.5 text-center text-xs/5 font-medium whitespace-nowrap text-gray-600 outline-1 -outline-offset-1 outline-gray-200 dark:bg-gray-900 dark:text-white dark:outline-white/15">1,284</span></a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg>Revenue</a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg>Cohorts</a></li>
+            <li><a href="empty-state.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Reports</a></li>
+            <li><a href="components.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>Components</a></li>
+          </ul>
+        </li>
+        <li>
+          <div class="text-xs/6 font-semibold text-gray-500 dark:text-gray-400">Saved segments</div>
+          <ul role="list" class="-mx-2 mt-2 space-y-1">
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">E</span><span class="truncate">Enterprise · Scale plan</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">T</span><span class="truncate">Trials ending this week</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">R</span><span class="truncate">At-risk (failed payment)</span></a></li>
+          </ul>
+        </li>
+        <li class="mt-auto">
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="settings.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>Settings</a></li>
+          </ul>
+        </li>
+        <li class="-mx-6">
+          <a href="settings.html" class="flex items-center gap-x-4 border-t border-gray-200 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
+            <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+            <span class="sr-only">Your profile:</span>
+            <span class="min-w-0"><span class="block truncate">Maya Okafor</span><span class="block truncate text-xs/5 font-normal text-gray-500 dark:text-gray-400">Lumenfield · Finance</span></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+<div class="lg:pl-72">
+  <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 dark:border-white/10 dark:bg-gray-900 dark:shadow-none">
+    <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden dark:text-gray-400" aria-label="Open sidebar"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+    <a href="dashboard.html" class="lg:hidden" aria-label="Tidewater home"><svg class="h-7 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg></a>
+    <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden dark:bg-white/10"></div>
+    <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+      <div class="grid flex-1 grid-cols-1">
+        <input type="search" name="search" aria-label="Search" placeholder="Search" class="col-start-1 row-start-1 block size-full min-w-0 bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-500 sm:text-sm/6 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-400">
+        <svg class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg>
+      </div>
+      <div class="flex items-center gap-x-4 lg:gap-x-6">
+        <button type="button" class="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500 dark:hover:text-white" aria-label="View notifications, 2 unread">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+          <span aria-hidden="true" class="absolute top-2 right-2.5 size-2 rounded-full bg-indigo-600 ring-2 ring-white dark:bg-indigo-400 dark:ring-gray-900"></span>
+        </button>
+        <div aria-hidden="true" class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-white/10"></div>
+        <a href="settings.html" class="-m-1.5 flex items-center p-1.5" aria-label="Your profile: Maya Okafor">
+          <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+          <span class="hidden lg:flex lg:items-center">
+            <span aria-hidden="true" class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-white">Maya Okafor</span>
+            <svg class="ml-2 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="py-8 sm:py-10">
+    <div class="px-4 sm:px-6 lg:px-8">
+<div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+          <h1 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight dark:text-white">Revenue overview</h1>
+          <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
+            <p class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400"><svg class="mr-1.5 size-5 shrink-0 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M1 2.75A.75.75 0 0 1 1.75 2h10.5a.75.75 0 0 1 0 1.5H12v13.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 0-.75-.75h-2.5a.75.75 0 0 0-.75.75v2.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5H2v-13h-.25A.75.75 0 0 1 1 2.75ZM4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM4.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM8 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM8.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1ZM14.25 6a.75.75 0 0 0-.75.75V17a1 1 0 0 0 1 1h3.75a.75.75 0 0 0 0-1.5H18v-9h.25a.75.75 0 0 0 0-1.5h-4Zm.5 3.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm.5 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z" clip-rule="evenodd"/></svg>Lumenfield workspace</p>
+            <p class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400"><span aria-hidden="true" class="mr-2 size-2 rounded-full bg-green-500"></span>Stripe synced 4 minutes ago</p>
+            <p class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400"><svg class="mr-1.5 size-5 shrink-0 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd"/></svg>Nov 1, 2025 – Oct 12, 2026</p>
+          </div>
+        </div>
+        <div class="mt-5 flex gap-x-3 md:mt-0 md:ml-4">
+          <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20"><svg class="-ml-0.5 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd"/></svg>Last 12 months<svg class="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button>
+          <button type="button" class="hidden items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:inline-flex dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20"><svg class="-ml-0.5 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z"/><path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"/></svg>Export</button>
+          <a href="empty-state.html" class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500"><svg class="-ml-0.5 size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>New report</a>
+        </div>
+      </div>
+
+      <h2 class="sr-only">Key metrics</h2>
+      <dl class="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-gray-900/5 shadow-xs outline-1 outline-gray-900/5 sm:grid-cols-2 xl:grid-cols-4 dark:bg-white/10 dark:shadow-none dark:outline-white/10">
+        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900">
+          <dt class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Monthly recurring revenue</dt>
+          <dd class="mt-1 flex items-baseline justify-between gap-x-3">
+            <span class="text-2xl font-semibold tracking-tight text-gray-900 tabular-nums dark:text-white">$84,210</span>
+            <span class="inline-flex items-center gap-x-0.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd"/></svg>4.6%<span class="sr-only">increase</span></span>
+          </dd>
+          <dd class="mt-1 text-xs text-gray-500 dark:text-gray-400">from $80,510 in September</dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900">
+          <dt class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Paying customers</dt>
+          <dd class="mt-1 flex items-baseline justify-between gap-x-3">
+            <span class="text-2xl font-semibold tracking-tight text-gray-900 tabular-nums dark:text-white">1,284</span>
+            <span class="inline-flex items-center gap-x-0.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd"/></svg>38<span class="sr-only">more</span></span>
+          </dd>
+          <dd class="mt-1 text-xs text-gray-500 dark:text-gray-400">61 trials converting this month</dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900">
+          <dt class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Net revenue churn</dt>
+          <dd class="mt-1 flex items-baseline justify-between gap-x-3">
+            <span class="text-2xl font-semibold tracking-tight text-gray-900 tabular-nums dark:text-white">1.8%</span>
+            <span class="inline-flex items-center gap-x-0.5 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd"/></svg>0.4 pt<span class="sr-only">lower, better</span></span>
+          </dd>
+          <dd class="mt-1 text-xs text-gray-500 dark:text-gray-400">target below 2.0%</dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:p-6 dark:bg-gray-900">
+          <dt class="text-sm/6 font-medium text-gray-500 dark:text-gray-400">Avg. revenue per account</dt>
+          <dd class="mt-1 flex items-baseline justify-between gap-x-3">
+            <span class="text-2xl font-semibold tracking-tight text-gray-900 tabular-nums dark:text-white">$65.58</span>
+            <span class="inline-flex items-center gap-x-0.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 inset-ring inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20"><svg class="size-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clip-rule="evenodd"/></svg>0.9%<span class="sr-only">decrease</span></span>
+          </dd>
+          <dd class="mt-1 text-xs text-gray-500 dark:text-gray-400">more Starter sign-ups in Q3</dd>
+        </div>
+      </dl>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
+        <section aria-labelledby="mrr-title" class="rounded-lg bg-white px-4 py-5 shadow-xs outline-1 outline-gray-900/5 sm:p-6 xl:col-span-2 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 id="mrr-title" class="text-base/7 font-semibold text-gray-900 dark:text-white">MRR growth</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400">+37.6% over the last 12 months</p>
+            </div>
+            <div class="inline-flex rounded-md bg-gray-100 p-0.5 text-xs font-semibold dark:bg-white/5" role="group" aria-label="Chart interval">
+              <button type="button" class="rounded px-2.5 py-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Weekly</button>
+              <button type="button" aria-pressed="true" class="rounded bg-white px-2.5 py-1 text-gray-900 shadow-xs dark:bg-white/10 dark:text-white">Monthly</button>
+              <button type="button" class="rounded px-2.5 py-1 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Quarterly</button>
+            </div>
+          </div>
+          <div class="mt-6 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3">
+          <div aria-hidden="true" class="flex h-60 flex-col justify-between text-right text-xs/5 text-gray-500 tabular-nums dark:text-gray-400"><span class="h-5">$90k</span><span class="h-5">$80k</span><span class="h-5">$70k</span><span class="h-5">$60k</span><span class="h-5">$50k</span></div>
+          <div class="relative">
+            <svg class="h-60 w-full text-indigo-600 dark:text-indigo-400" viewBox="0 0 720 240" preserveAspectRatio="none" role="img" aria-label="MRR by month, November 2025 to October 2026: from $61,200 to $84,210">
+              <defs><linearGradient id="mrr-fill-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".22"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
+              <g class="stroke-gray-200 dark:stroke-white/10" stroke-dasharray="3 4"><line x1="0" x2="720" y1="10" y2="10" vector-effect="non-scaling-stroke"/><line x1="0" x2="720" y1="65" y2="65" vector-effect="non-scaling-stroke"/><line x1="0" x2="720" y1="120" y2="120" vector-effect="non-scaling-stroke"/><line x1="0" x2="720" y1="175" y2="175" vector-effect="non-scaling-stroke"/><line x1="0" x2="720" y1="230" y2="230" vector-effect="non-scaling-stroke"/></g>
+              <path d="M30 168.4C50 165.1 70 161.2 90 158.5C110 155.8 130 155.9 150 152.5C170 149 190 142 210 137.6C230 133.2 250 129.2 270 126C290 122.9 310 122.3 330 118.9C350 115.5 370 109.3 390 105.7C410 102.1 430 101.4 450 97.5C470 93.5 490 86.4 510 82C530 77.7 550 74.9 570 71.6C590 68.3 610 67.2 630 62.2C650 57.2 670 48.6 690 41.8L690.0 240L30.0 240Z" fill="url(#mrr-fill-dark)"/>
+              <path d="M30 168.4C50 165.1 70 161.2 90 158.5C110 155.8 130 155.9 150 152.5C170 149 190 142 210 137.6C230 133.2 250 129.2 270 126C290 122.9 310 122.3 330 118.9C350 115.5 370 109.3 390 105.7C410 102.1 430 101.4 450 97.5C470 93.5 490 86.4 510 82C530 77.7 550 74.9 570 71.6C590 68.3 610 67.2 630 62.2C650 57.2 670 48.6 690 41.8" class="fill-none stroke-current" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <span aria-hidden="true" class="absolute size-3 -translate-1/2 rounded-full border-2 border-white bg-indigo-600 shadow-sm dark:border-gray-900 dark:bg-indigo-400" style="left: 95.83%; top: 42px"></span>
+            <div class="absolute right-[6%] -translate-y-full rounded-lg bg-gray-900 px-3 py-2 text-xs/5 text-white shadow-lg dark:bg-white dark:text-gray-900" style="top: 30px">
+              <p class="font-medium text-gray-300 dark:text-gray-500">October 2026</p>
+              <p class="text-sm font-semibold tabular-nums">$84,210 <span class="font-medium text-green-400 dark:text-green-600">+4.6%</span></p>
+            </div>
+          </div>
+          <div></div>
+          <div aria-hidden="true" class="mt-3 grid grid-cols-12 text-center text-xs/5 text-gray-500 dark:text-gray-400"><span class="invisible sm:visible">Nov</span><span>Dec</span><span class="invisible sm:visible">Jan</span><span>Feb</span><span class="invisible sm:visible">Mar</span><span>Apr</span><span class="invisible sm:visible">May</span><span>Jun</span><span class="invisible sm:visible">Jul</span><span>Aug</span><span class="invisible sm:visible">Sep</span><span>Oct</span></div>
+        </div>
+        </section>
+
+        <section aria-labelledby="moves-title" class="rounded-lg bg-white px-4 py-5 shadow-xs outline-1 outline-gray-900/5 sm:p-6 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+          <h2 id="moves-title" class="text-base/7 font-semibold text-gray-900 dark:text-white">MRR movements</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">October 2026, month to date</p>
+          <dl class="mt-6 space-y-5 text-sm">
+            <div>
+              <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-300">New business</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">+$6,420</dd></div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-full rounded-full bg-indigo-600 dark:bg-indigo-400"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-300">Expansion</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">+$3,180</dd></div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-1/2 rounded-full bg-indigo-400 dark:bg-indigo-300"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-300">Reactivation</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">+$540</dd></div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-1/12 rounded-full bg-sky-400"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-300">Contraction</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">−$1,260</dd></div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-1/5 rounded-full bg-yellow-400"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-300">Churn</dt><dd class="font-medium text-gray-900 tabular-nums dark:text-white">−$5,180</dd></div>
+              <div class="mt-2 h-1.5 rounded-full bg-gray-100 dark:bg-white/10"><div class="h-1.5 w-4/5 rounded-full bg-red-500 dark:bg-red-400"></div></div>
+            </div>
+            <div class="flex justify-between border-t border-gray-200 pt-4 dark:border-white/10">
+              <dt class="font-semibold text-gray-900 dark:text-white">Net new MRR</dt>
+              <dd class="font-semibold text-green-700 tabular-nums dark:text-green-400">+$3,700</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      <section aria-labelledby="events-title" class="mt-8 rounded-lg bg-white shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+        <div class="flex items-center justify-between gap-4 border-b border-gray-200 px-4 py-4 sm:px-6 dark:border-white/10">
+          <div>
+            <h2 id="events-title" class="text-base/7 font-semibold text-gray-900 dark:text-white">Recent subscription events</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Synced from Stripe in real time.</p>
+          </div>
+          <a href="resource-list.html" class="shrink-0 text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">View all<span class="sr-only"> subscription events</span> <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="relative overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-white/10">
+            <thead class="bg-gray-50 dark:bg-white/5">
+              <tr>
+                <th scope="col" class="py-3 pr-3 pl-4 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase sm:pl-6 dark:text-gray-400">Customer</th>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">Event</th>
+                <th scope="col" class="px-3 py-3 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">Plan</th>
+                <th scope="col" class="px-3 py-3 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase dark:text-gray-400">MRR change</th>
+                <th scope="col" class="py-3 pr-4 pl-3 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase sm:pr-6 dark:text-gray-400">Date</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-white/5">
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">VH</span><div><div class="font-medium text-gray-900 dark:text-white">Verdant Health</div><div class="text-gray-500 dark:text-gray-400">ops@verdanthealth.de</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 inset-ring inset-ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:inset-ring-indigo-400/30">Upgrade</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Growth &rarr; Scale</td>
+                <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap text-green-700 tabular-nums dark:text-green-400">+$2,100</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-11">Oct 11, 2026</time></td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-700 dark:bg-sky-900 dark:text-sky-200">MF</span><div><div class="font-medium text-gray-900 dark:text-white">Marlowe &amp; Finch</div><div class="text-gray-500 dark:text-gray-400">billing@marlowefinch.co.uk</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 inset-ring inset-ring-sky-700/10 dark:bg-sky-400/10 dark:text-sky-400 dark:inset-ring-sky-400/30">Trial started</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Growth</td>
+                <td class="px-3 py-4 text-right text-sm whitespace-nowrap text-gray-500 tabular-nums dark:text-gray-400">$0 · 14 days</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-11">Oct 11, 2026</time></td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-200">PL</span><div><div class="font-medium text-gray-900 dark:text-white">Parallax Learning</div><div class="text-gray-500 dark:text-gray-400">finance@parallax.edu.au</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 inset-ring inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20">Churned</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Starter</td>
+                <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap text-red-700 tabular-nums dark:text-red-400">−$190</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-10">Oct 10, 2026</time></td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">KL</span><div><div class="font-medium text-gray-900 dark:text-white">Kōan Labs</div><div class="text-gray-500 dark:text-gray-400">accounts@koanlabs.jp</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20">Expansion</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Scale · +12 seats</td>
+                <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap text-green-700 tabular-nums dark:text-green-400">+$780</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-09">Oct 9, 2026</time></td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-xs font-semibold text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200">NO</span><div><div class="font-medium text-gray-900 dark:text-white">Northpeak Outfitters</div><div class="text-gray-500 dark:text-gray-400">hello@northpeak.ca</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 inset-ring inset-ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:inset-ring-yellow-400/20">Payment failed</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Starter</td>
+                <td class="px-3 py-4 text-right text-sm whitespace-nowrap text-gray-500 tabular-nums dark:text-gray-400">$290 at risk</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-09">Oct 9, 2026</time></td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-3 pl-4 text-sm whitespace-nowrap sm:pl-6"><div class="flex items-center gap-x-3"><span aria-hidden="true" class="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700 dark:bg-green-900 dark:text-green-200">OL</span><div><div class="font-medium text-gray-900 dark:text-white">Osei Logistics</div><div class="text-gray-500 dark:text-gray-400">kwame@oseilogistics.com.gh</div></div></div></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20">New</span></td>
+                <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">Growth</td>
+                <td class="px-3 py-4 text-right text-sm font-medium whitespace-nowrap text-green-700 tabular-nums dark:text-green-400">+$1,180</td>
+                <td class="py-4 pr-4 pl-3 text-right text-sm whitespace-nowrap text-gray-500 sm:pr-6 dark:text-gray-400"><time datetime="2026-10-08">Oct 8, 2026</time></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

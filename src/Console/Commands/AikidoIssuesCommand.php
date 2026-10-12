@@ -17,7 +17,7 @@ class AikidoIssuesCommand extends LarapilotCommand
                             {--type= : One kind of finding: open_source, leaked_secret, sast, iac, …}
                             {--new : Only the findings nobody decided about}
                             {--limit= : List at most this many, the most severe first}
-                            {--report : Write the findings to {paths.security}/aikido.md}
+                            {--report : Write the findings to {paths.security}/security-report.md}
                             {--gate : Exit 1 when the verdict of the gate is FAIL}';
 
     protected $description = 'Download the open findings of Aikido for this repository, with what was decided about each';

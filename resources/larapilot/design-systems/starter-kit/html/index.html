@@ -1,27 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Laravel Starter Kits — Screens</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Catalog of the Laravel Starter Kit design system screens.">
+<title>Catalog - Ledgerly</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="sk-mockup">
-  <main class="sk-gallery">
-    <h1>Laravel Starter Kits</h1>
-    <p class="sk-gallery__intro">Static HTML derived from the official kits — <a href="https://laravel.com/starter-kits">laravel.com/starter-kits</a> · <a href="https://github.com/laravel/react-starter-kit">React</a> · <a href="https://github.com/laravel/vue-starter-kit">Vue</a> · <a href="https://github.com/laravel/svelte-starter-kit">Svelte</a> · <a href="https://github.com/laravel/livewire-starter-kit">Livewire</a>. See <a href="../sources.md">sources.md</a>.</p>
-
-    <div class="sk-gallery__grid">
-      <a class="sk-gallery__card" href="dashboard.html"><h2>Dashboard</h2><p>Sidebar layout + placeholder pattern</p></a>
-      <a class="sk-gallery__card" href="dashboard-dark.html"><h2>Dashboard (dark)</h2><p>Dark mode variant</p></a>
-      <a class="sk-gallery__card" href="header-layout.html"><h2>Header layout</h2><p>Top navigation variant</p></a>
-      <a class="sk-gallery__card" href="login.html"><h2>Login</h2><p>Simple centered auth card</p></a>
-      <a class="sk-gallery__card" href="auth-split.html"><h2>Auth (split)</h2><p>Brand panel + form column</p></a>
-      <a class="sk-gallery__card" href="settings.html"><h2>Settings</h2><p>Profile, password, appearance</p></a>
-      <a class="sk-gallery__card" href="components.html"><h2>Components</h2><p>Buttons, inputs, badges, cards</p></a>
-    </div>
-  </main>
+<!-- Catalog: links every screen of the Laravel Starter Kit design system. -->
+<a class="visually-hidden sk-skip" href="#main">Skip to content</a>
+<main class="sk-gallery" id="main">
+<div class="sk-gallery__head">
+<div class="sk-row"><span class="sk-logo-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 23.5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zm10.5-8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2zM26 7a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/></svg></span><h1>Laravel Starter Kit — Ledgerly</h1></div>
+<p class="sk-gallery__intro">Static screens of the official Laravel 12/13 starter kits (React and Vue on shadcn/ui, Livewire on Flux) drawn for <strong>Ledgerly</strong>, a personal finance app. One stylesheet, <code>../tokens.css</code>; no scripts, no web fonts. Read <a href="../README.md">README.md</a> and <a href="../components.md">components.md</a> before composing a new screen. The theme follows the OS; <code>dashboard-dark.html</code> forces dark.</p>
+<div class="sk-swatches" aria-label="Theme tokens"><span class="sk-swatch sk-swatch--background"><span class="sk-swatch__chip"></span><code>--background</code></span><span class="sk-swatch sk-swatch--foreground"><span class="sk-swatch__chip"></span><code>--foreground</code></span><span class="sk-swatch sk-swatch--primary"><span class="sk-swatch__chip"></span><code>--primary</code></span><span class="sk-swatch sk-swatch--secondary"><span class="sk-swatch__chip"></span><code>--secondary</code></span><span class="sk-swatch sk-swatch--muted"><span class="sk-swatch__chip"></span><code>--muted</code></span><span class="sk-swatch sk-swatch--muted-foreground"><span class="sk-swatch__chip"></span><code>--muted-foreground</code></span><span class="sk-swatch sk-swatch--border"><span class="sk-swatch__chip"></span><code>--border</code></span><span class="sk-swatch sk-swatch--sidebar"><span class="sk-swatch__chip"></span><code>--sidebar</code></span><span class="sk-swatch sk-swatch--destructive"><span class="sk-swatch__chip"></span><code>--destructive</code></span><span class="sk-swatch sk-swatch--chart-1"><span class="sk-swatch__chip"></span><code>--chart-1</code></span><span class="sk-swatch sk-swatch--chart-2"><span class="sk-swatch__chip"></span><code>--chart-2</code></span><span class="sk-swatch sk-swatch--chart-3"><span class="sk-swatch__chip"></span><code>--chart-3</code></span></div>
+</div>
+<section class="sk-gallery__group" aria-labelledby="g0"><h2 id="g0">The kit pages</h2><div class="sk-gallery__grid"><a class="sk-gallery__card" href="dashboard.html"><h3>Dashboard</h3><p>Sidebar layout (inset variant) with a real dashboard: stats, cash-flow chart, budgets, recent transactions. Start here for any authenticated page.</p><code>dashboard.html</code></a><a class="sk-gallery__card" href="dashboard-dark.html"><h3>Dashboard, dark</h3><p>The same page with html.dark forced: check contrast and charts in the dark palette.</p><code>dashboard-dark.html</code></a><a class="sk-gallery__card" href="dashboard-livewire.html"><h3>Dashboard, Livewire look</h3><p>The same page with .sk-flux on body: the Livewire kit renders Flux, with a bordered zinc-50 sidebar, white pill for the current item and 40px controls.</p><code>dashboard-livewire.html</code></a><a class="sk-gallery__card" href="header-layout.html"><h3>Header layout</h3><p>The kit's app-header-layout: top nav with active underline, breadcrumb bar, user menu open. Use when the PRD picks the header variant.</p><code>header-layout.html</code></a><a class="sk-gallery__card" href="settings.html"><h3>Settings: Profile</h3><p>Settings sub-navigation (Profile, Security, Appearance), profile form, delete-account box, Sonner toast.</p><code>settings.html</code></a><a class="sk-gallery__card" href="settings-security.html"><h3>Settings: Security</h3><p>Update password with drawn fields and an error, 2FA enabled with recovery codes, passkeys.</p><code>settings-security.html</code></a><a class="sk-gallery__card" href="settings-appearance.html"><h3>Settings: Appearance</h3><p>Light / Dark / System toggle plus app preferences with selects and switches.</p><code>settings-appearance.html</code></a></div></section><section class="sk-gallery__group" aria-labelledby="g1"><h2 id="g1">Authentication (Fortify)</h2><div class="sk-gallery__grid"><a class="sk-gallery__card" href="login.html"><h3>Log in (simple)</h3><p>auth-simple-layout, the default: logo, title, drawn email and password, remember me.</p><code>login.html</code></a><a class="sk-gallery__card" href="auth-split.html"><h3>Log in (split)</h3><p>auth-split-layout: zinc-900 brand panel with a quote, failed-login error state.</p><code>auth-split.html</code></a><a class="sk-gallery__card" href="auth-register.html"><h3>Register (card)</h3><p>auth-card-layout on bg-muted: name, email, password, confirm password.</p><code>auth-register.html</code></a></div></section><section class="sk-gallery__group" aria-labelledby="g2"><h2 id="g2">Ledgerly pages built on the kit</h2><div class="sk-gallery__grid"><a class="sk-gallery__card" href="resource-list.html"><h3>Transactions list</h3><p>Search, account and category filters, date range, sorted column, selection with bulk bar, row menu open, status badges, pagination.</p><code>resource-list.html</code></a><a class="sk-gallery__card" href="resource-form.html"><h3>Edit transaction</h3><p>Two-column form in cards: required marks, error, disabled field, radio cards, switches, upload, sticky actions.</p><code>resource-form.html</code></a><a class="sk-gallery__card" href="empty-state.html"><h3>Empty states</h3><p>First-run Budgets page and a no-results search inside a card.</p><code>empty-state.html</code></a><a class="sk-gallery__card" href="components.html"><h3>Components</h3><p>Every component in its variants and states, including the kit's placeholder pattern.</p><code>components.html</code></a></div></section>
+</main>
 </body>
 </html>

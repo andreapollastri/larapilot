@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berlin — Larapilot design system catalog</title>
+<meta name="description" content="Catalog of the Berlin design system: palette, type specimen and every screen of Kollektiv Studio (public site and backoffice) with when to start from it.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body" id="top">
+<a class="bn-skip" href="#main">Skip to content</a>
+<div class="bn-site">
+<header class="bn-sitehead">
+<div class="bn-sitehead__brand"><a class="bn-logo" href="index.html" aria-label="Berlin design system catalog"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Berlin</span><span class="bn-logo__sub">Larapilot design system</span></span></a></div>
+<nav class="bn-sitenav" aria-label="Catalog">
+<a class="bn-sitenav__link is-active" href="index.html" aria-current="page"><span class="bn-idx">00</span>Catalog</a>
+<a class="bn-sitenav__link" href="components.html"><span class="bn-idx">01</span>Components</a>
+<a class="bn-sitenav__link" href="dashboard.html"><span class="bn-idx">02</span>Backoffice</a>
+<a class="bn-sitenav__link" href="landing.html"><span class="bn-idx">03</span>Public site</a>
+</nav>
+<div class="bn-sitehead__end"><span class="bn-micro">Prefix bn- · 1 stylesheet</span><button type="button" class="bn-sitehead__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+</header>
+<main id="main">
+<div class="bn-hero__meta"><p class="bn-micro bn-micro--ink">Berlino — original system</p><p class="bn-micro">Swiss grid · club flyer</p><p class="bn-micro">Light + dark native</p><p class="bn-micro">Sample: Kollektiv Studio</p></div>
+<div class="bn-hero__mark"><h1 class="bn-wordmark bn-wordmark--xl">Berlin<span class="visually-hidden"> — design system catalog</span></h1></div>
+<div class="bn-cat__intro">
+<p class="bn-lede">Ink on paper, concrete greys, hairlines used as layout and one signal colour — acid <span class="bn-mark">#E4FF1A</span>. For agencies, galleries, venues, labels and any product that wants a severe, editorial voice. Every screen links one stylesheet, <code>../tokens.css</code>, and follows the OS theme; <code>dashboard-dark.html</code> forces dark.</p>
+<dl class="bn-cat__facts bn-dl"><dt>Type</dt><dd>Akzidenz-Grotesk · JetBrains Mono</dd><dt>Corners</dt><dd>0 px</dd><dt>Grid</dt><dd>12 columns, shared 1 px rules</dd><dt>Signal rule</dt><dd>Surface in light, ink in dark</dd><dt>Icons</dt><dd>Lucide (ISC)</dd></dl>
+</div>
+<section aria-labelledby="pal"><h2 id="pal" class="visually-hidden">Palette</h2>
+<div class="bn-swatches">
+<div class="bn-swatch bn-swatch--wide"><div class="bn-swatch__chip bn-sw-acid"></div><p class="bn-swatch__name">Acid — signal</p><p class="bn-swatch__hex">#E4FF1A · surface only on paper</p></div>
+<div class="bn-swatch bn-swatch--wide"><div class="bn-swatch__chip bn-sw-black"></div><p class="bn-swatch__name">Ink</p><p class="bn-swatch__hex">#0A0A0A · 17.96:1 on paper</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-paper"></div><p class="bn-swatch__name">Paper</p><p class="bn-swatch__hex">F4F4F0</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-white"></div><p class="bn-swatch__name">White</p><p class="bn-swatch__hex">FFFFFF</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c100"></div><p class="bn-swatch__name">100</p><p class="bn-swatch__hex">E8E8E3</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c300"></div><p class="bn-swatch__name">300</p><p class="bn-swatch__hex">C4C4BD</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c400"></div><p class="bn-swatch__name">400</p><p class="bn-swatch__hex">A3A39C</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c600"></div><p class="bn-swatch__name">600</p><p class="bn-swatch__hex">5E5E58</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c700"></div><p class="bn-swatch__name">700</p><p class="bn-swatch__hex">3A3A36</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-c900"></div><p class="bn-swatch__name">900</p><p class="bn-swatch__hex">141413</p></div>
+<div class="bn-swatch bn-swatch--wide"><div class="bn-swatch__chip bn-sw-red"></div><p class="bn-swatch__name">Alarm, light</p><p class="bn-swatch__hex">#B8241A · errors only</p></div>
+<div class="bn-swatch bn-swatch--wide"><div class="bn-swatch__chip bn-sw-red-dark"></div><p class="bn-swatch__name">Alarm, dark</p><p class="bn-swatch__hex">#FF6B5E · errors only</p></div>
+<div class="bn-swatch bn-swatch--wide"><div class="bn-swatch__chip bn-sw-c200"></div><p class="bn-swatch__name">Concrete 200</p><p class="bn-swatch__hex">#D6D6D0 · photos</p></div>
+<div class="bn-swatch"><div class="bn-swatch__chip bn-sw-dark-rule"></div><p class="bn-swatch__name">Rule, dark</p><p class="bn-swatch__hex">8A8A84</p></div>
+</div>
+<div class="bn-specimen">
+<div class="bn-specimen__cell"><p class="bn-micro">Display · 700 · −0.045em</p><p class="bn-specimen__big">Aa 42</p></div>
+<div class="bn-specimen__cell"><p class="bn-micro">Text · 15/1.5 · 400–600</p><p class="bn-h3">Identities, spaces and nights for the city's independent culture.</p><p class="bn-soft">Body copy sits at 15 px; labels at 13 px semibold.</p></div>
+<div class="bn-specimen__cell"><p class="bn-micro">Mono · 11 uppercase · +0.08em</p><p class="bn-specimen__mono">KW 42</p><p class="bn-micro bn-micro--ink">P—036 · €48,320 · 23:00</p></div>
+</div>
+</section>
+
+<section aria-labelledby="g1">
+<div class="bn-grouphead"><h2 id="g1" class="bn-h2">Public site</h2><span class="bn-micro">3 screens</span></div>
+<nav class="bn-screens" aria-label="Public site screens">
+<a class="bn-screen" href="landing.html"><span class="bn-idx">01</span><span><span class="bn-screen__name">Landing</span><span class="bn-screen__file">landing.html</span></span><span class="bn-screen__what">Ticker, wordmark hero, next-event card, work grid with duotone photos, six theses, timetable, rooms, team, clients, contact with map and newsletter, footer.</span><span class="bn-screen__when">Start here for any public home, studio or portfolio page.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="program.html"><span class="bn-idx">02</span><span><span class="bn-screen__name">Program</span><span class="bn-screen__file">program.html</span></span><span class="bn-screen__what">Filters, featured event with poster and running order, timetable grouped by week, access and awareness info.</span><span class="bn-screen__when">Start here for listings, events, schedules, catalogues.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="error-404.html"><span class="bn-idx">03</span><span><span class="bn-screen__name">Error 404</span><span class="bn-screen__file">error-404.html</span></span><span class="bn-screen__what">Oversized 404 cut by a rule, registration mark, explanation and numbered ways back.</span><span class="bn-screen__when">Start here for 404, 500 and maintenance pages.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+
+<section aria-labelledby="g2">
+<div class="bn-grouphead"><h2 id="g2" class="bn-h2">Backoffice</h2><span class="bn-micro">8 screens</span></div>
+<nav class="bn-screens" aria-label="Backoffice screens">
+<a class="bn-screen" href="dashboard.html"><span class="bn-idx">04</span><span><span class="bn-screen__name">Dashboard</span><span class="bn-screen__file">dashboard.html</span></span><span class="bn-screen__what">Rail + topbar shell, KPI cells (one acid), invoiced-vs-paid bars, open invoices, room week timeline, deadlines table, team load, activity.</span><span class="bn-screen__when">Start here for any admin overview or report page.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="dashboard-dark.html"><span class="bn-idx">05</span><span><span class="bn-screen__name">Dashboard, dark</span><span class="bn-screen__file">dashboard-dark.html</span></span><span class="bn-screen__what">The same overview forced dark with &lt;html class="dark"&gt;: acid becomes ink too.</span><span class="bn-screen__when">Use to check a screen in the dark theme.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="resource-list.html"><span class="bn-idx">06</span><span><span class="bn-screen__name">Projects list</span><span class="bn-screen__file">resource-list.html</span></span><span class="bn-screen__what">Status strip, search, filter chips, sort, 3 selected rows with the bulk bar, open row menu, status tags, pager.</span><span class="bn-screen__when">Start here for any index or table screen.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="resource-form.html"><span class="bn-idx">07</span><span><span class="bn-screen__name">Brief editor</span><span class="bn-screen__file">resource-form.html</span></span><span class="bn-screen__what">Numbered sections, required marks, one error with summary, disabled field, selects, check grid, radio row, switches, drop zone, sticky bar.</span><span class="bn-screen__when">Start here for create / edit forms.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="modal.html"><span class="bn-idx">08</span><span><span class="bn-screen__name">Booking dialog</span><span class="bn-screen__file">modal.html</span></span><span class="bn-screen__what">Bookings week view under a dotted backdrop with a New booking dialog.</span><span class="bn-screen__when">Start here for dialogs, confirmations, quick-create.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="settings.html"><span class="bn-idx">09</span><span><span class="bn-screen__name">Settings</span><span class="bn-screen__file">settings.html</span></span><span class="bn-screen__what">Numbered index, profile and invoicing forms, team table, notification switches, danger zone, toast.</span><span class="bn-screen__when">Start here for settings, profile, account pages.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="empty-state.html"><span class="bn-idx">10</span><span><span class="bn-screen__name">Empty states</span><span class="bn-screen__file">empty-state.html</span></span><span class="bn-screen__what">A room with no bookings (giant 0 with crop marks) and three compact empty cells.</span><span class="bn-screen__when">Start here for empty lists, no results, all-done states.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<a class="bn-screen" href="login.html"><span class="bn-idx">11</span><span><span class="bn-screen__name">Sign in</span><span class="bn-screen__file">login.html</span></span><span class="bn-screen__what">Black art panel with photo and wordmark; drawn email and password, remember me, SSO.</span><span class="bn-screen__when">Start here for any auth page (fields are drawn, never real).</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+
+<section aria-labelledby="g3">
+<div class="bn-grouphead"><h2 id="g3" class="bn-h2">Reference</h2><span class="bn-micro">1 screen</span></div>
+<nav class="bn-screens" aria-label="Reference screens">
+<a class="bn-screen" href="components.html"><span class="bn-idx">12</span><span><span class="bn-screen__name">Components</span><span class="bn-screen__file">components.html</span></span><span class="bn-screen__what">Every component of components.md in its variants and states, including the photo placeholders.</span><span class="bn-screen__when">Look here before inventing anything.</span><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</nav>
+</section>
+</main>
+<footer class="bn-sitefoot__bottom bn-mt-32"><span>Berlin · bn- · tokens.css</span><span>README.md · components.md · sources.md</span><a href="#top">Back to top ↑</a></footer>
+</div>
+</body>
+</html>

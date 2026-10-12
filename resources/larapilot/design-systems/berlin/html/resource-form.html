@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit brief P-037 · Kollektiv Studio backoffice</title>
+<meta name="description" content="Project brief editor: numbered sections, required marks, helper text, one field in error, a disabled field, selects, textareas, checkboxes, switches, a file drop zone and a sticky action bar.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#main">Skip to content</a>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item is-active" aria-current="page" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<nav class="bn-pagehead__eyebrow bn-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><a href="resource-list.html">02 — Projects</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">P-037 · Brief</span></nav>
+<div><div class="bn-pagehead__title"><h1 class="bn-h1">Grauzone — exhibition catalogue</h1></div><p class="bn-pagehead__lede">Galerie Nullpunkt · lead Tomasz Wiśniewski · <span class="bn-tag"><span class="bn-tag__ring"></span>Briefing</span></p></div>
+<div class="bn-pagehead__actions"><a class="bn-btn bn-btn--ghost" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg> History</a><a class="bn-btn" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg> Client preview</a></div>
+</header>
+
+<div class="bn-errorsum" role="alert"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><p><strong>One field needs a fix before the brief can go to the client.</strong> <a class="bn-link" href="#f-delivery">Delivery date</a> is before the kick-off.</p></div>
+
+<form class="bn-form" action="#" aria-label="Project brief">
+<section class="bn-formsec" aria-labelledby="s1">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">01</p><h2 id="s1" class="bn-h3">Basics</h2><p class="bn-formsec__desc">What the project is called inside the studio and on invoices. The code is assigned when the pitch is won.</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field bn-field--full"><label class="bn-label" for="f-title"><span>Project title<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span><span class="bn-label__meta">31 / 80</span></label><input id="f-title" class="bn-input" type="text" value="Grauzone — exhibition catalogue" required></div>
+<div class="bn-field"><label class="bn-label" for="f-code">Project code</label><input id="f-code" class="bn-input bn-input--mono" type="text" value="P-2026-037" disabled><p class="bn-help">Set automatically. Ask Felix to change it.</p></div>
+<div class="bn-field"><label class="bn-label" for="f-client"><span>Client<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><span class="bn-selectbox bn-selectbox--block"><select id="f-client" class="bn-select" required><option>Galerie Nullpunkt</option><option>Verlag Kante</option><option>Plattform Beton e.V.</option><option>Hallenbad Ost gGmbH</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="f-lead"><span>Lead<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><span class="bn-selectbox bn-selectbox--block"><select id="f-lead" class="bn-select"><option>Tomasz Wiśniewski — type &amp; editorial</option><option>Leyla Demir — identity</option><option>Jonas Albrecht — spatial</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="f-contact">Client contact</label><input id="f-contact" class="bn-input" type="email" value="r.haddad@nullpunkt.gallery"><p class="bn-help">Receives the brief and review links.</p></div>
+<fieldset class="bn-field bn-field--full"><legend class="bn-label">Disciplines</legend><div class="bn-checkgrid">
+<label class="bn-check"><input class="bn-checkbox" type="checkbox"><span>Identity</span></label>
+<label class="bn-check is-active"><input class="bn-checkbox" type="checkbox" checked><span>Editorial</span></label>
+<label class="bn-check is-active"><input class="bn-checkbox" type="checkbox" checked><span>Print</span></label>
+<label class="bn-check"><input class="bn-checkbox" type="checkbox"><span>Exhibition</span></label>
+<label class="bn-check"><input class="bn-checkbox" type="checkbox"><span>Motion</span></label>
+<label class="bn-check"><input class="bn-checkbox" type="checkbox" disabled><span>Venue event<span class="bn-check__sub">Book a room first</span></span></label>
+</div></fieldset>
+</div>
+</section>
+
+<section class="bn-formsec" aria-labelledby="s2">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">02</p><h2 id="s2" class="bn-h3">Budget &amp; dates</h2><p class="bn-formsec__desc">Net amounts in euro. The schedule feeds the team-load view and the client's review portal.</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field"><label class="bn-label" for="f-budget"><span>Budget<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span><span class="bn-label__meta">net</span></label><span class="bn-inputgroup"><span class="bn-affix">EUR</span><input id="f-budget" class="bn-input bn-input--mono" type="text" inputmode="decimal" value="9,600.00"></span><p class="bn-help">96 h at the editorial day rate, print managed separately.</p></div>
+<div class="bn-field"><label class="bn-label" for="f-billing">Billing plan</label><span class="bn-selectbox bn-selectbox--block"><select id="f-billing" class="bn-select"><option>50 / 50 — start, delivery</option><option>30 / 40 / 30</option><option>Monthly, on hours</option></select><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></div>
+<div class="bn-field"><label class="bn-label" for="f-kickoff"><span>Kick-off<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><input id="f-kickoff" class="bn-input bn-input--mono" type="text" value="19.10.2026"></div>
+<div class="bn-field is-error"><label class="bn-label" for="f-delivery"><span>Delivery<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span></label><input id="f-delivery" class="bn-input bn-input--mono" type="text" value="06.10.2026" aria-invalid="true" aria-describedby="f-delivery-err"><p id="f-delivery-err" class="bn-error"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>Delivery must be after the kick-off (19.10.2026). Did you mean 06.11.2026?</p></div>
+</div>
+</section>
+
+<section class="bn-formsec" aria-labelledby="s3">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">03</p><h2 id="s3" class="bn-h3">The brief</h2><p class="bn-formsec__desc">Written for the client. Short sentences; the first paragraph is what they will quote back to us.</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field bn-field--full"><label class="bn-label" for="f-bg"><span>Background<span class="bn-req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></span><span class="bn-label__meta">412 / 1200</span></label><textarea id="f-bg" class="bn-textarea" rows="5">“Grauzone” brings together eleven artists working with concrete, ash and recycled building rubble from the Lichtenberg demolition sites. The gallery wants a catalogue that behaves like the material: heavy, matte, a little unfinished. It launches with the exhibition on 06.11 and travels to Leipzig in spring.</textarea></div>
+<div class="bn-field bn-field--full"><label class="bn-label" for="f-del">Deliverables</label><textarea id="f-del" class="bn-textarea" rows="4">Catalogue, 144 pp., 210 × 280 mm, Swiss binding, two Pantone + black
+Exhibition wall texts (DE / EN) and a fold-out room plan
+Invitation card and Instagram set (6 posts)</textarea><p class="bn-help">One deliverable per line. Each becomes a task on the project.</p></div>
+</div>
+</section>
+
+<section class="bn-formsec" aria-labelledby="s4">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">04</p><h2 id="s4" class="bn-h3">Files</h2><p class="bn-formsec__desc">Client material, references and contracts. Max 200 MB per file.</p></div>
+<div class="bn-formsec__body">
+<div class="bn-field bn-field--full"><label class="bn-drop" for="f-files"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg><span class="bn-drop__title">Drop files here or <u>browse</u></span><span class="bn-micro">PDF · JPG · TIFF · XLSX · ZIP</span><input id="f-files" class="visually-hidden" type="file" multiple></label>
+<ul class="bn-files bn-mt-8">
+<li class="bn-file"><span class="bn-file__ext">PDF</span><span class="bn-stack bn-stack--4"><span class="bn-file__name">Nullpunkt_CI-guide_2024.pdf</span><span class="bn-file__meta">8.4 MB · uploaded 09.10 by Tomasz W.</span></span><button type="button" class="bn-rowbtn" aria-label="Remove Nullpunkt_CI-guide_2024.pdf"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></li>
+<li class="bn-file"><span class="bn-file__ext">XLS</span><span class="bn-stack bn-stack--4"><span class="bn-file__name">Grauzone_artists_and_works.xlsx</span><span class="bn-file__meta">212 KB · uploaded 09.10 by Rana Haddad (client)</span></span><button type="button" class="bn-rowbtn" aria-label="Remove Grauzone_artists_and_works.xlsx"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></li>
+<li class="bn-file"><span class="bn-file__ext bn-file__ext--signal">ZIP</span><span class="bn-stack bn-stack--4"><span class="bn-file__name">Installation_photos_raw.zip</span><span class="bn-file__meta"><span class="bn-meter"><span class="bn-meter__fill bn-w-65"></span></span>64% · 118 of 184 MB</span></span><button type="button" class="bn-rowbtn" aria-label="Cancel upload of Installation_photos_raw.zip"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></li>
+</ul></div>
+</div>
+</section>
+
+<section class="bn-formsec" aria-labelledby="s5">
+<div class="bn-formsec__head"><p class="bn-formsec__idx" aria-hidden="true">05</p><h2 id="s5" class="bn-h3">Visibility</h2><p class="bn-formsec__desc">Who sees the project, and when it may appear on the public site.</p></div>
+<div class="bn-formsec__body">
+<fieldset class="bn-field bn-field--full"><legend class="bn-label">Confidentiality</legend><div class="bn-radiorow">
+<label class="bn-check"><input class="bn-radio" type="radio" name="conf"><span>Public<span class="bn-check__sub">Can be named in pitches</span></span></label>
+<label class="bn-check is-active"><input class="bn-radio" type="radio" name="conf" checked><span>Until launch<span class="bn-check__sub">Embargo to 06.11.2026</span></span></label>
+<label class="bn-check"><input class="bn-radio" type="radio" name="conf"><span>NDA<span class="bn-check__sub">Never shown</span></span></label>
+</div></fieldset>
+<div class="bn-field bn-field--full">
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Show on kollektiv.studio after delivery</strong><span>Adds the project to Selected work with the first image from Files.</span></span><input class="bn-switch" type="checkbox" role="switch" checked></label>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Client can comment in the review portal</strong><span>Rana Haddad gets a link with every new round.</span></span><input class="bn-switch" type="checkbox" role="switch"></label>
+<label class="bn-switchrow"><span class="bn-switchrow__text"><strong>Count towards the Kante Markt booth</strong><span>Only for Verlag Kante projects.</span></span><input class="bn-switch" type="checkbox" role="switch" disabled></label>
+</div>
+</div>
+</section>
+
+<div class="bn-formbar">
+<p class="bn-formbar__status"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg> Draft saved 14:28 by Tomasz W.</p>
+<div class="bn-actions"><a class="bn-btn bn-btn--ghost" href="resource-list.html">Cancel</a><button type="button" class="bn-btn">Save draft</button><button type="submit" class="bn-btn bn-btn--signal">Save &amp; send brief <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>
+</div>
+</form>
+</main>
+</div>
+</body>
+</html>

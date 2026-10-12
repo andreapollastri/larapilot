@@ -85,10 +85,10 @@ it('exposes default project settings and updates them', function (): void {
         'decision_log' => 'YES',
         'code_history' => 'NO',
         'comments' => 'NO',
-        'dashboard_auth' => 'NO',
         'api_auth' => 'NO',
         'security_scan' => 'NO',
         'aikido' => 'NO',
+        'security' => 'NO',
         'errors' => 'NO',
         'boogle' => 'NO',
         'github' => 'NO',
@@ -103,7 +103,10 @@ it('exposes default project settings and updates them', function (): void {
         'project_docs' => 'NO',
         'prior_art' => 'YES',
         'hooks' => 'NO',
+        'sprints' => 'NO',
+        'public_roadmap' => 'NO',
         'errors_provider' => '',
+        'security_provider' => '',
     ])->and($config->autoApproveEnabled())->toBeFalse()
         ->and($config->priorArtEnabled())->toBeTrue()
         ->and($config->lucilleEnabled())->toBeTrue()

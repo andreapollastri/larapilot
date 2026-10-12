@@ -499,7 +499,7 @@
         <div>
             <h2>{{ $name }}@if ($readOnly) <span class="entry-tag">Read only</span>@endif</h2>
             @if ($path === '')
-                <p class="sub">{{ $root['description'] }}@if ($readOnly) You can look and download; the code is changed in your editor. A file that holds credentials — <code>.env</code>, <code>auth.json</code>, a key — shows the names of its keys with every value hidden.@endif</p>
+                <p class="sub">{{ $root['description'] }}@if ($readOnly) You can look and download; the code is changed in your editor. {{ ($secrets_revealed ?? false) ? 'An .env file is shown as it is — outside production, and to an admin in production. Other credentials — auth.json, a key — show the names of their keys with every value hidden.' : 'A file that holds credentials — .env, auth.json, a key — shows the names of its keys with every value hidden.' }}@endif</p>
             @endif
             <code class="folder-path">{{ $display_path }}</code>
             @unless ($is_directory)
@@ -510,8 +510,11 @@
             @endunless
         </div>
         <div class="page-actions">
+            @if ($zip ?? null)
+                <a class="btn ghost" href="{{ $zip }}" title="Every file shown in this folder and the folders inside it, as a zip — {{ ($secrets_revealed ?? false) ? '.env files as they are' : 'credentials masked' }}, logs redacted, databases left out{{ ($root['key'] ?? '') === 'project' ? ', vendor and node_modules left out' : '' }}">@include('larapilot::dashboard.partials.icon', ['name' => 'archive'])Download zip</a>
+            @endif
             @if ($readOnly)
-                @if (! $is_directory && ! $file['sealed'])
+                @if (! $is_directory && ! $file['sealed'] && ($can_download ?? true))
                     <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? ($file['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}</a>
                     @if (in_array($preview['kind'], ['image', 'pdf'], true))
                         <a class="btn ghost" href="{{ $raw($path) }}" target="_blank" rel="noopener noreferrer">@include('larapilot::dashboard.partials.icon', ['name' => 'external'])Open</a>
@@ -522,7 +525,7 @@
                 <button type="button" class="btn ghost" data-upload-pick="folder">@include('larapilot::dashboard.partials.icon', ['name' => 'folder-open'])Upload folder</button>
                 <button type="button" class="btn ghost" data-dialog="folder-dialog">@include('larapilot::dashboard.partials.icon', ['name' => 'folder-plus'])New folder</button>
             @else
-                @unless ($file['sealed'])
+                @unless ($file['sealed'] || ! ($can_download ?? true))
                     <a class="btn" href="{{ $raw($path, true) }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download']){{ $file['masked'] ? ($file['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}</a>
                 @endunless
                 @if (in_array($preview['kind'], ['image', 'pdf'], true))
@@ -641,7 +644,7 @@
                                 <span class="entry-size">{{ $isFolder ? $detail : $entry['size_label'] }}</span>
                                 <span class="entry-date">{{ $when($entry['modified']) }}</span>
                                 <span class="entry-actions">
-                                    @if (! $isFolder && ! $entry['link'] && ! $entry['sealed'])
+                                    @if (! $isFolder && ! $entry['link'] && ! $entry['sealed'] && ($can_download ?? true))
                                         <a class="row-btn" href="{{ $raw($entry['path'], true) }}" title="{{ $entry['masked'] ? ($entry['redacted'] ? 'Download, secrets redacted' : 'Download, values hidden') : 'Download' }}" aria-label="Download {{ $entry['name'] }}{{ $entry['masked'] ? ($entry['redacted'] ? ', secrets redacted' : ', values hidden') : '' }}">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])</a>
                                     @endif
                                     @unless ($readOnly)

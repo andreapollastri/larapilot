@@ -23,11 +23,14 @@ class SettingsSetCommand extends LarapilotCommand
                             {--project-docs= : Living project handbook in .larapilot/docs/handbook/: YES or NO (default NO)}
                             {--prior-art= : Prior-art search for existing open-source / packaged solutions at inception: YES (default) or NO}
                             {--hooks= : Workflow hooks from .larapilot/hooks.yaml on the transitions of the loop: YES or NO (default NO)}
+                            {--sprints= : Split the Board, the Plan, and planning into two-week sprints: YES or NO (default NO)}
+                            {--public-roadmap= : Publish a public product roadmap at a secret link: YES or NO (default NO)}
                             {--comments= : Internal feedback comments on dashboard/API: YES or NO (default NO)}
-                            {--dashboard-auth= : HTTP Basic Auth on the /larapilot dashboard: YES or NO (default NO)}
-                            {--api-auth= : Require LARAPILOT_API_TOKEN on every /larapilot/api/* request: YES or NO (default NO)}
+                            {--api-auth= : Require the API token on /larapilot/api/* in local too: YES or NO (default NO; outside local the token is always required)}
                             {--security-scan= : Run andreapollastri/checkpoint in /larapilot-review + pre-ship: YES or NO (default NO)}
-                            {--aikido= : Read the findings of Aikido for this repository: YES or NO (default NO)}
+                            {--security= : Read the security findings of this repository from a scanner: YES or NO (default NO)}
+                            {--security-provider= : The scanner: aikido or hackly (naming one turns the findings on)}
+                            {--aikido= : Read the findings of Aikido: YES or NO — the same as --security=YES --security-provider=aikido}
                             {--errors= : Read the errors of production from the tracker of --errors-provider: YES or NO (default NO)}
                             {--errors-provider= : The tracker the errors are read from: boogle, sentry, bugsnag, flare, datadog, rollbar, honeybadger, or cloudwatch}
                             {--boogle= : The name --errors had when Boogle was the only tracker: YES is --errors=YES --errors-provider=boogle}
@@ -129,11 +132,13 @@ class SettingsSetCommand extends LarapilotCommand
             'project-docs' => ['project_docs', $config->allowedProjectDocsModes()],
             'prior-art' => ['prior_art', $config->allowedPriorArtModes()],
             'hooks' => ['hooks', $config->allowedHooksModes()],
+            'sprints' => ['sprints', $config->allowedSprintsModes()],
+            'public-roadmap' => ['public_roadmap', $config->allowedPublicRoadmapModes()],
             'comments' => ['comments', $config->allowedCommentsModes()],
-            'dashboard-auth' => ['dashboard_auth', $config->allowedDashboardAuthModes()],
             'api-auth' => ['api_auth', $config->allowedApiAuthModes()],
             'security-scan' => ['security_scan', $config->allowedSecurityScanModes()],
             'aikido' => ['aikido', $config->allowedAikidoModes()],
+            'security' => ['security', $config->allowedSecurityModes()],
             'errors' => ['errors', $config->allowedErrorsModes()],
             'boogle' => ['boogle', $config->allowedBoogleModes()],
             'github' => ['github', $config->allowedGithubModes()],
@@ -162,6 +167,24 @@ class SettingsSetCommand extends LarapilotCommand
             $partial[$key] = $value;
         }
 
+        $securityProvider = $this->normalizeOption('security-provider');
+        if ($securityProvider !== null) {
+            $securityProvider = strtolower($securityProvider);
+
+            if ($securityProvider === 'none') {
+                $partial['security'] = 'NO';
+            } elseif (! in_array($securityProvider, $config->allowedSecurityProviders(), true)) {
+                return $this->failure(
+                    'E_INVALID_INPUT',
+                    "Invalid --security-provider value: {$securityProvider}.",
+                    $this->exitForCode('E_INVALID_INPUT'),
+                    'Allowed: '.implode(', ', $config->allowedSecurityProviders()).', or none.'
+                );
+            } else {
+                $partial['security_provider'] = $securityProvider;
+            }
+        }
+
         $errorsProvider = $this->normalizeOption('errors-provider');
         if ($errorsProvider !== null) {
             $errorsProvider = strtolower($errorsProvider);
@@ -181,7 +204,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --hooks, --comments, --dashboard-auth, --api-auth, --security-scan, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --hooks, --sprints, --public-roadmap, --comments, --api-auth, --security-scan, --security, --security-provider, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

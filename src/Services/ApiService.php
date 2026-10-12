@@ -8,6 +8,11 @@ use Larapilot\Support\Markdown;
 
 class ApiService
 {
+    /**
+     * @var array<string, array{release: string|null, sprint: int|null, sprint_proposed: bool}>|null
+     */
+    protected ?array $viewAssignments = null;
+
     public function __construct(
         protected ConfigService $config,
         protected DashboardService $dashboard,
@@ -16,6 +21,7 @@ class ApiService
         protected PrdService $prd,
         protected MockupService $mockups,
         protected InternalFeedbackService $feedback,
+        protected BoardViewService $views,
     ) {}
 
     /**
@@ -168,11 +174,31 @@ class ApiService
     {
         $code = (string) ($spec['code'] ?? '');
 
+        $assignment = $this->viewAssignments()[$code] ?? ['release' => null, 'sprint' => null, 'sprint_proposed' => false];
+
         return array_merge($spec, [
             'task_progress' => $code !== '' ? $this->plans->taskProgress($code) : ['total' => 0, 'done' => 0],
             'mockups' => $code !== '' ? $this->mockupsForApi($code) : $this->emptyMockups(),
             'feedback' => $code !== '' ? $this->feedback->summary($code, $spec) : $this->emptyFeedback(),
+            'release' => $assignment['release'],
+            'sprint' => $assignment['sprint'],
+            'sprint_proposed' => $assignment['sprint_proposed'],
         ]);
+    }
+
+    /**
+     * Release and sprint of every spec, computed once per request.
+     *
+     * @return array<string, array{release: string|null, sprint: int|null, sprint_proposed: bool}>
+     */
+    protected function viewAssignments(): array
+    {
+        if ($this->viewAssignments === null) {
+            $view = $this->views->resolve([], $this->specs->allSpecs());
+            $this->viewAssignments = $view['assignments'];
+        }
+
+        return $this->viewAssignments;
     }
 
     /**

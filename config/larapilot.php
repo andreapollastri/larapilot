@@ -38,19 +38,18 @@ return [
         // approval, rework, release, ship. A `before` hook that fails blocks the transition;
         // an `after` hook is reported. OFF by default; nothing runs until set true.
         'hooks' => false,
+        // Two-week sprints on the Board, the Plan, and in planning — OFF by default.
+        'sprints' => false,
+        // A public product roadmap at a token link — OFF by default.
+        'public_roadmap' => false,
         // Internal feedback comments on the dashboard, JSON API, and
         // `larapilot:spec-comment` — OFF by default; set true to enable.
         'comments' => false,
-        // HTTP Basic Auth on the /larapilot dashboard UI — OFF by default (open in the
-        // allowed environments). When true, browsing the dashboard requires a username +
-        // password from .larapilot/auth.yaml (manage with `larapilot:dashboard-user`).
-        // Never affects the JSON API (LARAPILOT_API_TOKEN) or the MCP server.
-        'dashboard_auth' => false,
-        // Require a shared token on every /larapilot/api/* request — OFF by default.
-        // When true, EnsureApiAuthorized enforces LARAPILOT_API_TOKEN on reads *and*
-        // writes and fails closed (HTTP 503) when the token env var is not set. When
-        // false, the API keeps the legacy behaviour (token enforced only when set;
-        // writes blocked outside local unless a token is configured).
+        // Require the API token on every /larapilot/api/* request on a developer's
+        // machine too — OFF by default. Outside `local` the token is always required:
+        // this setting only closes the API in `local`/`testing`, where it is otherwise
+        // open. The dashboard sign-in itself follows APP_ENV, not a setting (see
+        // `dashboard_route` below).
         'api_auth' => false,
         // Fold a static security scan into /larapilot-review and the pre-ship gate — OFF by
         // default. When true, the review skill runs `php artisan checkpoint:scan` (from the
@@ -58,11 +57,17 @@ return [
         // blockers; when the package is absent it points the user at `composer require --dev
         // andreapollastri/checkpoint`. Never runs the scanner automatically on its own.
         'security_scan' => false,
-        // Read the findings of Aikido (https://www.aikido.dev) for this repository — OFF by
-        // default. When true, /larapilot-aikido downloads the open findings and hands each
-        // one to /larapilot-triage, the ship gate stops on what nobody decided about, and
-        // /larapilot/security shows them. Aikido scans the repository on its side; Larapilot
-        // only reads the result, with the credentials under `aikido` below.
+        // Read the security findings of this repository from a scanner — OFF by default.
+        // When true, /larapilot-security downloads the open findings and hands each group to
+        // /larapilot-triage, the ship gate stops on what nobody decided about, and
+        // /larapilot/security shows them. The scanner is `security_provider`: `aikido`
+        // (https://www.aikido.dev, SaaS) or `hackly` (https://hackly.web.ap.it, self-hosted).
+        // It scans on its side; Larapilot only reads the result, with the credentials under
+        // `aikido` or `hackly` below.
+        'security' => false,
+        'security_provider' => '',
+        // The name the setting had before 5.1, when Aikido was the only scanner:
+        // true is security=true with security_provider=aikido.
         'aikido' => false,
         // Read the errors of production from one tracker — OFF by default. When true,
         // /larapilot-error downloads the open errors, has you confirm them, groups them
@@ -125,6 +130,36 @@ return [
         'timeout' => (int) env('LARAPILOT_AIKIDO_TIMEOUT', 15),
         // Seconds the dashboard keeps the findings before it asks Aikido again.
         'cache_seconds' => (int) env('LARAPILOT_AIKIDO_CACHE', 300),
+    ],
+
+    // Hackly (https://hackly.web.ap.it) — the self-hosted attack-surface and
+    // application security scanner (Semgrep, Trivy, Gitleaks, Composer audit,
+    // Checkpoint, Nuclei, ZAP…). Larapilot reads the findings of the repository of
+    // this project — and of the domains linked to it in Hackly — through its API,
+    // with a personal token (Profile → API tokens in Hackly, or `php artisan
+    // hackly:token you@example.com --ability=write`). `read` lists; `write` lets
+    // Larapilot tell Hackly a decision and ask for a scan. Keep the token in .env.
+    'hackly' => [
+        // Where YOUR Hackly is reached, such as https://hackly.example.com — the
+        // address of the instance, not of the documentation site.
+        'url' => env('LARAPILOT_HACKLY_URL'),
+        'token' => env('LARAPILOT_HACKLY_TOKEN'),
+        // The repository in Hackly, by id (uuid) or by owner/name, for this machine.
+        // Empty: the one chosen with `larapilot:security-repos --use`, or found from the git remote.
+        'repository' => env('LARAPILOT_HACKLY_REPOSITORY'),
+        // Read the findings of the domains linked to the repository in Hackly too
+        // (DAST: TLS, headers, exposed paths, Nuclei, ZAP).
+        'include_targets' => (bool) env('LARAPILOT_HACKLY_INCLUDE_TARGETS', true),
+        // Tell Hackly what is decided here: a spec or a waiver acknowledges the finding
+        // there, a false positive marks it so with its reason. false keeps every decision local.
+        'push_decisions' => (bool) env('LARAPILOT_HACKLY_PUSH_DECISIONS', true),
+        // Lowest severity that stops the ship gate: high, medium, low, or none.
+        'fail_on' => env('LARAPILOT_HACKLY_FAIL_ON', 'high'),
+        // The profile of a scan asked for from Larapilot: quick, standard, or deep.
+        'scan_profile' => env('LARAPILOT_HACKLY_SCAN_PROFILE', 'standard'),
+        'timeout' => (int) env('LARAPILOT_HACKLY_TIMEOUT', 15),
+        // Seconds the dashboard keeps the findings before it asks Hackly again.
+        'cache_seconds' => (int) env('LARAPILOT_HACKLY_CACHE', 300),
     ],
 
     // Boogle (https://boogle.web.ap.it) — the self-hosted exception tracker and
@@ -246,6 +281,8 @@ return [
         'decisions' => '.larapilot/decisions.yaml',
         'code_history' => '.larapilot/code-history.yaml',
         'releases' => '.larapilot/releases.yaml',
+        // Public product roadmap wording and token (.larapilot/roadmap.yaml).
+        'roadmap' => '.larapilot/roadmap.yaml',
         // Living project handbook (settings.project_docs).
         'project_docs' => '.larapilot/docs/handbook/',
         'custom_skills' => '.larapilot/skills/',
@@ -477,58 +514,71 @@ return [
         ],
     ],
 
+    // The mockups follow the dashboard: served wherever it is, behind the same
+    // sign-in. An `environments` list, if you add one, narrows that down.
     'mockups_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockups',
         'middleware' => ['web'],
-        'environments' => ['local', 'development', 'testing', 'staging'],
     ],
 
     'mockup_assets_route' => [
         'enabled' => env('LARAPILOT_MOCKUPS_ROUTE', true),
         'prefix' => 'mockup-assets',
         'middleware' => ['web'],
-        'environments' => ['local', 'development', 'testing', 'staging'],
     ],
 
+    // Where the dashboard is served, and who gets in, follows APP_ENV alone:
+    //   local (and testing)  open — no sign-in, whoever reaches it acts as an admin;
+    //   production           hidden, unless LARAPILOT_FORCE_IN_PROD=true — then a
+    //                        sign-in AND a second factor (TOTP) for every user;
+    //   anything else        sign-in mandatory, second factor optional.
+    // Users, roles (admin · dev · pm · ext), authenticators, and the API token live
+    // hashed in `auth.file`, out of Git: `php artisan larapilot:dashboard-user`,
+    // `php artisan larapilot:api-token`, or the Users and API token pages.
+    // An `environments` list, if you add one, narrows the environments served further.
     'dashboard_route' => [
         'enabled' => env('LARAPILOT_DASHBOARD_ROUTE', true),
         'prefix' => 'larapilot',
         'middleware' => ['web'],
-        'environments' => ['local', 'development', 'testing', 'staging'],
+        'force_in_production' => (bool) env('LARAPILOT_FORCE_IN_PROD', false),
 
-        // Optional HTTP Basic Auth for the dashboard UI. Enforced only when the
-        // `dashboard_auth` project setting is ON (see settings above). Credentials
-        // live hashed in `file`, which is git-ignored automatically and never
-        // committed. Manage users with `php artisan larapilot:dashboard-user`.
-        // This gate never applies to /larapilot/api/* or the MCP server.
         'auth' => [
             'file' => base_path('.larapilot/auth.yaml'),
-            'realm' => env('LARAPILOT_DASHBOARD_AUTH_REALM', 'Larapilot'),
-            // Failed Basic Auth attempts allowed per minute per IP; 0 disables throttling.
-            'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 30),
+            // Wrong passwords allowed per minute from one address; 0 disables the limit.
+            // One name takes five a minute from anywhere, whatever this says.
+            'max_attempts' => (int) env('LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS', 20),
+            // The name the authenticator app shows for the account.
+            'issuer' => env('LARAPILOT_DASHBOARD_AUTH_ISSUER', env('APP_NAME', 'Larapilot')),
+            // One JSON line per sign-in, failed sign-in, second factor, user, token,
+            // anonymization map, or data export — never a password, a code, or a token.
+            'audit' => env('LARAPILOT_DASHBOARD_AUTH_AUDIT', true),
+            'audit_file' => env('LARAPILOT_DASHBOARD_AUTH_AUDIT_FILE', '.larapilot/auth-audit.log'),
         ],
     ],
 
     // File manager on the dashboard (/larapilot/files): browse, upload, rename,
     // and delete the material folders the skills read — brand, client-materials,
-    // design-systems, legacy, skills. It follows the dashboard's own gate, so it
-    // is never served in production. It is open in local/development/testing;
-    // on any other environment it is served only when the `dashboard_auth`
-    // project setting is ON, so client documents stay behind a sign-in.
+    // design-systems, legacy, skills — and the project itself, read only, with
+    // a zip of any folder shown. It is served wherever the dashboard is and is
+    // for admins alone: client documents and the files of the project stay
+    // behind the sign-in and the role.
     'file_manager' => [
         'enabled' => env('LARAPILOT_FILE_MANAGER', true),
         // Largest single upload, in kilobytes. PHP's upload_max_filesize and
         // post_max_size still apply, and win when they are lower.
         'max_upload_kb' => (int) env('LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB', 51200),
+        // Largest zip of a folder, in megabytes: past it the archive stops and says so.
+        'max_zip_mb' => (int) env('LARAPILOT_FILE_MANAGER_MAX_ZIP_MB', 512),
     ],
 
     // Database viewer on the dashboard (/larapilot/database): the tables and
     // views of the application's database, their structure, and their rows,
     // read through Laravel's schema and query builders — MySQL, MariaDB,
-    // PostgreSQL, SQLite, and SQL Server alike. It only reads. The same gate
-    // as the file manager: never in production, open in local/development/
-    // testing, and elsewhere only when `dashboard_auth` is ON.
+    // PostgreSQL, SQLite, and SQL Server alike. It only reads. Served wherever
+    // the dashboard is, to admins and developers; in production a developer
+    // sees and downloads the rows anonymized only (see `/larapilot/anonymization`).
+    // The map an admin saves is `.larapilot/anonymization.yaml`.
     'database_viewer' => [
         'enabled' => env('LARAPILOT_DATABASE_VIEWER', true),
         // The connection to read; empty means the default (DB_CONNECTION).
@@ -551,10 +601,10 @@ return [
     // Log viewer on the dashboard (/larapilot/logs): the `.log` files of the
     // application read as entries — newest first, by level, searched, the
     // repeats counted — and downloaded. Secrets are redacted on screen and in
-    // the download. It only reads. The same gate as the file manager: never in
-    // production, open in local/development/testing, and elsewhere only when
-    // `dashboard_auth` is ON. `php artisan larapilot:logs` reads the same files
-    // for the skills and follows `diagnostics.enabled` instead.
+    // the download. It only reads. Served wherever the dashboard is, to admins
+    // and developers — and to product managers outside production.
+    // `php artisan larapilot:logs` reads the same files for the skills and
+    // follows `diagnostics.enabled` instead.
     'log_viewer' => [
         'enabled' => env('LARAPILOT_LOG_VIEWER', true),
         // The folder to read; empty means storage/logs. A path that is not
@@ -570,9 +620,8 @@ return [
     // up and what it is doing — the drivers in use, what is cached, the
     // scheduled tasks, the jobs that wait and the ones that failed — and what
     // the application sent and dumped: the outgoing mail and every dump() and
-    // dd(), kept in storage/larapilot to be read on the page. The same gate as
-    // the file manager: never in production, open in local/development/
-    // testing, and elsewhere only when `dashboard_auth` is ON.
+    // dd(), kept in storage/larapilot to be read on the page. Served wherever
+    // the dashboard is, to admins and developers.
     'laravel_viewer' => [
         'enabled' => env('LARAPILOT_LARAVEL_VIEWER', true),
         // Keep the outgoing mail. Empty means on a developer's own machine

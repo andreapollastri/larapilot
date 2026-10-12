@@ -30,7 +30,7 @@ MD);
         ->and($library['custom'][0]['origin'])->toBe('custom')
         ->and($library['custom'][0]['registered'])->toBeTrue()
         ->and($library['custom'][0]['relative_path'])->toBe('.larapilot/skills/deploy-checklist/SKILL.md')
-        ->and(array_column($library['packaged'], 'name'))->toContain('larapilot-inception', 'larapilot-triage', 'larapilot-aikido')
+        ->and(array_column($library['packaged'], 'name'))->toContain('larapilot-inception', 'larapilot-triage', 'larapilot-security')
         ->and(count($library['packaged']))->toBe(count(glob(dirname(__DIR__, 2).'/resources/boost/skills/*/SKILL.md') ?: []));
 
     foreach ($library['packaged'] as $skill) {
@@ -48,7 +48,7 @@ MD);
         ->assertSee('Registered', false)
         ->assertSee('Packaged with Larapilot', false)
         ->assertSee('href="'.url('/larapilot/skills/larapilot-triage').'"', false)
-        ->assertSee('/larapilot-aikido', false)
+        ->assertSee('/larapilot-security', false)
         ->assertSee('id="skills-filter"', false);
 });
 

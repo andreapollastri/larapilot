@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Fortify registration in the kit's card auth layout. Fields are drawn.">
+<title>Register - Ledgerly</title>
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="sk-mockup">
+<!-- Auth: layouts/auth/auth-card-layout.tsx + pages/auth/register.tsx. Vue: AuthCardLayout.vue + Register.vue. Livewire: layouts/auth/card.blade.php + pages/auth/register. Fields drawn with .mock-field. Map: .sk-auth--card = bg-muted page; .sk-auth__card = Card rounded-xl with CardHeader px-10 pt-8 pb-0 and CardContent px-10 py-8; .mock-field = Input / PasswordInput; .sk-error = InputError; .sk-auth__submit--tight = Button className=mt-2 w-full. -->
+<a class="visually-hidden sk-skip" href="#main">Skip to content</a>
+<main class="sk-auth sk-auth--card" id="main">
+<!-- A picture of the registration screen: no form element, no input for credentials. -->
+<div class="sk-auth__box">
+<a class="sk-auth__brand sk-auth__brand--row" href="#"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 23.5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zm10.5-8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2zM26 7a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/></svg><span class="visually-hidden">Ledgerly</span></a>
+<section class="sk-card sk-auth__card" aria-labelledby="reg-title">
+<div class="sk-card__header"><h1 class="sk-card__title" id="reg-title">Create an account</h1><p class="sk-card__desc">Enter your details below to create your account</p></div>
+<div class="sk-card__content">
+<div class="sk-auth__form">
+<div class="sk-field"><span class="mock-label">Name</span><div class="mock-field" role="img" aria-label="Name field, filled in">Daniel Mwangi</div></div>
+<div class="sk-field"><span class="mock-label">Email address</span><div class="mock-field mock-field--error" role="img" aria-label="Email field, filled in, invalid">daniel@mwangi.dev</div><p class="sk-error">The email has already been taken.</p></div>
+<div class="sk-field"><span class="mock-label">Password</span><div class="sk-password"><div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••••••</div><span class="sk-password__toggle" aria-hidden="true"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span></div></div>
+<div class="sk-field"><span class="mock-label">Confirm password</span><div class="sk-password"><div class="mock-field mock-field--empty" role="img" aria-label="Confirm password field, empty">Confirm password</div><span class="sk-password__toggle" aria-hidden="true"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span></div></div>
+<a class="sk-btn sk-btn--block sk-auth__submit sk-auth__submit--tight" href="dashboard.html" role="button">Create account</a>
+<p class="sk-auth__footer">Already have an account? <a class="sk-text-link" href="login.html">Log in</a></p>
+</div>
+</div>
+</section>
+<p class="sk-auth__legal">By creating an account you agree to the <a class="sk-text-link" href="#">Terms of Service</a> and <a class="sk-text-link" href="#">Privacy Policy</a>. Ledgerly never sells your financial data.</p>
+</div>
+</main>
+</body>
+</html>

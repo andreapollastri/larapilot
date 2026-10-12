@@ -14,9 +14,11 @@ use Larapilot\Support\SecurityRegisterStrings;
  * open, what was resolved, and what was ignored with its reason. It is
  * written in the language of the PRD, like everything the client reads.
  *
- * The register says what Aikido reports and what the project decided. It
- * rates nothing and leaves nothing out: a finding ignored with no reason
- * kept here is listed, and says where its reason is.
+ * The register says what the scanner — Aikido or Hackly — reports and what
+ * the project decided. It rates nothing and leaves nothing out: a finding
+ * ignored with no reason kept here is listed, and says where its reason is.
+ * The register names its scanner in `scanner` and its scale in
+ * `severities`; a register with neither is Aikido's, as before 5.1.
  */
 class AikidoRegisterWriter
 {
@@ -50,7 +52,8 @@ class AikidoRegisterWriter
     public function render(array $register): string
     {
         $lang = $this->language();
-        $t = static fn (string $key, array $replace = []): string => SecurityRegisterStrings::line($lang, $key, $replace);
+        $scanner = $this->scanner($register);
+        $t = static fn (string $key, array $replace = []): string => SecurityRegisterStrings::line($lang, $key, $replace + ['scanner' => $scanner === 'hackly' ? 'Hackly' : 'Aikido']);
         $repository = $register['repository'];
         $name = (string) ($repository['name'] ?? '');
 
@@ -61,7 +64,7 @@ class AikidoRegisterWriter
             $lines[] = '- **'.$t('branch').':** '.$this->cell((string) $repository['branch']);
         }
 
-        $lines[] = '- **'.$t('scanner').':** '.$t('scanner_value');
+        $lines[] = '- **'.$t('scanner').':** '.$t($scanner === 'hackly' ? 'scanner_value_hackly' : 'scanner_value');
         $lines[] = '- **'.$t('last_scan').':** '.$this->day($repository['last_scanned_at'] ?? null);
         $lines[] = '- **'.$t('generated').':** '.Carbon::parse($register['generated_at'])->format('Y-m-d H:i');
 
@@ -76,7 +79,7 @@ class AikidoRegisterWriter
         $lines[] = '| '.$t('severity').' | '.$t('open').' | '.$t('resolved').' | '.$t('ignored').' |';
         $lines[] = '| --- | ---: | ---: | ---: |';
 
-        foreach (AikidoService::SEVERITIES as $severity) {
+        foreach ($this->severities($register) as $severity) {
             $lines[] = '| '.$t('severity_'.$severity)
                 .' | '.$register['counts']['open'][$severity]
                 .' | '.$register['counts']['resolved'][$severity]
@@ -91,8 +94,9 @@ class AikidoRegisterWriter
             $t('none_open'),
             [$t('col_first_seen'), $t('col_decision')],
             $register['open'],
-            fn (array $entry): array => [$this->day($entry['first_detected_at'] ?? null), $this->decision($entry, $lang)],
-            $lang
+            fn (array $entry): array => [$this->day($entry['first_detected_at'] ?? null), $this->decision($entry, $lang, $scanner)],
+            $lang,
+            $scanner
         )];
 
         $lines = [...$lines, ...$this->section(
@@ -106,7 +110,8 @@ class AikidoRegisterWriter
                 $this->day($entry['closed_at'] ?? null),
                 ($entry['spec'] ?? null) !== null ? $t('resolved_spec', ['spec' => $entry['spec']]) : $t('resolved_scanner'),
             ],
-            $lang
+            $lang,
+            $scanner
         )];
 
         $lines = [...$lines, ...$this->section(
@@ -118,9 +123,10 @@ class AikidoRegisterWriter
             fn (array $entry): array => [
                 $this->day($entry['first_detected_at'] ?? null),
                 $this->day($entry['ignored_at'] ?? null),
-                $this->reason($entry, $lang),
+                $this->reason($entry, $lang, $scanner),
             ],
-            $lang
+            $lang,
+            $scanner
         )];
 
         $lines[] = '';
@@ -146,7 +152,7 @@ class AikidoRegisterWriter
             mkdir($directory, 0755, true);
         }
 
-        $path = $directory.DIRECTORY_SEPARATOR.'aikido-register.md';
+        $path = $directory.DIRECTORY_SEPARATOR.'security-register.md';
         AtomicFile::write($path, $this->render($register));
 
         return ['path' => $path, 'relative' => str_replace('\\', '/', $this->config->relativePath($path))];
@@ -161,9 +167,9 @@ class AikidoRegisterWriter
      * @param  callable(array<string, mixed>): list<string>  $cells
      * @return list<string>
      */
-    protected function section(string $heading, ?string $lead, string $none, array $columns, array $entries, callable $cells, string $lang): array
+    protected function section(string $heading, ?string $lead, string $none, array $columns, array $entries, callable $cells, string $lang, string $scanner = 'aikido'): array
     {
-        $t = static fn (string $key): string => SecurityRegisterStrings::line($lang, $key);
+        $t = static fn (string $key): string => SecurityRegisterStrings::line($lang, $key, ['scanner' => $scanner === 'hackly' ? 'Hackly' : 'Aikido']);
         $lines = ['', '## '.$heading.' ('.count($entries).')', ''];
 
         if ($entries === []) {
@@ -200,9 +206,9 @@ class AikidoRegisterWriter
     /**
      * @param  array<string, mixed>  $entry
      */
-    protected function decision(array $entry, string $lang): string
+    protected function decision(array $entry, string $lang, string $scanner = 'aikido'): string
     {
-        $t = static fn (string $key, array $replace = []): string => SecurityRegisterStrings::line($lang, $key, $replace);
+        $t = static fn (string $key, array $replace = []): string => SecurityRegisterStrings::line($lang, $key, $replace + ['scanner' => $scanner === 'hackly' ? 'Hackly' : 'Aikido']);
 
         if (($entry['status'] ?? '') === 'snoozed') {
             return ($entry['snoozed_until'] ?? null) !== null
@@ -221,7 +227,7 @@ class AikidoRegisterWriter
      *
      * @param  array<string, mixed>  $entry
      */
-    protected function reason(array $entry, string $lang): string
+    protected function reason(array $entry, string $lang, string $scanner = 'aikido'): string
     {
         $reason = trim((string) ($entry['reason'] ?? ''));
 
@@ -234,7 +240,26 @@ class AikidoRegisterWriter
             'rule' => 'reason_rule',
             'auto' => 'reason_auto',
             default => 'reason_unknown',
-        });
+        }, ['scanner' => $scanner === 'hackly' ? 'Hackly' : 'Aikido']);
+    }
+
+    /**
+     * @param  array<string, mixed>  $register
+     */
+    protected function scanner(array $register): string
+    {
+        return ($register['scanner'] ?? 'aikido') === 'hackly' ? 'hackly' : 'aikido';
+    }
+
+    /**
+     * @param  array<string, mixed>  $register
+     * @return list<string>
+     */
+    protected function severities(array $register): array
+    {
+        $severities = $register['severities'] ?? null;
+
+        return is_array($severities) && $severities !== [] ? array_values(array_map('strval', $severities)) : AikidoService::SEVERITIES;
     }
 
     protected function day(?string $iso): string

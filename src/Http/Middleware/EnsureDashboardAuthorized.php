@@ -6,76 +6,120 @@ namespace Larapilot\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Larapilot\Services\ConfigService;
+use Larapilot\Services\Auth\AccessPolicy;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\DashboardAuthService;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Optional HTTP Basic Auth for the `/larapilot` dashboard UI.
+ * The door of the `/larapilot` dashboard, of the mockups, and of their
+ * assets. What it asks follows `APP_ENV` (see `AccessPolicy`):
  *
- * Disabled by default: when the `dashboard_auth` project setting is OFF this
- * middleware is a pass-through and the dashboard behaves exactly as before.
- * When ON, every dashboard request must carry valid Basic Auth credentials
- * from `.larapilot/auth.yaml`. This gate is never wired onto the JSON API
- * (`/larapilot/api/*`, guarded by `LARAPILOT_API_TOKEN`) or the MCP server.
+ *   - open (local, testing): nothing — whoever reaches it acts as an admin;
+ *   - sign-in (any other environment): a user of `.larapilot/auth.yaml`,
+ *     and their authenticator when they have one;
+ *   - production, with `LARAPILOT_FORCE_IN_PROD=true`: a user and an
+ *     authenticator, enrolled on the first sign-in if need be.
  *
- * With the setting ON and no user created yet the dashboard fails closed
- * (HTTP 503) on a page that explains the setting and how to add the first user.
+ * Once in, the role of the user decides which pages answer: a page of
+ * another role answers 403. With a sign-in asked and no user created yet
+ * the dashboard fails closed (503) on a page that says how to create one.
+ * The JSON API has its own door (`EnsureApiAuthorized`).
  */
 class EnsureDashboardAuthorized
 {
     public function __construct(
-        protected ConfigService $config,
-        protected DashboardAuthService $auth,
+        protected DashboardSession $session,
+        protected DashboardAuthService $users,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $this->config->dashboardAuthEnabled()) {
+        $policy = $this->session->policy();
+
+        if ($policy->isOpen()) {
             return $next($request);
         }
 
-        if (! $this->auth->hasUsers()) {
+        if (! $policy->requiresSignIn()) {
+            abort(404);
+        }
+
+        if (! $this->users->hasUsers()) {
             return $this->firstUserMissing($request);
         }
 
-        $realm = str_replace('"', '', (string) config('larapilot.dashboard_route.auth.realm', 'Larapilot'));
-        $maxAttempts = max(0, (int) config('larapilot.dashboard_route.auth.max_attempts', 30));
-        $key = 'larapilot-dashboard-auth:'.sha1((string) $request->ip());
+        $user = $this->session->user();
 
-        if ($maxAttempts > 0 && RateLimiter::tooManyAttempts($key, $maxAttempts)) {
-            abort(429, 'Too many failed sign-in attempts. Try again in '.RateLimiter::availableIn($key).'s.');
-        }
+        if ($user === null) {
+            $pending = $this->session->pendingUser();
 
-        if ($this->auth->validate($request->getUser(), $request->getPassword())) {
-            if ($maxAttempts > 0) {
-                RateLimiter::clear($key);
+            if ($pending !== null) {
+                return $pending['totp'] === null
+                    ? $this->sendToDoor($request, 'larapilot.auth.two-factor.setup', 'Production asks every user for an authenticator: set yours up to go on.')
+                    : $this->sendToDoor($request, 'larapilot.auth.two-factor', 'Enter the code of your authenticator to go on.');
             }
 
-            return $next($request);
+            return $this->sendToDoor($request, 'larapilot.auth.login', 'Sign in to open the Larapilot dashboard.');
         }
 
-        if ($maxAttempts > 0) {
-            RateLimiter::hit($key, 60);
+        if ($this->session->needsTotpSetup()) {
+            return $this->sendToDoor($request, 'larapilot.auth.two-factor.setup', 'Production asks every user for an authenticator: set yours up to go on.');
         }
 
-        return response('Authentication required.', 401, [
-            'WWW-Authenticate' => sprintf('Basic realm="%s", charset="UTF-8"', $realm),
-        ]);
+        $area = $policy->areaOfRoute($request->route()?->getName()) ?? '';
+
+        if (! $policy->allows($user['role'], $area)) {
+            return $this->forbidden($request, $user['role'], $area);
+        }
+
+        return $next($request);
     }
 
     /**
-     * The setting is ON and nobody can sign in yet: the dashboard stays closed
-     * and says what opens it, instead of failing with a bare server error.
+     * Nobody is signed in: a page goes to the sign-in — and comes back here
+     * after it — and a client that asked for JSON is told so.
+     */
+    protected function sendToDoor(Request $request, string $route, string $message): Response
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], 401);
+        }
+
+        if ($request->isMethod('GET')) {
+            return redirect()->guest(route($route));
+        }
+
+        return redirect()->route($route);
+    }
+
+    /**
+     * A page the role of the user does not open.
+     */
+    protected function forbidden(Request $request, string $role, string $area): Response
+    {
+        $message = 'This page is not for the '.AccessPolicy::roleLabel($role).' role.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], 403);
+        }
+
+        return response()->view('larapilot::dashboard.forbidden', [
+            'role' => $role,
+            'area' => $area,
+        ], 403);
+    }
+
+    /**
+     * A sign-in is asked and nobody can give one yet: the dashboard stays
+     * closed and says what opens it, instead of failing with a bare error.
      */
     protected function firstUserMissing(Request $request): Response
     {
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'The Larapilot dashboard is protected by a sign-in (the dashboard_auth project setting is ON) and no user has been created yet. '
-                    .'Create the first one with: php artisan larapilot:dashboard-user add <username> — '
-                    .'or turn the sign-in off with: php artisan larapilot:settings-set --dashboard-auth=NO',
+                'message' => 'The Larapilot dashboard asks for a sign-in in this environment (APP_ENV='.app()->environment().') and no user has been created yet. '
+                    .'Create the first one with: php artisan larapilot:dashboard-user add <username> --role=admin',
             ], 503);
         }
 

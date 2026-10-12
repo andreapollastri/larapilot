@@ -17,6 +17,7 @@ use Larapilot\Console\Commands\AikidoRegisterCommand;
 use Larapilot\Console\Commands\AikidoReposCommand;
 use Larapilot\Console\Commands\AikidoScanCommand;
 use Larapilot\Console\Commands\AikidoStatusCommand;
+use Larapilot\Console\Commands\ApiTokenCommand;
 use Larapilot\Console\Commands\AzureDevopsStatusCommand;
 use Larapilot\Console\Commands\BackstageExportCommand;
 use Larapilot\Console\Commands\BitbucketStatusCommand;
@@ -67,10 +68,20 @@ use Larapilot\Console\Commands\ReleaseListCommand;
 use Larapilot\Console\Commands\ReleaseSetCommand;
 use Larapilot\Console\Commands\ReleaseShipCommand;
 use Larapilot\Console\Commands\ReleaseSyncCommand;
+use Larapilot\Console\Commands\RoadmapSetCommand;
+use Larapilot\Console\Commands\RoadmapShowCommand;
 use Larapilot\Console\Commands\SbomCommand;
 use Larapilot\Console\Commands\ScheduleApplyCommand;
 use Larapilot\Console\Commands\ScheduleSetCommand;
 use Larapilot\Console\Commands\ScheduleShowCommand;
+use Larapilot\Console\Commands\SecurityIssuesCommand;
+use Larapilot\Console\Commands\SecurityLinkCommand;
+use Larapilot\Console\Commands\SecurityPlanCommand;
+use Larapilot\Console\Commands\SecurityPushCommand;
+use Larapilot\Console\Commands\SecurityRegisterCommand;
+use Larapilot\Console\Commands\SecurityReposCommand;
+use Larapilot\Console\Commands\SecurityScanCommand;
+use Larapilot\Console\Commands\SecurityStatusCommand;
 use Larapilot\Console\Commands\SettingsSetCommand;
 use Larapilot\Console\Commands\SpecAddCommand;
 use Larapilot\Console\Commands\SpecApproveCommand;
@@ -82,6 +93,7 @@ use Larapilot\Console\Commands\SpecPlanCommand;
 use Larapilot\Console\Commands\SpecRequestChangesCommand;
 use Larapilot\Console\Commands\SpecReviewCommand;
 use Larapilot\Console\Commands\SpecShowCommand;
+use Larapilot\Console\Commands\SpecSprintCommand;
 use Larapilot\Console\Commands\SpecStartCommand;
 use Larapilot\Console\Commands\StackCommand;
 use Larapilot\Console\Commands\TaskDoneCommand;
@@ -109,9 +121,13 @@ use Larapilot\Services\AikidoRegisterWriter;
 use Larapilot\Services\AikidoService;
 use Larapilot\Services\ApiAuditService;
 use Larapilot\Services\ApiService;
+use Larapilot\Services\Auth\AccessPolicy;
+use Larapilot\Services\Auth\AuthAuditService;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\AzureDevopsService;
 use Larapilot\Services\BackstageService;
 use Larapilot\Services\BitbucketService;
+use Larapilot\Services\BoardViewService;
 use Larapilot\Services\Boogle\BoogleClient;
 use Larapilot\Services\Boogle\BoogleLedger;
 use Larapilot\Services\BoogleService;
@@ -121,8 +137,10 @@ use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\ContextService;
 use Larapilot\Services\CustomSkillService;
+use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
+use Larapilot\Services\DatabaseAnonymizer;
 use Larapilot\Services\DecisionService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\EconomicsMarketService;
@@ -131,12 +149,16 @@ use Larapilot\Services\EconomicsService;
 use Larapilot\Services\Errors\ErrorDataHelper;
 use Larapilot\Services\Errors\ErrorTrackerManager;
 use Larapilot\Services\FileManagerService;
+use Larapilot\Services\ForecastService;
 use Larapilot\Services\FrontendBriefService;
 use Larapilot\Services\FrontendService;
 use Larapilot\Services\GitGraphService;
 use Larapilot\Services\GithubService;
 use Larapilot\Services\GitlabService;
 use Larapilot\Services\GitService;
+use Larapilot\Services\Hackly\HacklyClient;
+use Larapilot\Services\Hackly\HacklyLedger;
+use Larapilot\Services\HacklyService;
 use Larapilot\Services\InternalFeedbackService;
 use Larapilot\Services\Laravel\DumpRecorder;
 use Larapilot\Services\Laravel\MailRecorder;
@@ -151,8 +173,11 @@ use Larapilot\Services\PlanService;
 use Larapilot\Services\PrdService;
 use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
+use Larapilot\Services\RoadmapService;
+use Larapilot\Services\SecurityService;
 use Larapilot\Services\SkillLibraryService;
 use Larapilot\Services\SpecService;
+use Larapilot\Services\SprintService;
 use Larapilot\Services\Tracker\TrackerLinkStore;
 use Larapilot\Services\Tracker\TrackerManager;
 use Larapilot\Services\TrackerService;
@@ -164,7 +189,7 @@ use Laravel\Mcp\Facades\Mcp;
 
 class LarapilotServiceProvider extends ServiceProvider
 {
-    public const VERSION = '5.0.4';
+    public const VERSION = '5.1.0';
 
     public function register(): void
     {
@@ -192,6 +217,10 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(AikidoLedger::class);
         $this->app->singleton(AikidoService::class);
         $this->app->singleton(AikidoRegisterWriter::class);
+        $this->app->singleton(HacklyClient::class);
+        $this->app->singleton(HacklyLedger::class);
+        $this->app->singleton(HacklyService::class);
+        $this->app->singleton(SecurityService::class);
         $this->app->singleton(BoogleClient::class);
         $this->app->singleton(BoogleLedger::class);
         $this->app->singleton(ErrorDataHelper::class);
@@ -211,6 +240,10 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(DashboardExportService::class);
         $this->app->singleton(ApiService::class);
         $this->app->singleton(ApiAuditService::class);
+        $this->app->singleton(DashboardAuthService::class);
+        $this->app->singleton(AccessPolicy::class);
+        $this->app->singleton(AuthAuditService::class);
+        $this->app->singleton(DashboardSession::class);
         $this->app->singleton(MetricsService::class);
         $this->app->singleton(OpenApiService::class);
         $this->app->singleton(ValidationService::class);
@@ -230,6 +263,13 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(EconomicsMarketService::class);
         $this->app->singleton(EconomicsQuoteWriter::class);
         $this->app->singleton(EconomicsService::class);
+        $this->app->singleton(ForecastService::class);
+        $this->app->singleton(SprintService::class);
+        $this->app->singleton(BoardViewService::class);
+        $this->app->singleton(RoadmapService::class);
+        // One map for the request: the viewer and the dump share it, and the
+        // next request starts clean.
+        $this->app->scoped(DatabaseAnonymizer::class);
     }
 
     public function boot(): void
@@ -252,6 +292,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 ContextCommand::class,
                 SettingsSetCommand::class,
                 DashboardUserCommand::class,
+                ApiTokenCommand::class,
                 HookListCommand::class,
                 HookRunCommand::class,
                 NotifyCommand::class,
@@ -260,6 +301,14 @@ class LarapilotServiceProvider extends ServiceProvider
                 BitbucketStatusCommand::class,
                 AzureDevopsStatusCommand::class,
                 AikidoStatusCommand::class,
+                SecurityStatusCommand::class,
+                SecurityIssuesCommand::class,
+                SecurityPlanCommand::class,
+                SecurityLinkCommand::class,
+                SecurityScanCommand::class,
+                SecurityReposCommand::class,
+                SecurityPushCommand::class,
+                SecurityRegisterCommand::class,
                 AikidoIssuesCommand::class,
                 AikidoPlanCommand::class,
                 AikidoLinkCommand::class,
@@ -285,6 +334,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecListCommand::class,
                 SpecAddCommand::class,
                 SpecShowCommand::class,
+                SpecSprintCommand::class,
                 SpecNextCommand::class,
                 SpecPlanCommand::class,
                 SpecStartCommand::class,
@@ -312,6 +362,8 @@ class LarapilotServiceProvider extends ServiceProvider
                 ReleaseFeatureCommand::class,
                 ReleaseSyncCommand::class,
                 ReleaseShipCommand::class,
+                RoadmapShowCommand::class,
+                RoadmapSetCommand::class,
                 CustomSkillListCommand::class,
                 CustomSkillAddCommand::class,
                 EconomicsMarketWriteCommand::class,

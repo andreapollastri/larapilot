@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · Kollektiv Studio backoffice</title>
+<meta name="description" content="Backoffice overview: projects in production, open invoices, invoiced vs paid chart, room bookings for the week, team load and activity.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#main">Skip to content</a>
+<svg class="bn-defs" aria-hidden="true" focusable="false"><defs><pattern id="bn-dk1" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" class="bn-ph-k"/></pattern><pattern id="bn-dk2" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.8" class="bn-ph-k"/></pattern><pattern id="bn-dk3" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2.5" class="bn-ph-k"/></pattern><pattern id="bn-ds1" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.1" class="bn-ph-s"/></pattern><pattern id="bn-ds2" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" class="bn-ph-s"/></pattern><pattern id="bn-dw1" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" class="bn-ph-w"/></pattern><pattern id="bn-dw2" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.9" class="bn-ph-w"/></pattern><pattern id="bn-lk" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.6" height="6" class="bn-ph-k"/></pattern><pattern id="bn-ls" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="3" height="8" class="bn-ph-s"/></pattern><pattern id="bn-win" width="22" height="18" patternUnits="userSpaceOnUse"><rect x="5" y="5" width="12" height="8" class="bn-ph-k"/></pattern><pattern id="bn-tile" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M14 0H0V14" class="bn-ph-line-w"/></pattern><pattern id="bn-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.5" height="6" class="bn-ch-hatch"/></pattern></defs></svg>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item is-active" aria-current="page" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<p class="bn-pagehead__eyebrow"><span class="bn-micro bn-micro--ink">01 — Overview</span><span class="bn-micro">Week 42 · 12–18 Oct 2026</span><span class="bn-tag bn-tag--signal"><span class="bn-tag__dot"></span>Live</span></p>
+<div><h1 class="bn-h1">Overview</h1><p class="bn-pagehead__lede">14 projects in production, 3 invoices overdue, and Halle A is booked every night this week.</p></div>
+<div class="bn-pagehead__actions"><a class="bn-btn" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg> Export week</a><a class="bn-btn bn-btn--primary" href="modal.html"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></svg> New booking</a></div>
+</header>
+
+<div class="bn-grid">
+<section class="bn-cell bn-span-3" aria-labelledby="k1"><div class="bn-stat"><p class="bn-stat__label"><span id="k1" class="bn-micro bn-micro--ink">Projects in production</span><span class="bn-idx">01</span></p><p class="bn-stat__value">14</p><p class="bn-stat__foot"><span class="bn-delta"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> +2</span><span>vs. September · 5 in review</span></p></div></section>
+<section class="bn-cell bn-span-3" aria-labelledby="k2"><div class="bn-stat"><p class="bn-stat__label"><span id="k2" class="bn-micro bn-micro--ink">Outstanding</span><span class="bn-idx">02</span></p><p class="bn-stat__value"><span class="bn-stat__unit">€</span>48,320</p><p class="bn-stat__foot"><span class="bn-tag bn-tag--alarm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> 3 overdue</span><span>7 invoices open</span></p></div></section>
+<section class="bn-cell bn-span-3" aria-labelledby="k3"><div class="bn-stat"><p class="bn-stat__label"><span id="k3" class="bn-micro bn-micro--ink">Paid · Q3 2026</span><span class="bn-idx">03</span></p><p class="bn-stat__value"><span class="bn-stat__unit">€</span>167,160</p><p class="bn-stat__foot"><span class="bn-delta"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> 12%</span><span>vs. Q3 2025</span></p></div></section>
+<section class="bn-cell bn-span-3 bn-sig" aria-labelledby="k4"><div class="bn-stat"><p class="bn-stat__label"><span id="k4" class="bn-micro bn-micro--ink">Tiefgarage Night 07 · Fr</span><span class="bn-idx">04</span></p><p class="bn-stat__value">412<span class="bn-stat__of">/450</span></p><div class="bn-meter bn-meter--thick"><span class="bn-meter__fill bn-w-90"></span></div><p class="bn-stat__foot"><span>Tickets sold · 38 left · doors 23:00</span></p></div></section>
+
+<section class="bn-cell bn-span-8" aria-labelledby="c1">
+<div class="bn-cell__head"><h2 id="c1" class="bn-cell__title"><span class="bn-idx">05</span>Invoiced vs. paid, Apr–Oct 2026 (€ thousands)</h2><a class="bn-cell__link" href="#">Invoices <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<div class="bn-chart-wrap"><svg class="bn-chart" viewBox="0 0 640 250" role="img" aria-label="Bar chart. Invoiced per month in thousand euro: April 58.2, May 71.4, June 49.8, July 83.6 — all paid; August 42.1 with 4.8 open; September 66.9 with 20.7 open; October to date 31.4 with 22.9 open."><line x1="48" y1="220.0" x2="632" y2="220.0" class="bn-ch-base"/><text x="38" y="224.0" text-anchor="end" class="bn-ch-axis">0k</text><line x1="48" y1="154.7" x2="632" y2="154.7" class="bn-ch-grid"/><text x="38" y="158.7" text-anchor="end" class="bn-ch-axis">30k</text><line x1="48" y1="89.3" x2="632" y2="89.3" class="bn-ch-grid"/><text x="38" y="93.3" text-anchor="end" class="bn-ch-axis">60k</text><line x1="48" y1="24.0" x2="632" y2="24.0" class="bn-ch-grid"/><text x="38" y="28.0" text-anchor="end" class="bn-ch-axis">90k</text><rect x="69.7" y="93.3" width="40" height="126.7" class="bn-ch-bar"/><text x="89.7" y="85.3" text-anchor="middle" class="bn-ch-val">58.2</text><text x="89.7" y="240" text-anchor="middle" class="bn-ch-axis">APR</text><rect x="153.1" y="64.5" width="40" height="155.5" class="bn-ch-bar"/><text x="173.1" y="56.5" text-anchor="middle" class="bn-ch-val">71.4</text><text x="173.1" y="240" text-anchor="middle" class="bn-ch-axis">MAY</text><rect x="236.6" y="111.5" width="40" height="108.5" class="bn-ch-bar"/><text x="256.6" y="103.5" text-anchor="middle" class="bn-ch-val">49.8</text><text x="256.6" y="240" text-anchor="middle" class="bn-ch-axis">JUN</text><rect x="320.0" y="37.9" width="40" height="182.1" class="bn-ch-bar"/><text x="340.0" y="29.9" text-anchor="middle" class="bn-ch-val">83.6</text><text x="340.0" y="240" text-anchor="middle" class="bn-ch-axis">JUL</text><rect x="403.4" y="138.7" width="40" height="81.3" class="bn-ch-bar"/><rect x="403.4" y="128.3" width="40" height="10.4" class="bn-ch-bar bn-ch-bar--open"/><text x="423.4" y="120.3" text-anchor="middle" class="bn-ch-val">42.1</text><text x="423.4" y="240" text-anchor="middle" class="bn-ch-axis">AUG</text><rect x="486.9" y="119.3" width="40" height="100.7" class="bn-ch-bar"/><rect x="486.9" y="74.3" width="40" height="45.0" class="bn-ch-bar bn-ch-bar--open"/><text x="506.9" y="66.3" text-anchor="middle" class="bn-ch-val">66.9</text><text x="506.9" y="240" text-anchor="middle" class="bn-ch-axis">SEP</text><rect x="570.3" y="201.4" width="40" height="18.6" class="bn-ch-bar bn-ch-bar--now"/><rect x="570.3" y="151.6" width="40" height="49.8" class="bn-ch-bar bn-ch-bar--open"/><text x="590.3" y="143.6" text-anchor="middle" class="bn-ch-val">31.4</text><text x="590.3" y="240" text-anchor="middle" class="bn-ch-axis bn-ch-axis--now">OCT</text></svg></div>
+<p class="bn-legend"><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--solid"></span>Paid</span><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--hatch"></span>Open</span><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--signal"></span>Paid this month, to 12.10</span></p>
+</section>
+
+<section class="bn-cell bn-span-4" aria-labelledby="c2">
+<div class="bn-cell__head"><h2 id="c2" class="bn-cell__title"><span class="bn-idx">06</span>Open invoices</h2><span class="bn-micro">7 · €48,320</span></div>
+<ul class="bn-list">
+<li class="bn-list__row"><span class="bn-list__main"><span class="bn-list__title">Kaffeerösterei Sorte</span><span class="bn-list__sub">KS-2026-114 · due 16.09</span></span><span class="bn-list__end"><span class="bn-mono">€4,760</span><span class="bn-tag bn-tag--alarm">26 d late</span></span></li>
+<li class="bn-list__row"><span class="bn-list__main"><span class="bn-list__title">Tiefgarage Records</span><span class="bn-list__sub">KS-2026-118 · due 30.09</span></span><span class="bn-list__end"><span class="bn-mono">€6,400</span><span class="bn-tag bn-tag--alarm">12 d late</span></span></li>
+<li class="bn-list__row"><span class="bn-list__main"><span class="bn-list__title">Galerie Nullpunkt</span><span class="bn-list__sub">KS-2026-120 · due 08.10</span></span><span class="bn-list__end"><span class="bn-mono">€2,880</span><span class="bn-tag bn-tag--alarm">4 d late</span></span></li>
+<li class="bn-list__row"><span class="bn-list__main"><span class="bn-list__title">Verlag Kante</span><span class="bn-list__sub">KS-2026-121 · due 20.10</span></span><span class="bn-list__end"><span class="bn-mono">€11,400</span><span class="bn-tag">Sent</span></span></li>
+<li class="bn-list__row"><span class="bn-list__main"><span class="bn-list__title">Hallenbad Ost</span><span class="bn-list__sub">KS-2026-124 · due 28.10</span></span><span class="bn-list__end"><span class="bn-mono">€9,750</span><span class="bn-tag">Sent</span></span></li>
+</ul>
+<a class="bn-cell__link bn-mt-auto" href="#">2 more — Plattform Beton, Kiez Kino <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</section>
+
+<section class="bn-cell bn-span-12" aria-labelledby="c3">
+<div class="bn-cell__head"><h2 id="c3" class="bn-cell__title"><span class="bn-idx">07</span>Rooms · week 42</h2><p class="bn-legend"><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--solid"></span>Confirmed</span><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--signal"></span>Public event</span><span class="bn-legend__item"><span class="bn-legend__key bn-legend__key--hatch"></span>Option</span></p></div>
+<div class="bn-tl-wrap"><div class="bn-tl" role="table" aria-label="Room bookings, Monday 12 to Sunday 18 October">
+<div class="bn-tl__head" role="row"><span class="bn-tl__corner bn-micro" role="columnheader">Room</span><span class="bn-tl__day is-today" role="columnheader"><strong>12</strong>Mo<span class="visually-hidden">, today</span></span><span class="bn-tl__day" role="columnheader"><strong>13</strong>Tu</span><span class="bn-tl__day" role="columnheader"><strong>14</strong>We</span><span class="bn-tl__day" role="columnheader"><strong>15</strong>Th</span><span class="bn-tl__day" role="columnheader"><strong>16</strong>Fr</span><span class="bn-tl__day" role="columnheader"><strong>17</strong>Sa</span><span class="bn-tl__day" role="columnheader"><strong>18</strong>Su</span></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Halle A</strong><span class="bn-micro">450 standing</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-1 bn-len-2" role="cell"><strong>Option: Spree Lichtspiele tests</strong><span class="bn-tl__meta">Projection · 10–22</span></p><p class="bn-tl__block bn-from-3 bn-len-1" role="cell"><strong>Kiez Kino 10 yrs</strong><span class="bn-tl__meta">Private · 19–02</span></p><p class="bn-tl__block bn-from-4 bn-len-1" role="cell"><strong>Tanzhaus rehearsal</strong><span class="bn-tl__meta">10–18</span></p><p class="bn-tl__block bn-tl__block--event bn-from-5 bn-len-2" role="cell"><strong>Tiefgarage Night 07</strong><span class="bn-tl__meta">Fr 23:00 → Sa 10:00 · 412/450</span></p><p class="bn-tl__block bn-tl__block--setup bn-from-7 bn-len-1" role="cell"><strong>Get-out</strong><span class="bn-tl__meta">Crew · 12–18</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Galerie</strong><span class="bn-micro">180 guests</span></p><p class="bn-tl__block bn-tl__block--event bn-from-2 bn-len-6" role="cell"><strong>Concrete Utopias — exhibition</strong><span class="bn-tl__meta">Open Tu–Su 12–20 · until 08.11</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Studio 1</strong><span class="bn-micro">Photo, 60 m²</span></p><p class="bn-tl__block bn-from-1 bn-len-2" role="cell"><strong>Shoot: Tiefgarage sleeves</strong><span class="bn-tl__meta">P-036 · Aiko B.</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-4 bn-len-1" role="cell"><strong>Option: Kante portraits</strong><span class="bn-tl__meta">P-029</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Studio 2</strong><span class="bn-micro">40 seated</span></p><p class="bn-tl__block bn-tl__block--event bn-from-1 bn-len-1" role="cell"><strong>Riso open lab</strong><span class="bn-tl__meta">18:00 · 14/16</span></p><p class="bn-tl__block bn-tl__block--hold bn-from-4 bn-len-2" role="cell"><strong>Option: Nachtbus pitch day</strong><span class="bn-tl__meta">Hold until 13.10</span></p></div>
+<div class="bn-tl__row" role="row"><p class="bn-tl__room" role="rowheader"><strong>Dachterrasse</strong><span class="bn-micro">Closes 01.11</span></p><p class="bn-tl__block bn-from-4 bn-len-1" role="cell"><strong>Verlag Kante launch</strong><span class="bn-tl__meta">Private · 18–23</span></p><p class="bn-tl__block bn-tl__block--event bn-from-6 bn-len-1" role="cell"><strong>Type after the Wall</strong><span class="bn-tl__meta">Talk · 19:30</span></p></div>
+</div></div>
+</section>
+
+<section class="bn-cell bn-span-6" aria-labelledby="c4">
+<div class="bn-cell__head"><h2 id="c4" class="bn-cell__title"><span class="bn-idx">08</span>In production · next deadlines</h2><a class="bn-cell__link" href="resource-list.html">All 14 <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
+<div class="bn-table-wrap"><table class="bn-table bn-table--cell bn-table--compact">
+<thead><tr><th scope="col">Project</th><th scope="col">Lead</th><th scope="col">Phase</th><th scope="col" class="bn-td-num">Due</th></tr></thead>
+<tbody>
+<tr><td><a class="bn-td-title" href="resource-form.html">Tiefgarage Records</a><span class="bn-td-sub">Label identity &amp; sleeves</span></td><td><span class="bn-av bn-av--sm">AB</span></td><td><span class="bn-tag bn-tag--signal">Review</span></td><td class="bn-td-num bn-mono">23.10</td></tr>
+<tr><td><a class="bn-td-title" href="resource-form.html">Galerie Nullpunkt</a><span class="bn-td-sub">Catalogue “Grauzone”</span></td><td><span class="bn-av bn-av--sm bn-av--concrete">TW</span></td><td><span class="bn-tag"><span class="bn-tag__ring"></span>Briefing</span></td><td class="bn-td-num bn-mono">06.11</td></tr>
+<tr><td><a class="bn-td-title" href="resource-form.html">Hallenbad Ost</a><span class="bn-td-sub">Reopening campaign</span></td><td><span class="bn-av bn-av--sm bn-av--outline">JA</span></td><td><span class="bn-tag bn-tag--signal">Review</span></td><td class="bn-td-num bn-mono">13.11</td></tr>
+<tr><td><a class="bn-td-title" href="resource-form.html">Spree Lichtspiele</a><span class="bn-td-sub">Festival identity 2027</span></td><td><span class="bn-av bn-av--sm bn-av--signal">LD</span></td><td><span class="bn-tag bn-tag--solid"><span class="bn-tag__dot"></span>Production</span></td><td class="bn-td-num bn-mono">30.11</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="bn-cell bn-span-3" aria-labelledby="c5">
+<div class="bn-cell__head"><h2 id="c5" class="bn-cell__title"><span class="bn-idx">09</span>Team load</h2><span class="bn-micro">of 40 h</span></div>
+<div>
+<div class="bn-load"><span class="bn-av bn-av--sm bn-av--signal">LD</span><span class="bn-load__name">Leyla Demir</span><span class="bn-load__val bn-load__val--alarm">112%</span><div class="bn-meter bn-meter--over"><span class="bn-meter__fill bn-w-100"></span></div></div>
+<div class="bn-load"><span class="bn-av bn-av--sm">AB</span><span class="bn-load__name">Aiko Brandt</span><span class="bn-load__val bn-load__val--alarm">104%</span><div class="bn-meter bn-meter--over"><span class="bn-meter__fill bn-w-100"></span></div></div>
+<div class="bn-load"><span class="bn-av bn-av--sm bn-av--outline">JA</span><span class="bn-load__name">Jonas Albrecht</span><span class="bn-load__val">96%</span><div class="bn-meter"><span class="bn-meter__fill bn-w-95"></span></div></div>
+<div class="bn-load"><span class="bn-av bn-av--sm bn-av--concrete">SM</span><span class="bn-load__name">Samuel Mensah</span><span class="bn-load__val">90%</span><div class="bn-meter"><span class="bn-meter__fill bn-w-90"></span></div></div>
+<div class="bn-load"><span class="bn-av bn-av--sm bn-av--concrete">TW</span><span class="bn-load__name">Tomasz Wiśniewski</span><span class="bn-load__val">88%</span><div class="bn-meter"><span class="bn-meter__fill bn-w-85"></span></div></div>
+<div class="bn-load"><span class="bn-av bn-av--sm bn-av--signal">MO</span><span class="bn-load__name">Mira Okafor</span><span class="bn-load__val">72%</span><div class="bn-meter"><span class="bn-meter__fill bn-w-70"></span></div></div>
+</div>
+</section>
+
+<section class="bn-cell bn-span-3" aria-labelledby="c6">
+<div class="bn-cell__head"><h2 id="c6" class="bn-cell__title"><span class="bn-idx">10</span>Activity</h2><span class="bn-micro">Today</span></div>
+<ol class="bn-log">
+<li class="bn-log__item is-signal"><span class="bn-log__time">14:21</span><p class="bn-log__text"><strong>Leyla D.</strong> moved P-036 Tiefgarage Records to Review</p></li>
+<li class="bn-log__item"><span class="bn-log__time">13:58</span><p class="bn-log__text"><strong>Felix H.</strong> sent KS-2026-126 to Kiez Kino, €4,800</p></li>
+<li class="bn-log__item"><span class="bn-log__time">12:40</span><p class="bn-log__text"><strong>Samuel M.</strong> confirmed Halle A for Tanzhaus, Th 15.10</p></li>
+<li class="bn-log__item"><span class="bn-log__time">11:12</span><p class="bn-log__text">Payment in: KS-2026-117 Tanzhaus Spreeufer, €8,520</p></li>
+<li class="bn-log__item"><span class="bn-log__time">10:05</span><p class="bn-log__text"><strong>Ines V.</strong> published Tiefgarage Night 08</p></li>
+</ol>
+</section>
+</div>
+<footer class="bn-mainfoot"><span>Kollektiv Studio backoffice · v4.12</span><span>Last sync 14:32 · Europe/Berlin</span></footer>
+</main>
+</div>
+</body>
+</html>

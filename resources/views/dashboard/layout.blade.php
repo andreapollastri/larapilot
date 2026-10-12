@@ -1,10 +1,17 @@
 @php
+    // Who is at the keyboard: the signed-in user, or — on a developer's own
+    // machine — an implicit admin. The menu shows the pages of their role.
+    $access = app(\Larapilot\Services\Auth\DashboardSession::class);
+    $accessPolicy = $access->policy();
+    $actor = $access->actor();
+
     $navigation = [
         'Workflow' => [
             ['route' => 'larapilot.dashboard.index', 'active' => ['larapilot.dashboard.index', 'larapilot.dashboard.spec'], 'label' => 'Board', 'icon' => 'board'],
             ['route' => 'larapilot.dashboard.prd', 'active' => ['larapilot.dashboard.prd'], 'label' => 'PRD', 'icon' => 'prd'],
             ['route' => 'larapilot.dashboard.inception', 'active' => ['larapilot.dashboard.inception'], 'label' => 'Inception', 'icon' => 'inception'],
             ['route' => 'larapilot.dashboard.plan', 'active' => ['larapilot.dashboard.plan'], 'label' => 'Plan', 'icon' => 'plan'],
+            ['route' => 'larapilot.dashboard.roadmap', 'active' => ['larapilot.dashboard.roadmap*'], 'label' => 'Roadmap', 'icon' => 'roadmap', 'area' => 'roadmap'],
             ['route' => 'larapilot.dashboard.design', 'active' => ['larapilot.dashboard.design*'], 'label' => 'Design', 'icon' => 'design'],
         ],
         'Workspace' => [
@@ -18,6 +25,7 @@
             ['route' => 'larapilot.dashboard.git', 'active' => ['larapilot.dashboard.git'], 'label' => 'Git', 'icon' => 'git'],
         ],
         'Insights' => [
+            ['route' => 'larapilot.dashboard.forecast', 'active' => ['larapilot.dashboard.forecast*'], 'label' => 'Forecast', 'icon' => 'forecast', 'area' => 'forecast'],
             ['route' => 'larapilot.dashboard.usage', 'active' => ['larapilot.dashboard.usage'], 'label' => 'Usage', 'icon' => 'usage'],
             ['route' => 'larapilot.dashboard.economics', 'active' => ['larapilot.dashboard.economics*'], 'label' => 'Economics', 'icon' => 'economics'],
             ['route' => 'larapilot.dashboard.security', 'active' => ['larapilot.dashboard.security*'], 'label' => 'Security', 'icon' => 'shield'],
@@ -28,6 +36,11 @@
             ['route' => 'larapilot.api.docs', 'active' => ['larapilot.api.*'], 'label' => 'API', 'icon' => 'api'],
             ['route' => 'larapilot.dashboard.docs', 'active' => ['larapilot.dashboard.docs'], 'label' => 'Docs', 'icon' => 'docs'],
         ],
+        'Access' => [
+            ['route' => 'larapilot.dashboard.users', 'active' => ['larapilot.dashboard.users*'], 'label' => 'Users', 'icon' => 'users', 'area' => 'users'],
+            ['route' => 'larapilot.dashboard.api-token', 'active' => ['larapilot.dashboard.api-token*'], 'label' => 'API token', 'icon' => 'key', 'area' => 'api-token'],
+            ['route' => 'larapilot.dashboard.anonymization', 'active' => ['larapilot.dashboard.anonymization*'], 'label' => 'Anonymization', 'icon' => 'mask', 'area' => 'anonymization'],
+        ],
     ];
 @endphp
 <!DOCTYPE html>
@@ -37,7 +50,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f4f6f7" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)">
-    <title>@yield('title', 'Larapilot') — Workflow Dashboard</title>
+    <title>@yield('title', 'Larapilot') — Dashboard</title>
     <script>
         // Before the first paint, so a saved theme never flashes the other one.
         (function () {
@@ -387,15 +400,51 @@
 
         .sidebar-foot {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
             gap: 10px;
             margin-top: 18px;
             padding: 14px 6px 0;
             border-top: 1px solid var(--border);
         }
 
+        .sidebar-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
         .version { color: var(--muted); font-size: 0.74rem; font-variant-numeric: tabular-nums; }
+        a.version:hover { color: var(--accent); text-decoration: none; }
+
+        .who { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+
+        .who-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-width: 0;
+            flex: 1 1 auto;
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .who-link:hover { background: var(--surface-3); text-decoration: none; }
+
+        .who-avatar {
+            display: grid;
+            place-items: center;
+            flex: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .who-text { display: grid; min-width: 0; line-height: 1.25; }
+        .who-name { font-size: 0.86rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .who-role { color: var(--muted); font-size: 0.72rem; }
+        .who-out { display: contents; }
 
         .theme-switch {
             display: inline-flex;
@@ -965,7 +1014,7 @@
                     <span class="brand-mark" aria-hidden="true">LP</span>
                     <span class="brand-text">
                         <span class="brand-name">Larapilot</span>
-                        <span class="brand-sub">Workflow dashboard</span>
+                        <span class="brand-sub">Dashboard</span>
                     </span>
                 </a>
                 <button type="button" class="icon-btn sidebar-close" data-nav-close aria-label="Close menu">
@@ -978,7 +1027,9 @@
                     @php
                         $items = array_values(array_filter(
                             $items,
-                            static fn (array $item): bool => ($item['when'] ?? true) && Route::has($item['route'])
+                            static fn (array $item): bool => ($item['when'] ?? true)
+                                && Route::has($item['route'])
+                                && $access->allows($item['area'] ?? $accessPolicy->areaOfRoute($item['route']) ?? '')
                         ));
                     @endphp
                     @continue($items === [])
@@ -993,18 +1044,37 @@
             </nav>
 
             <div class="sidebar-foot">
-                <div class="theme-switch" role="group" aria-label="Theme">
-                    <button type="button" data-theme-set="auto" aria-pressed="true" title="Match the system" aria-label="Match the system">
-                        @include('larapilot::dashboard.partials.icon', ['name' => 'auto'])
-                    </button>
-                    <button type="button" data-theme-set="light" aria-pressed="false" title="Light" aria-label="Light theme">
-                        @include('larapilot::dashboard.partials.icon', ['name' => 'sun'])
-                    </button>
-                    <button type="button" data-theme-set="dark" aria-pressed="false" title="Dark" aria-label="Dark theme">
-                        @include('larapilot::dashboard.partials.icon', ['name' => 'moon'])
-                    </button>
+                @if ($actor !== null && ! $actor['implicit'] && Route::has('larapilot.dashboard.account'))
+                    <div class="who">
+                        <a class="who-link" href="{{ route('larapilot.dashboard.account') }}" title="Your account">
+                            <span class="who-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr((string) $actor['name'], 0, 1)) }}</span>
+                            <span class="who-text">
+                                <span class="who-name">{{ $actor['name'] }}</span>
+                                <span class="who-role">{{ \Larapilot\Services\Auth\AccessPolicy::roleLabel($actor['role']) }}{{ $actor['totp'] ? ' · 2FA' : '' }}</span>
+                            </span>
+                        </a>
+                        <form method="post" action="{{ route('larapilot.auth.logout') }}" class="who-out">
+                            @csrf
+                            <button type="submit" class="icon-btn" title="Sign out" aria-label="Sign out">
+                                @include('larapilot::dashboard.partials.icon', ['name' => 'logout'])
+                            </button>
+                        </form>
+                    </div>
+                @endif
+                <div class="sidebar-meta">
+                    <div class="theme-switch" role="group" aria-label="Theme">
+                        <button type="button" data-theme-set="auto" aria-pressed="true" title="Match the system" aria-label="Match the system">
+                            @include('larapilot::dashboard.partials.icon', ['name' => 'auto'])
+                        </button>
+                        <button type="button" data-theme-set="light" aria-pressed="false" title="Light" aria-label="Light theme">
+                            @include('larapilot::dashboard.partials.icon', ['name' => 'sun'])
+                        </button>
+                        <button type="button" data-theme-set="dark" aria-pressed="false" title="Dark" aria-label="Dark theme">
+                            @include('larapilot::dashboard.partials.icon', ['name' => 'moon'])
+                        </button>
+                    </div>
+                    <a class="version" href="https://larapilot.web.ap.it" target="_blank" rel="noopener noreferrer" title="Larapilot — site and documentation">v{{ \Larapilot\LarapilotServiceProvider::VERSION }}</a>
                 </div>
-                <span class="version">v{{ \Larapilot\LarapilotServiceProvider::VERSION }}</span>
             </div>
         </aside>
 
@@ -1026,7 +1096,7 @@
 
             @yield('content')
 
-            <p class="footer-note">Local view of <code>.larapilot/</code> artifacts. Disabled in production.</p>
+            <p class="footer-note">A view of <code>.larapilot/</code>. Open on a developer's machine; behind a sign-in everywhere else; hidden in production unless <code>LARAPILOT_FORCE_IN_PROD</code> says otherwise.</p>
         </main>
     </div>
 

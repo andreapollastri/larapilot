@@ -1,32 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Header layout — Laravel Starter Kit</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Starter kit header layout: top navigation, breadcrumb bar, user menu open.">
+<title>Everyday Checking - Ledgerly</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="sk-mockup">
-  <div class="sk-header-layout">
-    <header class="sk-header-nav">
-      <a href="dashboard.html" class="sk-sidebar__logo">
-        <span class="sk-sidebar__logo-mark" aria-hidden="true">L</span>
-        Laravel
-      </a>
-      <nav class="sk-header-nav__links" aria-label="Main navigation">
-        <a href="header-layout.html" class="is-active" aria-current="page">Dashboard</a>
-        <a href="settings.html">Settings</a>
-      </nav>
-      <button type="button" class="sk-sidebar__user" style="width:auto;margin-left:0.5rem" aria-haspopup="menu">
-        <span class="sk-sidebar__avatar" aria-hidden="true">JD</span>
-        <span class="sk-sidebar__user-name">Jane Doe</span>
-      </button>
-    </header>
-    <main class="sk-header-content">
-      <div class="sk-placeholder" aria-label="Dashboard content placeholder"></div>
-    </main>
-  </div>
+<!-- Shell: .sk-header-shell = <AppHeaderLayout> (layouts/app/app-header-layout.tsx + components/app-header.tsx: NavigationMenu, active underline, DropdownMenu with UserMenuContent). Livewire: layouts/app/header.blade.php = flux:header + flux:navbar + flux:dropdown. -->
+<a class="visually-hidden sk-skip" href="#main">Skip to content</a>
+<div class="sk-header-shell">
+<header class="sk-header">
+<div class="sk-header__inner">
+<button class="sk-btn sk-btn--ghost sk-btn--icon sk-header__menu" type="button" aria-label="Open navigation menu"><svg class="sk-icon sk-icon--5" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+<a class="sk-header__brand" href="dashboard.html"><span class="sk-logo-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 23.5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zm10.5-8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2zM26 7a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/></svg></span><span class="sk-sidebar__brand-name">Ledgerly</span></a>
+<nav class="sk-header__nav" aria-label="Main"><ul><li><a class="sk-header__link" href="dashboard.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>Dashboard</a></li><li class="is-active"><a class="sk-header__link is-active" href="header-layout.html" aria-current="page"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg>Accounts</a></li><li><a class="sk-header__link" href="resource-list.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>Transactions</a></li><li><a class="sk-header__link" href="empty-state.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/></svg>Budgets</a></li></ul></nav>
+<div class="sk-header__actions">
+<button class="sk-btn sk-btn--ghost sk-btn--icon" type="button" aria-label="Search"><svg class="sk-icon sk-icon--5 sk-icon--soft" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></button>
+<a class="sk-icon-link" href="#" aria-label="Help center"><svg class="sk-icon sk-icon--5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></a>
+<a class="sk-icon-link" href="#" aria-label="What's new"><svg class="sk-icon sk-icon--5" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v16"/><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"/></svg></a>
+<div class="sk-menu-anchor">
+<button class="sk-header__avatar" type="button" aria-label="Account menu" aria-haspopup="menu" aria-expanded="true"><span class="sk-avatar">MO</span></button>
+<div class="sk-menu sk-menu--open sk-menu--user" role="menu" aria-label="Account">
+<div class="sk-menu__label"><span class="sk-avatar">MO</span><span class="sk-sidebar__user-meta"><span class="sk-sidebar__user-name">Maya Okafor</span><span class="sk-sidebar__user-email">maya@okafor.family</span></span></div>
+<div class="sk-menu__sep" role="separator"></div>
+<a class="sk-menu__item" role="menuitem" href="settings.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+<div class="sk-menu__sep" role="separator"></div>
+<a class="sk-menu__item" role="menuitem" href="login.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>Log out</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="sk-header__crumbs"><nav class="sk-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="header-layout.html">Accounts</a></li><li class="sk-breadcrumb__sep" role="presentation"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></li><li><span aria-current="page">Everyday Checking</span></li></ol></nav></div>
+<main class="sk-header__content" id="main">
+<div class="sk-page-header"><header class="sk-heading"><h1 class="sk-heading__title">Everyday Checking</h1><p class="sk-heading__desc">Northbank · Checking ••4821 · synced 4 minutes ago</p></header><div class="sk-page-header__actions"><button class="sk-btn sk-btn--outline" type="button"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>Transfer</button><a class="sk-btn" href="resource-form.html"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Add transaction</a></div></div>
+<div class="sk-stats sk-stats--3">
+<section class="sk-card sk-stat"><div class="sk-stat__label"><h2>Current balance</h2><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></div><p class="sk-stat__value">$6,482.19</p><p class="sk-stat__delta sk-stat__delta--up"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg><strong>+$3,191.60</strong> since Oct 1</p></section>
+<section class="sk-card sk-stat"><div class="sk-stat__label"><h2>Money in</h2><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7 7 17"/><path d="M17 17H7V7"/></svg></div><p class="sk-stat__value">$5,850.00</p><p class="sk-stat__delta">2 deposits this month</p></section>
+<section class="sk-card sk-stat"><div class="sk-stat__label"><h2>Money out</h2><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></div><p class="sk-stat__value">$2,658.40</p><p class="sk-stat__delta">Rent, utilities and 1 transfer</p></section>
+</div>
+<section class="sk-section" aria-labelledby="acct-tx">
+<div class="sk-row sk-row--between sk-row--wrap"><h2 class="sk-section__title" id="acct-tx">Transactions</h2>
+<div class="sk-tabs" role="tablist" aria-label="Period"><button class="sk-tabs__tab is-active" role="tab" aria-selected="true" type="button">October</button><button class="sk-tabs__tab" role="tab" aria-selected="false" type="button">September</button><button class="sk-tabs__tab" role="tab" aria-selected="false" type="button">Custom</button></div></div>
+<div class="sk-table-wrap">
+<table class="sk-table">
+<thead><tr><th scope="col">Date</th><th scope="col">Payee</th><th scope="col">Category</th><th scope="col">Account</th><th scope="col">Status</th><th scope="col" class="sk-num">Amount</th></tr></thead>
+<tbody>
+<tr><td class="sk-muted">Oct 10</td>
+<td><div class="sk-cell-payee"><span class="sk-cat-icon"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span><span class="sk-cell-payee__text"><a class="sk-table__primary" href="resource-form.html">Portland Water Bureau</a><span class="sk-small sk-muted">Autopay</span></span></div></td>
+<td><span class="sk-badge sk-badge--outline">Utilities</span></td><td class="sk-muted">Everyday Checking</td><td><span class="sk-badge sk-badge--outline sk-badge--status"><svg class="sk-icon sk-status-icon--ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>Cleared</span></td><td class="sk-num sk-amount">&minus;$58.40</td></tr>
+<tr><td class="sk-muted">Oct 09</td>
+<td><div class="sk-cell-payee"><span class="sk-cat-icon"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span><span class="sk-cell-payee__text"><a class="sk-table__primary" href="resource-form.html">Harbor Studio</a><span class="sk-small sk-muted">Invoice #2026-041</span></span></div></td>
+<td><span class="sk-badge sk-badge--outline">Income</span></td><td class="sk-muted">Everyday Checking</td><td><span class="sk-badge sk-badge--outline sk-badge--status"><svg class="sk-icon sk-status-icon--ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>Cleared</span></td><td class="sk-num sk-amount sk-amount--in">+$900.00</td></tr>
+<tr><td class="sk-muted">Oct 07</td>
+<td><div class="sk-cell-payee"><span class="sk-cat-icon"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></span><span class="sk-cell-payee__text"><a class="sk-table__primary" href="resource-form.html">Transfer to High-Yield Savings</a><span class="sk-small sk-muted">Scheduled</span></span></div></td>
+<td><span class="sk-badge sk-badge--outline">Transfer</span></td><td class="sk-muted">Everyday Checking</td><td><span class="sk-badge sk-badge--outline sk-badge--status"><svg class="sk-icon sk-status-icon--ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>Cleared</span></td><td class="sk-num sk-amount">&minus;$750.00</td></tr>
+<tr><td class="sk-muted">Oct 03</td>
+<td><div class="sk-cell-payee"><span class="sk-cat-icon"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span><span class="sk-cell-payee__text"><a class="sk-table__primary" href="resource-form.html">Alder Street Apartments</a><span class="sk-small sk-muted">October rent</span></span></div></td>
+<td><span class="sk-badge sk-badge--outline">Housing</span></td><td class="sk-muted">Everyday Checking</td><td><span class="sk-badge sk-badge--outline sk-badge--status"><svg class="sk-icon sk-status-icon--ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>Cleared</span></td><td class="sk-num sk-amount">&minus;$1,850.00</td></tr>
+<tr><td class="sk-muted">Oct 01</td>
+<td><div class="sk-cell-payee"><span class="sk-cat-icon"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg></span><span class="sk-cell-payee__text"><a class="sk-table__primary" href="resource-form.html">Meridian Health</a><span class="sk-small sk-muted">Payroll</span></span></div></td>
+<td><span class="sk-badge sk-badge--outline">Income</span></td><td class="sk-muted">Everyday Checking</td><td><span class="sk-badge sk-badge--outline sk-badge--status"><svg class="sk-icon sk-status-icon--ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg>Cleared</span></td><td class="sk-num sk-amount sk-amount--in">+$4,950.00</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
 </body>
 </html>

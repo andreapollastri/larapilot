@@ -386,10 +386,11 @@ it('blocks API writes outside local environments when no token is configured', f
 
     $this->app['env'] = 'staging';
 
+    // Outside a developer's machine the API needs a token, and says how to make one.
     $this->postJson('/larapilot/api/specs/US-001/comments', [
         'author' => 'PM',
         'message' => 'Unauthenticated write.',
-    ])->assertForbidden();
+    ])->assertStatus(503)->assertJsonPath('message', fn (string $message): bool => str_contains($message, 'larapilot:api-token generate'));
 
     config()->set('larapilot.api.token', 'secret-token');
 

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Larapilot OG card</title>
+<!-- The social card of the site (docs/img/og-card.png, 1200×630), drawn around the Board screenshot.
+     node shots.mjs og-card.json <out> --format=png, then copy <out>/og-card.png to docs/img/. -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #1c1412; --phosphor: #ff8f7a; --paper: #f1eae6; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: var(--ink); }
+  body {
+    position: relative; font-family: "Source Sans 3", sans-serif; color: var(--paper);
+    background:
+      radial-gradient(900px 500px at 85% 0%, rgba(224, 58, 45, 0.20), transparent 60%),
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 40px 40px,
+      var(--ink);
+  }
+  .copy { position: absolute; left: 64px; top: 72px; width: 480px; }
+  .mark { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 92px; letter-spacing: -4px; line-height: 1; color: #fff; }
+  .mark span { color: var(--phosphor); }
+  h1 { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 38px; line-height: 1.18; margin-top: 44px; color: #fff; letter-spacing: -0.5px; }
+  p { font-size: 22px; line-height: 1.5; margin-top: 26px; color: #cdbfb9; }
+  code { font-family: "IBM Plex Mono", monospace; font-size: 19px; color: #fff; background: rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 5px; }
+  .frame { position: absolute; left: 590px; top: 92px; width: 700px; height: 520px; border-radius: 12px 0 0 0; overflow: hidden;
+    background: #fff; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.12); }
+  .bar { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; background: #ece5e1; border-bottom: 1px solid #d4c6c0; }
+  .bar i { width: 11px; height: 11px; border-radius: 50%; background: #c9bab4; }
+  .bar span { margin-left: 12px; font-family: "IBM Plex Mono", monospace; font-size: 14px; color: #6b5a54; }
+  .frame img { display: block; width: 900px; height: auto; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <div class="mark">larapilot<span>.</span></div>
+    <h1>From product idea to reviewed Laravel code.</h1>
+    <p>PRD, backlog, plans, code, and tests through <code>/larapilot-*</code> skills — and a dashboard your app serves.</p>
+  </div>
+  <div class="frame">
+    <div class="bar"><i></i><i></i><i></i><span>fernway.test/larapilot</span></div>
+    <img src="../../docs/img/dashboard/board.webp" alt="">
+  </div>
+</body>
+</html>

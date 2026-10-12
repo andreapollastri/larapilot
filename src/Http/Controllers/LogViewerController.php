@@ -142,11 +142,12 @@ class LogViewerController
 
     /**
      * Tokens and passwords a log quotes leave the server only from a
-     * developer's own machine — never from a shared host, sign-in or not.
+     * developer's own machine (`local`, `testing`) — never from a shared
+     * host, `development` included, sign-in or not.
      */
     protected function secretsAllowed(): bool
     {
-        return app()->environment(['local', 'development', 'testing']);
+        return app()->environment(['local', 'testing']);
     }
 
     protected function guard(): void

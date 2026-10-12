@@ -6,6 +6,33 @@ namespace Larapilot\Support;
 
 class MockupHtmlProcessor
 {
+    /**
+     * The class each packaged catalog puts on `<body>` (and two older
+     * fingerprints), to the design system it belongs to. Specific markers
+     * come before the generic ones.
+     *
+     * @var array<string, string>
+     */
+    protected const MARKERS = [
+        'fi-mockup' => 'filament',
+        'nv-mockup' => 'nova',
+        'lte-mockup' => 'adminlte',
+        'sk-mockup' => 'starter-kit',
+        'sc-mockup' => 'shadcn',
+        'bs-mockup' => 'bootstrap-5',
+        'tw-mockup' => 'tailwind',
+        'md3-mockup' => 'material-3',
+        'ns-mockup' => 'nordic-saas',
+        'fl-mockup' => 'fluent',
+        'mo-mockup' => 'modern',
+        'bc-mockup' => 'bold-california',
+        'bn-mockup' => 'berlin',
+        'tw-gallery' => 'tailwind',
+        'cdn.tailwindcss.com' => 'tailwind',
+        'app-wrapper' => 'adminlte',
+        'adminlte' => 'adminlte',
+    ];
+
     public function __construct(protected MockupAssetResolver $assets) {}
 
     /**
@@ -136,24 +163,30 @@ class MockupHtmlProcessor
 
     protected function detectDesignSystemFromHtml(string $html): ?string
     {
-        if (preg_match('/\bfilament-tokens\.css\b/i', $html) || str_contains($html, 'fi-mockup')) {
-            return 'filament';
+        // A `{slug}-tokens.css` link names the system outright — packaged,
+        // aliased, or added to the project.
+        if (preg_match_all('/\b([A-Za-z0-9][A-Za-z0-9._-]*-tokens\.css)\b/i', $html, $matches) > 0) {
+            foreach ($matches[1] as $basename) {
+                $slug = $this->assets->designSystemForTokenBasename($basename);
+
+                if ($slug !== null) {
+                    return $slug;
+                }
+            }
         }
 
-        if (preg_match('/\bstarter-kit-tokens\.css\b/i', $html) || str_contains($html, 'sk-mockup')) {
-            return 'starter-kit';
+        foreach (self::MARKERS as $marker => $slug) {
+            if (str_contains($html, $marker)) {
+                return $slug;
+            }
         }
 
-        if (preg_match('/\bbootstrap-tokens\.css\b/i', $html) || str_contains($html, 'bs-mockup')) {
-            return 'bootstrap-5';
-        }
-
-        if (preg_match('/\badminlte-tokens\.css\b/i', $html) || str_contains($html, 'adminlte') || str_contains($html, 'app-wrapper')) {
-            return 'adminlte';
-        }
-
-        if (str_contains($html, 'cdn.tailwindcss.com') || str_contains($html, 'tw-gallery')) {
-            return 'tailwind';
+        // Any other system — packaged, or added by the project — marks its
+        // screens `{slug}-mockup`.
+        foreach ($this->assets->designSystemSlugs() as $slug) {
+            if (str_contains($html, $slug.'-mockup')) {
+                return $slug;
+            }
         }
 
         return null;

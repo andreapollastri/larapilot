@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Larapilot\Mcp\LarapilotServer;
 use Larapilot\Mcp\Tools\RunArtisanTool;
-use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\DiagnosticsService;
 use Larapilot\Services\LogViewerService;
+use Larapilot\Support\Totp;
 
 /**
  * A folder of logs outside the application, so a test never reads — or
@@ -441,23 +441,26 @@ it('downloads the log with the secrets redacted, or as written on a developer ma
         ->assertSee('Secrets as written', false);
 
     $this->artisan('larapilot:install')->assertSuccessful();
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
-    $this->app['env'] = 'staging';
+    dashboardUser('andrea');
+    sharedHost();
 
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
+    $this->get('/larapilot/logs/laravel?download=1')->assertRedirect('/larapilot/login');
+    signInDashboard('andrea')->assertRedirect();
 
-    $this->get('/larapilot/logs/laravel?download=1')->assertStatus(401);
-
-    // On a shared host the secrets stay redacted, asked for or not.
-    expect($this->get('/larapilot/logs/laravel?download=1&secrets=1', $headers)->assertOk()->streamedContent())
+    // On a shared host the secrets stay redacted, asked for or not — an admin's too.
+    expect($this->get('/larapilot/logs/laravel?download=1&secrets=1')->assertOk()->streamedContent())
         ->not->toContain('hunter2-do-not-show');
 
-    $this->get('/larapilot/logs', $headers)
+    $this->get('/larapilot/logs')
         ->assertOk()
         ->assertSee('Download log', false)
         ->assertDontSee('Secrets as written', false)
         ->assertSee('Secrets are redacted on a shared host.', false);
+
+    sharedHost('development');
+
+    expect($this->get('/larapilot/logs/laravel?download=1&secrets=1')->assertOk()->streamedContent())
+        ->not->toContain('hunter2-do-not-show');
 });
 
 it('opens nothing that is not a log of the folder', function (): void {
@@ -516,26 +519,36 @@ it('says so when there is no log yet', function (): void {
     $this->get('/larapilot/logs')->assertOk()->assertSee('No log yet.', false);
 });
 
-it('stays behind the dashboard sign-in on a shared environment', function (): void {
+it('shows the logs to admins, developers, and product managers on a shared host — not to a product manager in production', function (): void {
     logFolder(['laravel.log' => sampleLog()]);
     $this->artisan('larapilot:install')->assertSuccessful();
 
-    $this->app['env'] = 'staging';
+    sharedHost();
+    $this->get('/larapilot/logs')->assertStatus(503);
 
+    dashboardUser('andrea');
+    dashboardUser('pm', 'correct-horse-battery', 'pm');
+    dashboardUser('ext', 'correct-horse-battery', 'ext');
+
+    $this->get('/larapilot/logs')->assertRedirect('/larapilot/login');
+
+    signInDashboard('ext')->assertRedirect();
     $this->get('/larapilot')->assertOk()->assertDontSee('>Logs</a>', false);
-    $this->get('/larapilot/logs')->assertNotFound();
-    $this->get('/larapilot/logs/laravel')->assertNotFound();
-    $this->get('/larapilot/logs/laravel?download=1')->assertNotFound();
+    $this->get('/larapilot/logs')->assertForbidden();
+    dashboardPost('/larapilot/logout');
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
+    signInDashboard('pm')->assertRedirect();
+    $this->get('/larapilot')->assertOk()->assertSee('>Logs</a>', false);
+    $this->get('/larapilot/logs')->assertOk()->assertSee('Disk almost full', false);
+    dashboardPost('/larapilot/logout');
 
-    $this->get('/larapilot/logs')->assertStatus(401);
-
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/larapilot', $headers)->assertOk()->assertSee('>Logs</a>', false);
-    $this->get('/larapilot/logs', $headers)->assertOk()->assertSee('Disk almost full', false);
+    // Production: the product manager loses the logs.
+    forcedProduction();
+    app(DashboardAuthService::class)->enableTotp('pm', $secret = Totp::generateSecret());
+    signInDashboard('pm')->assertRedirect('/larapilot/two-factor');
+    dashboardPost('/larapilot/two-factor', ['code' => totpCode($secret)])->assertRedirect();
+    $this->get('/larapilot')->assertOk()->assertDontSee('>Logs</a>', false);
+    $this->get('/larapilot/logs')->assertForbidden();
 });
 
 it('hides the log viewer in production and when it is switched off', function (): void {

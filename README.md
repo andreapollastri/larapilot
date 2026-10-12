@@ -64,6 +64,8 @@ php artisan boost:install
 
 Already on Boost? Pick up the skills once with `php artisan boost:update --discover`.
 
+The dashboard is at `/larapilot`: open on your machine (`APP_ENV=local`), behind a sign-in on any other environment — see [Dashboard sign-in & roles](#dashboard-sign-in--roles).
+
 If your editor does not list the MCP servers after `boost:install`, register them:
 
 ```json
@@ -102,6 +104,12 @@ php artisan larapilot:doctor
 ```
 
 If `composer why andreapollastri/larapilot` says *requires* rather than *requires (for development)*, Larapilot sits in `require`: drop `--dev`, or Composer moves it to `require-dev`. Nothing in `.larapilot/` is migrated: PRD, backlog, plans, decisions, and settings are read as they are. Three things to check: `spec-list` answers without the bodies (add `--full` where a script reads `body`); a custom skill that names a runtime part by its number should cite the heading, or start with `larapilot:context {name} --with=…`; `/larapilot-boogle` is `/larapilot-error`, and the `boogle-*` commands still answer. What v5 changes, measured: [Version 5 vs version 4](https://larapilot.web.ap.it/#v5). Step by step — a branch, a dry run, the output to read, the checks as `git grep` commands, and the way back: [Major releases](https://larapilot.web.ap.it/#upgrade-major).
+
+**From 5.0 to 5.1** — `composer update` and `larapilot:update` are enough, but three things change on a shared host:
+
+- **The dashboard asks for a user outside `local`.** HTTP Basic Auth and the `dashboard_auth` setting are gone. Every environment but `local`, `testing`, and `production` — `staging`, `qa`, `preview`, and `development` too, which 5.0 treated as a developer's machine — shows a sign-in page. Until a user exists there, the dashboard answers **HTTP 503**. Make the first admin on that server: `php artisan larapilot:dashboard-user add andrea --role=admin`. `larapilot:update` rewrites an `.larapilot/auth.yaml` of before 5.1 and gives every user in it the `admin` role — the only one there was. See [Dashboard sign-in & roles](#dashboard-sign-in--roles).
+- **The API needs its token outside `local`.** It answers **HTTP 503** until one exists: make it on the **API token** page or with `php artisan larapilot:api-token generate`. Once a token exists, every request needs it — reads included, on a developer's machine too. `LARAPILOT_API_TOKEN` in `.env` keeps working.
+- **`/larapilot-aikido` is `/larapilot-security`.** The `aikido-*` commands and `--aikido=YES` still work; a `config.yaml` with `aikido: true` reads as `security_provider: aikido`.
 
 ---
 
@@ -171,26 +179,26 @@ Published by Laravel Boost after `php artisan boost:install`:
 | Skill | Role |
 | --- | --- |
 | `/larapilot-inception` | Product discovery → PRD (includes **Frontend Topology**) |
-| `/larapilot-adopt` | Reverse-engineer a PRD from an existing production codebase |
+| `/larapilot-adopt` | Reverse-engineer a PRD from an existing production codebase; derives the design system of the app as it is, so its mockups mirror the running product |
 | `/larapilot-spec` | MoSCoW backlog from the PRD |
 | `/larapilot-feature` | Mini-inception for one enhancement |
 | `/larapilot-bug` | Bug triage → fix spec or rework. Reads the logs of the application every time, secrets redacted |
 | `/larapilot-triage` | Bug or feature? Classifies a request against the PRD and the backlog, then hands off to `/larapilot-bug` or `/larapilot-feature` |
-| `/larapilot-aikido` | Downloads the open security findings of **Aikido**, confirms them with you, groups them by fix, and hands each group to `/larapilot-triage` (`aikido=YES`) |
+| `/larapilot-security` | Reads the security scanner the project associates — **Aikido** or **Hackly** — and asks which one when none is set. Downloads its open findings, confirms them with you, groups them by fix, and hands each group to `/larapilot-triage` (`security=YES`). Was `/larapilot-aikido` before 5.1 |
 | `/larapilot-error` | Asks which tracker records the **errors of production** — Boogle, Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch — when none is set, downloads the open ones, confirms them with you, groups them by place in the code, and hands each group to `/larapilot-triage` (`errors=YES`) |
 | `/larapilot-vendor-check` | Checks every dependency — Composer, the JavaScript of the repository, the frontend companion — against **OSV.dev** for known vulnerabilities, confirms each vulnerable package with you, then updates it, hands it to `/larapilot-triage`, or waives it with a reason |
 | `/larapilot-laravel-upgrade` | Upgrades Laravel to the version you name: readiness report and criticalities first, then one major at a time on its own branch — dependencies, the upgrade guide, Filament, Nova, Livewire, Inertia — with an upgrade report |
 | `/larapilot-php-upgrade` | Upgrades PHP: the suite on the target version, the packages that exclude it, deprecated code, every file that pins PHP (Docker, CI, Vapor, Herd, Sail), and the server runbook |
 | `/larapilot-db-upgrade` | Upgrades or switches the database — MySQL 5.7 → 8.0 → 8.4, MySQL → MariaDB or PostgreSQL, a PostgreSQL major — with portable SQL, a local rehearsal on the target engine, and the data and cutover runbook |
 | `/larapilot-prd` | Revises the PRD when it is neither — sharpen, re-scope, re-model, re-decide, upgrade — and aligns the stories that cite what changed |
-| `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare |
-| `/larapilot-plan` | Technical plan + tasks for a spec |
-| `/larapilot-implement` | Code + tests + developer domain docs, one commit per task |
-| `/larapilot-review` | Human gate → **DONE** or rework |
+| `/larapilot-design` | Static HTML mockups from a design system, with style variants to compare — the contract the frontend is built to. Presents the screens, takes changes at any later moment, and can interview you to build a design system of the client's own |
+| `/larapilot-plan` | Technical plan + tasks for a spec; every UI task names the mockup screens it mirrors; proposes a sprint when `sprints=YES` |
+| `/larapilot-implement` | Code + tests + developer domain docs, one commit per task; the UI mirrors the approved mockups, and a deviation is asked before it is coded |
+| `/larapilot-review` | Human gate → **DONE** or rework; a silent deviation from the mockups is a **High** finding |
 | `/larapilot-autopilot` | Batch plan + implement, one fresh context per spec |
 | `/larapilot-ship` | Security gate + deploy runbook when the MVP is done |
-| `/larapilot-settings` | Persist project modes (effort, backlog, git, testing, account, auth, forges, notifications, …) |
-| `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (`release_mode=YES`) |
+| `/larapilot-settings` | Persist project modes (effort, backlog, git, testing, account, API token, sprints, public roadmap, security scanner, forges, notifications, …) |
+| `/larapilot-release` | Semver release ledger + Gitflow `release/x.y.z` branches (`release_mode=YES`); keeps the public wording of the [roadmap](#roadmap) current |
 | `/larapilot-project-docs` | Living handbook in `.larapilot/docs/handbook/` (`project_docs=YES`) |
 | `/larapilot-custom-skill` | Create your own skills under `.larapilot/skills/`, registered with Boost |
 | `/larapilot-frontend-companion` | Link an external frontend repo or monorepo, name this product's projects, load its agent rules — driven from Laravel, or handed off to its team |
@@ -203,6 +211,21 @@ Published by Laravel Boost after `php artisan boost:install`:
 **Inception is a conversation, not a questionnaire.** AskQuestion is used only for the fixed choices Larapilot persists; every answer gets a reaction before the next question; and before any requirement is written, Mark, Jennifer, and Benjamin run at least two **challenge** exchanges on the goal itself (who has this problem and what they do instead, how you will know in 90 days, the riskiest assumption, what would make you stop). Four rounds always happen, legacy rewrites included: **Project Kind**, **Delivery Target**, **Business Model**, and **Operations & support**. A skipped round is recorded as `Not decided`, never as a guess.
 
 **Inception verifies before it scopes, and writes a PRD a spec can be built from.** After the goal challenge, Sebastian runs a **prior-art check** (`prior_art`, ON by default): he states the queries, asks consent, searches GitHub, Packagist, and open-source catalogs for products or packages that already do it, writes `research/prior-art.md` (license, stack, last release, what it covers and lacks, adoption cost), and you record a verdict — `Build anyway`, `Adopt / fork`, `Integrate as dependency`, or `Not checked`. Then the PRD gets its nouns and paths before its features: `## User Journeys` (one per way a persona gets value — the unit a spec is cut from), `## Domain Model` (entities, states, relations, glossary), every `### FR-XXX` with a named actor and verifiable **Done means** bullets, `## Non-Functional Requirements` with a target and a verifier per row, and `## Risks & Assumptions` (riskiest assumption, kill condition, open questions with an owner, the `Not decided` list). Tom runs a ten-point **Definition of Ready**, Mark reads the decisions back in twelve lines, and only then is the PRD written. `validate-prd` reports the new sections as warnings, so older PRDs stay valid.
+
+### Versions and sprints in the skills
+
+- **With `release_mode` on**, `/larapilot-inception` proposes the release roadmap — which stories go in which version, the MVP first — and asks for the starting release. `/larapilot-feature` proposes a target version for every new spec: an open release, or a future one. The spec carries it as `**Release:** x.y.z`, and the Board, the Plan, the [roadmap](#roadmap), and the API read it from there. `/larapilot-release` keeps the public wording of the roadmap current after every release change.
+- **With `sprints` on**, `/larapilot-feature` and `/larapilot-plan` propose the two-week sprint a spec belongs to and write it with `php artisan larapilot:spec-sprint US-012 3` (`none` clears it). With the setting off, nobody asks.
+
+### Mockups are the contract of the frontend
+
+`/larapilot-design`, `/larapilot-plan`, `/larapilot-implement`, and `/larapilot-review` read the same rules:
+
+- **The build mirrors the approved mockups** — layout, components, copy, states, responsive behaviour, dark mode. Every UI task of a plan names the screens it mirrors on a `Mirrors:` line, and implement opens them before the first line of frontend code.
+- **A deviation is asked before it is coded.** When the code cannot follow a mockup — a technical limit, accessibility, a mockup that contradicts an acceptance criterion — the agent says what and why in chat, and you accept it, keep the mockup, or have the mockup changed first. An accepted deviation is logged in the decision journal and in the `## Deviations` table of the mockup README. A deviation nobody agreed to is a **High** review finding.
+- **The mockups stay the mirror of the product.** After drawing, `/larapilot-design` presents the screens and asks for feedback; you can ask for changes at any later moment, and each one is recorded in the `## Revisions` log of the mockup README.
+- **A design system of the client's own.** `/larapilot-design` offers an interview — brand, references, links, the files you drop in `.larapilot/brand/` and `client-materials/`, tone, density, components, accessibility, dark mode — and writes `.larapilot/design-systems/{slug}/` in the shape of the packaged ones. You approve it before any mockup uses it.
+- **An adopted project mirrors what exists.** `/larapilot-adopt` derives the design system of the app from its views, CSS, brand assets, and navigation, and every mockup of that project is drawn in it. A redesign happens only when you ask for it, and is discussed first.
 
 ### Changing the PRD after inception
 
@@ -409,11 +432,28 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
 | `internal-feedback/{code}.md` | PM/dev comments until **DONE** |
 | `skills/{name}/SKILL.md` | Your custom Boost skills |
 | `client-materials/` · `legacy/` · `research/` · `brand/` | Inputs for inception, legacy snapshots, prior-art / reference-product / parity reports, brand assets |
-| `design-systems/` | Packaged references (Filament, Starter Kit, Bootstrap 5, Tailwind, AdminLTE) — add your own beside them |
+| `design-systems/` | The 13 packaged design systems (see [Design systems](#design-systems)) — add your own beside them |
 | `shared-runtime.md` · `runtime-*.md` · `task-templates.md` · `integrations.md` | Rules and guides behind the skills — refreshed by `larapilot:update`, which also removes the runtime files a new version no longer ships |
 | `cache/` | The runtime compiled for the settings of the project, and what each conversation already loaded — derived, never committed (it ignores itself) |
-| `auth.yaml` | Hashed dashboard users — git-ignored |
+| `auth.yaml` | Dashboard users — password hashes, roles, authenticator secrets encrypted with `APP_KEY` — and the hash of the API token. Git-ignored |
+| `auth-audit.log` | One line per sign-in, failure, second factor, user change, token, anonymization map, and file-manager zip — never a password, a code, or a token. Git-ignored |
+| `anonymization.yaml` | What each column of the database becomes in an anonymized copy, and the Faker locale — committed |
+| `roadmap.yaml` · `roadmap-link.yaml` | The public wording of the roadmap (committed) · the token of this host's public link (git-ignored) |
+| `aikido.yaml` · `hackly.yaml` | Decisions about the findings of the security scanner and the repository chosen — committed, never a credential |
 | `techdocs/` | Generated Backstage TechDocs (after `larapilot:backstage-export --write`) |
+
+### Design systems
+
+`/larapilot-design` draws every mockup in a design system: one of the 13 packaged in `.larapilot/design-systems/`, one built for the client from an interview, or the design system of an adopted app as it is. When you pick several, each becomes a style of the same screens on `/larapilot/design`, and **Use this style** keeps one. The frontend is then built to mirror the chosen mockups.
+
+| Kind | Systems |
+| --- | --- |
+| Laravel panels and kits — they look like the real product | **Filament** 4, **Laravel Nova** 5, the **Laravel Starter Kits** (React, Vue, Svelte, and the Livewire kit's Flux look), **shadcn/ui** |
+| CSS frameworks — real class names you can copy | **Bootstrap 5**, **AdminLTE 4**, **Tailwind CSS** 4, **Material Design 3** |
+| Enterprise — backoffice and product site | **Fluent 2** — the look of Microsoft 365 and the Azure portal, with Fluent's own token names |
+| Aesthetic — backoffice and public site | **Nordic SaaS** (the Nordic minimal default), **Modern** (Linear / Vercel-like, dark first), **Bold California** (sunny, heavy type, pill buttons), **Berlin** (Swiss grid, monochrome and one acid signal colour) |
+
+Every system has the same shape: a README with the mapping to real code, `components.md`, `sources.md` with what was verified and what was assumed, one `tokens.css`, and static screens in `html/` — at least a dashboard, a resource list, a resource form, sign-in, settings, the components, and an empty state, in light and dark. Screens render offline: no CDN, no web font, no script. Sign-in screens draw their fields, so password managers leave them alone. Open `html/index.html` of any system as its catalog, or browse them on `/larapilot/design`. The index of every screen is `.larapilot/design-systems/README.md`.
 
 ---
 
@@ -454,15 +494,18 @@ Set with `/larapilot-settings` or `php artisan larapilot:settings-set --{setting
 | Tracking | `lucille` → `YES` (switched off by `ECO` unless you pass `--lucille=YES`) · `decision_log` → `YES` · `code_history` → `NO` |
 | Discovery | `prior_art` → `YES` (Sebastian's existing-solutions search at inception, consent asked before every search) |
 | Business | `account` → `NONE` (`FREELANCE` · `COMPANY` unlock Economics) |
-| Delivery extras | `release_mode` → `NO` · `project_docs` → `NO` |
+| Delivery extras | `release_mode` → `NO` · `project_docs` → `NO` · `sprints` → `NO` (two-week sprints on the Board, the Plan, and in planning) · `public_roadmap` → `NO` (a public link to the [roadmap](#roadmap)) |
 | Automation | `hooks` → `NO` ([workflow hooks](#workflow-hooks--your-commands-on-the-loop) from `.larapilot/hooks.yaml`) |
-| Access & security | `comments` → `NO` · `dashboard_auth` → `NO` · `api_auth` → `NO` · `security_scan` → `NO` |
+| Access & security | `comments` → `NO` · `api_auth` → `NO` (the API token is required on a developer's machine too; elsewhere it always is) · `security_scan` → `NO` · `security` → `NO` with `security_provider` `aikido` · `hackly` ([security scanners](#security-scanners--aikido-or-hackly)) · `errors` → `NO` with `errors_provider` ([production errors](#production-errors)) |
 | Integrations | `github` · `gitlab` · `bitbucket` · `azure` · `notifications` · `notify_slack` · `notify_discord` · `notify_telegram` → all `NO` |
 
 ```bash
 php artisan larapilot:settings-set --effort=ECO --testing=MINIMAL
 php artisan larapilot:settings-set --release-mode=YES --comments=YES
+php artisan larapilot:settings-set --sprints=YES --public-roadmap=YES --security-provider=hackly
 ```
+
+There is no `dashboard_auth` setting any more: who gets into the dashboard follows `APP_ENV` — [Dashboard sign-in & roles](#dashboard-sign-in--roles). A `dashboard_auth` line left in `config.yaml` is ignored, and `--dashboard-auth` is no longer a flag.
 
 `ECO` never spawns sub-agents and defers docs theater (README, PDFs, diagrams) — but still updates OpenAPI when an API changes, and still writes the developer domain docs. Playwright/E2E only runs under `testing=BEST`.
 
@@ -475,39 +518,47 @@ php artisan larapilot:settings-set --release-mode=YES --comments=YES
 
 The YAML wins for workflow settings; Laravel config only provides the defaults at install. Machine-specific paths (like an external frontend repo) live in `.env`, never in committed YAML.
 
-A few switches live in `.env` alone, because they decide what the package registers before any YAML is read: `LARAPILOT_ENABLED=false` keeps the package to its Artisan commands (no routes, no views, no MCP server, no recorders); `LARAPILOT_DASHBOARD_ROUTE=false` and `LARAPILOT_MOCKUPS_ROUTE=false` leave the dashboard and the mockups unregistered; `LARAPILOT_API_AUDIT=false` stops the audit log of the API (`LARAPILOT_API_AUDIT_FILE` moves it). Every other variable is documented beside its key in `config/larapilot.php`, and the ones of the integrations in `.larapilot/integrations.md` after install.
+A few switches live in `.env` alone, because they decide what the package registers before any YAML is read: `LARAPILOT_ENABLED=false` keeps the package to its Artisan commands (no routes, no views, no MCP server, no recorders); `LARAPILOT_DASHBOARD_ROUTE=false` and `LARAPILOT_MOCKUPS_ROUTE=false` leave the dashboard and the mockups unregistered; `LARAPILOT_FORCE_IN_PROD=true` serves the dashboard, the mockups, and the API in `production`, behind a password and an authenticator for every user; `LARAPILOT_API_AUDIT=false` stops the audit log of the API (`LARAPILOT_API_AUDIT_FILE` moves it). Every other variable is documented beside its key in `config/larapilot.php`, and the ones of the integrations in `.larapilot/integrations.md` after install.
 
 ---
 
 ## Dashboard & API (dev/staging)
 
-Available when `APP_ENV` is `local`, `development`, `testing`, or `staging` — **never in production**. On `staging` the board, the PRD, the specs, the git history, the security findings, and the production errors are open to whoever reaches the host until `dashboard_auth` is `YES`: on a shared staging host, create a user and turn the sign-in on before anything else ([Security](#security)). The mockups at `/mockups` follow the same sign-in.
+**Larapilot · Dashboard** at `/larapilot`. Who gets in follows `APP_ENV` alone: open on a developer's machine (`local`, `testing`), a sign-in page on every other environment (`staging`, `qa`, `preview`, `development`, …), and **not served in `production`** unless `LARAPILOT_FORCE_IN_PROD=true` — then every user signs in with a password **and** an authenticator app. Each user has a role, and sees the pages of that role: [Dashboard sign-in & roles](#dashboard-sign-in--roles). The mockups at `/mockups` and their assets sit behind the same sign-in, for every role that sees **Design**.
+
+The sidebar groups the pages as **Workflow** (Board, PRD, Inception, Plan, Roadmap, Design), **Workspace** (About, Settings, Skills, File manager, Database, Logs, Laravel, Git), **Insights** (Forecast, Usage, Economics, Security, SBOM, Errors), **Reference** (API, Docs), and **Access** (Users, API token, Anonymization — admins). Its foot shows the signed-in user, who opens **Account**, and **Sign out**; the version number links to [larapilot.web.ap.it](https://larapilot.web.ap.it).
 
 | Page | URL | What you see |
 | --- | --- | --- |
-| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included; **Download epics (.md)** saves the same stories as an outline — the project, each epic with its story points, its user stories with theirs, and the tasks of each with their hours |
+| Board | `/larapilot` | Kanban by status, with search and priority / epic / status filters; **Group by: Status · Version · Sprint** and a version filter ([versions and sprints](#versions-and-sprints-on-the-board-and-the-plan)); counts and metrics follow the cards on screen. **Download status (.md)** saves the board as it stands, filters included; **Download epics (.md)** saves the same stories as an outline — the project, each epic with its story points, its user stories with theirs, and the tasks of each with their hours |
 | PRD | `/larapilot/prd` | Rendered PRD with a **search** that looks in the PRD and nowhere else, decision journal timeline, **Download PRD (.md)**, and a **functional analysis summary** download (one Markdown file in the PRD language, requirements numbered by priority) |
 | Inception | `/larapilot/inception` | Discovery choices snapshot |
-| Plan | `/larapilot/plan` | Epics, milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time; a milestone that names a release is done once that release is shipped. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
+| Roadmap | `/larapilot/roadmap` | The versions of the release ledger as **Shipped · Now · Next · Later**, with their stories in public words, and the public link when `public_roadmap` is on — [Roadmap](#roadmap) |
+| Plan | `/larapilot/plan` | Epics — or **Group by: Version · Sprint** — milestones, schedule criticality, and the delivery forecast: a dependency-aware Gantt with open work queued from today, one spec at a time; a milestone that names a release is done once that release is shipped. Re-planned with `/larapilot-schedule`. **Download plan (.md)** saves the epics, every story with its status, priority, points, release, blockers, and forecast window, the tasks of each planned story, the milestones, and the delivery order |
 | Design | `/larapilot/design` | Every screen first, as a card. A click opens that mockup as a site you browse, with **All screens** to come back; prev / next through every flow, style compare with **Use this style**, zip download |
 | Settings | `/larapilot/settings` | Every project mode with its options explained |
 | Skills | `/larapilot/skills` | Every skill the agents of the project can run, whoever brought it — the project, Larapilot, another package, Laravel Boost, a hand that dropped it into the folder of an agent — with which agent has it. Click one to **read it**. Under them, **what the agents are told**: `CLAUDE.md`, `AGENTS.md`, and the rules around them, one part for each author |
-| File manager | `/larapilot/files` | The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only |
-| Database | `/larapilot/database` | The tables and views of the database in `.env`, whatever the driver — MySQL, MariaDB, PostgreSQL, SQLite, SQL Server. Rows a page at a time with sort, search, and foreign keys that lead to the row they point at; the structure of each table; a **diagram** of the tables and the foreign keys between them; the **migrations** that ran and the ones still to run; **Download SQL** for a dump of the whole database, and **Other formats** for its structure alone, for Laravel **migrations**, and for **seeders** with its rows. Read only; passwords and tokens are never shown |
+| File manager | `/larapilot/files` | **Admins only.** The five material folders — `brand/`, `client-materials/`, `design-systems/`, `legacy/`, `skills/` — each with what it is for. Browse the tree, preview, read a PDF in the page, download, upload files or a whole folder (structure kept), rename, delete. A sixth folder, **Project**, shows the application itself, read only. **Download zip** on every folder |
+| Database | `/larapilot/database` | The tables and views of the database in `.env`, whatever the driver — MySQL, MariaDB, PostgreSQL, SQLite, SQL Server. Rows a page at a time with sort, search, and foreign keys that lead to the row they point at; the structure of each table; a **diagram** of the tables and the foreign keys between them; the **migrations** that ran and the ones still to run; **Download SQL** for a dump of the whole database, and **Other formats** for its structure alone, for Laravel **migrations**, and for **seeders** with its rows — the dump and the seeders with **Anonymize personal data**. Read only; passwords and tokens are never shown. Admins and developers; a developer in production sees the rows anonymized only |
 | Logs | `/larapilot/logs` | The log files of the application read as entries, the newest first: by level, by period, searched, or with the repeats counted — one row for each thing logged. An exception shows where it was thrown, and the frames of your own code apart from the framework's. **Download log** for the file. Read only; passwords, tokens, and keys are shown as `[REDACTED]` |
 | Laravel | `/larapilot/laravel` | How the framework is set up in the application and what it is doing, in five tabs. **Overview**: the drivers in use — database, cache, session, queue, mail, filesystem, broadcasting, logging — and what is cached: configuration, routes, events, compiled views, the application cache. **Schedule**: the scheduled tasks, the next one due first. **Queue**: the jobs that wait, are delayed, or are held by a worker, and the ones that failed. **Mail**: the mail the application sent, as it left. **Dumps**: what `dump()` and `dd()` printed, with the line that dumped it. Nothing of the application is changed |
 | Git | `/larapilot/git` | 12-month contribution heatmap, every branch measured against the branch it is heading for, and the history drawn as a graph with each commit on the branch it was made on. Filterable by developer |
+| Forecast | `/larapilot/forecast` | The story points of the backlog, the two-week sprints one person needs, and the same work with Larapilot, by epic — **Download report.md** — [Forecast](#forecast) |
 | Usage | `/larapilot/usage` | Lucille's token and hour ledger + Markdown report, and **Estimate vs build**: every delivered spec with the hours it was estimated at, the time it spent `IN PROGRESS`, the wait in review, how many times it was sent back, and its tokens |
-| Security | `/larapilot/security` · `/larapilot/security/checkpoint` | Two tabs. **Aikido**: what Aikido found in the repository, the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of Aikido, the page asks which one the project is. Always in the menu; with `aikido` off it says what Aikido is and how to connect it. **Checkpoint**: the last scan of [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) — verdict, checks by area (dependencies, configuration, code), every finding with its suppression hash, the trend of the scans — with **Run the scan** and **Download report (.md)**; when the package is missing it says how to install it |
+| Security | `/larapilot/security` · `/larapilot/security/checkpoint` | Two tabs. The first is the scanner the project associates — **Aikido** or **Hackly**: what it found in the repository (with Hackly, in the domains linked to it too), the most severe first, with what was decided about each finding and the verdict of the ship gate. **Register for the client (.md)** downloads every finding — open, resolved, ignored with its reason. When the git remote matches no repository of the scanner, the page asks which one the project is. Always in the menu; with no scanner associated it describes both and how to associate either. **Checkpoint**: the last scan of [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) — verdict, checks by area (dependencies, configuration, code), every finding with its suppression hash, the trend of the scans — with **Run the scan** and **Download report (.md)**; when the package is missing it says how to install it |
 | SBOM | `/larapilot/sbom` | Every package the project ships — Composer, the JavaScript of the repository, and the frontend companion — from the lockfiles: version, direct or transitive, production or development, license (copyleft flagged), abandoned packages. **Check vulnerabilities** asks OSV.dev; the vulnerable packages come grouped with the version that fixes them and the command to run, and what was decided about each. Downloads: **SBOM (.md)**, **CycloneDX (.json)**, **Vulnerabilities (.md)** |
 | Errors | `/larapilot/errors` | What the running application threw, as the tracker of the project recorded it: one row for each bug, how many times it was thrown, and what was decided about it — day by day when the tracker records every throw. Always in the menu; with `errors` off it says what Boogle is, how to connect it, and which other trackers can be read instead |
 | Economics | `/larapilot/economics` | What the project costs, what the client pays, what is left for you — every sum written as a receipt (`account` ≠ NONE) |
 | Spec | `/larapilot/specs/{code}` | Story, plan, tasks, mockups, decisions, internal feedback. The story keeps its lines as written, and its `**Status:**` follows the backlog. **Download spec (.md)** saves all of it, tasks included, in one file |
 | API docs | `/larapilot/api/docs` | Swagger UI over the JSON API |
 | Docs | `/larapilot/docs` | Delivery loop, packaged skills, persona roster |
-| About | `/larapilot/about` | What the project runs on: Laravel, PHP, the database server, Node — each with its upstream support window drawn as a bar (bug fixes, security fixes, today) and an alert when it is past or near its end — the project, PHP extensions and limits, connections, drivers, the packages that shape an upgrade (Filament, Nova, Livewire, Inertia, …), frontend, CI and deploy, and every file that pins a version |
+| Account | `/larapilot/account` | Your password, and your authenticator turned on or off — every signed-in user |
+| Users | `/larapilot/users` | **Admins.** Create users with a role, change roles and passwords, rename, reset a lost authenticator, remove |
+| API token | `/larapilot/api-token` | **Admins.** Generate, rotate, or revoke the token of the JSON API — shown once |
+| Anonymization | `/larapilot/anonymization` | **Admins.** What every column of the database becomes in an anonymized copy — [Anonymization](#anonymization) |
+| About | `/larapilot/about` | What the project runs on: Laravel, PHP, the database server, Node — each with its upstream support window drawn as a bar (bug fixes, security fixes, today) and an alert when it is past or near its end — the project, PHP extensions and limits, connections, drivers, the packages that shape an upgrade (Filament, Nova, Livewire, Inertia, …), frontend, CI and deploy, and every file that pins a version. The host, port, and name of the database are shown to admins only |
 
-The dashboard follows the system theme; pin **light** or **dark** from the sidebar. Every page works on a phone.
+The dashboard follows the system theme; pin **light** or **dark** from the sidebar. Every page works on a phone. A page your role does not see is not in your menu, and answers **403** with the reason.
 
 | Plan | Spec | Database |
 | --- | --- | --- |
@@ -517,9 +568,57 @@ The dashboard follows the system theme; pin **light** or **dark** from the sideb
 
 Taken on Fernway, the demo app of the documentation — more on the [tour](https://larapilot.web.ap.it/#tour).
 
+### Dashboard sign-in & roles
+
+There is no `dashboard_auth` setting and no HTTP Basic Auth. The dashboard has its own sign-in page, and what it asks follows `APP_ENV`:
+
+| `APP_ENV` | What the dashboard does |
+| --- | --- |
+| `local`, `testing` | Open. No sign-in: whoever reaches it acts as an admin |
+| any other but `production` — `staging`, `qa`, `preview`, `development`, … | A sign-in page: username and password. An authenticator app is optional — each user turns it on from **Account** |
+| `production` | Not served (404), unless `LARAPILOT_FORCE_IN_PROD=true`. Then every user signs in with a password **and** an authenticator app, and enrols one at the first sign-in if they have none |
+
+| Sign-in | Users | Account |
+| --- | --- | --- |
+| [![The sign-in page of the dashboard on a staging host: username and password, no sign-up](https://larapilot.web.ap.it/img/dashboard/login.webp)](https://larapilot.web.ap.it/img/dashboard/login.webp) | [![The Users page: one user per role, two with the authenticator on](https://larapilot.web.ap.it/img/dashboard/users.webp)](https://larapilot.web.ap.it/img/dashboard/users.webp) | [![Account: setting up the authenticator from a QR code drawn on the server](https://larapilot.web.ap.it/img/dashboard/account.webp)](https://larapilot.web.ap.it/img/dashboard/account.webp) |
+
+**There is no sign-up and no password reset.** An admin creates the users and sets their passwords, on the **Users** page or from the shell. The first admin of a server is always made from the shell: until a user exists, a shared host answers **HTTP 503** with the command to run.
+
+```bash
+php artisan larapilot:dashboard-user add andrea --role=admin          # asks for the password (12+ characters)
+php artisan larapilot:dashboard-user add giulia --role=pm --password='…'
+php artisan larapilot:dashboard-user role giulia dev                  # admin · dev · pm · ext
+php artisan larapilot:dashboard-user password giulia                  # a new password; her open sessions end
+php artisan larapilot:dashboard-user rename giulia giulia.rossi
+php artisan larapilot:dashboard-user totp-reset giulia                # a lost phone: she enrols again
+php artisan larapilot:dashboard-user remove giulia
+php artisan larapilot:dashboard-user list
+```
+
+`--role` defaults to `admin`. Users live in `.larapilot/auth.yaml` — password hashes (bcrypt or argon2id), roles, and the authenticator secrets encrypted with `APP_KEY` — git-ignored, with no database table and no `User` model. Each server has its own users.
+
+| Role | Sees |
+| --- | --- |
+| `admin` | Everything: every page, **Users**, **API token**, **Anonymization**, the file manager, and where the database lives |
+| `dev` | Everything but Users, API token, Anonymization, and the file manager. Never the host, port, or name of the database. In `production`, the Database page and every download from it are **anonymized**, always |
+| `pm` | Workflow (Board, PRD, Inception, Plan, Roadmap, Design), Insights (Forecast, Usage, Economics, Security, SBOM, Errors), and Reference (API, Docs). Not the Workspace — but the Logs outside `production` |
+| `ext` | Workflow only: Board, PRD, Inception, Plan, Roadmap, Design and its mockups — for a client or an outside stakeholder |
+
+Every role has **Account**. The menu shows each role its pages; any other page answers **403** and says why.
+
+- **Users** (admins) creates users with a role, changes roles and passwords, renames, resets a lost authenticator, and removes users. An admin never acts on themself there — another admin does — and can act on every other admin. **Account** is every user's own: their password, and their authenticator turned on or off.
+- **A change takes effect at once.** A new role, a new password, or a removed user applies on the next request of every open session.
+- **The authenticator** is any TOTP app (RFC 6238) — Google Authenticator, Microsoft Authenticator, 1Password, Authy. It is enrolled from a QR code drawn on the server; the secret is kept encrypted with `APP_KEY` and never leaves the server. A code is good once, thirty seconds either side of the clock. The app shows the account under `LARAPILOT_DASHBOARD_AUTH_ISSUER` (default `APP_NAME`).
+- **Passwords** have at least twelve characters and are not the username. A username is letters, digits, and `. _ @ + -`, up to 64 characters.
+- **Throttling.** Wrong passwords are limited per address — `LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, 20 a minute — and per name, 5 a minute from anywhere; wrong codes per name. Behind a load balancer or a CDN, have the application trust the proxy (`TrustProxies`), or every visitor shares one address.
+- **Sessions.** The sign-in and sign-out are forms with CSRF; the session is regenerated at every sign-in.
+- **Audit trail.** `.larapilot/auth-audit.log`, git-ignored, keeps one JSON line per sign-in, failure, second factor, user change, API token, anonymization map, and file-manager zip — never a password, a code, or a token. `LARAPILOT_DASHBOARD_AUTH_AUDIT=false` turns it off; `LARAPILOT_DASHBOARD_AUTH_AUDIT_FILE` moves it.
+- **From 5.0.** An `auth.yaml` written before 5.1 is read as it is, every user an admin, and `larapilot:update` rewrites it with roles and says whom it changed.
+- **In production** the package must be installed on the server: a deploy with `composer install --no-dev` leaves out a Larapilot required with `--dev`. Serve the dashboard over **HTTPS** on every shared host.
+
 ### File manager
 
-`/larapilot/files` manages what you hand the skills before they start:
+`/larapilot/files` manages what you hand the skills before they start. It is for **admins only**, on every environment — on a developer's machine, where the dashboard is open, that is whoever uses it:
 
 | Folder | What it is for |
 | --- | --- |
@@ -532,31 +631,53 @@ Taken on Fernway, the demo app of the documentation — more on the [tour](https
 
 - **Adding, renaming, and deleting** files and folders work in the five material folders. **Project is read only**: you browse, preview, and download; the routes that write do not know the folder and the service refuses a write to it.
 - **Folders that start with a dot are left out of Project** — `.git`, `.larapilot`, `.github`, `.idea`, at any depth — and so are the caches of the framework, `bootstrap/cache/` and `storage/framework/`: a cached configuration holds every value of `.env`. Files that start with a dot are shown. `vendor/` and `node_modules/` can be opened and are left out of the count.
-- **Credentials show their keys, never their values.** `.env`, `.env.*`, `auth.json`, `.npmrc`, `.netrc`, `.pgpass` are shown with every value replaced by `*****************`, on screen and in the download; a template such as `.env.example` is shown as it is. A key or certificate is one line of asterisks; a database (`.sqlite`, `.db`) is listed and neither shown nor downloaded. A `.log` file is shown and downloaded with the passwords, tokens, and keys it quotes replaced by `[REDACTED]`, as on the [Logs](#logs) page — which reads a log whole, by entries, where the file manager shows its first 256 KB.
+- **Credentials show their keys, never their values.** `auth.json`, `.npmrc`, `.yarnrc`, `.netrc`, `.pgpass` are shown with every value replaced by `*****************`, on screen and in the download. **`.env` and `.env.*` are shown as they are** outside `production`, and to an admin in `production`; masked for anyone else. A template such as `.env.example` is shown as it is. A key or certificate is one line of asterisks; a database (`.sqlite`, `.db`) is listed and neither shown nor downloaded. A `.log` file is shown and downloaded with the passwords, tokens, and keys it quotes replaced by `[REDACTED]`, as on the [Logs](#logs) page — which reads a log whole, by entries, where the file manager shows its first 256 KB.
 - **A PDF is read in the page**: one page or two side by side, zoom, page jump, full screen. The reader is PDF.js from cdnjs, checked against its hash; where it cannot load, the file opens in its own tab.
+- **Download zip** on every folder, the root of each included: what the folder shows, at any depth. Databases are left out, keys are their mask, logs are redacted, and the folders a listing hides stay out — dot folders and the caches of the framework in Project. `vendor/` and `node_modules/` are zipped only when you open them and zip them themselves, never with a parent. The archive stops at `LARAPILOT_FILE_MANAGER_MAX_ZIP_MB` (default 512) and says so. Every zip is written to the audit trail.
 - **Upload a folder** and it keeps its structure; an existing file is kept unless **Replace existing files** is on. One file is limited by `LARAPILOT_FILE_MANAGER_MAX_UPLOAD_KB` (default 50 MB) and by PHP's `upload_max_filesize` / `post_max_size`, whichever is lower.
-- **Local by default.** The file manager is open in `local`, `development`, and `testing`. On any other environment (`staging`) it is served only when `dashboard_auth` is `YES` — client documents and legacy snapshots stay behind a sign-in.
+- **Behind the sign-in and the role.** Client documents, legacy snapshots, and the files of the project are an admin's: a developer, a product manager, or an external user does not see the page, and its addresses answer 403.
 - Nothing outside the six folders can be reached, a symlink is never followed, and an uploaded `.html`, `.js`, or `.svg` is never run in the dashboard. `LARAPILOT_FILE_MANAGER=false` removes the page.
 
 ### Database
 
 `/larapilot/database` shows the application's own database — the connection named by `DB_CONNECTION`, with the `DB_*` values in `.env` — through Laravel's schema and query builders, so the page is the same on MySQL, MariaDB, PostgreSQL, SQLite, and SQL Server. It reads, and never writes.
 
-- **The list**: every table and view, with its size where the driver reports one, and the driver, database, and host on top — never the password. On MySQL/MariaDB only the database in `.env` is listed; on PostgreSQL every schema is, a table outside `public` named `schema.table`. A connection `prefix` is left out of the names.
+- **The list**: every table and view, with its size where the driver reports one, and the driver, database, and host on top — never the password; a developer sees the driver alone, and never the host, port, or name of the database, not even in the message of a failed connection. On MySQL/MariaDB only the database in `.env` is listed; on PostgreSQL every schema is, a table outside `public` named `schema.table`. A connection `prefix` is left out of the names.
 - **Rows**, 50 to a page (`LARAPILOT_DATABASE_VIEWER_PER_PAGE`), by primary key. Click a column to sort; the search looks in the text columns, without regard to case; a foreign key value links to the row it points at. Click a row to open it whole — long text in full, JSON indented, **Copy as JSON**, and **Copy as SQL INSERT**: the row as one `INSERT` statement of the driver, its columns named, ready to run on a database with the same table. Binary is shown as hex with its size.
 - **Structure**: columns (type, null, default, primary key, auto increment, comment), indexes, foreign keys with their on update / on delete, and the **create statement** — the `CREATE TABLE` (or `CREATE VIEW`) that builds it, with its indexes and keys, in the SQL of the driver, to copy.
 - **Diagram**, the second view of the list (`/larapilot/database?view=diagram`): a box for each table with its columns — `PK`, `FK`, the type — and a line for each foreign key, from the column to the one it references, with an arrow on that end. A table stands to the right of the tables it points at; the ones no foreign key touches are in rows below. **Keys only** leaves the keys and counts the rest. Click a table to keep only its relations lit; its name opens it. `−`, `+`, **Fit**, Ctrl/⌘ with the wheel, and a drag move around it. Drawn on the server as plain SVG — no library, nothing fetched — for up to 300 tables and views; the structure alone, never a row. **Download PDF** saves the diagram as it is shown — all columns or keys only — on one page as large as the drawing, in vectors, with the database, the counts, and the day on top (`/larapilot/database-diagram.pdf`).
 - **Migrations**, the third view (`/larapilot/database?view=migrations`): which migrations ran and which are still to run, as `php artisan migrate:status` tells it — the files of the application and of its packages against the `migrations` table. The pending ones come first, then the ones that ran with their batch, the newest first; a migration that ran from a file no longer there is marked **Ran · file gone**. Before the first `migrate` every file is pending. Nothing is run from the dashboard.
 - **Credentials are never shown.** A column named like a password, token, or secret (`*password*`, `remember_token`, `token`, `*_token`, `*secret*`, `two_factor_recovery_codes`, `*api_key*`, `*private_key*`) is shown as `*****************` and is never searched, sorted, or filtered on. Add patterns in `database_viewer.masked_columns` of `config/larapilot.php`.
 - **Download SQL** writes the whole database as one `.sql` file in the dialect of its driver — structure, every row, then indexes, keys, sequences, and views — to restore with `mysql`, `psql -f`, `sqlite3`, or `sqlcmd`. MySQL, MariaDB, and SQLite give their own `CREATE` statements; PostgreSQL is rebuilt from its catalogs like `pg_dump` (schemas, enum types, serial and identity columns with their next value); SQL Server from Laravel's schema builder. Each table and view is dropped first if it exists. It is written while it downloads, from one read-only snapshot.
-- **The dump leaves credentials out**: the hidden columns are written as `NULL`, or `''` where `NULL` is not allowed — `hidden-1`, `hidden-2`, … where a unique index holds the column, so the file still restores — and listed at the top of the file. **Include passwords and tokens** puts them in — offered only in `local`, `development`, and `testing`. The same holds for the seeders and for **Copy as SQL INSERT**, which never carries them.
+- **The dump leaves credentials out**: the hidden columns are written as `NULL`, or `''` where `NULL` is not allowed — `hidden-1`, `hidden-2`, … where a unique index holds the column, so the file still restores — and listed at the top of the file. **Include passwords and tokens** puts them in — offered only in `local` and `testing`. The same holds for the seeders and for **Copy as SQL INSERT**, which never carries them.
+- **Anonymize personal data**, beside **Download SQL** and **Laravel seeders**, writes every row through the [anonymization map](#anonymization): names, emails, phones, addresses, and free text replaced, keys and record dates kept, so the copy still imports. The migrations are the structure alone and have no row to replace. A **developer in `production`** always gets the anonymized rows — on screen and in every download — and cannot turn it off; search and filters are off while the rows are anonymized, so a match never tells a value. An admin sees the real rows and ticks the box for an anonymized download.
 - **Other formats**, beside **Download SQL**:
   - **SQL, structure only** — the same file with no rows: the tables, their keys and indexes, and the views, and no sequence left at the number the rows had reached.
   - **Laravel migrations** — a `.zip` to unpack in the root of a project: a file in `database/migrations` for each table, written with the Blueprint method that makes each column (`id()`, `timestamps()`, `softDeletes()`, `rememberToken()` where a table carries them), its indexes, and its foreign keys. A table comes after the ones it points at; the keys that close a circle are in a last migration of their own, and the views in one that runs their SQL. What Blueprint has no word for — a type of one database only, an index on an expression — is written as the nearest thing, with a comment above it. The `migrations` table is left out.
   - **Laravel seeders** — a `.zip` with a class in `database/seeders` for each table that holds rows, and `DatabaseDataSeeder`, which calls them in the order of the migrations: `php artisan db:seed --class=DatabaseDataSeeder` on tables that are there and empty. Bytes are kept through base64, the next id is set on PostgreSQL, and the archive is written while it downloads, so a large table fills neither the memory nor the disk.
   - The migrations and the seeders are read from Laravel's schema builder, so they are the same from every driver, and what one database wrote runs on another — but for a view and a generated column, which are the SQL of the database they came from.
 - The downloads are at `/larapilot/database-export/sql`, `/migrations`, and `/seeders` — no extension, since a web server may keep `.sql` and `.zip` for itself. `/larapilot/database.sql` still answers.
-- **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_DATABASE_VIEWER_CONNECTION` reads another connection; `LARAPILOT_DATABASE_VIEWER=false` removes the page.
+- **Admins and developers** see the page, wherever the dashboard is served. `LARAPILOT_DATABASE_VIEWER_CONNECTION` reads another connection; `LARAPILOT_DATABASE_VIEWER=false` removes the page.
+
+### Anonymization
+
+`/larapilot/anonymization` (admins) is the map of what the personal data of the database becomes in an anonymized copy: on the Database page for a developer in production, and in every SQL dump or seeder downloaded with **Anonymize personal data**. It lists every column of every table with what it becomes and an example beside it.
+
+[![Anonymization: the users table of Fernway with each column, what it leaves as, and an example](https://larapilot.web.ap.it/img/dashboard/anonymization.webp)](https://larapilot.web.ap.it/img/dashboard/anonymization.webp)
+
+| A column can be | What it writes |
+| --- | --- |
+| **Keep** | The value as it is |
+| **Hide** | `NULL`, or empty where `NULL` is not allowed |
+| **Same shape** | New characters in the same pattern — letters for letters, digits for digits, the separators kept |
+| **A Faker formatter** | Any formatter of [fakerphp.org](https://fakerphp.org/formatters/), grouped as the site groups them: Person (name, first and last name, title, date of birth), Address, Phone, Company, Internet (email, username, URL, IP, user agent), Text, Date and time, Payment (IBAN, SWIFT/BIC, card number), Identifiers (UUID, EAN-13, ISBN-13), Miscellaneous |
+
+- **The Faker locale** is chosen among every locale the installed Faker ships — 73 in Faker 1.24 — and writes names, addresses, and phones of that country. A locale adds formatters of its own — an Italian *codice fiscale*, a French *NIR*, a Spanish *DNI* — listed apart.
+- **Safe defaults.** A column with no line of its own follows a default that errs on the side of privacy: a name, an email, a phone, an address, an identifier, free text are replaced; keys, record dates, statuses, enumerations, and flags are kept, so the copy still imports and works. The tables of the framework are known by name: `migrations` and cache locks kept, queue payloads, failed-job exceptions, cache values, and session payloads hidden, the address and browser of a session replaced.
+- **Passwords, tokens, and secrets** stay hidden whatever the map says.
+- **The same value always becomes the same replacement** on one install — seeded with an HMAC of the value keyed with `APP_KEY` — so a foreign key written as text still matches and relations survive. No hash of a real value is ever written.
+- **A replacement fits its column**: its type and its length.
+- **The map is `.larapilot/anonymization.yaml`**, committed, so every environment anonymizes the same way. Saving it, and changing the locale, go to the audit trail.
 
 ### Logs
 
@@ -567,8 +688,8 @@ Taken on Fernway, the demo app of the documentation — more on the [tour](https
 - **By level, by period, by words.** A level returns itself and every one more severe (*Error and worse*), and the count of each level sits above the list. The search wants every word, in any case; quotes keep a phrase together, and a class name is found with its backslashes as the page shows them or as the log doubles them. The period is the last hour, day, week, or month.
 - **Repeats counted** turns the list into one row for each thing logged — the same message with its numbers, ids, and quoted values taken out, or the same exception thrown from the same line — with how many times and since when, the most repeated first. A log where nothing repeats is counted up to 10,000 different things, and the page says so.
 - **Any size.** A file is read from its end backwards — 32 MB for a request (`LARAPILOT_LOG_VIEWER_SCAN_MB`), 50 entries to a page (`LARAPILOT_LOG_VIEWER_PER_PAGE`) — so the newest entries of a log of gigabytes come at once; **Older** and **Keep reading older** go further back, and a page stays the same however much is written after it. A file that is not in Laravel's format, such as the output of a worker, is read a line at a time.
-- **Secrets are never shown.** Passwords, tokens, keys, cookies, and `Authorization` headers are `[REDACTED]` on screen, and a search never finds one. In a context written as JSON the value under such a key is hidden whatever it is — a string, the list a header comes as, a number — and so is the JSON of a request body logged as text. A line the redaction cannot check is hidden whole. **Download log** gives the file redacted the same way, with a line longer than 1 MB cut at that size; **Secrets as written** gives it as it is, and is offered only in `local`, `development`, and `testing`.
-- **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_LOG_VIEWER_PATH` reads another folder — absolute, or from the root of the project; `LARAPILOT_LOG_VIEWER=false` removes the page. Only the `.log` files of that folder are opened, three folders deep, and a symlink is never followed.
+- **Secrets are never shown.** Passwords, tokens, keys, cookies, and `Authorization` headers are `[REDACTED]` on screen, and a search never finds one. In a context written as JSON the value under such a key is hidden whatever it is — a string, the list a header comes as, a number — and so is the JSON of a request body logged as text. A line the redaction cannot check is hidden whole. **Download log** gives the file redacted the same way, with a line longer than 1 MB cut at that size; **Secrets as written** gives it as it is, and is offered only in `local` and `testing`.
+- **Admins and developers** see the page wherever the dashboard is served; **product managers** too, outside `production`. `LARAPILOT_LOG_VIEWER_PATH` reads another folder — absolute, or from the root of the project; `LARAPILOT_LOG_VIEWER=false` removes the page. Only the `.log` files of that folder are opened, three folders deep, and a symlink is never followed.
 - **For the skills**, `php artisan larapilot:logs` reads the same files — see [Diagnostics and logs](#diagnostics-and-logs-bug-triage). `/larapilot-bug` and `/larapilot-error` run it every time.
 
 ### Laravel
@@ -581,14 +702,58 @@ Taken on Fernway, the demo app of the documentation — more on the [tour](https
 - **Mail.** Every mail the application sends is kept and listed, the newest first: subject, recipients, the mailable or notification that built it, the request or command it was sent during. A mail opens on its headers, the names and sizes of its attachments — not the files — and the message: the HTML inside a frame that runs no script, where a link opens in a new tab, and the plain text. It listens to what Laravel says it sent, so it works with every mailer, `log` and `array` included, and changes nothing of the mail or of where it goes.
 - **Dumps.** What `dump()` and `dd()` printed, the newest first: the value as text, the file and line that dumped it — the Blade template, for a dump in a view — and the request or command it happened in. A dump still shows where it always did; here it stays to be read, also when it came from a job, an API call, or a response nobody saw. While Laravel Herd is watching the dumps it takes them all, and the page says so.
 - **Where they are kept.** The last 100 mails and the last 100 dumps (`LARAPILOT_LARAVEL_VIEWER_KEEP`) sit in `storage/larapilot/`, a folder that ignores itself in git (`LARAPILOT_LARAVEL_VIEWER_PATH` moves it). **Forget them all** empties a list. They are kept **on a developer's own machine only** — `local` and `development`, and not while the tests of the project run: a mail carries reset links and personal data, a dump whatever the code was holding. `LARAPILOT_LARAVEL_VIEWER_MAIL=true` or `LARAPILOT_LARAVEL_VIEWER_DUMPS=true` keeps them wherever the page is served; `false` never.
-- **Local by default**, like the file manager: open in `local`, `development`, and `testing`; elsewhere served only when `dashboard_auth` is `YES`. `LARAPILOT_LARAVEL_VIEWER=false` removes the page.
+- **Admins and developers** see the page, wherever the dashboard is served. `LARAPILOT_LARAVEL_VIEWER=false` removes the page.
+
+### Roadmap
+
+`/larapilot/roadmap`, in the **Workflow** menu and seen by every role, is the product roadmap: the versions of the release ledger as **Shipped · Now · Next · Later** — shipped, in progress, the next planned release, the ones after it — each with its stories in public words and its target. It is built from `.larapilot/releases.yaml`, the ledger `release_mode` keeps: with no release in it, the roadmap is empty.
+
+| Roadmap | The public link |
+| --- | --- |
+| [![The Roadmap in the dashboard: 0.1.0 shipped and 0.2.0 being built, each story in public words](https://larapilot.web.ap.it/img/dashboard/roadmap.webp)](https://larapilot.web.ap.it/img/dashboard/roadmap.webp) | [![The public roadmap link: the same lanes with no code, person, or hour](https://larapilot.web.ap.it/img/dashboard/roadmap-public.webp)](https://larapilot.web.ap.it/img/dashboard/roadmap-public.webp) |
+
+- **The public link.** With `public_roadmap` on (`php artisan larapilot:settings-set --public-roadmap=YES`), the page shows a link to send outside: `/larapilot/roadmap/p/{token}`. It shows the same lanes and leaves out spec and epic codes, people, hours, points, costs and tokens, branches, tags and commits, comments and blockers, mockups, and the stories a release does not claim or that are hidden. The token is unguessable and **regenerated with one click** — the old link stops at once. It is a secret of each host, kept in `.larapilot/roadmap-link.yaml`, out of Git. The link answers **even in `production`**, where the dashboard is hidden, as long as the setting is on and the package is installed there; it is throttled to 60 requests a minute.
+- **Public wording.** `.larapilot/roadmap.yaml`, committed, keeps what the public reads in place of the ledger: an intro, a title, a one-line summary, and a target for a version; a title and a summary for a story; what is hidden.
+
+```bash
+php artisan larapilot:roadmap-set --intro="What we are building for our members."
+php artisan larapilot:roadmap-set --semver=0.2.0 --title="Waitlist" --summary="Join a full class and get the seat when one frees up." --target="Q1 2027"
+php artisan larapilot:roadmap-set --semver=0.2.0 --item=US-014 --title="Book from the calendar"
+php artisan larapilot:roadmap-set --semver=0.2.0 --item=US-019 --hide          # --show puts it back
+php artisan larapilot:roadmap-show                                              # what the public sees
+```
+
+`--target` takes a quarter, a month, or `YYYY-MM-DD`, for a version only; an empty value restores the ledger's title or clears the field. `/larapilot-release` runs `roadmap-show` after a release changes, and words what reads as internal.
+
+### Versions and sprints on the Board and the Plan
+
+- **Group by** on the Board — **Status · Version · Sprint** — and on the Plan — **Epic · Version · Sprint**. **Version** is offered when `release_mode` is on or the ledger holds releases; a version filter narrows the kanban to one release. The version of a spec is the release that claims it, or its `**Release:**` line.
+- **Sprints** (`php artisan larapilot:settings-set --sprints=YES`) split the work into two-week sprints of one person. A spec carries the sprint someone decided — `php artisan larapilot:spec-sprint US-012 3`, `none` to clear it — or, until someone does, the sprint it is **proposed** for: the open specs laid one after another in delivery order into what one person does in a sprint (the sprint hours over the hours a point stands for, as on [Forecast](#forecast)). Sprint 1 starts on the first day the ledger recorded work. A proposed sprint is marked **proposed**.
+- The API returns the release and the sprint of each spec: `release`, `sprint`, and `sprint_proposed` on `/specs` and `/specs/{code}`.
+
+### Forecast
+
+`/larapilot/forecast`, in **Insights** before Usage (admins, developers, product managers), answers how long the backlog takes — by a person, and with Larapilot. Every number says where it comes from.
+
+[![The Forecast of Fernway: 76 story points, three sprints for one person, and the same work with Larapilot](https://larapilot.web.ap.it/img/dashboard/forecast.webp)](https://larapilot.web.ap.it/img/dashboard/forecast.webp)
+
+| Figure | How it is computed |
+| --- | --- |
+| **Story points** | The points of the backlog: done, under way (`IN PROGRESS` and `REVIEW`), to do. A spec with no points is counted apart |
+| **Hours a point stands for** | The rate the plans imply — task hours over points — once at least two specs and five points are planned; until then the `effort` setting: 3 (`ECO`), 4 (`STANDARD`), 5.5 (`MAX`) |
+| **A sprint** | Two weeks of five days of one person: 60 hours with the six-hour delivery day, or the day of the Economics profile when one is set |
+| **By a person** | Points × hours per point; sprints = those hours ÷ the hours of a sprint, the last one started counted whole |
+| **With Larapilot, measured** | Once delivered specs carry hours in Lucille's ledger: the hours they took ÷ their points, applied to the backlog. Called a first reading under three specs |
+| **With Larapilot, modelled** | Before that, a range: the build work of a person ÷ 10 (optimistic) or ÷ 5 (realistic), plus 0.5 or 1 hour of a person per spec for reading the plan, reviewing, and approving |
+
+The same figures come by epic, and **Download report.md** saves them with their assumptions.
 
 ### JSON API
 
 | Endpoint | Returns |
 | --- | --- |
 | `GET /larapilot/api/board` | Metrics and specs grouped by status |
-| `GET /larapilot/api/specs` · `/specs/{code}` | Specs with task progress, mockups, feedback (paginated, `?status=`) |
+| `GET /larapilot/api/specs` · `/specs/{code}` | Specs with task progress, mockups, feedback, release, and sprint (paginated, `?status=`) |
 | `POST /larapilot/api/specs/{code}/comments` | Append internal feedback (`comments=YES`) |
 | `GET /larapilot/api/prd` | PRD Markdown and heading index |
 | `GET /larapilot/api/metrics` | Delivery snapshot + effort timing + `build`: the estimates of the delivered specs beside the time they took |
@@ -596,6 +761,21 @@ Taken on Fernway, the demo app of the documentation — more on the [tour](https
 | `GET /larapilot/api/diagnostics` | Read-only runtime snapshot for bug triage |
 | `GET /larapilot/api/backstage` · `/backstage/catalog-info.yaml` | Backstage entities and delivery snapshot |
 | `GET /larapilot/api/openapi.json` · `/docs` | OpenAPI 3 document and Swagger UI |
+
+**The API token.** An admin makes it on the **API token** page (Access group) or from the shell; it is shown **once**, and only its hash is kept in `.larapilot/auth.yaml`. Rotating it ends the old one at once. A token in `.env` (`LARAPILOT_API_TOKEN=…`) works too. Send it on every request as `Authorization: Bearer <token>` or `X-Larapilot-Token: <token>`.
+
+```bash
+php artisan larapilot:api-token generate     # show · generate · rotate · revoke
+```
+
+| Where | No token exists | A token exists |
+| --- | --- | --- |
+| `local` / `testing`, `api_auth=NO` (default) | Open | Every request needs it, reads included |
+| `local` / `testing`, `api_auth=YES` | **HTTP 503**, with how to make one | Every request needs it |
+| any other environment | **HTTP 503**, with how to make one | Every request needs it |
+| `production` | Not served (404), unless `LARAPILOT_FORCE_IN_PROD=true`; then as above | |
+
+`api_auth` matters on a developer's machine only: elsewhere the token is always required. A wrong or missing token is **HTTP 401**. A user signed in on the dashboard whose role sees the API (admin, dev, pm) reads it from the browser — the Swagger UI included — without the token; never a write, the group has no CSRF. Call the API from a server, never from browser code that would carry the token.
 
 Rate limited per IP (`LARAPILOT_API_RATE_LIMIT`, default `120,1`), mutating requests audited to `.larapilot/api-audit.log`, `ETag` / `304` on the read endpoints. Workflow **state** changes only through skills and Artisan — never from the dashboard or the API.
 
@@ -655,18 +835,18 @@ php artisan larapilot:code-history --file=app/Models/Post.php   # where has this
 
 | Gate | Default | Turn it on |
 | --- | --- | --- |
-| **Dashboard auth** — HTTP Basic Auth on the `/larapilot` UI | OFF | `larapilot:dashboard-user add andrea` then `--dashboard-auth=YES` |
-| **API token** — bearer token or `X-Larapilot-Token` on `/larapilot/api/*` | enforced when `LARAPILOT_API_TOKEN` is set | set the env var |
-| **API auth** — token mandatory; fails closed (`503`) with no token configured | OFF | `--api-auth=YES` |
+| **Dashboard sign-in** — a sign-in page, roles, and an authenticator on `/larapilot` and the mockups | follows `APP_ENV`: open in `local`; a sign-in elsewhere; hidden in `production` | `larapilot:dashboard-user add andrea --role=admin` on each shared host; `LARAPILOT_FORCE_IN_PROD=true` to serve it in production, password + authenticator for all |
+| **API token** — bearer token or `X-Larapilot-Token` on `/larapilot/api/*` | required wherever a token exists; outside `local` the API answers `503` until one does | the **API token** page, `larapilot:api-token generate`, or `LARAPILOT_API_TOKEN` |
+| **API auth** — the token required on a developer's machine too | OFF | `--api-auth=YES` |
 | **Security scan** — [`andreapollastri/checkpoint`](https://github.com/andreapollastri/checkpoint) in review and pre-ship; the last scan on **Security → Checkpoint** | OFF | `composer require --dev andreapollastri/checkpoint` then `--security-scan=YES` |
 | **Vulnerable dependencies** — every package of the SBOM against [OSV.dev](https://osv.dev), at the ship gate and on the **SBOM** page | on demand | nothing: `php artisan larapilot:vendor-audit` or `/larapilot-vendor-check` |
-| **Aikido** — the findings of [Aikido](https://www.aikido.dev/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--aikido=YES` |
+| **Security scanner** — the findings of [Aikido](https://www.aikido.dev/) or [Hackly](https://hackly.web.ap.it/) for the repository, in triage and at the ship gate | OFF | credentials in `.env`, then `--security-provider=aikido` or `hackly` |
 | **Production errors** — what the running application throws, read from [Boogle](https://boogle.web.ap.it/), Sentry, Bugsnag, Flare, Datadog, Rollbar, Honeybadger, or CloudWatch, in triage and on the dashboard | OFF | a credential that reads the tracker in `.env`, then `--errors=YES --errors-provider=…` |
 
-- Dashboard credentials are argon2id/bcrypt hashes in `.larapilot/auth.yaml` (git-ignored, no database, no `User` model); failed sign-ins are rate-limited per IP (`LARAPILOT_DASHBOARD_AUTH_MAX_ATTEMPTS`, default 30/min) — behind a load balancer or a CDN, make sure the application trusts the proxy (`TrustProxies`), or every visitor shares one address. The dashboard gate never touches the API or MCP, and the API gate never touches the dashboard.
-- **Turn the sign-in on before a shared staging host sees the dashboard.** With `dashboard_auth` OFF, `staging` serves the board, the PRD, the specs, the git history, the security findings, and the production errors to whoever reaches the host. `larapilot:dashboard-user add` and `--dashboard-auth=YES` close it; the mockups at `/mockups` and their assets sit behind the same sign-in and are served with `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, and a `frame-ancestors 'self'` policy.
-- Without a token, API reads stay open in the allowed environments but **writes are refused** outside local/development/testing.
-- The dashboard **file manager**, **database**, **logs**, and **Laravel** pages are stricter than the rest of the UI: outside local/development/testing they answer `404` — reads and writes alike — until `dashboard_auth` is `YES`. Mail and dumps are recorded only in `local` and `development` unless `LARAPILOT_LARAVEL_VIEWER_MAIL` / `_DUMPS` say otherwise.
+- **The dashboard and the API have separate doors.** The sign-in never opens the API to a client without the token — only the browser of a signed-in user whose role sees the API, for reads — and the token never opens the dashboard. Neither touches MCP. Details: [Dashboard sign-in & roles](#dashboard-sign-in--roles), [JSON API](#json-api).
+- **Create the first admin before a shared host sees the dashboard.** With no user, every page answers **HTTP 503** and gives the command; nothing of the board, the PRD, the specs, the git history, the security findings, or the production errors is served. The mockups at `/mockups` and their assets sit behind the same sign-in and are served with `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, and a `frame-ancestors 'self'` policy.
+- **The pages that read the machine follow the role.** The file manager and **Anonymization** are an admin's; **Database** and **Laravel** an admin's and a developer's; **Logs** also a product manager's outside `production`. A developer never sees where the database lives, and in `production` sees its rows anonymized only. Mail and dumps are recorded only in `local` and `development` unless `LARAPILOT_LARAVEL_VIEWER_MAIL` / `_DUMPS` say otherwise.
+- **Secrets as they are** — **Include passwords and tokens** on a database download, **Secrets as written** on a log — are offered only in `local` and `testing`, whatever the role.
 - With `security_scan=YES`, review and ship run `larapilot:checkpoint-scan`: `FAIL` findings block the review (fix them, or log a waiver with `larapilot:decision-log`); `WARN` findings become notes. Larapilot never bundles the scanner; with the setting off it runs only when someone asks — the command, or **Run the scan** on the dashboard. The result stays in `.larapilot/cache/checkpoint/`, out of git: the details can quote code.
 
 ### Checkpoint and the SBOM
@@ -685,9 +865,43 @@ php artisan larapilot:vendor-link GHSA-xxxx-xxxx-xxxx --waive --reason="Never fe
 - **The vulnerability check** sends the name and the version of each package — nothing else — to OSV.dev, the open database behind the GitHub advisories, FriendsOfPHP, and npm. No account, no key. Severity is the advisory's word, else its CVSS 3 score; each package gets the version that fixes all its advisories and the command that moves to it (`composer update …`, `npm update …`, or a new constraint when the current one does not allow the fix).
 - **Decisions** — the spec that fixes an advisory, or a waiver with its reason — live in `.larapilot/vendor-audit.yaml` with the trend of the checks: commit it. The advisories are cached in `.larapilot/cache/`. **`/larapilot-ship`** runs `vendor-audit --gate`: an open advisory at `high` or above that was not waived stops the release; one in the backlog counts until the update is merged.
 
-### Aikido
+### Security scanners — Aikido or Hackly
 
-[Aikido](https://www.aikido.dev/) scans the repository on its side — dependencies, code, secrets, infrastructure. Larapilot runs no scanner and installs nothing: it **reads what Aikido found** over the public REST API, brings it into the workflow, and **tells Aikido what you decided** about each finding.
+`security` and `security_provider`, OFF by default. The project associates **one** scanner; it scans on its side, and Larapilot runs none and installs nothing: it **reads what the scanner found**, brings it into the workflow, and **tells the scanner what you decided** about each finding.
+
+| Scanner | What it scans | Ids |
+| --- | --- | --- |
+| **Aikido** — SaaS, [aikido.dev](https://www.aikido.dev/) | The repository, through the git provider: dependencies, code, secrets, infrastructure as code, containers | Numbers (`24`) |
+| **Hackly** — self-hosted, [hackly.web.ap.it](https://hackly.web.ap.it/) | A clone of the repository (Semgrep, Trivy, Gitleaks, Composer audit, Checkpoint, Laravel checks) **and the domains linked to it** (TLS, headers, exposed paths, Nuclei, ZAP) | UUIDs |
+
+```bash
+php artisan larapilot:settings-set --security-provider=aikido   # or hackly; none turns the findings off
+php artisan larapilot:security-status
+```
+
+`--aikido=YES` is the name the setting had before 5.1 and still means `--security-provider=aikido`; a `config.yaml` with `aikido: true` reads as Aikido. `/larapilot-security` asks which scanner when none is set. The same commands work for both:
+
+| Command (`php artisan larapilot:`) | What it does |
+| --- | --- |
+| `security-status` | Scanner, credentials, repository, last scan, `hints` |
+| `security-issues` (`--new`, `--severity=`, `--type=`, `--limit=`, `--report`, `--gate`, `--detail={id}`) | The open findings with their state — `new`, `in_backlog`, `waived`, `false_positive` — and the verdict of the gate; `--report` writes `docs/security/security-report.md`; `--gate` exits 1 on `FAIL`; `--detail` gives one finding as a brief and a fix prompt |
+| `security-plan --ids=…` | Groups the confirmed ids by kind and fix before triage — a leaked secret never merges |
+| `security-link {ids}` (`--spec=US-XXX`, `--waive --reason="…"`, `--false-positive --reason="…"`, `--forget`, `--local`) | What was decided, kept in `.larapilot/aikido.yaml` or `hackly.yaml` (committed: ids and decisions, never a credential) and told to the scanner; `--local` tells it nothing |
+| `security-push` | Tells the scanner the decisions it was not told (`unsent`) |
+| `security-repos` (`--search=`, `--use={id}`, `--forget`) | Which repository of the scanner this project is, when the git remote finds none |
+| `security-scan` | Asks for a new scan — Hackly: `--profile=quick\|standard\|deep`, `--include-targets` |
+| `security-register` | `docs/security/security-register.md` for the client: every finding open, resolved, or ignored with its reason, in the language of the PRD, naming its scanner and its scale |
+
+The `aikido-*` commands are the older names of the same Aikido steps and still answer.
+
+- **`/larapilot-security`** downloads the open findings, lets you **confirm each one** (resolve, waive, or skip), runs **`security-plan`** on the ids you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** — same kind and same fix together, secrets never merged. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
+- **The repository is asked for when it is not found.** Larapilot finds it from the git remote, by address or by name. When the code is scanned under another repository — a fork, a mirror, a different name — it does not guess: `/larapilot-security` asks which one it is, `/larapilot/security` shows the list with a form, and `security-repos --use=…` keeps the choice in the committed ledger for every machine. `LARAPILOT_AIKIDO_REPOSITORY` or `LARAPILOT_HACKLY_REPOSITORY` in `.env` names it for one machine.
+- **The ship gate** stops on an open finding at the `FAIL_ON` severity or above that was not waived. A finding in the backlog is not fixed: it counts until the scanner no longer reports it, after the fix is merged and scanned. The gate is computed on this project's findings.
+- **A waiver needs a reason**, in a sentence, and only the user gives it. When the scanner refuses a decision or cannot be reached, the decision is kept as `unsent` and `security-push` tells it later. `--local` keeps one decision in the project; `PUSH_DECISIONS=false` all of them.
+- **The register for the client.** `security-register`, or **Register for the client (.md)** on `/larapilot/security`, gives one Markdown document with every finding: open with the fix that is planned, resolved with the date, ignored with the date and the reason, and a count by severity — what a client or an auditor asks for.
+- **What is kept**: the ledger holds the decisions — ids, the spec, the reason, whether the scanner was told — and the repository chosen, and is meant to be committed. The credentials stay in `.env`.
+
+#### Aikido
 
 ```dotenv
 LARAPILOT_AIKIDO_CLIENT_ID=
@@ -698,28 +912,40 @@ LARAPILOT_AIKIDO_FAIL_ON=high     # critical · high · medium · low · none
 LARAPILOT_AIKIDO_PUSH_DECISIONS=true  # false = decisions stay in the project
 ```
 
-```bash
-php artisan larapilot:settings-set --aikido=YES
-php artisan larapilot:aikido-status                  # setting, credentials, repository, last scan
-php artisan larapilot:aikido-issues --new --report   # what nobody decided about; writes docs/security/aikido.md
-php artisan larapilot:aikido-plan --ids=24,31        # group confirmed ids by kind and fix before triage
-php artisan larapilot:aikido-link 24 --spec=US-012   # the spec that fixes it; leaves a note in Aikido
-php artisan larapilot:aikido-link 40 --waive --reason="Internal tool, never distributed."   # ignores it in Aikido, with the reason
-php artisan larapilot:aikido-push                    # tell Aikido the decisions it was not told yet
-php artisan larapilot:aikido-repos                   # the repositories of the workspace; --use=12 says which one this project is
-php artisan larapilot:aikido-register                # the register for the client: open, resolved, ignored with reason
-php artisan larapilot:aikido-issues --gate           # exit 1 when the gate fails — for CI
-php artisan larapilot:aikido-scan                    # ask Aikido to scan again
+- **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes, `issues:write` to tell Aikido your decisions, and `repositories:write` to ask for a scan. The repository has to be connected in Aikido, through the git provider.
+- **Decisions are told to Aikido.** A waiver **ignores the finding in Aikido**, with the reason as its comment; a spec leaves a note on the finding; `--forget` takes a waiver back. A finding that is in several repositories of the workspace is ignored in this one only.
+- A finding ignored by hand in Aikido is listed in the register too; its reason stays in Aikido, which does not give it back. The access token lives in the cache and is never written to a file of the project.
+
+#### Hackly
+
+[Hackly](https://hackly.web.ap.it/) is **self-hosted**: Larapilot reads **your** instance. `hackly.web.ap.it` is its documentation site, not an instance — `security-status` says so when `LARAPILOT_HACKLY_URL` points at it.
+
+1. In your Hackly, add the repository (Repositories → New, with a GitHub token that reads it). Link its domains to it for their findings too — each verified by DNS in Hackly.
+2. Create a personal token: Profile → API tokens, or on the Hackly server `php artisan hackly:token you@example.com --ability=write`. `read` lists; `write` lets Larapilot tell Hackly a decision and ask for a scan.
+3. Put the address of the instance and the token in `.env`, then `--security-provider=hackly` and `security-status`:
+
+```dotenv
+LARAPILOT_HACKLY_URL=https://hackly.example.com   # your instance; /api is added
+LARAPILOT_HACKLY_TOKEN=hk_…
+LARAPILOT_HACKLY_REPOSITORY=                       # uuid or owner/name, for this machine; empty = chosen or found from the git remote
+LARAPILOT_HACKLY_INCLUDE_TARGETS=true              # read the findings of the linked domains too
+LARAPILOT_HACKLY_FAIL_ON=high                      # high · medium · low · none
+LARAPILOT_HACKLY_SCAN_PROFILE=standard             # quick · standard · deep
+LARAPILOT_HACKLY_PUSH_DECISIONS=true               # false = Hackly is told nothing
 ```
 
-- **Create the credentials** in Aikido under *Settings → Integrations → Public REST API*, with the `issues:read` and `repositories:read` scopes, `issues:write` to tell Aikido your decisions, and `repositories:write` to ask for a scan. The repository has to be connected in Aikido, through the git provider.
-- **The repository is asked for when it is not found.** Larapilot finds it from the git remote, by address or by name. When the code is scanned under another repository — a fork, a mirror, a different name — it does not guess: `/larapilot-aikido` asks which one it is, `/larapilot/security` shows the list with a form, and `larapilot:aikido-repos --use=12` keeps the choice in `.larapilot/aikido.yaml` for every machine. `LARAPILOT_AIKIDO_REPOSITORY` in `.env` names it for one machine.
-- **`/larapilot-aikido`** downloads the open findings, lets you **confirm each one** (resolve, waive, or skip), runs **`larapilot:aikido-plan`** on the ids you chose to fix, and hands **each resolution group** to **`/larapilot-triage`** with an *Aikido finding* block — same kind and same fix together, secrets never merged. Triage measures it against the PRD like any request — a known vulnerability in shipped code is a bug, a requirement gap when no requirement names security — and `/larapilot-bug` writes the fix spec. The link between finding and spec is recorded.
-- **The ship gate** stops on an open finding at `LARAPILOT_AIKIDO_FAIL_ON` or above that was not waived. A finding in the backlog is not fixed: it counts until Aikido no longer reports it, after the fix is merged and scanned.
-- **A waiver needs a reason**, in a sentence, and only the user gives it.
-- **Decisions are told to Aikido.** A waiver **ignores the finding in Aikido**, with the reason as its comment; a spec leaves a note on the finding; `--forget` takes a waiver back. A finding that is in several repositories of the workspace is ignored in this one only. When Aikido refuses — credentials without `issues:write` — or cannot be reached, the decision is kept and `larapilot:aikido-push` tells it later. `--local` keeps one decision in the project, `LARAPILOT_AIKIDO_PUSH_DECISIONS=false` all of them.
-- **The register for the client.** `larapilot:aikido-register`, or **Register for the client (.md)** on `/larapilot/security`, gives one Markdown document with every finding of the repository: open with the fix that is planned, resolved with the date, ignored with the date and the reason, and a count by severity — what a client or an auditor asks for, in the language of the PRD. A finding ignored by hand in Aikido is listed too; its reason stays in Aikido, which does not give it back.
-- **What is kept**: `.larapilot/aikido.yaml` holds the decisions — ids, the spec, the reason, whether Aikido was told — and the repository that was chosen, and is meant to be committed. The credentials stay in `.env`; the access token lives in the cache and is never written to a file of the project.
+| Decision | In Hackly |
+| --- | --- |
+| `security-link {id} --spec=US-012` | **Acknowledged**; the spec is kept in `.larapilot/hackly.yaml` |
+| `security-link {id} --waive --reason="…"` | **Acknowledged** — Hackly has no "accepted risk"; the reason is kept here and in the register |
+| `security-link {id} --false-positive --reason="…"` | **False positive**, with the reason as its note (8–2000 characters) |
+| `security-link {id} --forget` | **Open** again |
+
+- **What is read**: the findings of the repository — and of its linked domains, unless `LARAPILOT_HACKLY_INCLUDE_TARGETS=false` — in the states `open` and `ack`. Severities are Hackly's three: `high`, `medium`, `low`; reachable code comes first within a severity.
+- **The gate is this project's.** It is computed here, on the findings of this repository and its domains; Hackly's own CI gate looks at the whole workspace.
+- **The fix prompt.** `security-issues --detail={uuid}` quotes Hackly's own brief and fix prompt, and that prompt is what triage hands to the fix.
+- **Scans.** `security-scan` asks for a repository scan with the profile of `LARAPILOT_HACKLY_SCAN_PROFILE`, or `--profile=quick|standard|deep`; `--include-targets` deep-scans the verified linked domains too. Target scans and penetration tests are started in Hackly.
+- The register lists fixed findings as resolved and false positives as ignored, with the note written in Hackly when none was written here.
 
 ### Production errors
 
@@ -884,9 +1110,9 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Area | Commands |
 | --- | --- |
 | Setup & health | `install` · `update` · `doctor` (`--human`) · `context {skill}` (`--session=`, `--fresh`, `--with=`) · `config-show` (`--only=settings,paths,frontend,tracker,dev_docs,backstage,workflow,personas`) · `settings-set` · `quality` (`--fix`) |
-| Access | `dashboard-user {list\|add\|remove}` |
+| Access | `dashboard-user {list\|add\|remove\|role\|password\|rename\|totp-reset}` (`--role=admin\|dev\|pm\|ext`, `--password=`) · `api-token {show\|generate\|rotate\|revoke}` |
 | Discovery | `prd-write` · `validate-prd` · `prd-show` (`--ids=`, `--section=`) · `prd-impact` (`--ids=`) · `choices-set` · `frontend-set` (`--project=`, `--mode=`) · `frontend-scan` (`--project=`, `--full`, `--no-cli`, `--fresh`) · `frontend-rules` (`--file=`) · `frontend-brief` |
-| Backlog | `spec-list` (`--status=`, `--full`) · `spec-add` · `spec-show` (`--task=`, `--fields=`) · `spec-next` · `spec-delete` · `validate-spec` · `spec-comment` |
+| Backlog | `spec-list` (`--status=`, `--full`) · `spec-add` · `spec-show` (`--task=`, `--fields=`) · `spec-next` · `spec-delete` · `validate-spec` · `spec-comment` · `spec-sprint {code} {n\|none}` |
 | Design | `mockup-choose-style US-XXX --style=` |
 | Plan & build | `validate-plan` · `spec-plan` · `spec-start` · `task-done` · `spec-review` |
 | Review | `spec-approve` (`--force`) · `spec-request-changes` (`--include-feedback`) |
@@ -895,18 +1121,19 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Schedule | `schedule-show` (`--only=queue,epics,deadlines,releases,alerts,findings`) · `schedule-apply --file=` (`--dry-run`) |
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
 | Releases | `release-list` · `release-add` · `release-set` · `release-cut` · `release-feature` · `release-sync` · `release-ship` (`--push`) · `release-import` |
+| Roadmap | `roadmap-set` (`--intro=`, `--semver=`, `--item=`, `--title=`, `--summary=`, `--target=`, `--hide`, `--show`) · `roadmap-show` |
 | Custom skills | `custom-skill-list` · `custom-skill-add` (`--name=`, `--file=` / `--content=` / stdin, `--force`) |
 | Hooks | `hook-list` (`--event=`) · `hook-run {event}` (`--phase=before\|after`, `--spec=`, `--task=`, `--release=`, `--dry-run`) · `--skill-hooks-done=` on every command that fires an event |
 | Stack & upgrades | `stack` (`--only=`, `--no-db`) · `upgrade-check` (`--laravel=`, `--php=`, `--php-from=`, `--db=`, `--db-from=`, `--offline`, `--report`, `--gate`) |
 | Dependencies | `sbom` (`--full`, `--write=md\|cyclonedx\|both`) · `vendor-audit` (`--cached`, `--new`, `--limit=`, `--report`, `--fail-on=`, `--gate`) · `vendor-link` (`--spec=`, `--waive --reason=`, `--clear`) · `checkpoint-scan` (`--only=`, `--skip=`, `--cached`, `--report`, `--gate`, `--fail-on-warn`) |
-| Security | `aikido-status` · `aikido-issues` (`--new`, `--severity=`, `--type=`, `--report`, `--gate`) · `aikido-plan` (`--ids=`) · `aikido-link` (`--spec=`, `--waive --reason=`, `--forget`, `--local`) · `aikido-push` · `aikido-repos` (`--search=`, `--use=`, `--forget`) · `aikido-register` · `aikido-scan` |
+| Security | `security-status` · `security-issues` (`--new`, `--severity=`, `--type=`, `--limit=`, `--detail=`, `--report`, `--gate`) · `security-plan` (`--ids=`) · `security-link` (`--spec=`, `--waive --reason=`, `--false-positive --reason=`, `--forget`, `--local`) · `security-push` · `security-repos` (`--search=`, `--use=`, `--forget`) · `security-register` (`--fresh`) · `security-scan` (`--profile=`, `--include-targets`) — Aikido's old names `aikido-status` · `aikido-issues` · `aikido-plan` · `aikido-link` · `aikido-push` · `aikido-repos` · `aikido-register` · `aikido-scan` |
 | Errors | `errors-status` · `errors-list` (`--new`, `--kind=error\|outage`, `--limit=`, `--report`) · `errors-plan` (`--codes=`) · `errors-link` (`--spec=`, `--ignore --reason=`, `--forget`) · `errors-resolve` (`--status=FIXED\|DONE`, `--comment=`) — old names `boogle-status` · `boogle-errors` · `boogle-plan` · `boogle-link` · `boogle-resolve` |
 | Integrations | `github-status` · `gitlab-status` · `bitbucket-status` · `azure-status` · `notify` · `tracker-status` · `tracker-push` · `tracker-pull` · `backstage-export` |
 | Runtime | `logs` (`--group`, `--level=`, `--search=`, `--since=`, `--limit=`, `--files`, `--file=`) · `diagnostics` (`--lines=`, `--no-logs`) |
 
 All commands are prefixed `larapilot:`. Release commands need `release_mode=YES` and take `--semver=` (Artisan reserves `--version`); nothing is pushed without `--push`.
 
-The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, `prd-impact`, the forge probes, the three validators, `doctor`, `diagnostics`, `logs`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `context`, `schedule-show`, `stack`, `upgrade-check`, `sbom`, `vendor-audit`, `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `aikido-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`, `vendor-audit --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`).
+The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowTool`, `DiagnosticsTool`, and `RunArtisanTool`, which runs only read and validate commands (`config-show`, `spec-list`, `spec-show`, `spec-next`, `metrics`, `usage-report`, `decision-check`, `code-history`, `prd-show`, `prd-impact`, the forge probes, the three validators, `doctor`, `diagnostics`, `logs`, `quality`, `frontend-scan`, `frontend-rules`, `backstage-export`, `tracker-status`, `hook-list`, `context`, `schedule-show`, `stack`, `upgrade-check`, `sbom`, `vendor-audit`, `security-status` / `security-issues` / `security-plan` / `security-repos` (for Aikido and Hackly), their Aikido names `aikido-status` / `aikido-issues` / `aikido-plan` / `aikido-repos`, `errors-status` / `errors-list` / `errors-plan`, and their old names `boogle-status` / `boogle-errors` / `boogle-plan`). The parameters are checked too: each command takes through MCP only the ones that read, and an option that writes a file is refused — `quality --fix`, `backstage-export --write` / `--force` / `--catalog=` / `--mkdocs=` / `--file=`, `usage-report --output=`, `aikido-issues --report`, `security-issues --report`, `aikido-repos --use=` / `--forget`, `security-repos --use=` / `--forget`, `errors-list --report`, `upgrade-check --report`, `sbom --write=`, `vendor-audit --report`. Run directly with Artisan, the commands take every option as before. All four tools are annotated as read-only (`readOnlyHint`). The commands that decide, write, or scan — `security-link`, `security-push`, `security-scan`, `security-register` — are not allowed through MCP.
 
 ---
 

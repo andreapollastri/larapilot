@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Larapilot\Services;
 
+use Illuminate\Support\Carbon;
 use Larapilot\Support\AtomicFile;
 use Symfony\Component\Yaml\Yaml;
 
@@ -62,7 +63,7 @@ class ChoicesService
     {
         $payload = array_replace_recursive($this->read(), $choices);
         $payload['settings'] = $this->config->settings();
-        $payload['updated_at'] = (new \DateTimeImmutable('now'))->format(\DateTimeInterface::ATOM);
+        $payload['updated_at'] = Carbon::now()->toAtomString();
         $payload['source'] = 'choices.yaml';
 
         AtomicFile::write(
@@ -135,11 +136,14 @@ class ChoicesService
             'project_docs' => $this->config->allowedProjectDocsModes(),
             'prior_art' => $this->config->allowedPriorArtModes(),
             'hooks' => $this->config->allowedHooksModes(),
+            'sprints' => $this->config->allowedSprintsModes(),
+            'public_roadmap' => $this->config->allowedPublicRoadmapModes(),
             'comments' => $this->config->allowedCommentsModes(),
-            'dashboard_auth' => $this->config->allowedDashboardAuthModes(),
             'api_auth' => $this->config->allowedApiAuthModes(),
             'security_scan' => $this->config->allowedSecurityScanModes(),
             'aikido' => $this->config->allowedAikidoModes(),
+            'security' => $this->config->allowedSecurityModes(),
+            'security_provider' => $this->config->allowedSecurityProviders(),
             'errors' => $this->config->allowedErrorsModes(),
             'errors_provider' => $this->config->allowedErrorsProviders(),
             'boogle' => $this->config->allowedBoogleModes(),

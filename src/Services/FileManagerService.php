@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Larapilot\Support\AtomicFile;
 use Larapilot\Support\Markdown;
 use Larapilot\Support\MimeTypes;
+use Larapilot\Support\MockupAssetResolver;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -24,7 +25,10 @@ use SplFileInfo;
  *
  * A file that holds credentials — `.env`, `auth.json`, a key — is shown in
  * every root with its values replaced by asterisks: the names of the keys
- * can be read, what they hold cannot, on screen or in a download.
+ * can be read, what they hold cannot, on screen or in a download. An env
+ * file is the exception the dashboard opens with `revealSecrets()`: outside
+ * production, and to an admin in production, its values are shown as they
+ * are. A key stays sealed, a database is never served, a log is redacted.
  *
  * Every path is relative to one of those roots. The parent directory is
  * resolved with realpath and checked against the root before anything is
@@ -51,11 +55,12 @@ class FileManagerService
 
     /**
      * Design systems shipped with the package. `larapilot:update` rewrites
-     * them, so edits made here do not survive an update.
+     * them, so edits made here do not survive an update; a folder added
+     * beside them is left alone.
      *
      * @var list<string>
      */
-    protected const PACKAGED_DESIGN_SYSTEMS = ['filament', 'starter-kit', 'bootstrap-5', 'tailwind', 'adminlte'];
+    protected const PACKAGED_DESIGN_SYSTEMS = MockupAssetResolver::PACKAGED;
 
     /**
      * Listed in the project root but never walked: too large to count or
@@ -141,6 +146,11 @@ class FileManagerService
     protected const SCAN_LIMIT = 20000;
 
     protected const PREVIEW_BYTES = 262144;
+
+    /**
+     * Whether the values of an env file are shown as they are.
+     */
+    protected bool $revealEnv = false;
 
     protected const MAX_SEGMENTS = 32;
 
@@ -354,7 +364,9 @@ class FileManagerService
 
         // The bytes of a file that holds secrets never leave as they are:
         // masked() is the only way its content goes out.
-        if ($absolute === null || ! is_file($absolute) || $this->secretKind(basename($relative)) !== null) {
+        $kind = $this->secretKind(basename($relative));
+
+        if ($absolute === null || ! is_file($absolute) || ($kind !== null && ! ($kind === 'env' && $this->revealEnv))) {
             return null;
         }
 
@@ -386,7 +398,136 @@ class FileManagerService
             return null;
         }
 
+        if ($this->revealEnv && $this->secretKind(basename($absolute)) === 'env') {
+            return null;
+        }
+
         return $this->mask($absolute);
+    }
+
+    /**
+     * Show the values of env files as they are — outside production, and
+     * to an admin in production — or keep them masked.
+     */
+    public function revealSecrets(bool $reveal): void
+    {
+        $this->revealEnv = $reveal;
+    }
+
+    public function revealsSecrets(): bool
+    {
+        return $this->revealEnv;
+    }
+
+    /**
+     * The files of a folder, at any depth, as a zip holds them — the way the
+     * listing shows them: what a listing leaves out (dot folders of the
+     * project, the caches of the framework, `vendor` and `node_modules`
+     * below the root, links) is left out, a database is left out, a key is
+     * its mask, an env file is masked unless revealed, a log is redacted.
+     * Null for a path that is not a folder of the root.
+     *
+     * @return array{name: string, files: list<array{path: string, absolute: string|null, content: string|null}>, bytes: int, skipped: int, truncated: bool}|null
+     */
+    public function zipEntries(string $rootKey, string $path = '', ?int $maxBytes = null): ?array
+    {
+        $root = $this->root($rootKey);
+
+        if ($root === null) {
+            return null;
+        }
+
+        try {
+            $relative = $this->normalize($path);
+        } catch (InvalidArgumentException) {
+            return null;
+        }
+
+        $start = $this->locate($root, $relative);
+
+        if ($start === null || ! is_dir($start) || is_link($start)) {
+            return null;
+        }
+
+        $maxBytes ??= max(1, (int) config('larapilot.file_manager.max_zip_mb', 512)) * 1024 * 1024;
+        $files = [];
+        $bytes = 0;
+        $skipped = 0;
+        $truncated = false;
+        $stack = [[$start, '']];
+
+        while ($stack !== [] && ! $truncated) {
+            [$directory, $inside] = array_pop($stack);
+            $names = scandir($directory) ?: [];
+            sort($names, SORT_STRING);
+
+            foreach ($names as $name) {
+                if ($this->isSkipped($root, $directory, $name)) {
+                    continue;
+                }
+
+                $absolute = $directory.DIRECTORY_SEPARATOR.$name;
+                $path = $inside === '' ? $name : $inside.'/'.$name;
+
+                if (is_link($absolute)) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                if (is_dir($absolute)) {
+                    // Too large to carry: `vendor` and `node_modules` are zipped only
+                    // when opened themselves, never swept up with a parent.
+                    if ($this->isProject($root) && in_array($name, self::PROJECT_HEAVY, true)) {
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    $stack[] = [$absolute, $path];
+
+                    continue;
+                }
+
+                $kind = $this->secretKind($name);
+
+                if ($kind === 'data') {
+                    $skipped++;
+
+                    continue;
+                }
+
+                if ($kind !== null && ! ($kind === 'env' && $this->revealEnv)) {
+                    $content = $this->mask($absolute) ?? self::MASK."\n";
+                    $size = strlen($content);
+                    $entry = ['path' => $path, 'absolute' => null, 'content' => $content];
+                } else {
+                    $size = (int) @filesize($absolute);
+                    $entry = ['path' => $path, 'absolute' => $absolute, 'content' => null];
+                }
+
+                if ($bytes + $size > $maxBytes || count($files) >= self::SCAN_LIMIT) {
+                    $truncated = true;
+
+                    break;
+                }
+
+                $bytes += $size;
+                $files[] = $entry;
+            }
+        }
+
+        usort($files, static fn (array $a, array $b): int => strcmp($a['path'], $b['path']));
+
+        $base = $relative === '' ? ($this->isProject($root) ? basename($this->config->projectRoot()) : $root['key']) : basename($relative);
+
+        return [
+            'name' => (preg_replace('/[^A-Za-z0-9._-]+/', '-', $base) ?: 'files').'-'.date('Y-m-d').'.zip',
+            'files' => $files,
+            'bytes' => $bytes,
+            'skipped' => $skipped,
+            'truncated' => $truncated,
+        ];
     }
 
     /**
@@ -1154,6 +1295,7 @@ class FileManagerService
         $modified = @filemtime($absolute);
 
         $secret = $isDirectory || $isLink ? null : $this->secretKind($name);
+        $secret = $secret === 'env' && $this->revealEnv ? null : $secret;
 
         return [
             'name' => $name,
@@ -1214,6 +1356,7 @@ class FileManagerService
     protected function preview(string $absolute): array
     {
         $secret = $this->secretKind(basename($absolute));
+        $secret = $secret === 'env' && $this->revealEnv ? null : $secret;
 
         if ($secret !== null) {
             $masked = $this->mask($absolute);

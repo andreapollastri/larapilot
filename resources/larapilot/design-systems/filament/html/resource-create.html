@@ -1,99 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Create user — Filament</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create order · Northwind Ops</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="fi-mockup">
-  <div class="fi-layout">
-    <aside class="fi-sidebar" aria-label="Main navigation">
-      <header class="fi-sidebar__header">
-        <div class="fi-sidebar__brand">Filament Demo</div>
-      </header>
-      <nav class="fi-sidebar__nav">
-        <a href="dashboard.html">Dashboard</a>
-        <div class="fi-nav-group__label">Catalog</div>
-        <a href="resource-list.html" class="is-active">Users</a>
-        <a href="resource-list.html">Orders</a>
-        <div class="fi-nav-group__label">System</div>
-        <a href="settings.html">Settings</a>
-      </nav>
-    </aside>
-    <div class="fi-main">
-      <header class="fi-topbar">
-        <div class="fi-topbar__spacer"></div>
-        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
-      </header>
-      <main class="fi-content">
-        <header class="fi-page-header">
-          <ul class="fi-breadcrumbs" aria-label="Breadcrumb">
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="resource-list.html">Users</a></li>
-            <li><span aria-current="page">Create</span></li>
-          </ul>
-          <h1>Create user</h1>
-        </header>
-        <form action="#" method="post">
-          <section class="fi-section" aria-labelledby="profile-heading">
-            <h2 class="fi-section__heading" id="profile-heading">Profile</h2>
-            <div class="fi-form-grid">
-              <div class="fi-field">
-                <label for="name">Full name <span aria-hidden="true">*</span></label>
-                <input id="name" name="name" type="text" required>
-              </div>
-              <div class="fi-field">
-                <label for="email">Email <span aria-hidden="true">*</span></label>
-                <input id="email" name="email" type="email" required>
-              </div>
-              <div class="fi-field">
-                <label for="role">Role</label>
-                <select id="role" name="role">
-                  <option>Admin</option>
-                  <option selected>Editor</option>
-                  <option>Viewer</option>
-                </select>
-              </div>
-              <div class="fi-field">
-                <label for="status">Status</label>
-                <select id="status" name="status">
-                  <option selected>Active</option>
-                  <option>Pending</option>
-                  <option>Suspended</option>
-                </select>
-              </div>
-              <div class="fi-field fi-field--full">
-                <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" rows="3"></textarea>
-                <p class="fi-field__hint">Optional short description shown on the profile.</p>
-              </div>
-            </div>
-          </section>
-          <section class="fi-section" aria-labelledby="security-heading">
-            <h2 class="fi-section__heading" id="security-heading">Security</h2>
-            <div class="fi-form-grid">
-              <!-- Secrets are drawn, never typed: no input element for a password in a mockup. -->
-              <div class="fi-field">
-                <span class="mock-label">Password <span aria-hidden="true">*</span></span>
-                <div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
-              </div>
-              <div class="fi-field">
-                <span class="mock-label">Confirm password <span aria-hidden="true">*</span></span>
-                <div class="mock-field mock-field--secret" role="img" aria-label="Confirm password field, filled in">••••••••••</div>
-              </div>
-            </div>
-          </section>
-          <div class="fi-actions-bar">
-            <a href="resource-list.html" class="fi-btn fi-btn--secondary">Cancel</a>
-            <div class="fi-actions-bar__spacer"></div>
-            <button type="submit" class="fi-btn fi-btn--primary">Create</button>
-          </div>
-        </form>
-      </main>
-    </div>
-  </div>
+<body class="fi-mockup fi-body fi-body-has-topbar fi-body-has-navigation">
+<a href="#fi-main-content" class="fi-skip-link">Skip to content</a>
+<header class="fi-topbar-ctn">
+<nav class="fi-topbar" aria-label="Topbar">
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-open-sidebar-btn" aria-label="Expand sidebar" aria-controls="fi-main-sidebar" aria-expanded="false"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+<div class="fi-topbar-start"><a href="dashboard.html" class="fi-logo" aria-label="Northwind Ops home"><span class="fi-logo-mark"><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/></svg></span>Northwind Ops</a></div>
+<div class="fi-topbar-end">
+<div class="fi-global-search-ctn"><div class="fi-global-search"><div class="fi-global-search-field">
+<label for="fi-global-search-input" class="fi-sr-only">Global search</label>
+<div class="fi-input-wrp"><div class="fi-input-wrp-prefix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg></div>
+<input id="fi-global-search-input" type="search" class="fi-input fi-input-has-inline-prefix" placeholder="Search" autocomplete="off"></div>
+</div></div></div>
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-database-notifications-btn" aria-label="Notifications, 3 unread"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><span class="fi-icon-btn-badge-ctn"><span class="fi-badge fi-color fi-color-primary fi-size-xs">3</span></span></button>
+<div class="fi-user-menu fi-dropdown"><button type="button" class="fi-user-menu-trigger" aria-label="User menu" aria-haspopup="menu" aria-expanded="false"><span class="fi-avatar fi-circular fi-user-avatar">ZH</span></button></div>
+</div>
+</nav>
+</header>
+<div class="fi-layout">
+<aside id="fi-main-sidebar" class="fi-sidebar fi-sidebar-open" aria-label="Sidebar">
+<nav class="fi-sidebar-nav" aria-label="Main"><ul class="fi-sidebar-nav-groups">
+<li class="fi-sidebar-group"><ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span class="fi-sidebar-item-label">Dashboard</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible fi-active"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Shop</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Shop" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url fi-active"><a href="resource-list.html" class="fi-sidebar-item-btn" aria-current="page"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg><span class="fi-sidebar-item-label">Orders</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-primary">38</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-edit.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg><span class="fi-sidebar-item-label">Products</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="relation-manager.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg><span class="fi-sidebar-item-label">Customers</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="cards-navigation.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path d="M6 6h.008v.008H6V6Z"/></svg><span class="fi-sidebar-item-label">Categories</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Logistics</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Logistics" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg><span class="fi-sidebar-item-label">Shipments</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-info">12</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg><span class="fi-sidebar-item-label">Warehouses</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"/></svg><span class="fi-sidebar-item-label">Suppliers</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Reports</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Reports" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="widgets-dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg><span class="fi-sidebar-item-label">Analytics</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Settings</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Settings" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="fi-sidebar-item-label">Store settings</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg><span class="fi-sidebar-item-label">Team</span></a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="fi-main-ctn">
+<main id="fi-main-content" class="fi-main">
+<div class="fi-page">
+<div class="fi-page-header-main-ctn">
+<header class="fi-header fi-header-has-breadcrumbs">
+<div>
+<nav class="fi-breadcrumbs" aria-label="Breadcrumbs"><ol class="fi-breadcrumbs-list">
+<li class="fi-breadcrumbs-item"><a href="resource-list.html">Orders</a></li>
+<li class="fi-breadcrumbs-item"><svg class="fi-icon fi-size-md fi-breadcrumbs-item-separator" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><span class="fi-breadcrumbs-item-label" aria-current="page">Create</span></li>
+</ol></nav>
+<h1 class="fi-header-heading">Create order</h1>
+</div>
+</header>
+<div class="fi-page-main">
+<div class="fi-page-content">
+<form class="fi-sc" aria-label="Create order" novalidate>
+<div class="fi-grid fi-grid-cols-3">
+<div class="fi-col-span-2 fi-sc">
+<section class="fi-section">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Order details</h2><p class="fi-section-header-description">Who is buying, through which channel, and the current status.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<div class="fi-grid fi-grid-cols-2">
+<div class="fi-fo-field fi-disabled">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="number" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Number</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-disabled"><input id="number" class="fi-input" value="NW-10493" disabled></div><span class="fi-sc-text">Assigned automatically when the order is saved.</span></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label" id="customer-label"><span class="fi-fo-field-label-content">Customer<sup class="fi-fo-field-label-required-mark">*</sup></span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><button type="button" class="fi-select-input-btn" aria-labelledby="customer-label">Kettle &amp; Crumb — Sofia Rossi</button></div></div>
+</div>
+<div class="fi-fo-field fi-col-span-full">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Status<sup class="fi-fo-field-label-required-mark">*</sup></span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-toggle-buttons" role="radiogroup" aria-label="Status">
+<button type="button" class="fi-btn fi-color fi-color-primary" role="radio" aria-checked="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.785l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .785.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.785l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684ZM13.949 13.684a1 1 0 0 0-1.898 0l-.184.551a1 1 0 0 1-.632.633l-.551.183a1 1 0 0 0 0 1.898l.551.183a1 1 0 0 1 .633.633l.183.551a1 1 0 0 0 1.898 0l.184-.551a1 1 0 0 1 .632-.633l.551-.183a1 1 0 0 0 0-1.898l-.551-.184a1 1 0 0 1-.633-.632l-.183-.551Z"/></svg>New</button>
+<button type="button" class="fi-btn" role="radio" aria-checked="false"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd"/></svg>Processing</button>
+<button type="button" class="fi-btn" role="radio" aria-checked="false"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.5h9V4.606c0-.771-.59-1.43-1.375-1.489A41.568 41.568 0 0 0 6.5 3ZM2 12v2.5A1.5 1.5 0 0 0 3.5 16h.041a3 3 0 0 1 5.918 0h.791a.75.75 0 0 0 .75-.75V12H2Z"/><path d="M6.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM13.25 5a.75.75 0 0 0-.75.75v8.514a3.001 3.001 0 0 1 4.893 1.44c.37-.275.61-.719.595-1.227a24.905 24.905 0 0 0-1.784-8.549A1.486 1.486 0 0 0 14.823 5H13.25ZM14.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg>Shipped</button>
+<button type="button" class="fi-btn" role="radio" aria-checked="false"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/></svg>Delivered</button>
+<button type="button" class="fi-btn" role="radio" aria-checked="false"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/></svg>Cancelled</button>
+</div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="currency" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Currency<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="currency" class="fi-select-input"><option>US Dollar (USD)</option><option>Euro (EUR)</option><option>Pound sterling (GBP)</option></select></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="channel" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Sales channel</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="channel" class="fi-select-input"><option>Wholesale</option><option>Online store</option><option>Trade show</option></select></div></div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="fi-section">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Shipping address</h2><p class="fi-section-header-description">Defaults to the customer’s primary address.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<div class="fi-grid fi-grid-cols-2">
+<div class="fi-fo-field fi-col-span-full">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="street" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Street address<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-invalid"><input id="street" class="fi-input" placeholder="Via Tortona 27" aria-invalid="true" aria-describedby="street-error"></div><p id="street-error" class="fi-fo-field-wrp-error-message">The street address field is required.</p></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="city" class="fi-fo-field-label"><span class="fi-fo-field-label-content">City<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="city" class="fi-input" value="Milan"></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="zip" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Postal code<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="zip" class="fi-input" value="20144"></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="country" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Country<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="country" class="fi-select-input"><option>Italy</option><option>Spain</option><option>United States</option></select></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="phone" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Delivery phone</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><div class="fi-input-wrp-prefix"><span class="fi-input-wrp-label">+39</span></div><input id="phone" class="fi-input" type="tel" value="02 8457 1120"></div></div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="fi-section">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Order items</h2><p class="fi-section-header-description">Prices come from the Wholesale price list.</p></div>
+<div class="fi-section-header-after-ctn"><button type="button" class="fi-link fi-color fi-color-danger fi-size-sm">Reset items</button></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<div class="fi-fo-table-repeater">
+<div class="fi-fo-table-repeater-ctn">
+<table>
+<thead><tr><th scope="col">Product<sup class="fi-fo-table-repeater-header-required-mark">*</sup></th><th scope="col">Quantity<sup class="fi-fo-table-repeater-header-required-mark">*</sup></th><th scope="col">Unit price</th><th scope="col"><span class="fi-sr-only">Actions</span></th></tr></thead>
+<tbody>
+<tr><td><div class="fi-input-wrp"><select class="fi-select-input" aria-label="Product, row 1"><option>Ethiopia Yirgacheffe beans, 1 kg</option></select></div></td><td><div class="fi-input-wrp"><input class="fi-input" type="number" value="8" aria-label="Quantity, row 1"></div></td><td><div class="fi-input-wrp fi-disabled"><div class="fi-input-wrp-prefix fi-inline"><span class="fi-input-wrp-label">$</span></div><input class="fi-input fi-input-has-inline-prefix" value="24.50" disabled aria-label="Unit price, row 1"></div></td><td class="fi-fo-table-repeater-actions"><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete row 1"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button></td></tr>
+<tr><td><div class="fi-input-wrp"><select class="fi-select-input" aria-label="Product, row 2"><option>Cold brew filter pack (50)</option></select></div></td><td><div class="fi-input-wrp"><input class="fi-input" type="number" value="4" aria-label="Quantity, row 2"></div></td><td><div class="fi-input-wrp fi-disabled"><div class="fi-input-wrp-prefix fi-inline"><span class="fi-input-wrp-label">$</span></div><input class="fi-input fi-input-has-inline-prefix" value="9.40" disabled aria-label="Unit price, row 2"></div></td><td class="fi-fo-table-repeater-actions"><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete row 2"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button></td></tr>
+<tr><td><div class="fi-input-wrp"><select class="fi-select-input" aria-label="Product, row 3"><option>Vanilla syrup, 750 ml</option></select></div></td><td><div class="fi-input-wrp"><input class="fi-input" type="number" value="6" aria-label="Quantity, row 3"></div></td><td><div class="fi-input-wrp fi-disabled"><div class="fi-input-wrp-prefix fi-inline"><span class="fi-input-wrp-label">$</span></div><input class="fi-input fi-input-has-inline-prefix" value="8.90" disabled aria-label="Unit price, row 3"></div></td><td class="fi-fo-table-repeater-actions"><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete row 3"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button></td></tr>
+</tbody>
+<tfoot><tr><td colspan="2">3 products · 18 units</td><td colspan="2"><strong class="fi-text-strong">Subtotal $286.00</strong></td></tr></tfoot>
+</table>
+</div>
+<div class="fi-fo-repeater-add"><button type="button" class="fi-btn fi-size-sm">Add to items</button></div>
+</div>
+</div></div>
+</section>
+<section class="fi-section">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Notes &amp; attachments</h2></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content fi-sc">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Notes for the warehouse</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-fo-rich-editor">
+<div class="fi-grow">
+<div class="fi-fo-rich-editor-toolbar" role="toolbar" aria-label="Formatting">
+<div class="fi-fo-rich-editor-toolbar-group"><button type="button" class="fi-fo-rich-editor-tool fi-active" aria-label="Bold" aria-pressed="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4 3a1 1 0 0 1 1-1h6a4.5 4.5 0 0 1 3.274 7.587A4.75 4.75 0 0 1 11.25 18H5a1 1 0 0 1-1-1V3Zm2.5 5.5v-4H11a2 2 0 1 1 0 4H6.5Zm0 2.5v4.5h4.75a2.25 2.25 0 0 0 0-4.5H6.5Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Italic"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 2.75A.75.75 0 0 1 8.75 2h7.5a.75.75 0 0 1 0 1.5h-3.215l-4.483 13h2.698a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5h3.215l4.483-13H8.75A.75.75 0 0 1 8 2.75Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Underline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4.75 2a.75.75 0 0 1 .75.75V9a4.5 4.5 0 1 0 9 0V2.75a.75.75 0 0 1 1.5 0V9A6 6 0 0 1 4 9V2.75A.75.75 0 0 1 4.75 2ZM2 17.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Strikethrough"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M11.617 3.963c-1.186-.318-2.418-.323-3.416.015-.992.336-1.49.91-1.642 1.476-.152.566-.007 1.313.684 2.1.528.6 1.273 1.1 2.128 1.446h7.879a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5h3.813a5.976 5.976 0 0 1-.447-.456C5.18 7.479 4.798 6.231 5.11 5.066c.312-1.164 1.268-2.055 2.61-2.509 1.336-.451 2.877-.42 4.286-.043.856.23 1.684.592 2.409 1.074a.75.75 0 1 1-.83 1.25 6.723 6.723 0 0 0-1.968-.875Zm1.909 8.123a.75.75 0 0 1 1.015.309c.53.99.607 2.062.18 3.01-.421.94-1.289 1.648-2.441 2.038-1.336.452-2.877.42-4.286.043-1.409-.377-2.759-1.121-3.69-2.18a.75.75 0 1 1 1.127-.99c.696.791 1.765 1.403 2.952 1.721 1.186.318 2.418.323 3.416-.015.853-.288 1.34-.756 1.555-1.232.21-.467.205-1.049-.136-1.69a.75.75 0 0 1 .308-1.014Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Link"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z"/><path d="M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z"/></svg></button></div>
+<div class="fi-fo-rich-editor-toolbar-group"><button type="button" class="fi-fo-rich-editor-tool" aria-label="Heading 2"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.75 4a.75.75 0 0 1 .75.75v4.5h5v-4.5a.75.75 0 0 1 1.5 0v10.5a.75.75 0 0 1-1.5 0v-4.5h-5v4.5a.75.75 0 0 1-1.5 0V4.75A.75.75 0 0 1 2.75 4ZM15 9.5c-.729 0-1.445.051-2.146.15a.75.75 0 0 1-.208-1.486 16.887 16.887 0 0 1 3.824-.1c.855.074 1.512.78 1.527 1.637a17.476 17.476 0 0 1-.009.931 1.713 1.713 0 0 1-1.18 1.556l-2.453.818a1.25 1.25 0 0 0-.855 1.185v.309h3.75a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-1.059a2.75 2.75 0 0 1 1.88-2.608l2.454-.818c.102-.034.153-.117.155-.188a15.556 15.556 0 0 0 .009-.85.171.171 0 0 0-.158-.169A15.458 15.458 0 0 0 15 9.5Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Heading 3"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.75 4a.75.75 0 0 1 .75.75v4.5h5v-4.5a.75.75 0 0 1 1.5 0v10.5a.75.75 0 0 1-1.5 0v-4.5h-5v4.5a.75.75 0 0 1-1.5 0V4.75A.75.75 0 0 1 2.75 4ZM15 9.5c-.73 0-1.448.051-2.15.15a.75.75 0 1 1-.209-1.485 16.886 16.886 0 0 1 3.476-.128c.985.065 1.878.837 1.883 1.932V10a6.75 6.75 0 0 1-.301 2A6.75 6.75 0 0 1 18 14v.031c-.005 1.095-.898 1.867-1.883 1.932a17.018 17.018 0 0 1-3.467-.127.75.75 0 0 1 .209-1.485 15.377 15.377 0 0 0 3.16.115c.308-.02.48-.24.48-.441L16.5 14c0-.431-.052-.85-.15-1.25h-2.6a.75.75 0 0 1 0-1.5h2.6c.098-.4.15-.818.15-1.25v-.024c-.001-.201-.173-.422-.481-.443A15.485 15.485 0 0 0 15 9.5Z" clip-rule="evenodd"/></svg></button></div>
+<div class="fi-fo-rich-editor-toolbar-group"><button type="button" class="fi-fo-rich-editor-tool" aria-label="Bullet list"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6 4.75A.75.75 0 0 1 6.75 4h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 4.75ZM6 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 10Zm0 5.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H6.75a.75.75 0 0 1-.75-.75ZM1.99 4.75a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1v-.01ZM1.99 15.25a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1v-.01ZM1.99 10a1 1 0 0 1 1-1H3a1 1 0 0 1 1 1v.01a1 1 0 0 1-1 1h-.01a1 1 0 0 1-1-1V10Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Numbered list"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 1.25a.75.75 0 0 0 0 1.5h.25v2.5a.75.75 0 0 0 1.5 0V2A.75.75 0 0 0 4 1.25H3ZM2.97 8.654a3.5 3.5 0 0 1 1.524-.12.034.034 0 0 1-.012.012L2.415 9.579A.75.75 0 0 0 2 10.25v1c0 .414.336.75.75.75h2.5a.75.75 0 0 0 0-1.5H3.927l1.225-.613c.52-.26.848-.79.848-1.371 0-.647-.429-1.327-1.193-1.451a5.03 5.03 0 0 0-2.277.155.75.75 0 0 0 .44 1.434ZM7.75 3a.75.75 0 0 0 0 1.5h9.5a.75.75 0 0 0 0-1.5h-9.5ZM7.75 9.25a.75.75 0 0 0 0 1.5h9.5a.75.75 0 0 0 0-1.5h-9.5ZM7.75 15.5a.75.75 0 0 0 0 1.5h9.5a.75.75 0 0 0 0-1.5h-9.5ZM2.625 13.875a.75.75 0 0 0 0 1.5h1.5a.125.125 0 0 1 0 .25H3.5a.75.75 0 0 0 0 1.5h.625a.125.125 0 0 1 0 .25h-1.5a.75.75 0 0 0 0 1.5h1.5a1.625 1.625 0 0 0 1.37-2.5 1.625 1.625 0 0 0-1.37-2.5h-1.5Z"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Attach files"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"/></svg></button></div>
+<div class="fi-fo-rich-editor-toolbar-group"><button type="button" class="fi-fo-rich-editor-tool" aria-label="Undo"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-fo-rich-editor-tool" aria-label="Redo"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.207 2.232a.75.75 0 0 0 .025 1.06l4.146 3.958H6.375a5.375 5.375 0 0 0 0 10.75H9.25a.75.75 0 0 0 0-1.5H6.375a3.875 3.875 0 0 1 0-7.75h10.003l-4.146 3.957a.75.75 0 0 0 1.036 1.085l5.5-5.25a.75.75 0 0 0 0-1.085l-5.5-5.25a.75.75 0 0 0-1.06.025Z" clip-rule="evenodd"/></svg></button></div>
+</div>
+<div class="fi-fo-rich-editor-content" role="textbox" aria-multiline="true" aria-label="Notes for the warehouse">
+<p><strong>Deliver to the side entrance on Via Tortona.</strong> The café opens at 7:00 — the loading bay is free until 8:30.</p>
+<ul><li>Keep the syrup bottles upright.</li><li>Add two sample bags of the new Colombia Huila roast.</li></ul>
+</div>
+</div>
+</div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Attachments</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-file-upload"><div class="fi-fo-file-upload-dropzone"><div class="fi-fo-file-upload-label">Drag &amp; Drop your files or&nbsp;<span class="fi-fo-file-upload-browse">Browse</span></div></div></div><span class="fi-sc-text">PDF or images, up to 10 MB each. Purchase orders are forwarded to accounting.</span></div>
+</div>
+</div></div>
+</section>
+</div>
+<div class="fi-sc">
+<section class="fi-section">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Fulfilment</h2></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content fi-sc">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="delivery-date" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Requested delivery</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="delivery-date" class="fi-input" value="Oct 16, 2026"><div class="fi-input-wrp-suffix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd"/></svg></div></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="warehouse" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Ship from</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="warehouse" class="fi-select-input"><option>Seattle DC</option><option>Rotterdam hub</option></select></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Delivery options</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-checkbox-list"><div class="fi-fo-checkbox-list-options">
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input" checked><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Signature on delivery</span><span class="fi-fo-checkbox-list-option-description">Required above $250.</span></span></label>
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input"><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Leave at loading dock</span></span></label>
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input" disabled><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Saturday delivery</span><span class="fi-fo-checkbox-list-option-description">Not offered in Italy.</span></span></label>
+</div></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label class="fi-fo-field-label"><button type="button" class="fi-toggle fi-toggle-on" role="switch" aria-checked="true" aria-label="Email the customer"><span></span></button><span class="fi-fo-field-label-content">Email the customer</span></label></div></div>
+<div class="fi-fo-field-content-col"><span class="fi-sc-text">Sends the order confirmation to sofia@kettleandcrumb.example.</span></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label class="fi-fo-field-label"><button type="button" class="fi-toggle fi-toggle-off" role="switch" aria-checked="false" aria-label="Gift wrap"><span></span></button><span class="fi-fo-field-label-content">Gift wrap</span></label></div></div>
+</div>
+</div></div>
+</section>
+<section class="fi-section fi-secondary fi-compact">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Totals</h2></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<dl class="fi-dl">
+<div><dt>Subtotal</dt><dd>$286.00</dd></div>
+<div><dt>Shipping (DHL Express)</dt><dd>$38.50</dd></div>
+<div><dt>VAT 22%</dt><dd>$71.39</dd></div>
+<div><dt>Total</dt><dd>$395.89</dd></div>
+</dl>
+</div></div>
+</section>
+</div>
+</div>
+<div class="fi-ac">
+<button type="submit" class="fi-btn fi-color fi-color-primary">Create</button>
+<button type="button" class="fi-btn">Create &amp; create another</button>
+<a href="resource-list.html" class="fi-btn">Cancel</a>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
 </body>
 </html>

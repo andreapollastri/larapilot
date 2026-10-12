@@ -312,6 +312,9 @@
                     @if ($database['charset'] || $database['collation'])
                         <div><dt>Charset</dt><dd>{{ $database['charset'] ?? '—' }}{{ $database['collation'] ? ' · '.$database['collation'] : '' }}</dd></div>
                     @endif
+                    @unless ($secrets_visible ?? true)
+                        <div><dt>Host · name</dt><dd><span class="hint">Shown to admins: where the database lives is the environment of the server.</span></dd></div>
+                    @endunless
                     <div><dt>Connections</dt><dd>{{ implode(' · ', array_map(static fn ($name, $driver) => $name.($driver !== '' && $driver !== $name ? ' ('.$driver.')' : ''), array_keys($database['connections']), $database['connections'])) }}</dd></div>
                 </dl>
             </section>

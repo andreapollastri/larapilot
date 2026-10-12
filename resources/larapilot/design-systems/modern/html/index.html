@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>Modern design system — catalog</title>
+</head>
+<body class="mo-mockup mo-body mo-body--site">
+<main class="mo-container mo-catalog" id="main">
+  <header class="mo-stack">
+    <a class="mo-brand" href="landing.html"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span>Pulseboard</a>
+    <span class="mo-eyebrow"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>Larapilot design system · modern · prefix mo-</span>
+    <h1 class="mo-title-site"><span class="mo-fade-text">Modern —</span> <span class="mo-gradient-text">crisp, quick, a little electric.</span></h1>
+    <p class="mo-lead mo-maxw-md">An original system in the spirit of 2025–2026 product design: hairline borders, one violet accent, glass and glow used sparingly, bento layouts, ⌘K and keyboard hints everywhere. Dark-first with an equally careful light theme; every screen follows the OS, <code class="mo-inline-code">dashboard-dark.html</code> forces dark. Sample product: <strong>Pulseboard</strong>, product analytics for Acme Inc.</p>
+  </header>
+
+  <section class="mo-mt-8" aria-labelledby="sw-title">
+    <h2 class="mo-h4 mo-mb-4" id="sw-title">Palette — neutrals, accent, chart order, status</h2>
+    <div class="mo-swatches">
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-bg"></div><span class="mo-swatch__name">bg</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-panel"></div><span class="mo-swatch__name">panel</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-surface-3"></div><span class="mo-swatch__name">surface-3</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-border"></div><span class="mo-swatch__name">border-strong</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-text-3"></div><span class="mo-swatch__name">text-3</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-text"></div><span class="mo-swatch__name">text</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-accent"></div><span class="mo-swatch__name">accent / c1</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-accent-soft"></div><span class="mo-swatch__name">accent-soft</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-grad"></div><span class="mo-swatch__name">grad</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-c2"></div><span class="mo-swatch__name">c2 cyan</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-c3"></div><span class="mo-swatch__name">c3 amber</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-c4"></div><span class="mo-swatch__name">c4 pink</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-success"></div><span class="mo-swatch__name">success</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-warning"></div><span class="mo-swatch__name">warning</span></div>
+      <div class="mo-swatch"><div class="mo-swatch__chip sw-danger"></div><span class="mo-swatch__name">danger</span></div>
+    </div>
+  </section>
+
+  <section class="mo-mt-8" aria-labelledby="app-title">
+    <h2 class="mo-h4" id="app-title">Backoffice (app)</h2>
+    <div class="mo-catalog__grid">
+      <a class="mo-card mo-catalog__item" href="dashboard.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</span><span class="mo-catalog__file">dashboard.html</span><span class="mo-catalog__text">Sidebar + topbar shell, KPI cards with sparklines, area chart with tooltip, bar list, funnel, retention heatmap, live events table. Start any analytics or home screen here.</span></a>
+      <a class="mo-card mo-catalog__item" href="dashboard-dark.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>Dashboard, forced dark</span><span class="mo-catalog__file">dashboard-dark.html</span><span class="mo-catalog__text">The same screen with <code class="mo-inline-code">&lt;html class="dark"&gt;</code>. Use it to review the dark palette.</span></a>
+      <a class="mo-card mo-catalog__item" href="resource-list.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>Resource list</span><span class="mo-catalog__file">resource-list.html</span><span class="mo-catalog__text">People table: saved views, search, filter chips, sort, 2 rows selected with the floating bulk bar, row menu open, badges, pagination. Start every index page here.</span></a>
+      <a class="mo-card mo-catalog__item" href="resource-form.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Resource form</span><span class="mo-catalog__file">resource-form.html</span><span class="mo-catalog__text">New funnel: sections, required marks, helper text, step builder with one error, disabled field, select, textarea, switches, drop zone, live preview, sticky actions.</span></a>
+      <a class="mo-card mo-catalog__item" href="settings.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</span><span class="mo-catalog__file">settings.html</span><span class="mo-catalog__text">Sub-navigation, label-left sections: workspace, members with roles, plan and usage, invoices, API keys, danger zone, toast.</span></a>
+      <a class="mo-card mo-catalog__item" href="empty-state.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Empty state</span><span class="mo-catalog__file">empty-state.html</span><span class="mo-catalog__text">First-run alerts page: illustration, primary action, onboarding checklist, API snippet, and a “no search results” state.</span></a>
+      <a class="mo-card mo-catalog__item" href="components.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"/><rect x="14" y="2" width="8" height="8" rx="1"/></svg>Components</span><span class="mo-catalog__file">components.html</span><span class="mo-catalog__text">Every component of components.md in its variants and states, including the command palette, dialog and charts.</span></a>
+      <a class="mo-card mo-catalog__item" href="login.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Sign in</span><span class="mo-catalog__file">login.html</span><span class="mo-catalog__text">Glass card on a glow: Google, GitHub, SAML and passkey buttons, drawn email and password fields. Start auth screens here.</span></a>
+    </div>
+  </section>
+
+  <section class="mo-mt-8" aria-labelledby="site-title">
+    <h2 class="mo-h4" id="site-title">Public website</h2>
+    <div class="mo-catalog__grid">
+      <a class="mo-card mo-catalog__item" href="landing.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>Landing</span><span class="mo-catalog__file">landing.html</span><span class="mo-catalog__text">Glass header, gradient hero with an HTML product shot, logo cloud, bento features, testimonials, pricing teaser, changelog, CTA, footer.</span></a>
+      <a class="mo-card mo-catalog__item" href="pricing.html"><span class="mo-catalog__title"><svg class="mo-icon mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>Pricing</span><span class="mo-catalog__file">pricing.html</span><span class="mo-catalog__text">Billing toggle, volume slider, four plans, comparison table, FAQ with native details. Start marketing sub-pages here.</span></a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Auth (split) — Laravel Starter Kit</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Fortify login in the kit's split auth layout with a failed-login error.">
+<title>Log in - Ledgerly</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="sk-mockup">
-  <div class="sk-auth-split">
-    <div class="sk-auth-split__brand">
-      <h2>Laravel</h2>
-      <p style="margin:0;opacity:0.85;max-width:20rem">Build something great with the official starter kits — auth, dashboard, and settings included.</p>
-    </div>
-    <div class="sk-auth-split__form">
-      <div class="sk-auth-card">
-        <h1>Log in to your account</h1>
-        <p class="sk-auth-card__desc">Enter your email and password below to log in</p>
-        <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
-        <div class="mock-form">
-          <div class="sk-field">
-            <span class="mock-label">Email address</span>
-            <div class="sk-input mock-field" role="img" aria-label="Email field, filled in">jane@example.com</div>
-          </div>
-          <div class="sk-field">
-            <span class="mock-label">Password</span>
-            <div class="sk-input mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
-          </div>
-          <a href="dashboard.html" class="sk-btn sk-btn--primary sk-btn--block" role="button">Log in</a>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Auth: layouts/auth/auth-simple-layout.tsx (or auth-split-layout.tsx) + pages/auth/login.tsx with components/passkey-verify.tsx. Vue: layouts/auth/AuthSimpleLayout.vue + pages/auth/Login.vue. Livewire: layouts/auth/simple.blade.php + pages/auth/login (flux:input, flux:checkbox, flux:button variant=primary). A picture of the screen: no form, credentials drawn with .mock-field. Map: .sk-auth__brand = AppLogoIcon size-9; .sk-auth__title = h1 text-xl font-medium; .mock-label = Label; .mock-field = Input / PasswordInput (pr-10 + Eye toggle); .sk-checkbox = Checkbox; .sk-auth__submit = Button className=mt-4 w-full; .sk-text-link = TextLink; .sk-status = the green status line. -->
+<a class="visually-hidden sk-skip" href="#main">Skip to content</a>
+<main class="sk-split" id="main">
+<!-- A picture of the sign-in screen: no form element, no input for credentials. -->
+<div class="sk-split__panel">
+<a class="sk-split__brand" href="#"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 23.5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zm10.5-8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2zM26 7a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/></svg>Ledgerly</a>
+<blockquote class="sk-split__quote"><p>&ldquo;I finally know where the money goes every month. Ledgerly turned three spreadsheets into one calm screen.&rdquo;</p><footer>Priya Raman, freelance illustrator</footer></blockquote>
+</div>
+<div class="sk-split__side">
+<div class="sk-split__form">
+<a class="sk-split__mobile-brand" href="#"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 23.5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2zm10.5-8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2V33a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2zM26 7a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/></svg><span class="visually-hidden">Ledgerly</span></a>
+<div class="sk-split__titles"><h1 class="sk-auth__title">Log in to your account</h1><p class="sk-auth__desc">Enter your email and password below to log in</p></div>
+<div class="sk-passkey-verify">
+<button class="sk-btn sk-btn--outline sk-btn--block" type="button"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>Sign in with a passkey</button>
+<div class="sk-or-divider sk-or-divider--caps"><span>Or continue with email</span></div>
+</div>
+<div class="sk-auth__form">
+<div class="sk-field"><span class="mock-label">Email address</span><div class="mock-field" role="img" aria-label="Email field, filled in">maya@okafor.family</div></div>
+<div class="sk-field"><div class="sk-field__row"><span class="mock-label">Password</span><a class="sk-text-link sk-text-link--sm" href="#">Forgot your password?</a></div>
+<div class="sk-password"><div class="mock-field mock-field--secret mock-field--error" role="img" aria-label="Password field, filled in">••••••••</div><span class="sk-password__toggle" aria-hidden="true"><svg class="sk-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span></div>
+<p class="sk-error">These credentials do not match our records.</p></div>
+<div class="sk-check"><input class="sk-checkbox" id="remember" type="checkbox"><label for="remember">Remember me</label></div>
+<a class="sk-btn sk-btn--block sk-auth__submit" href="dashboard.html" role="button">Log in</a>
+</div>
+<p class="sk-auth__footer">Don't have an account? <a class="sk-text-link" href="auth-register.html">Sign up</a></p>
+</div>
+</div>
+</main>
 </body>
 </html>

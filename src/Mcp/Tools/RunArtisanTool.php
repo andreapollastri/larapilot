@@ -38,6 +38,10 @@ class RunArtisanTool extends Tool
         'larapilot:aikido-issues',
         'larapilot:aikido-plan',
         'larapilot:aikido-repos',
+        'larapilot:security-status',
+        'larapilot:security-issues',
+        'larapilot:security-plan',
+        'larapilot:security-repos',
         'larapilot:errors-status',
         'larapilot:errors-list',
         'larapilot:errors-plan',
@@ -69,7 +73,7 @@ class RunArtisanTool extends Tool
      * What each command takes from an agent. A parameter that is not listed
      * is refused, and so is every parameter of a command that is not here:
      * the options that write (`quality --fix`, `backstage-export --write`,
-     * `usage-report --output`, `--report`, `aikido-repos --use`) stay with
+     * `usage-report --output`, `--report`, `aikido-repos --use`, `security-repos --use`) stay with
      * Artisan run by hand, and an option added to a command later is closed until it is
      * named here.
      *
@@ -89,6 +93,9 @@ class RunArtisanTool extends Tool
         'larapilot:aikido-issues' => ['--severity', '--type', '--new', '--limit', '--gate'],
         'larapilot:aikido-plan' => ['--ids'],
         'larapilot:aikido-repos' => ['--search'],
+        'larapilot:security-issues' => ['--severity', '--type', '--new', '--limit', '--detail', '--gate'],
+        'larapilot:security-plan' => ['--ids'],
+        'larapilot:security-repos' => ['--search'],
         'larapilot:errors-list' => ['--new', '--kind', '--limit'],
         'larapilot:errors-plan' => ['--codes'],
         'larapilot:boogle-errors' => ['--new', '--kind', '--limit'],

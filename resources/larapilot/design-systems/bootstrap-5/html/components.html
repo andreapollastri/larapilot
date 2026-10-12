@@ -1,82 +1,525 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Components — Bootstrap 5</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Components · Bootstrap 5 kit · Bramble Stays</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="bs-mockup">
-  <main class="bs-gallery container">
-    <h1 class="mb-2">Components</h1>
-    <p class="bs-gallery__intro">Bootstrap 5.3 primitives for static mockups. <a href="index.html">← Back to catalog</a></p>
+<header class="navbar bg-body-tertiary border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="index.html"><svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays <span class="badge text-bg-secondary fw-normal">Bootstrap 5.3 components</span></a>
+    <a class="btn btn-sm btn-outline-secondary" href="index.html">All screens</a>
+  </div>
+</header>
 
-    <section class="card mb-4">
-      <div class="card-body">
-        <h2 class="h6 mb-3">Buttons</h2>
-        <div class="d-flex flex-wrap gap-2">
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-3 d-none d-lg-block">
+      <nav class="list-group list-group-flush small sticky-top border rounded-3" aria-label="Components">
+        <a class="list-group-item list-group-item-action active" aria-current="true" href="#buttons">Buttons &amp; button groups</a>
+        <a class="list-group-item list-group-item-action" href="#badges">Badges</a>
+        <a class="list-group-item list-group-item-action" href="#alerts">Alerts</a>
+        <a class="list-group-item list-group-item-action" href="#cards">Cards</a>
+        <a class="list-group-item list-group-item-action" href="#listgroup">List group</a>
+        <a class="list-group-item list-group-item-action" href="#navs">Navs, tabs, breadcrumb, pagination</a>
+        <a class="list-group-item list-group-item-action" href="#forms">Forms &amp; validation</a>
+        <a class="list-group-item list-group-item-action" href="#mock">Drawn credential fields</a>
+        <a class="list-group-item list-group-item-action" href="#tables">Tables</a>
+        <a class="list-group-item list-group-item-action" href="#dropdowns">Dropdowns</a>
+        <a class="list-group-item list-group-item-action" href="#modal">Modal</a>
+        <a class="list-group-item list-group-item-action" href="#toasts">Toasts</a>
+        <a class="list-group-item list-group-item-action" href="#progress">Progress &amp; spinners</a>
+        <a class="list-group-item list-group-item-action" href="#accordion">Accordion</a>
+        <a class="list-group-item list-group-item-action" href="#offcanvas">Offcanvas</a>
+        <a class="list-group-item list-group-item-action" href="#placeholders">Placeholders</a>
+        <a class="list-group-item list-group-item-action" href="#type">Typography &amp; icons</a>
+      </nav>
+    </div>
+
+    <main class="col-lg-9">
+      <h1 class="h2">Components</h1>
+      <p class="lead text-body-secondary">Every component the kit documents, in its variants and states, with the real Bootstrap 5.3 class names. Interactive states (open menus, a modal, a toast) are drawn statically.</p>
+
+      <section id="buttons" class="py-4 border-top">
+        <h2 class="h4 mb-3">Buttons &amp; button groups</h2>
+        <div class="d-flex flex-wrap gap-2 mb-3">
           <button type="button" class="btn btn-primary">Primary</button>
           <button type="button" class="btn btn-secondary">Secondary</button>
-          <button type="button" class="btn btn-outline-primary">Outline</button>
+          <button type="button" class="btn btn-success">Success</button>
           <button type="button" class="btn btn-danger">Danger</button>
+          <button type="button" class="btn btn-warning">Warning</button>
+          <button type="button" class="btn btn-info">Info</button>
+          <button type="button" class="btn btn-light">Light</button>
+          <button type="button" class="btn btn-dark">Dark</button>
           <button type="button" class="btn btn-link">Link</button>
         </div>
-      </div>
-    </section>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <button type="button" class="btn btn-outline-primary">Primary</button>
+          <button type="button" class="btn btn-outline-secondary">Secondary</button>
+          <button type="button" class="btn btn-outline-success">Success</button>
+          <button type="button" class="btn btn-outline-danger">Danger</button>
+          <button type="button" class="btn btn-outline-warning">Warning</button>
+          <button type="button" class="btn btn-outline-info">Info</button>
+          <button type="button" class="btn btn-outline-dark">Dark</button>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <button type="button" class="btn btn-primary btn-lg">Large</button>
+          <button type="button" class="btn btn-primary">Default</button>
+          <button type="button" class="btn btn-primary btn-sm">Small</button>
+          <button type="button" class="btn btn-primary active" aria-pressed="true">Active</button>
+          <button type="button" class="btn btn-primary" disabled>Disabled</button>
+          <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2"><svg class="bi bi-plus-lg" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg> With icon</button>
+          <button type="button" class="btn btn-outline-secondary" aria-label="Edit listing"><svg class="bi bi-pencil" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/></svg></button>
+          <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" disabled><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Saving…</button>
+        </div>
+        <div class="d-flex flex-wrap gap-3">
+          <div class="btn-group" role="group" aria-label="View">
+            <button type="button" class="btn btn-outline-primary active" aria-pressed="true">List</button>
+            <button type="button" class="btn btn-outline-primary">Map</button>
+            <button type="button" class="btn btn-outline-primary">Calendar</button>
+          </div>
+          <div class="btn-toolbar gap-2" role="toolbar" aria-label="Editor">
+            <div class="btn-group btn-group-sm" role="group" aria-label="History">
+              <button type="button" class="btn btn-outline-secondary" aria-label="Undo"><svg class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/></svg></button>
+              <button type="button" class="btn btn-outline-secondary" aria-label="Redo"><svg class="bi bi-arrow-clockwise" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/></svg></button>
+            </div>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Export">
+              <button type="button" class="btn btn-outline-secondary">Share</button>
+              <button type="button" class="btn btn-outline-secondary">Export</button>
+            </div>
+          </div>
+          <div class="btn-group" role="group" aria-label="Nights">
+            <input type="radio" class="btn-check" name="nights" id="n2" checked><label class="btn btn-outline-secondary" for="n2">2 nights</label>
+            <input type="radio" class="btn-check" name="nights" id="n3"><label class="btn btn-outline-secondary" for="n3">3 nights</label>
+            <input type="radio" class="btn-check" name="nights" id="n7"><label class="btn btn-outline-secondary" for="n7">A week</label>
+          </div>
+        </div>
+      </section>
 
-    <section class="card mb-4">
-      <div class="card-body">
-        <h2 class="h6 mb-3">Alerts & badges</h2>
-        <div class="alert alert-success" role="alert">Changes saved successfully.</div>
-        <div class="alert alert-warning" role="alert">Your trial ends in 3 days.</div>
-        <div class="d-flex flex-wrap gap-2">
+      <section id="badges" class="py-4 border-top">
+        <h2 class="h4 mb-3">Badges</h2>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
           <span class="badge text-bg-primary">Primary</span>
-          <span class="badge text-bg-success">Success</span>
-          <span class="badge text-bg-warning">Warning</span>
-          <span class="badge text-bg-danger">Danger</span>
+          <span class="badge text-bg-secondary">Secondary</span>
+          <span class="badge text-bg-success">Confirmed</span>
+          <span class="badge text-bg-danger">Overdue</span>
+          <span class="badge text-bg-warning">Request</span>
+          <span class="badge text-bg-info">Awaiting payment</span>
+          <span class="badge text-bg-light">Light</span>
+          <span class="badge text-bg-dark">Dark</span>
+          <span class="badge rounded-pill text-bg-primary">Pill 14</span>
         </div>
-      </div>
-    </section>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">Subtle success</span>
+          <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Subtle warning</span>
+          <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">Subtle danger</span>
+          <button type="button" class="btn btn-primary btn-sm">Messages <span class="badge text-bg-light ms-1">2</span></button>
+          <button type="button" class="btn btn-outline-secondary position-relative ms-2" aria-label="Notifications, 3 unread">
+            <svg class="bi bi-bell" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">3</span>
+          </button>
+        </div>
+      </section>
 
-    <section class="card mb-4">
-      <div class="card-body">
-        <h2 class="h6 mb-3">Form</h2>
-        <div class="mb-3">
-          <label for="demo-input" class="form-label">Email</label>
-          <input type="email" class="form-control" id="demo-input" placeholder="you@example.com">
+      <section id="alerts" class="py-4 border-top">
+        <h2 class="h4 mb-3">Alerts</h2>
+        <div class="alert alert-primary d-flex align-items-baseline gap-2" role="alert"><svg class="bi bi-info-circle-fill flex-shrink-0" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg><div>Your calendar synced with Airbnb 6 minutes ago. <a href="#alerts" class="alert-link">View sync log</a></div></div>
+        <div class="alert alert-success d-flex align-items-baseline gap-2" role="alert"><svg class="bi bi-check-circle-fill flex-shrink-0" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg><div>Payout of €1,036.00 sent to Starling Bank •••• 4821.</div></div>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          <h3 class="alert-heading h6">Two requests expire today</h3>
+          <p class="mb-0">Guests are charged only once you accept. <a href="resource-list.html" class="alert-link">Review requests</a></p>
+          <button type="button" class="btn-close" aria-label="Close"></button>
         </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="demo-check">
-          <label class="form-check-label" for="demo-check">Accept terms</label>
-        </div>
-      </div>
-    </section>
+        <div class="alert alert-danger d-flex align-items-baseline gap-2 mb-0" role="alert"><svg class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></svg><div>The card on file was declined. Update it before 15 October to keep your Plus plan.</div></div>
+      </section>
 
-    <section class="card">
-      <div class="card-body">
-        <h2 class="h6 mb-3">Modal trigger</h2>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#demoModal">Open modal</button>
-      </div>
-    </section>
-  </main>
+      <section id="cards" class="py-4 border-top">
+        <h2 class="h4 mb-3">Cards</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+          <div class="col">
+            <div class="card h-100">
+              <svg class="card-img-top" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Saltmarsh Cottage above the sea"><defs><linearGradient id="s1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d8f0"/><stop offset="1" stop-color="#eef8fc"/></linearGradient></defs><rect width="400" height="250" fill="url(#s1)"/><path d="M0 132h400v40H0Z" fill="#3a86b8"/><path d="M0 146h400" stroke="#8cc4e3" stroke-width="2" opacity=".7"/><path d="M0 166c60-14 120-12 190 0s150 10 210-4v88H0Z" fill="#e9d5a8"/><path d="M0 200c80-20 170-18 260 0s110 6 140 0v50H0Z" fill="#9db866"/><rect x="150" y="120" width="110" height="62" fill="#f8f5ef"/><path d="M140 124 205 86 270 124Z" fill="#c2563c"/><rect x="196" y="146" width="18" height="36" fill="#2d5f8c"/><rect x="162" y="136" width="20" height="16" fill="#9fd0ea"/><rect x="228" y="136" width="20" height="16" fill="#9fd0ea"/><rect x="236" y="92" width="10" height="20" fill="#e7e1d6"/><path d="M60 205v-16M66 205v-20M72 205v-14M320 200v-18M327 200v-22M334 200v-15" stroke="#5f8a3a" stroke-width="3"/><circle cx="80" cy="60" r="18" fill="#fffbe9"/></svg>
+              <div class="card-body">
+                <h3 class="card-title h5">Saltmarsh Cottage</h3>
+                <p class="card-text text-body-secondary small">Holkham, Norfolk · sleeps 4</p>
+                <a href="#cards" class="btn btn-primary btn-sm">View stay</a>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100">
+              <div class="card-header">Payouts</div>
+              <div class="card-body">
+                <h3 class="card-title h5">€4,212.50</h3>
+                <h4 class="card-subtitle mb-2 text-body-secondary h6">Next payout · 16 Oct</h4>
+                <p class="card-text small">3 bookings check in this week.</p>
+                <a href="#cards" class="card-link">Statement</a>
+                <a href="#cards" class="card-link">Bank details</a>
+              </div>
+              <div class="card-footer text-body-secondary small">Updated 5 minutes ago</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card h-100 border-primary">
+              <div class="card-header text-bg-primary border-primary">Selected plan</div>
+              <div class="card-body">
+                <h3 class="card-title h5">Plus · €19/mo</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><svg class="bi bi-check2 text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/></svg> Up to 5 listings</li>
+                  <li><svg class="bi bi-check2 text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/></svg> Smart nightly pricing</li>
+                  <li><svg class="bi bi-check2 text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/></svg> Priority support</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <div class="modal fade" id="demoModal" tabindex="-1" aria-labelledby="demoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title fs-5" id="demoModalLabel">Confirm action</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <section id="listgroup" class="py-4 border-top">
+        <h2 class="h4 mb-3">List group</h2>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="list-group">
+              <a href="#listgroup" class="list-group-item list-group-item-action active" aria-current="true">Willow Cottage</a>
+              <a href="#listgroup" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">Larch Cabin <span class="badge text-bg-primary rounded-pill">3</span></a>
+              <a href="#listgroup" class="list-group-item list-group-item-action">Saltmarsh Cottage</a>
+              <a class="list-group-item list-group-item-action disabled" aria-disabled="true">Old Mill Barn (snoozed)</a>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div><div class="fw-semibold">Check-in</div><span class="small text-body-secondary">From 16:00, key safe by the door</span></div>
+                <span class="badge text-bg-success">Set</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div><div class="fw-semibold">House rules</div><span class="small text-body-secondary">Quiet hours, smoking, parties</span></div>
+                <span class="badge text-bg-warning">Missing</span>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="modal-body">Are you sure you want to proceed? This action cannot be undone.</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger">Confirm</button>
+      </section>
+
+      <section id="navs" class="py-4 border-top">
+        <h2 class="h4 mb-3">Navs, tabs, breadcrumb, pagination</h2>
+        <ul class="nav nav-tabs mb-3">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="#navs">Details</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Photos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Pricing</a></li>
+          <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Channel sync</a></li>
+        </ul>
+        <ul class="nav nav-pills mb-3">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="#navs">Upcoming</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Past</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Cancelled</a></li>
+        </ul>
+        <ul class="nav nav-underline mb-3">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="#navs">All</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Requests</a></li>
+          <li class="nav-item"><a class="nav-link" href="#navs">Reviews</a></li>
+        </ul>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#navs">Listings</a></li>
+            <li class="breadcrumb-item"><a href="#navs">Willow Cottage</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+          </ol>
+        </nav>
+        <nav aria-label="Pages">
+          <ul class="pagination mb-2">
+            <li class="page-item disabled"><a class="page-link" aria-disabled="true">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#navs">1</a></li>
+            <li class="page-item active" aria-current="page"><a class="page-link" href="#navs">2</a></li>
+            <li class="page-item"><a class="page-link" href="#navs">3</a></li>
+            <li class="page-item"><a class="page-link" href="#navs">Next</a></li>
+          </ul>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item active" aria-current="page"><a class="page-link" href="#navs">1</a></li>
+            <li class="page-item"><a class="page-link" href="#navs">2</a></li>
+            <li class="page-item"><a class="page-link" href="#navs">3</a></li>
+          </ul>
+        </nav>
+      </section>
+
+      <section id="forms" class="py-4 border-top">
+        <h2 class="h4 mb-3">Forms &amp; validation</h2>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="f1" class="form-label">Listing title <span class="text-danger" aria-hidden="true">*</span></label>
+            <input type="text" class="form-control" id="f1" value="Willow Cottage" aria-describedby="f1h">
+            <div id="f1h" class="form-text">Up to 60 characters.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="f2" class="form-label">Property type</label>
+            <select id="f2" class="form-select"><option>Cottage</option><option>Cabin</option></select>
+          </div>
+          <div class="col-md-4">
+            <label for="f3" class="form-label">Small</label>
+            <input type="text" class="form-control form-control-sm" id="f3" placeholder="form-control-sm">
+          </div>
+          <div class="col-md-4">
+            <label for="f4" class="form-label">Disabled</label>
+            <input type="text" class="form-control" id="f4" value="BR-L-0042" disabled>
+          </div>
+          <div class="col-md-4">
+            <label for="f5" class="form-label">Read-only plain text</label>
+            <input type="text" readonly class="form-control-plaintext" id="f5" value="amara@brambleandco.uk">
+          </div>
+          <div class="col-md-6">
+            <label for="f6" class="form-label">Valid</label>
+            <input type="text" class="form-control is-valid" id="f6" value="LA22 0EH">
+            <div class="valid-feedback">Postcode found: Ambleside.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="f7" class="form-label">Invalid</label>
+            <input type="text" class="form-control is-invalid" id="f7" value="0" aria-describedby="f7f">
+            <div id="f7f" class="invalid-feedback">Enter at least 1 night.</div>
+          </div>
+          <div class="col-md-6">
+            <label for="f8" class="form-label">Input group</label>
+            <div class="input-group">
+              <span class="input-group-text">€</span>
+              <input type="text" class="form-control" id="f8" value="142.00">
+              <span class="input-group-text">/ night</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="f9" class="form-label">Input group with button</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="f9" placeholder="Promo code">
+              <button class="btn btn-outline-secondary" type="button">Apply</button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="f10" placeholder="name@example.com" value="amara@brambleandco.uk">
+              <label for="f10">Floating label</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <select class="form-select is-invalid" id="f11"><option selected>Choose…</option><option>Flexible</option></select>
+              <label for="f11">Cancellation policy</label>
+              <div class="invalid-feedback">Pick a policy before publishing.</div>
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="f12" class="form-label">Textarea</label>
+            <textarea id="f12" class="form-control" rows="2">Key safe by the green door. Code sent 3 days before arrival.</textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="f13" class="form-label">File</label>
+            <input class="form-control" type="file" id="f13">
+          </div>
         </div>
-      </div>
-    </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <p class="form-label">Checkboxes</p>
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="c1" checked><label class="form-check-label" for="c1">Wi-Fi</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="c2"><label class="form-check-label" for="c2">Hot tub</label></div>
+            <div class="form-check"><input class="form-check-input is-invalid" type="checkbox" id="c3"><label class="form-check-label" for="c3">I accept the host terms</label><div class="invalid-feedback">Required to publish.</div></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" id="c4" disabled><label class="form-check-label" for="c4">Pool (disabled)</label></div>
+          </div>
+          <div class="col-md-4">
+            <p class="form-label">Radios</p>
+            <div class="form-check"><input class="form-check-input" type="radio" name="r" id="r1" checked><label class="form-check-label" for="r1">Flexible</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="r" id="r2"><label class="form-check-label" for="r2">Moderate</label></div>
+            <div class="form-check form-check-inline mt-2"><input class="form-check-input" type="radio" name="r2" id="r3" checked><label class="form-check-label" for="r3">Inline A</label></div>
+            <div class="form-check form-check-inline"><input class="form-check-input" type="radio" name="r2" id="r4"><label class="form-check-label" for="r4">Inline B</label></div>
+          </div>
+          <div class="col-md-4">
+            <p class="form-label">Switches</p>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="s1" checked><label class="form-check-label" for="s1">Instant booking</label></div>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="s2"><label class="form-check-label" for="s2">Last-minute deals</label></div>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="s3" checked disabled><label class="form-check-label" for="s3">Damage protection (always on)</label></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mock" class="py-4 border-top">
+        <h2 class="h4 mb-1">Drawn credential fields</h2>
+        <p class="text-body-secondary small">Sign-in screens draw their fields with <code>.mock-label</code> / <code>.mock-field</code>: the same box as <code>.form-control</code>, never a real input.</p>
+        <div class="row g-3">
+          <div class="col-md-6"><span class="mock-label">Filled</span><div class="mock-field" role="img" aria-label="Email field, filled in">amara.okafor@brambleandco.uk</div></div>
+          <div class="col-md-6"><span class="mock-label">Secret</span><div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••••</div></div>
+          <div class="col-md-4"><span class="mock-label">Empty</span><div class="mock-field mock-field--empty" role="img" aria-label="Email field, empty">name@example.com</div></div>
+          <div class="col-md-4"><span class="mock-label">Focus</span><div class="mock-field mock-field--focus" role="img" aria-label="Email field, focused">amara@</div></div>
+          <div class="col-md-4"><span class="mock-label">Error</span><div class="mock-field mock-field--error" role="img" aria-label="Email field, with an error">amara@bramble</div><div class="invalid-feedback">Enter a full email address.</div></div>
+          <div class="col-md-6">
+            <span class="mock-label">In an input group</span>
+            <div class="input-group"><span class="input-group-text"><svg class="bi bi-envelope" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg></span><div class="mock-field" role="img" aria-label="Email field, filled in">amara.okafor@brambleandco.uk</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tables" class="py-4 border-top">
+        <h2 class="h4 mb-3">Tables</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover table-sm align-middle text-nowrap">
+            <caption class="small">Payouts · October 2026</caption>
+            <thead>
+              <tr><th scope="col">Date</th><th scope="col">Booking</th><th scope="col">Listing</th><th scope="col">Status</th><th scope="col" class="text-end">Amount</th></tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr><td>12 Oct</td><td>BR-20481</td><td>Willow Cottage</td><td><span class="badge text-bg-success">Paid</span></td><td class="text-end">€413.22</td></tr>
+              <tr class="table-active"><td>12 Oct</td><td>BR-20477</td><td>Larch Cabin</td><td><span class="badge text-bg-success">Paid</span></td><td class="text-end">€1,004.92</td></tr>
+              <tr><td>16 Oct</td><td>BR-20502</td><td>Saltmarsh Cottage</td><td><span class="badge text-bg-secondary">Scheduled</span></td><td class="text-end">€578.12</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="dropdowns" class="py-4 border-top">
+        <h2 class="h4 mb-3">Dropdowns</h2>
+        <div class="d-flex flex-wrap gap-4 align-items-start" style="min-height: 15rem">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle show" type="button" aria-expanded="true">Sort by</button>
+            <ul class="dropdown-menu show" data-bs-popper="static">
+              <li><h6 class="dropdown-header">Order</h6></li>
+              <li><a class="dropdown-item active" aria-current="true" href="#dropdowns">Check-in date</a></li>
+              <li><a class="dropdown-item" href="#dropdowns">Guest name</a></li>
+              <li><a class="dropdown-item disabled" aria-disabled="true">Rating (needs 3 reviews)</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#dropdowns">Reset</a></li>
+            </ul>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary">Accept request</button>
+            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" aria-expanded="false"><span class="visually-hidden">More options</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="modal" class="py-4 border-top">
+        <h2 class="h4 mb-3">Modal</h2>
+        <div class="position-relative border rounded-3 overflow-hidden bg-body-tertiary" style="min-height: 22rem">
+          <div class="p-4" aria-hidden="true">
+            <p class="fw-semibold mb-2">Bookings</p>
+            <p class="placeholder-glow mb-0"><span class="placeholder col-7"></span> <span class="placeholder col-4"></span> <span class="placeholder col-4"></span> <span class="placeholder col-6"></span> <span class="placeholder col-8"></span> <span class="placeholder col-3"></span> <span class="placeholder col-5"></span> <span class="placeholder col-6"></span> <span class="placeholder col-9"></span> <span class="placeholder col-2"></span> <span class="placeholder col-6"></span> <span class="placeholder col-5"></span></p>
+          </div>
+          <div class="modal-backdrop show position-absolute w-100 h-100"></div>
+          <div class="modal d-block position-absolute top-0 start-0" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title fs-5" id="mTitle">Decline this request?</h3>
+                  <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-2">Aiyana Redcloud asked for Saltmarsh Cottage, 18–20 October.</p>
+                  <label class="form-label" for="mReason">Message to the guest</label>
+                  <textarea class="form-control" id="mReason" rows="2">Sorry — the cottage is closed that weekend for a boiler repair.</textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary">Keep request</button>
+                  <button type="button" class="btn btn-danger">Decline request</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="toasts" class="py-4 border-top">
+        <h2 class="h4 mb-3">Toasts</h2>
+        <div class="d-flex flex-wrap gap-3">
+          <div class="toast show" role="status" aria-live="polite" aria-atomic="true">
+            <div class="toast-header">
+              <svg class="bi bi-check-circle-fill text-success me-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+              <strong class="me-auto">Listing saved</strong>
+              <small class="text-body-secondary">just now</small>
+              <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">Willow Cottage is live with your new prices.</div>
+          </div>
+          <div class="toast show align-items-center text-bg-primary border-0" role="status" aria-live="polite" aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body">Calendar synced with Airbnb.</div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="progress" class="py-4 border-top">
+        <h2 class="h4 mb-3">Progress &amp; spinners</h2>
+        <div class="progress mb-2" role="progressbar" aria-label="Upload" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar w-25">25%</div></div>
+        <div class="progress mb-2" role="progressbar" aria-label="Occupancy" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-success progress-bar-striped w-75"></div></div>
+        <div class="progress-stacked mb-3">
+          <div class="progress w-50" role="progressbar" aria-label="Booked" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar"></div></div>
+          <div class="progress w-25" role="progressbar" aria-label="Blocked" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning"></div></div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+          <div class="spinner-border spinner-border-sm text-secondary" role="status"><span class="visually-hidden">Loading…</span></div>
+        </div>
+      </section>
+
+      <section id="accordion" class="py-4 border-top">
+        <h2 class="h4 mb-3">Accordion</h2>
+        <div class="accordion" id="acc">
+          <div class="accordion-item">
+            <h3 class="accordion-header"><button class="accordion-button" type="button" aria-expanded="true" aria-controls="a1">House rules</button></h3>
+            <div id="a1" class="accordion-collapse collapse show"><div class="accordion-body">No parties, quiet after 22:00, dogs welcome on the ground floor.</div></div>
+          </div>
+          <div class="accordion-item">
+            <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" aria-expanded="false" aria-controls="a2">Getting there</button></h3>
+            <div id="a2" class="accordion-collapse collapse"><div class="accordion-body">Windermere station is 15 minutes by taxi.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="offcanvas" class="py-4 border-top">
+        <h2 class="h4 mb-3">Offcanvas</h2>
+        <div class="border rounded-3 overflow-hidden d-flex bg-body-tertiary">
+          <div class="offcanvas offcanvas-start show position-static mw-100" tabindex="-1" aria-labelledby="ocTitle">
+            <div class="offcanvas-header border-bottom">
+              <h3 class="offcanvas-title h5" id="ocTitle">Filters</h3>
+              <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <label class="form-label" for="ocL">Listing</label>
+              <select class="form-select mb-3" id="ocL"><option>All listings</option></select>
+              <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" role="switch" id="ocS" checked><label class="form-check-label" for="ocS">Only requests</label></div>
+              <button type="button" class="btn btn-primary w-100">Show 6 bookings</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="placeholders" class="py-4 border-top">
+        <h2 class="h4 mb-3">Placeholders</h2>
+        <div class="card col-md-6" aria-hidden="true">
+          <div class="card-body">
+            <h3 class="card-title placeholder-glow h5"><span class="placeholder col-6"></span></h3>
+            <p class="card-text placeholder-glow"><span class="placeholder col-7"></span> <span class="placeholder col-4"></span> <span class="placeholder col-4"></span> <span class="placeholder col-6"></span></p>
+            <a class="btn btn-primary disabled placeholder col-4" aria-disabled="true"></a>
+          </div>
+        </div>
+      </section>
+
+      <section id="type" class="py-4 border-top">
+        <h2 class="h4 mb-3">Typography &amp; icons</h2>
+        <p class="display-6 mb-1">Display 6</p>
+        <p class="h1 mb-1">Heading 1</p>
+        <p class="h3 mb-1">Heading 3</p>
+        <p class="h5">Heading 5</p>
+        <p class="lead">Lead paragraph for introductions.</p>
+        <p>Body text with <a href="#type">a link</a>, <strong>bold</strong>, <mark>highlight</mark>, <code>code</code> and <small class="text-body-secondary">muted small text</small>.</p>
+        <figure class="mb-4">
+          <blockquote class="blockquote"><p>Countryside stays, booked direct.</p></blockquote>
+          <figcaption class="blockquote-footer">Bramble Stays, <cite title="Brand book">brand book</cite></figcaption>
+        </figure>
+        <div class="d-flex flex-wrap gap-3 fs-4 text-body-secondary" aria-label="Bootstrap Icons sample">
+          <svg class="bi bi-house-door" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/></svg><svg class="bi bi-calendar3" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg><svg class="bi bi-people" viewBox="0 0 16 16" aria-hidden="true"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></svg><svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-wallet2" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/></svg><svg class="bi bi-chat-left-text" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/><path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/></svg><svg class="bi bi-gear" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/></svg><svg class="bi bi-geo-alt" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>
+        </div>
+        <p class="small text-body-secondary mt-2 mb-0">More glyphs: <a href="icons.html">icons.html</a>.</p>
+      </section>
+    </main>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 </body>
 </html>

@@ -1,112 +1,416 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Landing — Bootstrap 5</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bramble Stays — countryside cottages and cabins, booked direct</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
 <body class="bs-mockup">
-  <header class="bs-site-header">
-    <nav class="navbar navbar-expand-lg container py-3" aria-label="Main">
-      <a class="navbar-brand fw-semibold" href="landing.html">Acme SaaS</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="nav">
-        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.html">Log in</a></li>
-          <li class="nav-item"><a class="btn btn-primary ms-lg-2" href="login.html">Start free trial</a></li>
+<header>
+  <nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top" aria-label="Main">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="landing.html"><svg class="bi bi-tree-fill text-success fs-4" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays</a>
+      <button class="navbar-toggler" type="button" aria-controls="siteNav" aria-expanded="false" aria-label="Open the menu"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="siteNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="landing.html">Find a stay</a></li>
+          <li class="nav-item"><a class="nav-link" href="#stays">Last-minute deals</a></li>
+          <li class="nav-item"><a class="nav-link" href="#hosts">Become a host</a></li>
+          <li class="nav-item"><a class="nav-link" href="#faq">Help</a></li>
         </ul>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <section class="bs-hero">
-      <div class="container text-center">
-        <span class="badge text-bg-primary-subtle text-primary mb-3">New · Analytics dashboard</span>
-        <h1 class="bs-hero__title mb-3">Ship faster with a Bootstrap-native workspace</h1>
-        <p class="lead text-secondary mx-auto mb-4" style="max-width: 36rem">Plan, build, and launch Laravel products with familiar Bootstrap components — no custom CSS framework lock-in.</p>
-        <div class="d-flex flex-wrap justify-content-center gap-2">
-          <a class="btn btn-primary btn-lg" href="dashboard.html">View app demo</a>
-          <a class="btn btn-outline-secondary btn-lg" href="#features">Explore features</a>
+        <div class="d-flex align-items-center gap-2">
+          <a class="btn btn-link link-body-emphasis text-decoration-none" href="login.html">Log in</a>
+          <a class="btn btn-primary" href="login.html">List your home</a>
         </div>
-      </div>
-    </section>
-
-    <section id="features" class="py-5">
-      <div class="container">
-        <div class="text-center mb-5">
-          <h2 class="h3 fw-bold">Everything you need to go live</h2>
-          <p class="text-secondary">Marketing site and authenticated app patterns in one design system.</p>
-        </div>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-              <div class="card-body">
-                <div class="bs-feature-icon mb-3" aria-hidden="true">⚡</div>
-                <h3 class="h5">Fast setup</h3>
-                <p class="text-secondary mb-0">Drop-in layouts for landing pages, dashboards, and auth flows.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-              <div class="card-body">
-                <div class="bs-feature-icon mb-3" aria-hidden="true">📊</div>
-                <h3 class="h5">App-ready</h3>
-                <p class="text-secondary mb-0">Sidebar shell, tables, forms, and settings screens out of the box.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-              <div class="card-body">
-                <div class="bs-feature-icon mb-3" aria-hidden="true">♿</div>
-                <h3 class="h5">Accessible</h3>
-                <p class="text-secondary mb-0">Bootstrap 5.3 components with labels, focus states, and semantic HTML.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="pricing" class="py-5 bg-body-tertiary">
-      <div class="container text-center">
-        <h2 class="h3 fw-bold mb-3">Simple pricing</h2>
-        <p class="text-secondary mb-4">Start free, upgrade when your team grows.</p>
-        <div class="card shadow-sm mx-auto" style="max-width: 22rem">
-          <div class="card-body p-4">
-            <p class="text-secondary mb-1">Pro</p>
-            <p class="display-6 fw-bold mb-3">€29<span class="fs-6 fw-normal text-secondary">/mo</span></p>
-            <ul class="list-unstyled text-start text-secondary mb-4">
-              <li class="mb-2">✓ Unlimited projects</li>
-              <li class="mb-2">✓ Team collaboration</li>
-              <li>✓ Priority support</li>
-            </ul>
-            <a class="btn btn-primary w-100" href="login.html">Get started</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="bs-site-footer">
-    <div class="container d-flex flex-wrap justify-content-between gap-3">
-      <span>© 2026 Acme SaaS</span>
-      <div class="d-flex gap-3">
-        <a href="#" class="link-secondary">Privacy</a>
-        <a href="#" class="link-secondary">Terms</a>
-        <a href="index.html" class="link-secondary">Design catalog</a>
       </div>
     </div>
-  </footer>
+  </nav>
+</header>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<main>
+  <section class="py-5 bg-body-tertiary border-bottom">
+    <div class="container py-lg-4">
+      <div class="row align-items-center g-4 g-lg-5">
+        <div class="col-lg-6">
+          <span class="badge rounded-pill bg-success-subtle text-success-emphasis border border-success-subtle mb-3">New for 2026 · 140 farm stays in Tuscany</span>
+          <h1 class="display-5 fw-bold lh-1 mb-3">Countryside stays, booked direct with the host.</h1>
+          <p class="lead text-body-secondary mb-4">Cabins, cottages and farmhouses in 14 countries. No booking fees, free cancellation up to 7 days, and every home visited in person by our team.</p>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="row g-2">
+                <div class="col-md-5">
+                  <label class="form-label small fw-semibold mb-1" for="where">Where</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-body"><svg class="bi bi-geo-alt" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg></span>
+                    <input class="form-control" id="where" type="text" value="Lake District, UK">
+                  </div>
+                </div>
+                <div class="col-6 col-md-4">
+                  <label class="form-label small fw-semibold mb-1" for="dates">Dates</label>
+                  <input class="form-control" id="dates" type="text" value="16–19 Oct">
+                </div>
+                <div class="col-6 col-md-3">
+                  <label class="form-label small fw-semibold mb-1" for="guests">Guests</label>
+                  <select class="form-select" id="guests"><option>2 adults</option><option>2 adults, 1 child</option><option>4 adults</option></select>
+                </div>
+                <div class="col-12 d-grid mt-3">
+                  <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2" type="button"><svg class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg> Search 312 stays</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3 mt-4">
+            <div class="d-flex">
+              <svg class="rounded-circle bg-primary-subtle text-primary-emphasis flex-shrink-0 border border-2 border-white" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">PR</text></svg><svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0 border border-2 border-white" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">KM</text></svg><svg class="rounded-circle bg-warning-subtle text-warning-emphasis flex-shrink-0 border border-2 border-white" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">FB</text></svg>
+            </div>
+            <p class="small text-body-secondary mb-0"><span class="text-warning"><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg></span> <strong class="text-body">4.9 out of 5</strong> from 12,400 verified guest reviews</p>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="position-relative">
+            <svg class="d-block w-100 h-auto rounded-4 shadow-lg" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Willow Cottage, a wooden cottage on the shore of a lake at dusk"><defs><linearGradient id="s2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8db8d8"/><stop offset="1" stop-color="#f5d9b5"/></linearGradient></defs><rect width="400" height="250" fill="url(#s2)"/><circle cx="305" cy="112" r="26" fill="#fff4dc" opacity=".9"/><path d="M0 150 70 112 140 140 215 98 300 140 360 118 400 132V200H0Z" fill="#88a993"/><path d="M0 172 90 140 170 168 250 146 330 166 400 150V205H0Z" fill="#557f63"/><rect y="190" width="400" height="60" fill="#5b8eae"/><path d="M40 208h70M150 222h90M260 210h60M90 236h80" stroke="#a9cce0" stroke-width="2" opacity=".7"/><path d="M20 190 38 150 56 190ZM44 190 60 158 76 190ZM330 190 350 146 370 190ZM356 190 372 160 388 190Z" fill="#2f5a43"/><rect x="138" y="150" width="84" height="42" fill="#8b5b3d"/><path d="M128 152 180 118 232 152Z" fill="#5a3826"/><rect x="172" y="166" width="16" height="26" fill="#3d281c"/><rect x="148" y="160" width="16" height="13" fill="#ffd47e"/><rect x="198" y="160" width="16" height="13" fill="#ffd47e"/><path d="M128 192h104l8 6H120Z" fill="#6e4a33"/></svg>
+            <div class="card position-absolute bottom-0 start-0 m-3 shadow">
+              <div class="card-body py-2 px-3">
+                <p class="fw-semibold mb-0">Willow Cottage</p>
+                <p class="small text-body-secondary mb-0">Ambleside · <svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg> 4.97 · €142 night</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-4 border-bottom" aria-label="Press">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-center justify-content-lg-between align-items-center gap-4 text-body-secondary">
+        <span class="small text-uppercase fw-semibold">As featured in</span>
+        <span class="fs-5 fw-bold d-flex align-items-center gap-2"><svg class="bi bi-newspaper" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z"/><path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/></svg> The Weekend Ledger</span>
+        <span class="fs-5 fst-italic fw-semibold d-flex align-items-center gap-2"><svg class="bi bi-compass" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016m6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/><path d="m6.94 7.44 4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"/></svg> Wayfarer</span>
+        <span class="fs-5 fw-bold text-uppercase d-flex align-items-center gap-2"><svg class="bi bi-signpost-2" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 1.414V2H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h5v1H2.5a1 1 0 0 0-.8.4L.725 8.7a.5.5 0 0 0 0 .6l.975 1.3a1 1 0 0 0 .8.4H7v5h2v-5h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H9V6h4.5a1 1 0 0 0 .8-.4l.975-1.3a.5.5 0 0 0 0-.6L14.3 2.4a1 1 0 0 0-.8-.4H9v-.586a1 1 0 0 0-2 0M13.5 3l.75 1-.75 1H2V3zm.5 5v2H2.5l-.75-1 .75-1z"/></svg> Outbound</span>
+        <span class="fs-5 fw-semibold d-flex align-items-center gap-2"><svg class="bi bi-cup-hot" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5M2.64 13.825 1.123 7h11.754l-1.517 6.825A1.5 1.5 0 0 1 9.896 15H4.104a1.5 1.5 0 0 1-1.464-1.175"/><path d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8"/></svg> Slow Travel Quarterly</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5" id="stays">
+    <div class="container">
+      <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+        <div>
+          <h2 class="fw-bold mb-1">Stays guests loved this autumn</h2>
+          <p class="text-body-secondary mb-0">Hand-picked from 2,300 homes, all with free cancellation up to 7 days before arrival.</p>
+        </div>
+        <a class="icon-link icon-link-hover" href="#stays">Browse all stays <svg class="bi bi-arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/></svg></a>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        <div class="col">
+          <div class="card h-100 position-relative">
+            <svg class="card-img-top" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Saltmarsh Cottage, a whitewashed cottage above the sea"><defs><linearGradient id="s3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d8f0"/><stop offset="1" stop-color="#eef8fc"/></linearGradient></defs><rect width="400" height="250" fill="url(#s3)"/><path d="M0 132h400v40H0Z" fill="#3a86b8"/><path d="M0 146h400" stroke="#8cc4e3" stroke-width="2" opacity=".7"/><path d="M0 166c60-14 120-12 190 0s150 10 210-4v88H0Z" fill="#e9d5a8"/><path d="M0 200c80-20 170-18 260 0s110 6 140 0v50H0Z" fill="#9db866"/><rect x="150" y="120" width="110" height="62" fill="#f8f5ef"/><path d="M140 124 205 86 270 124Z" fill="#c2563c"/><rect x="196" y="146" width="18" height="36" fill="#2d5f8c"/><rect x="162" y="136" width="20" height="16" fill="#9fd0ea"/><rect x="228" y="136" width="20" height="16" fill="#9fd0ea"/><rect x="236" y="92" width="10" height="20" fill="#e7e1d6"/><path d="M60 205v-16M66 205v-20M72 205v-14M320 200v-18M327 200v-22M334 200v-15" stroke="#5f8a3a" stroke-width="3"/><circle cx="80" cy="60" r="18" fill="#fffbe9"/></svg>
+            <span class="badge text-bg-light position-absolute top-0 start-0 m-2 shadow-sm">Guest favourite</span>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h3 class="h6 card-title mb-0"><a href="#stays" class="stretched-link link-body-emphasis text-decoration-none">Saltmarsh Cottage</a></h3>
+                <span class="small text-nowrap"><svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg> 4.92</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-2">Holkham, Norfolk · sleeps 4 · dog friendly</p>
+              <p class="card-text mb-0"><span class="fw-semibold">€149</span> <span class="small text-body-secondary">night</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card h-100 position-relative">
+            <svg class="card-img-top" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Larch Cabin, a timber chalet under snowy peaks"><defs><linearGradient id="s4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93bce4"/><stop offset="1" stop-color="#dfeaf7"/></linearGradient></defs><rect width="400" height="250" fill="url(#s4)"/><path d="M0 150 80 70 130 112 200 44 270 116 320 80 400 140V180H0Z" fill="#7c90aa"/><path d="M80 70 100 90 88 88 76 98 66 84ZM200 44 222 66 208 64 196 76 184 60ZM320 80 338 98 326 96 316 104 306 92Z" fill="#fff"/><path d="M0 170 110 128 220 162 320 132 400 160V200H0Z" fill="#5e7590"/><path d="M0 196c90-18 220-20 400-4v58H0Z" fill="#f3f6fb"/><path d="M40 200 58 150 76 200ZM70 204 86 162 102 204ZM300 198 318 148 336 198ZM330 202 346 160 362 202Z" fill="#2e5a4b"/><rect x="152" y="150" width="96" height="56" fill="#9a6943"/><path d="M138 156 200 112 262 156Z" fill="#5f3c27"/><path d="M138 156 200 112 262 156 256 160 200 120 144 160Z" fill="#fff"/><rect x="190" y="178" width="20" height="28" fill="#4a2f1f"/><rect x="162" y="166" width="18" height="14" fill="#ffd47e"/><rect x="220" y="166" width="18" height="14" fill="#ffd47e"/><path d="M150 150h100" stroke="#7a5233" stroke-width="3"/></svg>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h3 class="h6 card-title mb-0"><a href="#stays" class="stretched-link link-body-emphasis text-decoration-none">Larch Cabin</a></h3>
+                <span class="small text-nowrap"><svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg> 4.88</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-2">Cogne, Aosta Valley · sleeps 6 · sauna</p>
+              <p class="card-text mb-0"><span class="fw-semibold">€168</span> <span class="small text-body-secondary">night</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card h-100 position-relative">
+            <svg class="card-img-top" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Podere Ulivo, a stone farmhouse among cypress trees"><defs><linearGradient id="s5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1c387"/><stop offset="1" stop-color="#fbe9cc"/></linearGradient></defs><rect width="400" height="250" fill="url(#s5)"/><circle cx="90" cy="96" r="30" fill="#fff1d2" opacity=".9"/><path d="M0 150c70-30 140-30 210-6s130 20 190-8V200H0Z" fill="#cdae62"/><path d="M0 182c90-26 190-28 280-6s90 10 120 4V250H0Z" fill="#a98b42"/><path d="M0 220c120-14 260-14 400 0v30H0Z" fill="#8c7536"/><rect x="214" y="122" width="96" height="52" fill="#dcbf92"/><path d="M206 126 262 98 318 126Z" fill="#b5582f"/><rect x="252" y="146" width="16" height="28" fill="#6b4a2c"/><rect x="226" y="136" width="14" height="14" fill="#5b4a3a"/><rect x="284" y="136" width="14" height="14" fill="#5b4a3a"/><ellipse cx="190" cy="132" rx="7" ry="30" fill="#3f5a2e"/><ellipse cx="336" cy="136" rx="7" ry="28" fill="#3f5a2e"/><ellipse cx="352" cy="140" rx="6" ry="24" fill="#4a6735"/><circle cx="60" cy="196" r="16" fill="#7d8f4e"/><circle cx="110" cy="204" r="14" fill="#7d8f4e"/><circle cx="160" cy="198" r="15" fill="#869a55"/><path d="M60 196v18M110 204v16M160 198v18" stroke="#5a4630" stroke-width="3"/></svg>
+            <span class="badge text-bg-success position-absolute top-0 start-0 m-2">New</span>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h3 class="h6 card-title mb-0"><a href="#stays" class="stretched-link link-body-emphasis text-decoration-none">Podere Ulivo</a></h3>
+                <span class="small text-nowrap"><svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg> 5.0</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-2">Montalcino, Tuscany · sleeps 8 · pool</p>
+              <p class="card-text mb-0"><span class="fw-semibold">€236</span> <span class="small text-body-secondary">night</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card h-100 position-relative">
+            <svg class="card-img-top" viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="The Shepherd's Hut, a green hut in a flower meadow"><defs><linearGradient id="s6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d3e9f7"/><stop offset="1" stop-color="#f7fbff"/></linearGradient></defs><rect width="400" height="250" fill="url(#s6)"/><path d="M0 160c80-18 160-22 240-10s120 14 160 4V250H0Z" fill="#a4c873"/><path d="M0 198c100-14 240-16 400-2v54H0Z" fill="#82ae54"/><path d="M136 176V136c0-24 128-24 128 0v40Z" fill="#2f5249"/><path d="M128 140c0-34 144-34 144 0" stroke="#4d6f62" stroke-width="10" fill="none"/><rect x="186" y="146" width="22" height="30" fill="#c8a46a"/><rect x="226" y="146" width="22" height="14" fill="#ffd47e"/><rect x="148" y="146" width="22" height="14" fill="#ffd47e"/><circle cx="158" cy="184" r="10" fill="#3a3a3a"/><circle cx="242" cy="184" r="10" fill="#3a3a3a"/><circle cx="158" cy="184" r="4" fill="#9a9a9a"/><circle cx="242" cy="184" r="4" fill="#9a9a9a"/><g fill="#f2c94c"><circle cx="40" cy="214" r="3"/><circle cx="72" cy="226" r="3"/><circle cx="300" cy="220" r="3"/><circle cx="350" cy="232" r="3"/></g><g fill="#e57c9b"><circle cx="56" cy="232" r="3"/><circle cx="96" cy="212" r="3"/><circle cx="320" cy="236" r="3"/><circle cx="372" cy="214" r="3"/></g><circle cx="330" cy="56" r="20" fill="#fffbe6"/></svg>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <h3 class="h6 card-title mb-0"><a href="#stays" class="stretched-link link-body-emphasis text-decoration-none">The Shepherd's Hut</a></h3>
+                <span class="small text-nowrap"><svg class="bi bi-star-fill text-warning" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg> 4.95</span>
+              </div>
+              <p class="card-text small text-body-secondary mb-2">Hay-on-Wye, Wales · sleeps 2 · wood-fired tub</p>
+              <p class="card-text mb-0"><span class="fw-semibold">€98</span> <span class="small text-body-secondary">night</span> <span class="badge bg-danger-subtle text-danger-emphasis ms-1">−15% midweek</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 bg-body-tertiary border-top border-bottom">
+    <div class="container">
+      <div class="col-lg-8 mx-auto text-center mb-5">
+        <h2 class="fw-bold">Why guests book with Bramble</h2>
+        <p class="lead text-body-secondary mb-0">We run the platform like a small travel agency: fewer homes, every one of them checked, and people who answer the phone.</p>
+      </div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col">
+          <div class="d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3 p-3 mb-3"><svg class="bi bi-house-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/><path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514"/></svg></div>
+          <h3 class="fs-5 fw-semibold">Every home visited</h3>
+          <p class="text-body-secondary">A Bramble scout stays one night before a home goes live, and again every two years.</p>
+          <a href="#faq" class="icon-link">How we check homes <svg class="bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></a>
+        </div>
+        <div class="col">
+          <div class="d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3 p-3 mb-3"><svg class="bi bi-percent" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0M4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg></div>
+          <h3 class="fs-5 fw-semibold">No booking fees</h3>
+          <p class="text-body-secondary">The price you see is the price you pay. Hosts pay a small commission instead of you.</p>
+          <a href="#hosts" class="icon-link">See host plans <svg class="bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></a>
+        </div>
+        <div class="col">
+          <div class="d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3 p-3 mb-3"><svg class="bi bi-calendar2-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5z"/></svg></div>
+          <h3 class="fs-5 fw-semibold">Flexible cancellation</h3>
+          <p class="text-body-secondary">Cancel up to 7 days before arrival for a full refund, on every stay we list.</p>
+          <a href="#faq" class="icon-link">Cancellation policy <svg class="bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></a>
+        </div>
+        <div class="col">
+          <div class="d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3 p-3 mb-3"><svg class="bi bi-headset" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg></div>
+          <h3 class="fs-5 fw-semibold">People, not bots</h3>
+          <p class="text-body-secondary">Our guest team in Kendal and Lucca replies within an hour, from 8:00 to 22:00.</p>
+          <a href="#faq" class="icon-link">Contact the team <svg class="bi bi-chevron-right" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">What guests say</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <figure class="card h-100 mb-0">
+            <div class="card-body">
+              <div class="text-warning mb-2" role="img" aria-label="5 out of 5 stars"><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg></div>
+              <blockquote class="blockquote fs-6 mb-0"><p class="mb-0">“The cottage was exactly like the photos, the wood burner was laid when we arrived and Amara left a map of the walks she does with her dog. We've already booked February.”</p></blockquote>
+            </div>
+            <figcaption class="card-footer bg-transparent d-flex align-items-center gap-2 py-3">
+              <svg class="rounded-circle bg-primary-subtle text-primary-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">PR</text></svg>
+              <div class="lh-sm"><div class="fw-semibold small">Priya Raman</div><div class="small text-body-secondary">Willow Cottage · September 2026</div></div>
+            </figcaption>
+          </figure>
+        </div>
+        <div class="col-md-4">
+          <figure class="card h-100 mb-0">
+            <div class="card-body">
+              <div class="text-warning mb-2" role="img" aria-label="5 out of 5 stars"><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg></div>
+              <blockquote class="blockquote fs-6 mb-0"><p class="mb-0">“Our train was cancelled and we arrived at midnight. Someone from Bramble picked up the phone on the first ring and the host waited up for us. That's why we book here.”</p></blockquote>
+            </div>
+            <figcaption class="card-footer bg-transparent d-flex align-items-center gap-2 py-3">
+              <svg class="rounded-circle bg-success-subtle text-success-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">KM</text></svg>
+              <div class="lh-sm"><div class="fw-semibold small">Kwame Mensah</div><div class="small text-body-secondary">Larch Cabin · August 2026</div></div>
+            </figcaption>
+          </figure>
+        </div>
+        <div class="col-md-4">
+          <figure class="card h-100 mb-0">
+            <div class="card-body">
+              <div class="text-warning mb-2" role="img" aria-label="4 out of 5 stars"><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg><svg class="bi bi-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/></svg></div>
+              <blockquote class="blockquote fs-6 mb-0"><p class="mb-0">“Gorgeous farmhouse and a very fair price for eight of us. The road up is steep and gravelly — the listing says so, we just didn't read it. Pool was heated in October!”</p></blockquote>
+            </div>
+            <figcaption class="card-footer bg-transparent d-flex align-items-center gap-2 py-3">
+              <svg class="rounded-circle bg-warning-subtle text-warning-emphasis flex-shrink-0" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="23" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">LB</text></svg>
+              <div class="lh-sm"><div class="fw-semibold small">Lucía Bermúdez</div><div class="small text-body-secondary">Podere Ulivo · October 2026</div></div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 bg-body-tertiary border-top border-bottom" id="hosts">
+    <div class="container">
+      <div class="col-lg-7 mx-auto text-center mb-5">
+        <h2 class="display-6 fw-bold">Host with Bramble</h2>
+        <p class="lead text-body-secondary mb-0">List your home for free. Choose a plan when you want more bookings and less admin. Cancel any time.</p>
+      </div>
+      <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        <div class="col">
+          <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3"><h3 class="my-0 fw-normal fs-4">Starter</h3></div>
+            <div class="card-body">
+              <p class="card-title h1">€0<small class="text-body-secondary fw-light">/mo</small></p>
+              <p class="small text-body-secondary">5% commission per confirmed booking</p>
+              <ul class="list-unstyled mt-3 mb-4">
+                <li>1 listing</li>
+                <li>Calendar sync with iCal</li>
+                <li>Guest messaging</li>
+                <li>Email support</li>
+              </ul>
+              <a href="login.html" class="w-100 btn btn-lg btn-outline-primary">List for free</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card mb-4 rounded-3 shadow-sm border-primary">
+            <div class="card-header py-3 text-bg-primary border-primary"><h3 class="my-0 fw-normal fs-4">Plus <span class="badge text-bg-light align-middle fs-6 ms-1">Most popular</span></h3></div>
+            <div class="card-body">
+              <p class="card-title h1">€19<small class="text-body-secondary fw-light">/mo</small></p>
+              <p class="small text-body-secondary">3% commission per confirmed booking</p>
+              <ul class="list-unstyled mt-3 mb-4">
+                <li>Up to 5 listings</li>
+                <li>Smart nightly pricing</li>
+                <li>Cleaning schedules</li>
+                <li>Priority phone support</li>
+              </ul>
+              <a href="login.html" class="w-100 btn btn-lg btn-primary">Start a 30-day trial</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3"><h3 class="my-0 fw-normal fs-4">Pro</h3></div>
+            <div class="card-body">
+              <p class="card-title h1">€49<small class="text-body-secondary fw-light">/mo</small></p>
+              <p class="small text-body-secondary">1% commission per confirmed booking</p>
+              <ul class="list-unstyled mt-3 mb-4">
+                <li>Unlimited listings</li>
+                <li>Team logins and roles</li>
+                <li>Owner statements</li>
+                <li>A named account manager</li>
+              </ul>
+              <a href="login.html" class="w-100 btn btn-lg btn-outline-primary">Talk to sales</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center small text-body-secondary mb-0"><svg class="bi bi-shield-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/><path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/></svg> Every plan includes €1,000,000 host damage protection and payouts within 24 hours of check-in.</p>
+    </div>
+  </section>
+
+  <section class="py-5" id="faq">
+    <div class="container">
+      <div class="row g-4 g-lg-5">
+        <div class="col-lg-4">
+          <h2 class="fw-bold">Questions, answered</h2>
+          <p class="text-body-secondary">Can't find what you need? <a href="#faq">Talk to the guest team</a> — we reply within an hour, every day from 8:00 to 22:00 CET.</p>
+        </div>
+        <div class="col-lg-8">
+          <div class="accordion" id="faqList">
+            <div class="accordion-item">
+              <h3 class="accordion-header"><button class="accordion-button" type="button" aria-expanded="true" aria-controls="faq1">Is there a booking fee?</button></h3>
+              <div id="faq1" class="accordion-collapse collapse show">
+                <div class="accordion-body">No. Guests pay the nightly price, the cleaning fee set by the host and local tourist tax where it applies — nothing else. Hosts pay a commission from their payout, which is how Bramble makes money.</div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" aria-expanded="false" aria-controls="faq2">What happens if I need to cancel?</button></h3>
+              <div id="faq2" class="accordion-collapse collapse"><div class="accordion-body">Cancel up to 7 days before arrival for a full refund.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" aria-expanded="false" aria-controls="faq3">Can I bring my dog?</button></h3>
+              <div id="faq3" class="accordion-collapse collapse"><div class="accordion-body">Filter by “Dog friendly”: 860 homes welcome dogs.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" aria-expanded="false" aria-controls="faq4">How do I get the keys?</button></h3>
+              <div id="faq4" class="accordion-collapse collapse"><div class="accordion-body">Your host sends arrival instructions 3 days before check-in.</div></div>
+            </div>
+            <div class="accordion-item">
+              <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" aria-expanded="false" aria-controls="faq5">I own a cottage. How quickly can I start hosting?</button></h3>
+              <div id="faq5" class="accordion-collapse collapse"><div class="accordion-body">Most hosts publish within a week of the scout's visit.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-5">
+    <div class="container">
+      <div class="p-4 p-md-5 text-bg-dark rounded-4">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-8">
+            <h2 class="fw-bold">A two-bedroom cottage in the Lakes earns €21,400 a year on Bramble.</h2>
+            <p class="lead text-white-50 mb-0">Median 2025 payout for hosts on the Plus plan. Tell us about your home and we'll estimate yours in two minutes.</p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <a class="btn btn-light btn-lg" href="login.html">Estimate my earnings</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pt-5 border-top bg-body-tertiary">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <a class="d-inline-flex align-items-center gap-2 fw-semibold fs-5 link-body-emphasis text-decoration-none" href="landing.html"><svg class="bi bi-tree-fill text-success" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.416.223a.5.5 0 0 0-.832 0l-3 4.5A.5.5 0 0 0 5 5.5h.098L3.076 8.735A.5.5 0 0 0 3.5 9.5h.191l-1.638 3.276a.5.5 0 0 0 .447.724H7V16h2v-2.5h4.5a.5.5 0 0 0 .447-.724L12.31 9.5h.191a.5.5 0 0 0 .424-.765L10.902 5.5H11a.5.5 0 0 0 .416-.777z"/></svg> Bramble Stays</a>
+        <p class="small text-body-secondary mt-2">Countryside cottages, cabins and farmhouses, booked direct with the people who own them.</p>
+        <label class="form-label small fw-semibold" for="newsletter">New stays, once a month</label>
+        <div class="input-group">
+          <input class="form-control" id="newsletter" type="email" placeholder="Email address">
+          <button class="btn btn-primary" type="button">Subscribe</button>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <h2 class="h6">Stays</h2>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="#stays" class="nav-link p-0 text-body-secondary">Cabins</a></li>
+          <li class="nav-item mb-2"><a href="#stays" class="nav-link p-0 text-body-secondary">Cottages</a></li>
+          <li class="nav-item mb-2"><a href="#stays" class="nav-link p-0 text-body-secondary">Farm stays</a></li>
+          <li class="nav-item mb-2"><a href="#stays" class="nav-link p-0 text-body-secondary">Dog friendly</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-2">
+        <h2 class="h6">Hosts</h2>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="#hosts" class="nav-link p-0 text-body-secondary">List your home</a></li>
+          <li class="nav-item mb-2"><a href="#hosts" class="nav-link p-0 text-body-secondary">Plans</a></li>
+          <li class="nav-item mb-2"><a href="login.html" class="nav-link p-0 text-body-secondary">Host log in</a></li>
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Host guide</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-2">
+        <h2 class="h6">Company</h2>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">About us</a></li>
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Careers</a></li>
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Press</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-2">
+        <h2 class="h6">Support</h2>
+        <ul class="nav flex-column">
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Help centre</a></li>
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Cancellations</a></li>
+          <li class="nav-item mb-2"><a href="#faq" class="nav-link p-0 text-body-secondary">Accessibility</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 py-4 mt-4 border-top">
+      <p class="small text-body-secondary mb-0">© 2026 Bramble Stays Ltd · Kendal, Cumbria · Company no. 14820391</p>
+      <ul class="list-unstyled d-flex gap-3 mb-0 fs-5">
+        <li><a class="link-body-emphasis" href="#faq" aria-label="Instagram"><svg class="bi bi-instagram" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg></a></li>
+        <li><a class="link-body-emphasis" href="#faq" aria-label="Facebook"><svg class="bi bi-facebook" viewBox="0 0 16 16" aria-hidden="true"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/></svg></a></li>
+        <li><a class="link-body-emphasis" href="#faq" aria-label="YouTube"><svg class="bi bi-youtube" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg></a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

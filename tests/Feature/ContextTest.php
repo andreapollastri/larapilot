@@ -187,8 +187,8 @@ it('compiles the packs for the settings of the project', function (): void {
         ->and(compiledPack($changed, 'delivery-1.md'))->toContain('- **`BEST`** — Full bar', 'Viewport matrix')
         ->and(compiledPack($changed, 'task-templates.md'))->toContain('### `BEST`')
         ->not->toContain('TASK-00 — Git bootstrap', '### `MINIMAL` / `NORMAL`')
-        ->and(compiledPack($changed, 'core-settings-2.md'))->toContain('### Aikido (`settings.aikido`)', '- **`github`** — `gh` CLI', 'Only the user waives a finding')
-        ->not->toContain('### Notifications', '- **`gitlab`**', 'larapilot:aikido-status', 'Dashboard auth');
+        ->and(compiledPack($changed, 'core-settings-2.md'))->toContain('### Security findings (`settings.security`', '- **`github`** — `gh` CLI', 'Only the user waives')
+        ->not->toContain('### Notifications', '- **`gitlab`**', 'security-status', 'Dashboard sign-in');
 });
 
 it('gives the settings skill every value on demand, and the others only theirs', function (): void {
@@ -202,7 +202,7 @@ it('gives the settings skill every value on demand, and the others only theirs',
 
     expect(compiledPack($data, 'core-settings.full.md'))->toContain('- **`ECO`** —', '- **`MAX`** —', '- **`GITFLOW_PUSH`** —', 'Defaults when unset')
         ->not->toContain('<!--')
-        ->and(compiledPack($data, 'core-settings-2.full.md'))->toContain('### Dashboard auth', '### Notifications', 'larapilot:aikido-status', 'larapilot:errors-plan')
+        ->and(compiledPack($data, 'core-settings-2.full.md'))->toContain('### Dashboard sign-in', '### Notifications', '`security-status`', 'larapilot:errors-plan', 'LARAPILOT_HACKLY_URL')
         ->not->toContain('<!--');
 
     $this->artisan('larapilot:settings-set', ['--account' => 'FREELANCE'])->assertSuccessful();
@@ -615,7 +615,7 @@ it('keeps what a skill loads at activation within its budget', function (): void
     // from a session that holds nothing. Raise a ceiling only on purpose.
     $ceilings = [
         'triage' => 4100,
-        'aikido' => 4100,
+        'security' => 4100,
         'error' => 4100,
         'vendor-check' => 4100,
         'laravel-upgrade' => 8600,

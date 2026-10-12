@@ -1,26 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE — Screens</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdminLTE 4 — screen catalog · Kestrel Inventory</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="bg-body-tertiary">
-  <main class="lte-gallery container">
-    <h1 class="mb-2">AdminLTE</h1>
-    <p class="lte-gallery__intro">Static HTML mockups using <a href="https://adminlte.io/">AdminLTE 4</a> + Bootstrap 5.3 — see <a href="../sources.md">sources.md</a> and the <a href="https://adminlte-v4.netlify.app/">live demo</a>.</p>
-
-    <div class="lte-gallery__grid">
-      <a class="lte-gallery__card" href="dashboard.html"><h2>Dashboard</h2><p>Small-box widgets + recent orders table</p></a>
-      <a class="lte-gallery__card" href="resource-list.html"><h2>Resource list</h2><p>Card toolbar, search, striped table</p></a>
-      <a class="lte-gallery__card" href="login.html"><h2>Login</h2><p>Centered login-box card</p></a>
-      <a class="lte-gallery__card" href="settings.html"><h2>Settings</h2><p>Profile form + danger zone</p></a>
-      <a class="lte-gallery__card" href="components.html"><h2>Components</h2><p>Info boxes, alerts, badges, card tools</p></a>
+<body class="lte-mockup bg-body-tertiary">
+<header class="bg-body border-bottom py-4">
+  <div class="container">
+    <p class="small text-secondary mb-1">Larapilot design system · AdminLTE v4.10.0 on Bootstrap v5.3.8 · Bootstrap Icons 1.13</p>
+    <h1 class="fs-3 mb-1 fw-light"><b>Kestrel</b> Inventory — screen catalog</h1>
+    <p class="text-secondary mb-0">Stock, warehouses and suppliers in an AdminLTE 4 admin: dark sidebar, small-boxes, info-boxes, card tools. Real AdminLTE and Bootstrap class names, light and dark.</p>
+  </div>
+</header>
+<main class="container py-4">
+  <section class="mb-4" aria-labelledby="swatches">
+    <h2 class="fs-6 text-uppercase text-secondary" id="swatches">Theme colours</h2>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      <span class="badge text-bg-primary p-3">primary #0d6efd</span>
+      <span class="badge text-bg-secondary p-3">secondary #6c757d</span>
+      <span class="badge text-bg-success p-3">success #198754</span>
+      <span class="badge text-bg-danger p-3">danger #dc3545</span>
+      <span class="badge text-bg-warning p-3">warning #ffc107</span>
+      <span class="badge text-bg-info p-3">info #0dcaf0</span>
+      <span class="badge text-bg-dark p-3">dark #212529</span>
     </div>
-  </main>
+    <div class="d-flex flex-wrap gap-2">
+      <span class="badge bg-body text-body border p-3">header · body-bg</span>
+      <span class="badge bg-body-tertiary text-body border p-3">content · tertiary-bg</span>
+      <span class="badge bg-body-secondary text-body border p-3">secondary-bg</span>
+      <span class="badge text-bg-dark border p-3">sidebar #343a40 (dark secondary-bg)</span>
+    </div>
+  </section>
+
+  <h2 class="fs-6 text-uppercase text-secondary">Screens</h2>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="dashboard.html">Dashboard</a></h3><p class="small text-secondary mb-0">Full app shell: header with search and badges, dark sidebar with an open treeview, four small-boxes, SVG sales chart with card tools, latest orders table, info-boxes, products list, direct chat. Start here for any admin page.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="dashboard-dark.html">Dashboard — dark</a></h3><p class="small text-secondary mb-0">Warehouses overview forced dark with <code>data-bs-theme="dark"</code>: info-boxes, bar chart, progress-groups, recap footer, timeline, donut, callout.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="resource-list.html">Resource list</a></h3><p class="small text-secondary mb-0">Products table in a card: header tools with search and filters, selected rows with a bulk bar, sortable headers, stock bars, status badges, row actions, pagination.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="resource-form.html">Resource form</a></h3><p class="small text-secondary mb-0">Edit product: outlined cards, horizontal form rows, required marks, an invalid and a disabled field, input groups, switches, upload zone, supplier table, bottom action bar.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="settings.html">Settings</a></h3><p class="small text-secondary mb-0">Profile box, list-group section nav, pill tabs, horizontal form, notification switches, drawn password fields, danger card, toast.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="login.html">Login</a></h3><p class="small text-secondary mb-0">AdminLTE <code>login-page</code> / <code>login-box</code> with drawn credentials in input groups. Start here for any auth screen.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="empty-state.html">Empty state</a></h3><p class="small text-secondary mb-0">No suppliers yet, a search with no results, a setup checklist and a tip callout.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="components.html">Components</a></h3><p class="small text-secondary mb-0">Small boxes, info boxes, card variants and tools, callouts, alerts, buttons, badges, progress, forms, drawn fields, dropdown, toasts, modal, tables.</p></div></div></div>
+    <div class="col"><div class="card card-primary card-outline h-100"><div class="card-body"><h3 class="fs-5"><a class="stretched-link" href="icons.html">Icons</a></h3><p class="small text-secondary mb-0">144 Bootstrap Icons glyphs inlined as SVG with their names.</p></div></div></div>
+  </div>
+</main>
 </body>
 </html>

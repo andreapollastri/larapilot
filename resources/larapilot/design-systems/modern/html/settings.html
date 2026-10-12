@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>Settings — Pulseboard</title>
+</head>
+<body class="mo-mockup mo-body">
+<a class="mo-skip" href="#main">Skip to content</a>
+<div class="mo-app">
+<nav class="mo-sidebar" aria-label="Workspace">
+  <div class="mo-sidebar__top">
+    <a class="mo-ws" href="dashboard.html" aria-label="Acme workspace, switch workspace"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span><span class="mo-ws__text"><span class="mo-ws__name">Acme Inc.</span><span class="mo-ws__sub">Growth plan</span></span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></a>
+    <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-menu-btn" aria-label="Open navigation"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+  </div>
+  <button type="button" class="mo-cmdk"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span>Search or jump to…</span><span class="mo-kbds"><kbd class="mo-kbd">⌘</kbd><kbd class="mo-kbd">K</kbd></span></button>
+  <div class="mo-nav">
+    <a class="mo-nav__item" href="dashboard.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+    <a class="mo-nav__item" href="dashboard.html#live"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>Live events<span class="mo-nav__count">1.2k/m</span></a>
+    <a class="mo-nav__item" href="resource-list.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>People<span class="mo-nav__count">48.3k</span></a>
+    <a class="mo-nav__item" href="resource-form.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Funnels</a>
+    <a class="mo-nav__item" href="dashboard.html#retention"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Retention</a>
+    <a class="mo-nav__item" href="empty-state.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>Alerts<span class="mo-nav__count mo-nav__count--accent">2</span></a>
+  </div>
+  <div class="mo-nav">
+    <p class="mo-nav__label">Saved views <svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></p>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c1"></span>Power users</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c2"></span>Activated this week</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c3"></span>Churn risk</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c4"></span>EU enterprise trials</a>
+  </div>
+  <div class="mo-sidebar__foot">
+    <div class="mo-usage">
+      <div class="mo-usage__row"><span>Events this month</span><strong class="mo-tnum">8.2M / 10M</strong></div>
+      <div class="mo-meter"><div class="mo-meter__bar mo-pct-80"></div></div>
+    </div>
+    <a class="mo-nav__item is-active" href="settings.html" aria-current="page"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+    <a class="mo-user" href="settings.html" aria-label="Account: Maya Okafor"><span class="mo-avatar mo-avatar--1">MO</span><span class="mo-user__text"><span class="mo-user__name">Maya Okafor</span><span class="mo-user__mail">maya@acme.io</span></span></a>
+  </div>
+</nav>
+<main class="mo-main" id="main">
+  <header class="mo-topbar">
+    <nav class="mo-crumbs" aria-label="Breadcrumb"><a href="settings.html">Settings</a><span class="mo-crumbs__sep">/</span><span aria-current="page">Workspace</span></nav>
+    <div class="mo-topbar__end"><a class="mo-btn mo-btn--ghost mo-btn--sm" href="dashboard.html"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg><span class="mo-hide-sm">Help</span></a></div>
+  </header>
+
+  <div class="mo-page">
+    <div class="mo-page-head"><div class="mo-page-head__text"><h1 class="mo-h1">Workspace settings</h1><p class="mo-page-head__desc">Acme Inc. · created 14 Mar 2024 · region EU (Frankfurt)</p></div></div>
+
+    <div class="mo-settings">
+      <nav class="mo-subnav" aria-label="Settings sections">
+        <p class="mo-subnav__label">Workspace</p>
+        <a class="mo-subnav__item is-active" href="#general" aria-current="page"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12h4"/><path d="M10 8h4"/><path d="M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/></svg>General</a>
+        <a class="mo-subnav__item" href="#members"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>Members</a>
+        <a class="mo-subnav__item" href="#billing"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>Billing</a>
+        <a class="mo-subnav__item" href="#api"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>API keys</a>
+        <a class="mo-subnav__item" href="#danger"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Danger zone</a>
+        <p class="mo-subnav__label">Account</p>
+        <a class="mo-subnav__item" href="settings.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>Profile</a>
+        <a class="mo-subnav__item" href="settings.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>Notifications</a>
+      </nav>
+
+      <div>
+        <section class="mo-pref" id="general" aria-labelledby="h-general">
+          <div><h2 class="mo-pref__title" id="h-general">General</h2><p class="mo-pref__desc">Name, address and defaults every member sees.</p></div>
+          <div class="mo-card"><div class="mo-card__body">
+            <div class="mo-formgrid">
+              <div class="mo-field"><label class="mo-label" for="s-name">Workspace name</label><input class="mo-input" id="s-name" type="text" value="Acme Inc."></div>
+              <div class="mo-field"><label class="mo-label" for="s-slug">URL</label><div class="mo-input-group"><span class="mo-input-group__addon">pulseboard.app/</span><input class="mo-input" id="s-slug" type="text" value="acme"></div></div>
+              <div class="mo-field"><label class="mo-label" for="s-tz">Reporting timezone</label><select class="mo-select" id="s-tz"><option>Europe/Berlin (UTC+2)</option><option>America/New_York</option></select><p class="mo-help">Changes how days are bucketed in every chart.</p></div>
+              <div class="mo-field"><label class="mo-label" for="s-week">Week starts on</label><select class="mo-select" id="s-week"><option>Monday</option><option>Sunday</option></select></div>
+              <div class="mo-field mo-span-2"><label class="mo-choice"><input class="mo-switch" type="checkbox" role="switch" checked><span class="mo-choice__text"><span class="mo-choice__title">Require SSO for everyone</span><span class="mo-choice__help">Members sign in with Okta. Passwords and magic links are turned off.</span></span></label></div>
+            </div>
+          </div>
+          <div class="mo-card__foot"><span>Last changed by Maya Okafor, 3 days ago</span><button type="button" class="mo-btn mo-btn--primary mo-btn--sm">Save changes</button></div></div>
+        </section>
+
+        <section class="mo-pref" id="members" aria-labelledby="h-members">
+          <div><h2 class="mo-pref__title" id="h-members">Members</h2><p class="mo-pref__desc">12 of 15 seats used. Admins can manage billing and API keys.</p></div>
+          <div class="mo-card">
+            <div class="mo-card__head mo-card__head--bordered"><label class="mo-search"><span class="visually-hidden">Search members</span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><input class="mo-input" type="search" placeholder="Search members…"></label><button type="button" class="mo-btn mo-btn--secondary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>Invite</button></div>
+            <ul class="mo-list">
+              <li class="mo-list__item"><span class="mo-avatar mo-avatar--lg mo-avatar--1">MO</span><div class="mo-list__main"><span class="mo-list__title">Maya Okafor <span class="mo-badge mo-badge--accent">You</span></span><span class="mo-list__meta">maya@acme.io · active now</span></div><div class="mo-list__end"><select class="mo-select" aria-label="Role of Maya Okafor" disabled><option>Owner</option></select></div></li>
+              <li class="mo-list__item"><span class="mo-avatar mo-avatar--lg mo-avatar--4">DK</span><div class="mo-list__main"><span class="mo-list__title">Daniel Kowalski</span><span class="mo-list__meta">daniel@acme.io · 2 h ago</span></div><div class="mo-list__end"><select class="mo-select" aria-label="Role of Daniel Kowalski"><option>Admin</option><option>Member</option><option>Viewer</option></select></div></li>
+              <li class="mo-list__item"><span class="mo-avatar mo-avatar--lg mo-avatar--5">SA</span><div class="mo-list__main"><span class="mo-list__title">Sofia Alvarez</span><span class="mo-list__meta">sofia@acme.io · yesterday</span></div><div class="mo-list__end"><select class="mo-select" aria-label="Role of Sofia Alvarez"><option>Member</option><option>Admin</option><option>Viewer</option></select></div></li>
+              <li class="mo-list__item"><span class="mo-avatar mo-avatar--lg mo-avatar--6"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span><div class="mo-list__main"><span class="mo-list__title">wei.chen@acme.io</span><span class="mo-list__meta">Invited by Daniel · expires in 5 days</span></div><div class="mo-list__end"><span class="mo-badge mo-badge--warning">Pending</span><button type="button" class="mo-btn mo-btn--ghost mo-btn--xs">Resend</button></div></li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="mo-pref" id="billing" aria-labelledby="h-billing">
+          <div><h2 class="mo-pref__title" id="h-billing">Plan &amp; billing</h2><p class="mo-pref__desc">Billed monthly in EUR to the card ending 4242. Invoices go to finance@acme.io.</p></div>
+          <div class="mo-stack">
+            <div class="mo-plan-card">
+              <div class="mo-flex mo-items-center mo-justify-between mo-wrap mo-gap-2"><div class="mo-flex mo-items-center mo-gap-2"><span class="mo-icon-tile"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span><span class="mo-h4">Growth</span><span class="mo-badge mo-badge--success">Active</span></div><span class="mo-plan-card__price">€249<small> / month</small></span></div>
+              <div class="mo-stack-sm">
+                <div class="mo-flex mo-justify-between mo-text-xs"><span class="mo-text-2">Events this month</span><span class="mo-tnum"><strong>8.2M</strong> of 10M · renews 1 Nov</span></div>
+                <div class="mo-meter mo-meter--lg"><div class="mo-meter__bar mo-pct-80"></div></div>
+              </div>
+              <div class="mo-flex mo-gap-2 mo-wrap"><a class="mo-btn mo-btn--primary mo-btn--sm" href="pricing.html">Upgrade to Scale</a><button type="button" class="mo-btn mo-btn--secondary mo-btn--sm">Manage payment method</button></div>
+            </div>
+            <div class="mo-card">
+              <div class="mo-table-wrap"><table class="mo-table mo-table--compact"><caption class="visually-hidden">Invoices</caption>
+                <thead><tr><th scope="col">Invoice</th><th scope="col">Date</th><th scope="col">Status</th><th scope="col" class="mo-num">Amount</th><th scope="col" class="mo-table__actions"><span class="visually-hidden">Download</span></th></tr></thead>
+                <tbody>
+                  <tr><td class="mo-mono mo-table__strong">PB-2026-0931</td><td>1 Oct 2026</td><td><span class="mo-badge mo-badge--success">Paid</span></td><td class="mo-num">€249.00</td><td class="mo-table__actions"><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Download PB-2026-0931"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></button></td></tr>
+                  <tr><td class="mo-mono mo-table__strong">PB-2026-0814</td><td>1 Sep 2026</td><td><span class="mo-badge mo-badge--success">Paid</span></td><td class="mo-num">€249.00</td><td class="mo-table__actions"><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Download PB-2026-0814"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></button></td></tr>
+                  <tr><td class="mo-mono mo-table__strong">PB-2026-0702</td><td>1 Aug 2026</td><td><span class="mo-badge mo-badge--warning">Retried</span></td><td class="mo-num">€312.40</td><td class="mo-table__actions"><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Download PB-2026-0702"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></button></td></tr>
+                </tbody></table></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mo-pref" id="api" aria-labelledby="h-api">
+          <div><h2 class="mo-pref__title" id="h-api">API keys</h2><p class="mo-pref__desc">Project keys are public and only ingest events. Secret keys read data — keep them on the server.</p></div>
+          <div class="mo-card">
+            <div class="mo-card__head mo-card__head--bordered"><h3 class="mo-card__title">3 keys</h3><button type="button" class="mo-btn mo-btn--secondary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Create key</button></div>
+            <ul class="mo-list">
+              <li class="mo-list__item"><span class="mo-icon-tile mo-icon-tile--neutral"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span><div class="mo-list__main"><span class="mo-list__title">Web SDK · production</span><span class="mo-list__meta">Project key · last used 2 s ago</span></div><div class="mo-list__end"><span class="mo-secret">pk_live_4f9a<span class="mo-secret__mask">••••</span>2c1e<button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Copy project key"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></span></div></li>
+              <li class="mo-list__item"><span class="mo-icon-tile mo-icon-tile--neutral"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></svg></span><div class="mo-list__main"><span class="mo-list__title">Warehouse sync</span><span class="mo-list__meta">Secret key · created by Daniel · last used 1 h ago</span></div><div class="mo-list__end"><span class="mo-secret">sk_live_<span class="mo-secret__mask">••••••••</span>91b7<button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Reveal secret key"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></button></span></div></li>
+              <li class="mo-list__item"><span class="mo-icon-tile mo-icon-tile--neutral"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06"/><path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8"/></svg></span><div class="mo-list__main"><span class="mo-list__title">Zapier (old)</span><span class="mo-list__meta">Secret key · never used in 90 days</span></div><div class="mo-list__end"><span class="mo-badge mo-badge--warning">Stale</span><button type="button" class="mo-btn mo-btn--danger-ghost mo-btn--xs">Revoke</button></div></li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="mo-pref" id="danger" aria-labelledby="h-danger">
+          <div><h2 class="mo-pref__title" id="h-danger">Danger zone</h2><p class="mo-pref__desc">These actions cannot be undone.</p></div>
+          <div class="mo-card mo-danger-zone">
+            <div class="mo-card__body mo-flex mo-items-center mo-justify-between mo-gap-4 mo-wrap"><div><p class="mo-h4">Delete workspace</p><p class="mo-text-sm mo-text-2">Removes 8.2M events, 48,312 people and every dashboard after a 7-day grace period.</p></div><button type="button" class="mo-btn mo-btn--danger"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete workspace</button></div>
+            <div class="mo-card__foot"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Only the workspace owner can do this.</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<div class="mo-toasts" role="status">
+  <div class="mo-toast mo-toast--success"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 9-5.5 5.5L8 12"/></svg><div class="mo-toast__body"><p class="mo-toast__title">Invitation sent</p><p class="mo-toast__text">wei.chen@acme.io will get an email from Pulseboard.</p></div><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Dismiss"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+</div>
+</body>
+</html>

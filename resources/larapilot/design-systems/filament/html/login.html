@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sign in — Filament</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Northwind Ops</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="fi-mockup">
-  <main class="fi-login-page">
-    <div class="fi-login-card">
-      <div class="fi-login-card__brand">Filament Demo</div>
-      <h1>Sign in</h1>
-      <!-- A picture of the sign-in screen: no form element, no input for credentials. -->
-      <div class="mock-form">
-        <div class="fi-field">
-          <span class="mock-label">Email</span>
-          <div class="mock-field" role="img" aria-label="Email field, filled in">anna@example.com</div>
-        </div>
-        <div class="fi-field">
-          <span class="mock-label">Password</span>
-          <div class="mock-field mock-field--secret" role="img" aria-label="Password field, filled in">••••••••••</div>
-        </div>
-        <div class="fi-field fi-checkbox">
-          <input id="remember" type="checkbox">
-          <label for="remember">Remember me</label>
-        </div>
-        <a href="dashboard.html" class="fi-btn fi-btn--primary" role="button">Sign in</a>
-        <p style="text-align:center;margin-top:1rem;font-size:0.8125rem">
-          <a href="#" style="color:rgb(var(--color-primary-600))">Forgot your password?</a>
-        </p>
-      </div>
-    </div>
-  </main>
+<body class="fi-mockup fi-body">
+<div class="fi-simple-layout">
+<main class="fi-simple-main-ctn" id="fi-main-content">
+<div class="fi-simple-main">
+<div class="fi-simple-page-content">
+<header class="fi-simple-header">
+<span class="fi-logo"><span class="fi-logo-mark"><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/></svg></span>Northwind Ops</span>
+<h1 class="fi-simple-header-heading">Sign in</h1>
+<p class="fi-simple-header-subheading">or <a href="auth-register.html" class="fi-link fi-color fi-color-primary">sign up for an account</a></p>
+</header>
+<div class="mock-form" role="group" aria-label="Sign-in form, drawn">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-ctn"><span class="mock-label">Email address<sup class="fi-fo-field-label-required-mark">*</sup></span></div>
+<div class="mock-field" role="img" aria-label="Email field, filled in">zainab@northwind.example</div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-ctn"><span class="mock-label">Password<sup class="fi-fo-field-label-required-mark">*</sup></span><a href="profile.html" class="fi-link fi-color fi-color-primary fi-ms-auto">Forgot password?</a></div>
+<div class="mock-field-affix"><div class="mock-field mock-field--secret mock-field--focus" role="img" aria-label="Password field, filled in">••••••••••••</div><div class="fi-input-wrp-suffix"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/></svg></div></div>
+</div>
+<label class="fi-fo-field-label"><input type="checkbox" class="fi-checkbox-input" checked><span class="fi-fo-field-label-content">Remember me</span></label>
+<a href="dashboard.html" class="fi-btn fi-color fi-color-primary fi-block" role="button">Sign in</a>
+<p class="fi-sc-text">Single sign-on is enforced for <strong>@northwind.example</strong> staff. Warehouse tablets sign in with a badge PIN instead.</p>
+</div>
+</div>
+</div>
+</main>
+<footer class="fi-simple-footer" aria-label="Footer">
+<span>© 2026 Northwind Provisions LLC</span>
+<a href="settings.html" class="fi-link">Privacy</a>
+<a href="settings.html" class="fi-link">Terms</a>
+<a href="empty-state.html" class="fi-link"><svg class="fi-icon fi-size-sm" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path fill-rule="evenodd" d="M9.68 5.26a.75.75 0 0 1 1.06 0 3.875 3.875 0 0 1 0 5.48.75.75 0 1 1-1.06-1.06 2.375 2.375 0 0 0 0-3.36.75.75 0 0 1 0-1.06Zm-3.36 0a.75.75 0 0 1 0 1.06 2.375 2.375 0 0 0 0 3.36.75.75 0 1 1-1.06 1.06 3.875 3.875 0 0 1 0-5.48.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M11.89 3.05a.75.75 0 0 1 1.06 0 7 7 0 0 1 0 9.9.75.75 0 1 1-1.06-1.06 5.5 5.5 0 0 0 0-7.78.75.75 0 0 1 0-1.06Zm-7.78 0a.75.75 0 0 1 0 1.06 5.5 5.5 0 0 0 0 7.78.75.75 0 1 1-1.06 1.06 7 7 0 0 1 0-9.9.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>System status: all operational</a>
+</footer>
+</div>
 </body>
 </html>

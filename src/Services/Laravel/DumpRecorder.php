@@ -6,6 +6,7 @@ namespace Larapilot\Services\Laravel;
 
 use Closure;
 use Illuminate\Container\Container;
+use Illuminate\Support\Carbon;
 use Larapilot\Services\ConfigService;
 use ReflectionClass;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -137,7 +138,7 @@ class DumpRecorder
         [$file, $line] = $this->source($trace);
 
         $this->store->put([
-            'at' => date(DATE_ATOM),
+            'at' => Carbon::now()->toAtomString(),
             'label' => $label !== null && $label !== '' ? mb_substr($label, 0, 200) : null,
             'file' => $file,
             'line' => $line,

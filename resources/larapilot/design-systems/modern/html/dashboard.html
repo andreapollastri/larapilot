@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>Dashboard — Pulseboard</title>
+</head>
+<body class="mo-mockup mo-body">
+<a class="mo-skip" href="#main">Skip to content</a>
+<svg class="mo-defs" aria-hidden="true" focusable="false"><defs>
+<linearGradient id="mo-grad-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="mo-stop-c1 mo-stop-a"/><stop offset="1" class="mo-stop-c1 mo-stop-b"/></linearGradient>
+<linearGradient id="mo-grad-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="mo-stop-c2 mo-stop-a"/><stop offset="1" class="mo-stop-c2 mo-stop-b"/></linearGradient>
+<linearGradient id="mo-grad-c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="mo-stop-c4 mo-stop-a"/><stop offset="1" class="mo-stop-c4 mo-stop-b"/></linearGradient>
+<linearGradient id="mo-grad-down" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="mo-stop-down mo-stop-a"/><stop offset="1" class="mo-stop-down mo-stop-b"/></linearGradient>
+</defs></svg>
+<div class="mo-app">
+<nav class="mo-sidebar" aria-label="Workspace">
+  <div class="mo-sidebar__top">
+    <a class="mo-ws" href="dashboard.html" aria-label="Acme workspace, switch workspace"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span><span class="mo-ws__text"><span class="mo-ws__name">Acme Inc.</span><span class="mo-ws__sub">Growth plan</span></span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></a>
+    <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-menu-btn" aria-label="Open navigation"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+  </div>
+  <button type="button" class="mo-cmdk"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span>Search or jump to…</span><span class="mo-kbds"><kbd class="mo-kbd">⌘</kbd><kbd class="mo-kbd">K</kbd></span></button>
+  <div class="mo-nav">
+    <a class="mo-nav__item is-active" href="dashboard.html" aria-current="page"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+    <a class="mo-nav__item" href="dashboard.html#live"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>Live events<span class="mo-nav__count">1.2k/m</span></a>
+    <a class="mo-nav__item" href="resource-list.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>People<span class="mo-nav__count">48.3k</span></a>
+    <a class="mo-nav__item" href="resource-form.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Funnels</a>
+    <a class="mo-nav__item" href="dashboard.html#retention"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Retention</a>
+    <a class="mo-nav__item" href="empty-state.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>Alerts<span class="mo-nav__count mo-nav__count--accent">2</span></a>
+  </div>
+  <div class="mo-nav">
+    <p class="mo-nav__label">Saved views <svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></p>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c1"></span>Power users</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c2"></span>Activated this week</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c3"></span>Churn risk</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c4"></span>EU enterprise trials</a>
+  </div>
+  <div class="mo-sidebar__foot">
+    <div class="mo-usage">
+      <div class="mo-usage__row"><span>Events this month</span><strong class="mo-tnum">8.2M / 10M</strong></div>
+      <div class="mo-meter"><div class="mo-meter__bar mo-pct-80"></div></div>
+    </div>
+    <a class="mo-nav__item" href="settings.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+    <a class="mo-user" href="settings.html" aria-label="Account: Maya Okafor"><span class="mo-avatar mo-avatar--1">MO</span><span class="mo-user__text"><span class="mo-user__name">Maya Okafor</span><span class="mo-user__mail">maya@acme.io</span></span></a>
+  </div>
+</nav>
+<main class="mo-main" id="main">
+  <header class="mo-topbar">
+    <nav class="mo-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Dashboards</a><span class="mo-crumbs__sep">/</span><span aria-current="page">Product overview</span><button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-btn--xs" aria-label="Unstar dashboard"><svg class="mo-icon mo-icon--sm mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></button></nav>
+    <div class="mo-topbar__end">
+      <span class="mo-live mo-hide-sm"><span class="mo-live__dot"></span>Live · 1,284 events/min</span>
+      <div class="mo-seg" role="group" aria-label="Date range"><button type="button" class="mo-seg__item">24h</button><button type="button" class="mo-seg__item">7d</button><button type="button" class="mo-seg__item is-active" aria-pressed="true">30d</button><button type="button" class="mo-seg__item">90d</button></div>
+      <button type="button" class="mo-btn mo-btn--secondary mo-btn--sm mo-hide-sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>Share</button>
+      <a href="resource-form.html" class="mo-btn mo-btn--primary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New<kbd class="mo-kbd mo-hide-sm">N</kbd></a>
+    </div>
+  </header>
+
+  <div class="mo-page">
+    <div class="mo-page-head">
+      <div class="mo-page-head__text">
+        <h1 class="mo-h1">Product overview</h1>
+        <p class="mo-page-head__desc">12 Sep – 11 Oct 2026 · compared with the previous 30 days · all times Europe/Berlin</p>
+      </div>
+      <div class="mo-chips" aria-label="Active filters">
+        <span class="mo-chip"><span class="mo-chip__key"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>Platform</span><span class="mo-chip__op">is any of</span><span class="mo-chip__val">Web, iOS</span><button type="button" class="mo-chip__x" aria-label="Remove platform filter"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+        <span class="mo-chip"><span class="mo-chip__key"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>Country</span><span class="mo-chip__op">is not</span><span class="mo-chip__val">Internal</span><button type="button" class="mo-chip__x" aria-label="Remove country filter"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>
+        <button type="button" class="mo-chip mo-chip--add"><span><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h20"/><path d="M6 12h12"/><path d="M9 19h6"/></svg>Filter</span></button>
+      </div>
+    </div>
+
+    <section class="mo-bento" aria-label="Key metrics">
+      <article class="mo-card mo-col-3">
+        <div class="mo-stat">
+          <p class="mo-stat__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>Weekly active users</p>
+          <div class="mo-stat__row"><span class="mo-stat__value">48,312</span><span class="mo-delta mo-delta--up"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>12.4%</span></div>
+          <p class="mo-stat__note">vs 42,980 in the previous period</p>
+          <div class="mo-stat__spark"><svg class="mo-spark" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="mo-spark__area" d="M0.0,30.77C1.82,30.51 7.27,30.0 10.91,29.23C14.55,28.46 18.18,26.41 21.82,26.15C25.46,25.89 29.09,28.2 32.73,27.69C36.37,27.18 40.0,24.1 43.64,23.08C47.28,22.05 50.91,21.54 54.55,21.54C58.18,21.54 61.82,23.85 65.45,23.08C69.09,22.31 72.72,18.46 76.36,16.92C80.0,15.38 83.63,14.11 87.27,13.85C90.91,13.59 94.54,16.15 98.18,15.38C101.82,14.61 105.45,11.02 109.09,9.23C112.73,7.44 118.18,5.39 120.0,4.62L120,40L0,40Z"/><path class="mo-spark__line" d="M0.0,30.77C1.82,30.51 7.27,30.0 10.91,29.23C14.55,28.46 18.18,26.41 21.82,26.15C25.46,25.89 29.09,28.2 32.73,27.69C36.37,27.18 40.0,24.1 43.64,23.08C47.28,22.05 50.91,21.54 54.55,21.54C58.18,21.54 61.82,23.85 65.45,23.08C69.09,22.31 72.72,18.46 76.36,16.92C80.0,15.38 83.63,14.11 87.27,13.85C90.91,13.59 94.54,16.15 98.18,15.38C101.82,14.61 105.45,11.02 109.09,9.23C112.73,7.44 118.18,5.39 120.0,4.62"/></svg></div>
+        </div>
+      </article>
+      <article class="mo-card mo-col-3">
+        <div class="mo-stat">
+          <p class="mo-stat__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Activation rate</p>
+          <div class="mo-stat__row"><span class="mo-stat__value">38.6%</span><span class="mo-delta mo-delta--up"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>3.1 pts</span></div>
+          <p class="mo-stat__note">Signed up → created a first dashboard</p>
+          <div class="mo-stat__spark"><svg class="mo-spark" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="mo-spark__area" d="M0.0,29.09C1.82,28.48 7.27,25.45 10.91,25.45C14.55,25.45 18.18,29.7 21.82,29.09C25.46,28.48 29.09,22.43 32.73,21.82C36.37,21.21 40.0,26.06 43.64,25.45C47.28,24.84 50.91,18.79 54.55,18.18C58.18,17.57 61.82,21.82 65.45,21.82C69.09,21.82 72.72,19.39 76.36,18.18C80.0,16.97 83.63,14.55 87.27,14.55C90.91,14.55 94.54,18.79 98.18,18.18C101.82,17.57 105.45,12.73 109.09,10.91C112.73,9.09 118.18,7.88 120.0,7.27L120,40L0,40Z"/><path class="mo-spark__line" d="M0.0,29.09C1.82,28.48 7.27,25.45 10.91,25.45C14.55,25.45 18.18,29.7 21.82,29.09C25.46,28.48 29.09,22.43 32.73,21.82C36.37,21.21 40.0,26.06 43.64,25.45C47.28,24.84 50.91,18.79 54.55,18.18C58.18,17.57 61.82,21.82 65.45,21.82C69.09,21.82 72.72,19.39 76.36,18.18C80.0,16.97 83.63,14.55 87.27,14.55C90.91,14.55 94.54,18.79 98.18,18.18C101.82,17.57 105.45,12.73 109.09,10.91C112.73,9.09 118.18,7.88 120.0,7.27"/></svg></div>
+        </div>
+      </article>
+      <article class="mo-card mo-col-3">
+        <div class="mo-stat">
+          <p class="mo-stat__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>Median session</p>
+          <div class="mo-stat__row"><span class="mo-stat__value">6m 42s</span><span class="mo-delta mo-delta--down"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 7 10 10"/><path d="M17 7v10H7"/></svg>0.8%</span></div>
+          <p class="mo-stat__note">vs 6m 45s · dip on the 3 Oct release</p>
+          <div class="mo-stat__spark"><svg class="mo-spark" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="mo-spark__area mo-spark__area--down" d="M0.0,8.42C1.82,8.77 7.27,10.88 10.91,10.53C14.55,10.18 18.18,5.97 21.82,6.32C25.46,6.67 29.09,11.93 32.73,12.63C36.37,13.33 40.0,10.18 43.64,10.53C47.28,10.88 50.91,11.93 54.55,14.74C58.18,17.55 61.82,26.32 65.45,27.37C69.09,28.42 72.72,22.8 76.36,21.05C80.0,19.3 83.63,17.19 87.27,16.84C90.91,16.49 94.54,19.3 98.18,18.95C101.82,18.6 105.45,15.09 109.09,14.74C112.73,14.39 118.18,16.49 120.0,16.84L120,40L0,40Z"/><path class="mo-spark__line mo-spark__line--down" d="M0.0,8.42C1.82,8.77 7.27,10.88 10.91,10.53C14.55,10.18 18.18,5.97 21.82,6.32C25.46,6.67 29.09,11.93 32.73,12.63C36.37,13.33 40.0,10.18 43.64,10.53C47.28,10.88 50.91,11.93 54.55,14.74C58.18,17.55 61.82,26.32 65.45,27.37C69.09,28.42 72.72,22.8 76.36,21.05C80.0,19.3 83.63,17.19 87.27,16.84C90.91,16.49 94.54,19.3 98.18,18.95C101.82,18.6 105.45,15.09 109.09,14.74C112.73,14.39 118.18,16.49 120.0,16.84"/></svg></div>
+        </div>
+      </article>
+      <article class="mo-card mo-col-3">
+        <div class="mo-stat">
+          <p class="mo-stat__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>Net revenue retention</p>
+          <div class="mo-stat__row"><span class="mo-stat__value">112<small>%</small></span><span class="mo-delta mo-delta--up"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>4 pts</span></div>
+          <p class="mo-stat__note">Trailing 12 months · $1.84M ARR</p>
+          <div class="mo-stat__spark"><svg class="mo-spark" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true"><path class="mo-spark__area mo-spark__area--c2" d="M0.0,28.89C1.82,28.52 7.27,27.78 10.91,26.67C14.55,25.56 18.18,22.59 21.82,22.22C25.46,21.85 29.09,24.81 32.73,24.44C36.37,24.07 40.0,21.11 43.64,20.0C47.28,18.89 50.91,18.52 54.55,17.78C58.18,17.04 61.82,15.56 65.45,15.56C69.09,15.56 72.72,18.15 76.36,17.78C80.0,17.41 83.63,14.44 87.27,13.33C90.91,12.22 94.54,12.22 98.18,11.11C101.82,10.0 105.45,7.78 109.09,6.67C112.73,5.56 118.18,4.81 120.0,4.44L120,40L0,40Z"/><path class="mo-spark__line mo-spark__line--c2" d="M0.0,28.89C1.82,28.52 7.27,27.78 10.91,26.67C14.55,25.56 18.18,22.59 21.82,22.22C25.46,21.85 29.09,24.81 32.73,24.44C36.37,24.07 40.0,21.11 43.64,20.0C47.28,18.89 50.91,18.52 54.55,17.78C58.18,17.04 61.82,15.56 65.45,15.56C69.09,15.56 72.72,18.15 76.36,17.78C80.0,17.41 83.63,14.44 87.27,13.33C90.91,12.22 94.54,12.22 98.18,11.11C101.82,10.0 105.45,7.78 109.09,6.67C112.73,5.56 118.18,4.81 120.0,4.44"/></svg></div>
+        </div>
+      </article>
+
+      <article class="mo-card mo-col-8">
+        <div class="mo-card__head">
+          <div><h2 class="mo-card__title">Daily active users</h2><p class="mo-card__sub">Unique people with at least one event</p></div>
+          <div class="mo-legend"><span class="mo-legend__item"><span class="mo-legend__line"></span>This period</span><span class="mo-legend__item"><span class="mo-legend__line mo-dot--muted"></span>Previous period</span></div>
+        </div>
+        <div class="mo-card__body">
+          <div class="mo-plot">
+            <div class="mo-plot__y" aria-hidden="true"><span>48K</span><span>36K</span><span>24K</span><span>12K</span><span>0</span></div>
+            <div class="mo-plot__area" role="img" aria-label="Daily active users rose from 31,200 on 12 September to 46,300 on 11 October; the previous period went from 28,000 to 36,400.">
+              <svg viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="mo-plot__line mo-plot__line--muted" d="M0.0,41.67C1.72,41.36 6.89,40.35 10.34,39.79C13.79,39.23 17.24,38.16 20.69,38.33C24.14,38.5 27.58,40.1 31.03,40.83C34.48,41.56 37.93,43.3 41.38,42.71C44.83,42.12 48.27,38.5 51.72,37.29C55.17,36.08 58.62,35.87 62.07,35.42C65.52,34.97 68.96,34.44 72.41,34.58C75.86,34.72 79.31,35.59 82.76,36.25C86.21,36.91 89.65,38.96 93.1,38.54C96.55,38.12 100.0,34.83 103.45,33.75C106.9,32.67 110.34,32.5 113.79,32.08C117.24,31.66 120.69,31.01 124.14,31.25C127.59,31.49 131.03,32.78 134.48,33.54C137.93,34.3 141.38,36.18 144.83,35.83C148.28,35.48 151.72,32.5 155.17,31.46C158.62,30.42 162.07,30.03 165.52,29.58C168.97,29.13 172.41,28.51 175.86,28.75C179.31,28.99 182.76,30.28 186.21,31.04C189.66,31.8 193.1,33.64 196.55,33.33C200.0,33.02 203.45,30.14 206.9,29.17C210.35,28.2 213.79,27.95 217.24,27.5C220.69,27.05 224.14,26.22 227.59,26.46C231.04,26.7 234.48,28.23 237.93,28.96C241.38,29.69 244.83,31.14 248.28,30.83C251.73,30.52 255.17,27.91 258.62,27.08C262.07,26.25 265.52,26.21 268.97,25.83C272.42,25.45 275.86,24.65 279.31,24.79C282.76,24.93 286.21,26.77 289.66,26.67C293.11,26.57 298.28,24.59 300.0,24.17"/>
+                <path class="mo-spark__area" d="M0.0,35.0C1.72,34.72 6.89,34.09 10.34,33.33C13.79,32.57 17.24,30.46 20.69,30.42C24.14,30.39 27.58,32.22 31.03,33.12C34.48,34.02 37.93,36.66 41.38,35.83C44.83,35.0 48.27,29.89 51.72,28.12C55.17,26.35 58.62,25.8 62.07,25.21C65.52,24.62 68.96,24.3 72.41,24.58C75.86,24.86 79.31,26.11 82.76,26.88C86.21,27.64 89.65,29.97 93.1,29.17C96.55,28.37 100.0,23.75 103.45,22.08C106.9,20.41 110.34,19.9 113.79,19.17C117.24,18.44 120.69,17.43 124.14,17.71C127.59,17.99 131.03,19.93 134.48,20.83C137.93,21.73 141.38,23.75 144.83,23.12C148.28,22.5 151.72,18.57 155.17,17.08C158.62,15.59 162.07,14.9 165.52,14.17C168.97,13.44 172.41,12.4 175.86,12.71C179.31,13.02 182.76,15.03 186.21,16.04C189.66,17.05 193.1,19.38 196.55,18.75C200.0,18.12 203.45,13.82 206.9,12.29C210.35,10.76 213.79,10.24 217.24,9.58C220.69,8.92 224.14,8.05 227.59,8.33C231.04,8.61 234.48,10.38 237.93,11.25C241.38,12.12 244.83,14.09 248.28,13.54C251.73,12.98 255.17,9.17 258.62,7.92C262.07,6.67 265.52,6.6 268.97,6.04C272.42,5.48 275.86,4.51 279.31,4.58C282.76,4.65 286.21,6.63 289.66,6.46C293.11,6.29 298.28,4.03 300.0,3.54L300,100L0,100Z"/>
+                <path class="mo-plot__line" d="M0.0,35.0C1.72,34.72 6.89,34.09 10.34,33.33C13.79,32.57 17.24,30.46 20.69,30.42C24.14,30.39 27.58,32.22 31.03,33.12C34.48,34.02 37.93,36.66 41.38,35.83C44.83,35.0 48.27,29.89 51.72,28.12C55.17,26.35 58.62,25.8 62.07,25.21C65.52,24.62 68.96,24.3 72.41,24.58C75.86,24.86 79.31,26.11 82.76,26.88C86.21,27.64 89.65,29.97 93.1,29.17C96.55,28.37 100.0,23.75 103.45,22.08C106.9,20.41 110.34,19.9 113.79,19.17C117.24,18.44 120.69,17.43 124.14,17.71C127.59,17.99 131.03,19.93 134.48,20.83C137.93,21.73 141.38,23.75 144.83,23.12C148.28,22.5 151.72,18.57 155.17,17.08C158.62,15.59 162.07,14.9 165.52,14.17C168.97,13.44 172.41,12.4 175.86,12.71C179.31,13.02 182.76,15.03 186.21,16.04C189.66,17.05 193.1,19.38 196.55,18.75C200.0,18.12 203.45,13.82 206.9,12.29C210.35,10.76 213.79,10.24 217.24,9.58C220.69,8.92 224.14,8.05 227.59,8.33C231.04,8.61 234.48,10.38 237.93,11.25C241.38,12.12 244.83,14.09 248.28,13.54C251.73,12.98 255.17,9.17 258.62,7.92C262.07,6.67 265.52,6.6 268.97,6.04C272.42,5.48 275.86,4.51 279.31,4.58C282.76,4.65 286.21,6.63 289.66,6.46C293.11,6.29 298.28,4.03 300.0,3.54"/>
+              </svg>
+              <span class="mo-plot__cursor" style="left:72.4%"></span>
+              <span class="mo-plot__dot mo-plot__dot--muted" style="left:72.4%;top:27.5%"></span>
+              <span class="mo-plot__dot" style="left:72.4%;top:9.6%"></span>
+              <div class="mo-tooltip" style="left:calc(72.4% - 196px);top:20%">
+                <p class="mo-tooltip__title">Fri 2 Oct 2026</p>
+                <p class="mo-tooltip__row"><span class="mo-legend__line"></span>This period<strong>43,412</strong></p>
+                <p class="mo-tooltip__row"><span class="mo-legend__line mo-dot--muted"></span>Previous<strong>34,806</strong></p>
+                <p class="mo-tooltip__row"><span class="mo-delta mo-delta--up">+24.7%</span></p>
+              </div>
+            </div>
+            <div class="mo-plot__x" aria-hidden="true"><span>12 Sep</span><span>19 Sep</span><span>26 Sep</span><span>3 Oct</span><span>11 Oct</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="mo-card mo-col-4">
+        <div class="mo-card__head">
+          <h2 class="mo-card__title">Top events</h2>
+          <a class="mo-btn mo-btn--ghost mo-btn--xs" href="resource-list.html">View all<svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+        <div class="mo-card__body">
+          <div class="mo-barlist">
+            <p class="mo-barlist__head"><span>Event</span><span>Count</span></p>
+            <div class="mo-barlist__row mo-pct-100"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>page_viewed</span><span class="mo-barlist__value">2.41M</span></div>
+            <div class="mo-barlist__row mo-pct-65"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>button_clicked</span><span class="mo-barlist__value">1.57M</span></div>
+            <div class="mo-barlist__row mo-pct-40"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>dashboard_opened</span><span class="mo-barlist__value">964K</span></div>
+            <div class="mo-barlist__row mo-pct-25"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>query_ran</span><span class="mo-barlist__value">612K</span></div>
+            <div class="mo-barlist__row mo-pct-10"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>signup_completed</span><span class="mo-barlist__value">18.9K</span></div>
+            <div class="mo-barlist__row mo-pct-5"><span class="mo-barlist__label"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>plan_upgraded</span><span class="mo-barlist__value">1,204</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="mo-card mo-col-5">
+        <div class="mo-card__head">
+          <div><h2 class="mo-card__title"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Signup to paid</h2><p class="mo-card__sub">Conversion window 14 days · unique people</p></div>
+          <span class="mo-badge mo-badge--accent">6.4% overall</span>
+        </div>
+        <div class="mo-card__body">
+          <div class="mo-funnel">
+            <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-100"></div></div><p class="mo-funnel__value">18,940</p><p class="mo-funnel__name">Signed up</p><p class="mo-funnel__rate">100%</p></div>
+            <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-40"></div></div><p class="mo-funnel__value">7,311</p><p class="mo-funnel__name">Activated</p><p class="mo-funnel__rate">↓ 38.6%</p></div>
+            <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-15"></div></div><p class="mo-funnel__value">2,906</p><p class="mo-funnel__name">Invited team</p><p class="mo-funnel__rate">↓ 39.7%</p></div>
+            <div class="mo-funnel__step"><div class="mo-funnel__track"><div class="mo-funnel__bar mo-pct-5"></div></div><p class="mo-funnel__value">1,204</p><p class="mo-funnel__name">Upgraded</p><p class="mo-funnel__rate">↓ 41.4%</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="mo-card mo-col-7" id="retention">
+        <div class="mo-card__head">
+          <div><h2 class="mo-card__title"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Weekly retention</h2><p class="mo-card__sub">Share of each signup cohort still active</p></div>
+          <span class="mo-heat-scale" aria-hidden="true">0%<span class="mo-heat-scale__bar"></span>100%</span>
+        </div>
+        <div class="mo-card__body">
+          <div class="mo-table-wrap">
+            <table class="mo-heat">
+              <caption class="visually-hidden">Weekly retention by signup cohort</caption>
+              <thead><tr><th scope="col">Cohort</th><th scope="col">Week 0</th><th scope="col">W1</th><th scope="col">W2</th><th scope="col">W3</th><th scope="col">W4</th><th scope="col">W5</th></tr></thead>
+              <tbody>
+                <tr><td class="mo-heat__cohort">31 Aug · 2,810</td><td class="mo-heat-9">100%</td><td class="mo-heat-6">58%</td><td class="mo-heat-5">46%</td><td class="mo-heat-4">39%</td><td class="mo-heat-4">36%</td><td class="mo-heat-3">33%</td></tr>
+                <tr><td class="mo-heat__cohort">7 Sep · 3,042</td><td class="mo-heat-9">100%</td><td class="mo-heat-6">61%</td><td class="mo-heat-5">48%</td><td class="mo-heat-4">41%</td><td class="mo-heat-4">37%</td><td class="mo-heat-3">34%</td></tr>
+                <tr><td class="mo-heat__cohort">14 Sep · 3,377</td><td class="mo-heat-9">100%</td><td class="mo-heat-7">64%</td><td class="mo-heat-5">51%</td><td class="mo-heat-4">43%</td><td class="mo-heat-4">40%</td><td class="is-empty"></td></tr>
+                <tr><td class="mo-heat__cohort">21 Sep · 3,501</td><td class="mo-heat-9">100%</td><td class="mo-heat-7">66%</td><td class="mo-heat-6">53%</td><td class="mo-heat-5">45%</td><td class="is-empty"></td><td class="is-empty"></td></tr>
+                <tr><td class="mo-heat__cohort">28 Sep · 3,688</td><td class="mo-heat-9">100%</td><td class="mo-heat-7">68%</td><td class="mo-heat-6">55%</td><td class="is-empty"></td><td class="is-empty"></td><td class="is-empty"></td></tr>
+                <tr><td class="mo-heat__cohort">5 Oct · 3,904</td><td class="mo-heat-9">100%</td><td class="mo-heat-8">71%</td><td class="is-empty"></td><td class="is-empty"></td><td class="is-empty"></td><td class="is-empty"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <article class="mo-card mo-col-12" id="live">
+        <div class="mo-card__head mo-card__head--bordered">
+          <div class="mo-flex mo-items-center mo-gap-3"><h2 class="mo-card__title">Live events</h2><span class="mo-live"><span class="mo-live__dot"></span>Streaming</span></div>
+          <div class="mo-toolbar">
+            <label class="mo-search"><span class="visually-hidden">Filter live events</span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><input class="mo-input" type="search" placeholder="Filter events…"><kbd class="mo-kbd">/</kbd></label>
+            <button type="button" class="mo-btn mo-btn--secondary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></svg>Pause</button>
+          </div>
+        </div>
+        <div class="mo-table-wrap">
+          <table class="mo-table mo-table--compact">
+            <caption class="visually-hidden">Most recent events</caption>
+            <thead><tr><th scope="col">Event</th><th scope="col">Person</th><th scope="col">Properties</th><th scope="col">Source</th><th scope="col">Country</th><th scope="col" class="mo-num">Time</th></tr></thead>
+            <tbody>
+              <tr class="is-selected"><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/></svg>plan_upgraded</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--2">LS</span><span class="mo-cell-user__name">Lucía Serrano</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">plan=growth</span><span class="mo-tag">seats=12</span></span></td><td><span class="mo-badge mo-badge--info">API</span></td><td>Spain</td><td class="mo-num">2s ago</td></tr>
+              <tr><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>dashboard_opened</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--3">KT</span><span class="mo-cell-user__name">Kenji Tanaka</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">id=d_9f21</span></span></td><td><span class="mo-badge mo-badge--outline">Web</span></td><td>Japan</td><td class="mo-num">4s ago</td></tr>
+              <tr><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>signup_completed</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--5">AN</span><span class="mo-cell-user__name">Amara Nwosu</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">utm=changelog</span><span class="mo-tag">sso=google</span></span></td><td><span class="mo-badge mo-badge--outline">Web</span></td><td>Nigeria</td><td class="mo-num">7s ago</td></tr>
+              <tr><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>query_ran</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--4">JB</span><span class="mo-cell-user__name">Jonas Berg</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">rows=1,284</span><span class="mo-tag">ms=212</span></span></td><td><span class="mo-badge mo-badge--accent">iOS</span></td><td>Sweden</td><td class="mo-num">9s ago</td></tr>
+              <tr><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>alert_triggered</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--6">PR</span><span class="mo-cell-user__name">Priya Raman</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">rule=checkout_drop</span></span></td><td><span class="mo-badge mo-badge--info">API</span></td><td>India</td><td class="mo-num">12s ago</td></tr>
+              <tr><td><span class="mo-flex mo-items-center mo-gap-2 mo-table__strong mo-mono"><svg class="mo-icon mo-icon--sm mo-icon--muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>page_viewed</span></td><td><span class="mo-cell-user"><span class="mo-avatar mo-avatar--sm mo-avatar--1">TM</span><span class="mo-cell-user__name">Tomás Mendes</span></span></td><td><span class="mo-flex mo-gap-1"><span class="mo-tag">path=/pricing</span></span></td><td><span class="mo-badge mo-badge--outline">Web</span></td><td>Portugal</td><td class="mo-num">15s ago</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mo-card__foot"><span>Showing the last 6 of 1,284 events this minute</span><span class="mo-flex mo-items-center mo-gap-2">Press <kbd class="mo-kbd">E</kbd> to open the event explorer</span></div>
+      </article>
+    </section>
+  </div>
+</main>
+</div>
+</body>
+</html>

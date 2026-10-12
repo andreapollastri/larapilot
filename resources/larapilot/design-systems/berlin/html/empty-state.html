@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dachterrasse, November · Kollektiv Studio backoffice</title>
+<meta name="description" content="Empty states: a room with no bookings in a closed season (big zero with crop marks), plus compact empty states for search with no results and a project without files.">
+<link rel="stylesheet" href="../tokens.css">
+</head>
+<body class="bn-mockup bn-body">
+<a class="bn-skip" href="#main">Skip to content</a>
+<div class="bn-app">
+<aside class="bn-rail" aria-label="Backoffice">
+<div class="bn-rail__brand"><a class="bn-logo" href="dashboard.html" aria-label="Kollektiv Studio backoffice, overview"><svg class="bn-logo__mark" viewBox="0 0 24 24" aria-hidden="true"><rect width="11" height="11" class="bn-logo__sq"/><rect x="13" width="11" height="11" class="bn-logo__sq"/><rect y="13" width="11" height="11" class="bn-logo__sq"/><rect x="13.75" y="13.75" width="9.5" height="9.5" class="bn-logo__sig"/></svg><span class="bn-logo__text"><span class="bn-logo__word">Kollektiv Studio</span><span class="bn-logo__sub">Backoffice</span></span></a><button type="button" class="bn-rail__menu" aria-label="Open menu" aria-expanded="false"><svg class="bn-i bn-i--24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button></div>
+<nav class="bn-rail__nav" aria-label="Main">
+<p class="bn-rail__group"><span>Studio</span><span>01–04</span></p>
+<a class="bn-nav-item" href="dashboard.html"><span class="bn-nav-item__idx">01</span><span class="bn-nav-item__label">Overview</span><span class="bn-nav-item__count">KW42</span></a>
+<a class="bn-nav-item" href="resource-list.html"><span class="bn-nav-item__idx">02</span><span class="bn-nav-item__label">Projects</span><span class="bn-nav-item__count">38</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">03</span><span class="bn-nav-item__label">Invoices</span><span class="bn-count bn-count--alarm" title="3 overdue">3</span></a>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">04</span><span class="bn-nav-item__label">Clients</span><span class="bn-nav-item__count">41</span></a>
+<p class="bn-rail__group"><span>Venue</span><span>05–07</span></p>
+<a class="bn-nav-item" href="modal.html"><span class="bn-nav-item__idx">05</span><span class="bn-nav-item__label">Bookings</span><span class="bn-nav-item__count">21</span></a>
+<a class="bn-nav-item" href="program.html"><span class="bn-nav-item__idx">06</span><span class="bn-nav-item__label">Program</span><span class="bn-nav-item__count">14</span></a>
+<a class="bn-nav-item is-active" aria-current="page" href="empty-state.html"><span class="bn-nav-item__idx">07</span><span class="bn-nav-item__label">Rooms</span><span class="bn-nav-item__count">5</span></a>
+<p class="bn-rail__group"><span>People</span><span>08–09</span></p>
+<a class="bn-nav-item" href="#"><span class="bn-nav-item__idx">08</span><span class="bn-nav-item__label">Team</span><span class="bn-nav-item__count">8</span></a>
+<a class="bn-nav-item" href="settings.html"><span class="bn-nav-item__idx">09</span><span class="bn-nav-item__label">Settings</span><span class="bn-nav-item__count"><svg class="bn-i bn-i--14" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></span></a>
+</nav>
+<div class="bn-rail__foot">
+<p class="bn-rail__coords"><span>52.5065° N</span><span>13.4934° E</span></p>
+<div class="bn-row bn-gap-12"><span class="bn-av bn-av--signal bn-av--lg">MO</span><span class="bn-stack bn-stack--4 bn-fill"><span class="bn-strong bn-text-sm bn-truncate">Mira Okafor</span><span class="bn-micro">Admin · CD</span></span><a class="bn-btn bn-btn--ghost bn-btn--sm bn-btn--icon" href="login.html" aria-label="Sign out"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></a></div>
+</div>
+</aside>
+<header class="bn-topbar">
+<p class="bn-topbar__meta"><strong>KW 42</strong><span>Mo 12.10.2026</span><span>14:32 CEST</span></p>
+<div class="bn-topbar__search" role="search"><label class="bn-search"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span class="visually-hidden">Search the backoffice</span><input class="bn-search__input" type="search" placeholder="Search projects, clients, invoices, events"><span class="bn-kbd" aria-hidden="true">/</span></label></div>
+<div class="bn-topbar__actions">
+<a class="bn-topbar__btn bn-topbar__btn--signal" href="resource-form.html" aria-label="New project"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></a>
+<a class="bn-topbar__btn" href="#" aria-label="Notifications, 4 unread"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span class="bn-topbar__badge" aria-hidden="true">4</span></a>
+<button type="button" class="bn-topbar__btn" aria-label="Theme: follows the system"><svg class="bn-i bn-i--20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v2"/><path d="M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715"/><path d="M16 12a4 4 0 0 0-4-4"/><path d="m19 5-1.256 1.256"/><path d="M20 12h2"/></svg></button>
+</div>
+</header>
+<main class="bn-main" id="main">
+<header class="bn-pagehead">
+<nav class="bn-pagehead__eyebrow bn-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Backoffice</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><a href="#">07 — Rooms</a><span class="bn-crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Dachterrasse</span></nav>
+<div class="bn-pagehead__title"><h1 class="bn-h1">Dachterrasse</h1><span class="bn-tag bn-tag--muted">Closed 01.11 – 28.02</span></div>
+<div class="bn-pagehead__actions"><a class="bn-btn" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 17H5"/><path d="M19 7h-9"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg> Room settings</a><a class="bn-btn bn-btn--primary" href="modal.html"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 18h6"/><path d="M16 2v3"/><path d="M19 15v6"/><path d="M21 11.5V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8.3"/><path d="M3 9h18"/><path d="M8 2v3"/></svg> New booking</a></div>
+</header>
+<nav class="bn-tabs" aria-label="Month">
+<a class="bn-tab" href="#"><span class="bn-tab__idx">09</span>September <span class="bn-chip__count">18</span></a>
+<a class="bn-tab" href="#"><span class="bn-tab__idx">10</span>October <span class="bn-chip__count">11</span></a>
+<a class="bn-tab is-active" href="#" aria-current="page"><span class="bn-tab__idx">11</span>November <span class="bn-chip__count">0</span></a>
+<a class="bn-tab" href="#"><span class="bn-tab__idx">12</span>December <span class="bn-chip__count">0</span></a>
+<a class="bn-tab" href="#"><span class="bn-tab__idx">03</span>March 2027 <span class="bn-chip__count">2</span></a>
+</nav>
+<section class="bn-empty bn-bb" aria-labelledby="empty-title">
+<p class="bn-empty__glyph bn-crops" aria-hidden="true">0</p>
+<div class="bn-empty__body">
+<p class="bn-micro bn-micro--ink">November 2026 · 0 bookings · 0 options</p>
+<h2 id="empty-title" class="bn-empty__title">No bookings on the roof in November.</h2>
+<p class="bn-empty__text">The Dachterrasse closes for winter from 01.11 to 28.02 — the lift is serviced and the deck is resealed. Move the request to the Galerie (180 guests) or Studio 2 (40 seated), or put the date on the waitlist for spring.</p>
+<div class="bn-actions"><a class="bn-btn bn-btn--signal" href="modal.html"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg> Book the Galerie instead</a><a class="bn-btn" href="#"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5H3"/><path d="M11 12H3"/><path d="M16 19H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg> Add to spring waitlist</a></div>
+<p class="bn-help">3 people are on the waitlist for March 2027.</p>
+</div>
+</section>
+<div class="bn-grid">
+<section class="bn-cell bn-span-4" aria-labelledby="e2"><div class="bn-cell__head"><h2 id="e2" class="bn-cell__title"><span class="bn-idx">A</span>Search, no results</h2></div>
+<div class="bn-empty--compact bn-empty"><p class="bn-empty__glyph" aria-hidden="true">?</p><p class="bn-empty__title">Nothing matches “Sonnenallee”.</p><p class="bn-empty__text">Searched projects, clients, invoices and events. Check the spelling or search the archive 2014–2025.</p><a class="bn-arrowlink" href="#">Search the archive <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></section>
+<section class="bn-cell bn-span-4" aria-labelledby="e3"><div class="bn-cell__head"><h2 id="e3" class="bn-cell__title"><span class="bn-idx">B</span>Project without files</h2></div>
+<div class="bn-empty--compact bn-empty"><p class="bn-empty__glyph" aria-hidden="true">—</p><p class="bn-empty__title">No files on P-040 yet.</p><p class="bn-empty__text">Archiv der Plakate is still a pitch. Drop the client's references here once the meeting on 21.10 is done.</p><button type="button" class="bn-btn bn-btn--sm"><svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg> Upload files</button></div></section>
+<section class="bn-cell bn-span-4" aria-labelledby="e4"><div class="bn-cell__head"><h2 id="e4" class="bn-cell__title"><span class="bn-idx">C</span>All caught up</h2></div>
+<div class="bn-empty--compact bn-empty"><p class="bn-empty__glyph" aria-hidden="true">✓</p><p class="bn-empty__title">No invoices to send this week.</p><p class="bn-empty__text">The next milestone invoice is due on 23.10 for Tiefgarage Records. We'll remind Felix on the day.</p><a class="bn-arrowlink" href="#">Open invoices <svg class="bn-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div></section>
+</div>
+<footer class="bn-mainfoot"><span>Dachterrasse · 300 m² · 120 standing</span><span>Season 2027 opens 01.03</span></footer>
+</main>
+</div>
+</body>
+</html>

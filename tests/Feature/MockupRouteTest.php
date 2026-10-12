@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Larapilot\Services\ConfigService;
-use Larapilot\Services\DashboardAuthService;
 
 it('serves mockups via dynamic route in local environment', function (): void {
     $config = app(ConfigService::class);
@@ -206,18 +205,20 @@ it('keeps mockups and their assets behind the dashboard sign-in, framed from thi
         ->assertOk()
         ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
 
-    app(DashboardAuthService::class)->setUser('andrea', 's3cret-pass');
-    app(ConfigService::class)->updateSettings(['dashboard_auth' => 'YES']);
+    dashboardUser('andrea');
+    dashboardUser('ext', 'correct-horse-battery', 'ext');
+    sharedHost();
 
-    $this->get('/mockups/US-001/index.html')->assertStatus(401)->assertDontSee('Confidential', false);
-    $this->get('/mockups/US-001')->assertStatus(401);
-    $this->get('/mockup-assets/design-systems/tailwind/tokens.css')->assertStatus(401);
+    $this->get('/mockups/US-001/index.html')->assertRedirect('/larapilot/login');
+    $this->get('/mockups/US-001')->assertRedirect('/larapilot/login');
+    $this->get('/mockup-assets/design-systems/tailwind/tokens.css')->assertRedirect('/larapilot/login');
+    $this->get('/mockups/US-001/index.html')->assertDontSee('Confidential', false);
 
-    $headers = ['Authorization' => 'Basic '.base64_encode('andrea:s3cret-pass')];
-
-    $this->get('/mockups/US-001/index.html', $headers)->assertOk()->assertSee('Confidential mockup', false);
+    // The external stakeholder sees the design, and its mockups.
+    signInDashboard('ext')->assertRedirect();
+    $this->get('/mockups/US-001/index.html')->assertOk()->assertSee('Confidential mockup', false);
     // The asset is streamed from disk: the status and the headers are what the test can read.
-    $this->get('/mockup-assets/design-systems/tailwind/tokens.css', $headers)->assertOk()->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+    $this->get('/mockup-assets/design-systems/tailwind/tokens.css')->assertOk()->assertHeader('X-Frame-Options', 'SAMEORIGIN');
 });
 
 it('rewrites url() references inside mockup css files', function (): void {

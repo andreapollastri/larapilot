@@ -1,69 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Form wizard — Filament</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create order (wizard) · Northwind Ops</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="fi-mockup">
-  <div class="fi-layout">
-    <aside class="fi-sidebar" aria-label="Main navigation">
-      <header class="fi-sidebar__header">
-        <div class="fi-sidebar__brand">Filament Demo</div>
-      </header>
-      <nav class="fi-sidebar__nav">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="resource-list.html" class="is-active">Users</a>
-      </nav>
-    </aside>
-    <div class="fi-main">
-      <header class="fi-topbar">
-        <div class="fi-topbar__spacer"></div>
-        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
-      </header>
-      <main class="fi-content">
-        <header class="fi-page-header">
-          <h1>Onboard user</h1>
-          <p>Multi-step wizard — UI Kit (Free).</p>
-        </header>
-        <nav class="fi-wizard-steps" aria-label="Wizard progress">
-          <div class="fi-wizard-step is-done"><span class="fi-wizard-step__num">✓</span> Profile</div>
-          <div class="fi-wizard-step is-active"><span class="fi-wizard-step__num">2</span> Permissions</div>
-          <div class="fi-wizard-step"><span class="fi-wizard-step__num">3</span> Review</div>
-        </nav>
-        <form action="#" method="post">
-          <section class="fi-section">
-            <h2 class="fi-section__heading">Permissions</h2>
-            <div class="fi-field">
-              <label for="role">Role</label>
-              <select id="role" name="role">
-                <option>Admin</option>
-                <option selected>Editor</option>
-                <option>Viewer</option>
-              </select>
-            </div>
-            <div class="fi-field fi-checkbox">
-              <input id="can_export" type="checkbox" checked>
-              <label for="can_export">Can export data</label>
-            </div>
-            <div class="fi-field">
-              <span id="toggle-label">Two-factor required</span>
-              <div style="margin-top:0.5rem">
-                <button type="button" class="fi-toggle is-on" aria-labelledby="toggle-label" aria-pressed="true"></button>
-              </div>
-            </div>
-          </section>
-          <div class="fi-actions-bar">
-            <button type="button" class="fi-btn fi-btn--secondary">Back</button>
-            <div class="fi-actions-bar__spacer"></div>
-            <button type="submit" class="fi-btn fi-btn--primary">Continue</button>
-          </div>
-        </form>
-      </main>
-    </div>
-  </div>
+<body class="fi-mockup fi-body fi-body-has-topbar fi-body-has-navigation">
+<a href="#fi-main-content" class="fi-skip-link">Skip to content</a>
+<header class="fi-topbar-ctn">
+<nav class="fi-topbar" aria-label="Topbar">
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-open-sidebar-btn" aria-label="Expand sidebar" aria-controls="fi-main-sidebar" aria-expanded="false"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+<div class="fi-topbar-start"><a href="dashboard.html" class="fi-logo" aria-label="Northwind Ops home"><span class="fi-logo-mark"><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/></svg></span>Northwind Ops</a></div>
+<div class="fi-topbar-end">
+<div class="fi-global-search-ctn"><div class="fi-global-search"><div class="fi-global-search-field">
+<label for="fi-global-search-input" class="fi-sr-only">Global search</label>
+<div class="fi-input-wrp"><div class="fi-input-wrp-prefix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg></div>
+<input id="fi-global-search-input" type="search" class="fi-input fi-input-has-inline-prefix" placeholder="Search" autocomplete="off"></div>
+</div></div></div>
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-database-notifications-btn" aria-label="Notifications, 3 unread"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><span class="fi-icon-btn-badge-ctn"><span class="fi-badge fi-color fi-color-primary fi-size-xs">3</span></span></button>
+<div class="fi-user-menu fi-dropdown"><button type="button" class="fi-user-menu-trigger" aria-label="User menu" aria-haspopup="menu" aria-expanded="false"><span class="fi-avatar fi-circular fi-user-avatar">ZH</span></button></div>
+</div>
+</nav>
+</header>
+<div class="fi-layout">
+<aside id="fi-main-sidebar" class="fi-sidebar fi-sidebar-open" aria-label="Sidebar">
+<nav class="fi-sidebar-nav" aria-label="Main"><ul class="fi-sidebar-nav-groups">
+<li class="fi-sidebar-group"><ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span class="fi-sidebar-item-label">Dashboard</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible fi-active"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Shop</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Shop" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url fi-active"><a href="resource-list.html" class="fi-sidebar-item-btn" aria-current="page"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg><span class="fi-sidebar-item-label">Orders</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-primary">38</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-edit.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg><span class="fi-sidebar-item-label">Products</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="relation-manager.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg><span class="fi-sidebar-item-label">Customers</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="cards-navigation.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path d="M6 6h.008v.008H6V6Z"/></svg><span class="fi-sidebar-item-label">Categories</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Logistics</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Logistics" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg><span class="fi-sidebar-item-label">Shipments</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-info">12</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg><span class="fi-sidebar-item-label">Warehouses</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"/></svg><span class="fi-sidebar-item-label">Suppliers</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Reports</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Reports" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="widgets-dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg><span class="fi-sidebar-item-label">Analytics</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Settings</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Settings" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="fi-sidebar-item-label">Store settings</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg><span class="fi-sidebar-item-label">Team</span></a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="fi-main-ctn">
+<main id="fi-main-content" class="fi-main">
+<div class="fi-page">
+<div class="fi-page-header-main-ctn">
+<header class="fi-header fi-header-has-breadcrumbs">
+<div>
+<nav class="fi-breadcrumbs" aria-label="Breadcrumbs"><ol class="fi-breadcrumbs-list">
+<li class="fi-breadcrumbs-item"><a href="resource-list.html">Orders</a></li>
+<li class="fi-breadcrumbs-item"><svg class="fi-icon fi-size-md fi-breadcrumbs-item-separator" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><span class="fi-breadcrumbs-item-label" aria-current="page">Create</span></li>
+</ol></nav>
+<h1 class="fi-header-heading">Create order</h1>
+</div>
+</header>
+<div class="fi-page-main">
+<div class="fi-page-content">
+<form class="fi-sc-wizard fi-contained" aria-label="Create order wizard" novalidate>
+<ol class="fi-sc-wizard-header" aria-label="Steps">
+<li class="fi-sc-wizard-header-step fi-completed"><button type="button" class="fi-sc-wizard-header-step-btn"><span class="fi-sc-wizard-header-step-icon-ctn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.75 6 6 9-13.5"/></svg></span><span class="fi-sc-wizard-header-step-text"><span class="fi-sc-wizard-header-step-label">Order details</span><span class="fi-sc-wizard-header-step-description">Customer and channel</span></span></button><svg fill="none" preserveAspectRatio="none" viewBox="0 0 22 80" aria-hidden="true" class="fi-sc-wizard-header-step-separator"><path d="M0 -2L20 40L0 82" stroke-linejoin="round" stroke="currentcolor" vector-effect="non-scaling-stroke"/></svg></li>
+<li class="fi-sc-wizard-header-step fi-active" aria-current="step"><button type="button" class="fi-sc-wizard-header-step-btn"><span class="fi-sc-wizard-header-step-icon-ctn"><span class="fi-sc-wizard-header-step-number">02</span></span><span class="fi-sc-wizard-header-step-text"><span class="fi-sc-wizard-header-step-label">Order items</span><span class="fi-sc-wizard-header-step-description">What goes in the box</span></span></button><svg fill="none" preserveAspectRatio="none" viewBox="0 0 22 80" aria-hidden="true" class="fi-sc-wizard-header-step-separator"><path d="M0 -2L20 40L0 82" stroke-linejoin="round" stroke="currentcolor" vector-effect="non-scaling-stroke"/></svg></li>
+<li class="fi-sc-wizard-header-step"><button type="button" class="fi-sc-wizard-header-step-btn"><span class="fi-sc-wizard-header-step-icon-ctn"><span class="fi-sc-wizard-header-step-number">03</span></span><span class="fi-sc-wizard-header-step-text"><span class="fi-sc-wizard-header-step-label">Delivery</span><span class="fi-sc-wizard-header-step-description">Address and carrier</span></span></button></li>
+</ol>
+<div class="fi-sc-wizard-step fi-active">
+<div class="fi-sc">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Items</span></span></div></div>
+<div class="fi-fo-field-content-col">
+<div class="fi-fo-repeater">
+<ul class="fi-fo-repeater-items">
+<li class="fi-fo-repeater-item">
+<div class="fi-fo-repeater-item-header">
+<div class="fi-fo-repeater-item-header-start-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Move item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.24 6.8a.75.75 0 0 0 1.06-.04l1.95-2.1v8.59a.75.75 0 0 0 1.5 0V4.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L2.2 5.74a.75.75 0 0 0 .04 1.06Zm8 6.4a.75.75 0 0 0-.04 1.06l3.25 3.5a.75.75 0 0 0 1.1 0l3.25-3.5a.75.75 0 1 0-1.1-1.02l-1.95 2.1V6.75a.75.75 0 0 0-1.5 0v8.59l-1.95-2.1a.75.75 0 0 0-1.06-.04Z" clip-rule="evenodd"/></svg></button></div>
+<h4 class="fi-fo-repeater-item-header-label">Ethiopia Yirgacheffe beans, 1 kg</h4>
+<div class="fi-fo-repeater-item-header-end-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Clone item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 4.25A2.25 2.25 0 0 1 4.25 2h6.5A2.25 2.25 0 0 1 13 4.25V5.5H9.25A3.75 3.75 0 0 0 5.5 9.25V13H4.25A2.25 2.25 0 0 1 2 10.75v-6.5Z"/><path d="M9.25 7A2.25 2.25 0 0 0 7 9.25v6.5A2.25 2.25 0 0 0 9.25 18h6.5A2.25 2.25 0 0 0 18 15.75v-6.5A2.25 2.25 0 0 0 15.75 7h-6.5Z"/></svg></button><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Collapse item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+</div>
+<div class="fi-fo-repeater-item-content"><div class="fi-grid fi-grid-cols-3">
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-p1" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Product<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="w-p1" class="fi-select-input"><option>Ethiopia Yirgacheffe beans, 1 kg</option></select></div></div></div>
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-q1" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Quantity<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="w-q1" class="fi-input" type="number" value="8"></div></div></div>
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-u1" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Unit price</span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-disabled"><div class="fi-input-wrp-prefix"><span class="fi-input-wrp-label">$</span></div><input id="w-u1" class="fi-input" value="24.50" disabled></div></div></div>
+</div></div>
+</li>
+<li class="fi-fo-repeater-item">
+<div class="fi-fo-repeater-item-header">
+<div class="fi-fo-repeater-item-header-start-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Move item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.24 6.8a.75.75 0 0 0 1.06-.04l1.95-2.1v8.59a.75.75 0 0 0 1.5 0V4.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L2.2 5.74a.75.75 0 0 0 .04 1.06Zm8 6.4a.75.75 0 0 0-.04 1.06l3.25 3.5a.75.75 0 0 0 1.1 0l3.25-3.5a.75.75 0 1 0-1.1-1.02l-1.95 2.1V6.75a.75.75 0 0 0-1.5 0v8.59l-1.95-2.1a.75.75 0 0 0-1.06-.04Z" clip-rule="evenodd"/></svg></button></div>
+<h4 class="fi-fo-repeater-item-header-label">Ceramic Pour-Over Dripper</h4>
+<div class="fi-fo-repeater-item-header-end-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Clone item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 4.25A2.25 2.25 0 0 1 4.25 2h6.5A2.25 2.25 0 0 1 13 4.25V5.5H9.25A3.75 3.75 0 0 0 5.5 9.25V13H4.25A2.25 2.25 0 0 1 2 10.75v-6.5Z"/><path d="M9.25 7A2.25 2.25 0 0 0 7 9.25v6.5A2.25 2.25 0 0 0 9.25 18h6.5A2.25 2.25 0 0 0 18 15.75v-6.5A2.25 2.25 0 0 0 15.75 7h-6.5Z"/></svg></button><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Collapse item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+</div>
+<div class="fi-fo-repeater-item-content"><div class="fi-grid fi-grid-cols-3">
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-p2" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Product<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="w-p2" class="fi-select-input"><option>Ceramic Pour-Over Dripper</option></select></div></div></div>
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-q2" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Quantity<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-invalid"><input id="w-q2" class="fi-input" type="number" value="0" aria-invalid="true" aria-describedby="w-q2-e"></div><p id="w-q2-e" class="fi-fo-field-wrp-error-message">The quantity must be at least 1.</p></div></div>
+<div class="fi-fo-field"><div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-u2" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Unit price</span></label></div></div><div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-disabled"><div class="fi-input-wrp-prefix"><span class="fi-input-wrp-label">$</span></div><input id="w-u2" class="fi-input" value="32.00" disabled></div></div></div>
+</div></div>
+</li>
+<li class="fi-fo-repeater-item fi-collapsed">
+<div class="fi-fo-repeater-item-header">
+<div class="fi-fo-repeater-item-header-start-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Move item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M2.24 6.8a.75.75 0 0 0 1.06-.04l1.95-2.1v8.59a.75.75 0 0 0 1.5 0V4.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0L2.2 5.74a.75.75 0 0 0 .04 1.06Zm8 6.4a.75.75 0 0 0-.04 1.06l3.25 3.5a.75.75 0 0 0 1.1 0l3.25-3.5a.75.75 0 1 0-1.1-1.02l-1.95 2.1V6.75a.75.75 0 0 0-1.5 0v8.59l-1.95-2.1a.75.75 0 0 0-1.06-.04Z" clip-rule="evenodd"/></svg></button></div>
+<h4 class="fi-fo-repeater-item-header-label">Vanilla syrup, 750 ml × 6</h4>
+<div class="fi-fo-repeater-item-header-end-actions"><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Clone item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M2 4.25A2.25 2.25 0 0 1 4.25 2h6.5A2.25 2.25 0 0 1 13 4.25V5.5H9.25A3.75 3.75 0 0 0 5.5 9.25V13H4.25A2.25 2.25 0 0 1 2 10.75v-6.5Z"/><path d="M9.25 7A2.25 2.25 0 0 0 7 9.25v6.5A2.25 2.25 0 0 0 9.25 18h6.5A2.25 2.25 0 0 0 18 15.75v-6.5A2.25 2.25 0 0 0 15.75 7h-6.5Z"/></svg></button><button type="button" class="fi-icon-btn fi-color fi-color-danger fi-size-sm" aria-label="Delete item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/></svg></button><button type="button" class="fi-icon-btn fi-size-sm" aria-label="Expand item"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></button></div>
+</div>
+</li>
+</ul>
+<div class="fi-fo-repeater-add"><button type="button" class="fi-btn fi-size-sm">Add to items</button></div>
+</div>
+<span class="fi-sc-text">Drag items to change the order they are packed in.</span>
+</div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="w-notes" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Special order notes</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp fi-fo-textarea"><textarea id="w-notes" rows="3" placeholder="Anything the warehouse should know about these items"></textarea></div></div>
+</div>
+</div>
+</div>
+<div class="fi-sc-wizard-footer">
+<a href="resource-create.html" class="fi-btn">Back</a>
+<button type="button" class="fi-btn fi-color fi-color-primary">Next</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
 </body>
 </html>

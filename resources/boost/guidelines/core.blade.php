@@ -17,7 +17,7 @@ The files are compiled for the project and hold only the rules its settings call
 
 - New product or PRD → `larapilot-inception` (client docs in `.larapilot/client-materials/`, legacy snapshots in `.larapilot/legacy/`)
 - Existing Laravel app with no PRD → `larapilot-adopt`
-- One new feature → `larapilot-feature`. A bug → `larapilot-bug`. A request that may be either → `larapilot-triage`, which classifies it and hands off. Security findings from Aikido → `larapilot-aikido`, errors in production from the tracker of the project (Boogle, Sentry, …) → `larapilot-error`, which asks which tracker when none is set: each downloads them, has the user confirm, and hands them to triage group by group
+- One new feature → `larapilot-feature`. A bug → `larapilot-bug`. A request that may be either → `larapilot-triage`, which classifies it and hands off. Security findings from the scanner the project associates (Aikido or Hackly) → `larapilot-security`, errors in production from the tracker of the project (Boogle, Sentry, …) → `larapilot-error`, which asks which tracker when none is set: each downloads them, has the user confirm, and hands them to triage group by group
 - A change to the PRD that is neither — sharpen, re-prioritize, re-scope, answer an open question, upgrade an older PRD → `larapilot-prd`. A PRD edited by hand → `larapilot-prd` to reconcile history, validation, and backlog
 - Backlog → `larapilot-spec`. Plan → `larapilot-plan`. Implement → `larapilot-implement`. Accept → `larapilot-review`
 - Mockups → `larapilot-design`. External frontend repo — a single app or a monorepo, its agent rules, a handoff to its team → `larapilot-frontend-companion`

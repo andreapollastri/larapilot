@@ -113,11 +113,14 @@
 
     .column-stats {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 8px;
+        gap: 6px 8px;
         min-height: 20px;
         padding-left: 2px;
     }
+
+    .column-stats .column-count { white-space: nowrap; }
 
     .column-count {
         color: var(--muted);
@@ -200,6 +203,23 @@
         flex-wrap: wrap;
         justify-content: flex-end;
     }
+
+    .spec-plan { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+
+    .spec-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 20px;
+        padding: 0 7px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text-2);
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        white-space: nowrap;
+    }
+
+    .spec-tag.is-proposed { border-style: dashed; color: var(--muted); }
 
     .spec-card h3 {
         margin: 0;
@@ -296,6 +316,12 @@
         border-color: color-mix(in srgb, var(--warn-fill) 40%, var(--border));
         background: color-mix(in srgb, var(--warn-fill) 11%, var(--surface));
     }
+
+    .group-switch { margin-top: 12px; }
+    .group-switch a { text-decoration: none; }
+    .group-switch a:hover { text-decoration: none; }
+    .view-note { margin: 0 0 14px; }
+    .view-column .column-sub { margin: 2px 0 0; color: var(--muted); font-size: 0.78rem; font-weight: 500; }
 </style>
 @endpush
 
@@ -338,7 +364,14 @@
     <header class="page-head">
         <div>
             <h2>Board</h2>
-            <p class="sub">Every user story in the backlog, grouped by workflow status.</p>
+            <p class="sub">Every user story in the backlog{{ ($view['group'] ?? 'status') === 'status' ? ', grouped by workflow status' : (($view['group'] ?? '') === 'version' ? ', grouped by version' : ', grouped by two-week sprint') }}.</p>
+            @if (count($view['options'] ?? []) > 1)
+                <nav class="chips group-switch" aria-label="Group the board">
+                    @foreach ($view['options'] as $option)
+                        <a href="{{ route('larapilot.dashboard.index', $option['key'] === ($view['default'] ?? 'status') ? [] : ['group' => $option['key']]) }}" @class(['chip', 'current' => $option['key'] === ($view['group'] ?? 'status')])>{{ $option['label'] }}</a>
+                    @endforeach
+                </nav>
+            @endif
         </div>
         @if (($metrics['total'] ?? 0) > 0)
             <div class="page-actions">
@@ -412,6 +445,10 @@
             <button type="button" class="board-filter-clear" id="board-filter-clear" hidden>Clear</button>
         </div>
 
+        @if (($view['group'] ?? 'status') === 'sprint' && is_array($view['sprint_plan'] ?? null))
+            <p class="hint view-note">A sprint is {{ \Larapilot\Services\SprintService::LENGTH_DAYS }} days for one person — {{ $view['sprint_plan']['capacity']['hours'] }} hours, about {{ $view['sprint_plan']['capacity']['points'] }} story points. A sprint marked <strong>proposed</strong> was filled from the backlog; nothing was decided. Sprint 1 starts {{ $view['sprint_plan']['origin'] }}.</p>
+        @endif
+
         <div class="board-scroll">
         <section
             class="board"
@@ -420,6 +457,7 @@
             data-wip-statuses="{{ $wipStatuses }}"
             data-total="{{ $metrics['total'] ?? 0 }}"
         >
+            @if (($view['group'] ?? 'status') === 'status')
             @foreach ($statusOrder as $status)
                 @php
                     $items = $columns[$status] ?? [];
@@ -456,6 +494,46 @@
                     </div>
                 </article>
             @endforeach
+            @else
+            @foreach ($viewColumns ?? [] as $column)
+                @php
+                    $items = $column['items'];
+                    $columnPoints = array_sum(array_map(
+                        fn (array $spec): int => max(0, (int) ($spec['points'] ?? 0)),
+                        $items
+                    ));
+                @endphp
+                <article class="card column view-column" data-status="{{ $column['key'] }}">
+                    <div class="column-header">
+                        <div>
+                            <strong>{{ $column['label'] }}</strong>
+                            @if ($column['sub'])
+                                <p class="column-sub">{{ $column['sub'] }}</p>
+                            @endif
+                        </div>
+                        <div class="column-stats">
+                            @if (($column['state'] ?? null) === 'shipped')
+                                <span class="chip">Shipped</span>
+                            @elseif (($column['state'] ?? null) === 'in_progress' || ($column['state'] ?? null) === 'current')
+                                <span class="chip current">Current</span>
+                            @endif
+                            @if (($column['proposed'] ?? 0) > 0)
+                                <span class="chip stale">Proposed</span>
+                            @endif
+                            <span class="column-count">{{ count($items) }} {{ $specWord(count($items)) }}</span>
+                            <span class="points" @if ($columnPoints === 0) hidden @endif>{{ $columnPoints }} SP</span>
+                        </div>
+                    </div>
+                    <div class="column-body">
+                        @forelse ($items as $spec)
+                            @include('larapilot::dashboard.partials.spec-card', ['spec' => $spec])
+                        @empty
+                            <div class="column-empty">No specs</div>
+                        @endforelse
+                    </div>
+                </article>
+            @endforeach
+            @endif
         </section>
         </div>
     @endif

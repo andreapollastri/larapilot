@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+use Illuminate\Testing\TestResponse;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DashboardAuthService;
 use Larapilot\Services\GitService;
 use Larapilot\Services\PlanService;
 use Larapilot\Services\ReleaseFlowService;
 use Larapilot\Services\ReleaseService;
+use Larapilot\Support\Totp;
 use Larapilot\Tests\DisabledTestCase;
 use Larapilot\Tests\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -131,6 +135,83 @@ function addSpec(array $overrides = []): void
 function enableComments(): void
 {
     test()->artisan('larapilot:settings-set', ['--comments' => 'YES'])->assertSuccessful();
+}
+
+/**
+ * A host that is not a developer's own: the dashboard asks for a sign-in.
+ * Call it after `larapilot:install`, which must run as `testing`.
+ */
+function sharedHost(string $environment = 'staging'): void
+{
+    app()['env'] = $environment;
+}
+
+/**
+ * Production with the one switch that serves the dashboard there.
+ */
+function forcedProduction(): void
+{
+    app()['env'] = 'production';
+    config()->set('larapilot.dashboard_route.force_in_production', true);
+}
+
+/**
+ * A dashboard user, written straight into `.larapilot/auth.yaml`.
+ */
+function dashboardUser(string $name, string $password = 'correct-horse-battery', string $role = 'admin'): void
+{
+    app(DashboardAuthService::class)->setUser($name, $password, $role);
+}
+
+/**
+ * The CSRF token of the session of this test, as a form of the dashboard
+ * would send it. The session is started if need be.
+ */
+function csrfToken(): string
+{
+    $session = app('session.store');
+
+    if (! $session->isStarted()) {
+        $session->start();
+    }
+
+    return (string) $session->token();
+}
+
+/**
+ * A form POST to the dashboard, with the CSRF token a browser would send.
+ *
+ * @param  array<string, mixed>  $data
+ */
+function dashboardPost(string $uri, array $data = []): TestResponse
+{
+    return test()->post($uri, ['_token' => csrfToken()] + $data);
+}
+
+/**
+ * Sign in through the door, as a browser would.
+ */
+function signInDashboard(string $name, string $password = 'correct-horse-battery'): TestResponse
+{
+    return dashboardPost('/larapilot/login', ['username' => $name, 'password' => $password]);
+}
+
+/**
+ * The six digits an authenticator shows now for a secret.
+ */
+function totpCode(string $secret, int $offsetSteps = 0): string
+{
+    return Totp::code($secret, Totp::step() + $offsetSteps);
+}
+
+/**
+ * The secret of the enrolment under way in this session.
+ */
+function totpSetupSecret(): string
+{
+    $setup = session()->get(DashboardSession::SETUP);
+
+    return is_array($setup) ? (string) ($setup['secret'] ?? '') : '';
 }
 
 /**

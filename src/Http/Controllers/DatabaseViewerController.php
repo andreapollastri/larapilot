@@ -9,7 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Larapilot\Services\Auth\DashboardSession;
 use Larapilot\Services\ConfigService;
+use Larapilot\Services\DatabaseAnonymizer;
 use Larapilot\Services\DatabaseDiagramPdfWriter;
 use Larapilot\Services\DatabaseDiagramService;
 use Larapilot\Services\DatabaseDumpService;
@@ -31,36 +33,35 @@ class DatabaseViewerController
         protected DatabaseMigrationService $migrations,
         protected DatabaseMigrationExportService $migrationFiles,
         protected DatabaseSeederExportService $seederFiles,
+        protected DatabaseAnonymizer $anonymizer,
+        protected DashboardSession $session,
     ) {}
 
     public function index(Request $request): View
     {
         $this->guard();
+        $this->anonymizer->engage($request->boolean('anonymize'));
 
         if ($request->query('view') === 'migrations') {
             $overview = $this->database->overview();
 
-            return view('larapilot::dashboard.database', $overview + [
-                'credentials_allowed' => $this->credentialsAllowed(),
+            return view('larapilot::dashboard.database', $this->protect($overview + $this->downloadFlags() + [
                 'view' => 'migrations',
                 'migrations' => $overview['error'] === null ? $this->migrations->status() : null,
-            ]);
+            ]));
         }
 
         if ($request->query('view') !== 'diagram') {
-            return view('larapilot::dashboard.database', $this->database->overview() + [
-                'credentials_allowed' => $this->credentialsAllowed(),
-            ]);
+            return view('larapilot::dashboard.database', $this->protect($this->database->overview() + $this->downloadFlags()));
         }
 
         $keysOnly = $request->query('columns') === 'keys';
 
-        return view('larapilot::dashboard.database', $this->diagrams->diagram($keysOnly) + [
-            'credentials_allowed' => $this->credentialsAllowed(),
+        return view('larapilot::dashboard.database', $this->protect($this->diagrams->diagram($keysOnly) + $this->downloadFlags() + [
             'view' => 'diagram',
             'keys_only' => $keysOnly,
             'limit' => DatabaseDiagramService::LIMIT,
-        ]);
+        ]));
     }
 
     /**
@@ -70,6 +71,7 @@ class DatabaseViewerController
     public function dump(Request $request): StreamedResponse|RedirectResponse
     {
         $this->guard();
+        $this->anonymizer->engage($request->boolean('anonymize'));
 
         if ($this->database->overview()['error'] !== null) {
             return $this->unreadable();
@@ -95,9 +97,10 @@ class DatabaseViewerController
     /**
      * The structure of the database as Laravel migrations, in a zip.
      */
-    public function migrations(): StreamedResponse|RedirectResponse
+    public function migrations(Request $request): StreamedResponse|RedirectResponse
     {
         $this->guard();
+        $this->anonymizer->engage($request->boolean('anonymize'));
 
         if ($this->database->overview()['error'] !== null) {
             return $this->unreadable();
@@ -115,13 +118,17 @@ class DatabaseViewerController
                 ->with('larapilot_error', 'The database has no table to write a migration for.');
         }
 
-        return response()->streamDownload(static function () use ($files): void {
+        return response()->streamDownload(function () use ($files): void {
             $zip = new ZipStream(static function (string $chunk): void {
                 echo $chunk;
             });
 
             foreach ($files as $path => $contents) {
                 $zip->add($path, $contents);
+            }
+
+            if ($this->anonymizer->active()) {
+                $zip->add('database/migrations/ANONYMIZATION.txt', "These migrations are the structure only: columns, keys, and indexes. They hold no row to replace.\nThe rows are anonymized in the SQL dump and in the Laravel seeders, from the map an admin saves at /larapilot/anonymization (.larapilot/anonymization.yaml).\n");
             }
 
             $zip->finish();
@@ -138,6 +145,7 @@ class DatabaseViewerController
     public function seeders(Request $request): StreamedResponse|RedirectResponse
     {
         $this->guard();
+        $this->anonymizer->engage($request->boolean('anonymize'));
 
         if ($this->database->overview()['error'] !== null) {
             return $this->unreadable();
@@ -197,6 +205,7 @@ class DatabaseViewerController
     public function table(Request $request, string $table): View
     {
         $this->guard();
+        $this->anonymizer->engage($request->boolean('anonymize'));
 
         $data = $this->database->table($table, [
             'page' => max(1, $request->integer('page', 1)),
@@ -212,9 +221,7 @@ class DatabaseViewerController
         }
 
         if ($data['object'] === null) {
-            return view('larapilot::dashboard.database', $data + [
-                'credentials_allowed' => $this->credentialsAllowed(),
-            ]);
+            return view('larapilot::dashboard.database', $this->protect($data + $this->downloadFlags()));
         }
 
         // The rows as the database holds them stay here: the page gets what is written from them.
@@ -223,11 +230,11 @@ class DatabaseViewerController
 
         $tab = $request->query('tab') === 'structure' ? 'structure' : 'rows';
 
-        return view('larapilot::dashboard.database-table', $data + [
+        return view('larapilot::dashboard.database-table', $this->protect($data + $this->downloadFlags() + [
             'tab' => $tab,
             'definition' => $tab === 'structure' ? $this->dumps->definition($table) : [],
             'inserts' => $tab === 'rows' && $data['object']['kind'] === 'table' ? $this->dumps->inserts($data['object'], $records, max(1, (int) $data['from'])) : [],
-        ]);
+        ]));
     }
 
     protected function unreadable(): RedirectResponse
@@ -245,12 +252,55 @@ class DatabaseViewerController
     }
 
     /**
+     * @return array{credentials_allowed: bool, anonymized: bool, anonymize_optional: bool}
+     */
+    protected function downloadFlags(): array
+    {
+        return [
+            'credentials_allowed' => $this->credentialsAllowed(),
+            'anonymized' => $this->anonymizer->active(),
+            'anonymize_optional' => ! $this->anonymizer->required(),
+        ];
+    }
+
+    /**
+     * Where the database lives — its host, its port, its name — is the
+     * environment of the server: an admin's to see, not a developer's.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function protect(array $data): array
+    {
+        if ($this->session->canSeeSecrets() || ! is_array($data['connection'] ?? null)) {
+            return $data;
+        }
+
+        // The message of a failed connection quotes them too.
+        if (is_string($data['error'] ?? null)) {
+            $config = config('database.connections.'.$this->database->connectionName());
+            $values = array_filter(
+                array_map(static fn (mixed $value): string => is_scalar($value) ? trim((string) $value) : '', is_array($config) ? [$config['database'] ?? '', $config['host'] ?? '', $config['username'] ?? '', $data['connection']['database'], (string) ($data['connection']['host'] ?? '')] : []),
+                static fn (string $value): bool => mb_strlen($value) >= 3
+            );
+
+            $data['error'] = str_replace($values, '[hidden]', $data['error']);
+        }
+
+        $data['connection']['database'] = '';
+        $data['connection']['host'] = null;
+
+        return $data;
+    }
+
+    /**
      * Passwords, tokens, and secrets leave the server in a dump only from
-     * a developer's own machine — never from a shared host, sign-in or not.
+     * a developer's own machine — the environments the dashboard leaves
+     * open — never from a shared host, sign-in or not.
      */
     protected function credentialsAllowed(): bool
     {
-        return app()->environment(['local', 'development', 'testing']);
+        return app()->environment(['local', 'testing']);
     }
 
     protected function guard(): void

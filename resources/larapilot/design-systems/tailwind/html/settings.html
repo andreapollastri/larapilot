@@ -1,66 +1,209 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full scheme-light bg-gray-50 antialiased dark:scheme-dark dark:bg-gray-950">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Settings — Tailwind CSS</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
-  </script>
+  <meta name="color-scheme" content="light dark">
+  <title>Settings · Tidewater</title>
+  <link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
-  <div class="flex min-h-screen">
-    <aside class="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white md:flex" aria-label="Sidebar">
-      <div class="flex h-14 items-center border-b border-slate-200 px-5">
-        <a href="dashboard.html" class="font-semibold text-slate-900">Nordic Flow</a>
-      </div>
-      <nav class="flex flex-1 flex-col gap-1 p-3">
-        <a href="dashboard.html" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900">Dashboard</a>
-        <a href="settings.html" class="rounded-lg bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700" aria-current="page">Settings</a>
-      </nav>
-    </aside>
-
-    <div class="flex min-w-0 flex-1 flex-col">
-      <header class="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-slate-200 bg-white px-4 shadow-sm sm:px-6">
-        <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 md:hidden" aria-label="Open menu">☰</button>
-        <nav aria-label="Breadcrumb" class="text-sm text-slate-500">
-          <a href="dashboard.html" class="hover:text-slate-700">Dashboard</a>
-          <span class="mx-1.5 text-slate-300">/</span>
-          <span class="font-medium text-slate-900">Settings</span>
-        </nav>
-      </header>
-
-      <main class="flex-1 p-4 sm:p-6">
-        <div class="mb-6">
-          <h1 class="text-2xl font-bold">Profile settings</h1>
-          <p class="text-slate-600">Update your account information.</p>
-        </div>
-
-        <section class="mb-6 max-w-xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 class="mb-4 font-semibold">Personal details</h2>
-          <form class="space-y-4">
-            <div>
-              <label for="name" class="mb-1 block text-sm font-medium">Name</label>
-              <input id="name" type="text" value="Jane Doe" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-            </div>
-            <div>
-              <label for="settings-email" class="mb-1 block text-sm font-medium">Email</label>
-              <input id="settings-email" type="email" value="jane@example.com" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-            </div>
-            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save changes</button>
-          </form>
-        </section>
-
-        <section class="max-w-xl rounded-xl border border-red-200 bg-white p-6 shadow-sm">
-          <h2 class="mb-2 font-semibold text-red-600">Danger zone</h2>
-          <p class="mb-4 text-sm text-slate-600">Permanently delete your account and all associated data.</p>
-          <button type="button" class="rounded-lg border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Delete account</button>
-        </section>
-      </main>
-    </div>
+<body class="tw-mockup h-full">
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-indigo-600 focus:shadow-lg">Skip to content</a>
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+  <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 dark:border-white/10 dark:bg-gray-900">
+    <a href="dashboard.html" class="flex h-16 shrink-0 items-center" aria-label="Tidewater home"><span class="flex items-center gap-x-2.5"><svg class="h-8 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg><span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Tidewater</span></span></a>
+    <nav aria-label="Main" class="flex flex-1 flex-col">
+      <ul role="list" class="flex flex-1 flex-col gap-y-7">
+        <li>
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Overview</a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>Customers<span aria-hidden="true" class="ml-auto w-11 min-w-max rounded-full bg-white px-2.5 py-0.5 text-center text-xs/5 font-medium whitespace-nowrap text-gray-600 outline-1 -outline-offset-1 outline-gray-200 dark:bg-gray-900 dark:text-white dark:outline-white/15">1,284</span></a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg>Revenue</a></li>
+            <li><a href="dashboard.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"/></svg>Cohorts</a></li>
+            <li><a href="empty-state.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25M9 16.5v.75m3-3v3M15 12v5.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Reports</a></li>
+            <li><a href="components.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><svg class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>Components</a></li>
+          </ul>
+        </li>
+        <li>
+          <div class="text-xs/6 font-semibold text-gray-500 dark:text-gray-400">Saved segments</div>
+          <ul role="list" class="-mx-2 mt-2 space-y-1">
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">E</span><span class="truncate">Enterprise · Scale plan</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">T</span><span class="truncate">Trials ending this week</span></a></li>
+            <li><a href="resource-list.html" class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"><span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[0.625rem] font-medium text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/20 dark:group-hover:text-white">R</span><span class="truncate">At-risk (failed payment)</span></a></li>
+          </ul>
+        </li>
+        <li class="mt-auto">
+          <ul role="list" class="-mx-2 space-y-1">
+            <li><a href="settings.html" aria-current="page" class="group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm/6 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"><svg class="size-6 shrink-0 text-indigo-600 dark:text-white" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>Settings</a></li>
+          </ul>
+        </li>
+        <li class="-mx-6">
+          <a href="settings.html" class="flex items-center gap-x-4 border-t border-gray-200 px-6 py-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/5">
+            <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+            <span class="sr-only">Your profile:</span>
+            <span class="min-w-0"><span class="block truncate">Maya Okafor</span><span class="block truncate text-xs/5 font-normal text-gray-500 dark:text-gray-400">Lumenfield · Finance</span></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
+</div>
+<div class="lg:pl-72">
+  <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 dark:border-white/10 dark:bg-gray-900 dark:shadow-none">
+    <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden dark:text-gray-400" aria-label="Open sidebar"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+    <a href="dashboard.html" class="lg:hidden" aria-label="Tidewater home"><svg class="h-7 w-auto" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" class="fill-indigo-600 dark:fill-indigo-500"/><path d="M6 13.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-width="2.25" stroke-linecap="round"/><path d="M6 19.5q3.33-3 6.67 0t6.67 0t6.66 0" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.25" stroke-linecap="round"/></svg></a>
+    <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden dark:bg-white/10"></div>
+    <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+      <div class="grid flex-1 grid-cols-1">
+        <input type="search" name="search" aria-label="Search" placeholder="Search" class="col-start-1 row-start-1 block size-full min-w-0 bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-500 sm:text-sm/6 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-400">
+        <svg class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg>
+      </div>
+      <div class="flex items-center gap-x-4 lg:gap-x-6">
+        <button type="button" class="relative -m-2.5 p-2.5 text-gray-400 hover:text-gray-500 dark:hover:text-white" aria-label="View notifications, 2 unread">
+          <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+          <span aria-hidden="true" class="absolute top-2 right-2.5 size-2 rounded-full bg-indigo-600 ring-2 ring-white dark:bg-indigo-400 dark:ring-gray-900"></span>
+        </button>
+        <div aria-hidden="true" class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200 dark:lg:bg-white/10"></div>
+        <a href="settings.html" class="-m-1.5 flex items-center p-1.5" aria-label="Your profile: Maya Okafor">
+          <span aria-hidden="true" class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+          <span class="hidden lg:flex lg:items-center">
+            <span aria-hidden="true" class="ml-4 text-sm/6 font-semibold text-gray-900 dark:text-white">Maya Okafor</span>
+            <svg class="ml-2 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="py-8 sm:py-10">
+    <div class="px-4 sm:px-6 lg:px-8">
+<h1 class="text-2xl/7 font-bold text-gray-900 sm:text-3xl sm:tracking-tight dark:text-white">Settings</h1>
+      <div class="mt-4 border-b border-gray-200 dark:border-white/10">
+        <nav aria-label="Settings sections" class="-mb-px flex gap-x-8 overflow-x-auto">
+          <a href="settings.html" aria-current="page" class="shrink-0 border-b-2 border-indigo-600 px-1 pb-3 text-sm font-semibold whitespace-nowrap text-indigo-600 dark:border-indigo-400 dark:text-indigo-400">Account</a>
+          <a href="settings.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-semibold whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200">Workspace</a>
+          <a href="settings.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-semibold whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200">Notifications</a>
+          <a href="settings.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-semibold whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200">Billing</a>
+          <a href="settings.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-semibold whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200">Team</a>
+          <a href="settings.html" class="shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-semibold whitespace-nowrap text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-200">Integrations</a>
+        </nav>
+      </div>
+
+      <div class="divide-y divide-gray-900/10 dark:divide-white/10">
+        <section aria-labelledby="s-personal" class="grid grid-cols-1 gap-x-8 gap-y-8 py-12 md:grid-cols-3">
+          <div>
+            <h2 id="s-personal" class="text-base/7 font-semibold text-gray-900 dark:text-white">Personal information</h2>
+            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Shown to teammates on comments, shared reports and the activity log.</p>
+          </div>
+          <div class="md:col-span-2">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
+              <div class="col-span-full flex items-center gap-x-6">
+                <span aria-hidden="true" class="inline-flex size-20 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xl font-semibold text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200">MO</span>
+                <div>
+                  <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20 ">Change avatar</button>
+                  <p class="mt-2 text-xs/5 text-gray-500 dark:text-gray-400">JPG, GIF or PNG. 1 MB max.</p>
+                </div>
+              </div>
+              <div class="sm:col-span-3">
+                <label for="first-name" class="block text-sm/6 font-medium text-gray-900 dark:text-white">First name</label>
+                <div class="mt-2"><input id="first-name" name="first-name" type="text" value="Maya" autocomplete="given-name" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-400 dark:focus:outline-indigo-500"></div>
+              </div>
+              <div class="sm:col-span-3">
+                <label for="last-name" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Last name</label>
+                <div class="mt-2"><input id="last-name" name="last-name" type="text" value="Okafor" autocomplete="family-name" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-400 dark:focus:outline-indigo-500"></div>
+              </div>
+              <div class="col-span-full">
+                <span class="mock-label">Sign-in email</span>
+                <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div class="mock-field mock-field--disabled sm:flex-1" role="img" aria-label="Email field, filled in">maya@lumenfield.io</div>
+                  <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20 shrink-0">Change email</button>
+                </div>
+                <p class="mt-2 text-sm/6 text-gray-600 dark:text-gray-400">We send a confirmation link to the new address before switching.</p>
+              </div>
+              <div class="sm:col-span-4">
+                <label for="timezone" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Timezone</label>
+                <div class="mt-2 grid grid-cols-1"><select id="timezone" name="timezone" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:*:bg-gray-800 dark:focus:outline-indigo-500"><option selected>Europe/Lisbon (UTC+01:00)</option><option>Europe/London (UTC+01:00)</option><option>America/Toronto (UTC−04:00)</option><option>America/New_York (UTC−04:00)</option></select><svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></div>
+              </div>
+            </div>
+            <div class="mt-8 flex"><button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500 ">Save</button></div>
+          </div>
+        </section>
+
+        <section aria-labelledby="s-notify" class="grid grid-cols-1 gap-x-8 gap-y-8 py-12 md:grid-cols-3">
+          <div>
+            <h2 id="s-notify" class="text-base/7 font-semibold text-gray-900 dark:text-white">Monday digest</h2>
+            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">A summary of last week's MRR movements, sent at 08:00 in your timezone.</p>
+          </div>
+          <div class="md:col-span-2 sm:max-w-xl">
+            <fieldset>
+              <legend class="text-sm/6 font-semibold text-gray-900 dark:text-white">Deliver to</legend>
+              <div class="mt-4 space-y-4">
+                <div class="flex items-center gap-x-3"><input type="radio" id="digest-email" name="digest" class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 forced-colors:appearance-auto forced-colors:before:hidden"><label for="digest-email" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Email only</label></div>
+                <div class="flex items-center gap-x-3"><input type="radio" id="digest-slack" name="digest" class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 forced-colors:appearance-auto forced-colors:before:hidden"><label for="digest-slack" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Slack, in #revenue</label></div>
+                <div class="flex items-center gap-x-3"><input type="radio" id="digest-both" name="digest" checked class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 dark:border-white/10 dark:bg-white/5 dark:checked:border-indigo-500 dark:checked:bg-indigo-500 forced-colors:appearance-auto forced-colors:before:hidden"><label for="digest-both" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Email and Slack</label></div>
+              </div>
+            </fieldset>
+            <div class="mt-8 flex items-center justify-between gap-x-6 rounded-lg bg-white p-4 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <div class="text-sm/6">
+                <p id="forecast-label" class="font-medium text-gray-900 dark:text-white">Include the 12-month forecast</p>
+                <p id="forecast-desc" class="text-gray-500 dark:text-gray-400">Adds the projection chart and its confidence band.</p>
+              </div>
+              <div class="group relative inline-flex w-11 shrink-0 rounded-full bg-gray-200 p-0.5 inset-ring inset-ring-gray-900/5 outline-offset-2 outline-indigo-600 transition-colors duration-200 ease-in-out has-checked:bg-indigo-600 has-focus-visible:outline-2 dark:bg-white/5 dark:inset-ring-white/10 dark:outline-indigo-500 dark:has-checked:bg-indigo-500"><span class="size-5 rounded-full bg-white shadow-xs ring-1 ring-gray-900/5 transition-transform duration-200 ease-in-out group-has-checked:translate-x-5"></span><input type="checkbox" id="forecast" name="forecast" checked aria-labelledby="forecast-label" aria-describedby="forecast-desc" class="absolute inset-0 size-full cursor-pointer appearance-none focus:outline-hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="s-security" class="grid grid-cols-1 gap-x-8 gap-y-8 py-12 md:grid-cols-3">
+          <div>
+            <h2 id="s-security" class="text-base/7 font-semibold text-gray-900 dark:text-white">Sign-in and sessions</h2>
+            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">Lumenfield requires two-factor authentication for every member.</p>
+          </div>
+          <div class="md:col-span-2 sm:max-w-xl">
+            <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-xs outline-1 outline-gray-900/5 dark:bg-gray-900 dark:shadow-none dark:outline-white/10">
+              <div class="flex items-center gap-x-3">
+                <span class="flex size-10 items-center justify-center rounded-full bg-green-50 dark:bg-green-400/10"><svg class="size-6 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg></span>
+                <div class="text-sm/6"><p class="font-medium text-gray-900 dark:text-white">Two-factor authentication</p><p class="text-gray-500 dark:text-gray-400">Authenticator app · added March 2, 2026</p></div>
+              </div>
+              <span class="inline-flex items-center gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium inset-ring bg-green-50 text-green-700 inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20"><svg viewBox="0 0 6 6" aria-hidden="true" class="size-1.5 fill-green-500 dark:fill-green-400"><circle r="3" cx="3" cy="3"/></svg>Enabled</span>
+            </div>
+            <ul role="list" class="mt-6 divide-y divide-gray-100 dark:divide-white/5">
+              <li class="flex items-center justify-between gap-x-6 py-4">
+                <div class="flex min-w-0 items-center gap-x-3"><svg class="size-6 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg><div class="min-w-0 text-sm/6"><p class="font-medium text-gray-900 dark:text-white">MacBook Pro · Chrome</p><p class="truncate text-gray-500 dark:text-gray-400">Lisbon, Portugal · this device</p></div></div>
+                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium inset-ring bg-indigo-50 text-indigo-700 inset-ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:inset-ring-indigo-400/30">Current</span>
+              </li>
+              <li class="flex items-center justify-between gap-x-6 py-4">
+                <div class="flex min-w-0 items-center gap-x-3"><svg class="size-6 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg><div class="min-w-0 text-sm/6"><p class="font-medium text-gray-900 dark:text-white">iPhone 16 · Safari</p><p class="truncate text-gray-500 dark:text-gray-400">Lisbon, Portugal · 2 hours ago</p></div></div>
+                <button type="button" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">Sign out</button>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section aria-labelledby="s-danger" class="grid grid-cols-1 gap-x-8 gap-y-8 py-12 md:grid-cols-3">
+          <div>
+            <h2 id="s-danger" class="text-base/7 font-semibold text-gray-900 dark:text-white">Leave workspace</h2>
+            <p class="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">You lose access to Lumenfield's reports. An owner can invite you again.</p>
+          </div>
+          <div class="md:col-span-2 sm:max-w-xl">
+            <div class="rounded-lg bg-red-50 p-4 outline-1 outline-red-600/10 dark:bg-red-500/10 dark:outline-red-500/20">
+              <div class="flex">
+                <svg class="size-5 shrink-0 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>
+                <div class="ml-3 text-sm">
+                  <h3 class="font-medium text-red-800 dark:text-red-200">You are the only finance admin</h3>
+                  <p class="mt-1 text-red-700 dark:text-red-300">Hand the Billing role to someone else before leaving, or scheduled board reports will stop on November 1.</p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 flex gap-x-3">
+              <button type="button" disabled class="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-500 dark:shadow-none dark:hover:bg-red-400">Leave Lumenfield</button>
+              <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20 ">Transfer Billing role</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+</div>
+
 </body>
 </html>

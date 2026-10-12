@@ -1,79 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Settings — Filament</title>
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
-  <link rel="stylesheet" href="../tokens.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Store settings · Northwind Ops</title>
+<link rel="stylesheet" href="../tokens.css">
 </head>
-<body class="fi-mockup">
-  <div class="fi-layout">
-    <aside class="fi-sidebar" aria-label="Main navigation">
-      <header class="fi-sidebar__header">
-        <div class="fi-sidebar__brand">Filament Demo</div>
-      </header>
-      <nav class="fi-sidebar__nav">
-        <a href="dashboard.html">Dashboard</a>
-        <div class="fi-nav-group__label">Catalog</div>
-        <a href="resource-list.html">Users</a>
-        <a href="resource-list.html">Orders</a>
-        <div class="fi-nav-group__label">System</div>
-        <a href="settings.html" class="is-active" aria-current="page">Settings</a>
-      </nav>
-    </aside>
-    <div class="fi-main">
-      <header class="fi-topbar">
-        <div class="fi-topbar__spacer"></div>
-        <div class="fi-topbar__avatar" aria-hidden="true">JD</div>
-      </header>
-      <main class="fi-content">
-        <header class="fi-page-header">
-          <h1>Settings</h1>
-          <p>Manage application preferences.</p>
-        </header>
-        <nav class="fi-tabs" aria-label="Settings sections">
-          <a href="#" class="is-active" aria-current="page">General</a>
-          <a href="#">Notifications</a>
-          <a href="#">Billing</a>
-        </nav>
-        <form action="#" method="post">
-          <section class="fi-section">
-            <h2 class="fi-section__heading">General</h2>
-            <div class="fi-form-grid">
-              <div class="fi-field fi-field--full">
-                <label for="app_name">Application name</label>
-                <input id="app_name" name="app_name" type="text" value="Filament Demo">
-              </div>
-              <div class="fi-field">
-                <label for="timezone">Timezone</label>
-                <select id="timezone" name="timezone">
-                  <option selected>Europe/Rome</option>
-                  <option>UTC</option>
-                  <option>America/New_York</option>
-                </select>
-              </div>
-              <div class="fi-field">
-                <label for="locale">Locale</label>
-                <select id="locale" name="locale">
-                  <option selected>Italian</option>
-                  <option>English</option>
-                </select>
-              </div>
-              <div class="fi-field fi-field--full fi-checkbox">
-                <input id="maintenance" name="maintenance" type="checkbox">
-                <label for="maintenance">Enable maintenance mode</label>
-              </div>
-            </div>
-          </section>
-          <div class="fi-actions-bar">
-            <div class="fi-actions-bar__spacer"></div>
-            <button type="submit" class="fi-btn fi-btn--primary">Save settings</button>
-          </div>
-        </form>
-      </main>
-    </div>
-  </div>
+<body class="fi-mockup fi-body fi-body-has-topbar fi-body-has-navigation">
+<a href="#fi-main-content" class="fi-skip-link">Skip to content</a>
+<header class="fi-topbar-ctn">
+<nav class="fi-topbar" aria-label="Topbar">
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-open-sidebar-btn" aria-label="Expand sidebar" aria-controls="fi-main-sidebar" aria-expanded="false"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></button>
+<div class="fi-topbar-start"><a href="dashboard.html" class="fi-logo" aria-label="Northwind Ops home"><span class="fi-logo-mark"><svg class="fi-icon fi-size-sm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z"/></svg></span>Northwind Ops</a></div>
+<div class="fi-topbar-end">
+<div class="fi-global-search-ctn"><div class="fi-global-search"><div class="fi-global-search-field">
+<label for="fi-global-search-input" class="fi-sr-only">Global search</label>
+<div class="fi-input-wrp"><div class="fi-input-wrp-prefix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/></svg></div>
+<input id="fi-global-search-input" type="search" class="fi-input fi-input-has-inline-prefix" placeholder="Search" autocomplete="off"></div>
+</div></div></div>
+<button type="button" class="fi-icon-btn fi-size-lg fi-topbar-database-notifications-btn" aria-label="Notifications, 3 unread"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><span class="fi-icon-btn-badge-ctn"><span class="fi-badge fi-color fi-color-primary fi-size-xs">3</span></span></button>
+<div class="fi-user-menu fi-dropdown"><button type="button" class="fi-user-menu-trigger" aria-label="User menu" aria-haspopup="menu" aria-expanded="false"><span class="fi-avatar fi-circular fi-user-avatar">ZH</span></button></div>
+</div>
+</nav>
+</header>
+<div class="fi-layout">
+<aside id="fi-main-sidebar" class="fi-sidebar fi-sidebar-open" aria-label="Sidebar">
+<nav class="fi-sidebar-nav" aria-label="Main"><ul class="fi-sidebar-nav-groups">
+<li class="fi-sidebar-group"><ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span class="fi-sidebar-item-label">Dashboard</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Shop</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Shop" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-list.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg><span class="fi-sidebar-item-label">Orders</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-primary">38</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="resource-edit.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg><span class="fi-sidebar-item-label">Products</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="relation-manager.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg><span class="fi-sidebar-item-label">Customers</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="cards-navigation.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path d="M6 6h.008v.008H6V6Z"/></svg><span class="fi-sidebar-item-label">Categories</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Logistics</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Logistics" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg><span class="fi-sidebar-item-label">Shipments</span><span class="fi-sidebar-item-badge-ctn"><span class="fi-badge fi-color fi-color-info">12</span></span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg><span class="fi-sidebar-item-label">Warehouses</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="empty-state.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"/></svg><span class="fi-sidebar-item-label">Suppliers</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Reports</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Reports" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="widgets-dashboard.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"/></svg><span class="fi-sidebar-item-label">Analytics</span></a></li>
+</ul></li>
+<li class="fi-sidebar-group fi-collapsible fi-active"><div class="fi-sidebar-group-btn"><span class="fi-sidebar-group-label">Settings</span><button type="button" class="fi-icon-btn fi-size-sm fi-sidebar-group-collapse-btn" aria-label="Collapse Settings" aria-expanded="true"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"/></svg></button></div>
+<ul class="fi-sidebar-group-items">
+<li class="fi-sidebar-item fi-sidebar-item-has-url fi-active"><a href="settings.html" class="fi-sidebar-item-btn" aria-current="page"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg><span class="fi-sidebar-item-label">Store settings</span></a></li>
+<li class="fi-sidebar-item fi-sidebar-item-has-url"><a href="settings.html" class="fi-sidebar-item-btn"><svg class="fi-icon fi-size-lg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg><span class="fi-sidebar-item-label">Team</span></a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="fi-main-ctn">
+<main id="fi-main-content" class="fi-main">
+<div class="fi-page">
+<div class="fi-page-header-main-ctn">
+<header class="fi-header">
+<div>
+<h1 class="fi-header-heading">Store settings</h1>
+<p class="fi-header-subheading">Applies to wholesale, the online store and every invoice Northwind Ops sends.</p>
+</div>
+</header>
+<div class="fi-page-main">
+<div class="fi-page-content">
+<form class="fi-sc" aria-label="Store settings" novalidate>
+<section class="fi-section fi-aside">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Store profile</h2><p class="fi-section-header-description">Shown on invoices, packing slips and order emails.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<div class="fi-grid fi-grid-cols-2">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-name" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Store name<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="s-name" class="fi-input" value="Northwind Ops"></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-legal" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Legal name</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><input id="s-legal" class="fi-input" value="Northwind Provisions LLC"></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-email" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Support email<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><div class="fi-input-wrp-prefix fi-inline"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/><path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/></svg></div><input id="s-email" class="fi-input fi-input-has-inline-prefix" type="email" value="help@northwind.example"></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-phone" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Phone</span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><div class="fi-input-wrp-prefix"><span class="fi-input-wrp-label">+1</span></div><input id="s-phone" class="fi-input" type="tel" value="206 555 0142"></div></div>
+</div>
+<div class="fi-fo-field fi-col-span-full">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Logo</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-file-upload"><div class="fi-fo-file-upload-dropzone"><div class="fi-fo-file-upload-items"><div class="fi-fo-file-upload-item fi-uploaded"><button type="button" class="fi-fo-file-upload-item-remove" aria-label="Remove northwind-logo.svg"><svg class="fi-icon fi-size-md" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/></svg></button><div class="fi-fo-file-upload-item-info"><span class="fi-fo-file-upload-item-name">northwind-logo.svg</span><span class="fi-fo-file-upload-item-size">14 KB</span></div><div class="fi-fo-file-upload-item-status">Upload complete<small>tap to undo</small></div></div></div></div></div><span class="fi-sc-text">SVG or PNG, at least 512 px wide. Used in emails and on printed documents.</span></div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="fi-section fi-aside">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Regional</h2><p class="fi-section-header-description">Currency, time zone and formats used across the panel.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content">
+<div class="fi-grid fi-grid-cols-2">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-cur" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Default currency<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="s-cur" class="fi-select-input"><option>US Dollar (USD)</option><option>Euro (EUR)</option></select></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label for="s-tz" class="fi-fo-field-label"><span class="fi-fo-field-label-content">Time zone<sup class="fi-fo-field-label-required-mark">*</sup></span></label></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-input-wrp"><select id="s-tz" class="fi-select-input"><option>America/Los_Angeles (UTC−07:00)</option><option>Europe/Amsterdam (UTC+02:00)</option></select></div></div>
+</div>
+<fieldset class="fi-fo-field">
+<legend class="fi-fo-field-label-content">Date format</legend>
+<div class="fi-fo-radio">
+<label class="fi-fo-radio-label"><input type="radio" name="date-format" class="fi-radio-input" checked><span class="fi-fo-radio-label-text">Oct 12, 2026<span class="fi-fo-radio-label-description">M j, Y</span></span></label>
+<label class="fi-fo-radio-label"><input type="radio" name="date-format" class="fi-radio-input"><span class="fi-fo-radio-label-text">12/10/2026<span class="fi-fo-radio-label-description">d/m/Y</span></span></label>
+<label class="fi-fo-radio-label"><input type="radio" name="date-format" class="fi-radio-input"><span class="fi-fo-radio-label-text">2026-10-12<span class="fi-fo-radio-label-description">ISO 8601</span></span></label>
+</div>
+</fieldset>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Weight unit</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-toggle-buttons fi-btn-group" role="radiogroup" aria-label="Weight unit"><button type="button" class="fi-btn fi-color fi-color-primary" role="radio" aria-checked="true">Kilograms</button><button type="button" class="fi-btn" role="radio" aria-checked="false">Pounds</button></div><span class="fi-sc-text">Carriers still receive grams.</span></div>
+</div>
+</div>
+</div></div>
+</section>
+<section class="fi-section fi-aside">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Notifications</h2><p class="fi-section-header-description">Who hears about what, and how often.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content fi-sc">
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><span class="fi-fo-field-label"><span class="fi-fo-field-label-content">Email the operations team about</span></span></div></div>
+<div class="fi-fo-field-content-col"><div class="fi-fo-checkbox-list"><div class="fi-fo-checkbox-list-options fi-cols-2">
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input" checked><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">New orders</span><span class="fi-fo-checkbox-list-option-description">Wholesale orders above $500.</span></span></label>
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input" checked><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Low stock</span><span class="fi-fo-checkbox-list-option-description">When a product drops under its security stock.</span></span></label>
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input"><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Failed payments</span><span class="fi-fo-checkbox-list-option-description">Card declines and expired mandates.</span></span></label>
+<label class="fi-fo-checkbox-list-option"><input type="checkbox" class="fi-checkbox-input" checked><span class="fi-fo-checkbox-list-option-text"><span class="fi-fo-checkbox-list-option-label">Shipment exceptions</span><span class="fi-fo-checkbox-list-option-description">Customs holds, damage, failed delivery.</span></span></label>
+</div></div></div>
+</div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label class="fi-fo-field-label"><button type="button" class="fi-toggle fi-toggle-off" role="switch" aria-checked="false" aria-label="Daily digest"><span></span></button><span class="fi-fo-field-label-content">Send one daily digest instead of instant emails</span></label></div></div>
+</div>
+</div></div>
+</section>
+<section class="fi-section fi-aside">
+<header class="fi-section-header"><div class="fi-section-header-text-ctn"><h2 class="fi-section-header-heading">Online store</h2><p class="fi-section-header-description">Pause checkout during stocktakes.</p></div></header>
+<div class="fi-section-content-ctn"><div class="fi-section-content fi-sc">
+<div class="fi-callout fi-color fi-color-info" role="note"><svg class="fi-icon fi-size-lg fi-callout-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg><div class="fi-callout-main"><div class="fi-callout-text"><p class="fi-callout-heading">Wholesale stays open</p><p class="fi-callout-description">Pausing hides the online store only. Wholesale customers can still order through the portal.</p></div></div></div>
+<div class="fi-fo-field">
+<div class="fi-fo-field-label-col"><div class="fi-fo-field-label-ctn"><label class="fi-fo-field-label"><button type="button" class="fi-toggle fi-toggle-off" role="switch" aria-checked="false" aria-label="Pause the online store"><span></span></button><span class="fi-fo-field-label-content">Pause the online store</span></label></div></div>
+<div class="fi-fo-field-content-col"><span class="fi-sc-text">Last paused Jul 1–2, 2026 for the mid-year stocktake.</span></div>
+</div>
+</div></div>
+</section>
+<div class="fi-ac">
+<button type="submit" class="fi-btn fi-color fi-color-primary">Save changes</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
 </body>
 </html>

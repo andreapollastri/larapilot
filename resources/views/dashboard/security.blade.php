@@ -133,7 +133,17 @@
 
     .state.is-new { border-color: color-mix(in srgb, var(--warn-fill) 55%, var(--border)); color: var(--warn); }
     .state.is-in_backlog { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); color: var(--accent-strong); }
-    .state.is-waived { color: var(--muted); }
+    .state.is-waived, .state.is-false_positive { color: var(--muted); }
+
+    .scanner-choice { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+    @media (min-width: 900px) { .scanner-choice { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .scanner-card { display: flex; flex-direction: column; gap: 10px; padding: 20px; }
+    .scanner-card h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.05rem; }
+    .scanner-card p { margin: 0; color: var(--text-2); font-size: 0.9rem; }
+    .scanner-card ul { margin: 0; padding-left: 1.1rem; color: var(--text-2); font-size: 0.86rem; line-height: 1.6; }
+    .scanner-card pre { margin: 4px 0 0; padding: 10px 12px; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-3); font-size: 0.8rem; }
+    .scanner-card pre code { padding: 0; background: none; font-size: inherit; }
+    .scanner-card .kind { padding: 1px 8px; border-radius: 999px; background: var(--surface-3); color: var(--muted); font-size: 0.72rem; font-weight: 600; }
 
     @media (max-width: 639px) {
         .finding > summary { grid-template-columns: minmax(0, 1fr) auto; }
@@ -191,7 +201,12 @@
         $repository = $findings['repository'] ?? null;
         $when = static fn (?string $iso): string => $iso ? \Illuminate\Support\Carbon::parse($iso)->format('M j, Y · H:i') : '—';
         $day = static fn (?string $iso): string => $iso ? \Illuminate\Support\Carbon::parse($iso)->format('M j, Y') : '—';
-        $stateLabel = ['new' => 'No decision yet', 'in_backlog' => 'In the backlog', 'waived' => 'Waived'];
+        $stateLabel = ['new' => 'No decision yet', 'in_backlog' => 'In the backlog', 'waived' => 'Waived', 'false_positive' => 'False positive'];
+        $provider = $provider ?? 'aikido';
+        $scanner = $scanner ?? 'Aikido';
+        $severities = $findings['severities'] ?? ($provider === 'hackly' ? ['high', 'medium', 'low'] : ['critical', 'high', 'medium', 'low']);
+        $cli = 'php artisan larapilot:security-';
+        $hacklyStatus = ['open' => 'Open', 'ack' => 'Acknowledged', 'fixed' => 'Fixed', 'false_positive' => 'False positive'];
         $verdictWords = [
             'PASS' => 'Nothing stops a release',
             'WARN' => 'Nothing stops a release, and there is something to look at',
@@ -205,10 +220,9 @@
             <div>
                 <h2>Security</h2>
                 @if ($enabled)
-                    <p class="sub">What Aikido found in this repository, and what was decided about each finding. Aikido scans on its side; this page reads the result.</p>
+                    <p class="sub">What {{ $scanner }} found in this repository{{ $provider === 'hackly' && ($findings['targets'] ?? []) !== [] ? ' and in the domains linked to it ('.implode(', ', array_column($findings['targets'], 'domain')).')' : '' }}, and what was decided about each finding. {{ $scanner }} scans on its side; this page reads the result.</p>
                 @else
-                    <p class="sub">Aikido scans this repository for vulnerable dependencies, weaknesses in the code, leaked secrets, and risky configuration. Larapilot reads what it found; it runs no scanner of its own.</p>
-                    <p class="sub">Connect the repository in <a href="https://www.aikido.dev/">Aikido</a>, put the API client in <code>.env</code>, then turn the link on: <code>php artisan larapilot:settings-set --aikido=YES</code>.</p>
+                    <p class="sub">Larapilot reads the findings of a security scanner — vulnerable dependencies, weaknesses in the code, leaked secrets, risky configuration, and with Hackly the exposed surface of the domains — and turns them into work through <code>/larapilot-security</code>. It runs no scanner of its own. Associate one of the two below.</p>
                 @endif
                 @if ($repository)
                     <div class="chips" style="margin-top: 12px">
@@ -223,7 +237,7 @@
             </div>
             @if ($enabled)
                 <div class="page-actions">
-                    <a class="btn ghost" href="{{ route('larapilot.dashboard.security', ['refresh' => 1]) }}" title="Ask Aikido again instead of showing what was read a few minutes ago">@include('larapilot::dashboard.partials.icon', ['name' => 'refresh'])Read again</a>
+                    <a class="btn ghost" href="{{ route('larapilot.dashboard.security', ['refresh' => 1]) }}" title="Ask {{ $scanner }} again instead of showing what was read a few minutes ago">@include('larapilot::dashboard.partials.icon', ['name' => 'refresh'])Read again</a>
                     @if ($findings)
                         <a class="btn ghost" href="{{ route('larapilot.dashboard.security.report') }}" title="The open findings in detail, for the team">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Download report (.md)</a>
                         <a class="btn ghost" href="{{ route('larapilot.dashboard.security.register') }}" title="Every finding that is open, resolved, or ignored with its reason — the document a client or an auditor asks for">@include('larapilot::dashboard.partials.icon', ['name' => 'download'])Register for the client (.md)</a>
@@ -232,7 +246,36 @@
             @endif
         </header>
 
-        @include('larapilot::dashboard.partials.security-tabs', ['current' => 'aikido'])
+        @include('larapilot::dashboard.partials.security-tabs', ['current' => 'scanner', 'scanner' => $enabled ? $scanner : 'Scanner'])
+
+        @unless ($enabled)
+            <div class="scanner-choice">
+                <section class="card scanner-card">
+                    <h3>Aikido <span class="kind">SaaS</span></h3>
+                    <p><a href="https://www.aikido.dev/" target="_blank" rel="noopener noreferrer">Aikido</a> scans the repository through its connection to the git provider: dependencies, code, secrets, infrastructure as code, containers.</p>
+                    <ul>
+                        <li>Connect the repository in Aikido.</li>
+                        <li>Create an API client under Settings → Integrations → Public REST API with <code>issues:read</code>, <code>repositories:read</code> (and <code>issues:write</code> to tell Aikido the decisions).</li>
+                        <li>Put it in <code>.env</code>, then associate it:</li>
+                    </ul>
+                    <pre><code>LARAPILOT_AIKIDO_CLIENT_ID=…
+LARAPILOT_AIKIDO_CLIENT_SECRET=…
+php artisan larapilot:settings-set --security-provider=aikido</code></pre>
+                </section>
+                <section class="card scanner-card">
+                    <h3>Hackly <span class="kind">self-hosted</span></h3>
+                    <p><a href="https://hackly.web.ap.it/" target="_blank" rel="noopener noreferrer">Hackly</a> runs on your own server: SAST and SCA on the repository (Semgrep, Trivy, Gitleaks, Composer audit, Checkpoint) and DAST on the verified domains linked to it (TLS, headers, exposed paths, Nuclei, ZAP).</p>
+                    <ul>
+                        <li>Add the repository in your Hackly, and link its domains if you want them read too.</li>
+                        <li>Create a personal token (Profile → API tokens, or <code>php artisan hackly:token you@example.com --ability=write</code>).</li>
+                        <li>Put the address of <em>your</em> Hackly and the token in <code>.env</code>, then associate it:</li>
+                    </ul>
+                    <pre><code>LARAPILOT_HACKLY_URL=https://hackly.example.com
+LARAPILOT_HACKLY_TOKEN=hk_…
+php artisan larapilot:settings-set --security-provider=hackly</code></pre>
+                </section>
+            </div>
+        @endunless
 
         @if ($enabled && $error)
             <div class="flash flash--error" role="alert">
@@ -244,26 +287,26 @@
             </div>
             @if (! empty($repositories['repositories']))
                 <section class="card panel">
-                    <h3 style="margin: 0 0 4px; font-size: 1rem">Which repository of Aikido is this project?</h3>
-                    <p class="hint" style="margin: 0 0 12px">The git remote of this project{{ ($repositories['origin'] ?? null) ? ' ('.$repositories['origin'].')' : '' }} matches none of the repositories Aikido scans. Choose the one that holds this code: the findings are read from it.</p>
+                    <h3 style="margin: 0 0 4px; font-size: 1rem">Which repository of {{ $scanner }} is this project?</h3>
+                    <p class="hint" style="margin: 0 0 12px">The git remote of this project{{ ($repositories['origin'] ?? null) ? ' ('.$repositories['origin'].')' : '' }} matches none of the repositories {{ $scanner }} scans. Choose the one that holds this code: the findings are read from it.</p>
                     <form class="repo-choice" method="post" action="{{ route('larapilot.dashboard.security.repository') }}">
                         @csrf
                         <label class="field">
-                            Repository in Aikido
+                            Repository in {{ $scanner }}
                             <select class="control" name="repository" required>
                                 <option value="" selected disabled>Choose a repository…</option>
                                 @foreach ($repositories['repositories'] as $candidate)
-                                    <option value="{{ $candidate['id'] }}">{{ $candidate['name'] }}{{ $candidate['branch'] !== '' ? ' · '.$candidate['branch'] : '' }}{{ $candidate['provider'] !== '' ? ' · '.$candidate['provider'] : '' }} (#{{ $candidate['id'] }})</option>
+                                    <option value="{{ $candidate['id'] }}">{{ $candidate['name'] }}{{ ($candidate['branch'] ?? '') !== '' ? ' · '.$candidate['branch'] : '' }}{{ ($candidate['provider'] ?? '') !== '' ? ' · '.$candidate['provider'] : '' }}{{ $provider === 'aikido' ? ' (#'.$candidate['id'].')' : '' }}</option>
                                 @endforeach
                             </select>
                         </label>
                         <button type="submit" class="btn">Use this repository</button>
                     </form>
                     <p class="hint" style="margin: 12px 0 0">
-                        @if ($repositories['truncated'])
-                            The workspace holds more repositories than this list shows: name yours from the terminal, <code>php artisan larapilot:aikido-repos --search=name</code> then <code>--use=id</code>.
+                        @if ($repositories['truncated'] ?? false)
+                            The workspace holds more repositories than this list shows: name yours from the terminal, <code>{{ $cli }}repos --search=name</code> then <code>--use=id</code>.
                         @else
-                            A repository that is not in the list has to be connected in Aikido first. The choice is kept in <code>{{ $repositories['ledger'] }}</code>, for every machine; from the terminal it is <code>php artisan larapilot:aikido-repos --use=id</code>.
+                            A repository that is not in the list has to be {{ $provider === 'hackly' ? 'added in Hackly' : 'connected in Aikido' }} first. The choice is kept in <code>{{ $repositories['ledger'] }}</code>, for every machine; from the terminal it is <code>{{ $cli }}repos --use=id</code>.
                         @endif
                     </p>
                 </section>
@@ -276,7 +319,7 @@
                             <li>{{ $line }}</li>
                         @endforeach
                     </ul>
-                    <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>php artisan larapilot:aikido-status</code></p>
+                    <p class="hint" style="margin: 12px 0 0">Check from the terminal: <code>{{ $cli }}status</code></p>
                 </section>
             @endif
         @elseif ($enabled)
@@ -290,13 +333,13 @@
                         @else
                             The ship gate is set to stop on nothing.
                         @endif
-                        A finding in the backlog is not fixed yet: it counts until Aikido no longer reports it.
+                        A finding in the backlog is not fixed yet: it counts until {{ $scanner }} no longer reports it.
                     </p>
                 </div>
             </div>
 
             <section class="metrics" aria-label="Open findings by severity">
-                @foreach (\Larapilot\Services\AikidoService::SEVERITIES as $severity)
+                @foreach ($severities as $severity)
                     <div class="card metric sev sev-{{ $severity }}">
                         <span class="sev-chip">{{ $severity }}</span>
                         <div class="metric-value">{{ number_format($findings['counts'][$severity]) }}</div>
@@ -307,7 +350,7 @@
 
             @if ($issues === [])
                 <div class="card empty">
-                    <p>Aikido reports nothing open for <strong>{{ $repository['name'] }}</strong>.</p>
+                    <p>{{ $scanner }} reports nothing open for <strong>{{ $repository['name'] }}</strong>.</p>
                 </div>
             @else
                 <div class="tools">
@@ -325,12 +368,12 @@
 
                 <section class="card findings" aria-label="Open findings, the most severe first">
                     @foreach ($issues as $issue)
-                        <details class="finding sev sev-{{ $issue['severity'] }}" data-state="{{ $issue['state'] }}" data-find="{{ strtolower($issue['title'].' '.$issue['type_label'].' '.implode(' ', $issue['cves']).' '.implode(' ', $issue['where']).' '.($issue['spec'] ?? '')) }}">
+                        <details class="finding sev sev-{{ $issue['severity'] }}" data-state="{{ $issue['state'] === 'false_positive' ? 'waived' : $issue['state'] }}" data-find="{{ strtolower($issue['title'].' '.$issue['type_label'].' '.implode(' ', $issue['cves']).' '.implode(' ', $issue['where']).' '.($issue['spec'] ?? '')) }}">
                             <summary>
                                 <span class="sev-chip">{{ $issue['severity'] }}</span>
                                 <span class="finding-title">
                                     <strong>{{ $issue['title'] }}</strong>
-                                    <small>#{{ $issue['id'] }} · {{ $issue['type_label'] }}{{ $issue['cves'] !== [] ? ' · '.implode(', ', array_slice($issue['cves'], 0, 3)).(count($issue['cves']) > 3 ? ' +'.(count($issue['cves']) - 3) : '') : '' }}</small>
+                                    <small>{{ $provider === 'hackly' ? \Illuminate\Support\Str::limit((string) $issue['id'], 8, '') : '#'.$issue['id'] }} · {{ $issue['type_label'] }}{{ ($issue['source'] ?? '') !== '' ? ' · '.$issue['source'] : '' }}{{ $issue['cves'] !== [] ? ' · '.implode(', ', array_slice($issue['cves'], 0, 3)).(count($issue['cves']) > 3 ? ' +'.(count($issue['cves']) - 3) : '') : '' }}</small>
                                 </span>
                                 <span class="state is-{{ $issue['state'] }}">{{ $issue['state'] === 'in_backlog' ? $issue['spec'] : $stateLabel[$issue['state']] }}</span>
                             </summary>
@@ -347,16 +390,25 @@
                                     <h4>Decision</h4>
                                     <p>
                                         @if ($issue['state'] === 'in_backlog')
-                                            In the backlog as <a href="{{ $issue['spec_url'] }}">{{ $issue['spec'] }}</a>{{ $issue['spec_status'] ? ', now '.$issue['spec_status'] : '' }}. It stays here until Aikido no longer reports it.
+                                            In the backlog as <a href="{{ $issue['spec_url'] }}">{{ $issue['spec'] }}</a>{{ $issue['spec_status'] ? ', now '.$issue['spec_status'] : '' }}. It stays here until {{ $scanner }} no longer reports it.
                                         @elseif ($issue['state'] === 'waived')
                                             Waived: {{ $issue['reason'] }}
+                                        @elseif ($issue['state'] === 'false_positive')
+                                            False positive: {{ $issue['reason'] }}
                                         @else
-                                            None yet. Run <code>/larapilot-aikido</code> to hand it to triage.
+                                            None yet. Run <code>/larapilot-security</code> to hand it to triage.
                                         @endif
                                     </p>
                                 </div>
                                 <dl class="finding-facts">
-                                    <div><dt>Severity</dt><dd>{{ ucfirst($issue['severity']) }}{{ $issue['score'] > 0 ? ' · '.$issue['score'].' out of 100' : '' }}</dd></div>
+                                    <div><dt>Severity</dt><dd>{{ ucfirst($issue['severity']) }}{{ $provider === 'aikido' && $issue['score'] > 0 ? ' · '.$issue['score'].' out of 100' : '' }}</dd></div>
+                                    @if ($provider === 'hackly')
+                                        <div><dt>In Hackly</dt><dd>{{ $hacklyStatus[$issue['status']] ?? $issue['status'] }}{{ ($issue['origin'] ?? '') === 'target' ? ' · on a linked domain' : '' }}</dd></div>
+                                        <div><dt>Id</dt><dd><code>{{ $issue['id'] }}</code></dd></div>
+                                        @if (($issue['reachability'] ?? null) !== null)
+                                            <div><dt>Reachability</dt><dd>{{ ucfirst((string) $issue['reachability']) }}</dd></div>
+                                        @endif
+                                    @endif
                                     <div><dt>Kind</dt><dd>{{ $issue['type_label'] }}</dd></div>
                                     @if ($issue['where'] !== [])
                                         <div><dt>Where</dt><dd>{{ implode(', ', $issue['where']) }}</dd></div>
@@ -387,19 +439,19 @@
                 </section>
 
                 @if ($findings['truncated'])
-                    <p class="hint" style="margin: 0">Only the first {{ number_format(count($issues)) }} findings are shown. Aikido holds the rest.</p>
+                    <p class="hint" style="margin: 0">Only the first {{ number_format(count($issues)) }} findings are shown. {{ $scanner }} holds the rest.</p>
                 @endif
             @endif
 
             @if ($findings['closed'] !== [])
                 <section class="card panel">
-                    <h3 style="margin: 0 0 4px; font-size: 1rem">No longer open in Aikido</h3>
-                    <p class="hint" style="margin: 0 0 10px">Findings that were decided about here and that Aikido reports as open no more: fixed, or waived here and ignored there.</p>
+                    <h3 style="margin: 0 0 4px; font-size: 1rem">No longer open in {{ $scanner }}</h3>
+                    <p class="hint" style="margin: 0 0 10px">Findings that were decided about here and that {{ $scanner }} reports as open no more: fixed, or waived here and {{ $provider === 'hackly' ? 'closed' : 'ignored' }} there.</p>
                     <ul class="closed-list">
                         @foreach ($findings['closed'] as $closed)
                             <li>
-                                <strong>#{{ $closed['id'] }} {{ $closed['title'] ?? '' }}</strong>
-                                <small>{{ ($closed['state'] ?? '') === 'waived' ? 'waived: '.($closed['reason'] ?? '—') : 'fixed by '.($closed['spec'] ?? '—') }}</small>
+                                <strong>{{ $provider === 'aikido' ? '#'.$closed['id'].' ' : '' }}{{ $closed['title'] ?? $closed['id'] }}</strong>
+                                <small>{{ in_array($closed['state'] ?? '', ['waived', 'false_positive'], true) ? str_replace('_', ' ', $closed['state']).': '.($closed['reason'] ?? '—') : 'fixed by '.($closed['spec'] ?? '—') }}</small>
                             </li>
                         @endforeach
                     </ul>
@@ -407,11 +459,11 @@
             @endif
 
             @if ($findings['unsent'] !== [])
-                <p class="hint" style="margin: 0">{{ count($findings['unsent']) === 1 ? 'One decision was' : count($findings['unsent']).' decisions were' }} not told to Aikido yet (#{{ implode(', #', $findings['unsent']) }}). Tell Aikido with <code>php artisan larapilot:aikido-push</code>; the credentials need the <code>issues:write</code> scope.</p>
+                <p class="hint" style="margin: 0">{{ count($findings['unsent']) === 1 ? 'One decision was' : count($findings['unsent']).' decisions were' }} not told to {{ $scanner }} yet. Tell it with <code>{{ $cli }}push</code>; {{ $provider === 'hackly' ? 'the token needs the write ability' : 'the credentials need the issues:write scope' }}.</p>
             @endif
 
             <p class="footer-note" style="margin: 0; text-align: left">
-                Decisions are kept in <code>{{ $findings['ledger'] }}</code>{{ $findings['push_decisions'] ? ' and told to Aikido: a waiver ignores the finding there, with its reason' : '' }}. Turn findings into work with <code>/larapilot-aikido</code>; ask for a new scan with <code>php artisan larapilot:aikido-scan</code>.
+                Decisions are kept in <code>{{ $findings['ledger'] }}</code>{{ $findings['push_decisions'] ? ($provider === 'hackly' ? ' and told to Hackly: a spec or a waiver acknowledges the finding there, a false positive is marked so with its reason' : ' and told to Aikido: a waiver ignores the finding there, with its reason') : '' }}. Turn findings into work with <code>/larapilot-security</code>; ask for a new scan with <code>{{ $cli }}scan</code>.
             </p>
         @endif
     </div>

@@ -1,0 +1,1321 @@
+/*
+ * Laravel Nova 5 — mockup stylesheet for static HTML screens (Larapilot design system "nova").
+ *
+ * Every value below was read from Nova 5.7 (the Tailwind classes of its Vue components and of the
+ * public `laravel-nova-ui` package) or from the official Nova screenshots; sources.md says which are
+ * VERIFIED and which are ASSUMED. Nova's own CSS variable names are kept: the palette is exposed as
+ * `--colors-<name>-<shade>` holding "R, G, B" triplets (used as rgba(var(--colors-…))), exactly like
+ * Nova's generators.js. Everything else is the `nv-` vocabulary documented in components.md.
+ *
+ * Contents
+ *   1.  Palette — light (:root): primary (sky), gray (slate), green, red, yellow, white/black
+ *   2.  Harbor CRM brand (config/nova.php brand.colors) — AA-tuned 400/500/600
+ *   3.  Semantic tokens — light
+ *   4.  Semantic tokens — dark (html.dark + prefers-color-scheme)
+ *   5.  Base / reset
+ *   6.  Icons
+ *   7.  App shell — header, global search, user menu, sidebar menu, content, breadcrumbs, footer
+ *   8.  Headings, links, text helpers
+ *   9.  Buttons (laravel-nova-ui Button: solid · ghost · outline · link · action)
+ *  10.  Badges, boolean icons, avatars, tags
+ *  11.  Card
+ *  12.  Form controls — input, select, combobox, textarea, checkbox, date, drop zone, markdown
+ *  13.  Field rows (DefaultField) and detail rows (PanelItem)
+ *  14.  Resource index — search, toolbar, select-all, table, sort icon, row controls, pagination
+ *  15.  Dropdown menus — action, lens, filter menu, user menu, theme menu
+ *  16.  Metrics & cards — value, trend, partition, progress, table, help card
+ *  17.  Modals — action modal, delete modal
+ *  18.  Notification center, toasts, tooltips, loader
+ *  19.  Auth pages (Login, Forgot password) and User Security
+ *  20.  Catalog (index.html) helpers
+ *  21.  Layout utilities used by the screens
+ *  22.  Drawn fields for mockups (.mock-*)
+ *  23.  Responsive (Tailwind breakpoints sm 640 · md 768 · lg 1024)
+ *  24.  .visually-hidden, reduced motion
+ */
+
+/* ---------------------------------------------------------------------------
+   1. Palette — light. Tailwind 3.4 colours, as Nova generates them (primary = sky, gray = slate).
+   --------------------------------------------------------------------------- */
+:root {
+  --colors-white: 255, 255, 255;
+  --colors-black: 0, 0, 0;
+
+  --colors-primary-50: 240, 249, 255;
+  --colors-primary-100: 224, 242, 254;
+  --colors-primary-200: 186, 230, 253;
+  --colors-primary-300: 125, 211, 252;
+  --colors-primary-400: 56, 189, 248;
+  --colors-primary-500: 14, 165, 233;
+  --colors-primary-600: 2, 132, 199;
+  --colors-primary-700: 3, 105, 161;
+  --colors-primary-800: 7, 89, 133;
+  --colors-primary-900: 12, 74, 110;
+  --colors-primary-950: 8, 47, 73;
+
+  --colors-gray-50: 248, 250, 252;
+  --colors-gray-100: 241, 245, 249;
+  --colors-gray-200: 226, 232, 240;
+  --colors-gray-300: 203, 213, 225;
+  --colors-gray-400: 148, 163, 184;
+  --colors-gray-500: 100, 116, 139;
+  --colors-gray-600: 71, 85, 105;
+  --colors-gray-700: 51, 65, 85;
+  --colors-gray-800: 30, 41, 59;
+  --colors-gray-900: 15, 23, 42;
+  --colors-gray-950: 2, 6, 23;
+
+  --colors-green-50: 240, 253, 244;
+  --colors-green-100: 220, 252, 231;
+  --colors-green-300: 134, 239, 172;
+  --colors-green-400: 74, 222, 128;
+  --colors-green-500: 34, 197, 94;
+  --colors-green-600: 22, 163, 74;
+  --colors-green-700: 21, 128, 61;
+  --colors-green-900: 20, 83, 45;
+  --colors-green-950: 5, 46, 22;
+
+  --colors-red-50: 254, 242, 242;
+  --colors-red-100: 254, 226, 226;
+  --colors-red-400: 248, 113, 113;
+  --colors-red-500: 239, 68, 68;
+  --colors-red-600: 220, 38, 38;
+  --colors-red-700: 185, 28, 28;
+  --colors-red-900: 127, 29, 29;
+  --colors-red-950: 69, 10, 10;
+
+  --colors-yellow-50: 254, 252, 232;
+  --colors-yellow-100: 254, 249, 195;
+  --colors-yellow-300: 253, 224, 71;
+  --colors-yellow-500: 234, 179, 8;
+  --colors-yellow-600: 202, 138, 4;
+  --colors-yellow-700: 161, 98, 7;
+  --colors-yellow-800: 133, 77, 14;
+
+  --colors-sky-100: 224, 242, 254;
+  --colors-sky-400: 56, 189, 248;
+  --colors-sky-700: 3, 105, 161;
+  --colors-sky-950: 8, 47, 73;
+
+  /* Partition metric slice colours (Nova's colorForIndex, in order) */
+  --nv-slice-1: #f5573b;
+  --nv-slice-2: #f99037;
+  --nv-slice-3: #f2cb22;
+  --nv-slice-4: #8fc15d;
+  --nv-slice-5: #098f56;
+  --nv-slice-6: #47c1bf;
+  --nv-slice-7: #1693eb;
+  --nv-slice-8: #6474d7;
+
+  /* Type — Nova bundles "Nunito Sans"; the stack falls back to Avenir Next (closest preinstalled
+     match on macOS), then the system sans. Body is text-sm (14px) font-medium (500). */
+  --nv-font-sans: "Nunito Sans", "Avenir Next", Avenir, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nv-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Shape & elevation (Tailwind rounded / rounded-lg / shadow / shadow-lg) */
+  --nv-radius: 0.25rem;
+  --nv-radius-lg: 0.5rem;
+  --nv-radius-full: 9999px;
+  --nv-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --nv-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Shell metrics (MainHeader h-14, sidebar w-60) */
+  --nv-header-h: 3.5rem;
+  --nv-sidebar-w: 15rem;
+}
+
+/* ---------------------------------------------------------------------------
+   2. Harbor CRM brand. Nova reads config/nova.php `brand.colors` (keys 400/500/600) and overrides
+   these three variables. Stock sky-500 with white text is 2.77:1, below WCAG AA, so the Harbor CRM
+   panel brands the light theme two steps darker (sky-600/700/800). Delete this block to get
+   Nova's stock sky. Dark mode keeps stock sky (it passes AA there; see section 4).
+   --------------------------------------------------------------------------- */
+:root {
+  --colors-primary-400: 2, 132, 199;
+  --colors-primary-500: 3, 105, 161;
+  --colors-primary-600: 7, 89, 133;
+}
+
+/* ---------------------------------------------------------------------------
+   3. Semantic tokens — light. Nova itself writes `dark:` utilities; the mockup routes every
+   colour through these variables so the dark theme is one block.
+   --------------------------------------------------------------------------- */
+:root {
+  --nv-bg: rgba(var(--colors-gray-100));               /* body bg-gray-100 */
+  --nv-surface: rgba(var(--colors-white));             /* header, cards */
+  --nv-popover: rgba(var(--colors-white));             /* DropdownMenu */
+  --nv-thead: rgba(var(--colors-gray-50));
+  --nv-row-hover: rgba(var(--colors-gray-50));
+  --nv-subtle: rgba(var(--colors-gray-50));            /* drop zone, disabled input, hover item */
+  --nv-modal-footer: rgba(var(--colors-gray-100));
+  --nv-border: rgba(var(--colors-gray-200));
+  --nv-divide: rgba(var(--colors-gray-100));
+  --nv-header-border: transparent;
+
+  --nv-text: rgba(var(--colors-gray-500));             /* body text-gray-500 */
+  --nv-text-canvas: rgb(91, 107, 130);                 /* gray-500 nudged darker: AA on the gray-100 canvas */
+  --nv-text-strong: rgba(var(--colors-gray-600));
+  --nv-text-heading: rgba(var(--colors-gray-600));
+  --nv-text-muted: rgba(var(--colors-gray-500));
+  --nv-placeholder: rgba(var(--colors-gray-500));      /* Nova: gray-400 (2.56:1) — darkened for AA */
+  --nv-icon: rgba(var(--colors-gray-500));
+  --nv-icon-faint: rgba(var(--colors-gray-400));
+  --nv-icon-disabled: rgba(var(--colors-gray-300));
+  --nv-logo-word: rgba(var(--colors-gray-600));
+
+  --nv-link: rgba(var(--colors-primary-500));
+  --nv-link-hover: rgba(var(--colors-primary-400));
+  --nv-active: rgba(var(--colors-primary-500));
+  --nv-focus-ring: rgba(var(--colors-primary-200));
+  --nv-focus-input: rgba(var(--colors-primary-500));
+
+  --nv-input-bg: rgba(var(--colors-white));
+  --nv-input-ring: rgba(var(--colors-gray-950), 0.1);
+  --nv-input-text: rgba(var(--colors-gray-600));
+  --nv-input-disabled-bg: rgba(var(--colors-gray-50));
+  --nv-input-disabled-text: rgba(var(--colors-gray-500));
+  --nv-search-bg: rgba(var(--colors-gray-100));
+  --nv-checkbox-bg: rgba(var(--colors-white));
+  --nv-checkbox-border: rgba(var(--colors-gray-950), 0.2);
+  --nv-check-mark: #fff;
+
+  --nv-btn-fg: #fff;
+  --nv-btn-danger-fg: #fff;
+  --nv-btn-danger-bg: rgba(var(--colors-red-600));
+  --nv-btn-ghost-hover: rgba(var(--colors-gray-700), 0.05);
+  --nv-btn-outline-border: rgba(var(--colors-gray-300));
+  --nv-menu-hover: rgba(var(--colors-gray-200));
+  --nv-overlay: rgba(var(--colors-gray-500), 0.75);
+  --nv-track: rgba(var(--colors-gray-200));
+  --nv-divider-line: #d8e3ec;
+  --nv-notif-panel: rgba(var(--colors-gray-100));
+  --nv-gsearch-group: rgba(var(--colors-gray-300));
+
+  --nv-error: rgba(var(--colors-red-600));
+  --nv-error-ring: rgba(var(--colors-red-400));
+  --nv-error-bg: rgba(var(--colors-red-50), 0.25);
+  --nv-danger: rgba(var(--colors-red-500));
+  --nv-success: rgba(var(--colors-green-600));
+  --nv-trend-up: rgba(var(--colors-green-600));
+  --nv-trend-down: rgba(var(--colors-red-500));
+
+  --nv-bool-yes: rgba(var(--colors-green-600));
+  --nv-bool-no: rgba(var(--colors-red-500));
+  --nv-bool-null: rgba(var(--colors-gray-300));
+
+  /* Badge field types (Laravel\Nova\Badge::$types) — text one step darker than Nova for AA */
+  --nv-badge-success-bg: rgba(var(--colors-green-100));
+  --nv-badge-success-fg: rgba(var(--colors-green-700));
+  --nv-badge-info-bg: rgba(var(--colors-sky-100));
+  --nv-badge-info-fg: rgba(var(--colors-sky-700));
+  --nv-badge-danger-bg: rgba(var(--colors-red-100));
+  --nv-badge-danger-fg: rgba(var(--colors-red-700));
+  --nv-badge-warning-bg: rgba(var(--colors-yellow-100));
+  --nv-badge-warning-fg: rgba(var(--colors-yellow-700));
+  --nv-badge-neutral-bg: rgba(var(--colors-gray-100));
+  --nv-badge-neutral-fg: rgba(var(--colors-gray-600));
+  --nv-circle-badge-bg: rgba(var(--colors-primary-100));
+  --nv-circle-badge-fg: rgba(var(--colors-primary-800));
+
+  /* Toasts (Nova "nova" toasted theme) */
+  --nv-toast-success-bg: rgba(var(--colors-green-50));
+  --nv-toast-success-fg: rgba(var(--colors-green-700));
+  --nv-toast-error-bg: rgba(var(--colors-red-50));
+  --nv-toast-error-fg: rgba(var(--colors-red-700));
+  --nv-toast-info-bg: rgba(var(--colors-primary-50));
+  --nv-toast-info-fg: rgba(var(--colors-primary-500));
+  --nv-toast-warning-bg: rgba(var(--colors-yellow-50));
+  --nv-toast-warning-fg: rgba(var(--colors-yellow-700));
+
+  color-scheme: light;
+  accent-color: rgba(var(--colors-primary-500));
+}
+
+/* ---------------------------------------------------------------------------
+   4. Semantic tokens — dark. Nova adds class="dark" to <html> (theme switcher: Light / Dark /
+   System). The same block is applied for the OS preference unless <html class="light">.
+   --------------------------------------------------------------------------- */
+html.dark {
+  --colors-primary-400: 56, 189, 248;
+  --colors-primary-500: 14, 165, 233;
+  --colors-primary-600: 2, 132, 199;
+  --nv-bg: rgba(var(--colors-gray-900));
+  --nv-surface: rgba(var(--colors-gray-800));
+  --nv-popover: rgba(var(--colors-gray-900));
+  --nv-thead: rgba(var(--colors-gray-800));
+  --nv-row-hover: rgba(var(--colors-gray-900));
+  --nv-subtle: rgba(var(--colors-gray-900));
+  --nv-modal-footer: rgba(var(--colors-gray-700));
+  --nv-border: rgba(var(--colors-gray-700));
+  --nv-divide: rgba(var(--colors-gray-700));
+  --nv-header-border: rgba(var(--colors-gray-700));
+  --nv-text: rgba(var(--colors-gray-400));
+  --nv-text-canvas: rgba(var(--colors-gray-400));
+  --nv-text-strong: rgba(var(--colors-gray-400));
+  --nv-text-heading: rgba(var(--colors-gray-300));
+  --nv-text-muted: rgba(var(--colors-gray-400));
+  --nv-placeholder: rgb(125, 140, 163);
+  --nv-icon: rgba(var(--colors-gray-400));
+  --nv-icon-faint: rgba(var(--colors-gray-500));
+  --nv-icon-disabled: rgba(var(--colors-gray-600));
+  --nv-logo-word: #fff;
+  --nv-focus-ring: rgba(var(--colors-gray-600));
+  --nv-focus-input: rgba(var(--colors-gray-500));
+  --nv-input-bg: rgba(var(--colors-gray-900));
+  --nv-input-ring: rgba(var(--colors-gray-100), 0.1);
+  --nv-input-text: rgba(var(--colors-gray-400));
+  --nv-input-disabled-bg: rgba(var(--colors-gray-800));
+  --nv-input-disabled-text: rgba(var(--colors-gray-400));
+  --nv-search-bg: rgba(var(--colors-gray-900));
+  --nv-checkbox-bg: rgba(var(--colors-gray-900));
+  --nv-checkbox-border: rgba(var(--colors-gray-600));
+  --nv-check-mark: rgba(var(--colors-gray-900));
+  --nv-btn-fg: rgba(var(--colors-gray-900));
+  --nv-btn-danger-fg: rgba(var(--colors-red-950));
+  --nv-btn-danger-bg: rgba(var(--colors-red-400));
+  --nv-btn-ghost-hover: rgba(var(--colors-gray-950));
+  --nv-btn-outline-border: rgba(var(--colors-gray-600));
+  --nv-menu-hover: rgba(var(--colors-gray-800));
+  --nv-overlay: rgba(var(--colors-gray-900), 0.75);
+  --nv-track: rgba(var(--colors-gray-900));
+  --nv-notif-panel: rgba(var(--colors-gray-800));
+  --nv-gsearch-group: rgba(var(--colors-gray-900));
+  --nv-error: rgba(var(--colors-red-400));
+  --nv-error-ring: rgba(var(--colors-red-500));
+  --nv-error-bg: transparent;
+  --nv-success: rgba(var(--colors-green-400));
+  --nv-trend-up: rgba(var(--colors-green-500));
+  --nv-trend-down: rgba(var(--colors-red-400));
+  --nv-bool-yes: rgba(var(--colors-green-500));
+  --nv-bool-no: rgba(var(--colors-red-400));
+  --nv-bool-null: rgba(var(--colors-gray-700));
+  --nv-badge-success-bg: rgba(var(--colors-green-500));
+  --nv-badge-success-fg: rgba(var(--colors-green-950));
+  --nv-badge-info-bg: rgba(var(--colors-sky-400));
+  --nv-badge-info-fg: rgba(var(--colors-sky-950));
+  --nv-badge-danger-bg: rgba(var(--colors-red-400));
+  --nv-badge-danger-fg: rgba(var(--colors-red-950));
+  --nv-badge-warning-bg: rgba(var(--colors-yellow-300));
+  --nv-badge-warning-fg: rgba(var(--colors-yellow-800));
+  --nv-badge-neutral-bg: rgba(var(--colors-gray-900));
+  --nv-badge-neutral-fg: rgba(var(--colors-gray-400));
+  --nv-circle-badge-bg: rgba(var(--colors-primary-500));
+  --nv-circle-badge-fg: rgba(var(--colors-gray-800));
+  --nv-toast-success-bg: rgba(var(--colors-green-900));
+  --nv-toast-success-fg: rgba(var(--colors-green-400));
+  --nv-toast-error-bg: rgba(var(--colors-red-900));
+  --nv-toast-error-fg: rgba(var(--colors-red-400));
+  --nv-toast-info-bg: rgba(var(--colors-primary-900));
+  --nv-toast-info-fg: rgba(var(--colors-primary-400));
+  --nv-toast-warning-bg: rgba(var(--colors-yellow-600));
+  --nv-toast-warning-fg: rgba(var(--colors-gray-950));
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    --colors-primary-400: 56, 189, 248;
+    --colors-primary-500: 14, 165, 233;
+    --colors-primary-600: 2, 132, 199;
+    --nv-bg: rgba(var(--colors-gray-900));
+    --nv-surface: rgba(var(--colors-gray-800));
+    --nv-popover: rgba(var(--colors-gray-900));
+    --nv-thead: rgba(var(--colors-gray-800));
+    --nv-row-hover: rgba(var(--colors-gray-900));
+    --nv-subtle: rgba(var(--colors-gray-900));
+    --nv-modal-footer: rgba(var(--colors-gray-700));
+    --nv-border: rgba(var(--colors-gray-700));
+    --nv-divide: rgba(var(--colors-gray-700));
+    --nv-header-border: rgba(var(--colors-gray-700));
+    --nv-text: rgba(var(--colors-gray-400));
+    --nv-text-canvas: rgba(var(--colors-gray-400));
+    --nv-text-strong: rgba(var(--colors-gray-400));
+    --nv-text-heading: rgba(var(--colors-gray-300));
+    --nv-text-muted: rgba(var(--colors-gray-400));
+    --nv-placeholder: rgb(125, 140, 163);
+    --nv-icon: rgba(var(--colors-gray-400));
+    --nv-icon-faint: rgba(var(--colors-gray-500));
+    --nv-icon-disabled: rgba(var(--colors-gray-600));
+    --nv-logo-word: #fff;
+    --nv-focus-ring: rgba(var(--colors-gray-600));
+    --nv-focus-input: rgba(var(--colors-gray-500));
+    --nv-input-bg: rgba(var(--colors-gray-900));
+    --nv-input-ring: rgba(var(--colors-gray-100), 0.1);
+    --nv-input-text: rgba(var(--colors-gray-400));
+    --nv-input-disabled-bg: rgba(var(--colors-gray-800));
+    --nv-input-disabled-text: rgba(var(--colors-gray-400));
+    --nv-search-bg: rgba(var(--colors-gray-900));
+    --nv-checkbox-bg: rgba(var(--colors-gray-900));
+    --nv-checkbox-border: rgba(var(--colors-gray-600));
+    --nv-check-mark: rgba(var(--colors-gray-900));
+    --nv-btn-fg: rgba(var(--colors-gray-900));
+    --nv-btn-danger-fg: rgba(var(--colors-red-950));
+  --nv-btn-danger-bg: rgba(var(--colors-red-400));
+    --nv-btn-ghost-hover: rgba(var(--colors-gray-950));
+    --nv-btn-outline-border: rgba(var(--colors-gray-600));
+    --nv-menu-hover: rgba(var(--colors-gray-800));
+    --nv-overlay: rgba(var(--colors-gray-900), 0.75);
+    --nv-track: rgba(var(--colors-gray-900));
+    --nv-notif-panel: rgba(var(--colors-gray-800));
+    --nv-gsearch-group: rgba(var(--colors-gray-900));
+    --nv-error: rgba(var(--colors-red-400));
+    --nv-error-ring: rgba(var(--colors-red-500));
+    --nv-error-bg: transparent;
+    --nv-success: rgba(var(--colors-green-400));
+    --nv-trend-up: rgba(var(--colors-green-500));
+    --nv-trend-down: rgba(var(--colors-red-400));
+    --nv-bool-yes: rgba(var(--colors-green-500));
+    --nv-bool-no: rgba(var(--colors-red-400));
+    --nv-bool-null: rgba(var(--colors-gray-700));
+    --nv-badge-success-bg: rgba(var(--colors-green-500));
+    --nv-badge-success-fg: rgba(var(--colors-green-950));
+    --nv-badge-info-bg: rgba(var(--colors-sky-400));
+    --nv-badge-info-fg: rgba(var(--colors-sky-950));
+    --nv-badge-danger-bg: rgba(var(--colors-red-400));
+    --nv-badge-danger-fg: rgba(var(--colors-red-950));
+    --nv-badge-warning-bg: rgba(var(--colors-yellow-300));
+    --nv-badge-warning-fg: rgba(var(--colors-yellow-800));
+    --nv-badge-neutral-bg: rgba(var(--colors-gray-900));
+    --nv-badge-neutral-fg: rgba(var(--colors-gray-400));
+    --nv-circle-badge-bg: rgba(var(--colors-primary-500));
+    --nv-circle-badge-fg: rgba(var(--colors-gray-800));
+    --nv-toast-success-bg: rgba(var(--colors-green-900));
+    --nv-toast-success-fg: rgba(var(--colors-green-400));
+    --nv-toast-error-bg: rgba(var(--colors-red-900));
+    --nv-toast-error-fg: rgba(var(--colors-red-400));
+    --nv-toast-info-bg: rgba(var(--colors-primary-900));
+    --nv-toast-info-fg: rgba(var(--colors-primary-400));
+    --nv-toast-warning-bg: rgba(var(--colors-yellow-600));
+    --nv-toast-warning-fg: rgba(var(--colors-gray-950));
+    color-scheme: dark;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. Base / reset (Tailwind preflight subset + Nova's <body> classes)
+   --------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; border: 0 solid var(--nv-border); }
+html { -webkit-text-size-adjust: 100%; font-family: var(--nv-font-sans); line-height: 1.5; }
+body { margin: 0; }
+body.nv-mockup {
+  min-height: 100vh;
+  font-family: var(--nv-font-sans); font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+  color: var(--nv-text); background: var(--nv-bg);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote, dl, dd { margin: 0; }
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+ul, ol { list-style: none; padding: 0; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; vertical-align: middle; }
+button, input, select, textarea { font: inherit; color: inherit; margin: 0; }
+button { background: transparent; cursor: pointer; padding: 0; }
+table { border-collapse: collapse; text-indent: 0; border-color: inherit; }
+th { font-weight: inherit; }
+strong, b { font-weight: 700; }
+hr { height: 0; border-top-width: 1px; color: inherit; margin: 0; }
+:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--nv-focus-ring); border-radius: var(--nv-radius); }
+.nv-mockup a:focus-visible, .nv-mockup button:focus-visible, .nv-mockup [tabindex]:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--nv-focus-ring); }
+
+/* ---------------------------------------------------------------------------
+   6. Icons — Heroicons v2 (outline 24 = w-6, mini 20 = w-5, micro 16 = w-4)
+   --------------------------------------------------------------------------- */
+.nv-icon { width: 1.5rem; height: 1.5rem; flex-shrink: 0; display: inline-block; }
+.nv-icon--mini { width: 1.25rem; height: 1.25rem; }
+.nv-icon--micro { width: 1rem; height: 1rem; }
+.nv-icon--xs { width: 0.75rem; height: 0.75rem; }
+.nv-icon--lg { width: 2rem; height: 2rem; }
+
+/* ---------------------------------------------------------------------------
+   7. App shell
+   --------------------------------------------------------------------------- */
+.nv-app { position: relative; min-height: 100vh; }
+
+/* Header: bg-white dark:bg-gray-800 h-14, dark:border-b border-gray-700 */
+.nv-header {
+  display: flex; align-items: center; height: var(--nv-header-h);
+  background: var(--nv-surface); border-bottom: 1px solid var(--nv-header-border);
+}
+.nv-header__toggle { margin-left: 0.25rem; }
+.nv-header__brand { display: none; flex-shrink: 0; align-items: center; }
+.nv-header__home {
+  display: flex; align-items: center; height: 3rem; margin-left: 0.5rem; padding: 0 1rem; border-radius: var(--nv-radius-lg);
+  color: var(--nv-logo-word);
+}
+.nv-header__main { display: flex; flex: 1; min-width: 0; padding: 0 1rem; }
+.nv-header__end { position: relative; isolation: isolate; display: flex; align-items: center; margin-left: auto; padding-left: 1.5rem; }
+.nv-header__end .nv-header__user { position: relative; display: none; margin-left: 0.5rem; }
+
+/* Logo (custom brand logo, config/nova.php brand.logo) */
+.nv-logo { display: inline-flex; align-items: center; gap: 0.5rem; height: 1.5rem; color: var(--nv-logo-word); }
+.nv-logo__mark { width: 1.75rem; height: 1.75rem; }
+.nv-logo__word { font-size: 1.1875rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1; white-space: nowrap; }
+.nv-logo__word span { font-weight: 500; opacity: 0.85; }
+.nv-logo--lg { height: 2rem; }
+.nv-logo--lg .nv-logo__mark { width: 2.25rem; height: 2.25rem; }
+.nv-logo--lg .nv-logo__word { font-size: 1.5rem; }
+
+/* Global search: max-w-xs h-12; pill input h-8 pl-10 bg-gray-100 */
+.nv-gsearch { position: relative; display: flex; align-items: center; width: 100%; max-width: 20rem; height: 3rem; }
+.nv-gsearch__icon { position: absolute; left: 0.5rem; top: 50%; margin-top: -0.625rem; color: var(--nv-icon-faint); pointer-events: none; }
+.nv-gsearch__input {
+  width: 100%; height: 2rem; padding: 0 0.5rem 0 2.5rem; border-radius: var(--nv-radius-full);
+  background: var(--nv-search-bg); color: var(--nv-input-text); appearance: none;
+}
+.nv-gsearch__input::placeholder { color: var(--nv-placeholder); opacity: 1; }
+.nv-gsearch__input:focus, .nv-gsearch__input.is-focus { outline: none; background: var(--nv-surface); box-shadow: 0 0 0 3px var(--nv-focus-ring); }
+.nv-user-avatar { display: none; }
+.nv-btn--theme-on { color: rgba(var(--colors-primary-500)); }
+.nv-gsearch-results {
+  position: absolute; top: 100%; left: 0; z-index: 40; width: 100%; max-width: 32rem; margin-top: 0.5rem; overflow: hidden;
+  background: var(--nv-surface); border-radius: var(--nv-radius-lg); box-shadow: var(--nv-shadow-lg);
+}
+.nv-gsearch-results__group { padding: 0.5rem 0.75rem; background: var(--nv-gsearch-group); color: var(--nv-text-strong); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }
+.nv-gsearch-results__item { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.5rem 0.75rem; color: var(--nv-text-strong); font-weight: 400; text-align: left; }
+.nv-gsearch-results__item.is-selected, .nv-gsearch-results__item:hover { background: var(--nv-subtle); }
+.nv-gsearch-results__sub { margin-top: 0.25rem; font-size: 0.75rem; color: var(--nv-text-muted); }
+
+/* Unread indicator on the bell (NotificationCenter) */
+.nv-bell { position: relative; }
+.nv-bell__dot {
+  position: absolute; top: 0; right: 3px; width: 1rem; height: 1rem; border-radius: var(--nv-radius-full);
+  background: rgba(var(--colors-primary-500)); border: 3px solid var(--nv-surface);
+}
+.nv-bell__count {
+  position: absolute; top: -5px; left: 15px; min-width: 26px; padding: 0 0.25rem; border-radius: var(--nv-radius-full);
+  background: rgba(var(--colors-primary-500)); border: 3px solid var(--nv-surface); color: var(--nv-btn-fg);
+  font-size: 11px; font-weight: 900; line-height: 1rem; text-align: center;
+}
+
+/* Content: sidebar lg:absolute top-[56px] w-60 px-3 py-8; content p-4 md:py-8 md:px-12 lg:ml-60 space-y-8 */
+.nv-sidebar { display: none; position: absolute; left: 0; top: var(--nv-header-h); width: var(--nv-sidebar-w); padding: 2rem 0.75rem 8rem; }
+.nv-main { padding: 1rem; }
+.nv-main > * + * { margin-top: 2rem; }
+
+/* Main menu (MenuSection / MenuGroup / MenuItem) */
+.nv-menu > * + * { margin-top: 1.5rem; }
+.nv-menu-section { position: relative; }
+.nv-menu-section__head {
+  display: flex; align-items: flex-start; width: 100%; padding: 0.25rem; border-radius: var(--nv-radius);
+  color: var(--nv-text-canvas); text-align: left;
+}
+.nv-menu-section__head:hover, .nv-menu-item:hover, .nv-menu-group__head.is-button:hover { background: var(--nv-menu-hover); }
+.nv-menu-section__icon { display: inline-block; flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
+.nv-menu-section__label { display: flex; flex: 1; align-items: center; width: 100%; padding: 0 0.75rem; font-size: 1rem; line-height: 1.5rem; }
+.nv-menu-section__chev { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; }
+.nv-menu-section__chev.is-collapsed svg { transform: rotate(-90deg); }
+.nv-menu-section__items { display: flex; flex-direction: column; margin-top: 0.25rem; }
+.nv-menu-group__head {
+  display: flex; align-items: center; padding: 0.25rem; border-radius: var(--nv-radius); color: var(--nv-text-canvas);
+}
+.nv-menu-group__label { display: flex; flex: 1; align-items: center; padding: 0.25rem 0.75rem; font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; }
+.nv-menu-item {
+  display: flex; width: 100%; min-height: 2rem; padding: 0.25rem; border-radius: var(--nv-radius);
+  color: var(--nv-text-canvas); text-align: left;
+}
+.nv-menu-spacer { display: inline-block; flex-shrink: 0; width: 1.5rem; height: 1.5rem; }
+.nv-menu-item__label { display: flex; flex: 1; align-items: center; width: 100%; padding: 0 0.75rem; font-size: 0.875rem; line-height: 1.25rem; }
+.nv-menu-item__badge { display: inline-flex; align-items: center; height: 1.5rem; flex-shrink: 0; }
+.nv-menu-section__head.is-active, .nv-menu-item.is-active { font-weight: 700; color: var(--nv-active); }
+
+/* Breadcrumbs: text-gray-500 font-semibold, chevron-right micro text-gray-300 */
+.nv-breadcrumbs { color: var(--nv-text-canvas); font-weight: 600; }
+.nv-breadcrumbs ol { display: block; }
+.nv-breadcrumbs li { display: inline-block; }
+.nv-breadcrumbs__item { display: flex; align-items: center; }
+.nv-breadcrumbs__sep { margin: 0 0.5rem; color: var(--nv-icon-disabled); }
+
+/* Footer: mt-8 text-xs text-gray-500 space-y-1, centred */
+.nv-footer { margin-top: 2rem; font-size: 0.75rem; line-height: 1.5; color: var(--nv-text-canvas); text-align: center; }
+.nv-footer > * + * { margin-top: 0.25rem; }
+.nv-main > .nv-footer { margin-top: 2rem; }
+
+/* ---------------------------------------------------------------------------
+   8. Headings (Heading.vue levels), links, text helpers
+   --------------------------------------------------------------------------- */
+.nv-h1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 400; color: var(--nv-text-canvas); }
+.nv-h2 { font-weight: 400; font-size: 1.25rem; line-height: 1.75rem; }
+.nv-h3 { font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; }
+.nv-h4 { font-size: 1.5rem; line-height: 2rem; font-weight: 400; }
+.nv-heading-row { display: flex; align-items: center; margin-bottom: 0.75rem; }
+.nv-heading-row .nv-h1 { display: flex; align-items: center; }
+.nv-link { color: var(--nv-link); font-weight: 700; border-radius: var(--nv-radius); }
+.nv-link:hover { color: var(--nv-link-hover); }
+.nv-link--danger { color: var(--nv-error); }
+.nv-text-strong { color: var(--nv-text-strong); }
+.nv-text-muted { color: var(--nv-text-muted); }
+.nv-text-xs { font-size: 0.75rem; line-height: 1rem; }
+.nv-text-base { font-size: 1rem; line-height: 1.5rem; }
+.nv-font-bold { font-weight: 700; }
+.nv-font-normal { font-weight: 400; }
+.nv-mono { font-family: var(--nv-font-mono); font-size: 0.8125rem; }
+.nv-nowrap { white-space: nowrap; }
+.nv-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nv-help { font-size: 0.75rem; line-height: 1.5; font-style: italic; color: var(--nv-text-muted); }
+.nv-help--error { color: var(--nv-error); }
+.nv-help a { color: var(--nv-link); }
+.nv-panel-help { font-size: 0.875rem; font-weight: 600; font-style: italic; color: var(--nv-text-canvas); }
+
+/* ---------------------------------------------------------------------------
+   9. Buttons — laravel-nova-ui useButtonStyles():
+   base "border rounded text-sm font-bold focus:ring ring-primary-200"; large h-9 px-3; small h-7 text-xs px-2
+   --------------------------------------------------------------------------- */
+.nv-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;
+  height: 2.25rem; padding: 0 0.75rem; border: 1px solid transparent; border-radius: var(--nv-radius);
+  font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; white-space: nowrap; text-align: left;
+  appearance: none; cursor: pointer; color: var(--nv-text-strong);
+}
+.nv-btn:focus-visible, .nv-btn.is-focus { outline: none; box-shadow: 0 0 0 3px var(--nv-focus-ring); }
+.nv-btn--solid { background: rgba(var(--colors-primary-500)); border-color: rgba(var(--colors-primary-500)); color: var(--nv-btn-fg); box-shadow: var(--nv-shadow); }
+.nv-btn--solid:hover, .nv-btn--solid.is-hover { background: rgba(var(--colors-primary-400)); border-color: rgba(var(--colors-primary-400)); }
+.nv-btn--solid.nv-btn--danger { background: var(--nv-btn-danger-bg); border-color: var(--nv-btn-danger-bg); color: var(--nv-btn-danger-fg); }
+.nv-btn--solid.nv-btn--danger:hover, .nv-btn--solid.nv-btn--danger.is-hover { background: rgba(var(--colors-red-500)); border-color: rgba(var(--colors-red-500)); }
+.nv-btn--ghost { background: transparent; border-color: transparent; color: var(--nv-text-strong); }
+.nv-btn--ghost:hover, .nv-btn--ghost.is-hover, .nv-btn--ghost.is-pressed { background: var(--nv-btn-ghost-hover); }
+.nv-btn--outline { background: transparent; border-color: var(--nv-btn-outline-border); color: var(--nv-text-strong); }
+.nv-btn--outline:hover, .nv-btn--outline.is-hover { color: var(--nv-link); }
+.nv-btn--link { background: transparent; border-color: transparent; color: var(--nv-link); }
+.nv-btn--link:hover { color: var(--nv-link-hover); }
+.nv-btn--link.nv-btn--mellow { color: var(--nv-text-muted); }
+.nv-btn--link.nv-btn--mellow:hover { color: var(--nv-text-strong); }
+.nv-btn--link.nv-btn--danger { color: var(--nv-error); }
+.nv-btn--action { width: 2.25rem; padding: 0; background: transparent; border-color: transparent; color: var(--nv-icon); justify-content: center; }
+.nv-btn--action:hover, .nv-btn--action.is-hover { color: var(--nv-link); }
+.nv-btn--sm { height: 1.75rem; padding: 0 0.5rem; font-size: 0.75rem; line-height: 1rem; }
+.nv-btn--tight { padding: 0 0.375rem; }
+.nv-btn--icon { padding: 0 0.375rem; }
+.nv-btn--block { display: flex; width: 100%; justify-content: center; }
+.nv-btn--create { padding: 0 1rem; }
+.nv-btn[disabled], .nv-btn.is-disabled { opacity: 0.5; cursor: not-allowed; }
+.nv-btn__count { min-width: 0.75rem; text-align: center; }
+.nv-btn-row { display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+.nv-row-controls { display: flex; align-items: center; justify-content: flex-end; color: var(--nv-icon-faint); }
+.nv-row-controls .nv-btn--action[disabled] { color: var(--nv-icon-disabled); opacity: 1; }
+
+/* ---------------------------------------------------------------------------
+   10. Badges, boolean icons, avatars, tags
+   --------------------------------------------------------------------------- */
+/* Badge.vue: inline-flex min-h-6 px-2 rounded-full uppercase text-xs font-bold */
+.nv-badge {
+  display: inline-flex; align-items: center; white-space: nowrap; min-height: 1.5rem; padding: 0 0.5rem;
+  border-radius: var(--nv-radius-full); font-size: 0.75rem; line-height: 1rem; font-weight: 700; text-transform: uppercase;
+  background: var(--nv-badge-neutral-bg); color: var(--nv-badge-neutral-fg);
+}
+.nv-badge__icon { margin-right: 0.25rem; margin-left: -0.25rem; }
+.nv-badge--success { background: var(--nv-badge-success-bg); color: var(--nv-badge-success-fg); }
+.nv-badge--info { background: var(--nv-badge-info-bg); color: var(--nv-badge-info-fg); }
+.nv-badge--danger { background: var(--nv-badge-danger-bg); color: var(--nv-badge-danger-fg); }
+.nv-badge--warning { background: var(--nv-badge-warning-bg); color: var(--nv-badge-warning-fg); }
+.nv-badge--square { border-radius: var(--nv-radius); padding: 0.125rem 0.5rem; min-height: 0; }
+/* Status field (loading / failed / finished) */
+.nv-status { display: inline-flex; align-items: center; gap: 0.25rem; }
+/* CircleBadge: h-4 px-2 text-xs bg-primary-100 text-primary-800 */
+.nv-circle-badge {
+  display: inline-flex; align-items: center; justify-content: center; height: 1rem; margin-left: 0.25rem; padding: 0 0.5rem;
+  border-radius: var(--nv-radius-full); background: var(--nv-circle-badge-bg); color: var(--nv-circle-badge-fg);
+  font-size: 0.75rem; line-height: 1rem; font-weight: 700;
+}
+/* IconBoolean: solid check-circle / x-circle / minus-circle */
+.nv-bool { display: inline-flex; }
+.nv-bool--yes { color: var(--nv-bool-yes); }
+.nv-bool--no { color: var(--nv-bool-no); }
+.nv-bool--null { color: var(--nv-bool-null); }
+.nv-bool-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.nv-bool-group li { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Avatar field / user avatar: rounded-full images. Mockups draw initials (no images). */
+.nv-avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem;
+  border-radius: var(--nv-radius-full); background: rgba(var(--colors-gray-200)); color: rgba(var(--colors-gray-700));
+  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em; line-height: 1;
+}
+.nv-avatar--7 { width: 1.75rem; height: 1.75rem; font-size: 0.6875rem; }
+.nv-avatar--lg { width: 3rem; height: 3rem; font-size: 1rem; }
+.nv-avatar--a { background: #fde2d4; color: #8a3410; }
+.nv-avatar--b { background: #d7ecff; color: #0b4a7d; }
+.nv-avatar--c { background: #dcf5e3; color: #17603a; }
+.nv-avatar--d { background: #efe1fb; color: #5d2a8c; }
+.nv-avatar--e { background: #fdf0c4; color: #7a5300; }
+.nv-avatar--f { background: #d5f3f1; color: #0f5c58; }
+.nv-avatar--g { background: #fde0ea; color: #8d1f47; }
+.nv-avatar-name { display: flex; align-items: center; gap: 0.75rem; }
+/* Avatars in dark: deep tone + light initials (photos in the real panel) */
+html.dark .nv-avatar--a { background: #6b2a10; color: #fde2d4; } html.dark .nv-avatar--b { background: #0b4a7d; color: #d7ecff; }
+html.dark .nv-avatar--c { background: #17603a; color: #dcf5e3; } html.dark .nv-avatar--d { background: #5d2a8c; color: #efe1fb; }
+html.dark .nv-avatar--e { background: #6b4a00; color: #fdf0c4; } html.dark .nv-avatar--f { background: #0f5c58; color: #d5f3f1; }
+html.dark .nv-avatar--g { background: #8d1f47; color: #fde0ea; }
+@media (prefers-color-scheme: dark) {
+  html:not(.light) .nv-avatar--a { background: #6b2a10; color: #fde2d4; } html:not(.light) .nv-avatar--b { background: #0b4a7d; color: #d7ecff; }
+  html:not(.light) .nv-avatar--c { background: #17603a; color: #dcf5e3; } html:not(.light) .nv-avatar--d { background: #5d2a8c; color: #efe1fb; }
+  html:not(.light) .nv-avatar--e { background: #6b4a00; color: #fdf0c4; } html:not(.light) .nv-avatar--f { background: #0f5c58; color: #d5f3f1; }
+  html:not(.light) .nv-avatar--g { background: #8d1f47; color: #fde0ea; }
+}
+
+/* Tag field (TagList): chips with title + subtitle */
+.nv-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.nv-tag {
+  display: inline-flex; align-items: center; gap: 0.25rem; height: 1.5rem; padding: 0 0.5rem; border-radius: var(--nv-radius);
+  background: rgba(var(--colors-primary-50)); color: rgba(var(--colors-primary-700)); font-size: 0.75rem; font-weight: 600;
+}
+html.dark .nv-tag { background: rgba(var(--colors-gray-900)); color: rgba(var(--colors-primary-400)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-tag { background: rgba(var(--colors-gray-900)); color: rgba(var(--colors-primary-400)); } }
+
+/* ---------------------------------------------------------------------------
+   11. Card — relative overflow-hidden bg-white dark:bg-gray-800 rounded-lg shadow
+   --------------------------------------------------------------------------- */
+.nv-card { position: relative; overflow: hidden; background: var(--nv-surface); border-radius: var(--nv-radius-lg); box-shadow: var(--nv-shadow); }
+.nv-card--visible { overflow: visible; }
+.nv-card--pad { padding: 1rem 1.5rem; }
+.nv-card--panel { margin-top: 0.75rem; padding: 0.5rem 1.5rem; }
+.nv-divide > * + * { border-top: 1px solid var(--nv-divide); }
+
+/* ---------------------------------------------------------------------------
+   12. Form controls. .nv-input = form-control form-input form-control-bordered:
+   h-9 text-sm bg-white shadow rounded px-3 text-gray-600, ring-1 ring-gray-950/10, focus ring-2 ring-primary-500
+   --------------------------------------------------------------------------- */
+.nv-input {
+  display: block; width: 100%; height: 2.25rem; padding: 0 0.75rem; border-radius: var(--nv-radius);
+  background: var(--nv-input-bg); color: var(--nv-input-text); font-size: 0.875rem; line-height: 1.5;
+  box-shadow: 0 0 0 1px var(--nv-input-ring), var(--nv-shadow); appearance: none;
+}
+.nv-input::placeholder { color: var(--nv-placeholder); opacity: 1; }
+.nv-input:focus, .nv-input.is-focus { outline: none; box-shadow: 0 0 0 2px var(--nv-focus-input), var(--nv-shadow); }
+.nv-input.is-error { box-shadow: 0 0 0 1px var(--nv-error-ring), var(--nv-shadow); background-color: var(--nv-input-bg); }
+.nv-input.is-error:focus { box-shadow: 0 0 0 2px var(--nv-error-ring), var(--nv-shadow); }
+.nv-input:disabled, .nv-input.is-disabled, .nv-input[readonly] { background: var(--nv-input-disabled-bg); color: var(--nv-input-disabled-text); cursor: not-allowed; }
+.nv-input--sm { height: 2rem; font-size: 0.75rem; }
+.nv-input--xs { height: 1.75rem; font-size: 0.75rem; }
+.nv-input--xxs { height: 1.5rem; font-size: 0.75rem; padding-right: 1.75rem; }
+.nv-input--date { width: 14rem; max-width: 100%; }
+.nv-input--narrow { max-width: 14rem; }
+.nv-textarea { height: auto; min-height: 6rem; padding-top: 0.75rem; padding-bottom: 0.75rem; resize: vertical; }
+.nv-input-group { display: flex; align-items: center; width: 100%; height: 2.25rem; border-radius: var(--nv-radius); background: var(--nv-input-bg); box-shadow: 0 0 0 1px var(--nv-input-ring), var(--nv-shadow); color: var(--nv-input-text); overflow: hidden; }
+.nv-input-group__addon { display: flex; flex-shrink: 0; align-items: center; height: 2.25rem; padding-left: 0.75rem; font-size: 0.875rem; color: var(--nv-text-muted); }
+.nv-input-group .nv-input { box-shadow: none; padding-left: 0.5rem; }
+.nv-counter { font-size: 0.75rem; text-align: right; color: var(--nv-text-muted); }
+
+/* SelectControl: select.form-control… with IconArrow at right-[11px] */
+.nv-select { position: relative; display: flex; }
+.nv-select select, .nv-select .nv-input { padding-right: 2rem; cursor: pointer; }
+.nv-select__arrow { position: absolute; top: 0; bottom: 0; right: 11px; display: flex; align-items: center; pointer-events: none; color: rgba(var(--colors-gray-700)); }
+html.dark .nv-select__arrow { color: rgba(var(--colors-gray-400)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-select__arrow { color: rgba(var(--colors-gray-400)); } }
+.nv-select--metric { width: 6rem; flex-shrink: 0; margin-left: auto; }
+.nv-select--metric .nv-select__arrow { right: 6px; }
+.nv-select--metric .nv-icon--mini { width: 1rem; height: 1rem; }
+
+/* SearchInput (searchable BelongsTo / filter): form-select with value, clear button, open dropdown */
+.nv-combobox { position: relative; }
+.nv-combobox__control { display: flex; align-items: center; padding-right: 1.5rem; cursor: pointer; }
+.nv-combobox__value { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+.nv-combobox__placeholder { color: var(--nv-placeholder); }
+.nv-combobox__clear { position: absolute; right: 1.75rem; top: 50%; margin-top: -0.5rem; color: var(--nv-icon-faint); }
+.nv-combobox__menu {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 50; margin-top: 0.25rem; overflow: hidden;
+  border-radius: var(--nv-radius-lg); border: 1px solid var(--nv-border); background: var(--nv-popover); box-shadow: var(--nv-shadow);
+}
+.nv-combobox__search { display: block; width: 100%; height: 2.5rem; padding: 0 0.75rem; border-bottom: 1px solid var(--nv-border); background: var(--nv-popover); color: var(--nv-input-text); font-size: 0.875rem; }
+.nv-combobox__search:focus { outline: none; }
+.nv-combobox__option { padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 600; color: var(--nv-text-strong); cursor: pointer; }
+.nv-combobox__option.is-selected { background: rgba(var(--colors-primary-500)); color: var(--nv-btn-fg); }
+.nv-combobox__option-sub { font-size: 0.75rem; font-weight: 500; opacity: 0.8; }
+.nv-combo-row { display: flex; align-items: center; gap: 0.5rem; }
+.nv-combo-row > .nv-combobox, .nv-combo-row > .nv-select { flex: 1; min-width: 0; }
+
+/* Checkbox (laravel-nova-ui Checkbox): h-4 w-4 rounded border-gray-950/20 bg-white; checked bg-primary-500 */
+.nv-check { display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--nv-text-strong); }
+.nv-checkbox {
+  position: relative; display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 1rem; height: 1rem;
+  border-radius: var(--nv-radius); border: 1px solid var(--nv-checkbox-border); background: var(--nv-checkbox-bg); color: var(--nv-check-mark);
+}
+.nv-checkbox svg { width: 0.75rem; height: 0.75rem; opacity: 0; }
+.nv-checkbox.is-checked, .nv-checkbox.is-indeterminate { background: rgba(var(--colors-primary-500)); border-color: rgba(var(--colors-primary-500)); }
+.nv-checkbox.is-checked .nv-checkbox__tick, .nv-checkbox.is-indeterminate .nv-checkbox__dash { opacity: 1; }
+.nv-checkbox__tick, .nv-checkbox__dash { position: absolute; }
+.nv-checkbox.is-focus, .nv-checkbox:focus-visible { box-shadow: 0 0 0 2px var(--nv-surface), 0 0 0 4px rgba(var(--colors-primary-500)); }
+.nv-checkbox.is-disabled { opacity: 0.5; background: rgba(var(--colors-gray-200)); }
+input[type="checkbox"].nv-checkbox-input { appearance: none; margin: 0; width: 1rem; height: 1rem; flex-shrink: 0; border-radius: var(--nv-radius); border: 1px solid var(--nv-checkbox-border); background: var(--nv-checkbox-bg) center / cover no-repeat; cursor: pointer; }
+input[type="checkbox"].nv-checkbox-input:checked { border-color: transparent; background-color: rgba(var(--colors-primary-500)); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23FFF' d='M5.695 7.28A1 1 0 0 0 4.28 8.696l2 2a1 1 0 0 0 1.414 0l4-4A1 1 0 0 0 10.28 5.28L6.988 8.574 5.695 7.28Z'/%3E%3C/svg%3E"); }
+input[type="checkbox"].nv-checkbox-input:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(var(--colors-primary-200)); }
+
+/* Toggle-style boolean is not a Nova field; Nova's Boolean is a checkbox. */
+
+/* DropZone: p-4 bg-gray-50 border-4 border-dashed rounded-lg; "Choose File" button + hint */
+.nv-dropzone {
+  display: block; padding: 1rem; border: 4px dashed var(--nv-border); border-radius: var(--nv-radius-lg);
+  background: var(--nv-subtle); cursor: pointer;
+}
+.nv-dropzone.is-drag, .nv-dropzone:hover { border-color: rgba(var(--colors-gray-300)); }
+.nv-dropzone__row { display: flex; align-items: center; gap: 1rem; }
+.nv-dropzone__hint { font-size: 0.875rem; font-weight: 600; color: var(--nv-text-muted); text-align: center; }
+.nv-files { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem 1.5rem; margin-bottom: 1rem; }
+.nv-file { position: relative; }
+.nv-file__thumb {
+  position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; overflow: hidden;
+  border: 2px solid var(--nv-border); border-radius: var(--nv-radius-lg); background: var(--nv-subtle); color: var(--nv-icon-faint);
+}
+.nv-file__name { margin-top: 0.25rem; font-size: 0.75rem; font-weight: 600; color: var(--nv-text-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nv-file__meta { font-size: 0.75rem; color: var(--nv-text-muted); }
+.nv-file__remove { position: absolute; z-index: 2; top: -10px; right: -9px; display: flex; align-items: center; justify-content: center; width: 21px; height: 20px; border-radius: var(--nv-radius-full); background: var(--nv-surface); color: rgba(var(--colors-gray-800)); box-shadow: var(--nv-shadow); }
+.nv-file__progress { position: absolute; left: 1rem; right: 1rem; top: 50%; width: auto; margin-top: -0.25rem; }
+.nv-file__thumb.is-uploading > svg { opacity: 0.25; }
+
+/* MarkdownEditor: rounded-lg bg-white; header border-b with Write/Preview + toolbar of 40px buttons */
+.nv-md { overflow: hidden; border-radius: var(--nv-radius-lg); background: var(--nv-input-bg); box-shadow: 0 0 0 1px var(--nv-input-ring), var(--nv-shadow); }
+.nv-md__bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--nv-border); background: var(--nv-input-bg); }
+.nv-md__tabs { display: flex; align-items: center; }
+.nv-md__tab { height: 2.5rem; padding: 0 0.75rem; color: var(--nv-text-muted); font-size: 0.875rem; }
+.nv-md__tab:first-child { margin-left: 0.25rem; }
+.nv-md__tab.is-active { color: var(--nv-link); font-weight: 700; }
+.nv-md__tools { display: flex; align-items: center; }
+.nv-md__tool { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-left: 1px solid var(--nv-border); color: var(--nv-icon); }
+.nv-md__tool svg { width: 1rem; height: 1rem; }
+.nv-md__body { padding: 1rem; font-family: var(--nv-font-mono); font-size: 0.8125rem; line-height: 1.6; color: var(--nv-input-text); white-space: pre-wrap; min-height: 8rem; }
+.nv-md__hint { display: block; padding: 0.25rem 0.5rem; background: rgba(var(--colors-gray-100)); color: rgba(var(--colors-gray-500)); font-size: 11px; }
+html.dark .nv-md__hint { background: rgba(var(--colors-gray-700)); color: rgba(var(--colors-gray-400)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-md__hint { background: rgba(var(--colors-gray-700)); color: rgba(var(--colors-gray-400)); } }
+
+/* KeyValue field */
+.nv-kv { overflow: hidden; border-radius: var(--nv-radius-lg); box-shadow: 0 0 0 1px var(--nv-input-ring); }
+.nv-kv__head { display: grid; grid-template-columns: 1fr 1fr; background: var(--nv-thead); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }
+.nv-kv__head > *, .nv-kv__row > * { padding: 0.75rem; }
+.nv-kv__head > * + *, .nv-kv__row > * + * { border-left: 1px solid var(--nv-border); }
+.nv-kv__row { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--nv-border); background: var(--nv-input-bg); color: var(--nv-input-text); }
+.nv-kv-add { display: flex; justify-content: center; margin-top: 0.75rem; }
+
+/* ---------------------------------------------------------------------------
+   13. Field rows (DefaultField): py-5; label md:w-1/5 md:px-8 md:mt-2; control md:w-3/5 md:px-8
+   Detail rows (PanelItem): label md:w-1/4 md:py-3; value md:w-3/4 md:py-3
+   --------------------------------------------------------------------------- */
+.nv-field { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem 0; }
+.nv-field__label { width: 100%; padding: 0 1.5rem; }
+.nv-field__control { width: 100%; padding: 0 1.5rem; }
+.nv-field__control > * + * { margin-top: 0.5rem; }
+.nv-label { display: inline-block; line-height: 1.25; color: var(--nv-text-strong); }
+.nv-label > * + * { margin-left: 0.25rem; }
+.nv-req { color: var(--nv-error); font-size: 0.875rem; }
+.nv-field--compact { padding: 0.75rem 0; }
+.nv-field--heading { padding: 0.75rem 1.5rem; background: var(--nv-subtle); }
+.nv-form-actions { display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+.nv-form > * + * { margin-top: 2rem; }
+.nv-panels > * + * { margin-top: 1rem; }
+
+.nv-pitem { display: flex; flex-direction: column; margin: 0 -1.5rem; padding: 0.5rem 1.5rem; gap: 0.5rem; }
+.nv-pitem__label h4, .nv-pitem__label { font-weight: 400; }
+.nv-pitem__value { overflow-wrap: anywhere; color: var(--nv-text-strong); }
+.nv-pitem__value p { display: flex; align-items: center; }
+.nv-show-all { margin: 0 -1.5rem -0.5rem; border-top: 1px solid var(--nv-divide); text-align: center; }
+.nv-show-all button { display: block; width: 100%; padding: 0.5rem 0; font-size: 0.875rem; font-weight: 700; color: var(--nv-link); }
+.nv-copy { display: inline-flex; align-items: center; gap: 0.25rem; }
+.nv-copy__icon { color: var(--nv-icon-faint); }
+
+/* Detail toolbar: heading + DetailActionDropdown + edit */
+.nv-detail-head { margin-bottom: 0.75rem; }
+.nv-detail-head__title { display: flex; flex: 1 1 auto; align-items: center; min-width: 0; }
+.nv-detail-head__title .nv-h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nv-detail-head__actions { display: flex; align-items: center; gap: 0.25rem; margin-left: auto; }
+.nv-panel-heading { display: flex; align-items: center; }
+.nv-collapse { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; margin-left: 0.25rem; border-radius: var(--nv-radius); color: var(--nv-text-canvas); }
+
+/* Tabs panel (Nova 5 Tab::group) */
+.nv-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--nv-divide); background: var(--nv-surface); border-radius: var(--nv-radius-lg) var(--nv-radius-lg) 0 0; }
+.nv-tab { position: relative; flex: 1 0 auto; padding: 1rem; font-weight: 600; text-align: center; color: var(--nv-text-muted); background: var(--nv-surface); }
+.nv-tab:hover { background: var(--nv-subtle); }
+.nv-tab.is-active { color: var(--nv-link); box-shadow: inset 0 -2px 0 rgba(var(--colors-primary-500)); }
+
+/* ---------------------------------------------------------------------------
+   14. Resource index
+   --------------------------------------------------------------------------- */
+.nv-index-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.nv-index-bar__actions { display: inline-flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+/* IndexSearchInput: relative h-9 w-full md:w-1/3; RoundInput h-8 pl-10 rounded-full bg-white shadow */
+.nv-isearch { position: relative; width: 100%; height: 2.25rem; flex-shrink: 1; }
+.nv-isearch__icon { position: absolute; left: 0.5rem; top: 4px; color: var(--nv-icon-faint); pointer-events: none; }
+.nv-isearch__input {
+  width: 100%; height: 2rem; padding: 0 0.75rem 0 2.5rem; border-radius: var(--nv-radius-full);
+  background: var(--nv-surface); color: var(--nv-input-text); box-shadow: var(--nv-shadow); appearance: none;
+}
+.nv-isearch__input::placeholder { color: var(--nv-placeholder); opacity: 1; }
+.nv-isearch__input:focus { outline: none; box-shadow: 0 0 0 3px var(--nv-focus-ring); }
+
+/* ResourceTableToolbar: py-3 border-b; left select-all, right action selector / lens / filter / delete */
+.nv-toolbar { display: flex; flex-direction: column; padding: 0.75rem 0; border-bottom: 1px solid var(--nv-border); }
+.nv-toolbar__row { display: flex; flex: 1; align-items: center; }
+.nv-toolbar__start { padding-left: 0.75rem; }
+.nv-toolbar__end { display: flex; align-items: center; height: 2.25rem; margin-left: auto; padding-right: 0.5rem; }
+.nv-toolbar__actions { display: none; padding: 0 0.5rem; }
+.nv-toolbar__mobile { display: flex; align-items: center; margin-top: 0.5rem; padding: 0.75rem 0.5rem 0; border-top: 1px solid var(--nv-border); }
+.nv-toolbar__mobile .nv-select { width: 100%; }
+.nv-select-all { margin-left: -0.25rem; padding: 0 0.375rem; }
+.nv-select-all.is-selecting { background: var(--nv-btn-ghost-hover); }
+.nv-selected { display: inline-flex; align-items: center; gap: 0.25rem; height: 2.25rem; padding-left: 0.25rem; color: var(--nv-text-strong); border-radius: var(--nv-radius-lg); }
+.nv-selected__label { font-weight: 700; }
+.nv-selected .nv-btn { margin-right: -0.5rem; }
+.nv-select-action { max-width: 7rem; }
+
+/* ResourceTable: w-full divide-y divide-gray-100; th text-xxs uppercase tracking-wide py-2 bg-gray-50 */
+.nv-table-scroll { position: relative; overflow: hidden; overflow-x: auto; }
+.nv-table { width: 100%; }
+.nv-table > thead { background: var(--nv-thead); }
+.nv-table > tbody > tr { border-top: 1px solid var(--nv-divide); }
+.nv-table > thead + tbody > tr:first-child { border-top: 1px solid var(--nv-divide); }
+.nv-table th {
+  padding: 0.5rem; text-align: left; white-space: nowrap; background: var(--nv-thead);
+  font-size: 11px; line-height: 1rem; font-weight: 500; letter-spacing: 0.025em; text-transform: uppercase; color: var(--nv-text-muted);
+}
+.nv-table td { padding: 0.5rem; white-space: nowrap; background: var(--nv-surface); color: var(--nv-text); }
+.nv-table tr:hover > td, .nv-table tr.is-hover > td { background: var(--nv-row-hover); }
+.nv-table .nv-cell-check { width: 1%; padding-left: 1.25rem; padding-right: 1.25rem; }
+.nv-table th.nv-cell-check { padding-right: 0.5rem; }
+.nv-table .nv-cell-controls { width: 1%; text-align: right; vertical-align: middle; }
+.nv-table .nv-cell-first { padding-left: 1.5rem; }
+.nv-table .nv-text-right { text-align: right; }
+.nv-table .nv-text-center { text-align: center; }
+.nv-table .nv-wrap { white-space: normal; }
+.nv-table--tight td { padding-top: 0; padding-bottom: 0; }
+.nv-table--borders th + th, .nv-table--borders td + td { border-left: 1px solid var(--nv-divide); }
+.nv-cell-center { display: flex; justify-content: center; }
+.nv-cell-right { display: flex; justify-content: flex-end; }
+
+/* SortableIcon: label + 8×14 svg, active arrow gray-500, inactive gray-300 */
+.nv-sort { display: inline-flex; align-items: center; border-radius: var(--nv-radius); color: var(--nv-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; font-size: 11px; }
+.nv-sort__icon { margin-left: 0.5rem; flex-shrink: 0; }
+.nv-sort__icon path, .nv-sort__icon .is-off { fill: var(--nv-icon-disabled); }
+.nv-sort__icon .is-on { fill: var(--nv-text-muted); }
+html.dark .nv-sort__icon .is-on { fill: rgba(var(--colors-gray-300)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-sort__icon .is-on { fill: rgba(var(--colors-gray-300)); } }
+
+/* Pagination — simple (default): Previous / count / Next */
+.nv-pagination { border-top: 1px solid var(--nv-border); }
+.nv-pagination__nav { display: flex; align-items: center; justify-content: space-between; }
+.nv-pagination__btn { padding: 0.75rem 1rem; font-size: 0.75rem; line-height: 1rem; font-weight: 700; color: var(--nv-link); }
+.nv-pagination__btn:hover { color: var(--nv-link-hover); }
+.nv-pagination__btn[disabled], .nv-pagination__btn.is-disabled { color: var(--nv-icon-disabled); cursor: default; }
+.nv-pagination__count { padding: 0 1rem; font-size: 0.75rem; line-height: 1rem; }
+/* Pagination — links ('pagination' => 'links') */
+.nv-pages { display: flex; font-size: 0.875rem; font-weight: 700; }
+.nv-page { height: 2.25rem; min-width: 2.25rem; padding: 0 0.5rem; border-right: 1px solid var(--nv-border); color: var(--nv-text-muted); }
+.nv-page--arrow { font-size: 1.25rem; }
+.nv-page:hover { background: var(--nv-subtle); }
+.nv-page.is-current { background: var(--nv-subtle); color: var(--nv-text-strong); }
+.nv-pagination--links .nv-pagination__count { margin-left: auto; }
+/* Load more */
+.nv-load-more { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0.75rem 0; font-size: 0.75rem; }
+
+/* IndexEmptyDialog */
+.nv-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; padding: 2rem 1.5rem; }
+.nv-empty__body { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 0 1.5rem; text-align: center; }
+.nv-empty__art { color: rgba(var(--colors-gray-300)); }
+html.dark .nv-empty__art { color: rgba(var(--colors-gray-500)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-empty__art { color: rgba(var(--colors-gray-500)); } }
+.nv-empty__title { font-size: 1rem; line-height: 1.5rem; font-weight: 400; color: var(--nv-text); }
+.nv-error-dialog .nv-empty__title { color: var(--nv-text-strong); }
+
+/* ---------------------------------------------------------------------------
+   15. Dropdown menus — DropdownMenu: bg-white dark:bg-gray-900 shadow-lg rounded-lg border border-gray-200
+   --------------------------------------------------------------------------- */
+.nv-dropdown { position: relative; display: inline-flex; }
+.nv-pop {
+  position: absolute; z-index: 50; top: 100%; margin-top: 0.375rem; overflow: hidden; user-select: none;
+  background: var(--nv-popover); border: 1px solid var(--nv-border); border-radius: var(--nv-radius-lg); box-shadow: var(--nv-shadow-lg);
+  color: var(--nv-text-muted); text-align: left;
+}
+.nv-pop--end { right: 0; }
+.nv-pop--start { left: 0; }
+.nv-pop--static { position: relative; top: auto; margin-top: 0; }
+.nv-pop--200 { width: 200px; }
+.nv-pop--250 { width: 250px; }
+.nv-pop--260 { width: 260px; }
+.nv-pop--auto { width: max-content; max-width: 24rem; }
+.nv-pop__nav { padding: 0.25rem; }
+.nv-pop__sections > * + * { border-top: 1px solid var(--nv-divide); }
+.nv-pop__heading { margin-top: 0.75rem; padding: 0 0.75rem; font-size: 0.75rem; line-height: 1rem; font-weight: 700; color: var(--nv-text-muted); }
+.nv-pop__item {
+  display: block; width: 100%; padding: 0.5rem 0.75rem; border-radius: var(--nv-radius); text-align: left;
+  font-size: 0.875rem; line-height: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--nv-text-muted);
+}
+.nv-pop__item--sm { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.nv-pop__item:hover, .nv-pop__item.is-hover { background: var(--nv-subtle); color: var(--nv-text-strong); }
+.nv-pop__item.is-disabled { color: var(--nv-icon-disabled); cursor: default; background: transparent; }
+.nv-pop__item--danger { color: var(--nv-error); }
+.nv-pop__item--icon { display: flex; align-items: center; gap: 0.5rem; }
+.nv-pop__checks { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1rem; }
+/* FilterMenu: width 260, divide-y; Reset Filters bar; FilterContainer pt-2 pb-3 */
+.nv-filter-reset { display: block; width: 100%; padding: 0.5rem 0; background: rgba(var(--colors-gray-100)); text-align: center; font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; color: rgba(var(--colors-gray-600)); }
+html.dark .nv-filter-reset { background: rgba(var(--colors-gray-800)); color: rgba(var(--colors-gray-400)); }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-filter-reset { background: rgba(var(--colors-gray-800)); color: rgba(var(--colors-gray-400)); } }
+.nv-filter { padding: 0.5rem 0 0.75rem; }
+.nv-filter__title { padding: 0 0.75rem; font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; color: var(--nv-text-muted); }
+.nv-filter__body { margin-top: 0.25rem; padding: 0 0.75rem; }
+.nv-filter__options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+.nv-filter-scroll { overflow-y: auto; }
+
+/* ---------------------------------------------------------------------------
+   16. Metrics & cards. Cards grid: md:grid-cols-12 gap-6; widths 1/4 1/3 1/2 2/3 3/4 full
+   --------------------------------------------------------------------------- */
+.nv-cards { display: grid; gap: 1.5rem; }
+.nv-cards > * { min-width: 0; }
+.nv-metric { position: relative; isolation: isolate; padding: 1rem 1.5rem; }
+.nv-metric--fixed { min-height: 10rem; }
+.nv-metric__head { display: flex; align-items: center; height: 1.5rem; margin-bottom: 1rem; }
+.nv-metric__title { margin-right: 0.75rem; font-size: 0.875rem; line-height: 1.25; font-weight: 700; color: var(--nv-text); }
+.nv-metric__help { position: absolute; right: 0; bottom: 0; z-index: 20; padding: 0.5rem; color: var(--nv-icon-faint); }
+/* Value */
+.nv-value { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.nv-value__icon { display: flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; flex-shrink: 0; border-radius: var(--nv-radius-lg); background: rgba(var(--colors-primary-500)); color: var(--nv-btn-fg); }
+.nv-value__number { display: flex; align-items: center; font-size: 2.25rem; line-height: 2.5rem; color: var(--nv-text); }
+.nv-value__suffix { margin-left: 0.5rem; font-size: 0.875rem; font-weight: 700; }
+.nv-value__change { display: flex; align-items: center; font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; }
+.nv-value__change svg { margin-right: 0.5rem; }
+.nv-value__change--up svg { color: var(--nv-trend-up); }
+.nv-value__change--down svg { color: var(--nv-trend-down); }
+.nv-value__change--none { color: var(--nv-text-muted); font-weight: 600; }
+/* Trend: value text-4xl, chart absolutely positioned from 60% down (Chartist line + area, no axes) */
+.nv-trend__value { display: flex; align-items: center; margin-bottom: 1rem; font-size: 2.25rem; line-height: 2.5rem; }
+.nv-trend__chart { position: absolute; left: 0; right: 0; bottom: 0; top: 60%; border-radius: 0 0 var(--nv-radius-lg) var(--nv-radius-lg); }
+.nv-trend__chart svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.nv-chart-area { fill: rgba(var(--colors-primary-500)); fill-opacity: 0.1; stroke: none; }
+.nv-chart-line { fill: none; stroke: rgba(var(--colors-primary-500)); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+.nv-chart-point { fill: rgba(var(--colors-primary-500)); }
+.nv-chart-dot { stroke: rgba(var(--colors-primary-500)); stroke-width: 6px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.nv-chart-bar { fill: rgba(var(--colors-primary-500)); }
+.nv-chart-point.is-hover { stroke: var(--nv-surface); stroke-width: 2px; }
+.nv-chart-tooltip { position: absolute; z-index: 5; padding: 0.2em 1em; border-radius: var(--nv-radius); background: var(--nv-popover); color: var(--nv-link); box-shadow: var(--nv-shadow); font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+/* Partition: title + (n total); legend list text-xs; 90×90 donut, 10px ring */
+.nv-partition__head { display: flex; height: 1.5rem; margin-bottom: 0.75rem; font-size: 0.875rem; font-weight: 700; }
+.nv-partition__total { margin-left: auto; font-size: 0.75rem; font-weight: 600; color: var(--nv-text-muted); }
+.nv-partition__body { display: flex; min-height: 90px; }
+.nv-legend { flex: 1; overflow: hidden; }
+.nv-legend li { font-size: 0.75rem; line-height: 1.5; }
+.nv-legend__dot { display: inline-block; width: 0.5rem; height: 0.5rem; margin-right: 0.5rem; border-radius: var(--nv-radius-full); }
+.nv-legend__dot--1 { background: var(--nv-slice-1); }
+.nv-legend__dot--2 { background: var(--nv-slice-2); }
+.nv-legend__dot--3 { background: var(--nv-slice-3); }
+.nv-legend__dot--4 { background: var(--nv-slice-4); }
+.nv-legend__dot--5 { background: var(--nv-slice-5); }
+.nv-legend__dot--6 { background: var(--nv-slice-6); }
+.nv-legend__dot--7 { background: var(--nv-slice-7); }
+.nv-legend__dot--8 { background: var(--nv-slice-8); }
+.nv-donut { flex: none; width: 90px; height: 90px; margin-right: 1rem; }
+.nv-donut circle { fill: none; stroke-width: 10; }
+.nv-slice-1 { stroke: var(--nv-slice-1); }
+.nv-slice-2 { stroke: var(--nv-slice-2); }
+.nv-slice-3 { stroke: var(--nv-slice-3); }
+.nv-slice-4 { stroke: var(--nv-slice-4); }
+.nv-slice-5 { stroke: var(--nv-slice-5); }
+.nv-slice-6 { stroke: var(--nv-slice-6); }
+.nv-slice-7 { stroke: var(--nv-slice-7); }
+.nv-slice-8 { stroke: var(--nv-slice-8); }
+/* Progress: header with value right; percentage text-4xl; ProgressBar h-4 rounded-full bg-gray-200 */
+.nv-progress-metric { display: flex; flex-direction: column; }
+.nv-progress-metric__target { flex: none; margin-left: auto; text-align: right; color: var(--nv-text-muted); }
+.nv-progress-metric__pct { display: flex; align-items: center; margin-bottom: 1rem; font-size: 2.25rem; line-height: 2.5rem; }
+.nv-progress { display: flex; width: 100%; height: 1rem; overflow: hidden; border-radius: var(--nv-radius-full); background: var(--nv-track); }
+.nv-progress__bar { height: 100%; }
+.nv-progress__bar--green { background: rgba(var(--colors-green-500)); }
+.nv-progress__bar--green-300 { background: rgba(var(--colors-green-300)); }
+.nv-progress__bar--yellow { background: rgba(var(--colors-yellow-500)); }
+.nv-progress__bar--yellow-300 { background: rgba(var(--colors-yellow-300)); }
+.nv-progress__bar--primary { background: rgba(var(--colors-primary-500)); }
+.nv-progress--sm { height: 0.5rem; }
+/* Table metric: rows with icon, title (text-base), subtitle (text-xs), action dropdown */
+.nv-tmetric { padding-top: 1rem; }
+.nv-tmetric__head { display: flex; align-items: center; height: 1.5rem; margin-bottom: 1rem; padding: 0 1.5rem; }
+.nv-tmetric__body { margin-bottom: 1.25rem; padding-bottom: 1rem; }
+.nv-tmetric table { width: 100%; table-layout: fixed; }
+.nv-tmetric tbody { border-top: 1px solid var(--nv-divide); border-bottom: 1px solid var(--nv-divide); }
+.nv-tmetric tr + tr { border-top: 1px solid var(--nv-divide); }
+.nv-tmetric td { padding-top: 0.5rem; padding-bottom: 0.5rem; vertical-align: middle; }
+.nv-tmetric__icon { width: 3.5rem; padding-left: 1.5rem; padding-right: 0.5rem; color: var(--nv-icon-faint); }
+.nv-tmetric__icon--success { color: var(--nv-bool-yes); }
+.nv-tmetric__icon--danger { color: var(--nv-bool-no); }
+.nv-tmetric__icon--warning { color: rgba(var(--colors-yellow-500)); }
+.nv-tmetric__icon--info { color: rgba(var(--colors-primary-500)); }
+.nv-tmetric__text { padding: 0 1.5rem 0 0.5rem; }
+.nv-tmetric__title { font-size: 1rem; line-height: 1.5rem; color: var(--nv-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nv-tmetric__sub { font-size: 0.75rem; line-height: 1rem; color: var(--nv-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nv-tmetric__actions { width: 3rem; padding-right: 1rem; text-align: right; }
+.nv-tmetric__empty { padding: 1rem 1.5rem; text-align: center; font-weight: 400; }
+/* Help card (Nova's default dashboard card) */
+.nv-help-card { padding: 1.5rem 2rem; }
+.nv-help-card__grid { display: grid; gap: 1.5rem; margin-top: 1rem; }
+.nv-help-card__item { display: flex; gap: 1rem; }
+.nv-help-card__item h3 { font-size: 1rem; font-weight: 700; color: var(--nv-text-strong); }
+.nv-help-card__item p { margin-top: 0.25rem; font-size: 0.875rem; }
+.nv-help-card__icon { flex-shrink: 0; color: rgba(var(--colors-primary-500)); }
+
+/* ---------------------------------------------------------------------------
+   17. Modals — Modal.vue: fixed inset-0 z-[60] px-3 md:px-0 py-3 md:py-6; backdrop bg-gray-500/75
+   ModalHeader: Heading 3 border-b py-4 px-8; ModalContent py-3 px-8; ModalFooter bg-gray-100 px-6 py-3
+   --------------------------------------------------------------------------- */
+.nv-backdrop { position: fixed; inset: 0; z-index: 55; background: var(--nv-overlay); }
+.nv-modal-wrap { position: fixed; inset: 0; z-index: 60; padding: 0.75rem; overflow-x: hidden; overflow-y: auto; }
+.nv-modal { position: relative; z-index: 20; margin: 0 auto; width: 100%; overflow: hidden; background: var(--nv-surface); border-radius: var(--nv-radius-lg); box-shadow: var(--nv-shadow-lg); color: var(--nv-text); }
+.nv-modal--sm { max-width: 24rem; }
+.nv-modal--md { max-width: 28rem; }
+.nv-modal--lg { max-width: 32rem; }
+.nv-modal--2xl { max-width: 42rem; }
+.nv-modal--stack > * + * { margin-top: 1.5rem; }
+.nv-modal__header { padding: 1rem 2rem; border-bottom: 1px solid var(--nv-divide); font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.025em; text-transform: uppercase; color: var(--nv-text-heading); }
+.nv-modal__content { padding: 0.75rem 2rem; line-height: 1.625; }
+.nv-modal__text { padding: 0 2rem; line-height: 1.625; }
+.nv-modal__text--danger { color: var(--nv-error); }
+.nv-modal__footer { display: flex; align-items: center; padding: 0.75rem 1.5rem; background: var(--nv-modal-footer); }
+.nv-modal__footer-end { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+.nv-modal .nv-field__label, .nv-modal .nv-field__control { padding-left: 2rem; padding-right: 2rem; }
+.nv-modal-demo { position: relative; padding: 1.5rem; border-radius: var(--nv-radius-lg); background: var(--nv-overlay); }
+
+/* ---------------------------------------------------------------------------
+   18. Notification center (slide-over), toasts, tooltip, loader
+   --------------------------------------------------------------------------- */
+.nv-notif-layer { position: fixed; inset: 0; z-index: 20; display: flex; }
+.nv-notif-layer__backdrop { position: absolute; inset: 0; background: var(--nv-overlay); }
+.nv-notif-panel { position: relative; width: 20rem; max-width: 100%; margin-left: auto; overflow-y: auto; background: var(--nv-notif-panel); border-bottom: 1px solid var(--nv-border); box-shadow: var(--nv-shadow); }
+.nv-notif-panel > * + * { border-top: 1px solid var(--nv-border); }
+.nv-notif-panel__head { display: flex; align-items: center; height: 3.5rem; padding: 0 1rem; background: var(--nv-surface); }
+.nv-notif-panel__head .nv-h3 { margin-left: 0.25rem; color: var(--nv-text-heading); }
+.nv-notif-list > * + * { border-top: 1px solid var(--nv-border); }
+.nv-notif { position: relative; display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 0 0.5rem; background: var(--nv-surface); }
+.nv-notif__unread { position: absolute; top: 20px; right: 16px; width: 5px; height: 5px; border-radius: var(--nv-radius-full); background: rgba(var(--colors-primary-500)); }
+.nv-notif__row { position: relative; display: flex; align-items: flex-start; gap: 1rem; padding: 0 1rem; }
+.nv-notif__body { flex: 1 1 auto; }
+.nv-notif__body > * + * { margin-top: 1rem; }
+.nv-notif__message { margin-right: 0.25rem; color: var(--nv-text-strong); line-height: 1.5; overflow-wrap: anywhere; }
+.nv-notif__time { margin-top: 0.25rem; font-size: 0.75rem; line-height: 1rem; }
+.nv-notif__links { display: flex; align-items: flex-start; margin-left: 3rem; }
+.nv-notif__icon--success { color: rgba(var(--colors-green-500)); }
+.nv-notif__icon--info { color: rgba(var(--colors-primary-500)); }
+.nv-notif__icon--warning { color: rgba(var(--colors-yellow-500)); }
+.nv-notif__icon--error { color: rgba(var(--colors-red-500)); }
+.nv-notif-empty { padding: 3rem 1rem; text-align: center; }
+
+/* Toasts: Toasted "nova" theme — font-bold py-2 px-5 rounded-lg shadow; bottom-right */
+.nv-toasts { position: fixed; right: 5%; bottom: 7%; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+.nv-toasts--static { position: static; align-items: flex-start; }
+.nv-toasts--low { right: 1.5rem; bottom: 1rem; }
+.nv-toast { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; min-height: 38px; padding: 0.5rem 1.25rem; border-radius: var(--nv-radius-lg); box-shadow: var(--nv-shadow); font-weight: 700; line-height: 1.1em; background: var(--nv-toast-info-bg); color: var(--nv-toast-info-fg); }
+.nv-toast--success { background: var(--nv-toast-success-bg); color: var(--nv-toast-success-fg); }
+.nv-toast--error { background: var(--nv-toast-error-bg); color: var(--nv-toast-error-fg); }
+.nv-toast--warning { background: var(--nv-toast-warning-bg); color: var(--nv-toast-warning-fg); }
+.nv-toast__action { font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.025em; }
+
+/* Tooltip (floating-vue "Nova" theme): shadow bg-white text-gray-500 */
+.nv-tooltip { position: relative; display: inline-flex; }
+.nv-tooltip__bubble { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 60; padding: 0.25rem 0.5rem; border-radius: var(--nv-radius); background: var(--nv-popover); color: var(--nv-text); box-shadow: var(--nv-shadow); font-size: 0.75rem; white-space: nowrap; }
+html.dark .nv-tooltip__bubble { color: #fff; }
+@media (prefers-color-scheme: dark) { html:not(.light) .nv-tooltip__bubble { color: #fff; } }
+.nv-tooltip__bubble--static { position: static; transform: none; display: inline-block; }
+
+/* Loader (Nova's 3-dot SVG) and LoadingCard */
+.nv-loader { display: inline-flex; gap: 6px; color: rgba(var(--colors-gray-300)); }
+.nv-loader span { width: 8px; height: 8px; border-radius: var(--nv-radius-full); background: currentColor; }
+.nv-loader span:nth-child(2) { opacity: 0.6; }
+.nv-loader span:nth-child(3) { opacity: 0.3; }
+.nv-loading { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; border-radius: var(--nv-radius-lg); background: var(--nv-surface); }
+.nv-progress-top { position: fixed; top: 0; left: 0; z-index: 70; height: 2px; background: rgba(var(--colors-primary-500)); }
+
+/* Impersonation banner state (user menu shows finger-print icon) */
+.nv-impersonating { color: rgba(var(--colors-red-500)); }
+
+/* ---------------------------------------------------------------------------
+   19. Auth pages: Auth layout py-6; logo h-8 py-8; form bg-white shadow rounded-lg p-8 max-w-[25rem]
+   --------------------------------------------------------------------------- */
+.nv-auth { padding: 1.5rem 0.25rem; }
+.nv-auth__logo { display: flex; justify-content: center; max-width: 24rem; margin: 0 auto; padding: 2rem 0; }
+.nv-auth-card { max-width: 25rem; margin: 0 auto; padding: 2rem; border-radius: var(--nv-radius-lg); background: var(--nv-surface); box-shadow: var(--nv-shadow); }
+.nv-auth__title { margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem; line-height: 2rem; font-weight: 400; color: var(--nv-text-heading); }
+.nv-auth__text { margin-bottom: 1.5rem; line-height: 1.5; }
+.nv-divider { display: block; width: 100px; height: 2px; margin: 0 auto 1.5rem; background: var(--nv-divider-line); }
+.nv-auth__group { margin-bottom: 1.5rem; }
+.nv-auth__row { display: flex; align-items: center; margin-bottom: 1.5rem; }
+.nv-auth__forgot { margin-left: auto; color: var(--nv-text-muted); font-weight: 700; }
+.nv-auth__note { max-width: 25rem; margin: 1.5rem auto 0; text-align: center; font-size: 0.75rem; color: var(--nv-text-canvas); }
+.nv-auth__more { max-width: 52rem; margin: 5rem auto 0; padding-top: 2rem; border-top: 1px dashed rgba(var(--colors-gray-300)); }
+.nv-auth__caption { margin-bottom: 1.5rem; text-align: center; color: var(--nv-text-canvas); }
+.nv-auth__pair { display: grid; gap: 1.5rem; align-items: start; }
+.nv-auth__pair .nv-auth-card { width: 100%; }
+
+/* User Security (Nova 5 page): max-w-7xl py-10; md:grid-cols-3 gap-6 — description left, card right */
+.nv-security { max-width: 80rem; margin: 0 auto; }
+.nv-security__title { margin-bottom: 2.5rem; }
+.nv-security__row { margin-bottom: 1.5rem; }
+.nv-security__aside { padding: 0 1rem; }
+.nv-security__aside .nv-h3 { color: var(--nv-text-canvas); }
+.nv-security__desc { margin: 0.75rem 0; font-size: 0.875rem; color: var(--nv-text-canvas); }
+.nv-security__card { padding-top: 1.5rem; margin-top: 1rem; }
+.nv-security__card--pad { padding-bottom: 1.5rem; }
+.nv-security__form { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.5rem; padding: 0 1.5rem; }
+.nv-security__form > * { grid-column: 1 / -1; }
+.nv-security__lead { font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; color: var(--nv-text-heading); }
+.nv-security__bar { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: var(--nv-modal-footer); }
+.nv-qr { display: grid; grid-template-columns: repeat(21, 1fr); width: 9.5rem; height: 9.5rem; padding: 0.5rem; background: #fff; border-radius: var(--nv-radius); box-shadow: 0 0 0 1px var(--nv-input-ring); }
+.nv-qr i { display: block; background: rgba(var(--colors-gray-900)); }
+.nv-qr i.o { background: transparent; }
+.nv-codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.25rem 1rem; padding: 1rem; border-radius: var(--nv-radius-lg); background: var(--nv-subtle); font-family: var(--nv-font-mono); font-size: 0.8125rem; color: var(--nv-text-strong); }
+
+/* ---------------------------------------------------------------------------
+   20. Catalog (html/index.html)
+   --------------------------------------------------------------------------- */
+.nv-catalog { max-width: 72rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+.nv-catalog__head { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.nv-catalog__intro { max-width: 46rem; margin-top: 0.5rem; color: var(--nv-text-canvas); line-height: 1.6; }
+.nv-catalog__grid { display: grid; gap: 1rem; }
+.nv-catalog__card { display: block; padding: 1.25rem 1.5rem; }
+.nv-catalog__card:hover { box-shadow: 0 0 0 2px rgba(var(--colors-primary-500)), var(--nv-shadow); }
+.nv-catalog__name { display: flex; align-items: center; gap: 0.5rem; color: var(--nv-link); font-weight: 700; font-size: 0.9375rem; }
+.nv-catalog__desc { margin-top: 0.375rem; line-height: 1.55; }
+.nv-catalog__when { margin-top: 0.5rem; font-size: 0.75rem; color: var(--nv-text-muted); }
+.nv-swatches { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
+.nv-swatch { width: 2.75rem; }
+.nv-swatch__chip { height: 2rem; border-radius: var(--nv-radius); box-shadow: inset 0 0 0 1px rgba(var(--colors-gray-950), 0.08); }
+.nv-swatch__label { margin-top: 0.25rem; font-size: 10px; line-height: 1; text-align: center; color: var(--nv-text-canvas); }
+.sw-p50 { background: rgba(var(--colors-primary-50)); } .sw-p100 { background: rgba(var(--colors-primary-100)); } .sw-p200 { background: rgba(var(--colors-primary-200)); }
+.sw-p300 { background: rgba(var(--colors-primary-300)); } .sw-p400 { background: rgba(var(--colors-primary-400)); } .sw-p500 { background: rgba(var(--colors-primary-500)); }
+.sw-p600 { background: rgba(var(--colors-primary-600)); } .sw-p700 { background: rgba(var(--colors-primary-700)); } .sw-p800 { background: rgba(var(--colors-primary-800)); } .sw-p900 { background: rgba(var(--colors-primary-900)); }
+.sw-g50 { background: rgba(var(--colors-gray-50)); } .sw-g100 { background: rgba(var(--colors-gray-100)); } .sw-g200 { background: rgba(var(--colors-gray-200)); }
+.sw-g300 { background: rgba(var(--colors-gray-300)); } .sw-g400 { background: rgba(var(--colors-gray-400)); } .sw-g500 { background: rgba(var(--colors-gray-500)); }
+.sw-g600 { background: rgba(var(--colors-gray-600)); } .sw-g700 { background: rgba(var(--colors-gray-700)); } .sw-g800 { background: rgba(var(--colors-gray-800)); } .sw-g900 { background: rgba(var(--colors-gray-900)); }
+.sw-green { background: rgba(var(--colors-green-500)); } .sw-red { background: rgba(var(--colors-red-500)); } .sw-yellow { background: rgba(var(--colors-yellow-500)); }
+.nv-specimen { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem; }
+.nv-specimen .nv-select--metric { margin-left: 0; }
+.nv-specimen-label { margin-bottom: 0.75rem; }
+.nv-demo-grid { display: grid; gap: 1.5rem; }
+.nv-demo { padding: 1.5rem; }
+.nv-demo__title { margin-bottom: 1rem; color: var(--nv-text-heading); }
+.nv-demo__note { margin-top: 0.75rem; font-size: 0.75rem; color: var(--nv-text-muted); }
+.nv-specimen-block + .nv-specimen-block { margin-top: 1.5rem; }
+.nv-specimen-label { color: var(--nv-text-muted); }
+.nv-demo-field { width: 15rem; max-width: 100%; }
+.nv-demo-field--tall { width: 20rem; min-height: 12.5rem; }
+.nv-demo-files { max-width: 34rem; }
+.nv-demo-row { display: grid; gap: 1.5rem; align-items: start; }
+.nv-demo-row > .nv-specimen-block + .nv-specimen-block { margin-top: 0; }
+.nv-demo-inset { box-shadow: 0 0 0 1px var(--nv-border); }
+.nv-gsearch--demo { margin-bottom: 11.5rem; }
+.nv-inline-art { margin: 0 auto; }
+
+/* ---------------------------------------------------------------------------
+   21. Layout utilities used by the screens (Tailwind-like, nv- prefixed)
+   --------------------------------------------------------------------------- */
+.nv-flex { display: flex; }
+.nv-flex-col { display: flex; flex-direction: column; }
+.nv-items-center { align-items: center; }
+.nv-items-start { align-items: flex-start; }
+.nv-justify-between { justify-content: space-between; }
+.nv-justify-end { justify-content: flex-end; }
+.nv-flex-1 { flex: 1 1 0%; min-width: 0; }
+.nv-shrink-0 { flex-shrink: 0; }
+.nv-ml-auto { margin-left: auto; }
+.nv-gap-1 { gap: 0.25rem; } .nv-gap-2 { gap: 0.5rem; } .nv-gap-3 { gap: 0.75rem; } .nv-gap-4 { gap: 1rem; } .nv-gap-6 { gap: 1.5rem; }
+.nv-mt-1 { margin-top: 0.25rem; } .nv-mt-2 { margin-top: 0.5rem; } .nv-mt-3 { margin-top: 0.75rem; } .nv-mt-4 { margin-top: 1rem; } .nv-mt-6 { margin-top: 1.5rem; } .nv-mt-8 { margin-top: 2rem; }
+.nv-mb-2 { margin-bottom: 0.5rem; } .nv-mb-3 { margin-bottom: 0.75rem; } .nv-mb-4 { margin-bottom: 1rem; } .nv-mb-6 { margin-bottom: 1.5rem; }
+.nv-mr-1 { margin-right: 0.25rem; } .nv-mr-2 { margin-right: 0.5rem; } .nv-mr-3 { margin-right: 0.75rem; } .nv-ml-1 { margin-left: 0.25rem; } .nv-ml-2 { margin-left: 0.5rem; }
+.nv-p-4 { padding: 1rem; } .nv-px-6 { padding-left: 1.5rem; padding-right: 1.5rem; } .nv-py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.nv-space-y-2 > * + * { margin-top: 0.5rem; } .nv-space-y-3 > * + * { margin-top: 0.75rem; } .nv-space-y-4 > * + * { margin-top: 1rem; } .nv-space-y-8 > * + * { margin-top: 2rem; }
+.nv-w-full { width: 100%; }
+.nv-relative { position: relative; }
+.nv-hidden-mobile { display: none; }
+.nv-only-mobile { display: inline; }
+.nv-stack-2 > * + * { margin-top: 0.5rem; }
+.nv-inline-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.nv-mini-text { font-size: 0.75rem; line-height: 1rem; }
+
+/* ---------------------------------------------------------------------------
+   22. Drawn fields (.mock-*) — look exactly like Nova's input (h-9 rounded shadow ring-1 ring-gray-950/10)
+   --------------------------------------------------------------------------- */
+.mock-label { display: block; margin-bottom: 0.5rem; line-height: 1.25rem; color: var(--nv-text-strong); }
+.mock-field {
+  display: flex; align-items: center; width: 100%; height: 2.25rem; padding: 0 0.75rem; overflow: hidden; white-space: nowrap;
+  border-radius: var(--nv-radius); background: var(--nv-input-bg); color: var(--nv-input-text);
+  font-size: 0.875rem; line-height: 1.5; box-shadow: 0 0 0 1px var(--nv-input-ring), var(--nv-shadow); user-select: none;
+}
+.mock-field--secret { letter-spacing: 0.2em; font-size: 0.8125rem; }
+.mock-field--empty { color: var(--nv-placeholder); }
+.mock-field--focus { box-shadow: 0 0 0 2px var(--nv-focus-input), var(--nv-shadow); }
+.mock-field--error { box-shadow: 0 0 0 1px var(--nv-error-ring), var(--nv-shadow); }
+.mock-field--disabled { background: var(--nv-input-disabled-bg); color: var(--nv-input-disabled-text); }
+.mock-field--textarea { height: auto; min-height: 6rem; align-items: flex-start; padding-top: 0.75rem; white-space: normal; }
+.mock-field__caret { display: inline-block; width: 1px; height: 1.1em; margin-left: 1px; background: currentColor; }
+
+/* ---------------------------------------------------------------------------
+   23. Responsive — sm 640 · md 768 · lg 1024
+   --------------------------------------------------------------------------- */
+@media (min-width: 640px) {
+  .nv-header__main { padding: 0 2rem; }
+  .nv-security__aside { padding: 0; }
+  .nv-security__form > .nv-col-4 { grid-column: span 4 / span 4; }
+  .nv-catalog__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) {
+  .nv-header__brand { display: flex; }
+  .nv-header__end .nv-header__user { display: flex; }
+  .nv-main { padding: 2rem 3rem; }
+  .nv-auth { padding: 1.5rem 0.5rem; }
+  .nv-modal-wrap { padding: 1.5rem 0; }
+  .nv-isearch { width: 33.333%; flex-shrink: 0; }
+  .nv-toolbar { flex-direction: row; align-items: center; }
+  .nv-toolbar__start { margin-left: 0.75rem; padding-left: 0; }
+  .nv-toolbar__end { padding-right: 0.75rem; }
+  .nv-toolbar__actions { display: flex; }
+  .nv-toolbar__mobile { display: none; }
+  .nv-hidden-mobile { display: inline; }
+  .nv-only-mobile { display: none; }
+  .nv-cards { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .nv-w-1-4 { grid-column: span 3 / span 3; } .nv-w-1-3 { grid-column: span 4 / span 4; } .nv-w-1-2 { grid-column: span 6 / span 6; }
+  .nv-w-2-3 { grid-column: span 8 / span 8; } .nv-w-3-4 { grid-column: span 9 / span 9; } .nv-w-full { grid-column: span 12 / span 12; }
+  .nv-field { flex-direction: row; gap: 0; }
+  .nv-field__label { width: 20%; margin-top: 0.5rem; padding: 0 2rem; }
+  .nv-field__control { width: 60%; padding: 0 2rem; }
+  .nv-field__control--full { width: 80%; }
+  .nv-field--stacked { flex-direction: column; gap: 0.5rem; }
+  .nv-field--stacked .nv-field__label { width: 100%; margin-top: 0; }
+  .nv-field--stacked .nv-field__control { width: 60%; }
+  .nv-form-actions { flex-direction: row; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+  .nv-pitem { flex-direction: row; padding-top: 0; padding-bottom: 0; gap: 0; }
+  .nv-pitem__label { width: 25%; padding: 0.75rem 0; }
+  .nv-pitem__value { width: 75%; padding: 0.75rem 0; }
+  .nv-detail-head { display: flex; align-items: center; }
+  .nv-security__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  .nv-security__card { grid-column: span 2 / span 2; margin-top: 0; }
+  .nv-help-card__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nv-auth__pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nv-demo-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nv-demo-row { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .nv-header__toggle { display: none; }
+  .nv-user-avatar { display: inline-flex; }
+  .nv-header__brand { width: var(--nv-sidebar-w); }
+  .nv-header__main { padding: 0 3rem; }
+  .nv-sidebar { display: block; }
+  .nv-main { margin-left: var(--nv-sidebar-w); }
+  .nv-auth { padding: 1.5rem; }
+  .nv-catalog__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nv-security { padding: 0 2rem; }
+}
+@media (max-width: 767.98px) {
+  .nv-gsearch { max-width: none; }
+  .nv-header__end { padding-left: 0.75rem; }
+  .nv-files { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nv-dropzone__row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .nv-input--date { width: 100%; }
+  .nv-md__tools { display: none; }
+  .nv-pop--260 { width: min(260px, calc(100vw - 2rem)); }
+  .nv-detail-head__actions { margin-top: 0.5rem; margin-left: -0.5rem; }
+  .nv-toasts { left: 0; right: 0; bottom: 0; align-items: stretch; }
+  .nv-toast { border-radius: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   24. Accessibility helpers & motion
+   --------------------------------------------------------------------------- */
+.visually-hidden, .sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.nv-skip:focus { position: fixed; top: 0.5rem; left: 0.5rem; z-index: 200; width: auto; height: auto; margin: 0; clip: auto; padding: 0.5rem 0.75rem; border-radius: var(--nv-radius); background: var(--nv-surface); color: var(--nv-link); font-weight: 700; box-shadow: var(--nv-shadow-lg); }
+.nv-btn, .nv-pop__item, .nv-menu-item, .nv-menu-section__head, .nv-input, .nv-link { transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}

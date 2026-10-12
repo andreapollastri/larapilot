@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../tokens.css">
+<title>Alerts (empty) — Pulseboard</title>
+</head>
+<body class="mo-mockup mo-body">
+<a class="mo-skip" href="#main">Skip to content</a>
+<div class="mo-app">
+<nav class="mo-sidebar" aria-label="Workspace">
+  <div class="mo-sidebar__top">
+    <a class="mo-ws" href="dashboard.html" aria-label="Acme workspace, switch workspace"><span class="mo-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h3.5l2.5-6 4 11 3-8 1.5 3H21"/></svg></span><span class="mo-ws__text"><span class="mo-ws__name">Acme Inc.</span><span class="mo-ws__sub">Growth plan</span></span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></a>
+    <button type="button" class="mo-btn mo-btn--ghost mo-btn--icon mo-menu-btn" aria-label="Open navigation"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
+  </div>
+  <button type="button" class="mo-cmdk"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><span>Search or jump to…</span><span class="mo-kbds"><kbd class="mo-kbd">⌘</kbd><kbd class="mo-kbd">K</kbd></span></button>
+  <div class="mo-nav">
+    <a class="mo-nav__item" href="dashboard.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Overview</a>
+    <a class="mo-nav__item" href="dashboard.html#live"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>Live events<span class="mo-nav__count">1.2k/m</span></a>
+    <a class="mo-nav__item" href="resource-list.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>People<span class="mo-nav__count">48.3k</span></a>
+    <a class="mo-nav__item" href="resource-form.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg>Funnels</a>
+    <a class="mo-nav__item" href="dashboard.html#retention"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Retention</a>
+    <a class="mo-nav__item is-active" href="empty-state.html" aria-current="page"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/></svg>Alerts<span class="mo-nav__count mo-nav__count--accent">2</span></a>
+  </div>
+  <div class="mo-nav">
+    <p class="mo-nav__label">Saved views <svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></p>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c1"></span>Power users</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c2"></span>Activated this week</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c3"></span>Churn risk</a>
+    <a class="mo-nav__item" href="resource-list.html"><span class="mo-dot mo-dot--c4"></span>EU enterprise trials</a>
+  </div>
+  <div class="mo-sidebar__foot">
+    <div class="mo-usage">
+      <div class="mo-usage__row"><span>Events this month</span><strong class="mo-tnum">8.2M / 10M</strong></div>
+      <div class="mo-meter"><div class="mo-meter__bar mo-pct-80"></div></div>
+    </div>
+    <a class="mo-nav__item" href="settings.html"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+    <a class="mo-user" href="settings.html" aria-label="Account: Maya Okafor"><span class="mo-avatar mo-avatar--1">MO</span><span class="mo-user__text"><span class="mo-user__name">Maya Okafor</span><span class="mo-user__mail">maya@acme.io</span></span></a>
+  </div>
+</nav>
+<main class="mo-main" id="main">
+  <header class="mo-topbar">
+    <nav class="mo-crumbs" aria-label="Breadcrumb"><a href="dashboard.html">Acme</a><span class="mo-crumbs__sep">/</span><span aria-current="page">Alerts</span></nav>
+    <div class="mo-topbar__end"><a href="resource-form.html" class="mo-btn mo-btn--primary mo-btn--sm"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>New alert<kbd class="mo-kbd mo-hide-sm">A</kbd></a></div>
+  </header>
+
+  <div class="mo-page mo-page--narrow">
+    <div class="mo-tabs" role="tablist" aria-label="Alert lists">
+      <a class="mo-tab is-active" role="tab" aria-selected="true" href="empty-state.html">Active<span class="mo-tab__count">0</span></a>
+      <a class="mo-tab" role="tab" aria-selected="false" href="empty-state.html">Muted<span class="mo-tab__count">0</span></a>
+      <a class="mo-tab" role="tab" aria-selected="false" href="empty-state.html">History<span class="mo-tab__count">2</span></a>
+    </div>
+
+    <section class="mo-card" aria-labelledby="empty-title">
+      <div class="mo-empty">
+        <div class="mo-empty__art" aria-hidden="true">
+          <svg viewBox="0 0 220 150">
+            <rect class="mo-art-soft" x="24" y="22" width="172" height="110" rx="14"/>
+            <rect class="mo-art-fill" x="40" y="36" width="140" height="82" rx="10"/>
+            <path class="mo-art-stroke" d="M52 100h116M52 82h116M52 64h116"/>
+            <path class="mo-art-line" d="M52 96c14-2 18-20 32-20s16 12 28 12 16-34 30-34 14 10 26 6"/>
+            <circle class="mo-art-accent" cx="142" cy="54" r="5"/>
+            <rect class="mo-art-accent-soft" x="148" y="10" width="58" height="26" rx="13"/>
+            <path class="mo-art-line" d="M162 23h0M170 23h24"/>
+            <circle class="mo-art-fill" cx="36" cy="128" r="14"/>
+            <path class="mo-art-line" d="M31 127.5a5 5 0 0 1 10 0v3l2 2.5H29l2-2.5zM34 136h4"/>
+          </svg>
+        </div>
+        <h1 class="mo-empty__title" id="empty-title">No alerts yet</h1>
+        <p class="mo-empty__text">Alerts watch any metric, funnel or event and ping Slack, email or a webhook the minute something drifts — before your customers notice.</p>
+        <div class="mo-empty__actions">
+          <a href="resource-form.html" class="mo-btn mo-btn--primary"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Create your first alert</a>
+          <button type="button" class="mo-btn mo-btn--secondary"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>Start from a template</button>
+        </div>
+        <p class="mo-help mo-mt-2">or press <kbd class="mo-kbd">A</kbd> anywhere</p>
+      </div>
+    </section>
+
+    <div class="mo-grid mo-cols-2 mo-gap-4">
+      <section class="mo-card" aria-labelledby="h-setup">
+        <div class="mo-card__head"><div><h2 class="mo-card__title" id="h-setup">Get Pulseboard ready</h2><p class="mo-card__sub">2 of 4 done · about 6 minutes left</p></div><span class="mo-badge mo-badge--accent">50%</span></div>
+        <div class="mo-card__body">
+          <ol class="mo-steps">
+            <li class="mo-step is-done"><span class="mo-step__num"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="mo-step__title">Install the SDK</p><p class="mo-step__text">First event received 12 Sep at 09:14</p></div></li>
+            <li class="mo-step is-done"><span class="mo-step__num"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="mo-step__title">Identify signed-in people</p><p class="mo-step__text">48,312 people identified</p></div></li>
+            <li class="mo-step is-current"><span class="mo-step__num">3</span><div><p class="mo-step__title">Connect Slack</p><p class="mo-step__text">Pick the channel alerts are posted to</p></div><button type="button" class="mo-btn mo-btn--secondary mo-btn--sm">Connect</button></li>
+            <li class="mo-step"><span class="mo-step__num">4</span><div><p class="mo-step__title">Create an alert</p><p class="mo-step__text">Watch a metric you care about</p></div></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="mo-stack-sm" aria-labelledby="h-api">
+        <h2 class="mo-h4" id="h-api">Prefer code? Create alerts from the API</h2>
+        <div>
+          <div class="mo-code-head"><span class="mo-flex mo-items-center mo-gap-2"><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></svg>alerts.ts</span><button type="button" class="mo-btn mo-btn--ghost mo-btn--xs"><svg class="mo-icon mo-icon--xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>Copy</button></div>
+<pre class="mo-code"><code><span class="mo-code__k">import</span> { Pulseboard } <span class="mo-code__k">from</span> <span class="mo-code__s">"@pulseboard/node"</span>;
+
+<span class="mo-code__k">const</span> pb = <span class="mo-code__k">new</span> <span class="mo-code__f">Pulseboard</span>(process.env.PB_SECRET);
+
+<span class="mo-code__c">// Ping #growth when checkouts drop</span>
+<span class="mo-code__k">await</span> pb.alerts.<span class="mo-code__f">create</span>({
+  metric: <span class="mo-code__s">"checkout_completed"</span>,
+  when: { drop: <span class="mo-code__n">0.15</span>, window: <span class="mo-code__s">"1h"</span> },
+  notify: [<span class="mo-code__s">"slack:#growth"</span>],
+});</code></pre>
+        </div>
+        <div class="mo-callout mo-callout--info"><svg class="mo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><p>Two alerts were deleted on 8 Oct. They are still in <a class="mo-link" href="empty-state.html">History</a> for 30 days.</p></div>
+      </section>
+    </div>
+
+    <section class="mo-card" aria-labelledby="h-search-empty">
+      <div class="mo-card__head mo-card__head--bordered"><label class="mo-search"><span class="visually-hidden">Search alert templates</span><svg class="mo-icon mo-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg><input class="mo-input" type="search" value="refund spike"></label><span class="mo-card__sub">Templates</span></div>
+      <div class="mo-empty">
+        <span class="mo-icon-tile mo-icon-tile--lg mo-icon-tile--neutral"><svg class="mo-icon mo-icon--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg></span>
+        <h2 class="mo-h3" id="h-search-empty">No templates match “refund spike”</h2>
+        <p class="mo-empty__text">Try “refund”, “checkout” or “error rate”, or clear the search to see all 24 templates.</p>
+        <button type="button" class="mo-btn mo-btn--secondary mo-btn--sm">Clear search</button>
+      </div>
+    </section>
+  </div>
+</main>
+</div>
+</body>
+</html>

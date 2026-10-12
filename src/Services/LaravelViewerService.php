@@ -226,15 +226,22 @@ class LaravelViewerService
 
         $tasks = [];
 
-        foreach ($events as $event) {
+        $order = [];
+
+        foreach ($events as $position => $event) {
             try {
                 $tasks[] = $this->task($event);
+                $order[] = $position;
             } catch (Throwable) {
                 // One task that cannot be described does not hide the others.
             }
         }
 
-        usort($tasks, static fn (array $a, array $b): int => [$a['next_at'] ?? PHP_INT_MAX, $a['command']] <=> [$b['next_at'] ?? PHP_INT_MAX, $b['command']]);
+        // The next one due first; two due at the same minute keep the order
+        // the schedule writes them in, whatever the minute of the clock.
+        $keys = array_keys($tasks);
+        usort($keys, static fn (int $a, int $b): int => [$tasks[$a]['next_at'] ?? PHP_INT_MAX, $order[$a]] <=> [$tasks[$b]['next_at'] ?? PHP_INT_MAX, $order[$b]]);
+        $tasks = array_map(static fn (int $key): array => $tasks[$key], $keys);
 
         return ['error' => null, 'timezone' => $timezone, 'tasks' => $tasks];
     }

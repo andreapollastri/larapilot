@@ -166,6 +166,8 @@ it('leaves out every option that writes, and nothing else', function (): void {
         'larapilot:usage-report' => ['--output'],
         'larapilot:aikido-issues' => ['--report'],
         'larapilot:aikido-repos' => ['--use', '--forget'],
+        'larapilot:security-issues' => ['--report'],
+        'larapilot:security-repos' => ['--use', '--forget'],
         'larapilot:errors-list' => ['--report'],
         'larapilot:boogle-errors' => ['--report'],
         'larapilot:quality' => ['--fix'],

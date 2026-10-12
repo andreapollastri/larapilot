@@ -8,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Larapilot\Services\Aikido\AikidoException;
+use Larapilot\Services\BoardViewService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\DashboardExportService;
 use Larapilot\Services\DashboardService;
@@ -37,13 +37,41 @@ class DashboardController
         protected MockupService $mockups,
         protected DecisionService $decisions,
         protected DashboardExportService $exports,
+        protected BoardViewService $views,
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $this->guard();
 
-        return view('larapilot::dashboard.index', $this->dashboard->board());
+        $board = $this->dashboard->board();
+        $flat = [];
+
+        foreach ($board['columns'] as $specs) {
+            foreach ($specs as $spec) {
+                $flat[] = $spec;
+            }
+        }
+
+        $view = $this->views->resolve($request->query(), $flat);
+
+        foreach ($board['columns'] as $status => $specs) {
+            $board['columns'][$status] = array_values(array_filter(
+                array_map(fn (array $spec): array => $this->views->annotate($spec, $view), $specs),
+                fn (array $spec): bool => $this->views->matches((string) ($spec['code'] ?? ''), $view)
+            ));
+        }
+
+        $columns = $view['group'] === 'status' ? null : $this->views->columns($board['columns'], $view);
+
+        if ($view['filtered'] && is_array($columns)) {
+            $columns = array_values(array_filter($columns, static fn (array $column): bool => $column['items'] !== []));
+        }
+
+        $board['view'] = $view;
+        $board['viewColumns'] = $columns;
+
+        return view('larapilot::dashboard.index', $board);
     }
 
     public function boardDownload(Request $request): Response
@@ -189,11 +217,53 @@ class DashboardController
         return view('larapilot::dashboard.usage', $this->dashboard->usage());
     }
 
-    public function plan(): View
+    public function plan(Request $request): View
     {
         $this->guard();
 
-        return view('larapilot::dashboard.plan', $this->dashboard->plan());
+        $plan = $this->dashboard->plan();
+        $specs = $this->specs->allSpecs();
+        $view = $this->views->resolve($request->query(), $specs, 'epic');
+        $annotated = array_values(array_filter(
+            array_map(fn (array $spec): array => $this->views->annotate($spec, $view), $specs),
+            fn (array $spec): bool => $this->views->matches((string) ($spec['code'] ?? ''), $view)
+        ));
+        $bands = $view['group'] === 'epic' ? [] : $this->views->columns(['ALL' => $annotated], $view);
+
+        if ($view['filtered']) {
+            $bands = array_values(array_filter($bands, static fn (array $column): bool => $column['items'] !== []));
+            $kept = [];
+
+            foreach ($annotated as $spec) {
+                $kept[strtoupper((string) ($spec['code'] ?? ''))] = true;
+            }
+
+            if (is_array($plan['gantt']['bars'] ?? null)) {
+                $plan['gantt']['bars'] = array_values(array_filter(
+                    $plan['gantt']['bars'],
+                    static function (array $bar) use ($kept): bool {
+                        if (($bar['type'] ?? '') === 'epic') {
+                            foreach ((array) ($bar['spec_codes'] ?? []) as $code) {
+                                if (isset($kept[strtoupper((string) $code)])) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }
+
+                        $spec = strtoupper((string) strtok((string) ($bar['id'] ?? ''), '·'));
+
+                        return $spec !== '' && isset($kept[$spec]);
+                    }
+                ));
+            }
+        }
+
+        $plan['view'] = $view;
+        $plan['bands'] = $bands;
+
+        return view('larapilot::dashboard.plan', $plan);
     }
 
     /**
@@ -273,7 +343,7 @@ class DashboardController
             abort(404);
         }
 
-        return $this->markdown($report, 'aikido-findings-'.now()->format('Y-m-d').'.md');
+        return $this->markdown($report, 'security-report-'.now()->format('Y-m-d').'.md');
     }
 
     public function securityRegister(): Response
@@ -293,17 +363,19 @@ class DashboardController
     {
         $this->guard();
 
-        if (! $this->config->aikidoEnabled()) {
+        $provider = $this->config->securityProvider();
+
+        if ($provider === '') {
             abort(404);
         }
 
         $validated = $request->validate([
-            'repository' => ['required', 'integer', 'min:1'],
+            'repository' => $provider === 'aikido' ? ['required', 'integer', 'min:1'] : ['required', 'string', 'uuid'],
         ]);
 
         try {
-            $repository = $this->dashboard->chooseSecurityRepository((int) $validated['repository']);
-        } catch (AikidoException|\InvalidArgumentException $e) {
+            $repository = $this->dashboard->chooseSecurityRepository((string) $validated['repository']);
+        } catch (\Throwable $e) {
             return redirect()
                 ->route('larapilot.dashboard.security')
                 ->with('larapilot_error', $e->getMessage());
@@ -311,7 +383,7 @@ class DashboardController
 
         return redirect()
             ->route('larapilot.dashboard.security', ['refresh' => 1])
-            ->with('larapilot_success', 'This project is “'.$repository['name'].'” in Aikido. The choice is in .larapilot/aikido.yaml: commit it.');
+            ->with('larapilot_success', 'This project is “'.$repository['name'].'” in '.($provider === 'hackly' ? 'Hackly' : 'Aikido').'. The choice is in .larapilot/'.$provider.'.yaml: commit it.');
     }
 
     public function errors(Request $request): View

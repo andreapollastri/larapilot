@@ -953,7 +953,7 @@ it('ships a skill that asks for the tracker, downloads the errors, and hands the
 
     expect((string) file_get_contents($root.'/larapilot/runtime-core-settings-2.md'))->toContain('### Production errors (`settings.errors`')
         ->toContain('larapilot:errors-plan')
-        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-aikido` and `larapilot-error` do the same.')
+        ->and((string) file_get_contents($root.'/larapilot/shared-runtime.md'))->toContain('`larapilot-security` and `larapilot-error` do the same.')
         ->and((string) file_get_contents($root.'/larapilot/runtime-core-economy.md'))->toContain('**`larapilot-error`**')
         ->and((string) file_get_contents($root.'/larapilot/integrations.md'))->toContain('## Production errors (`settings.errors`')
         ->toContain('## Boogle (`errors_provider: boogle`)')
