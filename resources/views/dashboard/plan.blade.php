@@ -166,7 +166,7 @@
     }
 
     .chart-scroll {
-        --label: 292px;
+        --label: 320px;
         overflow-x: auto;
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
@@ -177,14 +177,14 @@
     }
 
     .chart {
-        --label: 292px;
+        --label: 320px;
         --row: 38px;
         min-width: calc(var(--label) + var(--track));
     }
 
     /* a phone keeps most of its width for the timeline */
     @media (max-width: 640px) {
-        .chart-scroll, .chart { --label: 168px; }
+        .chart-scroll, .chart { --label: 184px; }
     }
 
     .gantt-head,
@@ -333,20 +333,23 @@
         gap: 1px;
     }
 
+    /* a title wraps whole rather than lose its end; the meta line keeps to two lines */
     .name .title {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
         font-size: 0.82rem;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
     }
 
     .name .meta {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        overflow-wrap: anywhere;
         color: var(--muted);
         font-size: 0.7rem;
         font-weight: 450;
+        line-height: 1.35;
     }
 
     .track {
@@ -367,9 +370,10 @@
 
     .today-line { width: 2px; background: var(--danger-fill); z-index: 1; }
 
+    /* bars sit on the middle of the row, which grows with a wrapped title */
     .bar {
         position: absolute;
-        top: 9px;
+        top: calc(50% - 10px);
         height: 20px;
         border-radius: 6px;
         min-width: 8px;
@@ -385,7 +389,7 @@
     .bar.risk { background: color-mix(in srgb, var(--risk) 85%, transparent); }
 
     .bar.epic {
-        top: 11px;
+        top: calc(50% - 8px);
         height: 16px;
         border-radius: 5px;
         background: color-mix(in srgb, var(--accent) 20%, transparent);
@@ -403,7 +407,7 @@
         box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--status-done) 55%, transparent);
     }
 
-    .bar.task { top: 12px; height: 14px; border-radius: 5px; }
+    .bar.task { top: calc(50% - 7px); height: 14px; border-radius: 5px; }
     .bar.parallel { box-shadow: inset 0 0 0 1.5px var(--sky-fill); }
 
     .bar .fill {
@@ -1397,7 +1401,8 @@
                                     >
                                         <div class="label-col">
                                             <div class="name">
-                                                <span class="title">{{ $task['label'] ?? '' }}</span>
+                                                {{-- the row already sits under its spec: drop the repeated "US-001 / " --}}
+                                                <span class="title">{{ \Illuminate\Support\Str::after((string) ($task['label'] ?? ''), $child['code'].' / ') }}</span>
                                                 <span class="meta">{{ implode(' · ', $taskMeta) }}</span>
                                             </div>
                                         </div>

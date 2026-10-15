@@ -181,7 +181,7 @@ it('gives no project ratio under three timed specs', function (): void {
 
     $this->get('/larapilot/usage')
         ->assertOk()
-        ->assertSee('Given from 3 specs with a build time')
+        ->assertDontSee('Estimate ÷ build')
         ->assertSee('16×');
 });
 
@@ -222,7 +222,8 @@ it('shows the delivered specs on the usage page, in the report, the insights, an
         ->assertSee('Estimate vs build')
         ->assertSee('4 of 5 specs delivered')
         ->assertSee('3 with a build time')
-        ->assertSee('8.9×')
+        ->assertDontSee('8.9×')
+        ->assertSee('13×')
         ->assertSee('3 h 50 min')
         ->assertSee('sent back ×1')
         ->assertSee('started over ×1')

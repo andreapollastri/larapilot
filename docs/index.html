@@ -2079,7 +2079,7 @@
     <div class="hero-plane" aria-hidden="true"></div>
     <div class="hero-content">
       <div class="hero-copy">
-      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.2.0</a></div>
+      <div class="hero-brand">larapilot<span>.</span><a class="hero-version" href="#v5" title="Version 5 vs version 4">v5.2.1</a></div>
       <h1>From product idea to reviewed Laravel code.</h1>
       <p>
         Spec-driven workflow for Laravel — integrated with
@@ -5784,7 +5784,7 @@ GO — Slack notified.</code></pre>
             <div class="code-block-header">Terminal — in your Laravel project</div>
             <pre><code>composer show andreapollastri/larapilot --latest | grep -E '^(versions|latest)'
 <span class="comment"># versions : * 4.1.2</span>
-<span class="comment"># latest   : 5.2.0 released 2026-10-12</span>
+<span class="comment"># latest   : 5.2.1 released 2026-10-15</span>
 
 composer why andreapollastri/larapilot
 <span class="comment"># laravel/laravel dev-main requires andreapollastri/larapilot (^4.0)</span></code></pre>
@@ -9082,8 +9082,8 @@ php artisan larapilot:schedule-apply --file=.larapilot/tmp-payload-schedule.json
             story points when it has no plan, before the PM/QA buffer: the same estimate Economics prices — the
             time it took to <strong>build</strong>, how long it then waited <strong>in review</strong>, and the
             <strong>tokens</strong> the ledger holds for it. A spec that review sent back, or that was started over,
-            says so. Above the table: the estimated hours, the build time, and how many times the first holds the
-            second — given from three specs with a build time, since one spec proves nothing.
+            says so. Above the table: the estimated hours, the build time, and the tokens; how many times the
+            estimate holds the build is in the table, spec by spec.
           </p>
 
           <figure class="shot">
@@ -13696,7 +13696,7 @@ Http::baseUrl(env('LARAPILOT_BASE_URL').'/larapilot/api')
   </div>
 
   <footer>
-    <p>Larapilot v5.2.0 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Larapilot v5.2.1 · Open source · MIT · <a href="https://github.com/andreapollastri/larapilot" target="_blank" rel="noopener">GitHub</a></p>
     <p>Made by <a href="https://web.ap.it" target="_blank" rel="noopener">Andrea Pollastri</a></p>
   </footer>
 

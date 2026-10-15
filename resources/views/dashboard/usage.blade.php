@@ -121,10 +121,8 @@
     }
 
     @media (min-width: 860px) {
-        .actuals-figures { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .actuals-figures { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-
-    .actuals-figures .metric-value.is-lead { color: var(--accent-strong); }
 
     .actuals {
         width: 100%;
@@ -254,17 +252,6 @@
                     <div class="metric-label">Build</div>
                     <div class="metric-value">{{ $actualTotals['build_display'] ?? '—' }}</div>
                     <div class="metric-note">Time spent {{ $inProgressLabel }}, pauses included</div>
-                </div>
-                <div>
-                    <div class="metric-label">Estimate ÷ build</div>
-                    <div class="metric-value is-lead">{{ $actualTotals['ratio_display'] ?? '—' }}</div>
-                    <div class="metric-note">
-                        @if (($actualTotals['ratio_display'] ?? null) === null)
-                            Given from {{ $actualTotals['min_timed_specs'] ?? 3 }} specs with a build time
-                        @else
-                            An estimate the agent wrote, not hours a person worked
-                        @endif
-                    </div>
                 </div>
                 <div>
                     <div class="metric-label">Tokens</div>

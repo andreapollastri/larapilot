@@ -2,6 +2,20 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## [5.2.1] - 2026-10-15
+
+### Changed
+
+- **Usage keeps to values above the table** — the figures of **Estimate vs build** no longer carry the project ratio (**Estimate ÷ build**, `8.9×`): the estimated hours, the build time, and the tokens stay. The ratio of each spec is still in the table, and the project one in `report.md` and in `usage-report --insights`.
+
+### Fixed
+
+- **The Plan reads its epics and stories whole** — the left column of the Gantt cut every title to one line with an ellipsis, so most epics, stories, and tasks lost the end of their name. A title now wraps over as many lines as it needs, and the row grows with it; the line under it (status, dates, hours, people, the objective of an epic) keeps to two lines. The column is a little wider (320 px, 184 px on a phone), the bars stay on the middle of a taller row, and a task no longer repeats the code of the story it sits under (`TASK-01 — …`, not `US-001 / TASK-01 — …`).
+
+### Docs
+
+- Site / package version **v5.2.1**.
+
 ## [5.2.0] - 2026-10-12
 
 Larapilot on an app that is already there, on the stack it runs on: Laravel 10, PHP 8.1, Boost 1, Sail. From a review by a team adopting it on such an app. And the version as a dimension of the whole product: of every page that reads the backlog, and of every step of the workflow. And two design systems, New York and Zen.
