@@ -45,6 +45,9 @@ return [
         // Code change history (.larapilot/code-history.yaml) — per spec/task list of files and line
         // ranges touched, derived from the task git commit. OFF by default; set true to enable.
         'code_history' => false,
+        // PHPDoc traceability on methods written by Larapilot — spec/task title plus @see links
+        // to technical documentation. ON by default; set false to keep generated code unannotated.
+        'traceability_comments' => true,
         // Release mode — semver release ledger + Gitflow release branches. OFF by default.
         'release_mode' => false,
         // Living project handbook in .larapilot/docs/handbook/ — OFF by default.

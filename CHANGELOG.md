@@ -2,6 +2,13 @@
 
 All notable changes to `larapilot` will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- **PHP 8.6 support** — the compatibility matrix now tests PHP 8.6 with Laravel 13, and the built-in support policy recognizes PHP 8.6.
+- **Method traceability comments** — `traceability_comments` defaults to ON. `/larapilot-implement` adds spec/task PHPDoc and technical-documentation `@see` links to every PHP method it creates or materially changes while preserving existing tags such as `@deprecated`. `larapilot:trace-code` backfills existing PHP files or directories, with repeatable `--path` / `--see` and `--dry-run`.
+
 ## [5.2.1] - 2026-10-15
 
 ### Changed

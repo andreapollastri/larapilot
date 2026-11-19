@@ -320,6 +320,14 @@
                     'NO' => 'No code change history (default).',
                 ],
             ],
+            'traceability_comments' => [
+                'label' => 'Method traceability comments',
+                'description' => 'PHPDoc on generated or changed methods linking the spec/task to relevant technical documentation.',
+                'options' => [
+                    'YES' => 'Add US/task context and @see documentation links (default).',
+                    'NO' => 'Do not add Larapilot traceability comments; existing PHPDoc remains untouched.',
+                ],
+            ],
             'sprints' => [
                 'label' => 'Sprints',
                 'description' => 'Split the work into two-week sprints (one person\'s capacity) on the Board, the Plan, and in planning. Off by default.',
@@ -493,7 +501,7 @@
         $settingGroups = [
             'Delivery' => ['effort', 'backlog', 'git_mode', 'testing', 'quality_scope', 'auto_approve', 'sprints'],
             'Automation' => ['hooks'],
-            'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'release_mode', 'public_roadmap', 'project_docs', 'comments'],
+            'Tracking and documentation' => ['lucille', 'decision_log', 'prior_art', 'code_history', 'traceability_comments', 'release_mode', 'public_roadmap', 'project_docs', 'comments'],
             'Business' => ['account'],
             'Security' => ['api_auth', 'security_scan', 'security', 'security_provider'],
             'Monitoring' => ['errors', 'errors_provider', 'boogle'],

@@ -85,6 +85,7 @@ it('exposes default project settings and updates them', function (): void {
         'lucille' => 'YES',
         'decision_log' => 'YES',
         'code_history' => 'NO',
+        'traceability_comments' => 'YES',
         'comments' => 'NO',
         'api_auth' => 'NO',
         'security_scan' => 'NO',
@@ -113,6 +114,7 @@ it('exposes default project settings and updates them', function (): void {
         ->and($config->lucilleEnabled())->toBeTrue()
         ->and($config->decisionLogEnabled())->toBeTrue()
         ->and($config->codeHistoryEnabled())->toBeFalse()
+        ->and($config->traceabilityCommentsEnabled())->toBeTrue()
         ->and($config->commentsEnabled())->toBeFalse()
         ->and($config->apiAuthEnabled())->toBeFalse()
         ->and($config->securityScanEnabled())->toBeFalse()

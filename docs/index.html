@@ -2242,7 +2242,7 @@
           roles</a>. <a href="#deep-dive-dashboard">Every page</a>.</p>
         <p>Then open your editor in the project and type <code>/larapilot-</code>: the skills are listed. Pick the
           one for your situation from <a href="#first-run">First run</a>.</p>
-        <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
+        <p class="install-requirements"><strong>Requires:</strong> PHP 8.1+ (tested through 8.6; 8.2+ recommended) · Laravel 10.49+ · 11.45.3+ · 12+ · 13+ · <a
             href="https://laravel.com/ai/boost" target="_blank" rel="noopener">Laravel Boost</a> ^1 or ^2 (Boost 2 needs PHP 8.2 and Laravel 11.45.3+; Composer picks Boost 1 below that) ·
           MCP-capable editor/agent (Claude Code, VS Code, Cursor, etc.)</p>
         <details class="more">
@@ -6458,7 +6458,8 @@ php artisan boost:update   <span class="comment"># the 4.x skills back in your e
                   <li><strong>Process</strong> — <code>effort</code>, <code>backlog</code> granularity,
                     <code>git_mode</code>, <code>testing</code>, <code>auto_approve</code>, <code>lucille</code></li>
                   <li><strong>Traceability</strong> — <code>decision_log</code> (journal + regression guard, ON by
-                    default), <code>code_history</code> (per spec/task file+line log, OFF)</li>
+                    default), <code>code_history</code> (per spec/task file+line log, OFF),
+                    <code>traceability_comments</code> (US/task PHPDoc + technical-documentation links, ON)</li>
                   <li><strong>Discovery</strong> — <code>prior_art</code> (Sebastian's existing-solutions search at
                     inception, consent asked before every search, ON)</li>
                   <li><strong>Delivery extras</strong> — <code>release_mode</code> (semver ledger + Gitflow release
@@ -7170,8 +7171,9 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
                   <td>Tracking</td>
                   <td><a href="#deep-dive-lucille"><code>lucille</code></a> ·
                     <a href="#deep-dive-decision-log"><code>decision_log</code></a> ·
-                    <a href="#deep-dive-code-history"><code>code_history</code></a></td>
-                  <td><code>YES</code> · <code>YES</code> · <code>NO</code></td>
+                    <a href="#deep-dive-code-history"><code>code_history</code></a> ·
+                    <a href="#deep-dive-traceability-comments"><code>traceability_comments</code></a></td>
+                  <td><code>YES</code> · <code>YES</code> · <code>NO</code> · <code>YES</code></td>
                 </tr>
                 <tr>
                   <td>Discovery</td>
@@ -7470,6 +7472,31 @@ php artisan larapilot:hook-run task.done --phase=before --spec=US-001 --task=TAS
               working-tree diff).</li>
             <li><code>php artisan larapilot:code-history --file=app/Models/Post.php</code> (read-only, also on the MCP
               allowlist) reports every touchpoint for a path.</li>
+          </ul>
+
+          <h4 id="deep-dive-traceability-comments">Method traceability comments <span class="chip">on by default</span></h4>
+          <p><code>settings.traceability_comments</code> (default <code>YES</code>) keeps the reason for a method beside
+            the implementation. Every PHP method Larapilot creates or materially changes receives standard PHPDoc
+            with the user story/spec, its title, the task id/title, and one or more <code>@see</code> links to the
+            relevant technical documentation.</p>
+          <div class="code-block">
+            <div class="code-block-header">Generated PHPDoc</div>
+            <pre><code>/**
+ * US-014 | Subscription billing | TASK-03: Create renewal endpoint
+ *
+ * @see .larapilot/docs/devs/billing.md
+ * @deprecated Use renew() instead.
+ */</code></pre>
+          </div>
+          <ul>
+            <li>Existing PHPDoc is merged, not replaced: <code>@param</code>, <code>@return</code>,
+              <code>@throws</code>, <code>@deprecated</code>, and custom tags stay intact.</li>
+            <li>The operation is idempotent: the same trace and <code>@see</code> are never duplicated.</li>
+            <li>Backfill existing code with
+              <code>php artisan larapilot:trace-code US-014 --task=TASK-03 --see=.larapilot/docs/devs/billing.md --path=app</code>.
+              Repeat <code>--see</code> and <code>--path</code> as needed; <code>--dry-run</code> reports without writing.</li>
+            <li>Disable future Larapilot comments with
+              <code>php artisan larapilot:settings-set --traceability-comments=NO</code>. Existing PHPDoc is never removed.</li>
           </ul>
 
           <h4 id="deep-dive-account">Account <span class="chip">opt-in</span></h4>
@@ -7876,6 +7903,7 @@ php artisan larapilot:errors-status</code></pre>
   --lucille=YES \
   --decision-log=YES \
   --code-history=NO \
+  --traceability-comments=YES \
   --prior-art=YES \
   --release-mode=NO \
   --project-docs=NO \
@@ -11437,9 +11465,11 @@ php artisan larapilot:doctor --human                                  # a table 
                   <td>Traceability</td>
                   <td><code>larapilot:decision-log</code> · <code>larapilot:decision-check</code> ·
                     <code>larapilot:code-log</code> · <code>larapilot:code-history</code> (<code>--file=</code>,
-                    <code>--spec=</code>)</td>
+                    <code>--spec=</code>) · <code>larapilot:trace-code {spec}</code> (<code>--task=</code>,
+                    repeatable <code>--see</code> / <code>--path</code>, <code>--dry-run</code>)</td>
                   <td>Every skill — see <a href="#deep-dive-decision-log">Decision journal</a> and
-                    <a href="#deep-dive-code-history">Code history</a></td>
+                    <a href="#deep-dive-code-history">Code history</a>; implementation and retrofit — see
+                    <a href="#deep-dive-traceability-comments">method comments</a></td>
                 </tr>
                 <tr>
                   <td>Metrics</td>

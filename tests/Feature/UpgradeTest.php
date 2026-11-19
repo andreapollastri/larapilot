@@ -152,7 +152,8 @@ it('knows where each version stands in its support window', function (): void {
         // A version newer than the table is unknown, never end of life.
         ->and(SupportPolicy::status('laravel', '14', '2026-10-01')['state'])->toBe('unknown')
         ->and(SupportPolicy::cycle('mariadb', '10.11.6'))->toBe('10.11')
-        ->and(SupportPolicy::laravelPhpRange('13'))->toBe(['8.3', '8.5']);
+        ->and(SupportPolicy::laravelPhpRange('13'))->toBe(['8.3', '8.6'])
+        ->and(SupportPolicy::status('php', '8.6', '2026-11-19')['state'])->toBe('active');
 });
 
 it('reads the engine behind a server version string', function (): void {
@@ -222,7 +223,7 @@ it('checks a Laravel upgrade against what Packagist publishes', function (): voi
     $dependencies = collect($check['laravel']['dependencies'])->keyBy('name');
 
     expect($check['laravel']['steps'])->toHaveCount(1)
-        ->and($check['laravel']['steps'][0])->toMatchArray(['from' => '12', 'to' => '13', 'php' => ['8.3', '8.5'], 'guide' => 'https://laravel.com/docs/13.x/upgrade'])
+        ->and($check['laravel']['steps'][0])->toMatchArray(['from' => '12', 'to' => '13', 'php' => ['8.3', '8.6'], 'guide' => 'https://laravel.com/docs/13.x/upgrade'])
         // Filament leaves Laravel to filament/support: the check follows it.
         ->and($dependencies['filament/filament'])->toMatchArray(['verdict' => 'bump', 'candidate' => '4.0.0'])
         // Searched on PHP 8.3, the floor Laravel 13 needs, not on the project's 8.2.

@@ -99,6 +99,7 @@ use Larapilot\Console\Commands\SpecSprintCommand;
 use Larapilot\Console\Commands\SpecStartCommand;
 use Larapilot\Console\Commands\StackCommand;
 use Larapilot\Console\Commands\TaskDoneCommand;
+use Larapilot\Console\Commands\TraceCodeCommand;
 use Larapilot\Console\Commands\TrackerPullCommand;
 use Larapilot\Console\Commands\TrackerPushCommand;
 use Larapilot\Console\Commands\TrackerStatusCommand;
@@ -135,6 +136,7 @@ use Larapilot\Services\Boogle\BoogleLedger;
 use Larapilot\Services\BoogleService;
 use Larapilot\Services\CodeHistoryService;
 use Larapilot\Services\CodeQualityService;
+use Larapilot\Services\CodeTraceabilityService;
 use Larapilot\Services\CompanionService;
 use Larapilot\Services\ConfigService;
 use Larapilot\Services\ContextService;
@@ -202,6 +204,7 @@ class LarapilotServiceProvider extends ServiceProvider
         $this->app->singleton(ConfigService::class);
         $this->app->singleton(ContextService::class);
         $this->app->singleton(CodeQualityService::class);
+        $this->app->singleton(CodeTraceabilityService::class);
         $this->app->singleton(DecisionService::class);
         $this->app->singleton(CodeHistoryService::class);
         $this->app->singleton(CompanionService::class);
@@ -348,6 +351,7 @@ class LarapilotServiceProvider extends ServiceProvider
                 SpecCommentCommand::class,
                 SpecRequestChangesCommand::class,
                 TaskDoneCommand::class,
+                TraceCodeCommand::class,
                 MetricsCommand::class,
                 MockupChooseStyleCommand::class,
                 UsageLogCommand::class,

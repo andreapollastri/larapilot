@@ -20,6 +20,7 @@ class SettingsSetCommand extends LarapilotCommand
                             {--lucille= : Lucille usage tracking: YES (default) or NO to exclude explicitly}
                             {--decision-log= : Decision journal + regression guard: YES (default) or NO}
                             {--code-history= : Per spec/task code change history: YES or NO (default NO)}
+                            {--traceability-comments= : Spec/task and technical-documentation PHPDoc on methods: YES (default) or NO}
                             {--release-mode= : Semver release ledger + Gitflow release branches: YES or NO (default NO)}
                             {--project-docs= : Living project handbook in .larapilot/docs/handbook/: YES or NO (default NO)}
                             {--prior-art= : Prior-art search for existing open-source / packaged solutions at inception: YES (default) or NO}
@@ -142,6 +143,7 @@ class SettingsSetCommand extends LarapilotCommand
             'lucille' => ['lucille', $config->allowedLucilleModes()],
             'decision-log' => ['decision_log', $config->allowedDecisionLogModes()],
             'code-history' => ['code_history', $config->allowedCodeHistoryModes()],
+            'traceability-comments' => ['traceability_comments', $config->allowedTraceabilityCommentsModes()],
             'release-mode' => ['release_mode', $config->allowedReleaseModeModes()],
             'project-docs' => ['project_docs', $config->allowedProjectDocsModes()],
             'prior-art' => ['prior_art', $config->allowedPriorArtModes()],
@@ -218,7 +220,7 @@ class SettingsSetCommand extends LarapilotCommand
         if ($partial === []) {
             return $this->failure(
                 'E_INVALID_INPUT',
-                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --release-mode, --project-docs, --prior-art, --hooks, --sprints, --public-roadmap, --comments, --api-auth, --security-scan, --security, --security-provider, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
+                'Provide at least one of --effort, --backlog, --git-mode, --testing, --account, --auto-approve, --lucille, --decision-log, --code-history, --traceability-comments, --release-mode, --project-docs, --prior-art, --hooks, --sprints, --public-roadmap, --comments, --api-auth, --security-scan, --security, --security-provider, --aikido, --errors, --errors-provider, --boogle, --github, --gitlab, --bitbucket, --azure, --notifications, --notify-slack, --notify-discord, or --notify-telegram.',
                 $this->exitForCode('E_INVALID_INPUT')
             );
         }

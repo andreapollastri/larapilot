@@ -392,6 +392,7 @@ class ConfigService
      *     lucille: string,
      *     decision_log: string,
      *     code_history: string,
+     *     traceability_comments: string,
      *     comments: string,
      *     api_auth: string,
      *     security_scan: string,
@@ -510,6 +511,7 @@ class ConfigService
      *     lucille: bool,
      *     decision_log: bool,
      *     code_history: bool,
+     *     traceability_comments: bool,
      *     comments: bool,
      *     api_auth: bool,
      *     security_scan: bool,
@@ -571,6 +573,7 @@ class ConfigService
             'lucille' => true,
             'decision_log' => true,
             'code_history' => false,
+            'traceability_comments' => true,
             'comments' => false,
             'api_auth' => false,
             'security_scan' => false,
@@ -611,6 +614,7 @@ class ConfigService
      *     lucille: string,
      *     decision_log: string,
      *     code_history: string,
+     *     traceability_comments: string,
      *     comments: string,
      *     api_auth: string,
      *     security_scan: string,
@@ -771,6 +775,14 @@ class ConfigService
     public function codeHistoryEnabled(): bool
     {
         return $this->settings()['code_history'] === 'YES';
+    }
+
+    /**
+     * Spec/task and technical-documentation PHPDoc on methods — ON by default.
+     */
+    public function traceabilityCommentsEnabled(): bool
+    {
+        return $this->settings()['traceability_comments'] === 'YES';
     }
 
     /**
@@ -1274,6 +1286,14 @@ class ConfigService
      * @return list<string>
      */
     public function allowedCodeHistoryModes(): array
+    {
+        return $this->allowedYesNoModes();
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function allowedTraceabilityCommentsModes(): array
     {
         return $this->allowedYesNoModes();
     }

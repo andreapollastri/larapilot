@@ -54,7 +54,7 @@ Never edit `.larapilot/config.yaml` by hand from the skill — always use `larap
 
 From the `context` envelope, show one line with current values:
 
-`effort={…} · backlog={…} · git_mode={…} · testing={…} · quality_scope={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · prior_art={…} · release_mode={…} · project_docs={…} · hooks={…} · sprints={…} · public_roadmap={…} · comments={…} · api_auth={…} · security_scan={…} · security={…} · security_provider={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
+`effort={…} · backlog={…} · git_mode={…} · testing={…} · quality_scope={…} · account={…} · auto_approve={…} · lucille={…} · decision_log={…} · code_history={…} · traceability_comments={…} · prior_art={…} · release_mode={…} · project_docs={…} · hooks={…} · sprints={…} · public_roadmap={…} · comments={…} · api_auth={…} · security_scan={…} · security={…} · security_provider={…} · errors={…} · errors_provider={…} · github={…} · gitlab={…} · bitbucket={…} · azure={…} · notifications={…}`
 
 If `.larapilot/config.yaml` is missing, suggest `php artisan larapilot:install` first (settings-set will scaffold defaults if needed, but install is preferred).
 
@@ -139,10 +139,11 @@ Warn once when the user picks `YES`: this bypasses the usual human-in-the-loop D
 
 Warn once when the user picks `NO`: this opts out of project time/token metrics until they set `YES` again. Note: choosing **Effort = ECO** also sets Lucille to `NO` automatically — same re-enable path (`--lucille=YES`).
 
-**6b. Decision journal, Code change history & Comments**
+**6b. Decision journal, Code traceability & Comments**
 
 - **Decision journal prompt:** `Decision journal (current: {VALUE}) — record every explicit choice you make and warn you before a later choice contradicts an earlier one?`
 - **Code history prompt:** `Code change history (current: {VALUE}) — keep a per-spec/task log of which files and lines were changed?`
+- **Traceability comments prompt:** `Method traceability comments (current: {VALUE}) — add US/task and @see technical-documentation PHPDoc to every method Larapilot creates or materially changes?`
 - **Comments prompt:** `Comments (current: {VALUE}) — allow PM/dev internal feedback on dashboard specs and via the API until DONE?`
 - **Prior art prompt:** `Prior art check (current: {VALUE}) — at inception, search GitHub / Packagist / OSS catalogs for existing solutions before scope (consent asked per search)?`
 - **Chat framing (one line):** 💎 Mark — comments live in `.larapilot/internal-feedback/`; the journal (`.larapilot/decisions.yaml`) is ON by default; the code log (`.larapilot/code-history.yaml`) is OFF by default; 💡 Sebastian — the prior-art round is ON by default and writes `research/prior-art.md`.
@@ -151,6 +152,7 @@ Warn once when the user picks `NO`: this opts out of project time/token metrics 
 | --- | --- | --- |
 | `decision_log` | `YES — journal AskQuestion answers + explicit directives; decision-check flags contradictions (default)` | `NO — do not record decisions or run the regression guard` |
 | `code_history` | `YES — after each task-done, log touched files + line ranges from the task commit` | `NO — no code change history (default)` |
+| `traceability_comments` | `YES — PHPDoc links every created/changed method to its US/task and technical docs (default)` | `NO — do not add Larapilot trace comments; preserve existing PHPDoc` |
 | `prior_art` | `YES — Sebastian searches for existing OSS / packages at inception, consent first; verdict in the PRD (default)` | `NO — skip the round; PRD records Prior Art: Not checked` |
 | `comments` | `YES — dashboard + API + larapilot:spec-comment until spec is DONE` | `NO — hide feedback UI and reject new comments project-wide (default)` |
 
@@ -291,8 +293,8 @@ If notifications = `YES`, ask channels in the same round (or next if at max):
 
 When any channel is YES, remind once: configure env vars per `.larapilot/integrations.md` — do not paste secrets into chat. Suggest a test: `php artisan larapilot:notify --event=custom --title="Larapilot test"`.
 
-Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (prior_art)** / **`NO` (hooks)** / **`NO` (sprints)** / **`NO` (public_roadmap)** / **`NO` (comments)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
-(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `prior_art` → YES; missing `code_history` / `hooks` / `sprints` / `public_roadmap` / `comments` / `api_auth` / `security_scan` / `security` / `errors` / forge / notifications → NO; missing `errors_provider` → `boogle`; missing `security_provider` with `aikido: true` → `aikido`.)
+Defaults when unset: `STANDARD` / `STANDARD` / `GITFLOW` / `NORMAL` / **`NONE` (account)** / `NO` / **`YES` (lucille)** / **`YES` (decision_log)** / **`NO` (code_history)** / **`YES` (traceability_comments)** / **`YES` (prior_art)** / **`NO` (hooks)** / **`NO` (sprints)** / **`NO` (public_roadmap)** / **`NO` (comments)** / **`NO` (api_auth)** / **`NO` (security_scan)** / **`NO` (github/gitlab/bitbucket/azure)** / **`NO` (notifications + channels)**.
+(`config.yaml` stores booleans; `config-show` / CLI envelopes expose `YES` | `NO`. Missing `lucille` / `decision_log` / `traceability_comments` / `prior_art` → YES; missing `code_history` / `hooks` / `sprints` / `public_roadmap` / `comments` / `api_auth` / `security_scan` / `security` / `errors` / forge / notifications → NO; missing `errors_provider` → `boogle`; missing `security_provider` with `aikido: true` → `aikido`.)
 
 ### 2. Persist
 
@@ -310,6 +312,7 @@ php artisan larapilot:settings-set \
   --lucille=YES \
   --decision-log=YES \
   --code-history=NO \
+  --traceability-comments=YES \
   --prior-art=YES \
   --hooks=NO \
   --sprints=NO \
@@ -331,7 +334,7 @@ php artisan larapilot:settings-set \
 
 Pass only the keys the user answered. On success, parse the JSON envelope (`kind: "settings"`) and confirm:
 
-`Saved → effort=… · backlog=… · git_mode=… · testing=… · quality_scope=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · hooks=… · sprints=… · public_roadmap=… · comments=… · api_auth=… · security_scan=… · security=… · security_provider=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`  
+`Saved → effort=… · backlog=… · git_mode=… · testing=… · quality_scope=… · account=… · auto_approve=… · lucille=… · decision_log=… · code_history=… · traceability_comments=… · hooks=… · sprints=… · public_roadmap=… · comments=… · api_auth=… · security_scan=… · security=… · security_provider=… · errors=… · errors_provider=… · github=… · gitlab=… · bitbucket=… · azure=… · notifications=…`
 `Path: data.config_path` (or `.larapilot/config.yaml`)
 
 If `data.lucille_disabled_by_eco` is true (or effort was just set to ECO without an explicit lucille flag), state once: **Lucille disabled by ECO** — re-enable with `php artisan larapilot:settings-set --lucille=YES`.

@@ -882,6 +882,17 @@ php artisan larapilot:code-log --spec=US-014 --task=TASK-03 --skill=larapilot-im
 php artisan larapilot:code-history --file=app/Models/Post.php   # where has this file been worked on?
 ```
 
+### Method traceability (`traceability_comments`, ON by default)
+
+During implementation, every PHP method Larapilot creates or materially changes gets PHPDoc that names its user story/spec and task and links the relevant technical documentation with `@see`. Existing tags, including `@deprecated`, are preserved. Backfill existing code explicitly:
+
+```bash
+php artisan larapilot:trace-code US-014 --task=TASK-03 \
+  --see=.larapilot/docs/devs/billing.md --path=app
+```
+
+Repeat `--see` and `--path` as needed; use `--dry-run` to preview. Disable new trace comments with `php artisan larapilot:settings-set --traceability-comments=NO`.
+
 ---
 
 ## Security
@@ -1169,7 +1180,7 @@ Skills call these for you — run them by hand for scripting, CI, or debugging. 
 | Design | `mockup-choose-style US-XXX --style=` |
 | Plan & build | `validate-plan` · `spec-plan` · `spec-start` · `task-done` · `spec-review` |
 | Review | `spec-approve` (`--force`) · `spec-request-changes` (`--include-feedback`) |
-| Traceability | `decision-log` · `decision-check` · `code-log` · `code-history` |
+| Traceability | `decision-log` · `decision-check` · `code-log` · `code-history` · `trace-code {spec}` (`--task=`, repeatable `--see` / `--path`, `--dry-run`) |
 | Metrics & usage | `metrics` · `usage-log` · `usage-report` (`--insights`, `--format=json\|md\|human`) · `schedule-set` (`--release=` for a milestone of one release) |
 | Schedule | `schedule-show` (`--only=queue,epics,deadlines,releases,alerts,findings`) · `schedule-apply --file=` (`--dry-run`) |
 | Economics | `economics-set` · `economics-show` (`--format=json\|md\|quote`) · `economics-market-write` · `economics-quote-write` |
@@ -1192,7 +1203,7 @@ The **`larapilot` MCP server** exposes four tools: `BacklogListTool`, `SpecShowT
 
 ## Requirements
 
-- PHP **^8.1** (8.2+ recommended)
+- PHP **^8.1**, tested through **8.6** (8.2+ recommended)
 - Laravel **^10.49** · **^11.45.3** · **^12** · **^13**
 - [Laravel Boost](https://laravel.com/ai/boost) **^1** or **^2** — Boost 2 needs PHP 8.2 and Laravel 11.45.3+ (12.41.1+ on 12); Composer resolves Boost 1 below that ([what changes](#laravel-10-php-81-and-boost-1)). Kept current by `larapilot:update`
 - `laravel/mcp` **^0.5.1 … ^1.0**, the line the installed Boost brings

@@ -43,12 +43,12 @@ final class SupportPolicy
                 '11' => ['released' => '2024-03-12', 'active_until' => '2025-09-03', 'security_until' => '2026-03-12', 'php' => '8.2 - 8.4'],
                 '12' => ['released' => '2025-02-24', 'active_until' => '2026-08-13', 'security_until' => '2027-02-24', 'php' => '8.2 - 8.5'],
                 // Bug fixes are announced as "Q3 2027": the end of the quarter is used.
-                '13' => ['released' => '2026-03-17', 'active_until' => '2027-09-30', 'security_until' => '2028-03-17', 'php' => '8.3 - 8.5', 'note' => 'Bug fixes until Q3 2027'],
+                '13' => ['released' => '2026-03-17', 'active_until' => '2027-09-30', 'security_until' => '2028-03-17', 'php' => '8.3 - 8.6', 'note' => 'Bug fixes until Q3 2027'],
             ],
         ],
         'php' => [
             'label' => 'PHP',
-            'latest' => '8.5',
+            'latest' => '8.6',
             'versions' => [
                 '7.4' => ['released' => '2019-11-28', 'active_until' => '2021-11-28', 'security_until' => '2022-11-28'],
                 '8.0' => ['released' => '2020-11-26', 'active_until' => '2022-11-26', 'security_until' => '2023-11-26'],
@@ -57,6 +57,7 @@ final class SupportPolicy
                 '8.3' => ['released' => '2023-11-23', 'active_until' => '2025-12-31', 'security_until' => '2027-12-31'],
                 '8.4' => ['released' => '2024-11-21', 'active_until' => '2026-12-31', 'security_until' => '2028-12-31'],
                 '8.5' => ['released' => '2025-11-20', 'active_until' => '2027-12-31', 'security_until' => '2029-12-31'],
+                '8.6' => ['released' => '2026-11-19', 'active_until' => '2028-12-31', 'security_until' => '2030-12-31'],
             ],
         ],
         'mysql' => [

@@ -385,6 +385,7 @@ it('installs default project settings into config.yaml', function (): void {
         ->and($yaml)->toContain('account: NONE')
         ->and($yaml)->toContain('auto_approve: false')
         ->and($yaml)->toContain('lucille: true')
+        ->and($yaml)->toContain('traceability_comments: true')
         ->and($yaml)->toContain('comments: false')
         ->and($yaml)->toContain('api_auth: false')
         ->and($yaml)->toContain('security_scan: false')
@@ -410,6 +411,7 @@ it('persists project settings via settings-set', function (): void {
         '--lucille' => 'NO',
         '--decision-log' => 'NO',
         '--code-history' => 'YES',
+        '--traceability-comments' => 'NO',
         '--api-auth' => 'YES',
         '--security-scan' => 'YES',
         '--github' => 'YES',
@@ -436,6 +438,7 @@ it('persists project settings via settings-set', function (): void {
         'lucille' => 'NO',
         'decision_log' => 'NO',
         'code_history' => 'YES',
+        'traceability_comments' => 'NO',
         'comments' => 'NO',
         'api_auth' => 'YES',
         'security_scan' => 'YES',
